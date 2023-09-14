@@ -373,8 +373,8 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "選取媒體來傳送";
 
-/* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "相機";
+/* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "聯絡人";
@@ -385,20 +385,29 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "授予存取";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "位置";
 
-/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal 需要獲取權限以顯示你的相片和影片。";
+/* Second block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
 
-/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "當你拍攝照片後便可以在這裏傳送最近的照片。";
+/* First block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+
+/* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+
+/* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "付款";
+
+/* A button to open the photo picker from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "附件";
@@ -1762,6 +1771,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "如果繼續，將會禁用在其他裝置上使用同一電話號碼登記的Signal。";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "無法驗證你的新裝置，請重試。";
 
@@ -1780,6 +1792,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "更新至最新版的Signal，然後重試。";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "將你的Signal帳戶轉移到新的iOS裝置上。請確保你的裝置在附近且已經開啟。";
 
@@ -1787,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "轉移帳戶";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "在舊裝置上開啟Signal，放在附近，並確保兩個裝置上的Wi-Fi及藍牙均已開啟。";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "將另一個裝置上的QR Code對準於框內。";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "在舊裝置上沒有任何提示？";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "正等待其他裝置……";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "保持兩個裝置互相靠近。請勿關閉裝置並始終開啟Signal。轉移已端對端加密。";
@@ -3307,15 +3322,6 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "您無法分享超過 %1$@ 個項目。";
 
-/* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "更改照片";
-
-/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "在「設定」中允許全部權限，或選擇 Signal 可存取的相片。";
-
-/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "無見到您的相片？";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "無法選擇附件。";
 
@@ -3365,10 +3371,10 @@
 "INCOMING_VIDEO_CALL" = "視訊通話來電";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "此人已被重新加回你的 Signal 聯絡人清單。";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "你已從 Signal 聯絡人清單中移除了此人，若向他們發送訊息，會將他們重新加回清單。";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "您已啟動付款。";
@@ -3609,6 +3615,9 @@
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "重設";
+
+/* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "加入訊息";
@@ -3992,16 +4001,16 @@
 "MISSED_AUDIO_CALL" = "未接的語音通話";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "在電話設定中遭到封鎖的聯絡人未接來電";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "同時在 Signal 中封鎖聯絡人";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "你錯過了他們的來電，因為他們在你的電話設定中遭到封鎖。前往「設定」> 「電話」，並點按「已封鎖的聯絡人」來管理此情況。";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ 已在電話設定中封鎖";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "使用「請勿打擾」模式時的未接來電";
@@ -4418,13 +4427,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "未接的視訊通話";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "退出 Signal";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal 現在將從此裝置上退出";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "轉移完成！";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "撥打視訊通話";
@@ -4862,7 +4871,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "無法設定相機。";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "影片太長。";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名相簿";
@@ -5806,6 +5815,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "錯誤日誌";
 
+/* Information on sheet about changing the app icon - first line */
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+
+/* Information on sheet about changing the app icon - second line */
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+
+/* The footer for the app icon selection settings page. */
+"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+
+/* The title for the app icon selection settings page. */
+"SETTINGS_APP_ICON_TITLE" = "App Icon";
+
+/* The title for the app icon section in the appearance settings. */
+"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "顯示系統聯絡人照片（如有）。";
 
@@ -6032,7 +6056,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "啟用";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "你可使用 Signal 收發 MobileCoin。所有付款均受 MobileCoin 和 MobileCoin Wallet 的使用條款約束。你或許會遇到一些問題，以及你可能遺失付款或餘額而無法還原。";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "啟用";
@@ -7302,6 +7326,18 @@
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ 星期";
+
+/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+
+/* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+
+/* Title for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+
+/* Notification prompting the user to relaunch Signal after a device transfer completed. */
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";

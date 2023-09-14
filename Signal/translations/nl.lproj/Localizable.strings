@@ -329,10 +329,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Opgeslagen";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Langzamer, meer dataoverdracht";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Langzamer, meer dataverbruik";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Sneller, minder dataoverdracht";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Sneller, minder dataverbruik";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediakwaliteit";
@@ -373,8 +373,8 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Kies media om te verzenden";
 
-/* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "Camera";
+/* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Contactpersoon";
@@ -385,20 +385,29 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Toestemming geven";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locatie";
 
-/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal heeft toestemming nodig om je foto's en video's weer te kunnen geven.";
+/* Second block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
 
-/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Zodra je foto's hebt genomen, kun je van hieruit je recente foto's verzenden.";
+/* First block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+
+/* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+
+/* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Betaling";
+
+/* A button to open the photo picker from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bijlage";
@@ -1280,7 +1289,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Uitgeschakeld";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, -afbeelding, -omschrijving en de tijdspanne voor verlopende berichten kan bewerken.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, -afbeelding, -omschrijving en de timer voor verdwijnende berichten kan bewerken.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
@@ -1658,7 +1667,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Account aan het verwijderen...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Je hebt geen verbinding met het internet. Ga na dat wifi of mobiele-dataoverdracht is ingeschakeld en probeer het daarna opnieuw.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Geen internetverbinding. Ga na dat wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefoonnummer";
@@ -1762,6 +1771,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Als je doorgaat dan zal de Signal-app worden uitgeschakeld op andere apparaten welke momenteel met hetzelfde telefoonnummer bij Signal zijn geregistreerd.";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Kon de identiteit van het nieuwe apparaat niet verifiëren, probeer het opnieuw";
 
@@ -1780,6 +1792,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Werk bij naar de meest recente versie van Signal en probeer het opnieuw";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Zet je account over naar een nieuw iOS apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
 
@@ -1787,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Account overzetten";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal op je oude apparaat, breng de apparaten bij elkaar in de buurt, en ga na dat zowel wifi als bluetooth op beide apparaten zijn ingeschakeld.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positioneer deze QR code in het frame van het andere apparaat.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Zie je op je oude apparaat geen mogelijkheid om gegevens over te zetten?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Aan het wachten op het andere apparaat …";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Houd de apparaten bij elkaar in de buurt en houd de Signal-app open op beide apparaten. De gegevens worden eind-tot-eind-versleuteld uitgewisseld.";
@@ -1820,28 +1835,28 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Gegevens overzetten";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Verlopende berichten";
+"DISAPPEARING_MESSAGES" = "Verdwijnende berichten";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in deze chat zullen na %1$@ verlopen.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in deze chat zullen na %1$@ verdwijnen.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Zelfgekozen tijdspanne";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Zelfgekozen tijd";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld, zullen nieuwe berichten die in deze chat zijn verstuurd en ontvangen, verdwijnen nadat ze zijn gezien.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld, worden nieuwe berichten die in deze chat zijn verstuurd en ontvangen gewist nadat ze zijn gezien.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %1$@";
+"DISAPPEARING_MESSAGES_HINT" = "Momenteel verdwijnen nieuwe berichten na %1$@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "uur";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor verlopende berichten";
+"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor verdwijnende berichten";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "minuten";
@@ -1850,7 +1865,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Hiermee stel je voor alle toekomstige gesprekken die jij zelf begint in dat berichten voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Hiermee stel je voor alle nieuwe chats die jij zelf begint in dat berichten voor iedereen na een bepaalde tijd worden gewist nadat ze zijn gezien.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weken";
@@ -1958,7 +1973,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Donatie bevestigen";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Verlopende berichten staan aan voor deze chat. Je donatiebericht verdwijnt over %1$@ .";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Verdwijnende berichten zijn ingeschakeld voor deze chat. Je donatiebericht verdwijnt over %1$@ .";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Kan niet doneren. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
@@ -3307,15 +3322,6 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Je kunt niet meer dan %1$@ items delen.";
 
-/* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Toegang tot foto's wijzigen";
-
-/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Geef Signal volledige toegang tot je foto's via Instellingen of wijzig tot welke foto's Signal toegang heeft.";
-
-/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Zie je je foto's niet?";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Bijlage selecteren mislukt.";
 
@@ -3365,10 +3371,10 @@
 "INCOMING_VIDEO_CALL" = "Inkomende video-oproep";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "Deze persoon is weer toegevoegd aan je Signal-contactenlijst.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "Je hebt deze persoon uit je Signal-contactenlijst verwijderd. Als je een bericht stuurt, wordt deze persoon weer toegevoegd.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Je hebt Betalingen geactiveerd.";
@@ -3610,6 +3616,9 @@
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "Standaardinstelling herstellen";
 
+/* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Bericht toevoegen";
 
@@ -3770,7 +3779,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME-type";
 
 /* Label for the 'disappears' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Verloopt over";
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Verdwijnt over";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Afgeleverd aan";
@@ -3992,16 +4001,16 @@
 "MISSED_AUDIO_CALL" = "Gemiste spraakoproep";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Gemiste oproep van geblokkeerd contact in telefooninstellingen";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Blokkeer contact ook in Signal";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Je hebt deze oproep gemist, omdat dit contact is geblokkeerd in je telefooninstellingen. Ga naar Instellingen > Telefoon en tik op Geblokkeerde contacten om ze te beheren.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is geblokkeerd in Telefooninstellingen";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Gemiste oproep tijdens Niet storen";
@@ -4394,10 +4403,10 @@
 "OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal ondersteunt binnenkort de iOS-versie van je apparaat niet meer. Schakel vóór %1$@ over naar een nieuwer apparaat om Signal te blijven gebruiken.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ heeft verlopende berichten uitgeschakeld.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ heeft verdwijnende berichten uitgeschakeld.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ heeft de tijdsspanne voor verlopende berichten op %2$@ ingesteld.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ heeft de timer voor verdwijnende berichten op %2$@ ingesteld.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de bereikbaarheid te hervatten.";
@@ -4418,13 +4427,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "Onbeantwoorde video-oproep";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Sluit Signal";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal wordt nu gesloten op dit apparaat";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Overzetten voltooid!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Uitgaande video-oproep";
@@ -4862,7 +4871,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Afstemmen met camera mislukt.";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video te lang.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
@@ -4979,7 +4988,7 @@
 "PIN_RECRETION_ERROR_MESSAGE" = "Het aanmaken van een pincode is mislukt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je regelmatig om je pincode in te voeren. We zullen dit na verloop van tijd minder vaak vragen. Je kunt deze herinneringen uitschakelen via Instellingen > Account.";
+"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je regelmatig om je pincode in te voeren. We zullen dit na verloop van tijd minder vaak vragen.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Tik hier als je je pincode bent vergeten.";
@@ -4988,7 +4997,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode verifiëren";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Signal zal je af te toe vragen om je pincode opnieuw in te voeren, om te controleren of je hem goed hebt onthouden.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Signal vraagt je af en toe om je pincode te bevestigen, zodat je je pincode goed onthoudt.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Signal zal je er binnen een aantal dagen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
@@ -5806,6 +5815,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutopsporingslogs";
 
+/* Information on sheet about changing the app icon - first line */
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+
+/* Information on sheet about changing the app icon - second line */
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+
+/* The footer for the app icon selection settings page. */
+"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+
+/* The title for the app icon selection settings page. */
+"SETTINGS_APP_ICON_TITLE" = "App Icon";
+
+/* The title for the app icon section in the appearance settings. */
+"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto uit je eigen systeemcontactenlijst weer, in plaats van de profielfoto welke anderen voor henzelf hebben ingesteld.";
 
@@ -5888,13 +5912,13 @@
 "SETTINGS_COPYRIGHT" = "Auteursrecht Signal Messenger\nGelicentieerd onder de GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Dataoverdracht";
+"SETTINGS_DATA" = "Datagebruik";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Minder dataoverdracht bij oproepen";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Minder data gebruiken";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Gebruikmaken van minder dataoverdracht bij oproepen kan de kwaliteit van oproepen verbeteren op een slecht netwerk.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Door minder data te gebruiken kan de kwaliteit van oproepen op slechte netwerken verbeteren";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Oproepen";
@@ -5918,7 +5942,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Media verzenden";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Dataoverdracht";
+"SETTINGS_DATA_TITLE" = "Datagebruik";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Account verwijderen";
@@ -5945,10 +5969,10 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles wissen";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "Verlopende berichten";
+"SETTINGS_DISAPPEARING_MESSAGES" = "Verdwijnende berichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel in dat elk bericht in chats die jij zelf begint een bepaalde tijd nadat het is gezien voor iedereen moet worden gewist.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel standaard verdwijnende berichten in voor alle nieuwe chats die jij zelf begint";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Aan Signal doneren";
@@ -6002,7 +6026,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Video's";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Als leesbevestigingen of typindicatoren zijn uitgeschakeld, zien anderen niet wanneer je typt of dat je hun berichten leest. Je kunt ook niet zien wanneer anderen typen of wanneer ze jouw berichten lezen.";
+"SETTINGS_MESSAGING_FOOTER" = "Bekijk en deel wanneer berichten worden gelezen of getypt. Als leesbevestingen of typindicatoren zijn uitgeschakeld, kun je ook geen leesbevestigingen of typindicatoren van anderen zien.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Instellingen";
@@ -6032,7 +6056,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Inschakelen";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Je kunt Signal gebruiken om MobileCoin te verzenden en te ontvangen. Op alle betalingen zijn de gebruiksvoorwaarden voor MobileCoins en de MobileCoin Wallet van toepassing. Er kunnen zich problemen voordoen. Verloren betalingen en krediet kan je dan niet terugvorderen.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Inschakelen";
@@ -6227,19 +6251,19 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Verzonden door";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Geprobeerd door";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Poging gedaan door";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ op %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Verzonden naar %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Aan het overmaken naar %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Verzonden";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Overgemaakt naar %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Overgemaakt naar %%1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
@@ -6614,7 +6638,7 @@
 "SETTINGS_SECURITY_TITLE" = "Meekijkpreventie";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Door hoge kwaliteit media te verzenden verbruik je meer dataoverdracht.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Als je media in hoge kwaliteit verzendt, verbruik je meer data.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Afbeeldingen en video's";
@@ -6632,7 +6656,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Als je dit inschakelt zal Signal je verplichten om je Signal-pincode in te voeren wanneer je je opnieuw met dit telefoonnummer registreert. Zo voorkom je dat iemand anders zich met jouw telefoonnummer registreert om berichten te ontvangen die voor jou bedoeld zijn. Dit wordt ook wel twee-factor-authenticatie genoemd.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Vereis je Signal-pincode om je telefoonnummer opnieuw bij Signal te kunnen registeren";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typindicatoren";
@@ -7196,7 +7220,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiëren";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Zodra je een bericht verzend zal de tijdspanne voor verlopende berichten op %1$@ worden ingesteld.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Zodra je een bericht verzendt zal de timer voor verdwijnende berichten op %1$@ worden ingesteld.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Deze persoon is een onbekende, je zit zelfs niet in een groepsgesprek met deze persoon. Overweeg daarom zorgvuldig of je dit gespreksverzoek wilt aanvaarden.";
@@ -7303,6 +7327,18 @@
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ w";
 
+/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+
+/* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+
+/* Title for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+
+/* Notification prompting the user to relaunch Signal after a device transfer completed. */
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Annuleren";
 
@@ -7343,10 +7379,10 @@
 "UNKNOWN_USER" = "Gebruiker niet bekend";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verlopende berichten zijn uitgeschakeld.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verdwijnende berichten zijn uitgeschakeld.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De tijdsspanne voor verlopende berichten is op %1$@ ingesteld.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor verdwijnende berichten is op %1$@ ingesteld.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -7670,10 +7706,10 @@
 "YOU_DELETED_THIS_MESSAGE" = "Je hebt dit bericht gewist.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt verlopende berichten uitgeschakeld.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt verdwijnende berichten uitgeschakeld.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de tijdsspanne voor verlopende berichten op %1$@ ingesteld.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor verdwijnende berichten op %1$@ ingesteld.";

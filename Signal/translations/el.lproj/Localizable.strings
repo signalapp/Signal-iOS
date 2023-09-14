@@ -373,8 +373,8 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Διάλεξε πολυμέσα προς αποστολή";
 
-/* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "Κάμερα";
+/* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Επαφή";
@@ -385,20 +385,29 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Να δοθεί πρόσβαση";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Τοποθεσία";
 
-/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Το Signal χρειάζεται άδεια για να εμφανίσει τις φωτογραφίες και τα βίντεό σου.";
+/* Second block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
 
-/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Μόλις τραβήξεις φωτογραφίες, θα μπορείς να στέλνεις τις πιο πρόσφατες από εδώ.";
+/* First block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+
+/* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+
+/* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Πληρωμή";
+
+/* A button to open the photo picker from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Συνημμένο";
@@ -1762,6 +1771,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Συνεχίζοντας θα απενεργοποιηθεί το Signal σε άλλες συσκευές εγγεγραμμένες με τον ίδιο αριθμό τηλεφώνου.";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Αδυναμία επαλήθευσης της νέας συσκευής σου, παρακαλώ δοκίμασε ξανά.";
 
@@ -1780,6 +1792,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Ενημέρωσε το Signal στην τελευταία έκδοση και δοκίμασε ξανά";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Μεταφορά του Signal λογαριασμού σου σε νέα συσκευή iOS. Βεβαιώσου πως η νέα σου συσκευή είναι κοντά και είναι ενεργοποιημένη.";
 
@@ -1787,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Μεταφορά Λογαριασμού";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Άνοιξε το Signal στην παλιά σου συσκευή, φέρ' την κοντά, και βεβαιώσου πως το Wi-Fi και το Bluetooth είναι ενεργοποιημένα και στις δύο συσκευές.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Τοποθέτησε αυτόν τον κώδικα QR εντός του πλαισίου της άλλης συσκευής.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Δεν βλέπεις το μήνυμα στη παλιά σου συσκευή;";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Αναμονή για άλλη συσκευή…";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Κράτησε τις δύο συσκευές κοντά. Μην σβήσεις καμία συσκευή και κράτησε το Signal ανοικτό. Οι μεταφορές είναι κρυπτογραφημένες απ' άκρη σ' άκρη.";
@@ -3307,15 +3322,6 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Δεν μπορείς να κοινοποιήσεις πάνω από %1$@ αντικείμενα.";
 
-/* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Αλλαγή φωτογραφιών";
-
-/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Δώσε πλήρη πρόσβαση στις Ρυθμίσεις, ή άλλαξε σε ποιές φωτογραφίες έχει πρόσβαση το Signal.";
-
-/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Δεν βλέπεις τις φωτογραφίες σου;";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Δεν μπόρεσε να επιλεχθεί το συνημμένο.";
 
@@ -3365,10 +3371,10 @@
 "INCOMING_VIDEO_CALL" = "Εισερχόμενη βιντεοκλήση";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "Αυτό το άτομο προστέθηκε ξανά στη λίστα των Signal επαφών σου.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "Κατάργησες αυτό το άτομο από τη λίστα επαφών σου στο Signal, η αποστολή μηνυμάτων θα το προσθέσει ξανά.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Ενεργοποίησες τις Πληρωμές.";
@@ -3609,6 +3615,9 @@
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "Επαναφορά";
+
+/* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Προσθήκη μηνύματος";
@@ -3992,16 +4001,16 @@
 "MISSED_AUDIO_CALL" = "Αναπάντητη κλήση";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Αναπάντητη κλήση από αποκλεισμένη επαφή στις ρυθμίσεις του τηλεφώνου";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Και αποκλεισμός επαφής στο Signal";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Έχασες την κλήση αυτού του ατόμου επειδή είναι αποκλεισμένο στις ρυθμίσεις του τηλεφώνου σου. Πήγαινε στις Ρυθμίσεις > Τηλέφωνο και πάτα Αποκλεισμένες επαφές για να το διαχειριστείς.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "Ο χρήστης %1$@ είναι αποκλεισμένος στις Ρυθμίσεις τηλεφώνου";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Αναπάντητη κλήση ενώ βρισκόσασταν στην κατάσταση \"Μην ενοχλείτε\"";
@@ -4418,13 +4427,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "Αναπάντητη βιντεοκλήση";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Έξοδος από Signal";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Θα γίνει έξοδος από το Signal σε αυτή τη συσκευή";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Η μεταφορά ολοκληρώθηκε!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Εξερχόμενη βιντεοκλήση";
@@ -4862,7 +4871,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Αποτυχία ρύθμισης της κάμερας.";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Πολύ μεγάλο βίντεο.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Ανώνυμο άλμπουμ";
@@ -5806,6 +5815,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Αρχεία καταγραφής σφαλμάτων";
 
+/* Information on sheet about changing the app icon - first line */
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+
+/* Information on sheet about changing the app icon - second line */
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+
+/* The footer for the app icon selection settings page. */
+"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+
+/* The title for the app icon selection settings page. */
+"SETTINGS_APP_ICON_TITLE" = "App Icon";
+
+/* The title for the app icon section in the appearance settings. */
+"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Προβολή των φωτογραφιών επαφών συστήματος αν είναι διαθέσιμες.";
 
@@ -6032,7 +6056,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Ενεργοποίηση";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Μπορείς να χρησιμοποιήσεις το Signal για να στέλνεις και να λαμβάνεις MobileCoin. Όλες οι πληρωμές υπόκεινται στους Όρους Χρήσης για τα MobileCoin και το πορτοφόλι MobileCoin. Ενδέχεται να αντιμετωπίσεις ορισμένα ζητήματα και οι πληρωμές ή τα υπόλοιπα που μπορεί να χάσεις δεν μπορούν να ανακτηθούν.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Ενεργοποίηση";
@@ -7302,6 +7326,18 @@
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@εβ";
+
+/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+
+/* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+
+/* Title for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+
+/* Notification prompting the user to relaunch Signal after a device transfer completed. */
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Ακύρωση";

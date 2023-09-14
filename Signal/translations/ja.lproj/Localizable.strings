@@ -373,8 +373,8 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "送信するメディアを選択します";
 
-/* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "カメラ";
+/* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "連絡先";
@@ -385,20 +385,29 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "アクセスを許可する";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "場所";
 
-/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "写真や動画を表示するには、Signalに許可が必要です。";
+/* Second block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
 
-/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "写真を撮ると、ここから送信できます。";
+/* First block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+
+/* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+
+/* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "決済";
+
+/* A button to open the photo picker from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "添付ファイル";
@@ -1762,6 +1771,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "続行すると、同じ電話番号で登録されている他の端末のSignalが無効化されます。";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新しい端末を確認できませんでした、再度試してください。";
 
@@ -1780,6 +1792,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalを最新版にアップデートしてから再度試してください";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "新しいiOS端末にSignalアカウントを移動します。新しい端末を手元に置き、電源を入れてください。";
 
@@ -1787,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "アカウントの移行";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "旧端末でSignalを開き、近くに置いて、両方の端末でWi-FiとBluetoothを有効にしてください。";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "このQRコードを他の端末のフレームの中に入れてください。";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "旧端末側で表示がありせんか？";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "他の端末を待っています…";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "端末同士を近づけてください。どちらの端末も電源を切らず、Signalを開いたままにしてください。転送はエンドツーエンドで暗号化されます。";
@@ -3307,15 +3322,6 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "画像の共有は%1$@点までです。";
 
-/* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "写真を変更";
-
-/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "設定でフルアクセスを許可したり、Signalがアクセスできる写真を変更したりできます。";
-
-/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "写真が見えませんか？";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "添付ファイルを選択できませんでした。";
 
@@ -3365,10 +3371,10 @@
 "INCOMING_VIDEO_CALL" = "ビデオ通話着信";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "以前削除したユーザーがSignalの連絡先に再度追加されました。";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "Signalの連絡先リストから削除した相手にメッセージを送ると、その相手は自動的に連絡先に再追加されます。";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "決済機能を有効にしました。";
@@ -3609,6 +3615,9 @@
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "リセット";
+
+/* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "メッセージを追加してください";
@@ -3992,16 +4001,16 @@
 "MISSED_AUDIO_CALL" = "音声通話着信あり";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "電話の設定で着信拒否設定した連絡先からの不在着信";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Signalでのコンタクトも拒否する";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "不在着信がありました。着信拒否設定している相手からなので呼び出し音は鳴りませんでした。設定 > 電話に移動して、着信拒否した連絡先をタップし、必要に応じて設定を変えます。";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "電話の設定で%1$@ さんは着信拒否されています";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "おやすみモード中の不在着信";
@@ -4418,13 +4427,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "ビデオ通話応答なし";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Signalを停止する";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "このデバイスでSignalは停止します";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "転送が完了しました！";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "ビデオ通話発信";
@@ -4862,7 +4871,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "カメラを設定できませんでした。";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "動画が長すぎます。";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "無名のアルバム";
@@ -5806,6 +5815,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "エラーログ";
 
+/* Information on sheet about changing the app icon - first line */
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+
+/* Information on sheet about changing the app icon - second line */
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+
+/* The footer for the app icon selection settings page. */
+"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+
+/* The title for the app icon selection settings page. */
+"SETTINGS_APP_ICON_TITLE" = "App Icon";
+
+/* The title for the app icon section in the appearance settings. */
+"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "可能な場合、システムの連絡先写真を表示します。";
 
@@ -6032,7 +6056,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "有効にする";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "MobileCoinの送受信にはSignalをご利用ください。すべての決済は、MobileCoinsとMobileCoin Walletの利用規約に準じます。おこなった決済が取り消されたり、残高の回復ができないといった問題などが発生する可能性があります。";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "決済確認の有効化";
@@ -6233,13 +6257,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ (%2$@)";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@さんへの送金";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@さんへ送金中";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "送金";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@ に送金済み";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@ さんへ送金済";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "状態";
@@ -7302,6 +7326,18 @@
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@週";
+
+/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+
+/* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+
+/* Title for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+
+/* Notification prompting the user to relaunch Signal after a device transfer completed. */
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "キャンセル";

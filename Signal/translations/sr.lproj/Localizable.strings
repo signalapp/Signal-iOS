@@ -373,8 +373,8 @@
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Изаберите медиј за слање";
 
-/* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "Камера";
+/* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Контакт";
@@ -385,20 +385,29 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
-/* A message on a button prompting the user to go settings to grant Signal photos access. */
-"ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Омогућите приступ";
+/* Text in chat attachment panel when Signal only has access to some photos/videos. */
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Локација";
 
-/* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal-у је потребна дозвола за приказивање ваших слика и видео снимака.";
+/* Second block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
 
-/* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Одавде ћете моћи слати фотографије које сте недавно фотографисали.";
+/* First block of text in chat attachment panel when there's no recent photos to show. */
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+
+/* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+
+/* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Плаћање";
+
+/* A button to open the photo picker from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Прилог";
@@ -1226,7 +1235,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 дан";
 
 /* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 час";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 сат";
 
 /* 1 week */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 седмица";
@@ -1370,7 +1379,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 дан";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 час";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 сат";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 минут";
@@ -1762,6 +1771,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Настављањем ћете онемогућити Signal на свим постојећим уређајима повезаним на исти број телефона.";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Није могуће оверити ваш нови уређај, молимо покушајте поново";
 
@@ -1780,6 +1792,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Ажурирајте Signal на најновију верзију и покушајте поново";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Пренесите ваш Signal налог на нови iOS уређај. Ваш нови уређај мора бити укључен и у непосредној близини.";
 
@@ -1787,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Пренесите налог";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Отворите Signal на вашем старом уређају, приближите га и укључите Wi-Fi и Bluetooth на оба уређаја.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поставите овај QR кôд унутар оквира на другом уређају.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не видите упит на старом уређају?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Чека се други уређај…";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Приближите уређаје, не искључујте их и не затварајте Signal. Пренос података је потпуно енкриптован.";
@@ -3307,15 +3322,6 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Maksimalan broj stavki koje možete da podelite je %1$@.";
 
-/* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Промени фотографију";
-
-/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Одобрите пуни приступ у Подешавањима или промените којим фотографијама Signal може да приступи.";
-
-/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Не видите своје фотографије?";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Грешка при слању прилога.";
 
@@ -3365,10 +3371,10 @@
 "INCOMING_VIDEO_CALL" = "Долазни видео позив";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "Ова особа је сачувана у вашој листи контаката на Signal-у.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "Уклонили сте ову особу са своје листе контаката на Signal-у. Ако јој пошаљете поруку, поново ћете је додати.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Активирали сте плаћања.";
@@ -3609,6 +3615,9 @@
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "Ресетуј";
+
+/* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Dodaj poruku";
@@ -3992,16 +4001,16 @@
 "MISSED_AUDIO_CALL" = "Пропуштен гласовни позив";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Пропуштен позив од контакта који је блокиран у подешавањима телефона";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Такође блокирај контакт на Signal-у";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Пропустили сте позив овог корисника зато што је блокиран у подешавањима вашег телефона. Идите на Подешавања > Телефон и изаберите блокиране контакте да бисте то променили.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ је блокиран(а) у подешавањима телефона";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Propušten poziv u režimu „Ne uznemiravaj“";
@@ -4418,13 +4427,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "Неодговорен видео позив";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Затвори Signal";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal ће се сада затворити на овом уређају";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Пренос је завршен!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Одлазни видео позив";
@@ -4862,7 +4871,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Грешка при подешавању камере.";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Видео је предугачак.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Неименовани албум";
@@ -5806,6 +5815,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Извештаји грешака";
 
+/* Information on sheet about changing the app icon - first line */
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+
+/* Information on sheet about changing the app icon - second line */
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+
+/* The footer for the app icon selection settings page. */
+"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+
+/* The title for the app icon selection settings page. */
+"SETTINGS_APP_ICON_TITLE" = "App Icon";
+
+/* The title for the app icon section in the appearance settings. */
+"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Покажати системску фотографију контакта ако је доступна";
 
@@ -5909,7 +5933,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Ресетујте поставке ауто-преузимања";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Квалитет сланог медија";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Квалитет послатог медија";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Изаберите квалитет у који шаљете фотографије и видео записе.";
@@ -6032,7 +6056,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Активирај";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Можете да користите Signal да бисте слали и примали MobileCoin. Сва плаћања подлежу условима коришћења за MobileCoin и MobileCoin Wallet. Може се десити да наиђете на неке проблеме због којих се плаћања или износи које можда изгубите не могу повратити.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Активирај";
@@ -6233,13 +6257,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ на %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Шаље се за: %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Шаље се кориснику: %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Послато";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Послано %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Послато кориснику: %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Стање";
@@ -7303,6 +7327,18 @@
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@н";
 
+/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+
+/* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+
+/* Title for bottom sheet shown when device transfer completes on the receiving device. */
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+
+/* Notification prompting the user to relaunch Signal after a device transfer completed. */
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Одустани";
 
@@ -7622,7 +7658,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Није могуће ресетовати све позадине. Покушајте поново касније или контактирајте подршку ако се грешка настави.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Рисетовати све боје";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Ресетовати све боје";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Рисетуј све позадине";
@@ -7637,25 +7673,25 @@
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Ресетуј боју ћаскања";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Рисетовати позадину";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Ресетовати позадину";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Рисетовати подразумеване боје";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Ресетовати подразумеване боје";
 
 /* Reset global chat colors action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Ресетуј боје ћаскања";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Рисетовати подразумевану позадину";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Ресетовати подразумевану позадину";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Рисетовати позадине";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Ресетовати позадине";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Да ли желите да надјачате све позадине?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Рисетовати позадину";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Ресетовати позадину";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Боја ћаскања";
