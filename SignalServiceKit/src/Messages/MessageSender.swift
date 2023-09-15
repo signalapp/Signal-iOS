@@ -208,6 +208,7 @@ private extension MessageSender {
         let bundle: LibSignalClient.PreKeyBundle
         if preKeyBundle.preKeyPublic.isEmpty {
             if preKeyBundle.pqPreKeyPublic.isEmpty {
+                Logger.info("Creating prekey bundle with signed prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -216,6 +217,7 @@ private extension MessageSender {
                     signedPrekeySignature: preKeyBundle.signedPreKeySignature,
                     identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
             } else {
+                Logger.info("Creating prekey bundle with signed and pq prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -230,6 +232,7 @@ private extension MessageSender {
             }
         } else {
             if preKeyBundle.pqPreKeyPublic.isEmpty {
+                Logger.info("Creating prekey bundle with signed and one-time prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -240,6 +243,7 @@ private extension MessageSender {
                     signedPrekeySignature: preKeyBundle.signedPreKeySignature,
                     identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
             } else {
+                Logger.info("Creating prekey bundle with signed, one-time, and pq prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -257,6 +261,7 @@ private extension MessageSender {
         }
 
         do {
+            Logger.info("Process prekey bundle")
             let identityManager = DependenciesBridge.shared.identityManager
             let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
             try processPreKeyBundle(
@@ -266,7 +271,8 @@ private extension MessageSender {
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
-        } catch SignalError.untrustedIdentity(_) {
+        } catch SignalError.untrustedIdentity(let message) {
+            Logger.error("Found untrusted identity for \(serviceId): \(message)")
             handleUntrustedIdentityKeyError(
                 recipientId: recipientId,
                 preKeyBundle: preKeyBundle,
