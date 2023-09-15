@@ -1087,11 +1087,12 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     OWSAssertDebug(isValidV1orV2 || isValidV3);
 
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builder];
-    builder.cdnID = self.serverId;
-    if (self.cdnKey.length > 0) {
+    if (isValidV1orV2) {
+        builder.cdnID = self.serverId;
+    } else if (isValidV3) {
         builder.cdnKey = self.cdnKey;
+        builder.cdnNumber = self.cdnNumber;
     }
-    builder.cdnNumber = self.cdnNumber;
 
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
