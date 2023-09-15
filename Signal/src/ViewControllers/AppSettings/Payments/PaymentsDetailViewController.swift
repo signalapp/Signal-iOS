@@ -303,7 +303,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 case let item where item.isFailed:
                     return OWSLocalizedString(
                         "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED",
-                        comment: "Label for the sender in the payment details view in the app settings. Followed by sender name."
+                        comment: "Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name."
                     )
                 default:
                     return OWSLocalizedString(
