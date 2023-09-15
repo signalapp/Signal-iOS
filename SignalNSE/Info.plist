@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>6.43.0</string>
 	<key>CFBundleVersion</key>
-	<string>0</string>
+	<string>1</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -50,7 +50,7 @@
 	<key>OWSBundleIDPrefix</key>
 	<string>$(SIGNAL_BUNDLEID_PREFIX)</string>
 	<key>OWSBundleVersion4</key>
-	<string>6.43.0.0</string>
+	<string>6.43.0.1</string>
 	<key>OWSMerchantID</key>
 	<string>$(SIGNAL_MERCHANTID)</string>
 </dict>
