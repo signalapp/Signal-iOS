@@ -182,10 +182,30 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private let vSpacingMutualGroups: CGFloat = 4
 
     private var titleLabelConfig: CVLabelConfig {
-        CVLabelConfig.unstyledText(
-            titleText,
-            font: UIFont.dynamicTypeTitle1.semibold(),
-            textColor: Theme.secondaryTextAndIconColor,
+        let font = UIFont.dynamicTypeTitle1.semibold()
+        let textColor = Theme.secondaryTextAndIconColor
+        let attributedString = NSMutableAttributedString(string: titleText, attributes: [
+            .font: font,
+            .foregroundColor: textColor,
+        ])
+
+        if threadDetails.shouldShowVerifiedBadge {
+            attributedString.append(" ")
+            let verifiedBadgeImage = Theme.iconImage(.official)
+            let verifiedBadgeAttachment = NSAttributedString.with(
+                image: verifiedBadgeImage,
+                font: .dynamicTypeTitle3,
+                centerVerticallyRelativeTo: font,
+                heightReference: .pointSize
+            )
+            attributedString.append(verifiedBadgeAttachment)
+        }
+
+        return CVLabelConfig.init(
+            text: .attributedText(attributedString),
+            displayConfig: .forUnstyledText(font: font, textColor: textColor),
+            font: font,
+            textColor: textColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
             textAlignment: .center
@@ -257,6 +277,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return CVComponentState.ThreadDetails(avatarDataSource: nil,
                                                   isAvatarBlurred: false,
                                                   titleText: TSGroupThread.defaultGroupName,
+                                                  shouldShowVerifiedBadge: false,
                                                   bioText: nil,
                                                   detailsText: nil,
                                                   mutualGroupsText: nil,
@@ -286,6 +307,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 return contactName
             }
         }()
+
+        let shouldShowVerifiedBadge = contactThread.isNoteToSelf
 
         let bioText = { () -> String? in
             if contactThread.isNoteToSelf {
@@ -368,6 +391,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         return CVComponentState.ThreadDetails(avatarDataSource: avatarDataSource,
                                               isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
+                                              shouldShowVerifiedBadge: shouldShowVerifiedBadge,
                                               bioText: bioText,
                                               detailsText: detailsText,
                                               mutualGroupsText: mutualGroupsText,
@@ -409,6 +433,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         return CVComponentState.ThreadDetails(avatarDataSource: avatarDataSource,
                                               isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
+                                              shouldShowVerifiedBadge: false,
                                               bioText: nil,
                                               detailsText: detailsText,
                                               mutualGroupsText: nil,

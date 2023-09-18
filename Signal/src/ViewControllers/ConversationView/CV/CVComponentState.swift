@@ -255,6 +255,7 @@ public class CVComponentState: Equatable, Dependencies {
         let avatarDataSource: ConversationAvatarDataSource?
         let isAvatarBlurred: Bool
         let titleText: String
+        let shouldShowVerifiedBadge: Bool
         let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?

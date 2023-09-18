@@ -35,6 +35,15 @@ public class ConversationHeaderView: UIView {
         }
     }
 
+    public var titleIconSize: CGFloat {
+        get {
+            return self.titleIconConstraints.first?.constant ?? 0
+        }
+        set {
+            self.titleIconConstraints.forEach { $0.constant = newValue }
+        }
+    }
+
     public var attributedSubtitle: NSAttributedString? {
         get {
             return self.subtitleLabel.attributedText
@@ -51,6 +60,7 @@ public class ConversationHeaderView: UIView {
 
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
+    private let titleIconConstraints: [NSLayoutConstraint]
     private let subtitleLabel: UILabel
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
@@ -70,6 +80,7 @@ public class ConversationHeaderView: UIView {
         titleIconView = UIImageView()
         titleIconView.contentMode = .scaleAspectFit
         titleIconView.setCompressionResistanceHigh()
+        titleIconConstraints = titleIconView.autoSetDimensions(to: .square(20))
 
         let titleColumns = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
         titleColumns.spacing = 5

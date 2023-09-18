@@ -327,20 +327,40 @@ public extension NSMutableAttributedString {
 }
 
 public extension NSAttributedString {
+    /// Creates an `NSAttributedString` of the image as an `NSTextAttachment`,
+    /// vertically-centered in the relative font.
+    /// - Parameters:
+    ///   - image: The image to use as the attachment.
+    ///   - font: The font to use for sizing the image.
+    ///   - attributes: A dictionary containing the attributes to add.
+    ///   - centeringFont: The relative font to vertically center the image in.
+    ///   If attaching this image to another attributed string of a different
+    ///   font, specify that font here.
+    ///   - heightReference: Which property of the font the image should be
+    ///   sized relative to.
+    /// - Returns: An `NSAttributedString` with the specified image as an attachment, applying `attributes`, centered vertically in `centeringFont`, sized based on the `heightReference` property of `font`.
     static func with(
         image: UIImage,
         font: UIFont,
         attributes: [NSAttributedString.Key: Any]? = nil,
+        centerVerticallyRelativeTo centeringFont: UIFont? = nil,
         heightReference: ImageAttachmentHeightReference = .lineHeight
     ) -> NSAttributedString {
         let attachment = NSTextAttachment()
         attachment.image = image
 
+        let centeringFont = centeringFont ?? font
+
         // Match the image's height to the font's height while preserving
         // the image's aspect ratio, and vertically center.
         let imageHeight = heightReference.height(for: font)
         let imageWidth = (imageHeight / image.size.height) * image.size.width
-        attachment.bounds = CGRect(x: 0, y: (font.capHeight - imageHeight) / 2, width: imageWidth, height: imageHeight)
+        attachment.bounds = CGRect(
+            x: 0,
+            y: (centeringFont.capHeight - imageHeight) / 2,
+            width: imageWidth,
+            height: imageHeight
+        )
 
         let attachmentString = NSAttributedString(attachment: attachment)
 

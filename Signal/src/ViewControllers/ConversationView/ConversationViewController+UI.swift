@@ -14,12 +14,15 @@ extension ConversationViewController {
 
         self.title = nil
 
-        // If the user is in the system contacts, show a badge
-        headerView.titleIcon = (
-            conversationViewModel.isSystemContact
-            ? UIImage(imageLiteralResourceName: "person-circle-compact")
-            : nil
-        )
+        if conversationViewModel.isSystemContact {
+            headerView.titleIcon = UIImage(imageLiteralResourceName: "person-circle-compact")
+            headerView.titleIconSize = 20
+        } else if thread.isNoteToSelf {
+            headerView.titleIcon = Theme.iconImage(.official)
+            headerView.titleIconSize = 16
+        } else {
+            headerView.titleIcon = nil
+        }
 
         let attributedName = NSAttributedString(
             string: threadViewModel.name,

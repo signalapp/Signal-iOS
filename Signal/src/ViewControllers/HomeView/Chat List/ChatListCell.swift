@@ -16,6 +16,7 @@ public class ChatListCell: UITableViewCell {
     private let dateTimeLabel = CVLabel()
     private let messageStatusIconView = CVImageView()
     private let typingIndicatorView = TypingIndicatorView()
+    private let badgeView = CVImageView()
     private let muteIconView = CVImageView()
 
     private let unreadBadge = NeverClearView(name: "unreadBadge")
@@ -42,6 +43,7 @@ public class ChatListCell: UITableViewCell {
             snippetLabel,
             dateTimeLabel,
             messageStatusIconView,
+            badgeView,
             muteIconView,
             unreadLabel,
 
@@ -51,6 +53,7 @@ public class ChatListCell: UITableViewCell {
     }
 
     private struct ReuseToken {
+        let hasVerifiedBadge: Bool
         let hasMuteIndicator: Bool
         let hasMessageStatusToken: Bool
         let hasUnreadBadge: Bool
@@ -207,6 +210,7 @@ public class ChatListCell: UITableViewCell {
             lastReloadDate: configuration.lastReloadDate,
             timestamp: configuration.overrideDate ?? configuration.thread.chatListInfo?.lastMessageDate,
             isBlocked: configuration.isBlocked,
+            shouldShowVerifiedBadge: configuration.thread.threadRecord.isNoteToSelf,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: messageStatusToken,
@@ -225,6 +229,7 @@ public class ChatListCell: UITableViewCell {
 
     private static func buildMeasurements(configuration: Configuration,
                                           configs: CLVCellConfigs) -> CLVCellMeasurements {
+        let shouldShowVerifiedBadge = configs.shouldShowVerifiedBadge
         let shouldShowMuteIndicator = configs.shouldShowMuteIndicator
 
         let topRowStackConfig = configs.topRowStackConfig
@@ -241,6 +246,9 @@ public class ChatListCell: UITableViewCell {
                                                 maxWidth: .greatestFiniteMagnitude)
         topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
                                                                          verticalFlowBehavior: .fixed))
+        if shouldShowVerifiedBadge {
+            topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
+        }
         if shouldShowMuteIndicator {
             topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
@@ -339,6 +347,8 @@ public class ChatListCell: UITableViewCell {
         let nameLabelConfig = configs.nameLabelConfig
         let dateTimeLabelConfig = configs.dateTimeLabelConfig
 
+        let shouldShowVerifiedBadge = configs.thread.isNoteToSelf
+
         let measurements = cellContentToken.measurements
         let avatarStackMeasurement = measurements.avatarStackMeasurement
         let topRowStackMeasurement = measurements.topRowStackMeasurement
@@ -390,6 +400,12 @@ public class ChatListCell: UITableViewCell {
 
         nameLabelConfig.applyForRendering(label: nameLabel)
         topRowStackSubviews.append(nameLabel)
+
+        if shouldShowVerifiedBadge {
+            badgeView.image = Theme.iconImage(.official)
+            badgeView.tintColor = .ows_signalBlue
+            topRowStackSubviews.append(badgeView)
+        }
 
         if shouldShowMuteIndicator {
             muteIconView.image = UIImage(imageLiteralResourceName: "bell-slash")
@@ -461,9 +477,12 @@ public class ChatListCell: UITableViewCell {
 
         // It is only safe to reuse the bottom row wrapper if its subview list
         // hasn't changed.
-        let newReuseToken = ReuseToken(hasMuteIndicator: shouldShowMuteIndicator,
-                                       hasMessageStatusToken: configs.messageStatusToken != nil,
-                                       hasUnreadBadge: measurements.unreadBadgeMeasurements != nil)
+        let newReuseToken = ReuseToken(
+            hasVerifiedBadge: shouldShowVerifiedBadge,
+            hasMuteIndicator: shouldShowMuteIndicator,
+            hasMessageStatusToken: configs.messageStatusToken != nil,
+            hasUnreadBadge: measurements.unreadBadgeMeasurements != nil
+        )
 
         avatarStack.configure(config: avatarStackConfig,
                               measurement: avatarStackMeasurement,
@@ -472,7 +491,8 @@ public class ChatListCell: UITableViewCell {
         // topRowStack can only be configured for reuse if
         // its subview list hasn't changed.
         if let oldReuseToken = self.reuseToken,
-           oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator {
+           oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator,
+           oldReuseToken.hasVerifiedBadge == newReuseToken.hasVerifiedBadge {
             topRowStack.configureForReuse(config: topRowStackConfig,
                                           measurement: topRowStackMeasurement)
         } else {
@@ -989,6 +1009,7 @@ private struct CLVCellConfigs {
     let lastReloadDate: Date?
     let timestamp: Date?
     let isBlocked: Bool
+    let shouldShowVerifiedBadge: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
     let messageStatusToken: CLVMessageStatusToken?
