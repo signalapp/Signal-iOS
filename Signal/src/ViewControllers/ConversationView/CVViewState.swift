@@ -263,6 +263,12 @@ extension ConversationViewController {
 
     var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
 
+    var isSwitchingKeyboard: Bool {
+        // See comment in `ConversationInputToolbar.isSwitchingKeyboard`.
+        guard #available(iOS 17, *) else { return false }
+        return inputToolbar?.isSwitchingKeyboard ?? false
+    }
+
     var mediaCache: CVMediaCache { viewState.mediaCache }
 
     var groupCallBarButtonItem: UIBarButtonItem? {

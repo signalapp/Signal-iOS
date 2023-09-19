@@ -80,7 +80,7 @@ extension ConversationViewController {
     internal func updateContentInsets() {
         AssertIsOnMainThread()
 
-        guard !isMeasuringKeyboardHeight else {
+        guard !isMeasuringKeyboardHeight, !isSwitchingKeyboard else {
             return
         }
 

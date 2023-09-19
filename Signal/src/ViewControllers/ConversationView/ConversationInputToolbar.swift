@@ -1809,6 +1809,18 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private(set) var isMeasuringKeyboardHeight = false
     private var hasMeasuredKeyboardHeight = false
 
+    // Workaround for keyboard & chat flashing when switching between keyboards on iOS 17.
+    // When swithing keyboards sometimes! we get "keyboard will show" notification
+    // with keyboard frame being slightly (45 dp) shorter, immediately followed by another
+    // notification with previous (correct) keyboard frame.
+    //
+    // Because this does not always happen and because this does not happen on a Simulator
+    // I concluded this is an iOS 17 bug.
+    //
+    // In the future it might be better to implement different keyboard managing
+    // by making UIViewController a first responder and vending input bar as `inputView`.
+    private(set) var isSwitchingKeyboard = false
+
     private enum KeyboardType {
         case system
         case sticker
@@ -1896,9 +1908,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         ensureButtonVisibility(withAnimation: animated, doLayout: true)
 
         if isInputViewFirstResponder {
+            isSwitchingKeyboard = true
             // If any keyboard is presented, make sure the correct
             // keyboard is presented.
             beginEditingMessage()
+
+            DispatchQueue.main.async {
+                self.isSwitchingKeyboard = false
+            }
         } else {
             // Make sure neither keyboard is presented.
             endEditingMessage()
