@@ -91,12 +91,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     }
 
     @objc
-    public static func create(for threadUniqueId: String, warnIfPresent: Bool, transaction: SDSAnyWriteTransaction) {
+    public static func create(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
         guard threadAssociatedDataStore.fetch(for: threadUniqueId, tx: transaction.asV2Write) == nil else {
-            if warnIfPresent {
-                owsFailDebug("Unexpectedly tried to create for a thread that already exists.")
-            }
             return
         }
         do {

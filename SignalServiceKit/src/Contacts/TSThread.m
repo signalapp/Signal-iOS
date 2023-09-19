@@ -175,7 +175,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [ThreadAssociatedData createFor:self.uniqueId warnIfPresent:YES transaction:transaction];
+    [ThreadAssociatedData createFor:self.uniqueId transaction:transaction];
 
     if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
