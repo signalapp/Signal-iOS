@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• Signal の外観をカスタマイズする新しい方法が追加されました。 一新されたアプリのアイコンオプションからお好みのものを選択して、ホーム画面で表示される Signal のデザインを変更しましょう (Signal の設定 > デザイン > アプリのアイコン)。 
+• アタッチメントセレクターが、よりコンパクトで使いやすい新デザインとなっています。
+• システム設定が24時間表示になっている場合、メディアエディターの時計ステッカーも24時間表示になります。

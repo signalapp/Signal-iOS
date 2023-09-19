@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "पाठविण्यासाठी मिडिया निवडा";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "व्यवस्थापित करा";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "संपर्क";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ला फक्त आपण निवडलेल्या फोटो आणि व्हिडीओजमध्ये प्रवेश असतो";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "स्थान";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "एकदा का आपण फोटो किंवा व्हिडीओ कॅप्चर केलात, आपण आपले अलिकडील फोटोज किंवा व्हिडीओ पाठवण्यास सक्षम असाल";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "कोणतेही फोटो किंवा व्हिडीओ नाहीत";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal ला आपल्या फोटो किंवा व्हिडीओ यांचा ॲक्सेस नसतो. ॲक्सेस सक्षम करण्यास सेटिंग्ज उघडा आणि फोटोज वर टॅप करा";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "सेटिंग्ज उघडा";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "पेमेंट";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "फोटोज";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "संलग्न";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "सुरू ठेवल्याने या फोन नंबर सोबत सध्या नोंदवलेले इतर डिव्हाईस यांवर Signal अक्षम केले जाईल.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "लहान पहा";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "आपला नवीन डिव्हाईस सत्यापित करण्यात अक्षम, कृपया पुन्हा प्रयत्न करा";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal च्या नवीनतम आवृत्ती वर अद्यतनित करा आणि पुन्हा प्रयत्न करा";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "मोठे पहा";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "आपले खाते एक नवीन iOS डिव्हाईस वर स्थानांतरित करा. आपला नवीन डिव्हाईस जवळपास असल्याची आणि चालू असल्याची खात्री करा.";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "खाते स्थानांतरित करा";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "आपले जुने डिव्हाइस जवळपास आणा, Wi-Fi आणि ब्लुटूथ सक्षम केलेले असल्याची खात्री करा, आणि हा QR कोड त्या सह स्कॅन करा.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "आपल्या इतर iOS डिव्हाईस च्या फ्रेम मध्ये हा QR कोड आणा.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "आपल्या जुन्या डिव्हाईसवर सूचना दिसत नाही?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "QR कोड स्कॅन करा";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "दोन्ही डिव्हाईस ऐकमेकांच्या जवळ ठेवा. कुठलाही डिव्हाईस बंद करू नका आणि Signal उघडे ठेवा. स्थानांतरण हे एंड-टू-एंड एन्क्रिप्टेड असतात.";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "रीसेट करा";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "अधिक करिता टॅप करा";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "संदेश जोडा";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "त्रुटी लॉग";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "“Signal” नावाचे ॲप मुख्य स्क्रीन वर, अधिसूचना मध्ये आणि ॲप लायब्ररीमध्ये दृश्यमान असेल.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "आपण मुख्य स्क्रीन पासून “Signal” नावाचे ॲप मुख्य स्क्रीनच्या तळाशी असलेल्या डॉककडे हलवून लपवू शकता.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "“Signal” नावाचे ॲप मुख्य स्क्रीन, अधिसूचना आणि ॲप लायब्ररी मध्ये दृश्यमान असेल.";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "ॲप चिन्ह";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "ॲप चिन्ह";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "उपलब्ध असल्यास सिस्टिम संपर्क फोटो दाखवा";
@@ -7328,16 +7328,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ आ";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal बंद करा";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "या डिव्हाइसवर आपले खाते वापरणे सुरू करण्यासाठी, Signal बंद करा आणि ते पुन्हा उघडा.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "स्थानांतरण पूर्ण झाले";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "संदेश पाठवणे सुरू करण्यास Signal उघडा";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "रद्द करा";

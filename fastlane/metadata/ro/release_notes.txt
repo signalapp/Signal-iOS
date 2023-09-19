@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• Am adăugat un nou mod iconic de a personaliza aspectul Signal. Alege dintr-o selecție cool de opțiuni fresh de pictograme și culori pentru aplicații ca să schimbi modul în care Signal va apărea pe ecranul de pornire (Setări Signal > Aspect > Pictogramă aplicație). 
+• Selectorul de atașamente are un design nou-nouț, care este mai compact și mai ușor de utilizat. Dacă începi să te simți atașat/ă de aceste îmbunătățiri imediat, este în regulă, deoarece este adecvat tematic.
+• Pentru cei dintre voi cărora nu le plac AM sau PM, este timpul să zâmbești. Acum, când setările sistemului tău sunt configurate pentru a afișa un ceas de 24 de ore, autocolantele pentru ceas din editorul media vor fi și ele în format de 24 de ore.

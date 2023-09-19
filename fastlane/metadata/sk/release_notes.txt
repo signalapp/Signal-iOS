@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• Pridali sme ikonický nový spôsob ako si prispôsobiť vzhľad aplikácie Signal. Vyberte si z pestrej ponuky nových ikon aplikácie a zmeňte tak spôsob, akým sa bude Signal zobrazovať na vašej domovskej obrazovke (Nastavenia Signal > Vzhľad > Ikona aplikácie). 
+• Výber prílohy má úplne nový dizajn, ktorý je kompaktnejší a jednoduchšie sa používa.
+• Ak sú vaše systémové nastavenia nakonfigurované tak, aby zobrazovali 24-hodinový formát hodín, nálepky s hodinami v editore médií budú teraz tiež v 24-hodinovom formáte.

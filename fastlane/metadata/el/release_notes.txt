@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• Προσθέσαμε έναν εμβληματικό νέο τρόπο για να προσαρμόσουμε την εμφάνιση του Signal. Επίλεξε από μια διασκεδαστική συλλογή νέων επιλογών εικονιδίων εφαρμογής για να αλλάξεις τον τρόπο εμφάνισης του Signal στην αρχική σου οθόνη (Ρυθμίσεις Signal > Εμφάνιση > Εικονίδιο εφαρμογής). 
+• Το εργαλείο επιλογής συνημμένων έχει μια ολοκαίνουργια σχεδίαση που είναι πιο συμπαγής και ευκολότερη στη χρήση.
+• Εάν δεν πιστεύεις στις ώρες π.μ. και μ.μ., σίγουρα θα χαρείς με αυτό. Τώρα, όταν οι ρυθμίσεις του συστήματός σου έχουν διαμορφωθεί ώστε να εμφανίζουν ένα ρολόι 24 ωρών, τα αυτοκόλλητα ρολογιού στο πρόγραμμα επεξεργασίας πολυμέσων θα είναι επίσης σε μορφή 24 ωρών.

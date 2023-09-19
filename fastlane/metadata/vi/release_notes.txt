@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• Chúng tôi đã thêm một cách mới để tùy chỉnh giao diện của Signal. Chọn từ bộ sưu tập thú vị các tùy chọn biểu tượng ứng dụng mới để thay đổi cách Signal xuất hiện trên màn hình chính của bạn (Cài đặt Signal > Giao diện > Biểu tượng Ứng dụng). 
+• Bộ chọn tệp đính kèm có thiết kế hoàn toàn mới, nhỏ gọn hơn và dễ sử dụng hơn.
+• Nếu hệ thống của bạn được thiết lập để hiển thị đồng hồ 24 tiếng, nhãn dán đồng hồ trong công cụ chỉnh sửa đa phương tiện giờ đây cũng sẽ hiển thị định dạng 24 tiếng.

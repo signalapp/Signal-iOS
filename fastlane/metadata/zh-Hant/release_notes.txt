@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• 我們添加了一種標誌性的新方法來自訂 Signal 外觀。許多有趣的新應用程式圖示和顏色隨你選擇，讓你更改 Signal 在主畫面上的顯示方式（Signal 設定 > 外觀 > 應用程式圖示）。 
+• 附件選擇器具有全新的設計，更簡潔，更易用。
+• 如果你不喜歡 AM 或 PM，現在可以開心了。現在，當你的系統時間顯示設定為 24 小時制時，媒體編輯器中的時間貼圖也將以 24 小時格式顯示。

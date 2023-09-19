@@ -1,3 +1,3 @@
-• We added an iconic new way to customize the look of Signal. Choose from a fun selection of fresh app icon options to change how Signal will appear on your home screen (Signal Settings > Appearance > App Icon). 
-• The attachment selector has a brand-new design that is more compact and easier to use. If you start feeling attached to these improvements right away, that's OK because it's thematically appropriate.
-• For those of you who don't like AM or PM, it's time to smile. Now when your system settings are configured to display a 24-hour clock, the clock stickers in the media editor will be in 24-hour format too.
+• हमने Signal के लुक को अनुकूलित करने के लिए एक शानदार नया तरीका जोड़ा है। आपकी होम स्क्रीन पर Signal कैसा दिखाई देगा, इसे बदलने के लिए फ्रेश ऐप आइकन विकल्पों के मजेदार चयन में से चुनें (Signal सेटिंग > दिखावट > ऐप आइकन)। 
+• अटैचमेंट सिलेक्टर का डिज़ाइन बिल्कुल नया है, जो अधिक कॉम्पैक्ट और इस्तेमाल में आसान है। अगर आप इन सुधारों से तुरंत जुड़ाव महसूस करना शुरू कर देते हैं, तो यह ठीक है क्योंकि यह विषयगत रूप से उपयुक्त है।
+• आप जैसे वे लोग जिन्हें AM या PM पसंद नहीं है, उनके लिए यह मुस्कुराने का समय है। अब जब आपकी सिस्टम सेटिंग 24-घंटे वाली घड़ी प्रदर्शित करने के लिए कॉन्फ़िगर की गई हैं, तो मीडिया एडिटर में क्लॉक स्टिकर भी 24 घंटे के प्रारूप में होंगे।
