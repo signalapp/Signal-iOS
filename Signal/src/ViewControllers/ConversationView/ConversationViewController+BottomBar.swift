@@ -220,6 +220,8 @@ public extension ConversationViewController {
             return
         }
 
+        guard !isSwitchingKeyboard else { return }
+
         if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
             // Don't update the bottom bar position if an interactive pop is in progress
             switch interactivePopGestureRecognizer.state {
