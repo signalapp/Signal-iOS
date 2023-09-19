@@ -807,6 +807,15 @@ class StorageServiceOperation: OWSOperation {
                         )
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
+                } else if
+                    case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
+                    TSAccountManager.shared.isPrimaryDevice
+                {
+                    // If decryption succeeded but proto deserialization failed, we somehow ended up with
+                    // byte garbage in storage service. Our only recourse is to throw everything away and
+                    // re-encrypt the social graph with data we have locally.
+                    Logger.info("Manifest deserialization failed, recreating manifest.")
+                    return self.createNewManifest(version: previousManifestVersion + 1)
                 }
 
                 return self.reportError(storageError)
@@ -1190,6 +1199,15 @@ class StorageServiceOperation: OWSOperation {
                         )
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
+                } else if
+                    case .itemProtoDeserializationFailed = storageError,
+                    TSAccountManager.shared.isPrimaryDevice
+                {
+                    // If decryption succeeded but proto deserialization failed, we somehow ended up with
+                    // byte garbage in storage service. Our only recourse is to throw everything away and
+                    // re-encrypt the social graph with data we have locally.
+                    Logger.info("Item deserialization failed, recreating manifest.")
+                    return self.createNewManifest(version: manifest.version + 1)
                 }
 
                 return self.reportError(storageError)

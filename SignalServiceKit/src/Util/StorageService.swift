@@ -64,8 +64,12 @@ public struct StorageService: Dependencies {
         case retryableAssertion
         case manifestEncryptionFailed(version: UInt64)
         case manifestDecryptionFailed(version: UInt64)
+        /// Decryption succeeded (passed validation) but interpreting those bytes as a proto failed.
+        case manifestProtoDeserializationFailed(version: UInt64)
         case itemEncryptionFailed(identifier: StorageIdentifier)
         case itemDecryptionFailed(identifier: StorageIdentifier)
+        /// Decryption succeeded (passed validation) but interpreting those bytes as a proto failed.
+        case itemProtoDeserializationFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
 
         // MARK: 
@@ -80,9 +84,13 @@ public struct StorageService: Dependencies {
                 return false
             case .manifestDecryptionFailed:
                 return false
+            case .manifestProtoDeserializationFailed:
+                return false
             case .itemEncryptionFailed:
                 return false
             case .itemDecryptionFailed:
+                return false
+            case .itemProtoDeserializationFailed:
                 return false
             case .networkError(let statusCode, _):
                 // If this is a server error, retry
@@ -262,7 +270,13 @@ public struct StorageService: Dependencies {
                 })
                 switch decryptResult {
                 case .success(let manifestData):
-                    return .latestManifest(try StorageServiceProtoManifestRecord(serializedData: manifestData))
+                    do {
+                        let proto = try StorageServiceProtoManifestRecord(serializedData: manifestData)
+                        return .latestManifest(proto)
+                    } catch {
+                        Logger.error("Failed to deserialize manifest proto after successful decryption.")
+                        throw StorageError.manifestProtoDeserializationFailed(version: encryptedManifestContainer.version)
+                    }
                 case .masterKeyMissing, .cryptographyError:
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
@@ -360,7 +374,6 @@ public struct StorageService: Dependencies {
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
-                let manifestData: Data
 
                 let decryptionResult = self.databaseStorage.read(block: { tx in
                     return DependenciesBridge.shared.svr.decrypt(
@@ -370,12 +383,17 @@ public struct StorageService: Dependencies {
                     )
                 })
                 switch decryptionResult {
-                case .success(let data):
-                    manifestData = data
+                case .success(let manifestData):
+                    do {
+                        let proto = try StorageServiceProtoManifestRecord(serializedData: manifestData)
+                        return proto
+                    } catch {
+                        Logger.error("Failed to deserialize manifest proto after successful decryption.")
+                        throw StorageError.manifestProtoDeserializationFailed(version: encryptedManifestContainer.version)
+                    }
                 case .masterKeyMissing, .cryptographyError:
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
-                return try StorageServiceProtoManifestRecord(serializedData: manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.retryableAssertion
@@ -433,7 +451,6 @@ public struct StorageService: Dependencies {
                     owsFailDebug("missing identifier for fetched item")
                     throw StorageError.assertion
                 }
-                let itemData: Data
                 let itemDecryptionResult = self.databaseStorage.read(block: { tx in
                     return DependenciesBridge.shared.svr.decrypt(
                         keyType: .storageServiceRecord(identifier: itemIdentifier),
@@ -442,13 +459,18 @@ public struct StorageService: Dependencies {
                     )
                 })
                 switch itemDecryptionResult {
-                case .success(let data):
-                    itemData = data
+                case .success(let itemData):
+                    do {
+                        let record = try StorageServiceProtoStorageRecord(serializedData: itemData)
+                        return StorageItem(identifier: itemIdentifier, record: record)
+                    } catch {
+                        Logger.error("Failed to deserialize item proto after decryption succeeded")
+                        throw StorageError.itemProtoDeserializationFailed(identifier: itemIdentifier)
+                    }
                 case .masterKeyMissing, .cryptographyError:
                     throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
                 }
-                let record = try StorageServiceProtoStorageRecord(serializedData: itemData)
-                return StorageItem(identifier: itemIdentifier, record: record)
+
             }
         }
     }
