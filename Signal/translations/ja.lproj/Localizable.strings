@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "送信するメディアを選択します";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "管理する";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "連絡先";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signalはユーザーが選択した写真とビデオにのみアクセスできます";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "場所";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "撮影した写真や動画はここに送信することができます";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "写真や動画はありません";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signalはユーザーの写真と動画にアクセスすることはできません。 アクセスを許可するには「設定」を開いて「写真」をタップします";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "設定を開く";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "決済";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "写真";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "添付ファイル";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "続行すると、同じ電話番号で登録されている他の端末のSignalが無効化されます。";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "縮小表示する";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新しい端末を確認できませんでした、再度試してください。";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalを最新版にアップデートしてから再度試してください";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "拡大表示する";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "新しいiOS端末にSignalアカウントを移動します。新しい端末を手元に置き、電源を入れてください。";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "アカウントの移行";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "以前の端末をお手元に置き、Wi-FiとBluetoothが有効になっていることを確認してからQRコードをスキャンしてください。";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "このQRコードが新しいiOS端末のフレーム内に入るようにしてください。";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "旧端末側で表示がありせんか？";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "QRコードをスキャン";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "端末同士を近づけてください。どちらの端末も電源を切らず、Signalを開いたままにしてください。転送はエンドツーエンドで暗号化されます。";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "リセット";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "タップして他の候補を表示";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "メッセージを追加してください";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "エラーログ";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "アプリ名の「Signal」は、ホーム画面、通知、アプリライブラリでは表示されます。";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "ホーム画面下部のDockにアプリを移動させると、「Signal」というアプリ名は非表示になります。";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "アプリ名の「Signal」は、ホーム画面、通知、アプリライブラリでは表示されます。";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "アプリアイコン";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "アプリアイコン";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "可能な場合、システムの連絡先写真を表示します。";
@@ -6250,7 +6250,7 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "送金者";
 
-/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+/* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "送金しようとした人";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
@@ -7285,6 +7285,15 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ と %2$@ のメンバー";
 
+/* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
+"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
+"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@日";
 
@@ -7328,16 +7337,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@週";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Signalを閉じる";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "この端末でアカウントの使用を開始するには、Signalを一度閉じて開き直してください。";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "移行が完了しました";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Signalを開いてメッセージのやりとりを開始しましょう";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "キャンセル";

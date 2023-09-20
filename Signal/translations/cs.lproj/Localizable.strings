@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "Zvolte přílohu k odeslání";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Spravovat";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Kontakt";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Služba Signal má přístup pouze k vybraným fotografiím a videím";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Poloha";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Jakmile pořídíte fotografii nebo video, budete moci odeslat své poslední snímky zde";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Žádné fotografie ani videa";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal nemá přístup k vašim fotografiím ani videím. Chcete-li povolit přístup, otevřete Nastavení a klepněte na Fotografie";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Otevřít nastavení";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Platba";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Fotografie";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Příloha";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Pokud budete pokračovat, Signal bude deaktivován na dalších zařízeních aktuálně registrovaných na stejné telefonní číslo.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Zobrazit menší";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nepodařilo se ověřit vaše nové zařízení, zkuste to prosím znovu";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Aktualizujte na poslední verzi Signalu a zkuste to znovu";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Zobrazit větší";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Přeneste váš účet na Signalu na nové iOS zařízení. Ujistěte se, že nové zařízení je v blízkosti a zapnuté.";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Přenést účet";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Dejte své staré zařízení poblíž, ujistěte se, že jsou na něm povoleny Wi-Fi a Bluetooth, a naskenujte s ním tento QR kód.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Umístěte tento QR kód do rámečku na vašem druhém zařízení iOS.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nevidíte výzvu na svém starém zařízení?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Naskenování QR kódu";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Mějte obě zařízení blízko sebe a zapnutá. Nechte Signal otevřený. Přenos je koncově zašifrován.";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "Obnovit";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Klepnutím zobrazíte více";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Přidat zprávu";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Protokoly chyb";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Název aplikace „Signal“ bude vidět na domovské obrazovce, v oznámeních a v knihovně aplikací.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Název aplikace „Signal“ můžete na domovské obrazovce skrýt tak, že ji přesunete do sekce u spodní strany domovské obrazovky.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Název aplikace „Signal“ bude vidět na domovské obrazovce, v oznámeních a v knihovně aplikací.";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "Ikona aplikace";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "Ikona aplikace";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Zobrazit systémové fotografie kontaktů, pokud jsou k dispozici.";
@@ -6250,7 +6250,7 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Odesláno od";
 
-/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+/* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Pokus o odeslání provedl/a";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
@@ -7285,6 +7285,15 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Člen %1$@ a %2$@";
 
+/* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
+"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
+"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ dnů";
 
@@ -7328,16 +7337,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@t";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Zavřít aplikaci Signal";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "Pokud chcete začít používat svůj účet na tomto zařízení, zavřete a znovu otevřete aplikaci Signal.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Přenos dokončen";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Otevřete Signal a začněte posílat zprávy";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Zrušit";

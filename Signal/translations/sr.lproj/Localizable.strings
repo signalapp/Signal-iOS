@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "Изаберите медиј за слање";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Измени";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Контакт";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal само има приступ фотографијама и видео снимцима које сте изабрали";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Локација";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Када снимите фотографију или видео, моћи ћете да их пошаљете овде";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Нема фотографија или видео снимака";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal нема приступ вашим фотографијама и видео снимцима. Да бисте омогућили тај приступ, отворите „Подешавања“ и изаберите „Фотографије“";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Отвори подешавања";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Плаћање";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Слике";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Прилог";
@@ -1331,7 +1331,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Изаберите ко може мењати чланове групе.";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Link za grupu";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Линк за групу";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Постави за администратора";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Настављањем ћете онемогућити Signal на свим постојећим уређајима повезаним на исти број телефона.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Умањи";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Није могуће оверити ваш нови уређај, молимо покушајте поново";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Ажурирајте Signal на најновију верзију и покушајте поново";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Увећај";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Пренесите ваш Signal налог на нови iOS уређај. Ваш нови уређај мора бити укључен и у непосредној близини.";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Пренесите налог";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Узмите свој стари уређај, проверите се да ли су Wi-Fi и Bluetooth активирани на њему и скенирајте њиме овај QR код.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поставите овај QR код унутар оквира на другом iOS уређају.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не видите упит на старом уређају?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Скенирајте QR кôд";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Приближите уређаје, не искључујте их и не затварајте Signal. Пренос података је потпуно енкриптован.";
@@ -1841,7 +1841,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Поруке у овом ћаскању ће нестати након %1$@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Прилагодити време";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Прилагођено време";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "дан(а)";
@@ -2717,58 +2717,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Неважећи позиви су опозвани.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Link za grupu je isključen.";
+"GROUP_INVITE_LINK_DISABLED" = "Линк за групу је искључен.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Isključili ste link za grupu.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Искључили сте линк за групу.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ je isključio/la link za grupu.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ је искључио/ла линк за групу.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Uključen je link za grupu sa obaveznim odobrenjem administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Укључен је линк за групу са обавезним одобрењем администратора.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Uključili ste link za grupu sa obaveznim odobrenjem administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Укључили сте линк за групу са обавезним одобрењем администратора.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je uključio/la link za grupu sa obaveznim odobrenjem administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ је укључио/ла линк за групу са обавезним одобрењем администратора.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Uključen je link za grupu bez obaveznog odobrenja administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Укључен је линк за групу без обавезног одобрења администратора.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Uključili ste link za grupu bez obaveznog odobrenja administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Укључили сте линк за групу без обавезног одобрења администратора.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je uključio/la link za grupu bez obaveznog odobrenja administratora.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ је укључио/ла линк за групу без обавезног одобрења администратора.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " Link za grupu je resetovan.";
+"GROUP_INVITE_LINK_RESET" = " Линк за групу је ресетован.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Resetovali ste link za grupu.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Ресетовали сте линк за групу.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ je resetovao/la link za grupu.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ је ресетовао/ла линк за групу.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Isključeno je obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Искључено је обавезно одобрење администратора за линк за групу.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Isključili ste obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Искључили сте обавезно одобрење администратора за линк за групу.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je isključio/la obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ је искључио/ла обавезно одобрење администратора за линк за групу.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Uključeno je obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Укључено је обавезно одобрење администратора за линк за групу.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Uključili ste obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Укључили сте обавезно одобрење администратора за линк за групу.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je uključio/la obavezno odobrenje administratora za link za grupu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ jе укључио/ла обавезно одобрење администратора за линк за групу.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Не можете аутоматски додати %1$@ у групу. Позивница им је послата, а групне поруке неће видети док је не прихвате.";
@@ -2801,7 +2801,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Не може да се придружи групи";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Link za grupu više nije ispravan.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Линк за групу више није исправан.";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Група";
@@ -2822,7 +2822,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Молимо покушајте поново.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ovaj link za grupu nije ispravan. Proverite da li je ceo link kompletan i ispravan pre nego što pokušate da se pridružite.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Овај линк за групу није исправан. Проверите да ли је цео линк комплетан и исправан пре него што покушате да се придружите.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Neispravan link";
@@ -2831,7 +2831,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Ажурирајте Signal на овом уређају како бисте могли да се придружите овој групи.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Obavezno je da administrator odobri nove članove koji se pridružuju preko linka za grupu.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Обавезно је да администратор групе одобри нове чланове који се придружују групи преко линка за групу.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Одобри нове чланове";
@@ -2867,16 +2867,16 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "Kopiraj link";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Link za grupu";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Линк за групу";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Obavezno je da administrator odobri nove članove koji se pridružuju preko linka za grupu.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Обавезно је да администратор групе одобри нове чланове који се придружују групи преко линка за групу.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Resetuj link";
+"GROUP_LINK_VIEW_RESET_LINK" = "Ресетуj линк";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Da li ste sigurni da želite da resetujete link za grupu? Ljudi više neće moći da se pridruže grupi preko trenutnog linka.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Да ли сте сигурни да желите да ресетујете линк за групу? Људи више неће моћи да се придруже групи преко тренутног линка.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Поделите";
@@ -2894,7 +2894,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Svako ko ima ovaj link može da vidi naziv grupe i njene članove, kao i da zatraži da se pridruži grupi. Podelite link sa ljudima u koje imate poverenja.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Link za grupu";
+"GROUP_LINK_VIEW_TITLE" = "Линк за групу";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ вас је додао/ла.";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "Ресетуј";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Додирни за више";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Dodaj poruku";
@@ -4160,7 +4160,7 @@
 "NEW_PRIVATE_STORY_NAME_FOOTER" = "Само ви можете да видите назив ове приче.";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naziv priče (obavezno)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Назив приче (обавезно)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Izaberite gledaoce";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Извештаји грешака";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Назив апликације „Signal“ биће видљив на почетном екрану, у обавештењима и на списку апликација.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Можете да сакријете назив апликације „Signal“ са почетног екрана тако што ћете померити апликацију на дно почетног екрана.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Назив апликације „Signal“ биће видљив на почетном екрану, у обавештењима и на списку апликација.";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "Икона апликације";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "Икона апликације";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Покажати системску фотографију контакта ако је доступна";
@@ -6250,7 +6250,7 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Послао";
 
-/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+/* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Ко је покушао да плати:";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
@@ -7285,6 +7285,15 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Члан %1$@ и %2$@";
 
+/* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
+"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
+"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ дана";
 
@@ -7328,16 +7337,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@н";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Затвори Signal";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "Да бисте почели да користите свој налог на овом уређају, затворите Signal и поново га отворите.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Пренос је завршен";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Отворите Signal да почнете са дописивањем";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Одустани";

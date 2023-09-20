@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "Pilih Media untuk Dihantar";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Urus";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "Kenalan";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal hanya mempunyai akses kepada foto dan video yang anda pilih";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Lokasi";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Sebaik sahaja anda telah merakam foto atau video, anda akan dapat menghantarnya di sini";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Tiada Foto atau Video";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal tidak mempunyai akses kepada foto atau video anda. Untuk mendayakan akses, buka Tetapan dan ketik Foto";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Buka tetapan";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Pembayaran";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Foto";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Lampiran";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Teruskan akan menyahdayakan Signal pada peranti lain yang pada masa ini berdaftar dengan nombor telefon yang sama.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Lihat lebih kecil";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Tidak dapat mengesahkan peranti baru anda, sila cuba lagi";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Kemas kini kepada versi terkini Signal dan cuba lagi";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Lihat lebih besar";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Pindahkan akaun Signal anda kepada peranti iOS baru. Pastikan peranti baru anda berdekatan dan dihidupkan.";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Pindahkan Akaun";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bawa peranti lama anda berdekatan, pastikan Wi-Fi dan Bluetooth didayakan padanya, dan imbas kod QR ini dengannya.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Letakkan kod QR ini dalam bingkai peranti lain anda.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Tidak nampak arahan pada peranti lama anda?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Imbas Kod QR";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Kekalkan kedua-dua peranti berdekatan satu sama lain. Jangan matikan peranti dan kekalkan Signal terbuka. Pemindahan adalah disulitkan hujung ke hujung.";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "Tetap semula";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Ketik untuk lebih lanjut";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Tambah Mesej";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Ralat Log";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Nama aplikasi \"Signal\" akan kelihatan pada skrin utama, dalam pemberitahuan dan pustaka aplikasi.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Anda boleh menyembunyikan nama aplikasi \"Signal\" daripada skrin utama dengan mengalihkan aplikasi ke dok di bahagian bawah skrin utama.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Nama aplikasi \"Signal\" akan kelihatan pada Skrin Utama, dalam Pemberitahuan dan Pustaka Aplikasi.";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "Ikon Aplikasi";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "Ikon Aplikasi";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Paparkan foto kenalan sistem jika tersedia.";
@@ -6250,7 +6250,7 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Dihantar Oleh";
 
-/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+/* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Dicuba Oleh";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
@@ -7285,6 +7285,15 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Ahli kepada %1$@ dan %2$@";
 
+/* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
+"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
+"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ hari";
 
@@ -7328,16 +7337,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ minggu";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "Tutup Signal";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "Untuk mula menggunakan akaun anda pada peranti ini, tutup Signal dan buka semula.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "Pemindahan selesai";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "Buka Signal untuk memulakan pemesejan";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Batal";

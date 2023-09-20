@@ -374,7 +374,7 @@
 "ATTACHMENT_HINT" = "選擇媒體來傳送";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
-"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Manage";
+"ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "管理";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "聯絡人";
@@ -386,28 +386,28 @@
 "ATTACHMENT_KEYBOARD_GIF" = "動態圖檔";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal only has access to photos and videos you selected";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal 只能取用你選擇的相片和影片";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "位置";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Once you’ve captured a photo or video, you'll be able to send your recents here";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "當你拍攝相片或影片後便可以在這裏傳送最近的項目";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "No Photos or Videos";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "沒有相片或影片";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal does not have access to your photos or videos. To enable access open Settings and tap Photos";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal 沒有權限來取用你的相片和影片。要允許取用，請打開「設定」，然後點按「相片」";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
-"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Open Settings";
+"ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "開啟設定";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "付款";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Photos";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "照片";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "附檔";
@@ -1772,7 +1772,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "繼續將在當前使用相同電話號碼註冊的其他裝置上停用Signal。";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "縮小瀏覽";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "無法驗證你的新裝置，請重試";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "更新到最新版本的 Signal並再試一次";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "放大瀏覽";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "轉移您的 Signal 帳號到新的 iOS 裝置。請確定你的新裝置在附近並已打開。";
@@ -1802,16 +1802,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "轉移帳號";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "將舊裝置放在附近，並確保其 Wi-Fi 及藍牙均已開啟，然後掃描此二維碼。";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "用另一部 iOS 裝置上的方框對準此二維碼。";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "在舊裝置上看不到提示?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "掃描 QR code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "讓兩個裝置彼此接近。 請勿關閉任何一台裝置並使 Signal 保持開啟的狀態。 轉移是點對點加密的。";
@@ -3617,7 +3617,7 @@
 "MEDIA_EDITOR_RESET" = "重設";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Tap for more";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "點擊已獲得更多資訊";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "新增訊息";
@@ -5816,19 +5816,19 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "錯誤日誌";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the home screen, in notifications and the app library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "應用程式名稱「Signal」會出現在主畫面、通知和 App 資料庫中。";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the home screen by moving the app to the dock at the bottom of the home screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "如想從主畫面隱藏應用程式名稱「Signal」，你可以將應用程式移到主畫面底部的 Dock。";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in Notifications and the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "應用程式名稱「Signal」會出現在主畫面、通知和 App 資料庫中。";
 
 /* The title for the app icon selection settings page. */
-"SETTINGS_APP_ICON_TITLE" = "App Icon";
+"SETTINGS_APP_ICON_TITLE" = "應用程式圖示";
 
 /* The title for the app icon section in the appearance settings. */
-"SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
+"SETTINGS_APPEARANCE_APP_ICON" = "應用程式圖示";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "如果有的話，顯示系統聯絡人照片。";
@@ -6250,7 +6250,7 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "送出從";
 
-/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+/* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "嘗試發送者";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
@@ -7285,6 +7285,15 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@及%2$@的組員";
 
+/* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
+"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+
+/* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
+"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ 天";
 
@@ -7328,16 +7337,16 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@w";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "關閉 Signal";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "To start using your account on this device, close Signal and reopen it.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "要在此裝置上開始使用你的帳戶，請關閉 Signal 並重新開啟。";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "Transfer complete";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "轉移完成";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "Open Signal to start messaging";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "打開 Signal 以開始傳送訊息";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";
