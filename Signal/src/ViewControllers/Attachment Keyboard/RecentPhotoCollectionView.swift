@@ -131,11 +131,9 @@ class RecentPhotosCollectionView: UICollectionView {
     }
 
     func performPresentationAnimation() {
-        let animator = UIViewPropertyAnimator(duration: 0.5, springDamping: 1, springResponse: 0.3)
-        animator.addAnimations({
+        UIView.animate(withDuration: 0.3) {
             self.alpha = 1
-        })
-        animator.startAnimation()
+        }
     }
 
     // Background view
