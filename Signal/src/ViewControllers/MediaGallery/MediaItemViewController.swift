@@ -10,7 +10,9 @@ import SignalUI
 import YYImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
+
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
+    func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController)
 }
 
 protocol VideoPlaybackStatusProvider: AnyObject {
@@ -374,7 +376,6 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     @objc
     private func handleDoubleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        Logger.verbose("Double tap on media")
         guard scrollView.zoomScale == scrollView.minimumZoomScale else {
             // If already zoomed in at all, zoom out all the way.
             zoomOut(animated: true)
@@ -404,6 +405,10 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 extension MediaItemViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return mediaView
+    }
+
+    func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+        delegate?.mediaItemViewControllerWillBeginZooming(self)
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
