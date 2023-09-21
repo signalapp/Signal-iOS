@@ -42,7 +42,6 @@ class AttachmentKeyboard: CustomKeyboard {
 
         super.init()
 
-        // TODO: (igor) Temporarily until I figure out how to do translucent background.
         backgroundColor = Theme.backgroundColor
 
         let stackView = UIStackView(arrangedSubviews: [ recentPhotosCollectionView, attachmentFormatPickerView ])

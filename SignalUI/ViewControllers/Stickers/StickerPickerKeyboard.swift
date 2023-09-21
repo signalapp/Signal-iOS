@@ -18,9 +18,10 @@ public class StickerKeyboard: CustomKeyboard {
     public override init() {
         super.init()
 
+        backgroundColor = Theme.backgroundColor
+
         let stackView = UIStackView()
         addSubview(stackView)
-        stackView.addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.addArrangedSubview(headerView)
