@@ -6,11 +6,11 @@
 import XCTest
 @testable import SignalServiceKit
 
-final class TSAccountManagerTest: XCTestCase {
+final class RegistrationIdGeneratorTest: XCTestCase {
     func testGenerateRegistrationId() {
         var results = Set<UInt32>()
         for _ in 1...100 {
-            let result = TSAccountManager.generateRegistrationId()
+            let result = RegistrationIdGenerator.generate()
             XCTAssertGreaterThanOrEqual(result, 1)
             XCTAssertLessThanOrEqual(result, 0x3fff)
             results.insert(result)

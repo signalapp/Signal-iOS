@@ -51,8 +51,6 @@ protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
 }
 
 protocol _ChangePhoneNumberPniManager_TSAccountManagerShim {
-    func generateRegistrationId() -> UInt32
-
     func setPniRegistrationId(
         newRegistrationId: UInt32,
         transaction: DBWriteTransaction
@@ -122,10 +120,6 @@ class _ChangePhoneNumberPniManager_TSAccountManagerWrapper: _ChangePhoneNumberPn
 
     init(_ tsAccountManager: TSAccountManager) {
         self.tsAccountManager = tsAccountManager
-    }
-
-    func generateRegistrationId() -> UInt32 {
-        return TSAccountManager.generateRegistrationId()
     }
 
     func setPniRegistrationId(

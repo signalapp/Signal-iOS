@@ -76,7 +76,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         databaseStorage.asyncWrite { [weak self] transaction in
             guard let self = self else { return }
 
-            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+            guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
                 return owsFailDebug("Missing thread")
             }
 
@@ -246,7 +246,7 @@ public extension OWSSyncManager {
             return owsFailDebug("Sync request should only be sent from a linked device")
         }
 
-        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             return owsFailDebug("Missing thread")
         }
 

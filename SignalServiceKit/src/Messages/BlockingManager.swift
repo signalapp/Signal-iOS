@@ -365,7 +365,7 @@ extension BlockingManager {
                     }
                 }
 
-                let possibleThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction)
+                let possibleThread = TSContactThread.getOrCreateLocalThread(transaction: transaction)
                 guard let thread = possibleThread else {
                     owsFailDebug("Missing thread.")
                     return

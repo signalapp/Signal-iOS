@@ -1114,7 +1114,7 @@ public extension PaymentsImpl {
                                               isDefragmentation: Bool,
                                               transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage? {
 
-        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing local thread.")
             return nil
         }

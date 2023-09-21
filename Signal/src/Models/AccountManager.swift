@@ -266,20 +266,34 @@ public class AccountManager: NSObject, Dependencies {
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String?) -> Promise<Void> {
-        return Promise { future in
-            tsAccountManager.registerForPushNotifications(pushToken: pushToken,
-                                                          voipToken: voipToken,
-                                                          success: { future.resolve() },
-                                                          failure: future.reject)
-        }
+        let request = OWSRequestFactory.registerForPushRequest(
+            withPushIdentifier: pushToken,
+            voipIdentifier: voipToken
+        )
+        return updatePushTokens(request: request)
     }
 
     func updatePushTokens(request: TSRequest) -> Promise<Void> {
-        return Promise { future in
-            tsAccountManager.registerForPushNotifications(request: request,
-                                                          success: { future.resolve() },
-                                                          failure: future.reject)
-        }
+        return updatePushTokens(request: request, remainingRetries: 3)
+    }
+
+    private func updatePushTokens(
+        request: TSRequest,
+        remainingRetries: Int
+    ) -> Promise<Void> {
+        return networkManager.makePromise(request: request)
+            .asVoid()
+            .recover(on: DispatchQueue.global()) { error -> Promise<Void> in
+                if remainingRetries > 0 {
+                    return self.updatePushTokens(
+                        request: request,
+                        remainingRetries: remainingRetries - 1
+                    )
+                } else {
+                    owsFailDebugUnlessNetworkFailure(error)
+                    return Promise(error: error)
+                }
+            }
     }
 
     // MARK: Turn Server

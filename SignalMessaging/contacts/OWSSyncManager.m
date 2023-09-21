@@ -174,7 +174,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
     BOOL showTypingIndicators = self.typingIndicatorsImpl.areTypingIndicatorsEnabled;
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+        TSThread *_Nullable thread = [TSContactThread getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
             return;
@@ -319,7 +319,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
                     return [future resolveWithValue:@(1)];
                 }
 
-                TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+                TSThread *_Nullable thread = [TSContactThread getOrCreateLocalThreadWithSneakyTransaction];
                 if (thread == nil) {
                     OWSFailDebug(@"Missing thread.");
                     NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
@@ -522,7 +522,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
     }
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+        TSThread *_Nullable thread = [TSContactThread getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
             return;

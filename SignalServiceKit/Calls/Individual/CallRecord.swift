@@ -421,7 +421,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             owsFailDebug("Could not get peerUuid for sync message.")
             return
         }
-        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing local thread for sync message.")
             return
         }

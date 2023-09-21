@@ -20,44 +20,6 @@ public extension TSAccountManager {
     // MARK: -
 
     @objc
-    private class func getLocalThread(transaction: SDSAnyReadTransaction) -> TSThread? {
-        guard let localAddress = self.localAddress(with: transaction) else {
-            owsFailDebug("Missing localAddress.")
-            return nil
-        }
-        return TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
-    }
-
-    @objc
-    private class func getLocalThreadWithSneakyTransaction() -> TSThread? {
-        return databaseStorage.read { transaction in
-            return getLocalThread(transaction: transaction)
-        }
-    }
-
-    @objc
-    class func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
-        guard let localAddress = self.localAddress(with: transaction) else {
-            owsFailDebug("Missing localAddress.")
-            return nil
-        }
-        return TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
-    }
-
-    @objc
-    class func getOrCreateLocalThreadWithSneakyTransaction() -> TSThread? {
-        assert(!Thread.isMainThread)
-
-        if let thread = getLocalThreadWithSneakyTransaction() {
-            return thread
-        }
-
-        return databaseStorage.write { transaction in
-            return getOrCreateLocalThread(transaction: transaction)
-        }
-    }
-
-    @objc
     var registrationState: OWSRegistrationState {
         registrationState(for: getOrLoadAccountStateWithSneakyTransaction())
     }
@@ -82,6 +44,11 @@ public extension TSAccountManager {
 
     func localIdentifiers(transaction: SDSAnyReadTransaction) -> LocalIdentifiers? {
         getOrLoadAccountState(with: transaction).localIdentifiers
+    }
+
+    @objc
+    var localIdentifiersObjc: LocalIdentifiersObjC? {
+        return self.localIdentifiers.map(LocalIdentifiersObjC.init)
     }
 
     @objc
@@ -478,7 +445,7 @@ public extension TSAccountManager {
     ) -> UInt32 {
         let storedId = keyValueStore.getUInt32(key, transaction: transaction) ?? 0
         if storedId == 0 {
-            let result = Self.generateRegistrationId()
+            let result = RegistrationIdGenerator.generate()
             Logger.info("Generated a new \(nounForLogging): \(result)")
             keyValueStore.setUInt32(result, key: key, transaction: transaction)
             return result
@@ -486,9 +453,6 @@ public extension TSAccountManager {
             return storedId
         }
     }
-
-    /// Generate a registration ID, suitable for regular registration IDs or PNI ones.
-    static func generateRegistrationId() -> UInt32 { UInt32.random(in: 1...0x3fff) }
 
     // Sets the flag to force an account attributes update,
     // then returns a promise for the current attempt.
@@ -645,154 +609,6 @@ public extension TSAccountManager {
 // MARK: -
 
 extension TSAccountManager {
-    @objc
-    open func registerForPushNotifications(pushToken: String,
-                                           voipToken: String?,
-                                           success: @escaping () -> Void,
-                                           failure: @escaping (Error) -> Void) {
-        let request = OWSRequestFactory.registerForPushRequest(withPushIdentifier: pushToken,
-                                                               voipIdentifier: voipToken)
-        registerForPushNotifications(request: request,
-                                     success: success,
-                                     failure: failure)
-    }
-
-    @objc
-    open func registerForPushNotifications(request: TSRequest,
-                                           success: @escaping () -> Void,
-                                           failure: @escaping (Error) -> Void) {
-        registerForPushNotifications(request: request,
-                                     success: success,
-                                     failure: failure,
-                                     remainingRetries: 3)
-    }
-
-    @objc
-    open func registerForPushNotifications(request: TSRequest,
-                                           success: @escaping () -> Void,
-                                           failure: @escaping (Error) -> Void,
-                                           remainingRetries: Int) {
-        firstly {
-            networkManager.makePromise(request: request)
-        }.done(on: DispatchQueue.global()) { _ in
-            success()
-        }.catch(on: DispatchQueue.global()) { error in
-            if remainingRetries > 0 {
-                self.registerForPushNotifications(request: request,
-                                                  success: success,
-                                                  failure: failure,
-                                                  remainingRetries: remainingRetries - 1)
-            } else {
-                owsFailDebugUnlessNetworkFailure(error)
-                failure(error)
-            }
-        }
-    }
-
-    @objc
-    open func verifyRegistration(request: TSRequest,
-                                 success: @escaping (Any?) -> Void,
-                                 failure: @escaping (Error) -> Void) {
-        firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-
-            switch statusCode {
-            case 200, 204:
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                Logger.info("Verification code accepted.")
-                success(json)
-            default:
-                Logger.warn("Unexpected status while verifying code: \(statusCode)")
-                failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
-            }
-        }.catch(on: DispatchQueue.global()) { error in
-            failure(Self.processRegistrationError(error))
-        }
-    }
-
-    @objc
-    open func verifyChangePhoneNumber(request: TSRequest,
-                                      success: @escaping (Any?) -> Void,
-                                      failure: @escaping (Error) -> Void) {
-        firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-
-            switch statusCode {
-            case 200, 204:
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                Logger.info("Verification code accepted.")
-                success(json)
-            default:
-                Logger.warn("Unexpected status while verifying code: \(statusCode)")
-                failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
-            }
-        }.catch(on: DispatchQueue.global()) { error in
-            failure(Self.processRegistrationError(error))
-        }
-    }
-
-    public static func processRegistrationError(_ error: Error) -> Error {
-        Logger.warn("Error: \(error)")
-
-        let statusCode = error.httpStatusCode ?? 0
-
-        switch statusCode {
-        case 403:
-            let message = OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                                            comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
-            return OWSError(error: .userError,
-                            description: message,
-                            isRetryable: false)
-        case 409:
-            let message = OWSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
-                                            comment: "Error message indicating that device transfer from another device might be possible.")
-            return OWSError(error: .registrationTransferAvailable,
-                            description: message,
-                            isRetryable: false)
-        case 413, 429:
-            // In the case of the "rate limiting" error, we want to show the
-            // "recovery suggestion", not the error's "description."
-            let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
-            return OWSError(error: .userError,
-                            description: recoverySuggestion,
-                            isRetryable: false)
-        case 423:
-            Logger.error("2FA PIN required: \(error)")
-
-            if let httpResponseHeaders = error.httpResponseHeaders {
-                Logger.verbose("httpResponseHeaders: \(httpResponseHeaders.headers)")
-            }
-
-            guard let json = error.httpResponseJson as? [String: Any] else {
-                return OWSAssertionError("Invalid response.")
-            }
-
-            // Check if we received KBS credentials, if so pass them on.
-            // This should only ever be returned if the user was using registration lock v2
-            guard let backupCredentials = json["backupCredentials"] as? [String: Any] else {
-                return OWSAssertionError("Invalid response.")
-            }
-
-            do {
-                let auth = try RemoteAttestation.Auth(authParams: backupCredentials)
-                return RegistrationMissing2FAPinError(remoteAttestationAuth: auth)
-            } catch {
-                owsFailDebug("Remote attestation auth could not be parsed: \(json).")
-                return OWSAssertionError("Invalid response.")
-            }
-        default:
-            owsFailDebugUnlessNetworkFailure(error)
-            return error
-        }
-    }
 
     @objc
     func resetSessionStores(transaction: SDSAnyWriteTransaction) {
@@ -844,34 +660,6 @@ public extension TSAccountManager {
             object: nil
         )
     }
-}
-
-// MARK: -
-
-@objc
-public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvider, UserErrorDescriptionProvider {
-
-    public let remoteAttestationAuth: RemoteAttestation.Auth
-
-    required init(remoteAttestationAuth: RemoteAttestation.Auth) {
-        self.remoteAttestationAuth = remoteAttestationAuth
-    }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        var result = [String: Any]()
-        result[NSLocalizedDescriptionKey] = localizedDescription
-        return result
-    }
-
-    public var localizedDescription: String {
-        OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                                                     comment: "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.")
-    }
-
-    // MARK: - IsRetryableProvider
-
-    public var isRetryableProvider: Bool { false }
 }
 
 // MARK: - Phone number discoverability

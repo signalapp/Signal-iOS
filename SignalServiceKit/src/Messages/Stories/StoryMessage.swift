@@ -780,7 +780,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
             // Send a sent transcript update notifying our linked devices of any context changes.
             let sentTranscriptUpdate = OutgoingStorySentMessageTranscript(
-                localThread: TSAccountManager.getOrCreateLocalThread(transaction: transaction)!,
+                localThread: TSContactThread.getOrCreateLocalThread(transaction: transaction)!,
                 timestamp: timestamp,
                 recipientStates: recipientStates,
                 transaction: transaction

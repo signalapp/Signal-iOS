@@ -15,6 +15,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var preKeyManagerMock: PreKeyManagerMock!
     private var signedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var kyberPreKeyStoreMock: MockKyberPreKeyStore!
+    private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
     private var tsAccountManagerMock: TSAccountManagerMock!
 
     private var schedulers: TestSchedulers!
@@ -28,6 +29,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         preKeyManagerMock = .init()
         kyberPreKeyStoreMock = .init(dateProvider: Date.provider)
         signedPreKeyStoreMock = .init()
+        registrationIdGeneratorMock = .init()
         tsAccountManagerMock = .init()
 
         schedulers = TestSchedulers(scheduler: TestScheduler())
@@ -36,12 +38,13 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         db = .init()
 
         changeNumberPniManager = ChangePhoneNumberPniManagerImpl(
-            schedulers: schedulers,
-            pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             identityManager: identityManagerMock,
-            preKeyManager: preKeyManagerMock,
+            pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             pniSignedPreKeyStore: signedPreKeyStoreMock,
             pniKyberPreKeyStore: kyberPreKeyStoreMock,
+            preKeyManager: preKeyManagerMock,
+            registrationIdGenerator: registrationIdGeneratorMock,
+            schedulers: schedulers,
             tsAccountManager: tsAccountManagerMock
         )
     }
@@ -67,8 +70,8 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)
         XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.first, pendingState.localDevicePniSignedPreKeyRecord)
 
-        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.count, 1)
-        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.first, pendingState.localDevicePniRegistrationId)
+        XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
+        XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.first, pendingState.localDevicePniRegistrationId)
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
@@ -88,7 +91,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         XCTAssertEqual(identityManagerMock.generatedKeyPairs.count, 1)
         XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)
-        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.count, 1)
+        XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 1)
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
@@ -264,14 +267,8 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
 // MARK: TSAccountManager
 
 private class TSAccountManagerMock: ChangePhoneNumberPniManagerImpl.Shims.TSAccountManager {
-    var generatedRegistrationIds: [UInt32] = []
-    var storedPniRegistrationId: UInt32?
 
-    func generateRegistrationId() -> UInt32 {
-        let registrationId = UInt32.random(in: 0..<100)
-        generatedRegistrationIds.append(registrationId)
-        return registrationId
-    }
+    var storedPniRegistrationId: UInt32?
 
     func setPniRegistrationId(
         newRegistrationId: UInt32,

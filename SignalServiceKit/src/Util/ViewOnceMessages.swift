@@ -132,7 +132,7 @@ public class ViewOnceMessages: NSObject {
             owsFailDebug("Could not send sync message; no local number.")
             return
         }
-        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing thread.")
             return
         }

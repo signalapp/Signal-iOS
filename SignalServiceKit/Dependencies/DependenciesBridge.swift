@@ -35,57 +35,55 @@ public class DependenciesBridge {
     }
     private static var _shared: DependenciesBridge?
 
-    public let schedulers: Schedulers
-
     public let db: DB
-    public let chatColorSettingStore: ChatColorSettingStore
-    public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
-    public let keyValueStoreFactory: KeyValueStoreFactory
-    let threadAssociatedDataStore: ThreadAssociatedDataStore
-    public let threadRemover: ThreadRemover
-    public let threadReplyInfoStore: ThreadReplyInfoStore
-    public let wallpaperStore: WallpaperStore
+    public let schedulers: Schedulers
 
     public let appExpiry: AppExpiry
 
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
+    public let chatColorSettingStore: ChatColorSettingStore
 
     public let deviceManager: OWSDeviceManager
+    public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
 
     public let editManager: EditManager
 
+    public let groupMemberStore: GroupMemberStore
+    public let groupMemberUpdater: GroupMemberUpdater
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
-
-    public let svrCredentialStorage: SVRAuthCredentialStorage
-    public let svr: SecureValueRecovery
-
-    public let learnMyOwnPniManager: LearnMyOwnPniManager
-    public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
-    public let pniHelloWorldManager: PniHelloWorldManager
-
-    public let preKeyManager: PreKeyManager
-
-    public let recipientFetcher: RecipientFetcher
-    public let recipientMerger: RecipientMerger
-    public let recipientStore: RecipientDataStore
-
-    public let recipientHidingManager: RecipientHidingManager
-
-    public let registrationSessionManager: RegistrationSessionManager
-
-    public let signalProtocolStoreManager: SignalProtocolStoreManager
-
-    public let usernameApiClient: UsernameApiClient
-    public let usernameLookupManager: UsernameLookupManager
-    public let usernameEducationManager: UsernameEducationManager
-    public let usernameLinkManager: UsernameLinkManager
-    public let localUsernameManager: LocalUsernameManager
-    public let usernameValidationManager: UsernameValidationManager
 
     public let identityManager: OWSIdentityManager
 
-    let groupMemberStore: GroupMemberStore
-    let groupMemberUpdater: GroupMemberUpdater
+    public let keyValueStoreFactory: KeyValueStoreFactory
+
+    public let learnMyOwnPniManager: LearnMyOwnPniManager
+    public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
+    public let localUsernameManager: LocalUsernameManager
+
+    public let pniHelloWorldManager: PniHelloWorldManager
+    public let preKeyManager: PreKeyManager
+
+    public let recipientFetcher: RecipientFetcher
+    public let recipientHidingManager: RecipientHidingManager
+    public let recipientMerger: RecipientMerger
+    public let recipientStore: RecipientDataStore
+    public let registrationSessionManager: RegistrationSessionManager
+
+    public let signalProtocolStoreManager: SignalProtocolStoreManager
+    public let svr: SecureValueRecovery
+    public let svrCredentialStorage: SVRAuthCredentialStorage
+
+    public let threadAssociatedDataStore: ThreadAssociatedDataStore
+    public let threadRemover: ThreadRemover
+    public let threadReplyInfoStore: ThreadReplyInfoStore
+
+    public let usernameApiClient: UsernameApiClient
+    public let usernameEducationManager: UsernameEducationManager
+    public let usernameLinkManager: UsernameLinkManager
+    public let usernameLookupManager: UsernameLookupManager
+    public let usernameValidationManager: UsernameValidationManager
+
+    public let wallpaperStore: WallpaperStore
 
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setUpSingleton(
@@ -94,6 +92,7 @@ public class DependenciesBridge {
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2,
+        jobQueues: SSKJobQueues,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -108,8 +107,7 @@ public class DependenciesBridge {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
-        websocketFactory: WebSocketFactory,
-        jobQueues: SSKJobQueues
+        websocketFactory: WebSocketFactory
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
@@ -117,6 +115,7 @@ public class DependenciesBridge {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
+            jobQueues: jobQueues,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -132,8 +131,7 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
-            websocketFactory: websocketFactory,
-            jobQueues: jobQueues
+            websocketFactory: websocketFactory
         )
         _shared = result
         return result
@@ -145,6 +143,7 @@ public class DependenciesBridge {
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2,
+        jobQueues: SSKJobQueues,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -160,8 +159,7 @@ public class DependenciesBridge {
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        websocketFactory: WebSocketFactory,
-        jobQueues: SSKJobQueues
+        websocketFactory: WebSocketFactory
     ) {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
@@ -171,12 +169,12 @@ public class DependenciesBridge {
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
+            db: db,
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            schedulers: schedulers,
-            db: db,
-            tsAccountManager: PniDistributionParameterBuilderImpl.Wrappers.TSAccountManager(tsAccountManager)
+            registrationIdGenerator: RegistrationIdGenerator(),
+            schedulers: schedulers
         )
 
         self.appExpiry = AppExpiryImpl(
@@ -204,12 +202,13 @@ public class DependenciesBridge {
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
-            schedulers: schedulers,
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
-            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
+            registrationIdGenerator: RegistrationIdGenerator(),
+            schedulers: schedulers,
             tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 

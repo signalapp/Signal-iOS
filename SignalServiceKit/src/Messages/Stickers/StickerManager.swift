@@ -1184,7 +1184,7 @@ public class StickerManager: NSObject {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing thread.")
             return
         }

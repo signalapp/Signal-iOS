@@ -18,6 +18,9 @@ public class LocalIdentifiersObjC: NSObject {
 
     @objc
     public var aciAddress: SignalServiceAddress { wrappedValue.aciAddress }
+
+    @objc
+    public var phoneNumber: String { wrappedValue.phoneNumber }
 }
 
 public class LocalIdentifiers {

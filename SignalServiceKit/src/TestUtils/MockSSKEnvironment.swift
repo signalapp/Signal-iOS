@@ -83,6 +83,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
+            jobQueues: sskJobQueues,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -97,8 +98,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
-            websocketFactory: webSocketFactory,
-            jobQueues: sskJobQueues
+            websocketFactory: webSocketFactory
         )
 
         // Set up ourselves

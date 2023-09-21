@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-protocol ThreadAssociatedDataStore {
+public protocol ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData?
     func remove(for threadUniqueId: String, tx: DBWriteTransaction)
 }

@@ -77,6 +77,7 @@ public class AppSetup {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
+            jobQueues: sskJobQueues,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -91,8 +92,7 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
-            websocketFactory: webSocketFactory,
-            jobQueues: sskJobQueues
+            websocketFactory: webSocketFactory
         )
 
         // MARK: SignalMessaging environment properties

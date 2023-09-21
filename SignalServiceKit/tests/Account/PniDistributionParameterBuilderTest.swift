@@ -12,7 +12,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     private var messageSenderMock: MessageSenderMock!
     private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
-    private var tsAccountManagerMock: TSAccountManagerMock!
+    private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
 
     private var dateProvider: DateProvider!
     private var schedulers: TestSchedulers!
@@ -25,26 +25,26 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         messageSenderMock = .init()
         pniSignedPreKeyStoreMock = MockSignalSignedPreKeyStore()
         pniKyberPreKeyStoreMock = MockKyberPreKeyStore(dateProvider: dateProvider)
-        tsAccountManagerMock = .init()
+        registrationIdGeneratorMock = .init()
         db = MockDB()
 
         schedulers = TestSchedulers(scheduler: TestScheduler())
         schedulers.scheduler.start()
 
         pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
+            db: db,
             messageSender: messageSenderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
-            schedulers: schedulers,
-            db: db,
-            tsAccountManager: tsAccountManagerMock
+            registrationIdGenerator: registrationIdGeneratorMock,
+            schedulers: schedulers
         )
     }
 
     func testBuildParametersHappyPath() {
         let pniKeyPair = Curve25519.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
-        let localRegistrationId = tsAccountManagerMock.generateRegistrationId()
+        let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
@@ -76,7 +76,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         XCTAssertEqual(
             Set(parameters.pniRegistrationIds.values),
-            Set(tsAccountManagerMock.generatedRegistrationIds)
+            Set(registrationIdGeneratorMock.generatedRegistrationIds)
         )
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
@@ -89,7 +89,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     func testBuildParametersFailsBeforeMessageBuildingIfDeviceIdsMismatched() {
         let pniKeyPair = Curve25519.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
-        let localRegistrationId = tsAccountManagerMock.generateRegistrationId()
+        let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
@@ -116,7 +116,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     func testBuildParametersWithInvalidDevice() {
         let pniKeyPair = Curve25519.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
-        let localRegistrationId = tsAccountManagerMock.generateRegistrationId()
+        let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
@@ -143,7 +143,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         // We should have generated a registration ID we threw away, for the
         // invalid device.
-        XCTAssertLessThan(parameters.pniRegistrationIds.count, tsAccountManagerMock.generatedRegistrationIds.count)
+        XCTAssertLessThan(parameters.pniRegistrationIds.count, registrationIdGeneratorMock.generatedRegistrationIds.count)
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
@@ -155,7 +155,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     func testBuildParametersWithError() {
         let pniKeyPair = Curve25519.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
-        let localRegistrationId = tsAccountManagerMock.generateRegistrationId()
+        let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
@@ -175,7 +175,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         XCTAssert(isFailureResult)
         XCTAssertEqual(pniSignedPreKeyStoreMock.generatedSignedPreKeys.count, 2)
-        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.count, 2)
+        XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 2)
         XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
     }
 
@@ -273,17 +273,5 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         case .error:
             throw BuildDeviceMessageError()
         }
-    }
-}
-
-// MARK: TSAccountManager
-
-private class TSAccountManagerMock: PniDistributionParameterBuilderImpl.Shims.TSAccountManager {
-    var generatedRegistrationIds: [UInt32] = []
-
-    func generateRegistrationId() -> UInt32 {
-        let registrationId = UInt32.random(in: 0..<500)
-        generatedRegistrationIds.append(registrationId)
-        return registrationId
     }
 }

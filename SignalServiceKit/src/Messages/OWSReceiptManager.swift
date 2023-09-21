@@ -77,7 +77,7 @@ public extension OWSReceiptManager {
                 return false
             }
 
-            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+            guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
                 owsFailDebug("Missing thread.")
                 return false
             }

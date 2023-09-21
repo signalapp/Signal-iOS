@@ -531,7 +531,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard let thread = TSAccountManager.getOrCreateLocalThreadWithSneakyTransaction() else {
+        guard let thread = TSContactThread.getOrCreateLocalThreadWithSneakyTransaction() else {
             owsFailDebug("Missing thread.")
             return
         }

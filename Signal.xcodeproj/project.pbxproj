@@ -517,7 +517,6 @@
 		45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4585B4A3291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */; };
 		4585B4A5291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585B4A4291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift */; };
-		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45906C6A29D238560025906D /* WidePhotoCell.swift */; };
 		45A1684D2A1C308800C2432D /* AudioPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A1684C2A1C308800C2432D /* AudioPresentation.swift */; };
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
@@ -768,6 +767,8 @@
 		6605D5012A86D2B6004DC345 /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5002A86D2B6004DC345 /* indeterminate_spinner_blue.json */; };
 		6605D5032A86D305004DC345 /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */; };
 		6605D5052A86EE50004DC345 /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */; };
+		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
+		661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C92ABA522200A1B16D /* TSContactThread.swift */; };
 		661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */; };
 		6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */; };
 		6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */; };
@@ -1467,7 +1468,7 @@
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
-		F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */; };
+		F903C29B28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F903C29A28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift */; };
 		F905DFEB29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */; };
@@ -3037,7 +3038,6 @@
 		4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryCollectionViewUpdater.swift; sourceTree = "<group>"; };
 		4585B4A4291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryCollectionViewUpdaterTest.swift; sourceTree = "<group>"; };
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationSheet.swift; sourceTree = "<group>"; };
-		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		45906C6A29D238560025906D /* WidePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidePhotoCell.swift; sourceTree = "<group>"; };
 		45A1684C2A1C308800C2432D /* AudioPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPresentation.swift; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
@@ -3310,6 +3310,8 @@
 		6605D5002A86D2B6004DC345 /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
 		6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
+		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
+		661170C92ABA522200A1B16D /* TSContactThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThread.swift; sourceTree = "<group>"; };
 		661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTest.swift; sourceTree = "<group>"; };
 		661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTestShims.swift; sourceTree = "<group>"; };
 		6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
@@ -4111,7 +4113,7 @@
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		F27BDDCCAEDF770CCFFF1C14 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
-		F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerTest.swift; sourceTree = "<group>"; };
+		F903C29A28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGeneratorTest.swift; sourceTree = "<group>"; };
 		F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapterTest.swift; sourceTree = "<group>"; };
@@ -6360,7 +6362,6 @@
 		458E38381D6699110094BD24 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				458967101DC117CC00E9DD21 /* AccountManagerTest.swift */,
 				F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */,
 				4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */,
 			);
@@ -6648,6 +6649,22 @@
 				6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */,
 			);
 			path = Registration;
+			sourceTree = "<group>";
+		};
+		661170BF2ABA458800A1B16D /* TSAccountManager */ = {
+			isa = PBXGroup;
+			children = (
+				661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */,
+			);
+			path = TSAccountManager;
+			sourceTree = "<group>";
+		};
+		661170C22ABA464000A1B16D /* TSAccountManager */ = {
+			isa = PBXGroup;
+			children = (
+				F903C29A28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift */,
+			);
+			path = TSAccountManager;
 			sourceTree = "<group>";
 		};
 		661278052996BA6700A1D5A1 /* Registration */ = {
@@ -8461,6 +8478,7 @@
 			isa = PBXGroup;
 			children = (
 				6659A02D2A7C171900066AB7 /* PreKeys */,
+				661170C22ABA464000A1B16D /* TSAccountManager */,
 				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
 				D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */,
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
@@ -8468,7 +8486,6 @@
 				D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
-				F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */,
 			);
 			name = Account;
 			path = SignalServiceKit/tests/Account;
@@ -9115,6 +9132,7 @@
 			isa = PBXGroup;
 			children = (
 				6659A0242A7C112700066AB7 /* PreKeys */,
+				661170BF2ABA458800A1B16D /* TSAccountManager */,
 				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
 				D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */,
 				D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */,
@@ -9215,6 +9233,7 @@
 				F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */,
 				F9C5C9EB289453B100548EEE /* TSContactThread.h */,
 				F9C5C9EE289453B100548EEE /* TSContactThread.m */,
+				661170C92ABA522200A1B16D /* TSContactThread.swift */,
 				F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */,
 				F9C5C9E8289453B100548EEE /* TSGroupThread+SDS.swift */,
 				F9C5C9EC289453B100548EEE /* TSGroupThread.h */,
@@ -12092,7 +12111,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */,
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
@@ -12625,6 +12643,7 @@
 				E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */,
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
+				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
 				6600F354298C8FCA00B1EDB7 /* RegistrationSession.swift in Sources */,
@@ -12799,6 +12818,7 @@
 				F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */,
 				F9C5CCD0289453B300548EEE /* TSContactThread+SDS.swift in Sources */,
 				F9C5CCD4289453B300548EEE /* TSContactThread.m in Sources */,
+				661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */,
 				F9C5CBE1289453B300548EEE /* TSErrorMessage+SDS.swift in Sources */,
 				F9C5CBFB289453B300548EEE /* TSErrorMessage.m in Sources */,
 				F9C5CBCF289453B300548EEE /* TSErrorMessage.swift in Sources */,
@@ -12997,6 +13017,7 @@
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
+				F903C29B28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift in Sources */,
 				6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */,
 				6600F367298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
@@ -13037,7 +13058,6 @@
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
-				F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
 				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */,

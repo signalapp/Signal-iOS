@@ -433,7 +433,7 @@ extension TSOutgoingMessage {
 public extension TSOutgoingMessage {
     func sendSyncTranscript() -> Promise<Void> {
         return databaseStorage.write(.promise) { tx in
-            guard let localThread = TSAccountManager.getOrCreateLocalThread(transaction: tx) else {
+            guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
                 throw OWSAssertionError("Missing local thread")
             }
 

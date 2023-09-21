@@ -110,27 +110,27 @@ protocol PniDistributionParamaterBuilder {
 final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder {
     private let logger = PrefixedLogger(prefix: "PDPBI")
 
+    private let db: DB
     private let messageSender: Shims.MessageSender
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
+    private let registrationIdGenerator: RegistrationIdGenerator
     private let schedulers: Schedulers
-    private let db: DB
-    private let tsAccountManager: Shims.TSAccountManager
 
     init(
+        db: DB,
         messageSender: Shims.MessageSender,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
-        schedulers: Schedulers,
-        db: DB,
-        tsAccountManager: Shims.TSAccountManager
+        registrationIdGenerator: RegistrationIdGenerator,
+        schedulers: Schedulers
     ) {
+        self.db = db
         self.messageSender = messageSender
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
+        self.registrationIdGenerator = registrationIdGenerator
         self.schedulers = schedulers
-        self.db = db
-        self.tsAccountManager = tsAccountManager
     }
 
     func buildPniDistributionParameters(
@@ -239,7 +239,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 signedBy: pniIdentityKeyPair
             )
 
-            let registrationId = tsAccountManager.generateRegistrationId()
+            let registrationId = registrationIdGenerator.generate()
 
             logger.info("Building device message for device with ID \(linkedDeviceId).")
 
@@ -331,12 +331,10 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 extension PniDistributionParameterBuilderImpl {
     enum Shims {
         typealias MessageSender = _PniDistributionParameterBuilder_MessageSender_Shim
-        typealias TSAccountManager = _PniDistributionParameterBuilder_TSAccountManager_Shim
     }
 
     enum Wrappers {
         typealias MessageSender = _PniDistributionParameterBuilder_MessageSender_Wrapper
-        typealias TSAccountManager = _PniDistributionParameterBuilder_TSAccountManager_Wrapper
     }
 }
 
@@ -388,23 +386,5 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             isResendRequestMessage: isResendRequestMessage,
             udSendingParamsProvider: udSendingParamsProvider
         )
-    }
-}
-
-// MARK: TSAccountManager
-
-protocol _PniDistributionParameterBuilder_TSAccountManager_Shim {
-    func generateRegistrationId() -> UInt32
-}
-
-class _PniDistributionParameterBuilder_TSAccountManager_Wrapper: _PniDistributionParameterBuilder_TSAccountManager_Shim {
-    private let tsAccountManager: TSAccountManager
-
-    init(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
-    func generateRegistrationId() -> UInt32 {
-        return TSAccountManager.generateRegistrationId()
     }
 }

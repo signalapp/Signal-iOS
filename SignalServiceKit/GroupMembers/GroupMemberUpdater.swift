@@ -5,7 +5,7 @@
 
 import Foundation
 
-protocol GroupMemberUpdater {
+public protocol GroupMemberUpdater {
     func updateRecords(groupThread: TSGroupThread, transaction: DBWriteTransaction)
 }
 

@@ -6,7 +6,7 @@
 import GRDB
 import LibSignalClient
 
-protocol GroupMemberStore {
+public protocol GroupMemberStore {
     func insert(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
     func update(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
     func remove(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
