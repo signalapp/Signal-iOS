@@ -125,7 +125,7 @@ public class FeatureFlags: BaseFlags {
     /// be displayed.
     public static let onlyAciSafetyNumbers = false
 
-    public static let editMessageSend = build.includes(.beta)
+    public static let editMessageSend = true
 
     /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
     @objc
