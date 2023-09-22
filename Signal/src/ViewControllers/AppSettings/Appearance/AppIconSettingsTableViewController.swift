@@ -247,7 +247,9 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
         self.stackView = stackView
         let cell = OWSTableItem.newCell()
         cell.contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges(with: .init(hMargin: /*24 +*/ 16, vMargin: 24))
+        // Subtract off the cell inner margins in favor of
+        // the stack views' spacer views with equal spacing.
+        stackView.autoPinEdgesToSuperviewMargins(with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24))
         return cell
     }
 
@@ -284,6 +286,9 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
     }
 
     private class IconButton: UIView {
+        static let iconCornerRadius: CGFloat = 12
+        static let selectedOutlineCornerRadius: CGFloat = 16
+
         let icon: CustomAppIcon?
         private let button: UIView
         private let selectedOutlineView: UIView
@@ -296,7 +301,7 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
 
             self.addSubview(selectedOutlineView)
             selectedOutlineView.autoPinEdgesToSuperviewEdges()
-            selectedOutlineView.layer.cornerRadius = Self.cornerRadius
+            selectedOutlineView.layer.cornerRadius = Self.selectedOutlineCornerRadius
             let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
             selectedOutlineView.layer.borderColor = borderColor.cgColor
 
@@ -320,18 +325,16 @@ class AppIconSettingsTableViewController: OWSTableViewController2 {
             }
         }
 
-        static let cornerRadius: CGFloat = 12
-
         private static func makeButton(for icon: CustomAppIcon?, action: @escaping () -> Void) -> UIView {
             let image = UIImage(named: icon?.rawValue ?? CustomAppIcon.defaultAppIconPreviewImageName)
             let button = OWSButton(block: action)
             button.setImage(image, for: .normal)
             button.clipsToBounds = true
-            button.layer.cornerRadius = cornerRadius
+            button.layer.cornerRadius = iconCornerRadius
 
             if icon?.shouldShowShadow == true {
                 let backgroundView = UIView.container()
-                backgroundView.setShadow(radius: 2, opacity: 1, offset: .zero, color: .ows_blackAlpha25)
+                backgroundView.setShadow(radius: 1, opacity: 0.24, offset: .zero, color: .ows_black)
                 backgroundView.addSubview(button)
                 button.autoPinEdgesToSuperviewEdges()
                 return backgroundView
