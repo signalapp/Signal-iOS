@@ -184,7 +184,7 @@ public extension TSMessage {
     //  * you sent this message
     //  * you haven't already remotely deleted this message
     //  * it's not a message with a gift badge
-    //  * it has been less than 3 hours since you sent the message
+    //  * it has been less than 24 hours since you sent the message
     //    * this includes messages sent in the future
     var canBeRemotelyDeleted: Bool {
         guard let outgoingMessage = self as? TSOutgoingMessage else { return false }
@@ -192,7 +192,7 @@ public extension TSMessage {
         guard outgoingMessage.giftBadge == nil else { return false }
 
         let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(outgoingMessage.timestamp)
-        guard isInFuture || (elapsedTime <= (kHourInMs * 3)) else { return false }
+        guard isInFuture || (elapsedTime <= (kHourInMs * 24)) else { return false }
 
         return true
     }
