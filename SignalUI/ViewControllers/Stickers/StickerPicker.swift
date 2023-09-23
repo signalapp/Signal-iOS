@@ -108,6 +108,8 @@ public class StickerPickerPageView: UIView {
 
         super.init(frame: .zero)
 
+        layoutMargins = .zero
+
         setupPaging()
 
         reloadStickers()
@@ -245,7 +247,15 @@ public class StickerPickerPageView: UIView {
         return stickerPackCollectionViews[0]
     }
 
-    private let stickerPagingScrollView = UIScrollView()
+    private lazy var stickerPagingScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.isDirectionalLockEnabled = true
+        scrollView.delegate = self
+        scrollView.clipsToBounds = false
+        return scrollView
+    }()
 
     private var nextPageStickerPack: StickerPack? {
         // If we don't have a pack defined, the first pack is always up next
@@ -271,6 +281,7 @@ public class StickerPickerPageView: UIView {
 
     private var pageWidth: CGFloat { return stickerPagingScrollView.frame.width }
     private var numberOfPages: CGFloat { return CGFloat(stickerPackCollectionViews.count) }
+    private let pageSpacing: CGFloat = 40
 
     // These thresholds indicate the offset at which we update the next / previous page.
     // They're not exactly half way through the transition, to avoid us continuously
@@ -279,12 +290,10 @@ public class StickerPickerPageView: UIView {
     private var nextPageThreshold: CGFloat { return pageWidth + previousPageThreshold }
 
     private func setupPaging() {
-        stickerPagingScrollView.isPagingEnabled = true
-        stickerPagingScrollView.showsHorizontalScrollIndicator = false
-        stickerPagingScrollView.isDirectionalLockEnabled = true
-        stickerPagingScrollView.delegate = self
         addSubview(stickerPagingScrollView)
-        stickerPagingScrollView.autoPinEdgesToSuperviewEdges()
+        stickerPagingScrollView.autoPinHeightToSuperview()
+        stickerPagingScrollView.autoPinEdge(toSuperviewMargin: .leading, withInset: -0.5 * pageSpacing)
+        stickerPagingScrollView.autoPinEdge(toSuperviewMargin: .trailing, withInset: -0.5 * pageSpacing)
 
         let stickerPagesContainer = UIView()
         stickerPagingScrollView.addSubview(stickerPagesContainer)
@@ -305,17 +314,16 @@ public class StickerPickerPageView: UIView {
                 stickerPagesContainer.insertSubview(collectionView, at: 0)
             }
 
-            collectionView.autoMatch(.width, to: .width, of: stickerPagingScrollView)
+            collectionView.autoMatch(.width, to: .width, of: stickerPagingScrollView, withOffset: -pageSpacing)
             collectionView.autoMatch(.height, to: .height, of: stickerPagingScrollView)
 
             collectionView.autoPinEdge(toSuperviewEdge: .top)
             collectionView.autoPinEdge(toSuperviewEdge: .bottom)
 
             stickerPackCollectionViewConstraints.append(
-                collectionView.autoPinEdge(toSuperviewEdge: .left, withInset: CGFloat(index) * pageWidth)
+                collectionView.autoPinEdge(toSuperviewEdge: .left, withInset: CGFloat(index) * pageWidth + 0.5 * pageSpacing)
             )
         }
-
     }
 
     private var pendingPageChangeUpdates: (() -> Void)?
@@ -381,7 +389,7 @@ public class StickerPickerPageView: UIView {
     private func updatePageConstraints(ignoreScrollingState: Bool = false) {
         // Setup the collection views in their page positions
         for (index, constraint) in stickerPackCollectionViewConstraints.enumerated() {
-            constraint.constant = CGFloat(index) * pageWidth
+            constraint.constant = CGFloat(index) * pageWidth + 0.5 * pageSpacing
         }
 
         // Scrolling backwards

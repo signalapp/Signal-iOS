@@ -20,15 +20,11 @@ public class StickerKeyboard: CustomKeyboard {
 
         backgroundColor = Theme.backgroundColor
 
-        let stackView = UIStackView()
-        addSubview(stackView)
+        let stackView = UIStackView(arrangedSubviews: [ headerView, stickerPickerPageView ])
+        contentView.addSubview(stackView)
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.addArrangedSubview(headerView)
         stackView.autoPinEdgesToSuperviewEdges()
-        stackView.addArrangedSubview(stickerPickerPageView)
-        stickerPickerPageView.autoPinEdge(toSuperviewSafeArea: .left)
-        stickerPickerPageView.autoPinEdge(toSuperviewSafeArea: .right)
 
         headerView.delegate = self
     }
