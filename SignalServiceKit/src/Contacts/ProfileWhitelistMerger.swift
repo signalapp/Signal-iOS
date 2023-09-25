@@ -12,7 +12,7 @@ class ProfileWhitelistMerger: RecipientMergeObserver {
         self.profileManager = profileManager
     }
 
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {
         let tx = SDSDB.shimOnlyBridge(tx)
         profileManager.normalizeRecipientInProfileWhitelist(recipient, tx: tx)
     }

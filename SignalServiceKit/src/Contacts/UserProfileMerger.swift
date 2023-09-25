@@ -36,7 +36,7 @@ class UserProfileMerger: RecipientMergeObserver {
         )
     }
 
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {
         mergeUserProfiles(for: recipient, tx: tx)
     }
 

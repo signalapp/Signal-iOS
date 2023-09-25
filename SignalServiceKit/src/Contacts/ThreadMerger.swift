@@ -266,7 +266,7 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {
         mergeThreads(for: recipient, tx: tx)
     }
 

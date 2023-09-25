@@ -47,8 +47,13 @@ public protocol RecipientMerger {
 protocol RecipientMergeObserver {
     /// We are about to learn a new association between identifiers.
     ///
-    /// This is called for the identifiers that will no longer be linked.
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction)
+    /// - parameter recipient: The recipient whose identifiers are about to be
+    /// removed or replaced.
+    ///
+    /// - parameter mightReplaceNonnilPhoneNumber: If true, we might be about to
+    /// update an ACI/phone number association. This property exists mostly as a
+    /// performance optimization for ``AuthorMergeObserver``.
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction)
 
     /// We just learned a new association between identifiers.
     ///
@@ -232,9 +237,9 @@ class RecipientMergerImpl: RecipientMerger {
         aci: Aci,
         phoneNumber: E164,
         isLocalRecipient: Bool,
-        tx transaction: DBWriteTransaction
+        tx: DBWriteTransaction
     ) -> SignalRecipient {
-        let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: transaction)
+        let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: tx)
 
         // If these values have already been merged, we can return the result
         // without any modifications. This will be the path taken in 99% of cases
@@ -252,51 +257,31 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
+        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
 
-        let oldRecipients = [aciRecipient, phoneNumberRecipient].compacted().map { $0.copyRecipient() }
-
-        // If PN_1 is associated with ACI_A when this method starts, and if we're
-        // trying to associate PN_1 with ACI_B, then we should ensure everything
-        // that currently references PN_1 is updated to reference ACI_A. At this
-        // point in time, everything we've saved locally with PN_1 is associated
-        // with the ACI_A account, so we should mark it as such in the database.
-        // After this point, everything new will be associated with ACI_B.
-        postWillBreakAssociationNotification(for: phoneNumberRecipient, tx: transaction)
-        // If PN_2 is associated with ACI_B when this method starts, and if we're
-        // trying to associate PN_1 with ACI_B, then we also should ensure
-        // everything that currently references PN_2 is updated to reference ACI_B.
-        postWillBreakAssociationNotification(for: aciRecipient, tx: transaction)
-
-        let mergedRecipient: SignalRecipient
-        switch _mergeHighTrust(
-            aci: aci,
-            phoneNumber: phoneNumber,
-            aciRecipient: aciRecipient,
-            phoneNumberRecipient: phoneNumberRecipient,
-            tx: transaction
+        return mergeAndNotify(
+            existingRecipients: [phoneNumberRecipient, aciRecipient].compacted(),
+            mightReplaceNonnilPhoneNumber: true,
+            isLocalMerge: isLocalRecipient,
+            tx: tx
         ) {
-        case .some(let updatedRecipient):
-            mergedRecipient = updatedRecipient
-            dataStore.updateRecipient(mergedRecipient, transaction: transaction)
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [mergedRecipient.accountId])
-        case .none:
-            mergedRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
-            dataStore.insertRecipient(mergedRecipient, transaction: transaction)
+            switch _mergeHighTrust(
+                aci: aci,
+                phoneNumber: phoneNumber,
+                aciRecipient: aciRecipient,
+                phoneNumberRecipient: phoneNumberRecipient,
+                tx: tx
+            ) {
+            case .some(let updatedRecipient):
+                dataStore.updateRecipient(updatedRecipient, transaction: tx)
+                storageServiceManager.recordPendingUpdates(updatedAccountIds: [updatedRecipient.accountId])
+                return updatedRecipient
+            case .none:
+                let insertedRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
+                dataStore.insertRecipient(insertedRecipient, transaction: tx)
+                return insertedRecipient
+            }
         }
-
-        for observer in observers {
-            observer.didLearnAssociation(
-                mergedRecipient: MergedRecipient(
-                    isLocalRecipient: isLocalRecipient,
-                    oldRecipient: oldRecipients.first(where: { $0.uniqueId == mergedRecipient.uniqueId }),
-                    newRecipient: mergedRecipient
-                ),
-                tx: transaction
-            )
-        }
-
-        return mergedRecipient
     }
 
     private func _mergeHighTrust(
@@ -402,20 +387,57 @@ class RecipientMergerImpl: RecipientMerger {
         return winningRecipient
     }
 
-    private func postWillBreakAssociationNotification(for recipient: SignalRecipient?, tx: DBWriteTransaction) {
-        guard let recipient else {
-            return
+    @discardableResult
+    private func mergeAndNotify(
+        existingRecipients: [SignalRecipient],
+        mightReplaceNonnilPhoneNumber: Bool,
+        isLocalMerge: Bool,
+        tx: DBWriteTransaction,
+        applyMerge: () -> SignalRecipient
+    ) -> SignalRecipient {
+        let oldRecipients = existingRecipients.map { $0.copyRecipient() }
+
+        // If PN_1 is associated with ACI_A when this method starts, and if we're
+        // trying to associate PN_1 with ACI_B, then we should ensure everything
+        // that currently references PN_1 is updated to reference ACI_A. At this
+        // point in time, everything we've saved locally with PN_1 is associated
+        // with the ACI_A account, so we should mark it as such in the database.
+        // After this point, everything new will be associated with ACI_B.
+        //
+        // Also, if PN_2 is associated with ACI_B when this method starts, and if
+        // we're trying to associate PN_1 with ACI_B, then we also should ensure
+        // everything that currently references PN_2 is updated to reference ACI_B.
+        existingRecipients.forEach { recipient in
+            for observer in observers {
+                observer.willBreakAssociation(
+                    for: recipient,
+                    mightReplaceNonnilPhoneNumber: mightReplaceNonnilPhoneNumber,
+                    tx: tx
+                )
+            }
         }
+
+        let mergedRecipient = applyMerge()
+
         for observer in observers {
-            observer.willBreakAssociation(for: recipient, tx: tx)
+            observer.didLearnAssociation(
+                mergedRecipient: MergedRecipient(
+                    isLocalRecipient: isLocalMerge,
+                    oldRecipient: oldRecipients.first(where: { $0.uniqueId == mergedRecipient.uniqueId }),
+                    newRecipient: mergedRecipient
+                ),
+                tx: tx
+            )
         }
+
+        return mergedRecipient
     }
 }
 
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         updateRecipient(mergedRecipient.newRecipient)
@@ -440,7 +462,7 @@ public class RecipientMergeNotifier: RecipientMergeObserver {
         self.scheduler = scheduler
     }
 
-    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         tx.addAsyncCompletion(on: scheduler) {
