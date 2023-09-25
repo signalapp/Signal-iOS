@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // TODO: [DBV2] Ideally, these would live in a test target.
 //
@@ -176,6 +177,18 @@ public class MockDB: DB {
             completionQueue.sync {
                 completion()
             }
+        }
+    }
+
+    public func awaitableWrite<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: @escaping (DBWriteTransaction) throws -> T
+    ) async rethrows -> T {
+        await Task.yield()
+        return try queue.sync {
+            return try self.performWrite(block: block)
         }
     }
 

@@ -122,6 +122,17 @@ public class SDSDB: DB {
         databaseStorage.asyncWrite(file: file, function: function, line: line, block: {block(WriteTx($0))}, completionQueue: completionQueue, completion: completion)
     }
 
+    // MARK: Awaitable Methods
+
+    public func awaitableWrite<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (DBWriteTransaction) throws -> T
+    ) async rethrows -> T {
+        return try await databaseStorage.awaitableWrite(file: file, function: function, line: line, block: {try block(WriteTx($0))})
+    }
+
     // MARK: Promises
 
     public func readPromise(

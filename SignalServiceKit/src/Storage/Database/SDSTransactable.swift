@@ -5,11 +5,12 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
 public class SDSTransactable: NSObject {
-    fileprivate let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async")
+    fileprivate let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
 
     public func read(file: String = #file,
                      function: String = #function,
@@ -98,6 +99,45 @@ public extension SDSTransactable {
             if let completion = completion {
                 completionQueue.async(execute: completion)
             }
+        }
+    }
+}
+
+// MARK: - Awaitable Methods
+
+extension SDSTransactable {
+    public func awaitableWrite<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) throws -> T
+    ) async rethrows -> T {
+        return try await _awaitableWrite(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+    }
+
+    private func _awaitableWrite<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: @escaping (SDSAnyWriteTransaction) throws -> T,
+        rescue: @escaping (Error) throws -> Void
+    ) async rethrows -> T {
+        let result: Result<T, Error> = await withCheckedContinuation { continuation in
+            asyncWriteQueue.async {
+                do {
+                    let result = try self.write(file: file, function: function, line: line, block: block)
+                    continuation.resume(returning: .success(result))
+                } catch {
+                    continuation.resume(returning: .failure(error))
+                }
+            }
+        }
+        switch result {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            try rescue(error)
+            fatalError()
         }
     }
 }

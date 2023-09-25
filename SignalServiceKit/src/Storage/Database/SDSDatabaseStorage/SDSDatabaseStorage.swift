@@ -447,9 +447,18 @@ public class SDSDatabaseStorage: SDSTransactable {
                                line: Int = #line,
                                block: (SDSAnyWriteTransaction) -> Void) {
         #if TESTABLE_BUILD
-        if Thread.isMainThread &&
-            AppReadiness.isAppReady {
+        if Thread.isMainThread && AppReadiness.isAppReady {
             Logger.warn("Database write on main thread.")
+        }
+        #endif
+
+        #if DEBUG
+        // When running in a Task, we should ensure that callers don't use
+        // synchronous writes, as that could block forward progress for other
+        // tasks. This seems like a reasonable way to check for this in debug
+        // builds without adding overhead for other types of builds.
+        withUnsafeCurrentTask {
+            owsAssertDebug($0 == nil, "Must use awaitableWrite in Tasks.")
         }
         #endif
 

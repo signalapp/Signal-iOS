@@ -56,6 +56,15 @@ public protocol DB {
         completion: (() -> Void)?
     )
 
+    // MARK: - Awaitable Methods
+
+    func awaitableWrite<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: @escaping (DBWriteTransaction) throws -> T
+    ) async rethrows -> T
+
     // MARK: - Promises
 
     func readPromise(
@@ -162,6 +171,17 @@ extension DB {
         completion: (() -> Void)? = nil
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
+    }
+
+    // MARK: - Awaitable Methods
+
+    func awaitableWrite<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (DBWriteTransaction) throws -> T
+    ) async rethrows -> T {
+        return try await awaitableWrite(file: file, function: function, line: line, block: block)
     }
 
     // MARK: - Promises
