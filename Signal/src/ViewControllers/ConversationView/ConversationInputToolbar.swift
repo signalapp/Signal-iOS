@@ -1118,7 +1118,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func updateInputLinkPreview() {
         AssertIsOnMainThread()
 
-        linkPreviewFetcher.update(messageBodyForSending?.text ?? "", enableIfEmpty: true)
+        let messageBody = messageBodyForSending
+            ?? .init(text: "", ranges: .empty)
+        linkPreviewFetcher.update(messageBody, enableIfEmpty: true)
     }
 
     private func updateLinkPreviewView() {

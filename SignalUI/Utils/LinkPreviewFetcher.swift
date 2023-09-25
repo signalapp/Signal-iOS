@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 public class LinkPreviewFetcher {
@@ -84,7 +85,7 @@ public class LinkPreviewFetcher {
 
     /// Updates the user-provided text that may contain a URL.
     ///
-    /// - Parameter rawText: An entire blob of text entered by the user, such as
+    /// - Parameter body: An entire blob of text entered by the user, such as
     /// in the conversation input text field.
     ///
     /// - Parameter enableIfEmpty: If true, link preview fetches will be
@@ -93,14 +94,16 @@ public class LinkPreviewFetcher {
     /// - Parameter prependSchemeIfNeeded: If true, an "https://" scheme will be
     /// prepended to `rawText` if it doesn't have another scheme. This is useful
     /// for text fields dedicated to URL entry.
-    public func update(_ rawText: String, enableIfEmpty: Bool = false, prependSchemeIfNeeded: Bool = false) {
-        let filteredText = (rawText as NSString).ows_stripped()
-
-        if enableIfEmpty, filteredText.isEmpty {
+    public func update(
+        _ body: MessageBody,
+        enableIfEmpty: Bool = false,
+        prependSchemeIfNeeded: Bool = false
+    ) {
+        if enableIfEmpty, body.text.isEmpty {
             isEnabled = true
         }
 
-        let proposedUrl = validUrl(in: rawText, prependSchemeIfNeeded: prependSchemeIfNeeded)
+        let proposedUrl = validUrl(in: body, prependSchemeIfNeeded: prependSchemeIfNeeded)
 
         if currentUrl == proposedUrl {
             return
@@ -130,14 +133,15 @@ public class LinkPreviewFetcher {
             }
     }
 
-    private func validUrl(in filteredText: String, prependSchemeIfNeeded: Bool) -> URL? {
-        var filteredText = filteredText
-
+    private func validUrl(
+        in body: MessageBody,
+        prependSchemeIfNeeded: Bool
+    ) -> URL? {
         if !isEnabled {
             return nil
         }
 
-        if filteredText.isEmpty {
+        if body.text.isEmpty {
             return nil
         }
 
@@ -145,23 +149,42 @@ public class LinkPreviewFetcher {
             return nil
         }
 
+        var body = body
         if prependSchemeIfNeeded {
-            self.prependSchemeIfNeeded(to: &filteredText)
+            body = self.prependingSchemeIfNeeded(to: body)
         }
 
-        return LinkValidator.firstLinkPreviewURL(in: filteredText)
+        return LinkValidator.firstLinkPreviewURL(in: body)
     }
 
-    private func prependSchemeIfNeeded(to text: inout String) {
+    private func prependingSchemeIfNeeded(to body: MessageBody) -> MessageBody {
         // Prepend HTTPS if address is missing one…
         let schemePrefix = "https://"
-        guard text.range(of: schemePrefix, options: [ .caseInsensitive, .anchored ]) == nil else {
-            return
+        guard body.text.range(of: schemePrefix, options: [ .caseInsensitive, .anchored ]) == nil else {
+            return body
         }
         // …and it doesn't appear to have any other protocol specified.
-        guard text.range(of: "://") == nil else {
-            return
+        guard body.text.range(of: "://") == nil else {
+            return body
         }
-        text.insert(contentsOf: schemePrefix, at: text.startIndex)
+        let prefixLen = (schemePrefix as NSString).length
+
+        var finalMentions = [NSRange: Aci]()
+        for (range, aci) in body.ranges.mentions {
+            finalMentions[range.offset(by: prefixLen)] = aci
+        }
+
+        return MessageBody(
+            text: schemePrefix + body.text,
+            ranges: MessageBodyRanges(
+                mentions: finalMentions,
+                orderedMentions: body.ranges.orderedMentions.map {
+                    return $0.offset(by: prefixLen)
+                },
+                collapsedStyles: body.ranges.collapsedStyles.map {
+                    return $0.offset(by: prefixLen)
+                }
+            )
+        )
     }
 }

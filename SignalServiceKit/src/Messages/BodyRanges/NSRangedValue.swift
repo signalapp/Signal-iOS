@@ -83,4 +83,21 @@ extension NSRangedValue {
         }
         return .acrossExistingRanges(indexes: overlapIndexes, gaps: gaps)
     }
+
+    public func offset(by offset: Int) -> Self {
+        return Self.init(
+            value,
+            range: self.range.offset(by: offset)
+        )
+    }
+}
+
+extension NSRange {
+
+    public func offset(by offset: Int) -> Self {
+        return NSRange(
+            location: self.location + offset,
+            length: self.length
+        )
+    }
 }

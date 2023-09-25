@@ -104,7 +104,7 @@ class LinkValidatorTest: XCTestCase {
             ("https://si▶gnal.org", nil)
         ]
         for (entireMessage, expectedValue) in testCases {
-            let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)
+            let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: entireMessage, ranges: .empty))
             XCTAssertEqual(actualValue?.absoluteString, expectedValue, entireMessage)
         }
     }
@@ -112,7 +112,7 @@ class LinkValidatorTest: XCTestCase {
     func testFirstLinkPreviewURLPerformance() throws {
         let entireMessage = String(repeating: "https://signal.org ", count: 1_000_000)
         measure {
-            let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)
+            let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: entireMessage, ranges: .empty))
             XCTAssertNil(actualValue)
         }
     }

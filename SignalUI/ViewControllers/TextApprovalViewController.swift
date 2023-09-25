@@ -123,7 +123,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     }()
 
     private func updateLinkPreviewText() {
-        linkPreviewFetcher.update(textView.messageBodyForSending.text)
+        linkPreviewFetcher.update(textView.messageBodyForSending)
     }
 
     private func updateLinkPreviewView() {

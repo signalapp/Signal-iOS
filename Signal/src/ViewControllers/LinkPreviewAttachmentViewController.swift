@@ -143,7 +143,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     @objc
     private func textDidChange() {
-        linkPreviewFetcher.update(textField.text ?? "", prependSchemeIfNeeded: true)
+        let text = textField.text ?? ""
+        linkPreviewFetcher.update(
+            MessageBody(text: text, ranges: .empty),
+            prependSchemeIfNeeded: true
+        )
     }
 
     @objc

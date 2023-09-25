@@ -43,13 +43,13 @@ public enum LinkValidator {
         }
     }
 
-    public static func firstLinkPreviewURL(in entireMessage: String) -> URL? {
+    public static func firstLinkPreviewURL(in entireMessage: MessageBody) -> URL? {
         // Don't include link previews for oversize text messages.
-        guard entireMessage.utf8.dropFirst(Int(kOversizeTextMessageSizeThreshold) - 1).isEmpty else {
+        guard entireMessage.text.utf8.dropFirst(Int(kOversizeTextMessageSizeThreshold) - 1).isEmpty else {
             return nil
         }
 
-        guard canParseURLs(in: entireMessage) else {
+        guard canParseURLs(in: entireMessage.text) else {
             return nil
         }
 
@@ -59,12 +59,27 @@ public enum LinkValidator {
         }
 
         var result: URL?
-        detector.enumerateMatches(in: entireMessage, range: entireMessage.entireRange) { match, _, stop in
+        detector.enumerateMatches(
+            in: entireMessage.text,
+            range: entireMessage.text.entireRange
+        ) { match, _, stop in
             guard let match = match else { return }
             guard let parsedUrl = match.url else { return }
-            guard let matchedRange = Range(match.range, in: entireMessage) else { return }
+            guard let matchedRange = Range(match.range, in: entireMessage.text) else { return }
+            for style in entireMessage.ranges.collapsedStyles {
+                if
+                    style.value.style.contains(style: .spoiler),
+                    style.range.intersection(match.range)?.location ?? NSNotFound != NSNotFound
+                {
+                    return
+                }
+                // Styles are ordered; no need to search past the matched range.
+                if style.range.lowerBound >= match.range.upperBound {
+                    break
+                }
+            }
             guard parsedUrl.absoluteString.isEmpty.negated else { return }
-            guard parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: String(entireMessage[matchedRange])) else { return }
+            guard parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: String(entireMessage.text[matchedRange])) else { return }
             result = parsedUrl
             stop.pointee = true
         }

@@ -907,16 +907,3 @@ public class HydratedMessageBody: Equatable, Hashable {
         return styles
     }
 }
-
-fileprivate extension NSRangedValue {
-
-    func offset(by offset: Int) -> Self {
-        return Self.init(
-            value,
-            range: NSRange(
-                location: self.range.location + offset,
-                length: self.range.length
-            )
-        )
-    }
-}
