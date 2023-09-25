@@ -1181,6 +1181,14 @@ extension CallService: CallManagerDelegate {
 
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
+        onLowBandwidthForVideoFor call: SignalCall,
+        recovered: Bool
+    ) {
+        // TODO: Implement handling of the "low outgoing bandwidth for video" notification.
+    }
+
+    public func callManager(
+        _ callManager: CallManager<SignalCall, CallService>,
         shouldSendOffer callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?,
