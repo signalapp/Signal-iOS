@@ -179,7 +179,7 @@ CHECKOUT OPTIONS:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
   SignalCoreKit:
-    :commit: 8c92ef2634b7a7530e5afabffc9e2279b8c115e8
+    :commit: ea99e9002fc516004c339a2767e4023933df75f7
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
