@@ -165,12 +165,9 @@ extension FeatureFlags {
             LocalizationNotNeeded("Debug")
             #elseif TESTABLE_BUILD
             LocalizationNotNeeded("Testable build")
-            #elseif RELEASE
+            #else
             // RELEASE can be inferred from the lack of configuration. This will only be hit if the outer #if is removed.
             nil
-            #else
-            owsFailDebug("Invalid configuration")
-            return "*"
             #endif
         }()
 
