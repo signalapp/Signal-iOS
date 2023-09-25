@@ -270,8 +270,8 @@ final class ThreadMerger: RecipientMergeObserver {
         mergeThreads(for: recipient, tx: tx)
     }
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
-        mergeThreads(for: mergedRecipient.signalRecipient, tx: tx)
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
+        mergeThreads(for: mergedRecipient.newRecipient, tx: tx)
     }
 }
 

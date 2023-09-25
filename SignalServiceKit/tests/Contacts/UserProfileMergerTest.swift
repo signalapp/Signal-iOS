@@ -44,13 +44,11 @@ class UserProfileMergerTest: XCTestCase {
         MockDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    aci: aci,
-                    oldPhoneNumber: nil,
-                    newPhoneNumber: phoneNumber,
                     isLocalRecipient: true,
-                    signalRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
+                    oldRecipient: nil,
+                    newRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
                 ),
-                transaction: tx
+                tx: tx
             )
         }
 
@@ -81,13 +79,11 @@ class UserProfileMergerTest: XCTestCase {
         MockDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    aci: aci,
-                    oldPhoneNumber: nil,
-                    newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
+                    oldRecipient: nil,
+                    newRecipient: SignalRecipient(aci: aci, pni: pni, phoneNumber: phoneNumber)
                 ),
-                transaction: tx
+                tx: tx
             )
         }
 

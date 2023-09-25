@@ -14,26 +14,22 @@ private class MockRecipientDataStore: RecipientDataStore {
     var recipientTable: [Int: SignalRecipient] = [:]
 
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        copyRecipient(recipientTable.values.first(where: { $0.aci == serviceId || $0.pni == serviceId }) ?? nil)
+        return recipientTable.values.first(where: { $0.aci == serviceId || $0.pni == serviceId })?.copyRecipient() ?? nil
     }
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        copyRecipient(recipientTable.values.first(where: { $0.phoneNumber == phoneNumber }) ?? nil)
-    }
-
-    private func copyRecipient(_ signalRecipient: SignalRecipient?) -> SignalRecipient? {
-        signalRecipient?.copy() as! SignalRecipient?
+        return recipientTable.values.first(where: { $0.phoneNumber == phoneNumber })?.copyRecipient() ?? nil
     }
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         precondition(rowId(for: signalRecipient) == nil)
-        recipientTable[nextRowId] = copyRecipient(signalRecipient)
+        recipientTable[nextRowId] = signalRecipient.copyRecipient()
         nextRowId += 1
     }
 
     func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         let rowId = rowId(for: signalRecipient)!
-        recipientTable[rowId] = copyRecipient(signalRecipient)
+        recipientTable[rowId] = signalRecipient.copyRecipient()
     }
 
     func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {

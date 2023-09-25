@@ -21,7 +21,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
         populateMissingAcis(phoneNumber: phoneNumber, aciString: aciString, tx: tx)
     }
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         // As an performance optimization, don't assign missing ACIs unless we
         // must. When we learn an association, we don't need to assign ACIs because
         // we can still fetch based on phone number. When we *break* an

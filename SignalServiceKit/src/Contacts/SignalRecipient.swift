@@ -94,6 +94,10 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
+        return copyRecipient()
+    }
+
+    public func copyRecipient() -> SignalRecipient {
         return SignalRecipient(
             id: id,
             uniqueId: uniqueId,

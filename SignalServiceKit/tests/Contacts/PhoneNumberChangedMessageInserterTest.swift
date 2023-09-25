@@ -91,7 +91,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     newPhoneNumber: alicePhoneNumber2,
                     isLocalRecipient: false
                 ),
-                transaction: tx
+                tx: tx
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -108,7 +108,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     newPhoneNumber: bobPhoneNumber2,
                     isLocalRecipient: false
                 ),
-                transaction: tx
+                tx: tx
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -125,7 +125,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     newPhoneNumber: bobPhoneNumber3,
                     isLocalRecipient: false
                 ),
-                transaction: tx
+                tx: tx
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -142,7 +142,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     newPhoneNumber: myPhoneNumber2,
                     isLocalRecipient: true
                 ),
-                transaction: tx
+                tx: tx
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -156,13 +156,9 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         newPhoneNumber: E164,
         isLocalRecipient: Bool
     ) -> MergedRecipient {
-        MergedRecipient(
-            aci: aci,
-            oldPhoneNumber: oldPhoneNumber?.stringValue,
-            newPhoneNumber: newPhoneNumber,
-            isLocalRecipient: isLocalRecipient,
-            signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: newPhoneNumber)
-        )
+        let oldRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: oldPhoneNumber)
+        let newRecipient = oldRecipient.copyRecipient()
+        newRecipient.phoneNumber = newPhoneNumber.stringValue
+        return MergedRecipient(isLocalRecipient: isLocalRecipient, oldRecipient: oldRecipient, newRecipient: newRecipient)
     }
-
 }

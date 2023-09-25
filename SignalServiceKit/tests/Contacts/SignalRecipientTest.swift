@@ -745,7 +745,7 @@ final class SignalRecipient2Test: XCTestCase {
 
     func testEqualityAndHashing() {
         let someRecipient = SignalRecipient(aci: Aci.randomForTesting(), pni: nil, phoneNumber: nil, deviceIds: [1, 2])
-        let copiedRecipient = someRecipient.copy() as! SignalRecipient
+        let copiedRecipient = someRecipient.copyRecipient()
         XCTAssertEqual(copiedRecipient, someRecipient)
         XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)
         XCTAssertEqual(Set([someRecipient, copiedRecipient]).count, 1)

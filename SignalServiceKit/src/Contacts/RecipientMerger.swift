@@ -56,15 +56,13 @@ protocol RecipientMergeObserver {
     /// possible for us to learn about an association. However, if you provide
     /// two or more identifiers, and if it's the first time we've learned that
     /// they're linked, this callback will be invoked.
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction)
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction)
 }
 
 struct MergedRecipient {
-    let aci: Aci
-    let oldPhoneNumber: String?
-    let newPhoneNumber: E164
     let isLocalRecipient: Bool
-    let signalRecipient: SignalRecipient
+    let oldRecipient: SignalRecipient?
+    let newRecipient: SignalRecipient
 }
 
 protocol RecipientMergerTemporaryShims {
@@ -254,9 +252,9 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let oldPhoneNumber = aciRecipient?.phoneNumber
-
         let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
+
+        let oldRecipients = [aciRecipient, phoneNumberRecipient].compacted().map { $0.copyRecipient() }
 
         // If PN_1 is associated with ACI_A when this method starts, and if we're
         // trying to associate PN_1 with ACI_B, then we should ensure everything
@@ -290,13 +288,11 @@ class RecipientMergerImpl: RecipientMerger {
         for observer in observers {
             observer.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    aci: aci,
-                    oldPhoneNumber: oldPhoneNumber,
-                    newPhoneNumber: phoneNumber,
                     isLocalRecipient: isLocalRecipient,
-                    signalRecipient: mergedRecipient
+                    oldRecipient: oldRecipients.first(where: { $0.uniqueId == mergedRecipient.uniqueId }),
+                    newRecipient: mergedRecipient
                 ),
-                transaction: transaction
+                tx: transaction
             )
         }
 
@@ -421,8 +417,8 @@ class RecipientMergerImpl: RecipientMerger {
 extension SignalServiceAddressCache: RecipientMergeObserver {
     func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
-        updateRecipient(mergedRecipient.signalRecipient)
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
+        updateRecipient(mergedRecipient.newRecipient)
 
         // If there are any threads with addresses that have been merged, we should
         // reload them from disk. This allows us to rebuild the addresses with the
@@ -446,8 +442,8 @@ public class RecipientMergeNotifier: RecipientMergeObserver {
 
     func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
-        scheduler.async {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
+        tx.addAsyncCompletion(on: scheduler) {
             NotificationCenter.default.post(name: .didLearnRecipientAssociation, object: self)
         }
     }

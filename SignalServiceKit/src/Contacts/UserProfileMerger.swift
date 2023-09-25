@@ -40,17 +40,17 @@ class UserProfileMerger: RecipientMergeObserver {
         mergeUserProfiles(for: recipient, tx: tx)
     }
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         if mergedRecipient.isLocalRecipient {
             // The local recipient uses a constant key as its identifier in the
             // database. However, if you change your own number, you may claim a phone
             // number that was connected to some other account, and we want to
             // guarantee that that profile is deleted.
-            fetchAndExpungeUserProfiles(for: mergedRecipient.signalRecipient, tx: tx).forEach {
+            fetchAndExpungeUserProfiles(for: mergedRecipient.newRecipient, tx: tx).forEach {
                 userProfileStore.removeUserProfile($0, tx: tx)
             }
         } else {
-            mergeUserProfiles(for: mergedRecipient.signalRecipient, tx: tx)
+            mergeUserProfiles(for: mergedRecipient.newRecipient, tx: tx)
         }
     }
 

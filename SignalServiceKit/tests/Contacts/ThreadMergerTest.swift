@@ -342,13 +342,11 @@ final class ThreadMergerTest: XCTestCase {
         db.write { tx in
             threadMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    aci: aci,
-                    oldPhoneNumber: nil,
-                    newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
+                    oldRecipient: nil,
+                    newRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
                 ),
-                transaction: tx
+                tx: tx
             )
         }
     }

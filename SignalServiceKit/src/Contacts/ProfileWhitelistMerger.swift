@@ -17,11 +17,11 @@ class ProfileWhitelistMerger: RecipientMergeObserver {
         profileManager.normalizeRecipientInProfileWhitelist(recipient, tx: tx)
     }
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         if mergedRecipient.isLocalRecipient {
             return
         }
         let tx = SDSDB.shimOnlyBridge(tx)
-        profileManager.normalizeRecipientInProfileWhitelist(mergedRecipient.signalRecipient, tx: tx)
+        profileManager.normalizeRecipientInProfileWhitelist(mergedRecipient.newRecipient, tx: tx)
     }
 }

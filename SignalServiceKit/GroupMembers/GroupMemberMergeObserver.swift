@@ -24,15 +24,15 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
 
     func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
-    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         var groupThreadIds = [String]()
-        if let aci = mergedRecipient.signalRecipient.aci {
+        if let aci = mergedRecipient.newRecipient.aci {
             groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: aci, tx: tx))
         }
-        if let phoneNumber = E164(mergedRecipient.signalRecipient.phoneNumber) {
+        if let phoneNumber = E164(mergedRecipient.newRecipient.phoneNumber) {
             groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: phoneNumber, tx: tx))
         }
-        if let pni = mergedRecipient.signalRecipient.pni {
+        if let pni = mergedRecipient.newRecipient.pni {
             groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: pni, tx: tx))
         }
         resolveGroupMembers(in: groupThreadIds, tx: tx)
