@@ -83,7 +83,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 #if TARGET_OS_IPHONE
     countryCode = [self.phoneNumberUtil countryCodeByCarrier];
 
-    if ([countryCode isEqualToString:@"ZZ"]) {
+    if ([countryCode isEqualToString:@"ZZ"] || [countryCode isEqualToString:@"--"]) {
         countryCode = [locale objectForKey:NSLocaleCountryCode];
     }
 #else
