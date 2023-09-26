@@ -128,16 +128,19 @@ public class Preferences: NSObject {
     }
 
     private func string(forKey key: Key) -> String? {
-        let string = databaseStorage.read { transaction in
-            keyValueStore.getString(key.rawValue, transaction: transaction)
-        }
-        return string
+        return databaseStorage.read { tx in getString(for: key, tx: tx) }
+    }
+
+    private func getString(for key: Key, tx: SDSAnyReadTransaction) -> String? {
+        return keyValueStore.getString(key.rawValue, transaction: tx)
     }
 
     private func setString(_ value: String?, forKey key: Key) {
-        databaseStorage.write { transaction in
-            keyValueStore.setString(value, key: key.rawValue, transaction: transaction)
-        }
+        databaseStorage.write { tx in setString(value, for: key, tx: tx) }
+    }
+
+    private func setString(_ value: String?, for key: Key, tx: SDSAnyWriteTransaction) {
+        keyValueStore.setString(value, key: key.rawValue, transaction: tx)
     }
 
     // MARK: Logging
@@ -343,20 +346,24 @@ public class Preferences: NSObject {
         string(forKey: .lastRecordedPushToken)
     }
 
-    public func getPushToken(withTransaction transaction: SDSAnyReadTransaction) -> String? {
-        keyValueStore.getString(Key.lastRecordedPushToken.rawValue, transaction: transaction)
+    public func getPushToken(tx: SDSAnyReadTransaction) -> String? {
+        return getString(for: .lastRecordedPushToken, tx: tx)
     }
 
-    public func setPushToken(_ value: String) {
-        setString(value, forKey: .lastRecordedPushToken)
+    public func setPushToken(_ value: String, tx: SDSAnyWriteTransaction) {
+        setString(value, for: .lastRecordedPushToken, tx: tx)
     }
 
     public var voipToken: String? {
         string(forKey: .lastRecordedVoipToken)
     }
 
-    public func setVoipToken(_ value: String?) {
-        setString(value, forKey: .lastRecordedVoipToken)
+    public func getVoipToken(tx: SDSAnyReadTransaction) -> String? {
+        return getString(for: .lastRecordedVoipToken, tx: tx)
+    }
+
+    public func setVoipToken(_ value: String?, tx: SDSAnyWriteTransaction) {
+        setString(value, for: .lastRecordedVoipToken, tx: tx)
     }
 
     public func unsetRecordedAPNSTokens() {

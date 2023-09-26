@@ -259,8 +259,7 @@ public class AccountManager: NSObject, Dependencies {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
-        let job = SyncPushTokensJob(mode: .forceUpload)
-        return job.run()
+        return Promise.wrapAsync { try await SyncPushTokensJob(mode: .forceUpload).run() }
     }
 
     // MARK: Message Delivery

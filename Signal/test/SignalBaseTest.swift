@@ -25,19 +25,11 @@ open class SignalBaseTest: XCTestCase {
         super.tearDown()
     }
 
-    func read<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
-        return databaseStorage.read(block: block)
-    }
-
-    func read<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+    func read<T>(block: (SDSAnyReadTransaction) throws -> T) rethrows -> T {
         return try databaseStorage.read(block: block)
     }
 
-    func write<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
-        return databaseStorage.write(block: block)
-    }
-
-    func write<T>(block: @escaping (SDSAnyWriteTransaction) throws -> T) throws -> T {
+    func write<T>(block: (SDSAnyWriteTransaction) throws -> T) rethrows -> T {
         return try databaseStorage.write(block: block)
     }
 }

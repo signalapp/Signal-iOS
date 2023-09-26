@@ -138,16 +138,19 @@ class NotificationSettingsViewController: OWSTableViewController2 {
 
     private func syncPushTokens() {
         let job = SyncPushTokensJob(mode: .forceRotation)
-        job.run().done {
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "PUSH_REGISTER_SUCCESS",
-                comment: "Title of alert shown when push tokens sync job succeeds."
-            ))
-        }.catch { _ in
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "REGISTRATION_BODY",
-                comment: "Title of alert shown when push tokens sync job fails."
-            ))
+        Task {
+            do {
+                try await job.run()
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                    "PUSH_REGISTER_SUCCESS",
+                    comment: "Title of alert shown when push tokens sync job succeeds."
+                ))
+            } catch {
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                    "REGISTRATION_BODY",
+                    comment: "Title of alert shown when push tokens sync job fails."
+                ))
+            }
         }
     }
 }

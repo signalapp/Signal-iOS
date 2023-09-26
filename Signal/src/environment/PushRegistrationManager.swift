@@ -130,14 +130,14 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
         guard let vanillaTokenFuture = self.vanillaTokenFuture else {
             Logger.warn("System volunteered a push token even though we didn't request one. Syncing.")
-            SyncPushTokensJob(mode: .normal)
-                .run()
-                .done {
+            Task {
+                do {
+                    try await SyncPushTokensJob(mode: .normal).run()
                     Logger.info("Done syncing push tokens after system volunteered one.")
-                }
-                .catch { _ in
+                } catch {
                     Logger.error("Failed to sync push tokens after system volunteered one.")
                 }
+            }
             return
         }
 
@@ -288,7 +288,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         let completionSignal = DispatchSemaphore(value: 0)
         firstly { () -> Promise<Void> in
             let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
-            let pushTokensPromise = SyncPushTokensJob(mode: .forceUpload).run()
+            let pushTokensPromise = Promise.wrapAsync { try await SyncPushTokensJob(mode: .forceUpload).run() }
             return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
         }.ensure(on: DispatchQueue.global()) {
             completionSignal.signal()

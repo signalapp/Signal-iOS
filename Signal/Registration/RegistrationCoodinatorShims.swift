@@ -350,19 +350,22 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult> {
         let job = SyncPushTokensJob(mode: .forceUpload, auth: auth)
-        return job.run()
-            .map(on: SyncScheduler()) { return .success }
-            .recover(on: SyncScheduler()) { error -> Guarantee<Registration.SyncPushTokensResult> in
+        return Guarantee.wrapAsync {
+            do {
+                try await job.run()
+                return .success
+            } catch {
                 if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError)
+                    return .networkError
                 }
                 switch error {
                 case PushRegistrationError.pushNotSupported(let description):
-                    return .value(.pushUnsupported(description: description))
+                    return .pushUnsupported(description: description)
                 default:
-                    return .value(.genericError(error))
+                    return .genericError(error)
                 }
             }
+        }
     }
 }
 

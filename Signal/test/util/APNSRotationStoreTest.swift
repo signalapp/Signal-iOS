@@ -60,7 +60,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
 
         // Set an APNS token.
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
 
         read {
             // Nothing changed but the token, but we should now rotate.
@@ -75,7 +77,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
         // that we know it is having a good APNS token that stopped it.
 
         // Set an APNS token.
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
 
         write { transaction in
             // Mark as checked in the past so that we'd be eligible after an app update.
@@ -104,7 +108,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
 
         // Change the token!
-        preferences.setPushToken("abc")
+        write { tx in
+            preferences.setPushToken("abc", tx: tx)
+        }
 
         read {
             // Now we need to rotate again because the token changed but we had missed
@@ -120,7 +126,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
         // that we know the determining factor is the APNS token.
 
         // Set an APNS token.
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
 
         write { transaction in
             // Mark as checked in the past so that we'd be eligible after an app update.
@@ -168,7 +176,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     func testHasUpdatedRecently() {
         // Make sure we have an APNS Token
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
         let now = Date().ows_millisecondsSince1970
 
         // Should not want to rotate, because the NSE hasn't even had a chance
@@ -194,7 +204,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     func testHasRotatedRecently() {
         // Make sure we have an APNS Token
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
         let now = Date().ows_millisecondsSince1970
 
         // Make sure we are otherwise eligible to rotate, so
@@ -227,7 +239,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     func testRecentMissedMessages() {
         // Make sure we have an APNS Token
-        preferences.setPushToken("123")
+        write { tx in
+            preferences.setPushToken("123", tx: tx)
+        }
         let now = Date().ows_millisecondsSince1970
 
         let lastPushTime = now
@@ -243,7 +257,9 @@ final class APNSRotationStoreTest: SignalBaseTest {
         }
 
         // Change the token so its not marked good anymore.
-        preferences.setPushToken("abc")
+        write { tx in
+            preferences.setPushToken("abc", tx: tx)
+        }
 
         read {
             APNSRotationStore.nowMs = { now }
