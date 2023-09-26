@@ -335,7 +335,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         return try ProfileKey(contents: profileKeyDataBytes)
     }
 
-    public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) {
+    public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {
         do {
             guard let profileRequest = profileRequest as? VersionedProfileRequestImpl else {
                 return
@@ -366,15 +366,12 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 throw OWSAssertionError("Missing ACI.")
             }
 
-            try databaseStorage.write { tx throws in
-                guard let currentProfileKey = profileManager.profileKey(for: SignalServiceAddress(aci), transaction: tx) else {
+            try await databaseStorage.awaitableWrite { tx throws in
+                guard let currentProfileKey = self.profileManager.profileKey(for: SignalServiceAddress(aci), transaction: tx) else {
                     throw OWSAssertionError("Missing profile key in database.")
                 }
 
                 guard requestProfileKey.keyData == currentProfileKey.keyData else {
-                    if DebugFlags.internalLogging {
-                        Logger.info("requestProfileKey: \(requestProfileKey.keyData.hexadecimalString) != currentProfileKey: \(currentProfileKey.keyData.hexadecimalString)")
-                    }
                     Logger.warn("Profile key for versioned profile fetch does not match current profile key.")
                     return
                 }

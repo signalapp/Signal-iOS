@@ -61,8 +61,6 @@ private struct ProfileFetchOptions {
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    private static let queueCluster = GCDQueueCluster(label: "org.signal.profile-fetch", concurrency: 5)
-
     private static var fetchDateMap = LRUCache<ServiceId, Date>(maxSize: 256)
 
     private let serviceId: ServiceId
@@ -117,27 +115,29 @@ public class ProfileFetcherJob: NSObject {
             shouldUpdateStore: shouldUpdateStore,
             authedAccount: authedAccount
         )
-        return ProfileFetcherJob(serviceId: serviceId, options: options).runAsPromise()
+        return Promise.wrapAsync { try await ProfileFetcherJob(serviceId: serviceId, options: options).run() }
     }
 
     @objc
     public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool, authedAccount: AuthedAccount = .implicit()) {
-        return _fetchProfile(serviceId: address.serviceId, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
+        Task { await _fetchProfile(serviceId: address.serviceId, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount) }
     }
 
     @objc
     public class func fetchProfile(serviceId: ServiceIdObjC, ignoreThrottling: Bool, authedAccount: AuthedAccount = .implicit()) {
-        return _fetchProfile(serviceId: serviceId.wrappedValue, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
+        Task { await _fetchProfile(serviceId: serviceId.wrappedValue, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount) }
     }
 
-    private class func _fetchProfile(serviceId: ServiceId?, ignoreThrottling: Bool, authedAccount: AuthedAccount) {
-        let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
-        firstly { () -> Promise<FetchedProfile> in
+    private class func _fetchProfile(serviceId: ServiceId?, ignoreThrottling: Bool, authedAccount: AuthedAccount) async {
+        do {
             guard let serviceId else {
-                return Promise(error: ProfileFetchError.missing)
+                throw ProfileFetchError.missing
             }
-            return ProfileFetcherJob(serviceId: serviceId, options: options).runAsPromise()
-        }.catch { error in
+            try await ProfileFetcherJob(
+                serviceId: serviceId,
+                options: ProfileFetchOptions(ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
+            ).run()
+        } catch {
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
             } else {
@@ -164,33 +164,27 @@ public class ProfileFetcherJob: NSObject {
 
     // MARK: -
 
-    private func runAsPromise() -> Promise<FetchedProfile> {
-        return DispatchQueue.main.async(.promise) {
-            self.addBackgroundTask()
-        }.then(on: Self.queueCluster.next()) { _ in
-            self.requestProfile()
-        }.then(on: Self.queueCluster.next()) { fetchedProfile in
-            firstly { () -> Promise<Void> in
-                if self.options.shouldUpdateStore {
-                    return self.updateProfile(
-                        fetchedProfile: fetchedProfile,
-                        authedAccount: self.options.authedAccount
-                    )
-                }
-                return .value(())
-            }.map(on: Self.queueCluster.next()) { _ in
-                return fetchedProfile
-            }
+    @discardableResult
+    private func run() async throws -> FetchedProfile {
+        let backgroundTask = addBackgroundTask()
+        defer {
+            backgroundTask.end()
         }
+
+        let fetchedProfile = try await requestProfile()
+        if options.shouldUpdateStore {
+            try await updateProfile(fetchedProfile: fetchedProfile, authedAccount: options.authedAccount)
+        }
+        return fetchedProfile
     }
 
-    private func requestProfile() -> Promise<FetchedProfile> {
+    private func requestProfile() async throws -> FetchedProfile {
 
         guard !options.mainAppOnly || CurrentAppContext().isMainApp else {
             // We usually only refresh profiles in the MainApp to decrease the
             // chance of missed SN notifications in the AppExtension for our users
             // who choose not to verify contacts.
-            return Promise(error: ProfileFetchError.notMainApp)
+            throw ProfileFetchError.notMainApp
         }
 
         // Check throttling _before_ possible retries.
@@ -202,7 +196,7 @@ public class ProfileFetcherJob: NSObject {
                 // Throttle less in debug to make it easier to test problems
                 // with our fetching logic.
                 guard lastTimeInterval > Self.throttledProfileFetchFrequency else {
-                    return Promise(error: ProfileFetchError.throttled)
+                    throw ProfileFetchError.throttled
                 }
             }
         }
@@ -211,68 +205,52 @@ public class ProfileFetcherJob: NSObject {
             recordLastFetchDate()
         }
 
-        return requestProfileWithRetries()
+        return try await requestProfileWithRetries()
     }
 
     private static var throttledProfileFetchFrequency: TimeInterval {
         kMinuteInterval * 2.0
     }
 
-    private func requestProfileWithRetries(retryCount: Int = 0) -> Promise<FetchedProfile> {
-        let serviceId = self.serviceId
-
-        let (promise, future) = Promise<FetchedProfile>.pending()
-        firstly {
-            requestProfileAttempt()
-        }.done(on: Self.queueCluster.next()) { fetchedProfile in
-            future.resolve(fetchedProfile)
-        }.catch(on: Self.queueCluster.next()) { error in
+    private func requestProfileWithRetries(retryCount: Int = 0) async throws -> FetchedProfile {
+        do {
+            return try await requestProfileAttempt()
+        } catch {
             if error.httpStatusCode == 401 {
-                return future.reject(ProfileFetchError.unauthorized)
+                throw ProfileFetchError.unauthorized
             }
             if error.httpStatusCode == 404 {
-                return future.reject(ProfileFetchError.missing)
+                throw ProfileFetchError.missing
             }
             if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
-                return future.reject(ProfileFetchError.rateLimit)
+                throw ProfileFetchError.rateLimit
             }
 
             switch error {
             case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
                 // These errors should only be thrown at a higher level.
                 owsFailDebug("Unexpected error: \(error)")
-                future.reject(error)
-                return
+                throw error
             case SignalServiceProfile.ValidationError.invalidIdentityKey:
                 owsFailDebug("skipping updateProfile retry. Invalid profile for: \(serviceId) error: \(error)")
-                future.reject(error)
-                return
+                throw error
             case let error as SignalServiceProfile.ValidationError:
                 // This should not be retried.
                 owsFailDebug("skipping updateProfile retry. Invalid profile for: \(serviceId) error: \(error)")
-                future.reject(error)
-                return
+                throw error
             default:
                 let maxRetries = 3
                 guard retryCount < maxRetries else {
                     Logger.warn("failed to get profile with error: \(error)")
-                    future.reject(error)
-                    return
+                    throw error
                 }
 
-                firstly {
-                    self.requestProfileWithRetries(retryCount: retryCount + 1)
-                }.done(on: Self.queueCluster.next()) { fetchedProfile in
-                    future.resolve(fetchedProfile)
-                }.catch(on: Self.queueCluster.next()) { error in
-                    future.reject(error)
-                }
+                return try await requestProfileWithRetries(retryCount: retryCount + 1)
             }
         }
-        return promise
     }
 
-    private func requestProfileAttempt() -> Promise<FetchedProfile> {
+    private func requestProfileAttempt() async throws -> FetchedProfile {
         let serviceId = self.serviceId
 
         let udAccess: OWSUDAccess?
@@ -322,22 +300,20 @@ public class ProfileFetcherJob: NSObject {
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
-        return firstly {
-            return requestMaker.makeRequest()
-        }.map(on: Self.queueCluster.next()) { (result: RequestMakerResult) -> FetchedProfile in
-            let profile = try SignalServiceProfile(serviceId: serviceId, responseObject: result.responseJson)
+        let result = try await requestMaker.makeRequest().awaitable()
 
-            // If we sent a versioned request, store the credential that was returned.
-            if let versionedProfileRequest = currentVersionedProfileRequest {
-                // This calls databaseStorage.write { }
-                self.versionedProfilesSwift.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
-            }
+        let profile = try SignalServiceProfile(serviceId: serviceId, responseObject: result.responseJson)
 
-            return self.fetchedProfile(
-                for: profile,
-                profileKeyFromVersionedRequest: currentVersionedProfileRequest?.profileKey
-            )
+        // If we sent a versioned request, store the credential that was returned.
+        if let versionedProfileRequest = currentVersionedProfileRequest {
+            // This calls databaseStorage.write { }
+            await versionedProfilesSwift.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
         }
+
+        return fetchedProfile(
+            for: profile,
+            profileKeyFromVersionedRequest: currentVersionedProfileRequest?.profileKey
+        )
     }
 
     private func isFetchForLocalAccount(authedAccount: AuthedAccount) -> Bool {
@@ -379,32 +355,26 @@ public class ProfileFetcherJob: NSObject {
     private func updateProfile(
         fetchedProfile: FetchedProfile,
         authedAccount: AuthedAccount
-    ) -> Promise<Void> {
-        firstly {
-            // Before we update the profile, try to download and decrypt the avatar
-            // data, if necessary.
-            downloadAvatarIfNeeded(fetchedProfile, authedAccount: authedAccount)
-        }.then(on: Self.queueCluster.next()) { localAvatarUrlIfDownloaded in
-            self.updateProfile(
-                fetchedProfile: fetchedProfile,
-                localAvatarUrlIfDownloaded: localAvatarUrlIfDownloaded,
-                authedAccount: authedAccount
-            )
-        }
+    ) async throws {
+        await updateProfile(
+            fetchedProfile: fetchedProfile,
+            localAvatarUrlIfDownloaded: try await downloadAvatarIfNeeded(fetchedProfile, authedAccount: authedAccount),
+            authedAccount: authedAccount
+        )
     }
 
     private func downloadAvatarIfNeeded(
         _ fetchedProfile: FetchedProfile,
         authedAccount: AuthedAccount
-    ) -> Promise<URL?> {
+    ) async throws -> URL? {
         guard let newAvatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
-            return Promise.value(nil)
+            return nil
         }
         guard let profileKey = fetchedProfile.profileKey else {
             // If we don't have a profile key for this user, don't bother downloading
             // their avatar - we can't decrypt it.
-            return Promise.value(nil)
+            return nil
         }
         let profileAddress = SignalServiceAddress(fetchedProfile.profile.serviceId)
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
@@ -420,25 +390,14 @@ public class ProfileFetcherJob: NSObject {
             )
         }
         if didAlreadyDownloadAvatar {
-            Logger.verbose("Skipping avatar data download; already downloaded.")
-            return Promise.value(nil)
+            return nil
         }
-        return firstly {
-            profileManager.downloadAndDecryptProfileAvatar(
+        let anyAvatarData: Any?
+        do {
+            anyAvatarData = try await profileManager.downloadAndDecryptProfileAvatar(
                 forProfileAddress: profileAddress, avatarUrlPath: newAvatarUrlPath, profileKey: profileKey
-            )
-        }.map(on: Self.queueCluster.next()) { (anyAvatarData: Any?) in
-            guard let avatarData = anyAvatarData as? Data else {
-                throw OWSAssertionError("Unexpected result.")
-            }
-            return avatarData
-        }.map(on: DispatchQueue.global()) { (avatarData: Data) -> URL? in
-            if avatarData.isEmpty {
-                return nil
-            } else {
-                return self.profileManager.writeAvatarDataToFile(avatarData)
-            }
-        }.recover(on: Self.queueCluster.next()) { error -> Promise<URL?> in
+            ).asAny().awaitable()
+        } catch {
             Logger.warn("Error: \(error)")
             if error.isNetworkFailureOrTimeout, profileAddress.isLocalAddress {
                 // Fetches and local profile updates can conflict. To avoid these conflicts
@@ -456,17 +415,19 @@ public class ProfileFetcherJob: NSObject {
             //   afterward). This might be due to a race with an update that is in
             //   flight. We should eventually recover since profile updates are
             //   durable.
-            return Promise.value(nil)
+            return nil
         }
+        guard let avatarData = anyAvatarData as? Data else {
+            throw OWSAssertionError("Unexpected result.")
+        }
+        return avatarData.isEmpty ? nil : profileManager.writeAvatarDataToFile(avatarData)
     }
 
-    // TODO: This method can cause many database writes.
-    //       Perhaps we can use a single transaction?
     private func updateProfile(
         fetchedProfile: FetchedProfile,
         localAvatarUrlIfDownloaded: URL?,
         authedAccount: AuthedAccount
-    ) -> Promise<Void> {
+    ) async {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
 
@@ -508,7 +469,7 @@ public class ProfileFetcherJob: NSObject {
             )
         }
 
-        return databaseStorage.write(.promise) { transaction in
+        await databaseStorage.awaitableWrite { transaction in
             Self.updateUnidentifiedAccess(
                 serviceId: serviceId,
                 verifier: profile.unidentifiedAccessVerifier,
@@ -615,8 +576,8 @@ public class ProfileFetcherJob: NSObject {
         ProfileFetcherJob.fetchDateMap[serviceId] = Date()
     }
 
-    private func addBackgroundTask() {
-        backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+    private func addBackgroundTask() -> OWSBackgroundTask {
+        return OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
 
             guard status == .expired else {
@@ -717,39 +678,6 @@ public extension DecryptedProfile {
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
-        }
-    }
-}
-
-// MARK: -
-
-// A simple mechanism for distributing workload across multiple serial queues.
-// Allows concurrency while avoiding thread explosion.
-//
-// TODO: Move this to DispatchQueue+OWS.swift if we adopt it elsewhere.
-public class GCDQueueCluster {
-    private static let unfairLock = UnfairLock()
-
-    private let queues: [DispatchQueue]
-
-    private let counter = AtomicUInt(0)
-
-    public required init(label: String, concurrency: UInt) {
-        if concurrency < 1 {
-            owsFailDebug("Invalid concurrency.")
-        }
-        let concurrency = max(1, concurrency)
-        var queues = [DispatchQueue]()
-        for index in 0..<concurrency {
-            queues.append(DispatchQueue(label: label + ".\(index)"))
-        }
-        self.queues = queues
-    }
-
-    public func next() -> DispatchQueue {
-        Self.unfairLock.withLock {
-            let index = Int(counter.increment() % UInt(queues.count))
-            return queues[index]
         }
     }
 }

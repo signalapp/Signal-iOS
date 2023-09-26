@@ -67,7 +67,7 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
     func didFetchProfile(
         profile: SignalServiceProfile,
         profileRequest: VersionedProfileRequest
-    )
+    ) async
 }
 
 // MARK: -
@@ -87,8 +87,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         owsFail("Not implemented.")
     }
 
-    public func didFetchProfile(profile: SignalServiceProfile,
-                                profileRequest: VersionedProfileRequest) {}
+    public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {}
 
     public func updateProfilePromise(
         profileGivenName: String?,
