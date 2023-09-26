@@ -31,10 +31,12 @@ public extension NSObject {
         .shared
     }
 
+    @nonobjc
     final var bulkProfileFetch: BulkProfileFetch {
         SSKEnvironment.shared.bulkProfileFetchRef
     }
 
+    @nonobjc
     static var bulkProfileFetch: BulkProfileFetch {
         SSKEnvironment.shared.bulkProfileFetchRef
     }

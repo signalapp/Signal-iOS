@@ -123,7 +123,11 @@ public class MockSSKEnvironment: SSKEnvironment {
         let sskPreferences = SSKPreferences()
         let groupV2Updates = MockGroupV2Updates()
         let messageFetcherJob = MessageFetcherJob()
-        let bulkProfileFetch = BulkProfileFetch()
+        let bulkProfileFetch = BulkProfileFetch(
+            databaseStorage: databaseStorage,
+            reachabilityManager: reachabilityManager,
+            tsAccountManager: tsAccountManager
+        )
         let versionedProfiles = MockVersionedProfiles()
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()

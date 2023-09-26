@@ -130,7 +130,11 @@ public class AppSetup {
         let sskPreferences = SSKPreferences()
         let groupV2Updates = GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
-        let bulkProfileFetch = BulkProfileFetch()
+        let bulkProfileFetch = BulkProfileFetch(
+            databaseStorage: databaseStorage,
+            reachabilityManager: reachabilityManager,
+            tsAccountManager: tsAccountManager
+        )
         let versionedProfiles = VersionedProfilesImpl()
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
