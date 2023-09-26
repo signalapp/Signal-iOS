@@ -1,2 +1,2 @@
-• Now you can edit a message with a long press after it has been sent! Fix a tpyo, include the missing ingredient in grandma's chocolate chip cookie recipe, or add the punchline to a joke if you hit the send button too quickly. The choice is yours. Messages will always show when they have been edited, and you can tap on the "Edited" indicator to see the full edit history for any edited messages. Update the past in the present to prevent future confusion today!
-• Only you can truly find yourself, but we added a check mark badge that can help you find your “Note to Self.”
+• 现在您可以在发送消息后通过长按该消息来对其进行编辑了！您可以修改错别字，补充遗漏的信息，或者增添一点笑料，以弥补“手快”的遗憾。编辑的选择权在于你。当消息被编辑后，它会始终显示已被编辑，同时您可以看到任何已编辑消息的完整编辑记录。
+• 我们在聊天列表中给您的“备忘录”对话添加了一个打勾徽章，让您在滚动浏览对话时能更加轻松地找到备忘录。

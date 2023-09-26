@@ -1,2 +1,2 @@
-• Now you can edit a message with a long press after it has been sent! Fix a tpyo, include the missing ingredient in grandma's chocolate chip cookie recipe, or add the punchline to a joke if you hit the send button too quickly. The choice is yours. Messages will always show when they have been edited, and you can tap on the "Edited" indicator to see the full edit history for any edited messages. Update the past in the present to prevent future confusion today!
-• Only you can truly find yourself, but we added a check mark badge that can help you find your “Note to Self.”
+• 送信後に、そのメッセージを長押しすると編集できるようになりました！ これで、誤字を直すことはもちろん、とっておきのレシピに書き忘れた隠し味を追加したり、送信してしまった面白くない冗談にオチをつけてみんなの笑いを誘うこともできます。あなた好みにご使用ください。 編集されたメッセージは常に表示されます。「編集済み」インジケーターをタップすると、編集されたメッセージの全編集履歴をご覧になれます。
+• チャットリストの「自分用メモ」会話にチェックマークバッジを追加しました。これで、会話をスクロールしたときに目的のメモを見つけやすくなりました。

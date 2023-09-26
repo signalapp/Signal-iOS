@@ -7286,13 +7286,13 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Μέλος των %1$@ και %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both conversations have been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Μετά από μήνυμα με τον χρήστη %1$@ έμαθες ότι αυτός ο αριθμός ανήκει στον χρήστη %2$@. Ο αριθμός τηλεφώνου του χρήστη είναι ιδιωτικός.\n\nΤο ιστορικό των μηνυμάτων σου και για τις δύο συνομιλίες έχει συγχωνευθεί εδώ.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
-"THREAD_MERGE_NO_PHONE_NUMBER" = "Your message history with %1$@ and another chat that belonged to them has been merged.";
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Το ιστορικό μηνυμάτων σου με τον χρήστη %1$@ και μια άλλη συνομιλία που του άνηκε συγχωνεύτηκαν.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
-"THREAD_MERGE_PHONE_NUMBER" = "Your message history with %1$@ and their number %2$@ has been merged.";
+"THREAD_MERGE_PHONE_NUMBER" = "Συγχωνεύτηκαν το ιστορικό μηνυμάτων σου με τον χρήστη %1$@ και τον αριθμό του, %2$@.";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ ημέρες";
