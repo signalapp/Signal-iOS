@@ -193,6 +193,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isValidVideo;
 @property (nonatomic, readonly) BOOL isValidVisualMedia;
 
+- (BOOL)isValidImageIgnoringSize:(BOOL)ignoreSize;
+- (BOOL)isValidVideoIgnoringSize:(BOOL)ignoreSize;
+- (BOOL)isValidVisualMediaIgnoringSize:(BOOL)ignoreSize;
+
 @property (nonatomic, readonly) BOOL shouldBeRenderedByYY;
 
 #pragma mark - Update With... Methods

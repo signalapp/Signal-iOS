@@ -1137,7 +1137,7 @@ fileprivate extension CVComponentState.Builder {
                 continue
             }
 
-            guard attachmentStream.isValidVisualMedia else {
+            guard attachmentStream.isValidVisualMediaIgnoringSize(true) else {
                 Logger.warn("Filtering invalid media.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,

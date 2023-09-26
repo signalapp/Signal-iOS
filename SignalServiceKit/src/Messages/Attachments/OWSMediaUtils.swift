@@ -128,7 +128,18 @@ public class OWSMediaUtils: NSObject {
 
     @objc
     public class func isValidVideo(path: String) -> Bool {
-        guard isVideoOfValidContentTypeAndSize(path: path) else {
+        return isValidVideo(path: path, ignoreSize: false)
+    }
+
+    @objc
+    public class func isValidVideo(path: String, ignoreSize: Bool) -> Bool {
+        let pathValidationMethod: (String) -> Bool
+        if ignoreSize {
+            pathValidationMethod = self.isVideoOfValidContentType(path:)
+        } else {
+            pathValidationMethod = self.isVideoOfValidContentTypeAndSize(path:)
+        }
+        guard pathValidationMethod(path) else {
             Logger.error("Media file has missing or invalid length.")
             return false
         }

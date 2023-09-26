@@ -445,19 +445,24 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidVisualMedia
 {
-    if (self.isImage && self.isValidImage) {
+    return [self isValidVisualMediaIgnoringSize:NO];
+}
+
+- (BOOL)isValidVisualMediaIgnoringSize:(BOOL)ignoreSize
+{
+    if (self.isImage && [self isValidImageIgnoringSize:ignoreSize]) {
         return YES;
     }
 
-    if (self.isVideo && self.isValidVideo) {
+    if (self.isVideo && [self isValidVideoIgnoringSize:ignoreSize]) {
         return YES;
     }
 
-    if (self.isAnimated && self.isValidImage) {
+    if (self.isAnimated && [self isValidImageIgnoringSize:ignoreSize]) {
         return YES;
     }
 
-    if (self.isLoopingVideo && self.isValidVideo) {
+    if (self.isLoopingVideo && [self isValidVideoIgnoringSize:ignoreSize]) {
         return YES;
     }
 
@@ -468,6 +473,11 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidImage
 {
+    return [self isValidImageIgnoringSize:NO];
+}
+
+- (BOOL)isValidImageIgnoringSize:(BOOL)ignoreSize
+{
     OWSAssertDebug(self.isImage || self.isAnimated);
 
     BOOL result;
@@ -477,8 +487,10 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             if (!SSKDebugFlags.reduceLogChatter) {
                 OWSLogVerbose(@"Updating isValidImageCached.");
             }
-            self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
-                                                              mimeType:self.contentType]);
+            self.isValidImageCached = @([NSData imageMetadataWithPath:self.originalFilePath
+                                                             mimeType:self.contentType
+                                                       ignoreFileSize:ignoreSize]
+                                            .isValid);
             if (!self.isValidImageCached.boolValue) {
                 OWSLogWarn(@"Invalid image.");
             }
@@ -503,6 +515,11 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidVideo
 {
+    return [self isValidVideoIgnoringSize:NO];
+}
+
+- (BOOL)isValidVideoIgnoringSize:(BOOL)ignoreSize
+{
     OWSAssertDebug(self.isVideo);
 
     BOOL result;
@@ -510,7 +527,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     @synchronized(self) {
         if (!self.isValidVideoCached) {
             OWSLogVerbose(@"Updating isValidVideoCached.");
-            self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+            self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath
+                                                                 ignoreSize:ignoreSize]);
             if (!self.isValidVideoCached) {
                 OWSLogWarn(@"Invalid video.");
             }
