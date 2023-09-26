@@ -203,27 +203,26 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-    fileprivate class func fetchMessages(future: Future<Void>) {
+    fileprivate class func fetchMessages() async throws {
         Logger.info("")
 
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            return future.reject(OWSAssertionError("This extension should not fetch messages."))
+            throw OWSAssertionError("This extension should not fetch messages.")
         }
 
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady)
             Logger.warn("Not registered.")
-            return future.resolve()
+            return
         }
 
         if shouldUseWebSocket {
             Logger.info("Fetching messages via Web Socket.")
             socketManager.didReceivePush()
             // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
-            return future.resolve()
         } else {
             Logger.info("Fetching messages via REST.")
-            future.resolve(with: fetchMessagesViaRestWhenReady())
+            try await fetchMessagesViaRestWhenReady()
         }
     }
 
@@ -262,56 +261,40 @@ public class MessageFetcherJob: NSObject {
         let completion: (Error?) -> Void
     }
 
-    private class func fetchMessagesViaRest() -> Promise<Void> {
-        return firstly(on: DispatchQueue.global()) {
-            fetchBatchViaRest()
-        }.map(on: DispatchQueue.global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
-            if DebugFlags.internalLogging {
-                Logger.info("REST fetched envelopes: \(batch.envelopes.count)")
-            }
+    private class func fetchMessagesViaRest() async throws {
+        let batch = try await fetchBatchViaRest()
 
-            let envelopeJobs: [EnvelopeJob] = batch.envelopes.map { envelope in
-                let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
-                return EnvelopeJob(encryptedEnvelope: envelope) { error in
-                    let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
-                    switch ackBehavior {
-                    case .shouldAck:
-                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
-                    case .shouldNotAck(let error):
-                        Logger.info("Skipping ack of message with timestamp \(envelopeInfo.timestamp) because of error: \(error)")
-                    }
+        let envelopeJobs: [EnvelopeJob] = batch.envelopes.map { envelope in
+            let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+            return EnvelopeJob(encryptedEnvelope: envelope) { error in
+                let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
+                switch ackBehavior {
+                case .shouldAck:
+                    Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                case .shouldNotAck(let error):
+                    Logger.info("Skipping ack of message with timestamp \(envelopeInfo.timestamp) because of error: \(error)")
                 }
             }
-            return (envelopeJobs: envelopeJobs,
-                    serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
-                    hasMore: batch.hasMore)
-        }.then(on: DispatchQueue.global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, hasMore: Bool) -> Promise<Void> in
-            for job in envelopeJobs {
-                Self.messageProcessor.processReceivedEnvelope(
-                    job.encryptedEnvelope,
-                    serverDeliveryTimestamp: serverDeliveryTimestamp,
-                    envelopeSource: .rest,
-                    completion: job.completion
-                )
-            }
+        }
 
-            if hasMore {
-                Logger.info("fetching more messages.")
+        for job in envelopeJobs {
+            messageProcessor.processReceivedEnvelope(
+                job.encryptedEnvelope,
+                serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
+                envelopeSource: .rest,
+                completion: job.completion
+            )
+        }
 
-                return self.fetchMessagesViaRestWhenReady()
-            } else {
-                // All finished
-                return Promise.value(())
-            }
+        if batch.hasMore {
+            Logger.info("fetching more messages.")
+            try await fetchMessagesViaRestWhenReady()
         }
     }
 
-    private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
-        Promise<Void>.waitUntil {
-            isReadyToFetchMessagesViaRest
-        }.then {
-            fetchMessagesViaRest()
-        }
+    private class func fetchMessagesViaRestWhenReady() async throws {
+        try await Promise<Void>.waitUntil { isReadyToFetchMessagesViaRest }.awaitable()
+        try await fetchMessagesViaRest()
     }
 
     private class var isReadyToFetchMessagesViaRest: Bool {
@@ -460,27 +443,22 @@ public class MessageFetcherJob: NSObject {
         let hasMore: Bool
     }
 
-    private class func fetchBatchViaRest() -> Promise<RESTBatch> {
-        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.getMessagesRequest()
-            return self.networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
-            guard let timestampString = response.responseHeaders["x-signal-timestamp"],
-                  let serverDeliveryTimestamp = UInt64(timestampString) else {
-                throw OWSAssertionError("Unable to parse server delivery timestamp.")
-            }
-
-            guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
-                throw OWSAssertionError("Invalid response.")
-            }
-
-            return RESTBatch(envelopes: envelopes,
-                             serverDeliveryTimestamp: serverDeliveryTimestamp,
-                             hasMore: more)
+    private class func fetchBatchViaRest() async throws -> RESTBatch {
+        let request = OWSRequestFactory.getMessagesRequest()
+        let response = try await networkManager.makePromise(request: request).awaitable()
+        guard let json = response.responseBodyJson else {
+            throw OWSAssertionError("Missing or invalid JSON")
         }
+        guard
+            let timestampString = response.responseHeaders["x-signal-timestamp"],
+            let serverDeliveryTimestamp = UInt64(timestampString)
+        else {
+            throw OWSAssertionError("Unable to parse server delivery timestamp.")
+        }
+        guard let (envelopes, more) = parseMessagesResponse(responseObject: json) else {
+            throw OWSAssertionError("Invalid response.")
+        }
+        return RESTBatch(envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, hasMore: more)
     }
 
     fileprivate struct EnvelopeInfo {
@@ -506,21 +484,19 @@ private class MessageFetchOperation: OWSOperation {
     let future: Future<Void>
 
     override required init() {
-
         let (promise, future) = Promise<Void>.pending()
         self.promise = promise
         self.future = future
         super.init()
-        self.remainingRetries = 3
     }
 
     public override func run() {
         Logger.info("")
 
-        MessageFetcherJob.fetchMessages(future: future)
-
-        _ = promise.ensure {
-            self.reportSuccess()
+        Task {
+            try? await MessageFetcherJob.fetchMessages()
+            future.resolve(())
+            reportSuccess()
         }
     }
 }
