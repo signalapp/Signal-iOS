@@ -273,24 +273,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     }
 
     @objc
-    public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {
-        updatePendingMutations { pendingMutations in
-            updatedGroupV1Ids.forEach { groupV1Id in
-                pendingMutations.mutatedGroupV1Ids[groupV1Id] = .updated
-            }
-        }
-    }
-
-    @objc
-    public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {
-        updatePendingMutations { pendingMutations in
-            deletedGroupV1Ids.forEach { groupV1Id in
-                pendingMutations.mutatedGroupV1Ids[groupV1Id] = .deleted
-            }
-        }
-    }
-
-    @objc
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {
         updatePendingMutations { $0.updatedGroupV2MasterKeys.formUnion(updatedGroupV2MasterKeys) }
     }
@@ -317,7 +299,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
             recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKeyData ])
         } else {
-            recordPendingUpdates(updatedGroupV1Ids: [ groupModel.groupId ])
+            owsFailDebug("How did we end up with pending updates to a V1 group?")
         }
     }
 
@@ -421,8 +403,6 @@ private struct PendingMutations {
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedLocalAccount = false
 
-    var mutatedGroupV1Ids = [Data: StorageServiceOperation.State.ChangeState]()
-
     var hasChanges: Bool {
         return (
             updatedLocalAccount
@@ -430,7 +410,6 @@ private struct PendingMutations {
             || !updatedServiceIds.isEmpty
             || !updatedGroupV2MasterKeys.isEmpty
             || !updatedStoryDistributionListIds.isEmpty
-            || !mutatedGroupV1Ids.isEmpty
         )
     }
 }
@@ -547,7 +526,6 @@ class StorageServiceOperation: OWSOperation {
             Recording pending mutations (\
             Account: \(pendingMutations.updatedLocalAccount); \
             Contacts: \(allAccountIds.count); \
-            GV1: \(pendingMutations.mutatedGroupV1Ids.count); \
             GV2: \(pendingMutations.updatedGroupV2MasterKeys.count); \
             DLists: \(pendingMutations.updatedStoryDistributionListIds.count))
             """
@@ -559,10 +537,6 @@ class StorageServiceOperation: OWSOperation {
 
         allAccountIds.forEach {
             state.accountIdChangeMap[$0] = .updated
-        }
-
-        pendingMutations.mutatedGroupV1Ids.forEach {
-            state.groupV1ChangeMap[$0] = $1
         }
 
         pendingMutations.updatedGroupV2MasterKeys.forEach {
@@ -867,28 +841,21 @@ class StorageServiceOperation: OWSOperation {
                 }
             }
 
-            let groupV1Updater = buildGroupV1Updater()
             let groupV2Updater = buildGroupV2Updater()
             let storyDistributionListUpdater = buildStoryDistributionListUpdater()
             TSThread.anyEnumerate(transaction: transaction) { thread, _ in
-                if let groupThread = thread as? TSGroupThread {
-                    switch groupThread.groupModel.groupsVersion {
-                    case .V1:
-                        createRecord(localId: groupThread.groupModel.groupId, stateUpdater: groupV1Updater)
-                    case .V2:
-                        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                            owsFailDebug("Invalid group model.")
-                            return
-                        }
-                        let groupMasterKey: Data
-                        do {
-                            groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
-                        } catch {
-                            owsFailDebug("Invalid group model \(error).")
-                            return
-                        }
-                        createRecord(localId: groupMasterKey, stateUpdater: groupV2Updater)
+                if
+                    let groupThread = thread as? TSGroupThread,
+                    let groupModel = groupThread.groupModel as? TSGroupModelV2
+                {
+                    let groupMasterKey: Data
+                    do {
+                        groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
+                    } catch {
+                        owsFailDebug("Invalid group model \(error).")
+                        return
                     }
+                    createRecord(localId: groupMasterKey, stateUpdater: groupV2Updater)
                 } else if let storyThread = thread as? TSPrivateStoryThread {
                     guard let distributionListId = storyThread.distributionListIdentifier else {
                         owsFailDebug("Missing distribution list id for story thread \(thread.uniqueId)")
@@ -1112,12 +1079,6 @@ class StorageServiceOperation: OWSOperation {
 
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
-                var orphanedGroupV1Count = 0
-                for (groupId, identifier) in mutableState.groupV1IdToIdentifierMap where !allManifestItems.contains(identifier) {
-                    mutableState.groupV1ChangeMap[groupId] = .updated
-                    orphanedGroupV1Count += 1
-                }
-
                 var orphanedGroupV2Count = 0
                 for (groupMasterKey, identifier) in mutableState.groupV2MasterKeyToIdentifierMap where !allManifestItems.contains(identifier) {
                     mutableState.groupV2ChangeMap[groupMasterKey] = .updated
@@ -1148,7 +1109,6 @@ class StorageServiceOperation: OWSOperation {
 
                 let pendingChangesCount = (
                     mutableState.accountIdChangeMap.count
-                    + mutableState.groupV1ChangeMap.count
                     + mutableState.groupV2ChangeMap.count
                     + mutableState.storyDistributionListChangeMap.count
                 )
@@ -1159,7 +1119,6 @@ class StorageServiceOperation: OWSOperation {
                     Pending Updates: \(pendingChangesCount); \
                     Invalid/Missing IDs: \(invalidIdentifierCount); \
                     Orphaned Accounts: \(orphanedAccountCount); \
-                    Orphaned GV1: \(orphanedGroupV1Count); \
                     Orphaned GV2: \(orphanedGroupV2Count); \
                     Orphaned DLists: \(orphanedStoryDistributionListCount))
                     """
@@ -1393,7 +1352,6 @@ class StorageServiceOperation: OWSOperation {
         databaseStorage.write { tx in
             mergeRecordsWithUnknownFields(stateUpdater: buildAccountUpdater(), tx: tx)
             mergeRecordsWithUnknownFields(stateUpdater: buildContactUpdater(), tx: tx)
-            mergeRecordsWithUnknownFields(stateUpdater: buildGroupV1Updater(), tx: tx)
             mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater(), tx: tx)
             mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater(), tx: tx)
             Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
@@ -1521,7 +1479,7 @@ class StorageServiceOperation: OWSOperation {
 
     private func buildGroupV1Updater() -> MultipleElementStateUpdater<StorageServiceGroupV1RecordUpdater> {
         return MultipleElementStateUpdater(
-            recordUpdater: StorageServiceGroupV1RecordUpdater(blockingManager: blockingManager, profileManager: profileManager),
+            recordUpdater: StorageServiceGroupV1RecordUpdater(),
             changeState: \.groupV1ChangeMap,
             storageIdentifier: \.groupV1IdToIdentifierMap,
             recordWithUnknownFields: \.groupV1IdToRecordWithUnknownFields
@@ -1630,8 +1588,11 @@ class StorageServiceOperation: OWSOperation {
 
         fileprivate var localAccountChangeState: ChangeState = .unchanged
         fileprivate var accountIdChangeMap: [AccountId: ChangeState] = [:]
-        fileprivate var groupV1ChangeMap: [Data: ChangeState] = [:]
         fileprivate var groupV2ChangeMap: [Data: ChangeState] = [:]
+
+        /// We will no longer update this value, and want to also ignore this
+        /// value in any previously-persisted state.
+        @EmptyForCodable fileprivate var groupV1ChangeMap: [Data: ChangeState] = [:]
 
         private var _storyDistributionListChangeMap: [Data: ChangeState]?
         fileprivate var storyDistributionListChangeMap: [Data: ChangeState] {
@@ -1823,7 +1784,9 @@ private struct MultipleElementStateUpdater<RecordUpdaterType: StorageServiceReco
     }
 }
 
-// MARK: - Legacy Decoding
+// MARK: - Legacy Codable
+
+extension Dictionary: EmptyInitializable {}
 
 /// Optionally attempts decoding a dictionary as a BidirectionalDictionary,
 /// in case it was previously stored in that format.

@@ -7,16 +7,12 @@ import Foundation
 
 @objc
 public protocol StorageServiceManagerObjc {
-    func recordPendingDeletions(deletedGroupV1Ids: [Data])
-
     func recordPendingUpdates(updatedAccountIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
-    func recordPendingUpdates(updatedGroupV1Ids: [Data])
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
 
-    // A convenience method that calls recordPendingUpdates(updatedGroupV1Ids:)
-    // or recordPendingUpdates(updatedGroupV2MasterKeys:).
+    // A convenience method that calls recordPendingUpdates(updatedGroupV2MasterKeys:).
     func recordPendingUpdates(groupModel: TSGroupModel)
 
     func recordPendingLocalAccountUpdates()

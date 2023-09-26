@@ -1774,41 +1774,6 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
 
     public let id: Data
 
-    public var blocked: Bool {
-        return proto.blocked
-    }
-    public var hasBlocked: Bool {
-        return true
-    }
-
-    public var whitelisted: Bool {
-        return proto.whitelisted
-    }
-    public var hasWhitelisted: Bool {
-        return true
-    }
-
-    public var archived: Bool {
-        return proto.archived
-    }
-    public var hasArchived: Bool {
-        return true
-    }
-
-    public var markedUnread: Bool {
-        return proto.markedUnread
-    }
-    public var hasMarkedUnread: Bool {
-        return true
-    }
-
-    public var mutedUntilTimestamp: UInt64 {
-        return proto.mutedUntilTimestamp
-    }
-    public var hasMutedUntilTimestamp: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1862,21 +1827,6 @@ extension StorageServiceProtoGroupV1Record {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoGroupV1RecordBuilder {
         var builder = StorageServiceProtoGroupV1RecordBuilder(id: id)
-        if hasBlocked {
-            builder.setBlocked(blocked)
-        }
-        if hasWhitelisted {
-            builder.setWhitelisted(whitelisted)
-        }
-        if hasArchived {
-            builder.setArchived(archived)
-        }
-        if hasMarkedUnread {
-            builder.setMarkedUnread(markedUnread)
-        }
-        if hasMutedUntilTimestamp {
-            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
-        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1903,26 +1853,6 @@ public struct StorageServiceProtoGroupV1RecordBuilder {
 
     public mutating func setId(_ valueParam: Data) {
         proto.id = valueParam
-    }
-
-    public mutating func setBlocked(_ valueParam: Bool) {
-        proto.blocked = valueParam
-    }
-
-    public mutating func setWhitelisted(_ valueParam: Bool) {
-        proto.whitelisted = valueParam
-    }
-
-    public mutating func setArchived(_ valueParam: Bool) {
-        proto.archived = valueParam
-    }
-
-    public mutating func setMarkedUnread(_ valueParam: Bool) {
-        proto.markedUnread = valueParam
-    }
-
-    public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
-        proto.mutedUntilTimestamp = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

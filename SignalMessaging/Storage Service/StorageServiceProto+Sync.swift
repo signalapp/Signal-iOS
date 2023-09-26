@@ -681,20 +681,23 @@ extension StorageServiceProtoContactRecordIdentityState {
 
 // MARK: - Group V1 Record
 
+/// A record updater for V1 groups that treats any contained fields as unknown.
+///
+/// We no longer rely on GroupV1 records from StorageService, as the groups they
+/// correspond to are long-defunct. Consequently, this record updater simply
+/// treats all fields in the record as unknown, thereby preserving fields any
+/// older linked devices may still be parsing without using it ourselves.
+///
+/// 90 days after all clients are treating GroupV1 records as unknown, we can
+/// stop re-uploading the unknown fields - thereby removing those records.
+///
+/// Eventually, if we no longer care about removing existing unused records, we
+/// can remove the GroupV1 record from our protos entirely.
 class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoGroupV1Record
 
-    private let blockingManager: BlockingManager
-    private let profileManager: ProfileManagerProtocol
-
-    init(
-        blockingManager: BlockingManager,
-        profileManager: ProfileManagerProtocol
-    ) {
-        self.blockingManager = blockingManager
-        self.profileManager = profileManager
-    }
+    init() {}
 
     func unknownFields(for record: StorageServiceProtoGroupV1Record) -> UnknownStorage? { record.unknownFields }
 
@@ -709,19 +712,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
     ) -> StorageServiceProtoGroupV1Record? {
         var builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
 
-        builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
-        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId, transaction: transaction))
-
-        let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
-                                                                       ignoreMissing: true,
-                                                                       transaction: transaction)
-
-        builder.setArchived(threadAssociatedData.isArchived)
-        builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
-        builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-
-        if let unknownFields = unknownFields {
+        if let unknownFields {
             builder.setUnknownFields(unknownFields)
         }
 
@@ -732,55 +723,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
         _ record: StorageServiceProtoGroupV1Record,
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
-        let id = record.id
-
-        // We might be learning of a v1 group id for the first time that
-        // corresponds to a v2 group without a v1-to-v2 group id mapping.
-        TSGroupThread.ensureGroupIdMapping(forGroupId: id, transaction: transaction)
-
-        // Gather some local contact state to do comparisons against.
-        let localIsBlocked = blockingManager.isGroupIdBlocked(id, transaction: transaction)
-        let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: id, transaction: transaction)
-
-        // If our local blocked state differs from the service state, use the service's value.
-        if record.blocked != localIsBlocked {
-            if record.blocked {
-                blockingManager.addBlockedGroup(groupId: id, blockMode: .remote, transaction: transaction)
-            } else {
-                blockingManager.removeBlockedGroup(groupId: id, wasLocallyInitiated: false, transaction: transaction)
-            }
-        }
-
-        // If our local whitelisted state differs from the service state, use the service's value.
-        if record.whitelisted != localIsWhitelisted {
-            if record.whitelisted {
-                profileManager.addGroupId(toProfileWhitelist: id,
-                                          userProfileWriter: .storageService,
-                                          transaction: transaction)
-            } else {
-                profileManager.removeGroupId(fromProfileWhitelist: id,
-                                             userProfileWriter: .storageService,
-                                             transaction: transaction)
-            }
-        }
-
-        let localThreadId = TSGroupThread.threadId(forGroupId: id, transaction: transaction)
-        ThreadAssociatedData.create(for: localThreadId, transaction: transaction)
-        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
-
-        if record.archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
-        }
-
-        if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
-        }
-
-        if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
-        }
-
-        return .merged(needsUpdate: false, id)
+        return .merged(needsUpdate: false, record.id)
     }
 }
 

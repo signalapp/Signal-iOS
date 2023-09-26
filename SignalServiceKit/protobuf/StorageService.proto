@@ -107,12 +107,12 @@ message ContactRecord {
 
 message GroupV1Record {
   // @required
-  bytes  id                  = 1;
-  bool   blocked             = 2;
-  bool   whitelisted         = 3;
-  bool   archived            = 4;
-  bool   markedUnread        = 5;
-  uint64 mutedUntilTimestamp = 6;
+  bytes id                         = 1;
+  reserved /*blocked*/               2;
+  reserved /*whitelisted*/           3;
+  reserved /*archived*/              4;
+  reserved /*markedUnread*/          5;
+  reserved /*mutedUntilTimestamp*/   6;
 }
 
 message GroupV2Record {

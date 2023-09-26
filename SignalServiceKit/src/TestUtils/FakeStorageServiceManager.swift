@@ -9,11 +9,8 @@ import Foundation
 
 @objc(OWSFakeStorageServiceManager)
 public class FakeStorageServiceManager: NSObject, StorageServiceManager {
-    public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {}
-
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
-    public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {}
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     public func recordPendingUpdates(groupModel: TSGroupModel) {}

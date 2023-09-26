@@ -504,10 +504,8 @@ private class MockStorageServiceManager: StorageServiceManager {
     }
 
     func resetLocalData(transaction: DBWriteTransaction) { owsFail("Not implemented!") }
-    func recordPendingDeletions(deletedGroupV1Ids: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAccountIds: [AccountId]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) { owsFail("Not implemented!") }
-    func recordPendingUpdates(updatedGroupV1Ids: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }

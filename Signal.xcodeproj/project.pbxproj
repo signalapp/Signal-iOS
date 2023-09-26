@@ -1315,6 +1315,8 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */; };
+		D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */; };
 		D9170EEA290C57BF00CD813A /* CVViewState+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */; };
 		D9170EEF2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */; };
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
@@ -3942,6 +3944,8 @@
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D2F64CFA3B9F3C7EA87B1C37 /* Pods-SignalUI.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUI/Pods-SignalUI.profiling.xcconfig"; sourceTree = "<group>"; };
 		D4164D79E1C97918C458A743 /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
+		D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodable.swift; sourceTree = "<group>"; };
+		D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodableTest.swift; sourceTree = "<group>"; };
 		D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVViewState+Banners.swift"; sourceTree = "<group>"; };
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
@@ -8442,6 +8446,7 @@
 				F94C912328FDECC40065DF75 /* DecimalTest.swift */,
 				F94261F6289B1B5400460798 /* DeviceNamesTest.swift */,
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
+				D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */,
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
 				F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */,
 				76DA4D7F2A2AF9B3004F98FD /* FunctionalUtilTest.m */,
@@ -9650,6 +9655,7 @@
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
 				502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
+				D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */,
 				F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */,
 				F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */,
 				F9C5CB51289453B200548EEE /* Error+SSK.swift */,
@@ -12288,6 +12294,7 @@
 				C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */,
 				C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */,
 				C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */,
+				D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */,
 				F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */,
 				F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */,
 				F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */,
@@ -12943,6 +12950,7 @@
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
 				C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */,
+				D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */,
 				502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */,
 				D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */,
 				F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */,

@@ -431,7 +431,7 @@ struct StorageServiceProtos_ContactRecord {
     get {return _storage._systemNickname}
     set {_uniqueStorage()._systemNickname = newValue}
   }
-    
+
   var hidden: Bool {
     get {return _storage._hidden}
     set {_uniqueStorage()._hidden = newValue}
@@ -495,16 +495,6 @@ struct StorageServiceProtos_GroupV1Record {
 
   /// @required
   var id: Data = Data()
-
-  var blocked: Bool = false
-
-  var whitelisted: Bool = false
-
-  var archived: Bool = false
-
-  var markedUnread: Bool = false
-
-  var mutedUntilTimestamp: UInt64 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1680,11 +1670,6 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
   static let protoMessageName: String = _protobuf_package + ".GroupV1Record"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "blocked"),
-    3: .same(proto: "whitelisted"),
-    4: .same(proto: "archived"),
-    5: .same(proto: "markedUnread"),
-    6: .same(proto: "mutedUntilTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1694,11 +1679,6 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.id) }()
-      case 2: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
-      case 3: try { try decoder.decodeSingularBoolField(value: &self.whitelisted) }()
-      case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
-      case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       default: break
       }
     }
@@ -1708,31 +1688,11 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     if !self.id.isEmpty {
       try visitor.visitSingularBytesField(value: self.id, fieldNumber: 1)
     }
-    if self.blocked != false {
-      try visitor.visitSingularBoolField(value: self.blocked, fieldNumber: 2)
-    }
-    if self.whitelisted != false {
-      try visitor.visitSingularBoolField(value: self.whitelisted, fieldNumber: 3)
-    }
-    if self.archived != false {
-      try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 4)
-    }
-    if self.markedUnread != false {
-      try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 5)
-    }
-    if self.mutedUntilTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 6)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_GroupV1Record, rhs: StorageServiceProtos_GroupV1Record) -> Bool {
     if lhs.id != rhs.id {return false}
-    if lhs.blocked != rhs.blocked {return false}
-    if lhs.whitelisted != rhs.whitelisted {return false}
-    if lhs.archived != rhs.archived {return false}
-    if lhs.markedUnread != rhs.markedUnread {return false}
-    if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
