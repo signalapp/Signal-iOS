@@ -15,28 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (void)throws_acceptNewIdentityKey
-{
-    OWSAbstractMethod();
-}
-
-- (BOOL)acceptNewIdentityKeyWithError:(NSError **)error
-{
-    @try {
-        [self throws_acceptNewIdentityKey];
-        return YES;
-    } @catch (NSException *exception) {
-        *error = OWSErrorMakeAssertionError(@"Error: %@", exception.debugDescription);
-        return NO;
-    }
-}
-
-- (nullable NSData *)throws_newIdentityKey
-{
-    OWSAbstractMethod();
-    return nil;
-}
-
 - (SignalServiceAddress *)theirSignalAddress
 {
     OWSAbstractMethod();
@@ -108,7 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
                  wasIdentityVerified:wasIdentityVerified];
     return self;
 }
-
 
 @end
 

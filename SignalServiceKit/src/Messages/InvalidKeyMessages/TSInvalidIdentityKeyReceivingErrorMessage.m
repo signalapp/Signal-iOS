@@ -137,6 +137,17 @@ NS_ASSUME_NONNULL_BEGIN
     return _envelope;
 }
 
+- (BOOL)acceptNewIdentityKeyWithError:(NSError **)error
+{
+    @try {
+        [self throws_acceptNewIdentityKey];
+        return YES;
+    } @catch (NSException *exception) {
+        *error = OWSErrorMakeAssertionError(@"Error: %@", exception.debugDescription);
+        return NO;
+    }
+}
+
 - (void)throws_acceptNewIdentityKey
 {
     OWSAssertIsOnMainThread();

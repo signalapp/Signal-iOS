@@ -47,9 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initErrorMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 
-- (BOOL)acceptNewIdentityKeyWithError:(NSError **)error;
-- (void)throws_acceptNewIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
-- (nullable NSData *)throws_newIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
 - (SignalServiceAddress *)theirSignalAddress;
 
 @end

@@ -118,29 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-- (void)throws_acceptNewIdentityKey
-{
-    // Shouldn't really get here, since we're no longer creating blocking SN changes.
-    // But there may still be some old unaccepted SN errors in the wild that need to be accepted.
-    OWSFailDebug(@"accepting new identity key is deprecated.");
-
-    NSData *_Nullable newIdentityKey = [self throws_newIdentityKey];
-    if (!newIdentityKey) {
-        OWSFailDebug(@"newIdentityKey is unexpectedly nil. Bad Prekey bundle?: %@", self.preKeyBundle);
-        return;
-    }
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
-        NSString *recipientId = [OWSAccountIdFinder ensureAccountIdForAddress:self.recipientAddress transaction:tx];
-        [OWSIdentityManagerObjCBridge saveIdentityKey:newIdentityKey forRecipientId:recipientId transaction:tx];
-    });
-}
-
-- (nullable NSData *)throws_newIdentityKey
-{
-    return [self.preKeyBundle.identityKey throws_removeKeyType];
-}
-
 - (SignalServiceAddress *)theirSignalAddress
 {
     OWSAssertDebug(self.recipientAddress != nil);
