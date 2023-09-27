@@ -130,6 +130,9 @@ public class FeatureFlags: BaseFlags {
     /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
     @objc
     public static let recipientHiding = build.includes(.internal)
+
+    @objc
+    public static let newTSAccountManager = false
 }
 
 // MARK: -
@@ -397,12 +400,6 @@ public class DebugFlags: BaseFlags {
             messageDecrypter.cleanUpExpiredPlaceholders()
         }
     )
-
-    @objc
-    public static let deviceTransferPreserveOldDevice = false
-
-    @objc
-    public static let deviceTransferThrowAway = false
 
     @objc
     public static func logFlags() {

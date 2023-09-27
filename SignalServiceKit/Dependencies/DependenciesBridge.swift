@@ -77,6 +77,14 @@ public class DependenciesBridge {
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
 
+    private let _tsAccountManager: TSAccountManagerImpl?
+    public var tsAccountManager: TSAccountManagerProtocol {
+        guard FeatureFlags.newTSAccountManager else {
+            fatalError("Shouldn't be trying to use the new TSAccountManager!")
+        }
+        return _tsAccountManager!
+    }
+
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
     public let usernameLinkManager: UsernameLinkManager
@@ -167,6 +175,17 @@ public class DependenciesBridge {
 
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
+
+        if FeatureFlags.newTSAccountManager {
+            self._tsAccountManager = TSAccountManagerImpl(
+                dateProvider: dateProvider,
+                db: db,
+                keyValueStoreFactory: keyValueStoreFactory,
+                schedulers: schedulers
+            )
+        } else {
+            self._tsAccountManager = nil
+        }
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,

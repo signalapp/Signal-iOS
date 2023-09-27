@@ -351,9 +351,7 @@ class DeviceTransferService: NSObject {
         }
 
         Promise.when(fulfilled: promises).done {
-            if !DebugFlags.deviceTransferThrowAway {
-                self.tsAccountManager.wasTransferred = true
-            }
+            self.tsAccountManager.wasTransferred = true
             try self.sendDoneMessage(to: newDevicePeerId)
         }.catch { error in
             if !(error is DeviceTransferOperation.CancelError) {
