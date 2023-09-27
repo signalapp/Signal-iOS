@@ -790,7 +790,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         /// _only_ when the local profile key update is the _sole_ change
         /// action in this proto.
         if shouldUpdateLocalProfileKey {
-            if !didChange {
+            if !didChange && FeatureFlags.doNotSendGroupChangeMessagesOnProfileKeyRotation {
                 /// When the profile key rotation is the sole change action
                 /// in this proto, we skip the optimization of sending messages
                 /// notifying all group members of this change, instead opting
