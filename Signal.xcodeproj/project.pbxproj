@@ -767,10 +767,10 @@
 		6605D5032A86D305004DC345 /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */; };
 		6605D5052A86EE50004DC345 /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */; };
 		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
-		661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C92ABA522200A1B16D /* TSContactThread.swift */; };
 		661170C42ABA4D9900A1B16D /* TSAccountManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C32ABA4D9900A1B16D /* TSAccountManagerProtocol.swift */; };
 		661170C62ABA4E9C00A1B16D /* MockTSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */; };
 		661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C72ABA4F3A00A1B16D /* TSAccountManagerImpl.swift */; };
+		661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C92ABA522200A1B16D /* TSContactThread.swift */; };
 		661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */; };
 		6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */; };
 		6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */; };
@@ -781,6 +781,8 @@
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
+		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
+		661555412ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661555402ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
@@ -3314,10 +3316,10 @@
 		6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
-		661170C92ABA522200A1B16D /* TSContactThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThread.swift; sourceTree = "<group>"; };
 		661170C32ABA4D9900A1B16D /* TSAccountManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerProtocol.swift; sourceTree = "<group>"; };
 		661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTSAccountManager.swift; sourceTree = "<group>"; };
 		661170C72ABA4F3A00A1B16D /* TSAccountManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerImpl.swift; sourceTree = "<group>"; };
+		661170C92ABA522200A1B16D /* TSContactThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThread.swift; sourceTree = "<group>"; };
 		661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTest.swift; sourceTree = "<group>"; };
 		661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTestShims.swift; sourceTree = "<group>"; };
 		6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
@@ -3329,6 +3331,8 @@
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
+		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
+		661555402ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAccountManagerImpl+AccountState.swift"; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
@@ -6663,8 +6667,10 @@
 			children = (
 				661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */,
 				661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */,
+				661555402ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift */,
 				661170C72ABA4F3A00A1B16D /* TSAccountManagerImpl.swift */,
 				661170C32ABA4D9900A1B16D /* TSAccountManagerProtocol.swift */,
+				6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */,
 			);
 			path = TSAccountManager;
 			sourceTree = "<group>";
@@ -12818,6 +12824,7 @@
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,
 				F9C5CCAA289453B300548EEE /* TSAccountManager.m in Sources */,
 				F9C5CCAB289453B300548EEE /* TSAccountManager.swift in Sources */,
+				661555412ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift in Sources */,
 				661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */,
 				661170C42ABA4D9900A1B16D /* TSAccountManagerProtocol.swift in Sources */,
 				D9C2D77C299D4F2600D79715 /* TSAccountState.swift in Sources */,
@@ -12884,6 +12891,7 @@
 				F9C5CCD3289453B300548EEE /* TSPrivateStoryThread.m in Sources */,
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,
 				F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */,
+				6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */,
 				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,

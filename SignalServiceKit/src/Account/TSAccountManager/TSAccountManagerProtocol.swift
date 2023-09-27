@@ -19,4 +19,26 @@ public protocol TSAccountManagerProtocol {
     var localIdentifiersWithMaybeSneakyTransaction: LocalIdentifiers? { get }
 
     func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
+
+    // MARK: - RegistrationIds
+
+    func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32
+    func getOrGeneratePniRegistrationId(tx: DBWriteTransaction) -> UInt32
+
+    // MARK: - Manual Message Fetch
+
+    func isManualMessageFetchEnabled(tx: DBReadTransaction) -> Bool
+    func setIsManualMessageFetchEnabled(_ isEnabled: Bool, tx: DBWriteTransaction)
+
+    // MARK: - Phone Number Discoverability
+
+    func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
+    func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
+    // TODO: this needs to trigger an account attributes update as well as
+    // a storageService update. That needs to be managed externally to avoid
+    // circular dependencies.
+    func setIsDiscoverableByPhoneNumber(
+        _ isDiscoverable: Bool,
+        tx: DBWriteTransaction
+    )
 }
