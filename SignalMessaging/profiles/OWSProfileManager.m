@@ -1028,13 +1028,33 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 transaction:transaction];
 }
 
-- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
-               userProfileWriter:(UserProfileWriter)userProfileWriter
-                   authedAccount:(AuthedAccount *)authedAccount
+- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
+                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
+                         userProfileWriter:(UserProfileWriter)userProfileWriter
+                             authedAccount:(AuthedAccount *)authedAccount
 {
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        for (SignalServiceAddress *address in profileKeys) {
-            NSData *_Nullable profileKeyData = profileKeys[address];
+        for (SignalServiceAddress *address in authoritativeProfileKeys) {
+            NSData *_Nullable profileKeyData = allProfileKeys[address];
+            if (profileKeyData == nil) {
+                OWSFailDebug(@"Missing profileKeyData.");
+                continue;
+            }
+            [self setProfileKeyData:profileKeyData
+                         forAddress:address
+                onlyFillInIfMissing:NO
+                  userProfileWriter:userProfileWriter
+                      authedAccount:authedAccount
+                        transaction:transaction];
+        }
+
+        for (SignalServiceAddress *address in allProfileKeys) {
+            if (authoritativeProfileKeys[address] != nil) {
+                // We already stored this profile key as an
+                // authoritative one.
+                continue;
+            }
+            NSData *_Nullable profileKeyData = allProfileKeys[address];
             if (profileKeyData == nil) {
                 OWSFailDebug(@"Missing profileKeyData.");
                 continue;

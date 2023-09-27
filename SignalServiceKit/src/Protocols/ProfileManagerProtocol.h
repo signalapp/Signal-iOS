@@ -91,10 +91,11 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData NS_SWIFT_NAME(writeAvatarDataToFile(_:));
 
-- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
-               userProfileWriter:(UserProfileWriter)userProfileWriter
-                   authedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(fillInMissingProfileKeys(_:userProfileWriter:authedAccount:));
+- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
+                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
+                         userProfileWriter:(UserProfileWriter)userProfileWriter
+                             authedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(fillInProfileKeys(allProfileKeys:authoritativeProfileKeys:userProfileWriter:authedAccount:));
 
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName

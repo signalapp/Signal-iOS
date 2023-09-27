@@ -85,15 +85,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[address] = key;
 }
 
-- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
-               userProfileWriter:(UserProfileWriter)userProfileWriter
-                   authedAccount:(nonnull AuthedAccount *)authedAccount
+- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
+                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
+                         userProfileWriter:(UserProfileWriter)userProfileWriter
+                             authedAccount:(AuthedAccount *)authedAccount
 {
-    for (SignalServiceAddress *address in profileKeys) {
+    for (SignalServiceAddress *address in allProfileKeys) {
         if (self.profileKeys[address] != nil) {
             continue;
         }
-        NSData *_Nullable profileKeyData = profileKeys[address];
+        NSData *_Nullable profileKeyData = allProfileKeys[address];
         OWSAssertDebug(profileKeyData);
         OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
         self.profileKeys[address] = key;

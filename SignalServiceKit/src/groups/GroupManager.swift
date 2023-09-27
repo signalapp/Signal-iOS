@@ -1424,19 +1424,42 @@ public class GroupManager: NSObject {
 
     // MARK: -
 
-    public static func storeProfileKeysFromGroupProtos(_ profileKeysByAci: [Aci: Data]) {
-        var profileKeysByAddress = [SignalServiceAddress: Data]()
-        for (aci, profileKeyData) in profileKeysByAci {
-            profileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
+    /// A profile key is considered "authoritative" when it comes in on a group
+    /// change action and the owner of the profile key matches the group change
+    /// action author. We consider an "authoritative" profile key the source of
+    /// truth. Even if we have a different profile key for this user already,
+    /// we consider this authoritative profile key the correct, most up-to-date
+    /// one. A "non-authoritative" profile key, on the other hand, may or may
+    /// not be the most up to date profile key for a user (such as if one user
+    /// adds another to a group without having their latest profile key), and we
+    /// only use it if we have no other profile key for the user already.
+    ///
+    /// - Parameter allProfileKeysByAci: contains both authoritative and
+    ///   non-authoritative profile keys.
+    ///
+    /// - Parameter authoritativeProfileKeysByAci: contains just authoritative
+    ///   profile keys. If authoritative profile keys cannot be determined, pass
+    ///   nil.
+    public static func storeProfileKeysFromGroupProtos(
+        allProfileKeysByAci: [Aci: Data],
+        authoritativeProfileKeysByAci: [Aci: Data]?
+    ) {
+        var allProfileKeysByAddress = [SignalServiceAddress: Data]()
+        for (aci, profileKeyData) in allProfileKeysByAci {
+            allProfileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
         }
-        // If we receive a profile key from a user, that's "authoritative" and
-        // can discard and previous key from them.
-        //
-        // However, if we learn of a user's profile key from v2 group protos,
-        // it might be stale.  E.g. maybe they were added by someone who
-        // doesn't know their new profile key.  So we only want to fill in
-        // missing keys, not overwrite any existing keys.
-        profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState, authedAccount: .implicit())
+        var authoritativeProfileKeysByAddress = [SignalServiceAddress: Data]()
+        if let authoritativeProfileKeysByAci {
+            for (aci, profileKeyData) in authoritativeProfileKeysByAci {
+                authoritativeProfileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
+            }
+        }
+        profileManager.fillInProfileKeys(
+            allProfileKeys: allProfileKeysByAddress,
+            authoritativeProfileKeys: authoritativeProfileKeysByAddress,
+            userProfileWriter: .groupState,
+            authedAccount: .implicit()
+        )
     }
 
     /// Ensure that we have a profile key commitment for our local profile
