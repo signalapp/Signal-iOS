@@ -584,7 +584,7 @@ extension MessageSender {
         if DependenciesBridge.shared.appExpiry.isExpired {
             return Promise(error: AppExpiredError())
         }
-        if tsAccountManager.isDeregistered {
+        if tsAccountManager.isDeregistered || tsAccountManager.isReregistering {
             return Promise(error: AppDeregisteredError())
         }
         if message.shouldBeSaved {
