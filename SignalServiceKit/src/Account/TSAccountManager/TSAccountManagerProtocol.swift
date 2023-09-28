@@ -16,9 +16,17 @@ public protocol TSAccountManagerProtocol {
 
     func warmCaches()
 
+    // MARK: - Local Identifiers
+
     var localIdentifiersWithMaybeSneakyTransaction: LocalIdentifiers? { get }
 
     func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
+
+    // MARK: - Registration State
+
+    var registrationStateWithMaybeSneakyTransaction: TSRegistrationState { get }
+
+    func registrationState(tx: DBReadTransaction) -> TSRegistrationState
 
     // MARK: - RegistrationIds
 

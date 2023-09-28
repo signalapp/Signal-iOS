@@ -96,6 +96,11 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
     (BOOL)hasBackedUpMasterKey;
 
++ (NSDictionary<NSString *, NSNumber *> *)
+    deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
+                                                isRegistered:(BOOL)isRegistered
+                                             isPrimaryDevice:(BOOL)isPrimaryDevice;
+
 #pragma mark - Prekeys
 
 + (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity;

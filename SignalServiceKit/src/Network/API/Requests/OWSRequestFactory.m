@@ -273,9 +273,22 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     // tsAccountManager.isPrimaryDevice only has a valid value for registered
     // devices.
-    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
+    BOOL isRegisteredAndReady = self.tsAccountManager.isRegisteredAndReady;
+    OWSAssertDebug(isRegisteredAndReady);
 
-    BOOL isSecondaryDevice = !self.tsAccountManager.isPrimaryDevice;
+    BOOL isPrimaryDevice = self.tsAccountManager.isPrimaryDevice;
+    return [self deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:hasBackedUpMasterKey
+                                                             isRegistered:isRegisteredAndReady
+                                                          isPrimaryDevice:isPrimaryDevice];
+}
+
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
+                                              (BOOL)hasBackedUpMasterKey
+                                                                                      isRegistered:(BOOL)isRegistered
+                                                                                   isPrimaryDevice:(BOOL)isPrimaryDevice
+{
+    OWSAssertDebug(isRegistered);
+    BOOL isSecondaryDevice = !isPrimaryDevice;
     return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice hasBackedUpMasterKey:hasBackedUpMasterKey];
 }
 

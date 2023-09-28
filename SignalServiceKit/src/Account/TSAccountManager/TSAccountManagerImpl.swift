@@ -41,12 +41,24 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
         accountStateManager.getOrLoadAccountStateWithMaybeTransaction().log()
     }
 
+    // MARK: - Local Identifiers
+
     public var localIdentifiersWithMaybeSneakyTransaction: LocalIdentifiers? {
         return accountStateManager.getOrLoadAccountStateWithMaybeTransaction().localIdentifiers
     }
 
     public func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
         return accountStateManager.getOrLoadAccountState(tx: tx).localIdentifiers
+    }
+
+    // MARK: - Registration State
+
+    public var registrationStateWithMaybeSneakyTransaction: TSRegistrationState {
+        return accountStateManager.getOrLoadAccountStateWithMaybeTransaction().registrationState
+    }
+
+    public func registrationState(tx: DBReadTransaction) -> TSRegistrationState {
+        return accountStateManager.getOrLoadAccountState(tx: tx).registrationState
     }
 
     // MARK: - Registration IDs

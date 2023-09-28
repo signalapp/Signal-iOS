@@ -20,6 +20,8 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         warmCachesMock?()
     }
 
+    // MARK: - Local Identifiers
+
     public var localIdentifiersMock: (() -> LocalIdentifiers?) = {
         return LocalIdentifiers(
             aci: .randomForTesting(),
@@ -32,6 +34,18 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
 
     open func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
         return localIdentifiersWithMaybeSneakyTransaction
+    }
+
+    // MARK: - Registration State
+
+    public var registrationStateMock: (() -> TSRegistrationState) = {
+        return .registered
+    }
+
+    public var registrationStateWithMaybeSneakyTransaction: TSRegistrationState { registrationStateMock() }
+
+    public func registrationState(tx: DBReadTransaction) -> TSRegistrationState {
+        return registrationStateWithMaybeSneakyTransaction
     }
 
     // MARK: - RegistrationIds

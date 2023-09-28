@@ -38,6 +38,14 @@ public class DependenciesBridge {
     public let db: DB
     public let schedulers: Schedulers
 
+    private let _accountAttributesUpdater: AccountAttributesUpdaterImpl?
+    public var accountAttributesUpdater: AccountAttributesUpdater {
+        guard FeatureFlags.newTSAccountManager else {
+            fatalError("Shouldn't be trying to use the new AccountAttributesUpdater!")
+        }
+        return _accountAttributesUpdater!
+    }
+
     public let appExpiry: AppExpiry
 
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
@@ -176,14 +184,17 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
+        let _tsAccountManager: TSAccountManagerImpl?
         if FeatureFlags.newTSAccountManager {
-            self._tsAccountManager = TSAccountManagerImpl(
+            _tsAccountManager = TSAccountManagerImpl(
                 dateProvider: dateProvider,
                 db: db,
                 keyValueStoreFactory: keyValueStoreFactory,
                 schedulers: schedulers
             )
+            self._tsAccountManager = _tsAccountManager
         } else {
+            _tsAccountManager = nil
             self._tsAccountManager = nil
         }
 
@@ -435,5 +446,23 @@ public class DependenciesBridge {
             storageServiceManager: Usernames.Validation.Wrappers.StorageServiceManager(storageServiceManager),
             usernameLinkManager: usernameLinkManager
         ))
+
+        if FeatureFlags.newTSAccountManager {
+            self._accountAttributesUpdater = AccountAttributesUpdaterImpl(
+                appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
+                appVersion: appVersion,
+                dateProvider: dateProvider,
+                db: db,
+                profileManager: profileManager,
+                keyValueStoreFactory: keyValueStoreFactory,
+                serviceClient: SignalServiceRestClient(),
+                schedulers: schedulers,
+                svr: svr,
+                syncManager: syncManager,
+                tsAccountManager: _tsAccountManager!
+            )
+        } else {
+            self._accountAttributesUpdater = nil
+        }
     }
 }

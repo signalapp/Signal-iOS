@@ -37,14 +37,25 @@ public protocol SignalServiceClient {
     ) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
-    func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
+    func updatePrimaryDeviceAccountAttributes(authedAccount: AuthedAccount) -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
     func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)>
     func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse>
 
     // MARK: - Secondary Devices
 
-    func updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: Bool) -> Promise<Void>
+    func updateSecondaryDeviceCapabilities(authedAccount: AuthedAccount, hasBackedUpMasterKey: Bool) -> Promise<Void>
+}
+
+extension SignalServiceClient {
+
+    public func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {
+        updatePrimaryDeviceAccountAttributes(authedAccount: .implicit())
+    }
+
+    public func updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: Bool) -> Promise<Void> {
+        updateSecondaryDeviceCapabilities(authedAccount: .implicit(), hasBackedUpMasterKey: hasBackedUpMasterKey)
+    }
 }
 
 // MARK: -
@@ -137,7 +148,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         }
     }
 
-    public func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {
+    public func updatePrimaryDeviceAccountAttributes(authedAccount: AuthedAccount) -> Promise<Void> {
         guard tsAccountManager.isPrimaryDevice else {
             return Promise(error: OWSAssertionError("only primary device should update account attributes"))
         }
@@ -150,6 +161,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             )
         }
         let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
+        request.setAuth(authedAccount.chatServiceAuth)
         return networkManager.makePromise(request: request).asVoid()
     }
 
@@ -280,8 +292,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
     // MARK: - Secondary Devices
 
-    public func updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: Bool) -> Promise<Void> {
+    public func updateSecondaryDeviceCapabilities(authedAccount: AuthedAccount, hasBackedUpMasterKey: Bool) -> Promise<Void> {
         let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest(withHasBackedUpMasterKey: hasBackedUpMasterKey)
+        request.setAuth(authedAccount.chatServiceAuth)
         return self.networkManager.makePromise(request: request).asVoid()
     }
 }
