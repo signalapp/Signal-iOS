@@ -632,7 +632,7 @@ class StoryContextViewController: OWSViewController {
         var subsequentItems = items[currentItemIdx...endingIdx]
         var context = context
 
-        DispatchQueue.sharedBackground.async {
+        DispatchQueue.sharedUtility.async {
             // If the current context has less than 3 unloaded items, try the next context until we reach the end or the limit
             while subsequentItems.count < Self.subsequentItemsToLoad {
                 guard let nextContext = self.delegate?.storyContextViewController(self, contextAfter: context) else { break }

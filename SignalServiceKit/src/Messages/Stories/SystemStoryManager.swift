@@ -40,7 +40,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
 
-    private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .background)
+    private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
 
     private lazy var chainedPromise = ChainedPromise<Void>(scheduler: queue)
 

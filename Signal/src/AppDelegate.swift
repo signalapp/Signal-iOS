@@ -894,7 +894,7 @@ extension AppDelegate {
     ) {
         guard isRegistered, FeatureFlags.periodicallyCheckDatabaseIntegrity else { return }
 
-        DispatchQueue.sharedBackground.async {
+        DispatchQueue.sharedUtility.async {
             switch GRDBDatabaseStorageAdapter.checkIntegrity() {
             case .ok: break
             case .notOk:

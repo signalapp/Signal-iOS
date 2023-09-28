@@ -13,11 +13,6 @@ class DispatchQueueOWSTests: XCTestCase {
     func testQoSFlooring() {
         // Setup: Construct a map, (QoSClass) -> (UInt32 that should floor to its key)
         let expectedQoSForRawValues: [DispatchQoS.QoSClass: [UInt32]] = [
-            .background: [
-                QOS_CLASS_BACKGROUND.rawValue,
-                QOS_CLASS_BACKGROUND.rawValue + 1,
-                QOS_CLASS_UTILITY.rawValue - 1
-            ],
             .utility: [
                 QOS_CLASS_UTILITY.rawValue,
                 QOS_CLASS_UTILITY.rawValue + 1,
@@ -47,10 +42,6 @@ class DispatchQueueOWSTests: XCTestCase {
     func testSharedQueues() {
         // Setup + Test: Access queues in all sorts of different ways
         let sharedQueuesAtQoS: [DispatchQoS.QoSClass: [DispatchQueue]] = [
-            .background: [
-                DispatchQueue.sharedBackground,
-                DispatchQueue.sharedQueue(at: .background)
-            ],
             .utility: [
                 DispatchQueue.sharedUtility,
                 DispatchQueue.sharedQueue(at: .utility)

@@ -634,7 +634,7 @@ public class StickerManager: NSObject {
         // after the transaction is complete so that other transactions aren't
         // blocked.
         transaction.addSyncCompletion {
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.sharedUtility.async {
                 do {
                     try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
                 } catch {

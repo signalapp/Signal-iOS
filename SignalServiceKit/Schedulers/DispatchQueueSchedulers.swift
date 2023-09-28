@@ -31,10 +31,6 @@ public class DispatchQueueSchedulers: Schedulers {
         return DispatchQueue.sharedUtility
     }
 
-    public var sharedBackground: Scheduler {
-        return DispatchQueue.sharedBackground
-    }
-
     public func sharedQueue(at qos: DispatchQoS) -> Scheduler {
         return DispatchQueue.sharedQueue(at: qos)
     }
