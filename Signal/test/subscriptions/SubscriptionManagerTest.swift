@@ -316,6 +316,16 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         )
     }
 
+    func testParseConfigWithUnrecognizedPaymentMethod() throws {
+        let unexpectedPaymentMethod = DonationConfigurationFixtures.withDefaults(
+            currenciesJson: CurrencyFixtures.withDefaults(
+                supportedPaymentMethods: CurrencyFixtures.supportedPaymentMethods + ["cash money"]
+            )
+        )
+
+        _ = try DonationConfiguration.from(configurationServiceResponse: unexpectedPaymentMethod)
+    }
+
     // MARK: Utilities
 
     private func expect(
