@@ -754,11 +754,11 @@ public class SubscriptionManagerImpl: NSObject {
             return
         }
 
-        firstly(on: DispatchQueue.sharedBackground) {
+        firstly(on: DispatchQueue.global()) {
             self.postSubscriberID(subscriberID: subscriberID)
-        }.then(on: DispatchQueue.sharedBackground) {
+        }.then(on: DispatchQueue.global()) {
             self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: DispatchQueue.sharedBackground) { subscription in
+        }.done(on: DispatchQueue.global()) { subscription in
             guard let subscription = subscription else {
                 Logger.info("[Donations] No current subscription for this subscriberID")
                 self.updateSubscriptionHeartbeatDate()
@@ -802,7 +802,7 @@ public class SubscriptionManagerImpl: NSObject {
             // Save heartbeat
             self.updateSubscriptionHeartbeatDate()
 
-        }.catch(on: DispatchQueue.sharedBackground) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Failed subscription heartbeat with error \(error)")
         }
     }
@@ -830,10 +830,10 @@ public class SubscriptionManagerImpl: NSObject {
             return
         }
 
-        firstly(on: DispatchQueue.sharedBackground) {
+        firstly(on: DispatchQueue.global()) {
             // Fetch current subscription
             self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: DispatchQueue.sharedBackground) { subscription in
+        }.done(on: DispatchQueue.global()) { subscription in
             guard let subscription = subscription else {
                 Logger.info("[Donations] No current subscription for this subscriberID")
                 return
@@ -849,7 +849,7 @@ public class SubscriptionManagerImpl: NSObject {
                 }
             }
 
-        }.catch(on: DispatchQueue.sharedBackground) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Failed last subscription expiration update with error \(error)")
         }
     }

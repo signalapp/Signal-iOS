@@ -344,7 +344,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     deinit {
         // Eagerly clean up temp files.
         let temporaryFileUrls = self.temporaryFileUrls
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.sharedUtility.async {
             for fileUrl in temporaryFileUrls {
                 do {
                     try OWSFileSystem.deleteFileIfExists(url: fileUrl)

@@ -437,14 +437,14 @@ extension RegistrationCoordinatorImpl {
             networkFailureError: ResponseType
         ) -> Guarantee<ResponseType> {
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-                .map(on: schedulers.sharedBackground) { (response: HTTPResponse) -> ResponseType in
+                .map(on: schedulers.global()) { (response: HTTPResponse) -> ResponseType in
                     return handler(
                         response.responseStatusCode,
                         response.responseHeaders[Constants.retryAfterHeader],
                         response.responseBodyData
                     )
                 }
-                .recover(on: schedulers.sharedBackground) { (error: Error) -> Guarantee<ResponseType> in
+                .recover(on: schedulers.global()) { (error: Error) -> Guarantee<ResponseType> in
                     if error.isNetworkFailureOrTimeout {
                         return .value(networkFailureError)
                     }

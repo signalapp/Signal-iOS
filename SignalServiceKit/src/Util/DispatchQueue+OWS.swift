@@ -44,10 +44,10 @@ extension DispatchQueue {
             return DispatchQueue.sharedUtility
 
         case .background, .unspecified:
-            return DispatchQueue.sharedBackground
+            return DispatchQueue.global(qos: .background)
 
         default:
-            return DispatchQueue.sharedBackground
+            return DispatchQueue.sharedUtility
 
         }
     }

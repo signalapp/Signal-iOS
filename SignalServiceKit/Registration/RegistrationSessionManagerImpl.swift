@@ -471,14 +471,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     ) -> Guarantee<FetchSessionResponse> {
         let request = RegistrationRequestFactory.fetchSessionRequest(sessionId: session.id)
         return signalService.urlSessionForMainSignalService().promiseForTSRequest(request)
-            .map(on: schedulers.sharedBackground) { (response: HTTPResponse) -> FetchSessionResponse in
+            .map(on: schedulers.global()) { (response: HTTPResponse) -> FetchSessionResponse in
                 return self.handleFetchSessionResponse(
                     sessionAtSendTime: session,
                     statusCode: response.responseStatusCode,
                     bodyData: response.responseBodyData
                 )
             }
-            .recover(on: schedulers.sharedBackground) { (error: Error) -> Guarantee<FetchSessionResponse> in
+            .recover(on: schedulers.global()) { (error: Error) -> Guarantee<FetchSessionResponse> in
                 guard let error = error as? OWSHTTPError else {
                     return .value(.genericError)
                 }

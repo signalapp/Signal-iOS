@@ -32,9 +32,6 @@ public protocol Schedulers {
     /// Analogous to `DispatchQueue.sharedUtility`.
     var sharedUtility: Scheduler { get }
 
-    /// Analogous to `DispatchQueue.sharedBackground`.
-    var sharedBackground: Scheduler { get }
-
     /// Returns the shared serial queue appropriate for the provided QoS
     func sharedQueue(at qos: DispatchQoS) -> Scheduler
 

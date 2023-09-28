@@ -1364,7 +1364,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .retryAfter(let timeInterval):
             if timeInterval < Constants.autoRetryInterval {
                 return Guarantee
-                    .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                    .after(on: self.schedulers.global(), seconds: timeInterval)
                     .then(on: self.schedulers.sync) { [weak self] in
                         guard let self else {
                             return unretainedSelfError()
@@ -2122,7 +2122,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .retryAfter(let timeInterval):
             if timeInterval < Constants.autoRetryInterval {
                 return Guarantee
-                    .after(on: schedulers.sharedBackground, seconds: timeInterval)
+                    .after(on: schedulers.global(), seconds: timeInterval)
                     .then(on: schedulers.sync) { [weak self] in
                         guard let self else {
                             return unretainedSelfError()
@@ -2160,7 +2160,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return deps.pushRegistrationManager.requestPushToken()
-            .then(on: schedulers.sharedBackground) { [weak self] tokenResult -> Guarantee<RegistrationStep> in
+            .then(on: schedulers.global()) { [weak self] tokenResult -> Guarantee<RegistrationStep> in
                 guard let strongSelf = self else {
                     return unretainedSelfError()
                 }
@@ -2204,7 +2204,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     case .retryAfter(let timeInterval):
                         if timeInterval < Constants.autoRetryInterval {
                             return Guarantee
-                                .after(on: strongSelf.schedulers.sharedBackground, seconds: timeInterval)
+                                .after(on: strongSelf.schedulers.global(), seconds: timeInterval)
                                 .then(on: strongSelf.schedulers.sync) { [weak self] in
                                     guard let self else {
                                         return unretainedSelfError()
@@ -2303,7 +2303,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if let timeInterval, timeInterval < Constants.autoRetryInterval {
                     self.db.write { self.processSession(session, $0) }
                     return Guarantee
-                        .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                        .after(on: self.schedulers.global(), seconds: timeInterval)
                         .then(on: self.schedulers.sync) { [weak self] in
                             guard let self else {
                                 return unretainedSelfError()
@@ -2463,8 +2463,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return deps.pushRegistrationManager
                 .receivePreAuthChallengeToken()
                 .map { $0 }
-                .nilTimeout(on: schedulers.sharedBackground, seconds: timeout)
-                .then(on: schedulers.sharedBackground) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
+                .nilTimeout(on: schedulers.global(), seconds: timeout)
+                .then(on: schedulers.global()) { [weak self] (challengeToken: String?) -> Guarantee<RegistrationStep> in
                     guard let self else {
                         return unretainedSelfError()
                     }
@@ -2693,7 +2693,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.db.write { self.processSession(session, $0) }
                 if let timeInterval = session.nextVerificationAttempt, timeInterval < Constants.autoRetryInterval {
                     return Guarantee
-                        .after(on: self.schedulers.sharedBackground, seconds: timeInterval)
+                        .after(on: self.schedulers.global(), seconds: timeInterval)
                         .then(on: self.schedulers.sync) { [weak self] in
                             guard let self else {
                                 return unretainedSelfError()
@@ -3356,7 +3356,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // Creating a high strust signal recipient for oneself
         // must happen in a transaction initiated off the main thread.
-        return firstly(on: schedulers.sharedBackground) { [weak self] () -> FinalizeChangeNumberResult in
+        return firstly(on: schedulers.global()) { [weak self] () -> FinalizeChangeNumberResult in
             guard let strongSelf = self else {
                 return .unretainedSelf
             }
@@ -3664,7 +3664,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 localDeviceId: changeNumberState.localDeviceId,
                 localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
             )
-            .then(on: schedulers.sharedBackground) { [weak self] pniResult -> Guarantee<ChangeNumberResult> in
+            .then(on: schedulers.global()) { [weak self] pniResult -> Guarantee<ChangeNumberResult> in
                 guard let strongSelf = self else {
                     return .value(.unretainedSelf)
                 }
