@@ -42,11 +42,11 @@ public protocol TSAccountManagerProtocol {
 
     func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
     func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
-    // TODO: this needs to trigger an account attributes update as well as
-    // a storageService update. That needs to be managed externally to avoid
-    // circular dependencies.
-    func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverable: Bool,
-        tx: DBWriteTransaction
-    )
+}
+
+/// Should only be used in ``PhoneNumberDiscoverabilityManager``, so that necessary
+/// side effects can be triggered.
+public protocol PhoneNumberDiscoverabilitySetter {
+
+    func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction)
 }

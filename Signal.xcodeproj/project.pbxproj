@@ -812,7 +812,10 @@
 		6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */; };
 		6646572C2AC347B70099DE1C /* AccountAttributesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646572B2AC347B70099DE1C /* AccountAttributesUpdater.swift */; };
 		6646572E2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646572D2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift */; };
+		664657312AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657302AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift */; };
+		664657332AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */; };
 		664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657342AC370670099DE1C /* MockAccountAttributesUpdater.swift */; };
+		664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657362AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3365,7 +3368,10 @@
 		6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountAttributes+Dependencies.swift"; sourceTree = "<group>"; };
 		6646572B2AC347B70099DE1C /* AccountAttributesUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesUpdater.swift; sourceTree = "<group>"; };
 		6646572D2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesUpdaterImpl.swift; sourceTree = "<group>"; };
+		664657302AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilityManager.swift; sourceTree = "<group>"; };
+		664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilityManagerImpl.swift; sourceTree = "<group>"; };
 		664657342AC370670099DE1C /* MockAccountAttributesUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAccountAttributesUpdater.swift; sourceTree = "<group>"; };
+		664657362AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhoneNumberDiscoverabilityManager.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -6754,6 +6760,16 @@
 			path = AccountAttributes;
 			sourceTree = "<group>";
 		};
+		6646572F2AC369EB0099DE1C /* PhoneNumberDiscoverabilityManager */ = {
+			isa = PBXGroup;
+			children = (
+				664657362AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift */,
+				664657302AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift */,
+				664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */,
+			);
+			path = PhoneNumberDiscoverabilityManager;
+			sourceTree = "<group>";
+		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
 			isa = PBXGroup;
 			children = (
@@ -9157,6 +9173,7 @@
 		F9C5C9BA289453B100548EEE /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				6646572F2AC369EB0099DE1C /* PhoneNumberDiscoverabilityManager */,
 				6659A0242A7C112700066AB7 /* PreKeys */,
 				661170BF2ABA458800A1B16D /* TSAccountManager */,
 				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
@@ -12444,6 +12461,7 @@
 				664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
+				664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */,
 				6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */,
 				66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
@@ -12632,6 +12650,8 @@
 				6659A0352A7C6E0900066AB7 /* PersistPreKeyTask.swift in Sources */,
 				F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */,
 				5033D46329D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift in Sources */,
+				664657312AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift in Sources */,
+				664657332AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift in Sources */,
 				F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */,
 				F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */,
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,

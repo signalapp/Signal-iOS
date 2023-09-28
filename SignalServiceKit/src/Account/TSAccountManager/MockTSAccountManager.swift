@@ -99,20 +99,4 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
     open func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
         return isDiscoverableByPhoneNumberMock()
     }
-
-    public lazy var lastSetIsDiscoverablyByPhoneNumberAtMock: () -> Date = dateProvider
-
-    public lazy var setIsDiscoverableByPhoneNumberMock: (
-        Bool
-    ) -> Void = { [weak self] isDiscoverableByPhoneNumber in
-        guard let self else { return }
-        self.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
-        self.isDiscoverableByPhoneNumberMock = { isDiscoverableByPhoneNumber }
-        let date = self.dateProvider()
-        self.lastSetIsDiscoverablyByPhoneNumberAtMock = { date }
-    }
-
-    open func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction) {
-        setIsDiscoverableByPhoneNumberMock(isDiscoverable)
-    }
 }

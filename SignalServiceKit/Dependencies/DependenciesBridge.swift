@@ -68,6 +68,14 @@ public class DependenciesBridge {
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     public let localUsernameManager: LocalUsernameManager
 
+    private let _phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager?
+    public var phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager {
+        guard FeatureFlags.newTSAccountManager else {
+            fatalError("Shouldn't be trying to use the new PhoneNumberDiscoverabilityManager!")
+        }
+        return _phoneNumberDiscoverabilityManager!
+    }
+
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
 
@@ -448,7 +456,7 @@ public class DependenciesBridge {
         ))
 
         if FeatureFlags.newTSAccountManager {
-            self._accountAttributesUpdater = AccountAttributesUpdaterImpl(
+            let accountAttributesUpdater = AccountAttributesUpdaterImpl(
                 appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
                 appVersion: appVersion,
                 dateProvider: dateProvider,
@@ -461,8 +469,16 @@ public class DependenciesBridge {
                 syncManager: syncManager,
                 tsAccountManager: _tsAccountManager!
             )
+            self._accountAttributesUpdater = accountAttributesUpdater
+            self._phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
+                accountAttributesUpdater: accountAttributesUpdater,
+                schedulers: schedulers,
+                storageServiceManager: storageServiceManager,
+                tsAccountManager: _tsAccountManager!
+            )
         } else {
             self._accountAttributesUpdater = nil
+            self._phoneNumberDiscoverabilityManager = nil
         }
     }
 }

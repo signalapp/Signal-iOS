@@ -118,6 +118,9 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
     public func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
         accountStateManager.getOrLoadAccountState(tx: tx).isDiscoverableByPhoneNumber
     }
+}
+
+extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 
     public func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction) {
         accountStateManager.setIsDiscoverableByPhoneNumber(isDiscoverable, tx: tx)
