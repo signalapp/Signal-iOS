@@ -462,6 +462,10 @@ extension SignalCall: GroupCallDelegate {
         // TODO: Implement handling of the "low outgoing bandwidth for video" notification.
     }
 
+    public func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
+        // TODO: Implement handling of reactions.
+    }
+
     public func groupCall(onPeekChanged groupCall: GroupCall) {
         if let peekInfo = groupCall.peekInfo {
             // Note that we track this regardless of whether ringing is available.
