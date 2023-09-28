@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 extension SubscriptionManagerImpl {
     /// Represents donation configuration information fetched from the service,
@@ -474,7 +474,7 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
             case "PAYPAL":
                 result.formUnion([.paypal])
             default:
-                throw ParseError.invalidPaymentMethodString(string: methodString)
+                Logger.warn("Unrecognized payment string: \(methodString)")
             }
         }
 
