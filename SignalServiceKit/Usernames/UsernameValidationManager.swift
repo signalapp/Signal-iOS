@@ -174,6 +174,8 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         }
         .done(on: context.schedulers.global()) { whoamiResponse throws in
             let validationSucceeded: Bool = {
+                UsernameLogger.shared.info("Comparing usernames: \(localUsername == nil), \(whoamiResponse.usernameHash == nil)")
+
                 switch (localUsername, whoamiResponse.usernameHash) {
                 case (nil, nil):
                     // Both missing -> good
@@ -223,6 +225,10 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             {
                 UsernameLogger.shared.info("Username link validated successfully.")
             } else {
+                if usernameForLocalLink == nil {
+                    UsernameLogger.shared.warn("Username missing for local link!")
+                }
+
                 self.context.database.write { tx in
                     self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
                         username: localUsername,
