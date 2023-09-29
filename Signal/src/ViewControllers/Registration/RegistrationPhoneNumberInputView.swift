@@ -197,6 +197,20 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString: String
     ) -> Bool {
+        let wasEmpty = textField.text.isEmptyOrNil
+        var replacementString = replacementString
+
+        if
+            textField.text.isEmptyOrNil,
+            let fulle164 = E164(replacementString.removeCharacters(characterSet: CharacterSet(charactersIn: " -()"))),
+            let phoneNumber = RegistrationPhoneNumber(e164: fulle164)
+        {
+            // If we got a full e164, it was probably from system autofill.
+            // Split out the country code portion.
+            self.countryState = phoneNumber.countryState
+            replacementString = phoneNumber.nationalNumber
+        }
+
         let result = FormattedNumberField.textField(
             textField,
             shouldChangeCharactersIn: range,
@@ -204,6 +218,16 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             maxDigits: maxNationalNumberDigits,
             format: formatNationalNumber
         )
+
+        if wasEmpty {
+            DispatchQueue.main.async {
+                // Move the cursor back to the end.
+                textField.selectedTextRange = textField.textRange(
+                    from: textField.endOfDocument,
+                    to: textField.endOfDocument
+                )
+            }
+        }
 
         return result
     }
