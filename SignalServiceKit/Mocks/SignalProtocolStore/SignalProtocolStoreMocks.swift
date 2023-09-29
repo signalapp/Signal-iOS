@@ -6,6 +6,8 @@
 import Foundation
 import LibSignalClient
 
+#if TESTABLE_BUILD
+
 internal class MockSignalProtocolStore: SignalProtocolStore {
     public var sessionStore: SignalSessionStore { mockSessionStore }
     public var preKeyStore: SignalPreKeyStore { mockPreKeyStore }
@@ -295,3 +297,5 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
 
     func removeAll(tx: DBWriteTransaction) { }
 }
+
+#endif

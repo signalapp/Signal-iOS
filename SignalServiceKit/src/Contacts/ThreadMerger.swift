@@ -418,3 +418,51 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
 protocol _ThreadMerger_SDSThreadMergerShim {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction)
 }
+
+#if TESTABLE_BUILD
+
+class ThreadMerger_MockPinnedThreadManager: ThreadMerger.Shims.PinnedThreadManager {
+    var pinnedThreadIds = [String]()
+    func fetchPinnedThreadIds(tx: DBReadTransaction) -> [String] { pinnedThreadIds }
+    func setPinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) { self.pinnedThreadIds = pinnedThreadIds }
+}
+
+class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Shims.DisappearingMessagesConfigurationManager {
+    private let store: MockDisappearingMessagesConfigurationStore
+    init(_ disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore) {
+        self.store = disappearingMessagesConfigurationStore
+    }
+    func setToken(_ token: DisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
+        self.store.set(token: token, for: .thread(thread), tx: tx)
+    }
+}
+
+class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAssociatedDataManager {
+    private let store: MockThreadAssociatedDataStore
+    init(_ threadAssociatedDataStore: MockThreadAssociatedDataStore) {
+        self.store = threadAssociatedDataStore
+    }
+    func updateValue(
+        _ threadAssociatedData: ThreadAssociatedData,
+        isArchived: Bool?,
+        isMarkedUnread: Bool?,
+        mutedUntilTimestamp: UInt64?,
+        audioPlaybackRate: Float?,
+        updateStorageService: Bool,
+        tx: DBWriteTransaction
+    ) {
+        self.store.values[threadAssociatedData.threadUniqueId] = ThreadAssociatedData(
+            threadUniqueId: threadAssociatedData.threadUniqueId,
+            isArchived: isArchived ?? threadAssociatedData.isArchived,
+            isMarkedUnread: isMarkedUnread ?? threadAssociatedData.isMarkedUnread,
+            mutedUntilTimestamp: mutedUntilTimestamp ?? threadAssociatedData.mutedUntilTimestamp,
+            audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate
+        )
+    }
+}
+
+class ThreadMerger_MockSDSThreadMerger: ThreadMerger.Shims.SDSThreadMerger {
+    func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {}
+}
+
+#endif

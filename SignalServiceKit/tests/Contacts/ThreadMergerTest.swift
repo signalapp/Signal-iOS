@@ -12,11 +12,11 @@ import XCTest
 final class ThreadMergerTest: XCTestCase {
     private var chatColorSettingStore: ChatColorSettingStore!
     private var db: MockDB!
-    private var disappearingMessagesConfigurationManager: MockDisappearingMessagesConfigurationManager!
+    private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
-    private var pinnedThreadManager: MockPinnedThreadManager!
-    private var threadAssociatedDataManager: MockThreadAssociatedDataManager!
+    private var pinnedThreadManager: ThreadMerger_MockPinnedThreadManager!
+    private var threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager!
     private var threadAssociatedDataStore: MockThreadAssociatedDataStore!
     private var threadStore: MockThreadStore!
     private var threadRemover: ThreadRemover!
@@ -40,23 +40,23 @@ final class ThreadMergerTest: XCTestCase {
         chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         db = MockDB()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
-        disappearingMessagesConfigurationManager = MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
-        pinnedThreadManager = MockPinnedThreadManager()
+        disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
+        pinnedThreadManager = ThreadMerger_MockPinnedThreadManager()
         interactionStore = MockInteractionStore()
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
-        threadAssociatedDataManager = MockThreadAssociatedDataManager(threadAssociatedDataStore)
+        threadAssociatedDataManager = ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore)
         threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
         threadStore = MockThreadStore()
         wallpaperStore = WallpaperStore(keyValueStoreFactory: keyValueStoreFactory, notificationScheduler: SyncScheduler())
         threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
-            databaseStorage: MockDatabaseStorage(),
+            databaseStorage: ThreadRemover_MockDatabaseStorage(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            fullTextSearchFinder: MockFullTextSearchFinder(),
-            interactionRemover: MockInteractionRemover(),
-            sdsThreadRemover: MockSDSThreadRemover(),
+            fullTextSearchFinder: ThreadRemover_MockFullTextSearchFinder(),
+            interactionRemover: ThreadRemover_MockInteractionRemover(),
+            sdsThreadRemover: ThreadRemover_MockSDSThreadRemover(),
             threadAssociatedDataStore: threadAssociatedDataStore,
-            threadReadCache: MockThreadReadCache(),
+            threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore
@@ -67,7 +67,7 @@ final class ThreadMergerTest: XCTestCase {
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
             pinnedThreadManager: pinnedThreadManager,
-            sdsThreadMerger: MockSDSThreadMerger(),
+            sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
             threadAssociatedDataManager: threadAssociatedDataManager,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
@@ -81,12 +81,6 @@ final class ThreadMergerTest: XCTestCase {
     }
 
     // MARK: - Pinned Threads
-
-    private class MockPinnedThreadManager: _ThreadMerger_PinnedThreadManagerShim {
-        var pinnedThreadIds = [String]()
-        func fetchPinnedThreadIds(tx: DBReadTransaction) -> [String] { pinnedThreadIds }
-        func setPinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) { self.pinnedThreadIds = pinnedThreadIds }
-    }
 
     func testPinnedThreadsNeither() {
         let otherPinnedThreadId = "00000000-0000-4000-8000-000000000ABC"
@@ -121,16 +115,6 @@ final class ThreadMergerTest: XCTestCase {
     }
 
     // MARK: - Disappearing Messages
-
-    private class MockDisappearingMessagesConfigurationManager: _ThreadMerger_DisappearingMessagesConfigurationManagerShim {
-        private let store: MockDisappearingMessagesConfigurationStore
-        init(_ disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore) {
-            self.store = disappearingMessagesConfigurationStore
-        }
-        func setToken(_ token: DisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
-            self.store.set(token: token, for: .thread(thread), tx: tx)
-        }
-    }
 
     private func setDisappearingMessageIntervals(serviceIdValue: UInt32?, phoneNumberValue: UInt32?) {
         disappearingMessagesConfigurationStore.values = [
@@ -187,30 +171,6 @@ final class ThreadMergerTest: XCTestCase {
     }
 
     // MARK: - Thread Associated Data
-
-    private class MockThreadAssociatedDataManager: _ThreadMerger_ThreadAssociatedDataManagerShim {
-        private let store: MockThreadAssociatedDataStore
-        init(_ threadAssociatedDataStore: MockThreadAssociatedDataStore) {
-            self.store = threadAssociatedDataStore
-        }
-        func updateValue(
-            _ threadAssociatedData: ThreadAssociatedData,
-            isArchived: Bool?,
-            isMarkedUnread: Bool?,
-            mutedUntilTimestamp: UInt64?,
-            audioPlaybackRate: Float?,
-            updateStorageService: Bool,
-            tx: DBWriteTransaction
-        ) {
-            self.store.values[threadAssociatedData.threadUniqueId] = ThreadAssociatedData(
-                threadUniqueId: threadAssociatedData.threadUniqueId,
-                isArchived: isArchived ?? threadAssociatedData.isArchived,
-                isMarkedUnread: isMarkedUnread ?? threadAssociatedData.isMarkedUnread,
-                mutedUntilTimestamp: mutedUntilTimestamp ?? threadAssociatedData.mutedUntilTimestamp,
-                audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate
-            )
-        }
-    }
 
     private func setThreadAssociatedData(for thread: TSContactThread, isArchived: Bool, isMarkedUnread: Bool, mutedUntilTimestamp: UInt64, audioPlaybackRate: Float) {
         threadAssociatedDataStore.values[thread.uniqueId] = ThreadAssociatedData(
@@ -328,14 +288,6 @@ final class ThreadMergerTest: XCTestCase {
 
     // MARK: - Raw SDS Migrations
 
-    class MockSDSThreadRemover: ThreadRemoverImpl.Shims.SDSThreadRemover {
-        func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
-    }
-
-    class MockSDSThreadMerger: ThreadMerger.Shims.SDSThreadMerger {
-        func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {}
-    }
-
     // MARK: - Helpers
 
     private func performDefaultMerge() {
@@ -360,23 +312,5 @@ final class ThreadMergerTest: XCTestCase {
         ))
         threadAssociatedDataStore.values[result.uniqueId] = ThreadAssociatedData(threadUniqueId: result.uniqueId)
         return result
-    }
-
-    // MARK: - Mock Classes
-
-    private class MockInteractionRemover: ThreadRemoverImpl.Shims.InteractionRemover {
-        func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {}
-    }
-
-    private class MockFullTextSearchFinder: ThreadRemoverImpl.Shims.FullTextSearchFinder {
-        func modelWasRemoved(model: SDSIndexableModel, tx: DBWriteTransaction) {}
-    }
-
-    private class MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {
-        func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
-    }
-
-    private class MockDatabaseStorage: ThreadRemoverImpl.Shims.DatabaseStorage {
-        func updateIdMapping(thread: TSThread, tx: DBWriteTransaction) {}
     }
 }

@@ -148,3 +148,29 @@ class _ThreadRemoverImpl_SDSThreadRemoverWrapper: _ThreadRemoverImpl_SDSThreadRe
         thread.clearLastVisibleInteraction(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
+
+// MARK: - Unit Tests
+
+#if TESTABLE_BUILD
+
+class ThreadRemover_MockInteractionRemover: ThreadRemoverImpl.Shims.InteractionRemover {
+    func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {}
+}
+
+class ThreadRemover_MockFullTextSearchFinder: ThreadRemoverImpl.Shims.FullTextSearchFinder {
+    func modelWasRemoved(model: SDSIndexableModel, tx: DBWriteTransaction) {}
+}
+
+class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {
+    func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
+}
+
+class ThreadRemover_MockDatabaseStorage: ThreadRemoverImpl.Shims.DatabaseStorage {
+    func updateIdMapping(thread: TSThread, tx: DBWriteTransaction) {}
+}
+
+class ThreadRemover_MockSDSThreadRemover: ThreadRemoverImpl.Shims.SDSThreadRemover {
+    func didRemove(thread: TSThread, tx: DBWriteTransaction) {}
+}
+
+#endif
