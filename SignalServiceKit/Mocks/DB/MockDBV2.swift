@@ -299,6 +299,10 @@ public class MockDB: DB {
             return try performWrite(block: block)
         }
     }
+
+    public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
+        // Do nothing.
+    }
 }
 
 #endif

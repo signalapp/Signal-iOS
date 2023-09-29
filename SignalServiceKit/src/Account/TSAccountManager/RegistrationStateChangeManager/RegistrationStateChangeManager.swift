@@ -147,4 +147,9 @@ public protocol RegistrationStateChangeManager {
      * This puts the state into ``TSRegistrationState.tranferred``.
      */
     func setWasTransferred(tx: DBWriteTransaction)
+
+    /**
+     * Unregisters with the server, resetting all app data after completion (if successful).
+     */
+    func unregisterFromService(auth: ChatServiceAuth) async throws
 }

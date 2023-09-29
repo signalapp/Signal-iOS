@@ -4,7 +4,7 @@
 //
 
 @objc
-public class NoopNotificationsManager: NSObject, NotificationsProtocol {
+public class NoopNotificationsManager: NSObject, NotificationsProtocolSwift {
     public var expectErrors: Bool = false
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
@@ -65,6 +65,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func notifyUserToRelaunchAfterTransfer(completion: (() -> Void)? = nil) {
         Logger.warn("skipping transfer relaunch notification")
+    }
+
+    public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
+        Logger.warn("skipping deregistration notification")
     }
 
     public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {

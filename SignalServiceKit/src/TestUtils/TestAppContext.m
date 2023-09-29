@@ -214,6 +214,11 @@ NS_ASSUME_NONNULL_BEGIN
     return dirPath;
 }
 
+- (void)resetAppData
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

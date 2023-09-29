@@ -5,6 +5,10 @@
 
 import Foundation
 
+public protocol DBChangeDelegate: AnyObject {
+    func dbChangesDidUpdateExternally()
+}
+
 /// Wrapper around `SDSDatabaseStorage` that allows for an access pattern identical
 /// to the original (you get a transaction object you pass around to perform database operations)
 /// but which is easily stubbed out in tests.
@@ -126,6 +130,10 @@ public protocol DB {
         line: Int,
         block: (DBWriteTransaction) throws -> T
     ) rethrows -> T
+
+    // MARK: - Observation
+
+    func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate)
 }
 
 // MARK: - Default arguments

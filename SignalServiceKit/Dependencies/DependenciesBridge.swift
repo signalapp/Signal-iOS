@@ -96,6 +96,7 @@ public class DependenciesBridge {
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setUpSingleton(
         accountServiceClient: AccountServiceClient,
+        appContext: AppContext,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -105,7 +106,7 @@ public class DependenciesBridge {
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
-        notificationsManager: NotificationsProtocol,
+        notificationsManager: NotificationsProtocolSwift,
         ows2FAManager: OWS2FAManager,
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
@@ -123,6 +124,7 @@ public class DependenciesBridge {
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
+            appContext: appContext,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -155,6 +157,7 @@ public class DependenciesBridge {
 
     private init(
         accountServiceClient: AccountServiceClient,
+        appContext: AppContext,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -164,7 +167,7 @@ public class DependenciesBridge {
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
-        notificationsManager: NotificationsProtocol,
+        notificationsManager: NotificationsProtocolSwift,
         ows2FAManager: OWS2FAManager,
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
@@ -189,6 +192,7 @@ public class DependenciesBridge {
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let newTSAccountManager = TSAccountManagerImpl(
+            appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -466,13 +470,16 @@ public class DependenciesBridge {
             tsAccountManager: newTSAccountManager
         )
         self.registrationStateChangeManager = RegistrationStateChangeManagerImpl(
+            appContext: appContext,
             groupsV2: groupsV2,
             identityManager: identityManager,
+            notificationPresenter: notificationsManager,
             paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
             recipientMerger: recipientMerger,
             schedulers: schedulers,
             senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
             signalProtocolStoreManager: signalProtocolStoreManager,
+            signalService: signalService,
             storageServiceManager: storageServiceManager,
             tsAccountManager: newTSAccountManager,
             udManager: udManager,

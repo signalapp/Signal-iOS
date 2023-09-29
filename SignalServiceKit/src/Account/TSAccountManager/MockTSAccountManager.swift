@@ -94,6 +94,14 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         return pniRegistrationIdMock()
     }
 
+    public lazy var setPniRegistrationIdMock: (_ id: UInt32) -> Void = { [weak self] id in
+        self?.pniRegistrationIdMock = { id }
+    }
+
+    open func setPniRegistrationId(_ newRegistrationId: UInt32, tx: DBWriteTransaction) {
+        setPniRegistrationIdMock(newRegistrationId)
+    }
+
     // MARK: - Manual Message Fetch
 
     public var isManualMessageFetchEnabledMock: () -> Bool = { false }

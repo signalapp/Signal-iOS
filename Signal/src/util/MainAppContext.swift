@@ -218,4 +218,8 @@ class MainAppContext: NSObject, AppContext {
     }
 
     var debugLogsDirPath: String { DebugLogger.mainAppDebugLogsDirPath }
+
+    func resetAppData() {
+        SignalApp.resetAppData()
+    }
 }

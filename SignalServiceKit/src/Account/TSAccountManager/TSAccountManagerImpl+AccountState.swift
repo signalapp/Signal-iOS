@@ -72,6 +72,12 @@ extension TSAccountManagerImpl {
             }
         }
 
+        func reloadAccountState(tx: DBReadTransaction) {
+            acquireLock {
+                _ = loadAccountState(tx: tx)
+            }
+        }
+
         // MARK: Mutations
 
         func setDeviceId(
@@ -119,7 +125,7 @@ extension TSAccountManagerImpl {
                 kvStore.setDate(dateProvider(), key: Keys.registrationDate, transaction: tx)
                 kvStore.removeValues(
                     forKeys: [
-                        Keys.isDeregistered,
+                        Keys.isDeregisteredOrDelinked,
                         Keys.reregistrationPhoneNumber,
                         Keys.reregistrationAci
                     ],
@@ -153,6 +159,17 @@ extension TSAccountManagerImpl {
         func setDidFinishProvisioning(tx: DBWriteTransaction) {
             mutateWithLock(tx: tx) {
                 kvStore.setBool(true, key: Keys.isFinishedProvisioning, transaction: tx)
+            }
+        }
+
+        func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool {
+            return mutateWithLock(tx: tx) {
+                let oldValue = kvStore.getBool(Keys.isDeregisteredOrDelinked, defaultValue: false, transaction: tx)
+                guard oldValue != isDeregisteredOrDelinked else {
+                    return false
+                }
+                kvStore.setBool(isDeregisteredOrDelinked, key: Keys.isDeregisteredOrDelinked, transaction: tx)
+                return true
             }
         }
 
@@ -389,8 +406,8 @@ extension TSAccountManagerImpl {
                 transaction: tx
             )
 
-            let isDeregistered = kvStore.getBool(
-                Keys.isDeregistered,
+            let isDeregisteredOrDelinked = kvStore.getBool(
+                Keys.isDeregisteredOrDelinked,
                 transaction: tx
             )
 
@@ -430,7 +447,7 @@ extension TSAccountManagerImpl {
                     phoneNumber: reregistrationPhoneNumber,
                     aci: reregistrationAci
                 )
-            } else if isDeregistered == true {
+            } else if isDeregisteredOrDelinked == true {
                 // if isDeregistered is true, we may have been registered
                 // or not. But its being true means we should be deregistered
                 // (or delinked, based on whether this is a primary).
@@ -468,7 +485,7 @@ extension TSAccountManagerImpl {
             static let localPni = "TSAccountManager_RegisteredPNIKey"
 
             static let registrationDate = "TSAccountManager_RegistrationDateKey"
-            static let isDeregistered = "TSAccountManager_IsDeregisteredKey"
+            static let isDeregisteredOrDelinked = "TSAccountManager_IsDeregisteredKey"
 
             static let reregistrationPhoneNumber = "TSAccountManager_ReregisteringPhoneNumberKey"
             static let reregistrationAci = "TSAccountManager_ReregisteringUUIDKey"

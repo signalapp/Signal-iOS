@@ -17,7 +17,7 @@ public class AppSetup {
         mobileCoinHelper: MobileCoinHelper,
         webSocketFactory: WebSocketFactory,
         callMessageHandler: OWSCallMessageHandler,
-        notificationPresenter: NotificationsProtocol
+        notificationPresenter: NotificationsProtocolSwift
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
 
@@ -76,6 +76,7 @@ public class AppSetup {
 
         let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
+            appContext: appContext,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,

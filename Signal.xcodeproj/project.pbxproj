@@ -819,6 +819,7 @@
 		6646573B2AC388C70099DE1C /* RegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */; };
 		6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */; };
 		6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */; };
+		664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3378,6 +3379,7 @@
 		6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManager.swift; sourceTree = "<group>"; };
 		6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManagerImpl.swift; sourceTree = "<group>"; };
 		6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRegistrationStateChangeManager.swift; sourceTree = "<group>"; };
+		664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsProtocolSwift.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -9313,6 +9315,7 @@
 			children = (
 				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
 				F9C5CA06289453B100548EEE /* NotificationsProtocol.h */,
+				664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */,
 				F9C5CA04289453B100548EEE /* OWSCallMessageHandler.h */,
 				F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */,
 				F9C5CA05289453B100548EEE /* ProtoUtils.h */,
@@ -12491,6 +12494,7 @@
 				F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */,
 				F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */,
 				F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */,
+				664657412AC4FB720099DE1C /* NotificationsProtocolSwift.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,

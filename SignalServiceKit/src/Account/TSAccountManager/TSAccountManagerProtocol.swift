@@ -46,6 +46,19 @@ public protocol TSAccountManagerProtocol {
     func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32
     func getOrGeneratePniRegistrationId(tx: DBWriteTransaction) -> UInt32
 
+    /// Set the PNI registration ID.
+    ///
+    /// This exists as a separate, external setter because we might _learn_ about a
+    /// PNI registration ID from PNI events from other devices, already having been
+    /// provided to the service, in which case we need to persist the value locally.
+    ///
+    /// There are no side effects to this setter; the caller is expected to handle those
+    /// and have this setter just persist state.
+    func setPniRegistrationId(
+        _ newRegistrationId: UInt32,
+        tx: DBWriteTransaction
+    )
+
     // MARK: - Manual Message Fetch
 
     func isManualMessageFetchEnabled(tx: DBReadTransaction) -> Bool
@@ -96,6 +109,15 @@ public protocol LocalIdentifiersSetter {
     )
 
     func setDidFinishProvisioning(tx: DBWriteTransaction)
+
+    /// Returns true if successful. Not successful iff the old value is the same as new value (no-op).
+    ///
+    /// Note that the old value is NOT equivalent to ``TSRegistrationState.deregistered``
+    /// or ``TSRegistrationState.delinked``; you can be deregistered AND reregistering,
+    /// in which case state would be ``TSRegistrationState.reregistering`` (and remain so)
+    /// but this method could still mutate underlying state which would take effect _after_ the
+    /// reregistration state was also cleared.
+    func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool
 
     func resetForReregistration(
         localNumber: E164,

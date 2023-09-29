@@ -107,6 +107,12 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
     open func setWasTransferred(tx: DBWriteTransaction) {
         setWasTransferredMock()
     }
+
+    public var unregisterFromServiceMock: (_ auth: ChatServiceAuth) async throws -> Void = { _ in }
+
+    open func unregisterFromService(auth: ChatServiceAuth) async throws {
+        try await unregisterFromServiceMock(auth)
+    }
 }
 
 #endif

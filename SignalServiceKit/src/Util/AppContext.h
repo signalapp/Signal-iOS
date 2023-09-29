@@ -139,6 +139,12 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL hasActiveCall;
 
+/// WARNING: Resets all persisted app data. (main app only).
+///
+/// App becomes unuseable. As of time of writing, the only option
+/// after doing this is to terminate the app and relaunch.
+- (void)resetAppData;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

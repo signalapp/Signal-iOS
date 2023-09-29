@@ -19,38 +19,47 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public typealias TSAccountManager = SignalServiceKit.TSAccountManagerProtocol & LocalIdentifiersSetter
 
+    private let appContext: AppContext
     private let groupsV2: GroupsV2Swift
     private let identityManager: OWSIdentityManager
+    private let notificationPresenter: NotificationsProtocolSwift
     private let paymentsEvents: Shims.PaymentsEvents
     private let recipientMerger: RecipientMerger
     private let schedulers: Schedulers
     private let senderKeyStore: Shims.SenderKeyStore
     private let signalProtocolStoreManager: SignalProtocolStoreManager
+    private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
     private let versionedProfiles: VersionedProfilesSwift
 
     public init(
+        appContext: AppContext,
         groupsV2: GroupsV2Swift,
         identityManager: OWSIdentityManager,
+        notificationPresenter: NotificationsProtocolSwift,
         paymentsEvents: Shims.PaymentsEvents,
         recipientMerger: RecipientMerger,
         schedulers: Schedulers,
         senderKeyStore: Shims.SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
+        signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         versionedProfiles: VersionedProfilesSwift
     ) {
+        self.appContext = appContext
         self.groupsV2 = groupsV2
         self.identityManager = identityManager
+        self.notificationPresenter = notificationPresenter
         self.paymentsEvents = paymentsEvents
         self.recipientMerger = recipientMerger
         self.schedulers = schedulers
         self.senderKeyStore = senderKeyStore
         self.signalProtocolStoreManager = signalProtocolStoreManager
+        self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -137,6 +146,20 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
     }
 
+    public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) {
+        Logger.warn("Updating isDeregisteredOrDelinked \(isDeregisteredOrDelinked)")
+        let didChange = tsAccountManager.setIsDeregisteredOrDelinked(isDeregisteredOrDelinked, tx: tx)
+        guard didChange else {
+            Logger.info("No change; exiting early.")
+            return
+        }
+
+        if isDeregisteredOrDelinked {
+            notificationPresenter.notifyUserOfDeregistration(tx: tx)
+        }
+        postRegistrationStateDidChangeNotification()
+    }
+
     public func resetForReregistration(
         localPhoneNumber: E164,
         localAci: Aci,
@@ -199,6 +222,29 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
         tx.addAsyncCompletion(on: schedulers.main) {
             self.postRegistrationStateDidChangeNotification()
+        }
+    }
+
+    public func unregisterFromService(auth: ChatServiceAuth) async throws {
+        owsAssertBeta(appContext.isMainAppAndActive)
+        let request = OWSRequestFactory.unregisterAccountRequest()
+        request.setAuth(auth)
+        do {
+            try await signalService.urlSessionForMainSignalService()
+                .promiseForTSRequest(request)
+                .asVoid(on: schedulers.sync)
+                .awaitable()
+            Logger.verbose("Successfully unregistered.")
+
+            // No need to set any state, as we wipe the whole app anyway.
+            appContext.resetAppData()
+
+            schedulers.main.async {
+                self.postRegistrationStateDidChangeNotification()
+            }
+        } catch {
+            owsFailDebugUnlessNetworkFailure(error)
+            throw error
         }
     }
 

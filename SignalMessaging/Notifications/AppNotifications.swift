@@ -200,7 +200,7 @@ extension UserNotificationPresenter {
 
 // MARK: -
 
-public class NotificationPresenter: NSObject, NotificationsProtocol {
+public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
     private let presenter = UserNotificationPresenter()
 
     public override init() {
@@ -1192,6 +1192,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 }
             )
         }
+    }
+
+    public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
+        notifyUserOfDeregistration(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {

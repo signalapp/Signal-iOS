@@ -8,6 +8,7 @@ import LibSignalClient
 
 public class TSAccountManagerImpl: TSAccountManagerProtocol {
 
+    private let appReadiness: Shims.AppReadiness
     private let dateProvider: DateProvider
     private let db: DB
     private let schedulers: Schedulers
@@ -16,11 +17,13 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
     private let kvStore: KeyValueStore
 
     public init(
+        appReadiness: Shims.AppReadiness,
         dateProvider: @escaping DateProvider,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers
     ) {
+        self.appReadiness = appReadiness
         self.dateProvider = dateProvider
         self.db = db
         self.schedulers = schedulers
@@ -34,6 +37,12 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
             kvStore: kvStore
         )
         self.kvStore = kvStore
+
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            if !self.appReadiness.isMainApp {
+                self.db.appendDbChangeDelegate(self)
+            }
+        }
     }
 
     /// Temporary method until old TSAccountManager is deleted. While both exist,
@@ -113,6 +122,10 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
             nounForLogging: "PNI registration ID",
             tx: tx
         )
+    }
+
+    public func setPniRegistrationId(_ newRegistrationId: UInt32, tx: DBWriteTransaction) {
+        kvStore.setUInt32(newRegistrationId, key: Self.pniRegistrationIdKey, transaction: tx)
     }
 
     private func getOrGenerateRegistrationId(
@@ -207,6 +220,10 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         accountStateManager.setDidFinishProvisioning(tx: tx)
     }
 
+    public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool {
+        return accountStateManager.setIsDeregisteredOrDelinked(isDeregisteredOrDelinked, tx: tx)
+    }
+
     public func resetForReregistration(
         localNumber: E164,
         localAci: Aci,
@@ -225,5 +242,42 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
 
     public func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool {
         return accountStateManager.setWasTransferred(wasTransferred, tx: tx)
+    }
+}
+
+extension TSAccountManagerImpl: DBChangeDelegate {
+
+    public func dbChangesDidUpdateExternally() {
+        self.db.read(block: accountStateManager.reloadAccountState(tx:))
+    }
+}
+
+extension TSAccountManagerImpl {
+    public enum Shims {
+        public typealias AppReadiness = _TSAccountManagerImpl_AppReadinessShim
+    }
+
+    public enum Wrappers {
+        public typealias AppReadiness = _TSAccountManagerImpl_AppReadinessWrapper
+    }
+}
+
+public protocol _TSAccountManagerImpl_AppReadinessShim {
+
+    var isMainApp: Bool { get }
+
+    func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
+}
+
+public class _TSAccountManagerImpl_AppReadinessWrapper: _TSAccountManagerImpl_AppReadinessShim {
+
+    public init() {}
+
+    public var isMainApp: Bool {
+        return CurrentAppContext().isMainApp
+    }
+
+    public func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync(block)
     }
 }
