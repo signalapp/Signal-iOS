@@ -6,6 +6,8 @@
 import Foundation
 import LibSignalClient
 
+#if TESTABLE_BUILD
+
 public class MockTSAccountManager: TSAccountManagerProtocol {
 
     public var dateProvider: DateProvider
@@ -102,3 +104,5 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         setIsDiscoverableByPhoneNumberMock(isDiscoverable)
     }
 }
+
+#endif
