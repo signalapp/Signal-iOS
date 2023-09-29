@@ -191,7 +191,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         body.mentions.forEach { (mentionRange, mentionAci) in
             if
                 // An insert, which can happen in the middle of a mention.
-                (range.length == 0 && mentionRange.contains(range.location))
+                (range.length == 0 && mentionRange.contains(range.location) && range.location != mentionRange.location)
                 || (mentionRange.intersection(range)?.length ?? 0) > 0
             {
                 intersectingMentionRanges.append(mentionRange)
