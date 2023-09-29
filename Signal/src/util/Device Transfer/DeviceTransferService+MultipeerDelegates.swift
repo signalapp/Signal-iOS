@@ -39,45 +39,48 @@ extension DeviceTransferService: MCNearbyServiceAdvertiserDelegate {
 
 extension DeviceTransferService: MCSessionDelegate {
     func session(_ session: MCSession, peer peerId: MCPeerID, didChange state: MCSessionState) {
-        Logger.debug("Connection to \(peerId) did change: \(state.rawValue)")
+        // dispatch to main ASAP to free up the session's private thread to receive more bytes.
+        DispatchQueue.main.async {
+            Logger.debug("Connection to \(peerId) did change: \(state.rawValue)")
 
-        switch transferState {
-        case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress):
-            // We only care about state changes for the device we're sending to.
-            guard peerId == newDevicePeerId else { return }
+            switch self.transferState {
+            case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress):
+                // We only care about state changes for the device we're sending to.
+                guard peerId == newDevicePeerId else { return }
 
-            Logger.info("Connection to new device did change: \(state.rawValue)")
+                Logger.info("Connection to new device did change: \(state.rawValue)")
 
-            switch state {
-            case .connected:
-                notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
+                switch state {
+                case .connected:
+                    self.notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
 
-                // Only send the files if we haven't yet sent the manifest.
-                guard !transferredFiles.contains(DeviceTransferService.manifestIdentifier) else { return }
+                    // Only send the files if we haven't yet sent the manifest.
+                    guard !transferredFiles.contains(DeviceTransferService.manifestIdentifier) else { return }
 
-                do {
-                    try sendManifest().done {
-                        try self.sendAllFiles()
-                    }.catch { error in
+                    do {
+                        try self.sendManifest().done {
+                            try self.sendAllFiles()
+                        }.catch { error in
+                            self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                        }
+                    } catch {
                         self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
                     }
-                } catch {
-                    failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                case .connecting:
+                    break
+                case .notConnected:
+                    self.failTransfer(.assertion, "Lost connection to new device")
+                @unknown default:
+                    self.failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
                 }
-            case .connecting:
-                break
-            case .notConnected:
-                failTransfer(.assertion, "Lost connection to new device")
-            @unknown default:
-                failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
-            }
-        case .incoming(let oldDevicePeerId, _, _, _, _):
-            // We only care about state changes for the device we're receiving from.
-            guard peerId == oldDevicePeerId else { return }
+            case .incoming(let oldDevicePeerId, _, _, _, _):
+                // We only care about state changes for the device we're receiving from.
+                guard peerId == oldDevicePeerId else { return }
 
-            if state == .notConnected { failTransfer(.assertion, "Lost connection to old device") }
-        case .idle:
-            break
+                if state == .notConnected { self.failTransfer(.assertion, "Lost connection to old device") }
+            case .idle:
+                break
+            }
         }
     }
 
@@ -90,7 +93,12 @@ extension DeviceTransferService: MCSessionDelegate {
                 return owsFailDebug("Ignoring data from unexpected peer \(peerId)")
             }
 
-            guard data == DeviceTransferService.doneMessage else {
+            switch data {
+            case DeviceTransferService.backgroundAppMessage:
+                return failTransfer(.backgroundedDevice, "Received terminate message")
+            case DeviceTransferService.doneMessage:
+                break
+            default:
                 return failTransfer(.assertion, "Received unexpected data")
             }
 
@@ -109,7 +117,12 @@ extension DeviceTransferService: MCSessionDelegate {
                 return owsFailDebug("Ignoring data from unexpected peer \(peerId)")
             }
 
-            guard data == DeviceTransferService.doneMessage else {
+            switch data {
+            case DeviceTransferService.backgroundAppMessage:
+                return failTransfer(.backgroundedDevice, "Received backgrounded message")
+            case DeviceTransferService.doneMessage:
+                break
+            default:
                 return failTransfer(.assertion, "Received unexpected data")
             }
 

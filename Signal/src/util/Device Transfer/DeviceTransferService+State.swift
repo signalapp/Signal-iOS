@@ -10,6 +10,7 @@ extension DeviceTransferService {
     enum Error: Swift.Error {
         case assertion
         case cancel
+        case backgroundedDevice
         case certificateMismatch
         case modeMismatch
         case notEnoughSpace

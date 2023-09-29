@@ -58,7 +58,9 @@ class DeviceTransferOperation: OWSOperation {
     override public func run() {
         Logger.info("Transferring file: \(file.identifier), estimatedSize: \(file.estimatedSize)")
 
-        DispatchQueue.global().async { self.prepareForSending() }
+        // Use the main thread for all MCSession related operations.
+        // There shouldn't be anything else going on in the app, anyway.
+        DispatchQueue.main.async { self.prepareForSending() }
     }
 
     private var progress: Progress?

@@ -284,13 +284,19 @@ class DeviceTransferService: NSObject {
 
     @objc
     private func didEnterBackground() {
+        // MCSession automatically disconnects when the app is backgrounded.
+        // Send an explicit message to the peer (if connected) telling them
+        // that's what happened.
         switch transferState {
         case .idle:
             break
-        default:
-            notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .cancel) }
+        case .incoming(let oldDevicePeerId, _, _, _, _):
+            try? sendBackgroundAppMessage(to: oldDevicePeerId)
+            notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .backgroundedDevice) }
+        case .outgoing(let newDevicePeerId, _, _, _, _):
+            try? sendBackgroundAppMessage(to: newDevicePeerId)
+            notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .backgroundedDevice) }
         }
-
         stopTransfer()
     }
 
@@ -418,6 +424,17 @@ class DeviceTransferService: NSObject {
         }
 
         try session.send(DeviceTransferService.doneMessage, toPeers: [peerId], with: .reliable)
+    }
+
+    static let backgroundAppMessage = "App backgrounded".data(using: .utf8)!
+    func sendBackgroundAppMessage(to peerId: MCPeerID) throws {
+        Logger.info("Sending backgrounded message")
+
+        guard let session = session else {
+            throw OWSAssertionError("attempted to send backgrounded message without an available session")
+        }
+
+        try session.send(DeviceTransferService.backgroundAppMessage, toPeers: [peerId], with: .unreliable)
     }
 
     // MARK: - Throughput

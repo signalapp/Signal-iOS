@@ -127,6 +127,13 @@ extension ProvisioningTransferProgressViewController: DeviceTransferServiceObser
                 text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
                                         comment: "An error indicating that something went wrong with the transfer and it could not complete")
             )
+        case .backgroundedDevice:
+            progressView.renderError(
+                text: OWSLocalizedString(
+                    "DEVICE_TRANSFER_ERROR_BACKGROUNDED",
+                    comment: "An error indicating that the other device closed signal mid-transfer and it could not complete"
+                )
+            )
         case .cancel:
             // User initiated, nothing to do
             break

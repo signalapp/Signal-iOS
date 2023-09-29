@@ -13,6 +13,12 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     public var navbarBackgroundColorOverride: UIColor? { .clear }
 
+    public var prefersNavigationBarHidden: Bool { true }
+
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return isQRCodeExpanded ? .lightContent : super.preferredStatusBarStyle
+    }
+
     private lazy var qrCodeView = QRCodeView(useCircularWrapper: false)
 
     private lazy var expansionButton: ExpansionButton = {
@@ -127,7 +133,10 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         stackView.alignment = .center
         stackView.spacing = 20
         view.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.autoPinEdge(toSuperviewMargin: .top, withInset: 20)
+        stackView.autoPinLeadingToSuperviewMargin()
+        stackView.autoPinTrailingToSuperviewMargin()
+        stackView.autoPinBottomToSuperviewMargin()
 
         qrCodeView.autoPinToSquareAspectRatio()
         qrCodeView.autoMatch(
@@ -150,7 +159,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
 
         view.addSubview(closeButton)
         closeButton.autoPinLeadingToSuperviewMargin()
-        closeButton.autoPinEdge(.top, to: .top, of: view, withOffset: 24)
+        closeButton.autoPinTopToSuperviewMargin(withInset: 8)
 
         updateExpansionState(animated: false)
 
@@ -269,6 +278,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
     private func toggleQRCodeExpansion() {
         isQRCodeExpanded = !isQRCodeExpanded
         updateExpansionState(animated: true)
+        setNeedsStatusBarAppearanceUpdate()
     }
 
     @objc
