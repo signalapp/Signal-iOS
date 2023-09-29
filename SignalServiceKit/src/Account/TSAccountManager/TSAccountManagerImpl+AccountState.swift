@@ -16,7 +16,19 @@ extension TSAccountManagerImpl {
         private let db: DB
         private let kvStore: KeyValueStore
 
-        private let lock = UnfairLock()
+        private let _lock = UnfairLock()
+
+        private func acquireLock<T>(_ block: () -> T) -> T {
+            /// Temporary method until old TSAccountManager is deleted. While both exist,
+            /// they need to share the lock used around account state updates to ensure
+            /// no races.
+            if FeatureFlags.tsAccountManagerBridging {
+                return TSAccountManager.shared.tmp_performWithSynchronizedSelf(block)
+            } else {
+                return _lock.withLock(block)
+            }
+        }
+
         private var cachedAccountState: AccountState?
 
         init(
@@ -29,10 +41,19 @@ extension TSAccountManagerImpl {
             self.kvStore = kvStore
         }
 
+        /// Temporary method until old TSAccountManager is deleted. While both exist,
+        /// each needs to inform the other about account state updates so the other
+        /// can update their cache.
+        /// Called inside the lock that is shared between both TSAccountManagers.
+        func tmp_loadAccountState(tx: DBReadTransaction) {
+            owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary")
+            loadAccountState(tx: tx)
+        }
+
         // MARK: - External methods (acquire the lock)
 
         func getOrLoadAccountStateWithMaybeTransaction() -> AccountState {
-            return lock.withLock {
+            return acquireLock {
                 if let accountState = self.cachedAccountState {
                     return accountState
                 }
@@ -43,7 +64,7 @@ extension TSAccountManagerImpl {
         }
 
         func getOrLoadAccountState(tx: DBReadTransaction) -> AccountState {
-            return lock.withLock {
+            return acquireLock {
                 if let accountState = self.cachedAccountState {
                     return accountState
                 }
@@ -62,12 +83,16 @@ extension TSAccountManagerImpl {
             }
         }
 
+        /// The old TSAccountManager expects isOnboarded to be set for registration, not just provisioning.
+        /// While bridging between the old and new, set it in the new code. Once the old code is removed
+        /// and readers stop expecting the value, delete tmp_setIsOnboarded.
         func initializeLocalIdentifiers(
             e164: E164,
             aci: Aci,
             pni: Pni?,
             deviceId: UInt32,
             serverAuthToken: String,
+            tmp_setIsOnboarded: Bool,
             tx: DBWriteTransaction
         ) {
             mutateWithLock(tx: tx) {
@@ -83,6 +108,10 @@ extension TSAccountManagerImpl {
                 Logger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
                 // Encoded without the "PNI:" prefix for backwards compatibility.
                 kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+
+                if FeatureFlags.tsAccountManagerBridging, tmp_setIsOnboarded {
+                    kvStore.setBool(true, key: Keys.isFinishedProvisioning, transaction: tx)
+                }
 
                 kvStore.setUInt32(deviceId, key: Keys.deviceId, transaction: tx)
                 kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
@@ -187,11 +216,18 @@ extension TSAccountManagerImpl {
         }
 
         private func mutateWithLock<T>(tx: DBWriteTransaction, _ block: () -> T) -> T {
-            return lock.withLock {
+            return acquireLock {
                 let returnValue = block()
                 // Reload to repopulate the cache; the mutations will
                 // write to disk and not actually modify the cached value.
                 loadAccountState(tx: tx)
+
+                /// Temporary until old TSAccountManager is deleted. While both exist,
+                /// each needs to inform the other about account state updates so the other
+                /// can update their cache.
+                if FeatureFlags.tsAccountManagerBridging {
+                    TSAccountManager.shared.tmp_loadAccountState(tx: tx)
+                }
                 return returnValue
             }
         }

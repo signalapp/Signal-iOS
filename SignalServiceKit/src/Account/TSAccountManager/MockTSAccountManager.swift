@@ -14,6 +14,8 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         self.dateProvider = dateProvider
     }
 
+    public func tmp_loadAccountState(tx: DBReadTransaction) {}
+
     public var warmCachesMock: (() -> Void)?
 
     open func warmCaches() {

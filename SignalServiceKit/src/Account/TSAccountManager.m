@@ -311,7 +311,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     @synchronized(self) {
         [self.keyValueStore setBool:isOnboarded key:TSAccountManager_IsOnboardedKey transaction:transaction];
-        [self loadAccountStateWithTransaction:transaction];
+        [self tmp_loadAccountStateAfterMutationWithTransaction:transaction];
     }
     [self postOnboardingStateDidChangeNotification];
 }
@@ -324,7 +324,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self.keyValueStore setString:authToken key:TSAccountManager_ServerAuthTokenKey transaction:transaction];
         [self.keyValueStore setUInt32:deviceId key:TSAccountManager_DeviceIdKey transaction:transaction];
 
-        [self loadAccountStateWithTransaction:transaction];
+        [self tmp_loadAccountStateAfterMutationWithTransaction:transaction];
     }
 }
 

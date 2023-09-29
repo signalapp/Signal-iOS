@@ -131,10 +131,10 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let recipientHiding = build.includes(.internal)
 
-    @objc
-    public static let newTSAccountManager = false
-
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = build.includes(.internal)
+
+    @objc
+    public static let tsAccountManagerBridging = true
 }
 
 // MARK: -

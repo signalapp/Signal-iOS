@@ -151,6 +151,15 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 )
             }
 
+            // While bridging don't proactively update attributes; only once the old
+            // tsAccountManager is deleted does this one take charge of updates.
+            // (Do continue to make requested updates as in the lastAttributeRequestDate
+            // check above.
+            if FeatureFlags.tsAccountManagerBridging {
+                Logger.info("Skipping automatic updates while bridging")
+                return .no
+            }
+
             // Check if device capabilities have changed.
             let lastUpdateDeviceCapabilities = self.kvStore.getObject(
                 forKey: Keys.lastUpdateDeviceCapabilities,

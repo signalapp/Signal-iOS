@@ -229,6 +229,7 @@ public class SSKEnvironment: NSObject {
         }
         warmCachesForObject("signalProxy", SignalProxy.warmCaches)
         warmCachesForObject("tsAccountManager", tsAccountManager.warmCaches)
+        warmCachesForObject("newTSAccountManager", DependenciesBridge.shared.tsAccountManager.warmCaches)
         warmCachesForObject("fixLocalRecipient", fixLocalRecipientIfNeeded)
         warmCachesForObject("signalServiceAddressCache", signalServiceAddressCache.warmCaches)
         warmCachesForObject("signalService", signalService.warmCaches)

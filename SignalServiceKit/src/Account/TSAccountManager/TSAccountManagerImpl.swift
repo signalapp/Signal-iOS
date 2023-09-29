@@ -36,6 +36,15 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
         self.kvStore = kvStore
     }
 
+    /// Temporary method until old TSAccountManager is deleted. While both exist,
+    /// each needs to inform the other about account state updates so the other
+    /// can update their cache.
+    /// Called inside the lock that is shared between both TSAccountManagers.
+    public func tmp_loadAccountState(tx: DBReadTransaction) {
+        owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary")
+        accountStateManager.tmp_loadAccountState(tx: tx)
+    }
+
     public func warmCaches() {
         // Load account state into the cache and log.
         accountStateManager.getOrLoadAccountStateWithMaybeTransaction().log()
@@ -157,12 +166,16 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         accountStateManager.setDeviceId(deviceId, serverAuthToken: serverAuthToken, tx: tx)
     }
 
+    /// The old TSAccountManager expects isOnboarded to be set for registration, not just provisioning.
+    /// While bridging between the old and new, set it in the new code. Once the old code is removed
+    /// and readers stop expecting the value, delete tmp_setIsOnboarded.
     public func initializeLocalIdentifiers(
         e164: E164,
         aci: Aci,
         pni: Pni?,
         deviceId: UInt32,
         serverAuthToken: String,
+        tmp_setIsOnboarded: Bool,
         tx: DBWriteTransaction
     ) {
         accountStateManager.initializeLocalIdentifiers(
@@ -171,6 +184,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             pni: pni,
             deviceId: deviceId,
             serverAuthToken: serverAuthToken,
+            tmp_setIsOnboarded: tmp_setIsOnboarded,
             tx: tx
         )
     }

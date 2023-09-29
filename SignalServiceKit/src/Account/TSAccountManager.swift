@@ -198,7 +198,7 @@ public extension TSAccountManager {
             defer { objc_sync_exit(self) }
 
             keyValueStore.setBool(newValue, key: TSAccountManager_IsTransferInProgressKey, transaction: transaction)
-            loadAccountState(with: transaction)
+            tmp_loadAccountStateAfterMutation(transaction: transaction)
         }
     }
 
@@ -211,7 +211,7 @@ public extension TSAccountManager {
                 defer { objc_sync_exit(self) }
 
                 keyValueStore.setBool(newValue, key: TSAccountManager_WasTransferredKey, transaction: transaction)
-                loadAccountState(with: transaction)
+                tmp_loadAccountStateAfterMutation(transaction: transaction)
             }
             postRegistrationStateDidChangeNotification()
         }
@@ -255,7 +255,7 @@ public extension TSAccountManager {
             versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             groupsV2.clearTemporalCredentials(transaction: transaction)
 
-            loadAccountState(with: transaction)
+            tmp_loadAccountStateAfterMutation(transaction: transaction)
 
             phoneNumberAwaitingVerification = nil
             aciAwaitingVerification = nil
@@ -300,7 +300,7 @@ public extension TSAccountManager {
                 }
 
                 keyValueStore.setBool(newValue, key: TSAccountManager_IsDeregisteredKey, transaction: transaction)
-                loadAccountState(with: transaction)
+                tmp_loadAccountStateAfterMutation(transaction: transaction)
 
                 if newValue {
                     notificationPresenter.notifyUserOfDeregistration(transaction: transaction)
@@ -391,7 +391,7 @@ public extension TSAccountManager {
                 paymentsEvents.clearState(transaction: tx)
             }
 
-            loadAccountState(with: tx)
+            tmp_loadAccountStateAfterMutation(transaction: tx)
         }
 
         tx.addAsyncCompletionOnMain {
@@ -711,7 +711,7 @@ public extension TSAccountManager {
                 transaction: transaction
             )
 
-            loadAccountState(with: transaction)
+            tmp_loadAccountStateAfterMutation(transaction: transaction)
         }
 
         transaction.addAsyncCompletionOffMain {
@@ -727,6 +727,39 @@ public extension TSAccountManager {
         objc_sync_enter(self)
         block()
         objc_sync_exit(self)
+    }
+
+    /// Temporary method until old TSAccountManager is deleted. While both exist,
+    /// they need to share the lock used around account state updates to ensure
+    /// no races.
+    internal func tmp_performWithSynchronizedSelf<T>(_ block: () -> T) -> T {
+        owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary")
+        objc_sync_enter(self)
+        let result = block()
+        objc_sync_exit(self)
+        return result
+    }
+
+    /// Temporary method until old TSAccountManager is deleted. While both exist,
+    /// each needs to inform the other about account state updates so the other
+    /// can update their cache.
+    /// Called inside the lock that is shared between both TSAccountManagers.
+    internal func tmp_loadAccountState(tx: DBWriteTransaction) {
+        owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary")
+        loadAccountState(with: SDSDB.shimOnlyBridge(tx))
+    }
+
+    /// Temporary method until old TSAccountManager is deleted. While both exist,
+    /// each needs to inform the other about account state updates so the other
+    /// can update their cache.
+    /// Called inside the lock that is shared between both TSAccountManagers.
+    @objc
+    @discardableResult
+    internal func tmp_loadAccountStateAfterMutation(transaction: SDSAnyReadTransaction) -> TSAccountState {
+        owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary")
+        let result = loadAccountState(with: transaction)
+        DependenciesBridge.shared.tsAccountManager.tmp_loadAccountState(tx: transaction.asV2Read)
+        return result
     }
 }
 

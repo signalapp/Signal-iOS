@@ -38,13 +38,7 @@ public class DependenciesBridge {
     public let db: DB
     public let schedulers: Schedulers
 
-    private let _accountAttributesUpdater: AccountAttributesUpdaterImpl?
-    public var accountAttributesUpdater: AccountAttributesUpdater {
-        guard FeatureFlags.newTSAccountManager else {
-            fatalError("Shouldn't be trying to use the new AccountAttributesUpdater!")
-        }
-        return _accountAttributesUpdater!
-    }
+    public var accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
 
@@ -68,13 +62,7 @@ public class DependenciesBridge {
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     public let localUsernameManager: LocalUsernameManager
 
-    private let _phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager?
-    public var phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager {
-        guard FeatureFlags.newTSAccountManager else {
-            fatalError("Shouldn't be trying to use the new PhoneNumberDiscoverabilityManager!")
-        }
-        return _phoneNumberDiscoverabilityManager!
-    }
+    public var phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
 
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
@@ -85,13 +73,7 @@ public class DependenciesBridge {
     public let recipientStore: RecipientDataStore
     public let registrationSessionManager: RegistrationSessionManager
 
-    private let _registrationStateChangeManager: RegistrationStateChangeManager?
-    public var registrationStateChangeManager: RegistrationStateChangeManager {
-        guard FeatureFlags.newTSAccountManager else {
-            fatalError("Shouldn't be trying to use the new RegistrationStateChangeManager!")
-        }
-        return _registrationStateChangeManager!
-    }
+    public var registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let svr: SecureValueRecovery
@@ -101,13 +83,7 @@ public class DependenciesBridge {
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
 
-    private let _tsAccountManager: TSAccountManagerImpl?
-    public var tsAccountManager: TSAccountManagerProtocol {
-        guard FeatureFlags.newTSAccountManager else {
-            fatalError("Shouldn't be trying to use the new TSAccountManager!")
-        }
-        return _tsAccountManager!
-    }
+    public var tsAccountManager: TSAccountManagerProtocol
 
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
@@ -212,19 +188,13 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let _tsAccountManager: TSAccountManagerImpl?
-        if FeatureFlags.newTSAccountManager {
-            _tsAccountManager = TSAccountManagerImpl(
-                dateProvider: dateProvider,
-                db: db,
-                keyValueStoreFactory: keyValueStoreFactory,
-                schedulers: schedulers
-            )
-            self._tsAccountManager = _tsAccountManager
-        } else {
-            _tsAccountManager = nil
-            self._tsAccountManager = nil
-        }
+        let newTSAccountManager = TSAccountManagerImpl(
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers
+        )
+        self.tsAccountManager = newTSAccountManager
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
@@ -475,44 +445,38 @@ public class DependenciesBridge {
             usernameLinkManager: usernameLinkManager
         ))
 
-        if FeatureFlags.newTSAccountManager, let tsAccountManager = _tsAccountManager {
-            let accountAttributesUpdater = AccountAttributesUpdaterImpl(
-                appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
-                appVersion: appVersion,
-                dateProvider: dateProvider,
-                db: db,
-                profileManager: profileManager,
-                keyValueStoreFactory: keyValueStoreFactory,
-                serviceClient: SignalServiceRestClient(),
-                schedulers: schedulers,
-                svr: svr,
-                syncManager: syncManager,
-                tsAccountManager: tsAccountManager
-            )
-            self._accountAttributesUpdater = accountAttributesUpdater
-            self._phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
-                accountAttributesUpdater: accountAttributesUpdater,
-                schedulers: schedulers,
-                storageServiceManager: storageServiceManager,
-                tsAccountManager: tsAccountManager
-            )
-            self._registrationStateChangeManager = RegistrationStateChangeManagerImpl(
-                groupsV2: groupsV2,
-                identityManager: identityManager,
-                paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
-                recipientMerger: recipientMerger,
-                schedulers: schedulers,
-                senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
-                signalProtocolStoreManager: signalProtocolStoreManager,
-                storageServiceManager: storageServiceManager,
-                tsAccountManager: tsAccountManager,
-                udManager: udManager,
-                versionedProfiles: versionedProfiles
-            )
-        } else {
-            self._accountAttributesUpdater = nil
-            self._phoneNumberDiscoverabilityManager = nil
-            self._registrationStateChangeManager = nil
-        }
+        let accountAttributesUpdater = AccountAttributesUpdaterImpl(
+            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
+            appVersion: appVersion,
+            dateProvider: dateProvider,
+            db: db,
+            profileManager: profileManager,
+            keyValueStoreFactory: keyValueStoreFactory,
+            serviceClient: SignalServiceRestClient(),
+            schedulers: schedulers,
+            svr: svr,
+            syncManager: syncManager,
+            tsAccountManager: newTSAccountManager
+        )
+        self.accountAttributesUpdater = accountAttributesUpdater
+        self.phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
+            accountAttributesUpdater: accountAttributesUpdater,
+            schedulers: schedulers,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: newTSAccountManager
+        )
+        self.registrationStateChangeManager = RegistrationStateChangeManagerImpl(
+            groupsV2: groupsV2,
+            identityManager: identityManager,
+            paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
+            recipientMerger: recipientMerger,
+            schedulers: schedulers,
+            senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
+            signalProtocolStoreManager: signalProtocolStoreManager,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: newTSAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles
+        )
     }
 }
