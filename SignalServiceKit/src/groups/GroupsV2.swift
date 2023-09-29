@@ -182,6 +182,8 @@ public protocol GroupsV2Swift: GroupsV2 {
         account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     )
+
+    func clearTemporalCredentials(tx: DBWriteTransaction)
 }
 
 // MARK: -
@@ -691,6 +693,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
+        // Do nothing.
+    }
+
+    public func clearTemporalCredentials(tx: DBWriteTransaction) {
         // Do nothing.
     }
 

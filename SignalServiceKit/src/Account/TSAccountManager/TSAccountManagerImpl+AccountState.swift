@@ -59,30 +59,33 @@ extension TSAccountManagerImpl {
             tx: DBWriteTransaction
         ) {
             mutateWithLock(tx: tx) {
-                kvStore.setUInt32(id, key: Keys.deviceId, transaction: tx)
-                kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
             }
         }
 
-        func setLocalIdentifiers(
-            _ number: E164?,
-            _ aci: Aci?,
-            _ pni: Pni?,
+        func initializeLocalIdentifiers(
+            e164: E164,
+            aci: Aci,
+            pni: Pni?,
+            deviceId: UInt32,
+            serverAuthToken: String,
             tx: DBWriteTransaction
         ) {
             mutateWithLock(tx: tx) {
                 let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
-                Logger.info("local number \(oldNumber ?? "nil") -> \(number?.stringValue ?? "nil")")
-                kvStore.setString(number?.stringValue, key: Keys.localPhoneNumber, transaction: tx)
+                Logger.info("local number \(oldNumber ?? "nil") -> \(e164.stringValue)")
+                kvStore.setString(e164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
 
                 let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
-                Logger.info("local aci \(oldAci ?? "nil") -> \(aci?.serviceIdUppercaseString ?? "nil")")
-                kvStore.setString(aci?.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
+                Logger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
+                kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
                 let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
-                Logger.info("local number \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
+                Logger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
                 // Encoded without the "PNI:" prefix for backwards compatibility.
                 kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+
+                kvStore.setUInt32(deviceId, key: Keys.deviceId, transaction: tx)
+                kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
 
                 kvStore.setDate(dateProvider(), key: Keys.registrationDate, transaction: tx)
                 kvStore.removeValues(
@@ -94,6 +97,71 @@ extension TSAccountManagerImpl {
                     transaction: tx
                 )
             }
+        }
+
+        func changeLocalNumber(
+            newE164: E164,
+            aci: Aci,
+            pni: Pni?,
+            tx: DBWriteTransaction
+        ) {
+            mutateWithLock(tx: tx) {
+                let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
+                Logger.info("local number \(oldNumber ?? "nil") -> \(newE164.stringValue)")
+                kvStore.setString(newE164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
+
+                let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
+                Logger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
+                kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
+
+                let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
+                Logger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
+                // Encoded without the "PNI:" prefix for backwards compatibility.
+                kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
+            }
+        }
+
+        func setDidFinishProvisioning(tx: DBWriteTransaction) {
+            mutateWithLock(tx: tx) {
+                kvStore.setBool(true, key: Keys.isFinishedProvisioning, transaction: tx)
+            }
+        }
+
+        func resetForReRegistration(
+            localNumber: E164,
+            localAci: Aci,
+            tx: DBWriteTransaction
+        ) {
+            mutateWithLock(tx: tx) {
+                kvStore.removeAll(transaction: tx)
+
+                kvStore.setString(localNumber.stringValue, key: Keys.reregistrationPhoneNumber, transaction: tx)
+                kvStore.setString(localAci.serviceIdUppercaseString, key: Keys.reregistrationAci, transaction: tx)
+            }
+        }
+
+        /// Returns true if value changed, false otherwise.
+        func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool {
+            let oldValue = kvStore.getBool(Keys.isTransferInProgress, transaction: tx)
+            guard oldValue != isTransferInProgress else {
+                return false
+            }
+            mutateWithLock(tx: tx) {
+                kvStore.setBool(isTransferInProgress, key: Keys.isTransferInProgress, transaction: tx)
+            }
+            return true
+        }
+
+        /// Returns true if value changed, false otherwise.
+        func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool {
+            let oldValue = kvStore.getBool(Keys.wasTransferred, transaction: tx)
+            guard oldValue != wasTransferred else {
+                return false
+            }
+            mutateWithLock(tx: tx) {
+                kvStore.setBool(wasTransferred, key: Keys.wasTransferred, transaction: tx)
+            }
+            return true
         }
 
         func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction) {
@@ -118,12 +186,13 @@ extension TSAccountManagerImpl {
             }
         }
 
-        private func mutateWithLock(tx: DBWriteTransaction, _ block: () -> Void) {
-            lock.withLock {
-                block()
+        private func mutateWithLock<T>(tx: DBWriteTransaction, _ block: () -> T) -> T {
+            return lock.withLock {
+                let returnValue = block()
                 // Reload to repopulate the cache; the mutations will
                 // write to disk and not actually modify the cached value.
                 loadAccountState(tx: tx)
+                return returnValue
             }
         }
 
@@ -162,6 +231,13 @@ extension TSAccountManagerImpl {
         let lastSetIsDiscoverableByPhoneNumberAt: Date
 
         let isManualMessageFetchEnabled: Bool
+
+        var serverUsername: String? {
+            guard let aciString = self.localIdentifiers?.aci.serviceIdString else {
+                return nil
+            }
+            return registrationState.isRegisteredPrimaryDevice ? aciString : "\(aciString).\(deviceId)"
+        }
 
         init(
             kvStore: KeyValueStore,

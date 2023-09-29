@@ -816,6 +816,9 @@
 		664657332AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */; };
 		664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657342AC370670099DE1C /* MockAccountAttributesUpdater.swift */; };
 		664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657362AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift */; };
+		6646573B2AC388C70099DE1C /* RegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */; };
+		6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */; };
+		6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3372,6 +3375,9 @@
 		664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilityManagerImpl.swift; sourceTree = "<group>"; };
 		664657342AC370670099DE1C /* MockAccountAttributesUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAccountAttributesUpdater.swift; sourceTree = "<group>"; };
 		664657362AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhoneNumberDiscoverabilityManager.swift; sourceTree = "<group>"; };
+		6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManager.swift; sourceTree = "<group>"; };
+		6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStateChangeManagerImpl.swift; sourceTree = "<group>"; };
+		6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRegistrationStateChangeManager.swift; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -6677,6 +6683,7 @@
 		661170BF2ABA458800A1B16D /* TSAccountManager */ = {
 			isa = PBXGroup;
 			children = (
+				664657392AC388900099DE1C /* RegistrationStateChangeManager */,
 				661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */,
 				661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */,
 				661555402ABA5BBD00AA302B /* TSAccountManagerImpl+AccountState.swift */,
@@ -6768,6 +6775,16 @@
 				664657322AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift */,
 			);
 			path = PhoneNumberDiscoverabilityManager;
+			sourceTree = "<group>";
+		};
+		664657392AC388900099DE1C /* RegistrationStateChangeManager */ = {
+			isa = PBXGroup;
+			children = (
+				6646573E2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift */,
+				6646573A2AC388C70099DE1C /* RegistrationStateChangeManager.swift */,
+				6646573C2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift */,
+			);
+			path = RegistrationStateChangeManager;
 			sourceTree = "<group>";
 		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
@@ -12463,6 +12480,7 @@
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
 				664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */,
 				6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */,
+				6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */,
 				66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
@@ -12702,6 +12720,8 @@
 				6600F356298C903000B1EDB7 /* RegistrationSessionManager.swift in Sources */,
 				6600F358298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift in Sources */,
 				6691E7F22996E9BC0032A68A /* RegistrationSessionManagerMock.swift in Sources */,
+				6646573B2AC388C70099DE1C /* RegistrationStateChangeManager.swift in Sources */,
+				6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */,
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
 				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,

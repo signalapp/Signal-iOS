@@ -60,6 +60,7 @@ public class AppSetup {
         let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let receiptManager = OWSReceiptManager()
+        let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
@@ -69,6 +70,8 @@ public class AppSetup {
         let storageServiceManager = StorageServiceManagerImpl.shared
         let syncManager = OWSSyncManager(default: ())
         let tsAccountManager = TSAccountManager()
+        let udManager = OWSUDManagerImpl()
+        let versionedProfiles = VersionedProfilesImpl()
         let sskJobQueues = SSKJobQueues()
 
         let dependenciesBridge = DependenciesBridge.setUpSingleton(
@@ -84,14 +87,18 @@ public class AppSetup {
             networkManager: networkManager,
             notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
+            paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )
 
@@ -117,7 +124,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
         )
-        let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
@@ -135,13 +141,11 @@ public class AppSetup {
             reachabilityManager: reachabilityManager,
             tsAccountManager: tsAccountManager
         )
-        let versionedProfiles = VersionedProfilesImpl()
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsHelper = PaymentsHelperImpl()
         let paymentsCurrencies = PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()
-        let senderKeyStore = SenderKeyStore()
         let phoneNumberUtil = PhoneNumberUtil()
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
         let subscriptionManager = SubscriptionManagerImpl()

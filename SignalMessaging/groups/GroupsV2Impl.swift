@@ -1502,6 +1502,10 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         AuthCredentialStore.removeAll(transaction: transaction)
     }
 
+    public func clearTemporalCredentials(tx: DBWriteTransaction) {
+        clearTemporalCredentials(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
     private func retrieveTemporalCredentialsFromService(
         localAci: Aci,
         localPni: Pni?

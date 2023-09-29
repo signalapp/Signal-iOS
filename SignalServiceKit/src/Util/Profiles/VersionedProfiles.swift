@@ -68,6 +68,8 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
         profile: SignalServiceProfile,
         profileRequest: VersionedProfileRequest
     ) async
+
+    func clearProfileKeyCredentials(tx: DBWriteTransaction)
 }
 
 // MARK: -
@@ -78,6 +80,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
                                           transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
+    public func clearProfileKeyCredentials(tx: DBWriteTransaction) {}
 
     public func versionedProfileRequest(
         for aci: Aci,

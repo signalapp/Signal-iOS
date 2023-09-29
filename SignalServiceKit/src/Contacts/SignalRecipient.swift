@@ -254,6 +254,14 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         anyOverwritingUpdate(transaction: tx)
     }
 
+    public func markAsRegisteredAndSave(
+        source: ModifySource = .local,
+        deviceId: UInt32,
+        tx: DBWriteTransaction
+    ) {
+        self.markAsRegisteredAndSave(source: source, deviceId: deviceId, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
     public func modifyAndSave(deviceIdsToAdd: [UInt32], deviceIdsToRemove: [UInt32], tx: SDSAnyWriteTransaction) {
         if deviceIdsToAdd.isEmpty, deviceIdsToRemove.isEmpty {
             return

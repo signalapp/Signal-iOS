@@ -404,6 +404,10 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
         CredentialStore.removeAll(transaction: transaction)
     }
+
+    public func clearProfileKeyCredentials(tx: DBWriteTransaction) {
+        clearProfileKeyCredentials(transaction: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
 extension ExpiringProfileKeyCredential {

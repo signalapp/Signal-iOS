@@ -62,9 +62,11 @@ public class MockSSKEnvironment: SSKEnvironment {
         let networkManager = OWSFakeNetworkManager()
         let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
+        let paymentsEvents = PaymentsEventsNoop()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSFakeProfileManager()
         let receiptManager = OWSReceiptManager()
+        let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
@@ -74,6 +76,8 @@ public class MockSSKEnvironment: SSKEnvironment {
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
         let tsAccountManager = TSAccountManager()
+        let udManager = OWSUDManagerImpl()
+        let versionedProfiles = MockVersionedProfiles()
         let webSocketFactory = WebSocketFactoryMock()
         let sskJobQueues = SSKJobQueues()
 
@@ -90,14 +94,18 @@ public class MockSSKEnvironment: SSKEnvironment {
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
+            paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )
 
@@ -110,7 +118,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messageManager = OWSMessageManager()
         let blockingManager = BlockingManager()
         let remoteConfigManager = StubbableRemoteConfigManager()
-        let udManager = OWSUDManagerImpl()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
@@ -128,15 +135,12 @@ public class MockSSKEnvironment: SSKEnvironment {
             reachabilityManager: reachabilityManager,
             tsAccountManager: tsAccountManager
         )
-        let versionedProfiles = MockVersionedProfiles()
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsHelper = MockPaymentsHelper()
         let paymentsCurrencies = MockPaymentsCurrencies()
-        let paymentsEvents = PaymentsEventsNoop()
         let mobileCoinHelper = MobileCoinHelperMock()
         let spamChallengeResolver = SpamChallengeResolver()
-        let senderKeyStore = SenderKeyStore()
         let phoneNumberUtil = PhoneNumberUtil()
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
         let subscriptionManager = MockSubscriptionManager()

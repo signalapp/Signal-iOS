@@ -85,6 +85,14 @@ public class DependenciesBridge {
     public let recipientStore: RecipientDataStore
     public let registrationSessionManager: RegistrationSessionManager
 
+    private let _registrationStateChangeManager: RegistrationStateChangeManager?
+    public var registrationStateChangeManager: RegistrationStateChangeManager {
+        guard FeatureFlags.newTSAccountManager else {
+            fatalError("Shouldn't be trying to use the new RegistrationStateChangeManager!")
+        }
+        return _registrationStateChangeManager!
+    }
+
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
@@ -115,7 +123,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
-        groupsV2: GroupsV2,
+        groupsV2: GroupsV2Swift,
         jobQueues: SSKJobQueues,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -123,14 +131,18 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
+        paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
+        udManager: OWSUDManager,
+        versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
@@ -146,8 +158,10 @@ public class DependenciesBridge {
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
+            paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -155,6 +169,8 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
+            udManager: udManager,
+            versionedProfiles: versionedProfiles,
             websocketFactory: websocketFactory
         )
         _shared = result
@@ -166,7 +182,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
-        groupsV2: GroupsV2,
+        groupsV2: GroupsV2Swift,
         jobQueues: SSKJobQueues,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -174,8 +190,10 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
+        paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -183,6 +201,8 @@ public class DependenciesBridge {
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
+        udManager: OWSUDManager,
+        versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) {
         self.schedulers = DispatchQueueSchedulers()
@@ -455,7 +475,7 @@ public class DependenciesBridge {
             usernameLinkManager: usernameLinkManager
         ))
 
-        if FeatureFlags.newTSAccountManager {
+        if FeatureFlags.newTSAccountManager, let tsAccountManager = _tsAccountManager {
             let accountAttributesUpdater = AccountAttributesUpdaterImpl(
                 appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
                 appVersion: appVersion,
@@ -467,18 +487,32 @@ public class DependenciesBridge {
                 schedulers: schedulers,
                 svr: svr,
                 syncManager: syncManager,
-                tsAccountManager: _tsAccountManager!
+                tsAccountManager: tsAccountManager
             )
             self._accountAttributesUpdater = accountAttributesUpdater
             self._phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
                 accountAttributesUpdater: accountAttributesUpdater,
                 schedulers: schedulers,
                 storageServiceManager: storageServiceManager,
-                tsAccountManager: _tsAccountManager!
+                tsAccountManager: tsAccountManager
+            )
+            self._registrationStateChangeManager = RegistrationStateChangeManagerImpl(
+                groupsV2: groupsV2,
+                identityManager: identityManager,
+                paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
+                recipientMerger: recipientMerger,
+                schedulers: schedulers,
+                senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
+                signalProtocolStoreManager: signalProtocolStoreManager,
+                storageServiceManager: storageServiceManager,
+                tsAccountManager: tsAccountManager,
+                udManager: udManager,
+                versionedProfiles: versionedProfiles
             )
         } else {
             self._accountAttributesUpdater = nil
             self._phoneNumberDiscoverabilityManager = nil
+            self._registrationStateChangeManager = nil
         }
     }
 }

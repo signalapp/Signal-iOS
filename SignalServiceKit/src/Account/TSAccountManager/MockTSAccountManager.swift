@@ -36,6 +36,30 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         return localIdentifiersWithMaybeSneakyTransaction
     }
 
+    public var storedServerUsernameMock: (() -> String?) = { "testAccount" }
+
+    open var storedServerUsernameWithMaybeTransaction: String? { storedServerUsernameMock() }
+
+    open func storedServerUsername(tx: DBReadTransaction) -> String? {
+        return storedServerUsernameWithMaybeTransaction
+    }
+
+    public var storedServerAuthTokenMock: (() -> String?) = { "authToken" }
+
+    open var storedServerAuthTokenWithMaybeTransaction: String? { storedServerAuthTokenMock() }
+
+    open func storedServerAuthToken(tx: DBReadTransaction) -> String? {
+        return storedServerAuthTokenWithMaybeTransaction
+    }
+
+    public var storedDeviceIdMock: (() -> UInt32) = { 1 }
+
+    open var storedDeviceIdWithMaybeTransaction: UInt32 { storedDeviceIdMock() }
+
+    open func storedDeviceId(tx: DBReadTransaction) -> UInt32 {
+        return storedDeviceIdWithMaybeTransaction
+    }
+
     // MARK: - Registration State
 
     public var registrationStateMock: (() -> TSRegistrationState) = {

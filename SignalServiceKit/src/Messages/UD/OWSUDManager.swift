@@ -131,6 +131,7 @@ public protocol OWSUDManager {
     func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates>
 
     func removeSenderCertificates(transaction: SDSAnyWriteTransaction)
+    func removeSenderCertificates(tx: DBWriteTransaction)
 
     // MARK: Unrestricted Access
 
@@ -372,6 +373,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: true), transaction: transaction)
         keyValueStore.removeValue(forKey: senderCertificateDateKey(uuidOnly: false), transaction: transaction)
         keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: false), transaction: transaction)
+    }
+
+    public func removeSenderCertificates(tx: DBWriteTransaction) {
+        removeSenderCertificates(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     private func senderCertificateKey(uuidOnly: Bool) -> String {

@@ -61,6 +61,30 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
         return accountStateManager.getOrLoadAccountState(tx: tx).registrationState
     }
 
+    public var storedServerUsernameWithMaybeTransaction: String? {
+        return accountStateManager.getOrLoadAccountStateWithMaybeTransaction().serverUsername
+    }
+
+    public func storedServerUsername(tx: DBReadTransaction) -> String? {
+        return accountStateManager.getOrLoadAccountState(tx: tx).serverUsername
+    }
+
+    public var storedServerAuthTokenWithMaybeTransaction: String? {
+        return accountStateManager.getOrLoadAccountStateWithMaybeTransaction().serverAuthToken
+    }
+
+    public func storedServerAuthToken(tx: DBReadTransaction) -> String? {
+        return accountStateManager.getOrLoadAccountState(tx: tx).serverAuthToken
+    }
+
+    public var storedDeviceIdWithMaybeTransaction: UInt32 {
+        return accountStateManager.getOrLoadAccountStateWithMaybeTransaction().deviceId
+    }
+
+    public func storedDeviceId(tx: DBReadTransaction) -> UInt32 {
+        return accountStateManager.getOrLoadAccountState(tx: tx).deviceId
+    }
+
     // MARK: - Registration IDs
 
     private static var aciRegistrationIdKey: String = "TSStorageLocalRegistrationId"
@@ -124,5 +148,68 @@ extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 
     public func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction) {
         accountStateManager.setIsDiscoverableByPhoneNumber(isDiscoverable, tx: tx)
+    }
+}
+
+extension TSAccountManagerImpl: LocalIdentifiersSetter {
+
+    public func setDeviceId(_ deviceId: UInt32, serverAuthToken: String, tx: DBWriteTransaction) {
+        accountStateManager.setDeviceId(deviceId, serverAuthToken: serverAuthToken, tx: tx)
+    }
+
+    public func initializeLocalIdentifiers(
+        e164: E164,
+        aci: Aci,
+        pni: Pni?,
+        deviceId: UInt32,
+        serverAuthToken: String,
+        tx: DBWriteTransaction
+    ) {
+        accountStateManager.initializeLocalIdentifiers(
+            e164: e164,
+            aci: aci,
+            pni: pni,
+            deviceId: deviceId,
+            serverAuthToken: serverAuthToken,
+            tx: tx
+        )
+    }
+
+    public func changeLocalNumber(
+        newE164: E164,
+        aci: Aci,
+        pni: Pni?,
+        tx: DBWriteTransaction
+    ) {
+        accountStateManager.changeLocalNumber(
+            newE164: newE164,
+            aci: aci,
+            pni: pni,
+            tx: tx
+        )
+    }
+
+    public func setDidFinishProvisioning(tx: DBWriteTransaction) {
+        accountStateManager.setDidFinishProvisioning(tx: tx)
+    }
+
+    public func resetForReregistration(
+        localNumber: E164,
+        localAci: Aci,
+        tx: DBWriteTransaction
+    ) {
+        return accountStateManager.resetForReRegistration(
+            localNumber: localNumber,
+            localAci: localAci,
+            tx: tx
+        )
+    }
+
+    public func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool {
+        return accountStateManager.setIsTransferInProgress(isTransferInProgress, tx: tx)
+    }
+
+    public func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool {
+        return accountStateManager.setWasTransferred(wasTransferred, tx: tx)
     }
 }
