@@ -2066,7 +2066,14 @@ extension ConversationInputToolbar {
             return
         }
 
+        resetKeyboardToAlphabet()
         inputToolbarDelegate.sendButtonPressed()
+    }
+
+    @objc
+    private func resetKeyboardToAlphabet() {
+        inputTextView.keyboardType = .alphabet
+        inputTextView.reloadInputViews()
     }
 
     @objc
