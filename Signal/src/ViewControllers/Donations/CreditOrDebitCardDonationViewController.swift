@@ -199,10 +199,19 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                     let headerLabel = UILabel()
                     headerLabel.text = {
                         let amountString = DonationUtilities.format(money: self.donationAmount)
-                        let format = OWSLocalizedString(
-                            "CARD_DONATION_HEADER",
-                            comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
-                        )
+                        let format: String
+                        switch self.donationMode {
+                        case .oneTime, .gift:
+                            format = OWSLocalizedString(
+                                "CARD_DONATION_HEADER",
+                                comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
+                            )
+                        case .monthly:
+                            format = OWSLocalizedString(
+                                "CARD_DONATION_HEADER_MONTHLY",
+                                comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\"."
+                            )
+                        }
                         return String(format: format, amountString)
                     }()
                     headerLabel.font = .dynamicTypeTitle3.semibold()

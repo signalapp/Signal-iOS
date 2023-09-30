@@ -153,48 +153,80 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         self.tableViewController.setContents(contents, shouldReload: shouldReload)
     }
 
+    private func createButtonFor(paymentMethod: DonationPaymentMethod) -> UIView {
+        switch paymentMethod {
+        case .applePay:
+            return createApplePayButton()
+        case .creditOrDebitCard:
+            return createCreditOrDebitCardButton()
+        case .paypal:
+            return createPaypalButton()
+        }
+    }
+
+    private func createApplePayButton() -> ApplePayButton {
+        ApplePayButton { [weak self] in
+            guard let self else { return }
+            self.didChoosePaymentMethod(self, .applePay)
+        }
+    }
+
+    private func createPaypalButton() -> PaypalButton {
+        PaypalButton { [weak self] in
+            guard let self else { return }
+            self.didChoosePaymentMethod(self, .paypal)
+        }
+    }
+
+    private func createCreditOrDebitCardButton() -> OWSButton {
+        let title = OWSLocalizedString(
+            "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
+            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
+        )
+
+        let creditOrDebitCardButton = OWSButton(title: title) { [weak self] in
+            guard let self else { return }
+            self.didChoosePaymentMethod(self, .creditOrDebitCard)
+        }
+        guard let image = UIImage(named: "credit-or-debit-card") else {
+            owsFail("Card asset not found")
+        }
+        creditOrDebitCardButton.setImage(image, for: .normal)
+        creditOrDebitCardButton.setPaddingBetweenImageAndText(
+            to: 8,
+            isRightToLeft: CurrentAppContext().isRTL
+        )
+        creditOrDebitCardButton.layer.cornerRadius = 12
+        creditOrDebitCardButton.backgroundColor = .ows_accentBlue
+        creditOrDebitCardButton.dimsWhenHighlighted = true
+        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
+
+        return creditOrDebitCardButton
+    }
+
     private func updateBottom() {
         let paymentButtonContainerView: UIView = {
-            var paymentMethodButtons = [UIView]()
+            let paymentMethods: [DonationPaymentMethod]
+            let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
 
-            if supportedPaymentMethods.contains(.applePay) {
-                paymentMethodButtons.append(ApplePayButton { [weak self] in
-                    guard let self else { return }
-                    self.didChoosePaymentMethod(self, .applePay)
-                })
+            if let localNumber = Self.tsAccountManager.localNumber,
+               applePayFirstRegions.contains(e164: localNumber) {
+                paymentMethods = [
+                    .applePay,
+                    .creditOrDebitCard,
+                    .paypal,
+                ]
+            } else {
+                paymentMethods = [
+                    .creditOrDebitCard,
+                    .paypal,
+                    .applePay,
+                ]
             }
 
-            if supportedPaymentMethods.contains(.paypal) {
-                paymentMethodButtons.append(PaypalButton { [weak self] in
-                    guard let self else { return }
-                    self.didChoosePaymentMethod(self, .paypal)
-                })
-            }
-
-            if supportedPaymentMethods.contains(.creditOrDebitCard) {
-                let title = OWSLocalizedString(
-                    "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
-                    comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
-                )
-
-                let creditOrDebitCardButton = OWSButton(title: title) { [weak self] in
-                    guard let self else { return }
-                    self.didChoosePaymentMethod(self, .creditOrDebitCard)
-                }
-                guard let image = UIImage(named: "credit-or-debit-card") else {
-                    owsFail("Card asset not found")
-                }
-                creditOrDebitCardButton.setImage(image, for: .normal)
-                creditOrDebitCardButton.setPaddingBetweenImageAndText(
-                    to: 8,
-                    isRightToLeft: CurrentAppContext().isRTL
-                )
-                creditOrDebitCardButton.layer.cornerRadius = 12
-                creditOrDebitCardButton.backgroundColor = .ows_accentBlue
-                creditOrDebitCardButton.dimsWhenHighlighted = true
-                creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
-                paymentMethodButtons.append(creditOrDebitCardButton)
-            }
+            let paymentMethodButtons = paymentMethods
+                .filter(supportedPaymentMethods.contains)
+                .map(createButtonFor(paymentMethod:))
 
             owsAssert(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
 
