@@ -913,7 +913,19 @@ public class FullTextSearcher: NSObject {
 
         // Only show contacts which were not included in an existing 1:1 conversation.
         var otherContacts: [ContactSearchResult] = contactsMap.values.filter {
-            !existingConversationAddresses.contains($0.recipientAddress)
+            guard
+                !DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                    $0.recipientAddress,
+                    tx: transaction.asV2Read
+                ),
+                !blockingManager.isAddressBlocked(
+                    $0.recipientAddress,
+                    transaction: transaction
+                )
+            else {
+                return false
+            }
+            return !existingConversationAddresses.contains($0.recipientAddress)
         }
 
         // Order the conversation and message results in reverse chronological order.
