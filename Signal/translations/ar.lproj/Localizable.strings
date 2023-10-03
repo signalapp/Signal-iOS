@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الأخطاء";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "سيظهر اسم التطبيق \"سيجنال\" على الشاشة الرئيسية وفي الإشعارات ومكتبة التطبيقات.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "يمكنك إخفاء اسم التطبيق \"سيجنال\" من الشاشة الرئيسية عبر نقل التطبيق إلى الرصيف في أسفل الصفحة الرئيسية.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "سيظهر اسم التطبيق \"سيجنال\" على الشاشة الرئيسية وفي الإشعارات ومكتبة التطبيقات.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "أيقونة التطبيق";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %1$@ و %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "بعد تبادل الرسائل مع %1$@، أدركت أن هذا الرقم يعود إلى %2$@. رقم هاتفه خاص.\n\nتم دمج سِجل رسائلك للدردشتين معًا.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "تمّ دمج سِجّل رسائلك مع %1$@ ودردشة أخرى تخصه.";

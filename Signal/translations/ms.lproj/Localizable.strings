@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Ralat Log";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Nama aplikasi \"Signal\" akan kelihatan pada Skrin Utama, dalam pemberitahuan dan Pustaka Aplikasi.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Anda boleh menyembunyikan nama aplikasi \"Signal\" daripada skrin utama dengan mengalihkan aplikasi ke dok di bahagian bawah skrin utama.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Nama aplikasi \"Signal\" akan kelihatan pada Skrin Utama, dalam pemberitahuan dan Pustaka Aplikasi.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "Ikon Aplikasi";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Ahli kepada %1$@ dan %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Selepas menghantar mesej kepada %1$@, anda mengetahui nombor ini milik %2$@. Nombor mereka adalah peribadi.\n\nSejarah mesej anda untuk kedua-dua sembang telah digabungkan di sini.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Sejarah mesej anda dengan %1$@ dan sembang lain milik mereka telah digabungkan.";

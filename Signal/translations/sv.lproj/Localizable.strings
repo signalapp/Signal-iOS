@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Felloggar";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Appnamnet ”Signal” kommer att synas på startskärmen, i aviseringar och i appbiblioteket.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Du kan dölja appnamnet ”Signal” från startskärmen genom att flytta appen till dockan längst ner på startskärmen.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Appnamnet ”Signal” kommer att synas på startskärmen, i aviseringar och i appbiblioteket.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "Appikon";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Medlem av %1$@ och %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Efter att ha skickat meddelanden med %1$@ fick du reda på att detta nummer tillhör %2$@. Numret är privat.\n\nDin meddelandehistorik för båda chattarna har slagits samman här.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Din meddelandehistorik med %1$@ och en annan chatt som tillhörde hen har slagits samman.";

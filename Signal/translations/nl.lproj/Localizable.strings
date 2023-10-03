@@ -392,7 +392,7 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locatie";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
-"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Wanneer je een foto of video hebt gemaakt, kan je deze vanaf hier verzenden";
+"ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Wanneer je een foto of video hebt gemaakt, kun je deze vanaf hier verzenden";
 
 /* First block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Geen foto's of video's";
@@ -2051,7 +2051,7 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal wordt ondersteund door donaties, wat betekent dat jouw privacy centraal staat bij alles wat we doen. Signal is gebouwd voor jou; niet voor jouw gegevens en niet voor de winst.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Als je kan, doneer dan vandaag nog om Signal leuk, betrouwbaar en beschikbaar te houden voor iedereen.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Als je iets kunt missen, doneer dan vandaag nog om Signal leuk, betrouwbaar en beschikbaar te houden voor iedereen.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
 "DONATION_READ_MORE_SCREEN_TITLE" = "Signal is anders.";
@@ -2180,7 +2180,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Bericht bewerken";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kan je alleen binnen 3 uur na verzenden bewerken.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kun je alleen binnen 3 uur na verzenden bewerken.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2969,7 +2969,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Beheerder";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kan na het maken van deze groep vrienden uitnodigen of toevoegen.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kunt na het maken van deze groep vrienden uitnodigen of toevoegen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
@@ -3266,7 +3266,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Kan %1$@ niet verwijderen";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder ze uit Contacten op je telefoon en probeer het opnieuw.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder hem of haar uit Contacten op je telefoon en probeer het opnieuw.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Gearchiveerde chats";
@@ -4700,7 +4700,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Stuur verzoek";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je ze een verzoek sturen om Betalingen te activeren?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je hem of haar een verzoek sturen om Betalingen te activeren?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ heeft Betalingen niet geactiveerd";
@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutopsporingslogs";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "De app-naam “Signal” is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "De app-naam “Signal” kun je verbergen op het beginscherm door de app naar het dock onderaan het beginscherm te verplaatsen.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "De app-naam “Signal” is zichtbaar op het beginscherm, in meldingen en in de appbibliotheek.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "App-icoon";
@@ -6047,7 +6047,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Inschakelen";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Je kunt Signal gebruiken om MobileCoin te verzenden en te ontvangen. Op alle betalingen zijn de gebruiksvoorwaarden voor MobileCoins en de MobileCoin Wallet van toepassing. Er kunnen zich problemen voordoen. Verloren betalingen en krediet kan je dan niet terugvorderen.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Je kunt Signal gebruiken om MobileCoin te verzenden en te ontvangen. Op alle betalingen zijn de gebruiksvoorwaarden voor MobileCoins en de MobileCoin Wallet van toepassing. Er kunnen zich problemen voordoen. Verloren betalingen en krediet kun je dan niet terugvorderen.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Inschakelen";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Lid van %1$@ en %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Na het uitwisselen van berichten met %1$@ weet je dat dit nummer van %2$@ is. Dit nummer is privé.\n\nJe gespreksgeschiedenis voor beide gesprekken is hier samengevoegd.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Je gespreksgeschiedenis met %1$@ en een andere chat met hem of haar zijn samengevoegd.";

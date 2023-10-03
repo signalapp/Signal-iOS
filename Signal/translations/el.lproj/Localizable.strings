@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Αρχεία καταγραφής σφαλμάτων";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Το όνομα της εφαρμογής \"Signal\" θα είναι ορατό στην Αρχική οθόνη, στις ειδοποιήσεις και στη Βιβλιοθήκη εφαρμογών.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Μπορείς να αποκρύψεις το όνομα της εφαρμογής \"Signal\" από την αρχική οθόνη μετακινώντας την εφαρμογή στο dock στο κάτω μέρος της αρχικής οθόνης.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Το όνομα της εφαρμογής \"Signal\" θα είναι ορατό στην Αρχική οθόνη, στις ειδοποιήσεις και στη Βιβλιοθήκη εφαρμογών.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "Εικονίδιο εφαρμογής";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Μέλος των %1$@ και %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Μετά από μήνυμα με τον χρήστη %1$@ έμαθες ότι αυτός ο αριθμός ανήκει στον χρήστη %2$@. Ο αριθμός τηλεφώνου του χρήστη είναι ιδιωτικός.\n\nΤο ιστορικό μηνυμάτων σου και για τις δύο συνομιλίες έχει συγχωνευτεί εδώ.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Το ιστορικό μηνυμάτων σου με τον χρήστη %1$@ και μια άλλη συνομιλία που του άνηκε συγχωνεύτηκαν.";

@@ -5807,13 +5807,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Diagnoseprotokolle";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Benachrichtigungen und in der App-Bibliothek angezeigt.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Du kannst den App-Namen »Signal« auf dem Home-Bildschirm ausblenden, indem du die App in das Dock am unteren Rand des Home-Bildschirms verschiebst.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Benachrichtigungen und in der App-Bibliothek angezeigt.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "App-Icon";
@@ -7277,7 +7277,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Mitglied von %1$@ und %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "Nach dem Nachrichtenaustausch mit der Nummer %1$@ hast du erfahren, dass diese zu %2$@ gehört. Ihre*seine Nummer ist privat.\n\nDein Nachrichtenverlauf für beide Chats wurde hier zusammengeführt.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "Dein Nachrichtenverlauf mit %1$@ und einem anderen Chat, der dazu gehört, wurde zusammengeführt.";
