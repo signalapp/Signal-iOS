@@ -338,8 +338,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:transaction];
         if (message != nil) {
             OWSAssertDebug([TSMessage anyFetchWithUniqueId:message.uniqueId transaction:transaction] != nil);
-
-            OWSLogDebug(@"Incoming message: %@", message.debugDescription);
         }
     }
 

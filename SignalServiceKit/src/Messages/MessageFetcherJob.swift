@@ -204,8 +204,6 @@ public class MessageFetcherJob: NSObject {
     // MARK: -
 
     fileprivate class func fetchMessages() async throws {
-        Logger.info("")
-
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             throw OWSAssertionError("This extension should not fetch messages.")
         }
@@ -491,8 +489,6 @@ private class MessageFetchOperation: OWSOperation {
     }
 
     public override func run() {
-        Logger.info("")
-
         Task {
             try? await MessageFetcherJob.fetchMessages()
             future.resolve(())

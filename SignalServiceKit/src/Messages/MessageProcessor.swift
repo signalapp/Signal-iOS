@@ -412,7 +412,6 @@ public class MessageProcessor: NSObject {
     }
 
     private func handle(combinedRequest: RelatedProcessingRequests, transaction: SDSAnyWriteTransaction) {
-        Logger.info("Process \(combinedRequest.processingRequests.count) related requests")
         // Efficiently handle delivery receipts for the same message by fetching the sent message only
         // once and only using one updateWith... to update the message with new recipient state.
         BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in

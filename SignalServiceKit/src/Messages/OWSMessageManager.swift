@@ -1255,7 +1255,6 @@ class MessageManagerRequest: NSObject {
             return .noContent
         }
 
-        Logger.info("handling content: <Content: \(contentProto.contentDescription)>")
         if contentProto.callMessage != nil && shouldDiscardVisibleMessages {
             Logger.info("Discarding message with timestamp \(decryptedEnvelope.timestamp)")
             return .discard

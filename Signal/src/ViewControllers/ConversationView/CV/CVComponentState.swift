@@ -528,7 +528,6 @@ public class CVComponentState: Equatable, Dependencies {
                 return .quoteOnlyMessage
             }
 
-            Logger.verbose("interaction: \(interaction.debugDescription)")
             owsFailDebug("Unknown state.")
             return .unknown
         }()
@@ -907,7 +906,6 @@ fileprivate extension CVComponentState.Builder {
 
         let result = build()
         if result.messageCellType == .unknown {
-            Logger.verbose("message: \(message.debugDescription)")
             owsFailDebug("Unknown message cell type.")
         }
         return result

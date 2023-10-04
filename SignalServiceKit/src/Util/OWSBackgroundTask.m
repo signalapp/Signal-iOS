@@ -228,7 +228,7 @@ typedef NSNumber *OWSTaskId;
 
         // If the background task could not begin, return NO to indicate that.
         if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
-            OWSLogError(@"background task could not be started.");
+            OWSLogWarn(@"background task could not be started.");
 
             return NO;
         }
@@ -380,7 +380,6 @@ typedef NSNumber *OWSTaskId;
             if (!strongSelf) {
                 return;
             }
-            OWSLogVerbose(@"task expired");
 
             // Make a local copy of completionBlock to ensure that it is called
             // exactly once.
@@ -406,8 +405,6 @@ typedef NSNumber *OWSTaskId;
 
     // If a background task could not be begun, call the completion block.
     if (!self.taskId) {
-        OWSLogError(@"%@ background task could not be started.", self.label);
-
         // Make a local copy of completionBlock to ensure that it is called
         // exactly once.
         BackgroundTaskCompletionBlock _Nullable completionBlock;
