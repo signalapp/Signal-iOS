@@ -16,7 +16,7 @@ public struct RegistrationPermissionsState: Equatable {
 // MARK: - RegistrationPermissionsPresenter
 
 protocol RegistrationPermissionsPresenter: AnyObject {
-    func requestPermissions()
+    func requestPermissions() -> Guarantee<Void>
 }
 
 // MARK: - RegistrationPermissionsViewController
@@ -49,6 +49,8 @@ class RegistrationPermissionsViewController: OWSViewController {
         animationView.contentMode = .scaleAspectFit
         return animationView
     }()
+
+    private var giveAccessButton: OWSFlatButton?
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,6 +151,7 @@ class RegistrationPermissionsViewController: OWSViewController {
             giveAccessButton.autoSetDimension(.width, toSize: 280, relation: .greaterThanOrEqual)
             giveAccessButton.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
         }
+        self.giveAccessButton = giveAccessButton
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -169,6 +172,9 @@ class RegistrationPermissionsViewController: OWSViewController {
     // MARK: Requesting permissions
 
     private func requestPermissions() {
-        presenter?.requestPermissions()
+        giveAccessButton?.setEnabled(false)
+        presenter?.requestPermissions().observe(on: DispatchQueue.main) { [weak self] _ in
+            self?.giveAccessButton?.setEnabled(true)
+        }
     }
 }

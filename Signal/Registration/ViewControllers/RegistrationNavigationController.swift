@@ -404,8 +404,10 @@ extension RegistrationNavigationController: RegistrationChangeNumberSplashPresen
 
 extension RegistrationNavigationController: RegistrationPermissionsPresenter {
 
-    func requestPermissions() {
-        pushNextController(coordinator.requestPermissions(), loadingMode: nil)
+    func requestPermissions() -> Guarantee<Void> {
+        let guarantee = coordinator.requestPermissions()
+        pushNextController(guarantee, loadingMode: nil)
+        return guarantee.asVoid()
     }
 }
 
