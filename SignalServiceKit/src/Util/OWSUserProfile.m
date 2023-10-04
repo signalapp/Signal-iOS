@@ -467,7 +467,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                 canModifyStorageServiceProperties = NO;
                 break;
             case UserProfileWriter_GroupState:
-                OWSFailDebug(@"Group state should not write to user profiles.");
                 canModifyStorageServiceProperties = NO;
                 break;
             case UserProfileWriter_Reupload:
