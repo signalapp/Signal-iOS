@@ -201,7 +201,7 @@ extension UserNotificationPresenter {
 // MARK: -
 
 public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
-    private let presenter = UserNotificationPresenter()
+    private let presenter = UserNotificationPresenter(notifyQueue: NotificationPresenter.notificationQueue)
 
     public override init() {
         super.init()
@@ -712,7 +712,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                         completion()
                         return
                     }
-                    notify()
+                    Self.notificationQueue.async {
+                        notify()
+                    }
                 }
             } else {
                notify()

@@ -148,7 +148,10 @@ class UserNotificationPresenter: Dependencies {
     // avoid notifying a user on their phone while a conversation is actively happening on desktop.
     let kNotificationDelayForRemoteRead: TimeInterval = 20
 
-    init() {
+    private let notifyQueue: DispatchQueue
+
+    init(notifyQueue: DispatchQueue) {
+        self.notifyQueue = notifyQueue
         SwiftSingletons.register(self)
     }
 
@@ -185,6 +188,8 @@ class UserNotificationPresenter: Dependencies {
         forceBeforeOnboarded: Bool = false,
         completion: NotificationActionCompletion?
     ) {
+        dispatchPrecondition(condition: .onQueue(notifyQueue))
+
         guard forceBeforeOnboarded || tsAccountManager.isOnboarded else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
             completion?()
