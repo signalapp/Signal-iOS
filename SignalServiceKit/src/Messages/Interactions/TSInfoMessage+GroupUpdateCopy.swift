@@ -242,6 +242,11 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                     forLocalUserOnly: true,
                     tx: tx
                 )
+
+                addDisappearingMessageUpdates(
+                    oldToken: oldDisappearingMessageToken,
+                    newToken: newDisappearingMessageToken
+                )
             } else if wasJustMigrated(newGroupModel: newGroupModel) {
                 addMigrationUpdates(
                     oldGroupMembership: oldGroupModel.groupMembership,
@@ -268,8 +273,10 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                     newGroupModel: newGroupModel
                 )
 
-                addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
-                                              newToken: newDisappearingMessageToken)
+                addDisappearingMessageUpdates(
+                    oldToken: oldDisappearingMessageToken,
+                    newToken: newDisappearingMessageToken
+                )
 
                 addGroupInviteLinkUpdates(
                     oldGroupModel: oldGroupModel,
@@ -1415,16 +1422,45 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
     // MARK: - Disappearing Messages
 
-    mutating func addDisappearingMessageUpdates(oldToken: DisappearingMessageToken?,
-                                                newToken: DisappearingMessageToken?) {
-
-        guard let newToken = newToken else {
+    /// Add disappearing message timer updates to the item list.
+    ///
+    /// - Important
+    /// This method checks for other updates that have already been added. Use
+    /// caution when reorganizing any calls to this method.
+    mutating func addDisappearingMessageUpdates(
+        oldToken: DisappearingMessageToken?,
+        newToken: DisappearingMessageToken?
+    ) {
+        guard let newToken else {
             // This info message was created before we embedded DM state.
             return
         }
 
         // This might be zero if DMs are not enabled.
         let durationString = newToken.durationString
+
+        let localUserJustJoined = itemList.contains { updateItem in
+            switch updateItem {
+            case
+                    .localUserJoined,
+                    .localUserJoinedViaInviteLink,
+                    .localUserRequestApproved,
+                    .localUserRequestApprovedByUnknownUser:
+                return true
+            default:
+                return false
+            }
+        }
+
+        if localUserJustJoined, newToken.isEnabled {
+            // If this update represents us joining the group, we want to make
+            // sure we use "unknown" attribution for whatever the disappearing
+            // message timer is set to. Since we just joined, we can't know who
+            // set the timer.
+
+            addItem(.disappearingMessagesEnabledByUnknownUser(duration: durationString))
+            return
+        }
 
         guard let oldToken else {
             if newToken.isEnabled {
