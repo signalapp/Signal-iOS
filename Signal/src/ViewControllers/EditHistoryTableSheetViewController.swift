@@ -18,8 +18,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         static let cellSpacing: CGFloat = 12.0
     }
 
-    open override var interactiveScrollViews: [UIScrollView] { [] }
-
     weak var delegate: MessageEditHistoryViewDelegate?
 
     var parentRenderItems: [CVRenderItem]?
