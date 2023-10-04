@@ -3218,7 +3218,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             TSErrorMessage.missingSession(with: createEnvelopeForThread(thread), with: transaction),
             TSErrorMessage.invalidKeyException(with: createEnvelopeForThread(thread), with: transaction),
             TSErrorMessage.invalidVersion(with: createEnvelopeForThread(thread), with: transaction),
-            TSErrorMessage.corruptedMessage(with: createEnvelopeForThread(thread), with: transaction),
 
             TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: false),
             TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: true)

@@ -191,10 +191,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         guard let unsealedEnvelope else {
-            let threadlessMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            self.notificationsManager.notifyUser(forThreadlessErrorMessage: threadlessMessage, transaction: transaction)
             return wrappedError
         }
+
         let sourceAci = unsealedEnvelope.sourceAci
         let sourceAddress = SignalServiceAddress(sourceAci)
 

@@ -56,10 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(notifyUser(forPreviewableInteraction:thread:wantsSound:transaction:));
 
-- (void)notifyUserForThreadlessErrorMessage:(ThreadlessErrorMessage *)errorMessage
-                                transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(notifyUser(forThreadlessErrorMessage:transaction:));
-
 - (void)notifyTestPopulationOfErrorMessage:(NSString *)errorString;
 
 - (void)notifyUserForFailedStorySend:(StoryMessage *)storyMessage

@@ -316,7 +316,6 @@ class UserNotificationPresenter: Dependencies {
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
         switch category {
         case .incomingMessageFromNoLongerVerifiedIdentity,
-             .threadlessErrorMessage,
              .incomingCall,
              .missedCallWithActions,
              .missedCallWithoutActions,

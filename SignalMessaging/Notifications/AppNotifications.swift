@@ -26,7 +26,6 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingReactionWithActions_CanReply
     case incomingReactionWithActions_CannotReply
     case infoOrErrorMessage
-    case threadlessErrorMessage
     case incomingCall
     case missedCallWithActions
     case missedCallWithoutActions
@@ -84,8 +83,6 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
-        case .threadlessErrorMessage:
-            return "Signal.AppNotificationCategory.threadlessErrorMessage"
         case .incomingCall:
             return "Signal.AppNotificationCategory.incomingCall"
         case .missedCallWithActions:
@@ -127,8 +124,6 @@ extension AppNotificationCategory {
              .incomingMessageFromNoLongerVerifiedIdentity:
             return []
         case .infoOrErrorMessage:
-            return []
-        case .threadlessErrorMessage:
             return []
         case .incomingCall:
             return [.answerCall, .declineCall]
@@ -1066,22 +1061,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                                 userInfo: userInfo,
                                 interaction: interaction,
                                 sound: sound,
-                                completion: completion)
-        }
-    }
-
-    public func notifyUser(forThreadlessErrorMessage errorMessage: ThreadlessErrorMessage,
-                           transaction: SDSAnyWriteTransaction) {
-        let notificationBody = errorMessage.previewText(transaction: transaction)
-
-        performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
-            self.presenter.notify(category: .threadlessErrorMessage,
-                                title: nil,
-                                body: notificationBody,
-                                threadIdentifier: nil,
-                                userInfo: [:],
-                                interaction: nil,
-                                sound: self.requestGlobalSound(),
                                 completion: completion)
         }
     }

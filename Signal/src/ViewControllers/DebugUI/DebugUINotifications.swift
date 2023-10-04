@@ -45,14 +45,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
             OWSTableItem(title: "Last Incoming Message") { [weak self] in
                 self?.notifyForIncomingMessage(thread: thread)
             },
-
-            OWSTableItem(title: "Notify For Error Message") { [weak self] in
-                self?.notifyForErrorMessage(thread: thread)
-            },
-
-            OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
-                self?.notifyUserForThreadlessErrorMessage()
-            }
         ]
 
         return OWSTableSection(title: "Notifications have delay: \(kNotificationDelay)s", items: sectionItems)
@@ -108,10 +100,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
             self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
         }.then {
             self.notifyForIncomingMessage(thread: contactThread)
-        }.then {
-            self.notifyForErrorMessage(thread: contactThread)
-        }.then {
-            self.notifyUserForThreadlessErrorMessage()
         }.done {
             UIApplication.shared.endBackgroundTask(taskIdentifier)
         }
@@ -160,29 +148,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
 
                 self.notificationPresenter.notifyUser(forIncomingMessage: incomingMessage,
                                                       thread: thread,
-                                                      transaction: transaction)
-            }
-        }
-    }
-
-    @discardableResult
-    func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
-        return delayedNotificationDispatch {
-            let builder = TSErrorMessageBuilder(thread: thread, errorType: .invalidMessage)
-            let errorMessage = TSErrorMessage(errorMessageWithBuilder: builder)
-
-            self.databaseStorage.write { transaction in
-                self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: transaction)
-            }
-        }
-    }
-
-    @discardableResult
-    func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
-        return delayedNotificationDispatch {
-            self.databaseStorage.write { transaction in
-                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                       transaction: transaction)
             }
         }

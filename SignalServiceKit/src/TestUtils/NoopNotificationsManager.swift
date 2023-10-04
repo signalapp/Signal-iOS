@@ -49,11 +49,6 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocolSwift {
         Logger.warn("skipping notification for: \(previewableInteraction.description)")
     }
 
-    public func notifyUser(forThreadlessErrorMessage errorMessage: ThreadlessErrorMessage,
-                           transaction: SDSAnyWriteTransaction) {
-        Logger.warn("skipping notification for: \(errorMessage.description)")
-    }
-
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
         owsAssertDebug(expectErrors, "Internal error message: \(errorString)")
         Logger.warn("Skipping internal error notification: \(errorString)")

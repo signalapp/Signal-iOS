@@ -14,46 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSUInteger TSErrorMessageSchemaVersion = 2;
 
-@interface ThreadlessErrorMessage ()
-
-@property (nonatomic, readonly) TSErrorMessageType errorType;
-
-@end
-
-#pragma mark -
-
-@implementation ThreadlessErrorMessage
-
-- (instancetype)initWithErrorType:(TSErrorMessageType)errorType
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _errorType = errorType;
-
-    return self;
-}
-
-+ (ThreadlessErrorMessage *)corruptedMessageInUnknownThread
-{
-    return [[self alloc] initWithErrorType:TSErrorMessageInvalidMessage];
-}
-
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    switch (_errorType) {
-        case TSErrorMessageInvalidMessage:
-            return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
-        default:
-            OWSFailDebug(@"Unknown error type.");
-            return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
-    }
-}
-
-@end
-
 #pragma mark -
 
 @interface TSErrorMessage ()
@@ -260,14 +220,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             break;
     }
     return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
-}
-
-+ (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                             withTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageInvalidMessage
-                                                           envelope:envelope
-                                                        transaction:transaction] build];
 }
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
