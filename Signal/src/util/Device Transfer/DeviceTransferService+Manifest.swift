@@ -157,7 +157,9 @@ extension DeviceTransferService {
             stopTransfer()
             return owsFailDebug("Missing manifest file.")
         }
-        guard fileSize.uint64Value < 1024 * 1024 * 10 else {
+        // Not sure why this limit exists in the first place, but 1Gb should be
+        // plenty high for file descriptors.
+        guard fileSize.uint64Value < 1024 * 1024 * 1024 else {
             stopTransfer()
             return owsFailDebug("Unexpectedly received a very large manifest \(fileSize)")
         }
