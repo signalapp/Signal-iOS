@@ -427,6 +427,10 @@ public class SDSDatabaseStorage: SDSTransactable {
         do {
             try readThrows(file: file, function: function, line: line, block: block)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("error: \(error.grdbErrorForLogging)")
         }
     }
