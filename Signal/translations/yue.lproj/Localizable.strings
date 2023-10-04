@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由於你太耐冇用 Signal，所以我哋自動取消咗你嘅每月定期捐款。你嘅個人檔案唔會再顯示 %1$@ 徽章。\n\n你可以如常使用 Signal，但係如果想支持應用程式同埋重新啟動你嘅徽章，請立即捐款贊助。";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "你獲得一個 Signal 捐款者徽章！不妨喺個人檔案度展示徽章，展現你對我哋嘅支持。";
+"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "掛上去個人資料度展示";
@@ -888,6 +888,9 @@
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
 "CARD_DONATION_HEADER" = "捐款金額：%1$@";
+
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
+"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal 唔會喺你捐款嗰陣收集或者儲存任何個人資料。\n\n我哋用 Stripe 作為接收捐款嘅付款處理商。我哋唔會存取、保存或者儲存你向佢哋提供嘅任何資料。\n\nSignal 唔會亦冇辦法將你嘅捐款連結至你嘅 Signal 帳戶。\n\n多謝你嘅支持！";
@@ -1774,11 +1777,14 @@
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "縮細啲";
 
+/* An error indicating that the other device closed signal mid-transfer and it could not complete */
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "驗證唔到您部新機，請再試一次";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "轉移未能完成，請確定您兩部機泊喺左近，然後再試一次";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "若要將呢部 iPad 設定為連結咗嘅機，您就要用您部舊嘅 iPad 嚟掃描";
@@ -5807,13 +5813,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "錯誤記錄檔";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "應用程式名「Signal」會出現喺主畫面、通知同埋 App 資料庫。";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "如果你想喺主畫面度隱藏「Signal」個名，可以將個應用程式移去主畫面底部嘅 Dock。";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "應用程式名「Signal」會出現喺主畫面、通知同埋 App 資料庫。";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "App 圖示";
@@ -7277,7 +7283,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "係 %1$@ 同 %2$@ 嘅成員";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "同 %1$@ 通訊之後，你知道咗呢個號碼係屬於 %2$@ 嘅。對方嘅電話號碼係保密嘅。\n\n兩個聊天嘅訊息紀錄已經喺度合併咗。";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "你同 %1$@ 嘅訊息紀錄同埋另一個同對方嘅聊天已經合併。";

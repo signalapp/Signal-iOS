@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "การบริจาครายเดือนของคุณถูกยกเลิกโดยอัตโนมัติ เนื่องจากไม่มีการเคลื่อนไหวเป็นเวลานาน โล่ %1$@ ของคุณจะไม่แสดงบนโปรไฟล์อีกต่อไป\n\nคุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนแอปและเปิดใช้งานโล่อีกครั้ง สามารถร่วมบริจาคได้ตอนนี้";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "คุณได้รับโล่ผู้บริจาคจาก Signal! แสดงโล่บนโปรไฟล์ของคุณเพื่ออวดให้ทุกคนเห็นได้เลย";
+"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "แสดงบนโปรไฟล์";
@@ -888,6 +888,9 @@
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
 "CARD_DONATION_HEADER" = "จำนวนที่ต้องการบริจาค: %1$@";
+
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
+"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "เมื่อคุณบริจาคเงิน Signal ไม่ได้รวบรวมหรือจัดเก็บข้อมูลส่วนบุคคลใดๆ ของคุณ\n\nเราใช้ Stripe เป็นผู้ให้บริการการชำระเงินในการรับเงินบริจาคของคุณ โดยเราจะไม่เข้าถึง จัดเก็บ หรือบันทึกข้อมูลใดๆ ที่คุณกรอกระหว่างทำธุรกรรม\n\nSignal จะไม่เชื่อมโยงการบริจาคของคุณเข้ากับบัญชี Signal ของคุณ (และนี่เป็นสิ่งที่เราไม่สามารถทำได้อีกด้วย)\n\nขอบคุณสำหรับการสนับสนุนของคุณ!";
@@ -1774,11 +1777,14 @@
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "ดูขนาดเล็กลง";
 
+/* An error indicating that the other device closed signal mid-transfer and it could not complete */
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "ไม่สามารถยืนยันอุปกรณ์ใหม่ของคุณได้ กรุณาลองอีกครั้ง";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "การถ่ายโอนไม่สมบูรณ์ กรุณาทำให้แน่ใจว่าอุปกรณ์ของคุณแต่ละเครื่องอยู่ใกล้กันและลองอีกครั้ง";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "เพื่อตั้งค่า iPad เครื่องนี้ให้เป็นอุปกรณ์ที่เชื่อมโยง คุณต้องสแกนด้วย iPad เครื่องเก่า";
@@ -5807,13 +5813,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "ปูมข้อผิดพลาด";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "ชื่อของแอป “Signal” จะแสดงในหน้าจอหลัก การแจ้งเตือน และคลังแอป";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "You can hide the app name “Signal” from the Home Screen by moving the app to the dock at the bottom of the Home Screen.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "คุณสามารถซ่อนชื่อของแอป “Signal” ในหน้าจอหลัก โดยย้ายแอปไปยัง Dock ที่อยู่ด้านล่างของหน้าจอหลัก";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "The app name “Signal” will be visible on the Home Screen, in notifications and in the App Library.";
+"SETTINGS_APP_ICON_FOOTER" = "ชื่อของแอป “Signal” จะแสดงในหน้าจอหลัก การแจ้งเตือน และคลังแอป";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "ไอคอนแอป";
@@ -7277,7 +7283,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "สมาชิกของ %1$@ และ %2$@";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "After messaging with %1$@ you learned this number belongs to %2$@. Their number is private.\n\nYour message history for both chats has been merged here.";
+"THREAD_MERGE_LEARN_MORE" = "หลังจากที่ส่งข้อความกับ %1$@ คุณได้ทราบว่าหมายเลขนี้เป็นของ %2$@ หมายเลขโทรศัพท์นี้เป็นข้อมูลส่วนตัว\n\nประวัติการส่งข้อความสำหรับแชททั้งสองรายการถูกรวมไว้ในนี้";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "ประวัติการส่งข้อความของคุณกับ %1$@ และอีกแชทของผู้ติดต่อถูกรวมเข้าด้วยกันเรียบร้อยแล้ว";
