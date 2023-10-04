@@ -13,7 +13,9 @@ public enum TypingIndicatorAction: Int {
 
 @objc(OWSTypingIndicatorMessage)
 public class TypingIndicatorMessage: TSOutgoingMessage {
-    private let action: TypingIndicatorAction
+    // Marked @objc so that Mantle can encode/decode it.
+    @objc
+    private var action: TypingIndicatorAction = .started
 
     // MARK: Initializers
 
@@ -29,13 +31,11 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
 
     @objc
     public required init!(coder: NSCoder) {
-        self.action = .started
         super.init(coder: coder)
     }
 
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        self.action = .started
         try super.init(dictionary: dictionaryValue)
     }
 
