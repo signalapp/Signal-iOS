@@ -681,33 +681,58 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     func cleanUpExpiredPlaceholders() {
-        databaseStorage.asyncWrite { tx in
-            Logger.info("Cleaning up placeholders")
+        Task { await self._cleanUpExpiredPlaceholders() }
+    }
+
+    private func _cleanUpExpiredPlaceholders() async {
+        Logger.info("Cleaning up placeholders")
+
+        let (expiredPlaceholderIds, nextExpirationDate) = databaseStorage.read { tx in
+            var expiredPlaceholderIds = [String]()
             var nextExpirationDate: Date?
             InteractionFinder.enumeratePlaceholders(transaction: tx) { placeholder in
                 guard placeholder.expirationDate.isBeforeNow else {
                     nextExpirationDate = [nextExpirationDate, placeholder.expirationDate].compacted().min()
                     return
                 }
-                Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
-                placeholder.anyRemove(transaction: tx)
-                guard let thread = placeholder.thread(tx: tx) else {
-                    return
-                }
-                let errorMessage = TSErrorMessage.failedDecryption(
-                    forSender: placeholder.sender,
-                    thread: thread,
-                    timestamp: NSDate.ows_millisecondTimeStamp(),
-                    transaction: tx
-                )
-                errorMessage.anyInsert(transaction: tx)
-                self.notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
+                expiredPlaceholderIds.append(placeholder.uniqueId)
             }
-            if let nextExpirationDate {
-                DispatchQueue.main.async {
-                    self.schedulePlaceholderCleanup(noLaterThan: nextExpirationDate)
+            return (expiredPlaceholderIds, nextExpirationDate)
+        }
+
+        let batchSize = 25
+        var remainingPlaceholderIds = expiredPlaceholderIds[...]
+        while !remainingPlaceholderIds.isEmpty {
+            let thisBatchPlaceholderIds = remainingPlaceholderIds.prefix(batchSize)
+            remainingPlaceholderIds = remainingPlaceholderIds.dropFirst(batchSize)
+
+            await databaseStorage.awaitableWrite { tx in
+                for placeholderId in thisBatchPlaceholderIds {
+                    guard let placeholder = OWSRecoverableDecryptionPlaceholder.anyFetchRecoverableDecryptionPlaceholder(
+                        uniqueId: placeholderId,
+                        transaction: tx
+                    ) else {
+                        continue
+                    }
+                    Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
+                    placeholder.anyRemove(transaction: tx)
+                    guard let thread = placeholder.thread(tx: tx) else {
+                        return
+                    }
+                    let errorMessage = TSErrorMessage.failedDecryption(
+                        forSender: placeholder.sender,
+                        thread: thread,
+                        timestamp: NSDate.ows_millisecondTimeStamp(),
+                        transaction: tx
+                    )
+                    errorMessage.anyInsert(transaction: tx)
+                    self.notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
                 }
             }
+        }
+
+        if let nextExpirationDate {
+            await MainActor.run { self.schedulePlaceholderCleanup(noLaterThan: nextExpirationDate) }
         }
     }
 }

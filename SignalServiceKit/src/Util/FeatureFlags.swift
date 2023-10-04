@@ -508,6 +508,8 @@ public class TestableFlag: NSObject {
         if affectsCapabilities {
             updateCapabilities()
         }
+
+        toggleHandler?(value)
     }
 
     @objc
