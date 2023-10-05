@@ -13,7 +13,7 @@ extension Stripe {
     /// A Stripe secret used to authorize payment for the new subscription.
     public static func createSignalPaymentMethodForSubscription(subscriberId: Data) -> Promise<String> {
         return firstly {
-            let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberId.asBase64Url)
+            let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
 
             return networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in

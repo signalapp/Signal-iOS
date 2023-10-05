@@ -292,8 +292,7 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     public class func getCurrentSubscriptionStatus(for subscriberID: Data) -> Promise<Subscription?> {
-        let subscriberIDString = subscriberID.asBase64Url
-        let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberIDString)
+        let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
@@ -482,13 +481,10 @@ public class SubscriptionManagerImpl: NSObject {
         subscription: SubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
-
-        let subscriberIDURL = subscriberID.asBase64Url
         let key = Cryptography.generateRandomBytes(UInt(32)).asBase64Url
-        let level = String(subscription.level)
         let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(
-            subscriberIDURL,
-            level: level,
+            subscriberID: subscriberID,
+            level: subscription.level,
             currency: currencyCode,
             idempotencyKey: key
         )
@@ -572,8 +568,10 @@ public class SubscriptionManagerImpl: NSObject {
                                                            targetSubscriptionLevel: UInt,
                                                            priorSubscriptionLevel: UInt = 0) throws -> Promise<ReceiptCredentialPresentation> {
         let clientOperations = try clientZKReceiptOperations()
-        let encodedReceiptCredentialRequest = request.serialize().asData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionReceiptCredentialsRequest(subscriberID.asBase64Url, request: encodedReceiptCredentialRequest)
+        let request = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
+            subscriberID: subscriberID,
+            request: request.serialize().asData
+        )
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
@@ -673,9 +671,8 @@ public class SubscriptionManagerImpl: NSObject {
 
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
-        let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
         let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
-            receiptCredentialPresentationString
+            receiptCredentialPresentation: receiptCredentialPresentationData
         )
         return firstly(on: DispatchQueue.global()) {
             networkManager.makePromise(request: request)
@@ -1110,12 +1107,11 @@ extension SubscriptionManagerImpl {
     ) throws -> Promise<ReceiptCredentialPresentation> {
 
         let clientOperations = try clientZKReceiptOperations()
-        let receiptCredentialRequest = request.serialize().asData.base64EncodedString()
 
         let request = OWSRequestFactory.boostReceiptCredentials(
-            withPaymentIntentId: intentId,
-            andRequest: receiptCredentialRequest,
-            forPaymentProcessor: paymentProcessor.rawValue
+            with: intentId,
+            for: paymentProcessor.rawValue,
+            request: request.serialize().asData
         )
 
         return firstly {

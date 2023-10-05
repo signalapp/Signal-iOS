@@ -176,22 +176,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)paymentsAuthenticationCredentialRequest;
 
-#pragma mark - Subscriptions
-
-+ (TSRequest *)subscriptionGetCurrentSubscriptionLevelRequest:(NSString *)base64SubscriberID;
-+ (TSRequest *)subscriptionCreateStripePaymentMethodRequest:(NSString *)base64SubscriberID;
-+ (TSRequest *)subscriptionCreatePaypalPaymentMethodRequest:(NSString *)base64SubscriberID
-                                                  returnUrl:(NSURL *)returnUrl
-                                                  cancelUrl:(NSURL *)cancelUrl
-    NS_SWIFT_NAME(subscriptionCreatePaypalPaymentMethodRequest(subscriberId:returnUrl:cancelUrl:));
-+ (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
-+ (TSRequest *)subscriptionReceiptCredentialsRequest:(NSString *)base64SubscriberID
-                                             request:(NSString *)base64ReceiptCredentialRequest;
-+ (TSRequest *)subscriptionRedeemReceiptCredential:(NSString *)base64ReceiptCredentialPresentation;
-+ (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
-                                               andRequest:(NSString *)base64ReceiptCredentialRequest
-                                      forPaymentProcessor:(NSString *)processor;
-
 #pragma mark - Spam
 
 + (TSRequest *)pushChallengeRequest;

@@ -88,9 +88,9 @@ public extension Paypal {
     ) -> Promise<SubscriptionAuthorizationParams> {
         firstly {
             let request = OWSRequestFactory.subscriptionCreatePaypalPaymentMethodRequest(
-                subscriberId: subscriberId.asBase64Url,
-                returnUrl: Self.webAuthReturnUrl,
-                cancelUrl: Self.webAuthCancelUrl
+                subscriberID: subscriberId,
+                returnURL: Self.webAuthReturnUrl,
+                cancelURL: Self.webAuthCancelUrl
             )
 
             return networkManager.makePromise(request: request)

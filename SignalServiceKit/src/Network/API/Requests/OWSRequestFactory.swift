@@ -142,6 +142,147 @@ public extension OWSRequestFactory {
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
+
+    static func subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: Data) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+            ])!,
+            method: "GET",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionCreateStripePaymentMethodRequest(subscriberID: Data) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+                "create_payment_method",
+            ])!,
+            method: "POST",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionCreatePaypalPaymentMethodRequest(
+        subscriberID: Data,
+        returnURL: URL,
+        cancelURL: URL
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+                "create_payment_method",
+                "paypal",
+            ])!,
+            method: "POST",
+            parameters: [
+                "returnUrl": returnURL.absoluteString,
+                "cancelUrl": cancelURL.absoluteString,
+            ]
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionSetSubscriptionLevelRequest(
+        subscriberID: Data,
+        level: UInt,
+        currency: String,
+        idempotencyKey: String
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+                "level",
+                String(level),
+                currency,
+                idempotencyKey,
+            ])!,
+            method: "PUT",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionReceiptCredentialsRequest(
+        subscriberID: Data,
+        request: Data
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberID.asBase64Url,
+                "receipt_credentials",
+            ])!,
+            method: "POST",
+            parameters: [
+                "receiptCredentialRequest": request.base64EncodedString(),
+            ]
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionRedeemReceiptCredential(
+        receiptCredentialPresentation: Data
+    ) -> TSRequest {
+        return TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "donation",
+                "redeem-receipt",
+            ])!,
+            method: "POST",
+            parameters: [
+                "receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString(),
+                "visible": self.subscriptionManager.displayBadgesOnProfile,
+                "primary": false,
+            ]
+        )
+    }
+
+    static func boostReceiptCredentials(
+        with paymentIntentID: String,
+        for paymentProcessor: String,
+        request: Data
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                "boost",
+                "receipt_credentials",
+            ])!,
+            method: "POST",
+            parameters: [
+                "paymentIntentId": paymentIntentID,
+                "receiptCredentialRequest": request.base64EncodedString(),
+                "processor": paymentProcessor,
+            ]
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        return result
+    }
 }
 
 // MARK: - Messages
