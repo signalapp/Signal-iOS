@@ -18,11 +18,11 @@ private enum OpenableUrl {
 
 class UrlOpener {
     private let databaseStorage: SDSDatabaseStorage
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     init(
         databaseStorage: SDSDatabaseStorage,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.databaseStorage = databaseStorage
         self.tsAccountManager = tsAccountManager

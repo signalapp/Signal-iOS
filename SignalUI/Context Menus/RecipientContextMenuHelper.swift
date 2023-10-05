@@ -13,7 +13,7 @@ class RecipientContextMenuHelper {
     private let recipientHidingManager: RecipientHidingManager
     // TODO: When BlockingManager is protocolized, this should be the protocol type.
     private let blockingManager: BlockingManager
-    private let accountManager: TSAccountManagerProtocol
+    private let accountManager: TSAccountManager
     private let contactsManager: ContactsManagerProtocol
 
     /// The view controller from which to present action
@@ -26,7 +26,7 @@ class RecipientContextMenuHelper {
         databaseStorage: SDSDatabaseStorage,
         blockingManager: BlockingManager,
         recipientHidingManager: RecipientHidingManager,
-        accountManager: TSAccountManagerProtocol,
+        accountManager: TSAccountManager,
         contactsManager: ContactsManagerProtocol,
         fromViewController: UIViewController
     ) {

@@ -5,7 +5,6 @@
 
 #import "Contact.h"
 #import "PhoneNumber.h"
-#import "TSAccountManager.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>

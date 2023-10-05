@@ -4,7 +4,6 @@
 //
 
 #import "TSGroupThread.h"
-#import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

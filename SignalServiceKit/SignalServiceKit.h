@@ -137,7 +137,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/StickerPack.h>
 #import <SignalServiceKit/StorageCoordinator.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

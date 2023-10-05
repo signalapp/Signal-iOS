@@ -15,6 +15,14 @@ public extension NSNotification.Name {
     static let localNumberDidChange = NSNotification.Name("NSNotificationNameLocalNumberDidChange")
 }
 
+@objcMembers
+public class RegistrationStateChangeNotificatons: NSObject {
+
+    private override init() { super.init() }
+
+    public static var registrationStateDidChange: NSNotification.Name { .registrationStateDidChange }
+}
+
 public protocol RegistrationStateChangeManager {
 
     func registrationState(tx: DBReadTransaction) -> TSRegistrationState

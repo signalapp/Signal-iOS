@@ -18,7 +18,7 @@ public enum PreKeyTasks {
         let protocolStoreManager: SignalProtocolStoreManager
         let schedulers: Schedulers
         let serviceClient: AccountServiceClient
-        let tsAccountManager: TSAccountManagerProtocol
+        let tsAccountManager: TSAccountManager
     }
 }
 

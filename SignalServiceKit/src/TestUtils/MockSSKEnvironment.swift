@@ -75,7 +75,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
-        let tsAccountManager = TSAccountManager()
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = MockVersionedProfiles()
         let webSocketFactory = WebSocketFactoryMock()
@@ -104,7 +103,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
             udManager: udManager,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
@@ -174,7 +172,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             messageDecrypter: messageDecrypter,
             groupsV2MessageProcessor: groupsV2MessageProcessor,
             socketManager: socketManager,
-            tsAccountManager: tsAccountManager,
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,

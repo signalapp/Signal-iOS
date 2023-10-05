@@ -21,7 +21,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR.Shims.OWS2FAManager
 
@@ -36,7 +36,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {

@@ -22,7 +22,6 @@
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "ProfileManagerProtocol.h"
-#import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"

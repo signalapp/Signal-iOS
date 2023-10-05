@@ -7,7 +7,6 @@
 #import "AppContext.h"
 #import "OWSFileSystem.h"
 #import "ProfileManagerProtocol.h"
-#import "TSAccountManager.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>

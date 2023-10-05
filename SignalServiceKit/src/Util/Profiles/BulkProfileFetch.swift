@@ -39,12 +39,12 @@ public actor BulkProfileFetch {
 
     private let databaseStorage: SDSDatabaseStorage
     private let reachabilityManager: SSKReachabilityManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     public init(
         databaseStorage: SDSDatabaseStorage,
         reachabilityManager: SSKReachabilityManager,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.databaseStorage = databaseStorage
         self.reachabilityManager = reachabilityManager

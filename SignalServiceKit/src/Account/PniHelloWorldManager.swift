@@ -40,7 +40,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let profileManager: Shims.ProfileManager
     private let schedulers: Schedulers
     private let signalRecipientStore: Shims.SignalRecipientStore
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     init(
         database: DB,
@@ -53,7 +53,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         profileManager: Shims.ProfileManager,
         schedulers: Schedulers,
         signalRecipientStore: Shims.SignalRecipientStore,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.database = database
         self.identityManager = identityManager

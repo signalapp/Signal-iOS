@@ -6,18 +6,9 @@
 import Foundation
 import LibSignalClient
 
-fileprivate extension NSNotification.Name {
-    /// TODO: remove this notification once bridging between old and new TSAccountManager is done
-    /// and no listeners exist.
-    static let onboardingStateDidChange: NSNotification.Name = {
-        owsAssertDebug(FeatureFlags.tsAccountManagerBridging, "Canary to remove when feature flag is removed")
-        return NSNotification.Name("NSNotificationNameOnboardingStateDidChange")
-    }()
-}
-
 public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager {
 
-    public typealias TSAccountManager = SignalServiceKit.TSAccountManagerProtocol & LocalIdentifiersSetter
+    public typealias TSAccountManager = SignalServiceKit.TSAccountManager & LocalIdentifiersSetter
 
     private let appContext: AppContext
     private let groupsV2: GroupsV2Swift
@@ -83,7 +74,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             pni: pni,
             deviceId: OWSDevice.primaryDeviceId,
             serverAuthToken: authToken,
-            tmp_setIsOnboarded: FeatureFlags.tsAccountManagerBridging,
             tx: tx
         )
 
@@ -92,9 +82,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         tx.addAsyncCompletion(on: schedulers.main) {
             self.postLocalNumberDidChangeNotification()
             self.postRegistrationStateDidChangeNotification()
-            if FeatureFlags.tsAccountManagerBridging {
-                self.tmp_postOnboardingStateDidChangeNotification()
-            }
         }
     }
 
@@ -112,7 +99,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             pni: pni,
             deviceId: deviceId,
             serverAuthToken: authToken,
-            tmp_setIsOnboarded: false,
             tx: tx
         )
         didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, tx: tx)
@@ -185,9 +171,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         tx.addAsyncCompletion(on: schedulers.main) {
             self.postRegistrationStateDidChangeNotification()
             self.postLocalNumberDidChangeNotification()
-            if FeatureFlags.tsAccountManagerBridging {
-                self.tmp_postOnboardingStateDidChangeNotification()
-            }
         }
     }
 
@@ -291,16 +274,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             object: nil
         )
     }
-
-    private func tmp_postOnboardingStateDidChangeNotification() {
-        guard FeatureFlags.tsAccountManagerBridging else {
-            return
-        }
-        NotificationCenter.default.postNotificationNameAsync(
-            .onboardingStateDidChange,
-            object: nil
-        )
-    }
 }
 
 // MARK: - Shims
@@ -376,7 +349,6 @@ extension RegistrationStateChangeManagerImpl {
             pni: localIdentifiers.pni,
             deviceId: OWSDevice.primaryDeviceId,
             serverAuthToken: "",
-            tmp_setIsOnboarded: true,
             tx: tx
         )
         didUpdateLocalIdentifiers(

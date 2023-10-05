@@ -8,7 +8,6 @@
 #import "ContactsManagerProtocol.h"
 #import "OWSContactsOutputStream.h"
 #import "ProfileManagerProtocol.h"
-#import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"

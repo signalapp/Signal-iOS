@@ -104,7 +104,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
         recipientStore: RecipientDataStore,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
     ) {

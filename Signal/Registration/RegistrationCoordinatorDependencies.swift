@@ -32,7 +32,7 @@ public struct RegistrationCoordinatorDependencies {
     public let storageServiceManager: StorageServiceManager
     public let svr: SecureValueRecovery
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
-    public let tsAccountManager: TSAccountManagerProtocol
+    public let tsAccountManager: TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
 
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {

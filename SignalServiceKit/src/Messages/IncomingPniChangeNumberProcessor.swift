@@ -21,14 +21,14 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
     private let pniProtocolStore: SignalProtocolStore
     private let preKeyManager: PreKeyManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     public init(
         identityManager: OWSIdentityManager,
         pniProtocolStore: SignalProtocolStore,
         preKeyManager: PreKeyManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.identityManager = identityManager
         self.pniProtocolStore = pniProtocolStore

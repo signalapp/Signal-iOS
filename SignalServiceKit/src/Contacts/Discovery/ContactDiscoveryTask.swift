@@ -16,7 +16,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let recipientFetcher: RecipientFetcher
     private let recipientMerger: RecipientMerger
     private let recipientStore: RecipientDataStore
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
     private let websocketFactory: WebSocketFactory
 
@@ -25,7 +25,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
         recipientStore: RecipientDataStore,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
     ) {

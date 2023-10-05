@@ -85,7 +85,7 @@ public class DependenciesBridge {
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
 
-    public var tsAccountManager: TSAccountManagerProtocol
+    public var tsAccountManager: TSAccountManager
 
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
@@ -119,7 +119,6 @@ public class DependenciesBridge {
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
-        tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
@@ -147,7 +146,6 @@ public class DependenciesBridge {
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
             udManager: udManager,
             versionedProfiles: versionedProfiles,
@@ -180,7 +178,6 @@ public class DependenciesBridge {
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
-        tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         udManager: OWSUDManager,
         versionedProfiles: VersionedProfilesSwift,
@@ -193,14 +190,14 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let newTSAccountManager = TSAccountManagerImpl(
+        let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
             dateProvider: dateProvider,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers
         )
-        self.tsAccountManager = newTSAccountManager
+        self.tsAccountManager = tsAccountManager
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
@@ -232,7 +229,7 @@ public class DependenciesBridge {
             recipientFetcher: recipientFetcher,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
@@ -243,7 +240,7 @@ public class DependenciesBridge {
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
             registrationIdGenerator: RegistrationIdGenerator(),
             schedulers: schedulers,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
 
         self.deviceManager = OWSDeviceManagerImpl(
@@ -279,7 +276,7 @@ public class DependenciesBridge {
             schedulers: schedulers,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
         self.accountAttributesUpdater = accountAttributesUpdater
 
@@ -298,7 +295,7 @@ public class DependenciesBridge {
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
-            tsAccountManager: newTSAccountManager,
+            tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
         )
@@ -375,7 +372,7 @@ public class DependenciesBridge {
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: newTSAccountManager,
+            tsAccountManager: tsAccountManager,
             udManager: udManager,
             versionedProfiles: versionedProfiles
         )
@@ -393,7 +390,7 @@ public class DependenciesBridge {
             pniIdentityKeyChecker: pniIdentityKeyChecker,
             registrationStateChangeManager: registrationStateChangeManager,
             schedulers: schedulers,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
         self.pniHelloWorldManager = PniHelloWorldManagerImpl(
             database: db,
@@ -406,7 +403,7 @@ public class DependenciesBridge {
             profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
             schedulers: schedulers,
             signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
 
         let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
@@ -419,7 +416,7 @@ public class DependenciesBridge {
                 protocolStoreManager: signalProtocolStoreManager,
                 schedulers: schedulers,
                 serviceClient: accountServiceClient,
-                tsAccountManager: newTSAccountManager
+                tsAccountManager: tsAccountManager
             )
         )
         self.preKeyManager = PreKeyManagerImpl(
@@ -438,7 +435,7 @@ public class DependenciesBridge {
             preKeyManager: preKeyManager,
             registrationStateChangeManager: registrationStateChangeManager,
             schedulers: schedulers,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(
@@ -452,7 +449,7 @@ public class DependenciesBridge {
         self.recipientHidingManager = RecipientHidingManagerImpl(
             profileManager: profileManager,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: newTSAccountManager,
+            tsAccountManager: tsAccountManager,
             jobQueues: jobQueues
         )
 
@@ -492,7 +489,7 @@ public class DependenciesBridge {
             accountAttributesUpdater: accountAttributesUpdater,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
 
         self.incomingPniChangeNumberProcessor = IncomingPniChangeNumberProcessorImpl(
@@ -500,7 +497,7 @@ public class DependenciesBridge {
             pniProtocolStore: pniProtocolStore,
             preKeyManager: preKeyManager,
             registrationStateChangeManager: registrationStateChangeManager,
-            tsAccountManager: newTSAccountManager
+            tsAccountManager: tsAccountManager
         )
     }
 }

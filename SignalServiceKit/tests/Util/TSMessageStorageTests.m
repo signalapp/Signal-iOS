@@ -4,7 +4,6 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"

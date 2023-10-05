@@ -24,7 +24,6 @@ public class SSKEnvironment: NSObject {
     private(set) public var messageSenderRef: MessageSender
     private(set) public var networkManagerRef: NetworkManager
     private(set) public var paymentsHelperRef: PaymentsHelperSwift
-    private(set) public var tsAccountManagerRef: TSAccountManager
     private(set) public var groupsV2Ref: GroupsV2Swift
     #else
     public let contactsManagerRef: ContactsManagerProtocol
@@ -106,7 +105,6 @@ public class SSKEnvironment: NSObject {
         messageDecrypter: OWSMessageDecrypter,
         groupsV2MessageProcessor: GroupsV2MessageProcessor,
         socketManager: SocketManager,
-        tsAccountManager: TSAccountManager,
         ows2FAManager: OWS2FAManager,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         receiptManager: OWSReceiptManager,
@@ -166,7 +164,6 @@ public class SSKEnvironment: NSObject {
         self.messageDecrypterRef = messageDecrypter
         self.groupsV2MessageProcessorRef = groupsV2MessageProcessor
         self.socketManagerRef = socketManager
-        self.tsAccountManagerRef = tsAccountManager
         self.ows2FAManagerRef = ows2FAManager
         self.disappearingMessagesJobRef = disappearingMessagesJob
         self.receiptManagerRef = receiptManager
@@ -228,7 +225,6 @@ public class SSKEnvironment: NSObject {
             InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: name, block: action)
         }
         warmCachesForObject("signalProxy", SignalProxy.warmCaches)
-        warmCachesForObject("tsAccountManager", tsAccountManager.warmCaches)
         warmCachesForObject("newTSAccountManager", DependenciesBridge.shared.tsAccountManager.warmCaches)
         warmCachesForObject("fixLocalRecipient", fixLocalRecipientIfNeeded)
         warmCachesForObject("signalServiceAddressCache", signalServiceAddressCache.warmCaches)
@@ -292,10 +288,6 @@ public class SSKEnvironment: NSObject {
 
     public func setPaymentsHelperForUnitTests(_ paymentsHelper: PaymentsHelperSwift) {
         self.paymentsHelperRef = paymentsHelper
-    }
-
-    public func setTsAccountManagerForUnitTests(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManagerRef = tsAccountManager
     }
 
     @objc

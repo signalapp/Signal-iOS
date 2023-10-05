@@ -16,7 +16,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let schedulers: Schedulers
     private let svrLocalStorage: SVRLocalStorage
     private let syncManager: SyncManagerProtocol
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     private let kvStore: KeyValueStore
 
@@ -31,7 +31,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         schedulers: Schedulers,
         svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.appReadiness = appReadiness
         self.appVersion = appVersion
@@ -149,15 +149,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                     registrationState: registrationState,
                     hasBackedUpMasterKey: hasBackedUpMasterKey
                 )
-            }
-
-            // While bridging don't proactively update attributes; only once the old
-            // tsAccountManager is deleted does this one take charge of updates.
-            // (Do continue to make requested updates as in the lastAttributeRequestDate
-            // check above.
-            if FeatureFlags.tsAccountManagerBridging {
-                Logger.info("Skipping automatic updates while bridging")
-                return .no
             }
 
             // Check if device capabilities have changed.

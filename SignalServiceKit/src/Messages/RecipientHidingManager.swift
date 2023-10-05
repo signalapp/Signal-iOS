@@ -80,13 +80,13 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
     private let profileManager: ProfileManagerProtocol
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let jobQueues: SSKJobQueues
 
     public init(
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         jobQueues: SSKJobQueues
     ) {
         self.profileManager = profileManager

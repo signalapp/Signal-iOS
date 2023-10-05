@@ -708,7 +708,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     private let appExpiry: AppExpiry
     private let db: DB
     private let keyValueStore: KeyValueStore
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let serviceClient: SignalServiceClient
 
     // MARK: -
@@ -731,7 +731,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         appExpiry: AppExpiry,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         serviceClient: SignalServiceClient
     ) {
         self.appExpiry = appExpiry

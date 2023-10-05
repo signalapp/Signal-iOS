@@ -7,7 +7,7 @@ import Foundation
 
 public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityManager {
 
-    public typealias TSAccountManager = SignalServiceKit.TSAccountManagerProtocol & PhoneNumberDiscoverabilitySetter
+    public typealias TSAccountManager = SignalServiceKit.TSAccountManager & PhoneNumberDiscoverabilitySetter
 
     private let accountAttributesUpdater: AccountAttributesUpdater
     private let schedulers: Schedulers

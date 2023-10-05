@@ -177,14 +177,6 @@ public extension NSObject {
         SSKEnvironment.shared.syncManagerRef
     }
 
-    final var tsAccountManager: TSAccountManager {
-        .shared
-    }
-
-    static var tsAccountManager: TSAccountManager {
-        .shared
-    }
-
     final var typingIndicatorsImpl: TypingIndicators {
         SSKEnvironment.shared.typingIndicatorsRef
     }
@@ -637,14 +629,6 @@ public extension Dependencies {
         SSKEnvironment.shared.syncManagerRef
     }
 
-    var tsAccountManager: TSAccountManager {
-        .shared
-    }
-
-    static var tsAccountManager: TSAccountManager {
-        .shared
-    }
-
     var typingIndicatorsImpl: TypingIndicators {
         SSKEnvironment.shared.typingIndicatorsRef
     }
@@ -1059,15 +1043,6 @@ public extension OWS2FAManager {
 public extension OWSReceiptManager {
     static var shared: OWSReceiptManager {
         SSKEnvironment.shared.receiptManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension TSAccountManager {
-    static var shared: TSAccountManager {
-        SSKEnvironment.shared.tsAccountManagerRef
     }
 }
 

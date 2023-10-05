@@ -12,7 +12,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

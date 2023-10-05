@@ -8,7 +8,7 @@ import LibSignalClient
 
 #if TESTABLE_BUILD
 
-public class MockTSAccountManager: TSAccountManagerProtocol {
+public class MockTSAccountManager: TSAccountManager {
 
     public var dateProvider: DateProvider
 

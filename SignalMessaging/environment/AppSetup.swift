@@ -69,7 +69,6 @@ public class AppSetup {
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = StorageServiceManagerImpl.shared
         let syncManager = OWSSyncManager(default: ())
-        let tsAccountManager = TSAccountManager()
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = VersionedProfilesImpl()
         let sskJobQueues = SSKJobQueues()
@@ -97,7 +96,6 @@ public class AppSetup {
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
             udManager: udManager,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
@@ -190,7 +188,6 @@ public class AppSetup {
             messageDecrypter: messageDecrypter,
             groupsV2MessageProcessor: groupsV2MessageProcessor,
             socketManager: socketManager,
-            tsAccountManager: tsAccountManager,
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,
@@ -344,18 +341,17 @@ extension AppSetup.FinalContinuation {
     private func setUpLocalIdentifiers(willResumeInProgressRegistration: Bool) -> Bool {
         let databaseStorage = sskEnvironment.databaseStorageRef
         let storageServiceManager = sskEnvironment.storageServiceManagerRef
-        let tsAccountManager = sskEnvironment.tsAccountManagerRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let updateLocalIdentifiers: (LocalIdentifiersObjC) -> Void = { [weak storageServiceManager] localIdentifiers in
             storageServiceManager?.setLocalIdentifiers(localIdentifiers)
         }
 
-        // If we're not registered, listen for when we become registered. If we are
-        // registered, listen for when we learn about our PNI or change our number.
-        tsAccountManager.didStoreLocalNumber = updateLocalIdentifiers
-
-        if tsAccountManager.isOnboarded && !willResumeInProgressRegistration {
-            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(transaction: $0) }
+        if
+            tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+            && !willResumeInProgressRegistration
+        {
+            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(tx: $0.asV2Read) }
             guard let localIdentifiers else {
                 return false
             }

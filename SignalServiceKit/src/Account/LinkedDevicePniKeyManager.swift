@@ -70,7 +70,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let schedulers: Schedulers
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     private let isValidating = AtomicBool(false, lock: .init())
 
@@ -81,7 +81,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         pniIdentityKeyChecker: PniIdentityKeyChecker,
         registrationStateChangeManager: RegistrationStateChangeManager,
         schedulers: Schedulers,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.db = db
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: Constants.collection)

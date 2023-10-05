@@ -29,7 +29,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {

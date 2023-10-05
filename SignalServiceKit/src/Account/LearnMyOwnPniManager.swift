@@ -28,7 +28,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let preKeyManager: PreKeyManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     private let db: DB
     private let keyValueStore: KeyValueStore
@@ -42,7 +42,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         preKeyManager: PreKeyManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
         schedulers: Schedulers,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.accountServiceClient = accountServiceClient
         self.pniIdentityKeyChecker = pniIdentityKeyChecker

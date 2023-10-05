@@ -168,12 +168,12 @@ extension PreKeyTasks {
     internal class Legacy_Generate: GenerateBase {
 
         private let messageProcessor: PreKey.Operation.Shims.MessageProcessor
-        private let tsAccountManager: TSAccountManagerProtocol
+        private let tsAccountManager: TSAccountManager
 
         internal init(
             context: Generate.Context,
             messageProcessor: PreKey.Operation.Shims.MessageProcessor,
-            tsAccountManager: TSAccountManagerProtocol
+            tsAccountManager: TSAccountManager
         ) {
             self.messageProcessor = messageProcessor
             self.tsAccountManager = tsAccountManager

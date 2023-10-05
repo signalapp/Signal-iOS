@@ -1189,7 +1189,7 @@ extension OWSContactsManager {
         let dataProvider: SystemContactsDataProvider?
         if forcePrimary {
             dataProvider = PrimaryDeviceSystemContactsDataProvider()
-        } else if !tsRegistrationState.isRegistered {
+        } else if !tsRegistrationState.wasEverRegistered {
             dataProvider = nil
         } else if tsRegistrationState.isPrimaryDevice ?? true {
             dataProvider = PrimaryDeviceSystemContactsDataProvider()

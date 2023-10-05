@@ -13,12 +13,12 @@ public class OWSFingerprintBuilder {
 
     private let contactsManager: ContactsManagerProtocol
     private let identityManager: OWSIdentityManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     public init(
         contactsManager: ContactsManagerProtocol,
         identityManager: OWSIdentityManager,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.contactsManager = contactsManager
         self.identityManager = identityManager

@@ -8,7 +8,7 @@ import SignalServiceKit
 
 enum LaunchJobs {
     static func run(
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         databaseStorage: SDSDatabaseStorage
     ) -> Guarantee<Void> {
         AssertIsOnMainThread()

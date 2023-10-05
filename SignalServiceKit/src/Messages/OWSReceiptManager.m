@@ -10,7 +10,6 @@
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
-#import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>

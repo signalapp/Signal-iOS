@@ -175,7 +175,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let contactsManager: OWSContactsManager
     private let identityManager: OWSIdentityManager
     private let profileManager: OWSProfileManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
@@ -188,7 +188,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
         profileManager: OWSProfileManager,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
         recipientMerger: RecipientMerger,
         recipientHidingManager: RecipientHidingManager
@@ -927,7 +927,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let storageServiceManager: StorageServiceManager
     private let subscriptionManager: SubscriptionManager
     private let systemStoryManager: SystemStoryManagerProtocol
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
     private let usernameEducationManager: UsernameEducationManager
@@ -947,7 +947,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         storageServiceManager: StorageServiceManager,
         subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
         udManager: OWSUDManager,
         usernameEducationManager: UsernameEducationManager

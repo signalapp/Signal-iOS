@@ -153,16 +153,19 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             return Promise(error: OWSAssertionError("only primary device should update account attributes"))
         }
 
-        let attributes = self.databaseStorage.write { transaction in
-            return AccountAttributes.generateForPrimaryDevice(
-                fromDependencies: self,
-                svr: DependenciesBridge.shared.svr,
-                transaction: transaction
-            )
+        return Promise<AccountAttributes>.wrapAsync {
+            return await self.databaseStorage.awaitableWrite { transaction in
+                return AccountAttributes.generateForPrimaryDevice(
+                    fromDependencies: self,
+                    svr: DependenciesBridge.shared.svr,
+                    transaction: transaction
+                )
+            }
+        }.then(on: SyncScheduler()) { [networkManager] attributes in
+            let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
+            request.setAuth(authedAccount.chatServiceAuth)
+            return networkManager.makePromise(request: request).asVoid()
         }
-        let request = AccountAttributesRequestFactory.updatePrimaryDeviceAttributesRequest(attributes)
-        request.setAuth(authedAccount.chatServiceAuth)
-        return networkManager.makePromise(request: request).asVoid()
     }
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {

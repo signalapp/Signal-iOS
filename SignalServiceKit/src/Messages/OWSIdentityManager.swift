@@ -95,12 +95,12 @@ extension OWSIdentity: CustomStringConvertible {
 public class IdentityStore: IdentityKeyStore {
     private let identityManager: OWSIdentityManager
     private let identityKeyPair: IdentityKeyPair
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     fileprivate init(
         identityManager: OWSIdentityManager,
         identityKeyPair: IdentityKeyPair,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.identityManager = identityManager
         self.identityKeyPair = identityKeyPair
@@ -200,7 +200,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let schedulers: Schedulers
     private let shareMyPhoneNumberStore: KeyValueStore
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
 
     public init(
         aciProtocolStore: SignalProtocolStore,
@@ -213,7 +213,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.aciProtocolStore = aciProtocolStore
         self.db = db

@@ -21,7 +21,6 @@
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -92,7 +91,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
-                                                 name:NSNotificationNameRegistrationStateDidChange
+                                                 name:[RegistrationStateChangeNotificatons registrationStateDidChange]
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willEnterForeground:)

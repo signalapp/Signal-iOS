@@ -8,7 +8,6 @@
 #import "OWS2FAManager.h"
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"
-#import "TSAccountManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

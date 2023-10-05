@@ -22,7 +22,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let contactsManager: ContactsManagerProtocol
         let databaseStorage: SDSDatabaseStorage
         let recipientHidingManager: RecipientHidingManager
-        let tsAccountManager: TSAccountManagerProtocol
+        let tsAccountManager: TSAccountManager
     }
 
     /// The e164 of the contact represented by this contact card.
@@ -42,7 +42,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         contactsManager: ContactsManagerProtocol,
         databaseStorage: SDSDatabaseStorage,
         recipientHidingManager: RecipientHidingManager,
-        tsAccountManager: TSAccountManagerProtocol
+        tsAccountManager: TSAccountManager
     ) {
         self.e164 = e164
         self.serviceId = serviceId

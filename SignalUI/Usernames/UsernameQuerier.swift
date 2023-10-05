@@ -16,7 +16,7 @@ public struct UsernameQuerier {
     private let recipientFetcher: RecipientFetcher
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManagerProtocol
+    private let tsAccountManager: TSAccountManager
     private let usernameApiClient: UsernameApiClient
     private let usernameLinkManager: UsernameLinkManager
     private let usernameLookupManager: UsernameLookupManager
@@ -50,7 +50,7 @@ public struct UsernameQuerier {
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManagerProtocol,
+        tsAccountManager: TSAccountManager,
         usernameApiClient: UsernameApiClient,
         usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager
