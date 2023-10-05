@@ -149,7 +149,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
         }
 
-        let localDeviceId = Self.tsAccountManager.storedDeviceId(transaction: transaction)
+        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
 
         self.callService.callManager.receivedCallMessage(
             senderUuid: caller.rawUUID,

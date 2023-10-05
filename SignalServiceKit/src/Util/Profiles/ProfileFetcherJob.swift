@@ -145,7 +145,7 @@ public class ProfileFetcherJob: NSObject {
                 case ProfileFetchError.missing:
                     Logger.warn("Error: \(error)")
                 case ProfileFetchError.unauthorized:
-                    if self.tsAccountManager.isRegisteredAndReady {
+                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                         owsFailDebug("Error: \(error)")
                     } else {
                         Logger.warn("Error: \(error)")
@@ -322,7 +322,7 @@ public class ProfileFetcherJob: NSObject {
         case .explicit(let info):
             localIdentifiers = info.localIdentifiers
         case .implicit:
-            guard let implicitLocalIdentifiers = tsAccountManager.localIdentifiers else {
+            guard let implicitLocalIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
                 owsFailDebug("Fetching without localIdentifiers.")
                 return false
             }

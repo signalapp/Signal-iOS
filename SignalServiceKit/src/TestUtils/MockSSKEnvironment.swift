@@ -134,7 +134,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let bulkProfileFetch = BulkProfileFetch(
             databaseStorage: databaseStorage,
             reachabilityManager: reachabilityManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: dependenciesBridge.tsAccountManager
         )
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
@@ -152,7 +152,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
             recipientStore: dependenciesBridge.recipientStore,
-            tsAccountManager: tsAccountManager,
+            tsAccountManager: dependenciesBridge.tsAccountManager,
             udManager: udManager,
             websocketFactory: webSocketFactory
         )

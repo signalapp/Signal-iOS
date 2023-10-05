@@ -114,7 +114,7 @@ public class AvatarBuilder: NSObject {
     @objc
     private func localUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
-        if let address = tsAccountManager.localAddress {
+        if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             addressToAvatarIdentifierCache.removeObject(forKey: address)
         }
     }
@@ -264,7 +264,7 @@ public class AvatarBuilder: NSObject {
                                         localUserDisplayMode: LocalUserDisplayMode,
                                         transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        guard let address = tsAccountManager.localAddress else {
+        guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
         }
@@ -340,7 +340,7 @@ public class AvatarBuilder: NSObject {
         transaction: SDSAnyReadTransaction
     ) -> UIImage? {
         let requestType: RequestType = {
-            guard let localAddress = tsAccountManager.localAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
                 return .contactDefaultIcon(theme: .default)
             }
 

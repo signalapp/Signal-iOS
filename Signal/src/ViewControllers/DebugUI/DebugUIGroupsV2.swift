@@ -52,7 +52,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
     // MARK: -
 
     private func kickOtherGroupMembers(groupModel: TSGroupModelV2) {
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return owsFailDebug("Missing localAddress.")
         }
 

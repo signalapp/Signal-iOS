@@ -14,7 +14,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let profileManager: ProfileManagerProtocol
     private let serviceClient: SignalServiceClient
     private let schedulers: Schedulers
-    private let svr: SecureValueRecovery
+    private let svrLocalStorage: SVRLocalStorage
     private let syncManager: SyncManagerProtocol
     private let tsAccountManager: TSAccountManagerProtocol
 
@@ -29,7 +29,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         keyValueStoreFactory: KeyValueStoreFactory,
         serviceClient: SignalServiceClient,
         schedulers: Schedulers,
-        svr: SecureValueRecovery,
+        svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManagerProtocol
     ) {
@@ -40,7 +40,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         self.profileManager = profileManager
         self.serviceClient = serviceClient
         self.schedulers = schedulers
-        self.svr = svr
+        self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
 
@@ -133,7 +133,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
             // has non-nil value if isRegistered is true.
             let isPrimaryDevice = registrationState.isPrimaryDevice ?? true
-            let hasBackedUpMasterKey = self.svr.hasBackedUpMasterKey(transaction: tx)
+            let hasBackedUpMasterKey = self.svrLocalStorage.getIsMasterKeyBackedUp(tx)
             let currentDeviceCapabilities = OWSRequestFactory.deviceCapabilitiesForLocalDevice(
                 withHasBackedUpMasterKey: hasBackedUpMasterKey,
                 isRegistered: isRegistered,

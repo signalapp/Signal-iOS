@@ -76,6 +76,10 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
         return getOrLoadAccountState(tx: tx).registrationState
     }
 
+    public func registrationDate(tx: DBReadTransaction) -> Date? {
+        return getOrLoadAccountState(tx: tx).registrationDate
+    }
+
     public var storedServerUsernameWithMaybeTransaction: String? {
         return getOrLoadAccountStateWithMaybeTransaction().serverUsername
     }
@@ -162,6 +166,10 @@ public class TSAccountManagerImpl: TSAccountManagerProtocol {
 
     public func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
         return getOrLoadAccountState(tx: tx).isDiscoverableByPhoneNumber
+    }
+
+    public func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date {
+        return getOrLoadAccountState(tx: tx).lastSetIsDiscoverableByPhoneNumberAt
     }
 }
 
@@ -304,6 +312,21 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         }
         return true
     }
+
+    public func cleanUpTransferStateOnAppLaunchIfNeeded() {
+        guard getOrLoadAccountStateWithMaybeTransaction().isTransferInProgress else {
+            // No need for cleanup if transfer wasn't already in progress.
+            return
+        }
+        db.write { tx in
+            mutateWithLock(tx: tx) {
+                guard kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx) else {
+                    return
+                }
+                kvStore.setBool(false, key: Keys.isTransferInProgress, transaction: tx)
+            }
+        }
+    }
 }
 
 extension TSAccountManagerImpl: DBChangeDelegate {
@@ -404,6 +427,8 @@ extension TSAccountManagerImpl {
         let registrationState: TSRegistrationState
         let registrationDate: Date?
 
+        fileprivate let isTransferInProgress: Bool
+
         let isDiscoverableByPhoneNumber: Bool
         let hasDefinedIsDiscoverableByPhoneNumber: Bool
         let lastSetIsDiscoverableByPhoneNumberAt: Date
@@ -443,9 +468,13 @@ extension TSAccountManagerImpl {
                 isPrimaryDevice = nil
             }
 
+            let isTransferInProgress = kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx)
+            self.isTransferInProgress = isTransferInProgress
+
             self.registrationState = Self.loadRegistrationState(
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
+                isTransferInProgress: isTransferInProgress,
                 kvStore: kvStore,
                 tx: tx
             )
@@ -512,6 +541,7 @@ extension TSAccountManagerImpl {
         private static func loadRegistrationState(
             localIdentifiers: LocalIdentifiers?,
             isPrimaryDevice: Bool?,
+            isTransferInProgress: Bool,
             kvStore: KeyValueStore,
             tx: DBReadTransaction
         ) -> TSRegistrationState {
@@ -536,11 +566,6 @@ extension TSAccountManagerImpl {
                 transaction: tx
             )
 
-            let isTransferInProgress = kvStore.getBool(
-                Keys.isTransferInProgress,
-                defaultValue: false,
-                transaction: tx
-            )
             let wasTransferred = kvStore.getBool(
                 Keys.wasTransferred,
                 defaultValue: false,

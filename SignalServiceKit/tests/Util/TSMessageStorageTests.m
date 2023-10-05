@@ -51,7 +51,7 @@
     // ensure local client has necessary "registered" state
     NSString *localE164Identifier = @"+13235551234";
     NSUUID *localUUID = NSUUID.UUID;
-    [self.tsAccountManager registerForTestsWithLocalNumber:localE164Identifier uuid:localUUID];
+    [RegistrationStateChangeManagerObjcTestUtil registerForTestsWithLocalNumber:localE164Identifier aci:localUUID];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.otherAddress transaction:transaction];

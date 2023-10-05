@@ -17,7 +17,16 @@ class GRDBFinderTest: SignalBaseTest {
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
         let localUUID = UUID()
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: localUUID),
+                    pni: nil,
+                    e164: E164(localE164Identifier)!
+                ),
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func testThreadFinder() {

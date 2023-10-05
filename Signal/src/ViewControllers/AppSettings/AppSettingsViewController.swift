@@ -30,7 +30,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateHasExpiredGiftBadge()
         updateTableContents()
 
-        if let localAddress = tsAccountManager.localAddress {
+        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             bulkProfileFetch.fetchProfile(address: localAddress)
         }
 
@@ -142,7 +142,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if self.tsAccountManager.isPrimaryDevice {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true {
             section1.add(.disclosureItem(
                 icon: .settingsLinkedDevices,
                 name: OWSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
@@ -389,7 +389,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             localUserDisplayMode: .asUser
         )
 
-        if let localAddress = tsAccountManager.localAddress {
+        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             avatarImageView.updateWithSneakyTransactionIfNecessary { config in
                 config.dataSource = .address(localAddress)
             }
@@ -438,7 +438,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         addSubtitleLabel(text: OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji))
 
-        if let phoneNumber = tsAccountManager.localNumber {
+        if let phoneNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber {
             addSubtitleLabel(
                 text: PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber),
                 isLast: true
@@ -501,7 +501,9 @@ class AppSettingsViewController: OWSTableViewController2 {
         let vc: UIViewController
         if DonationSettingsViewController.hasAnythingToShowWithSneakyTransaction() {
             vc = DonationSettingsViewController()
-        } else if DonationUtilities.canDonateInAnyWay(localNumber: tsAccountManager.localNumber) {
+        } else if DonationUtilities.canDonateInAnyWay(
+            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        ) {
             vc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
                 let frontVc = { CurrentAppContext().frontmostViewController() }
                 switch finishResult {

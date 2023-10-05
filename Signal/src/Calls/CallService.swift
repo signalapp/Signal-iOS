@@ -198,7 +198,7 @@ public final class CallService: LightweightCallManager {
         }
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            if let localAci = self.tsAccountManager.localAci {
+            if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
                 self.callManager.setSelfUuid(localAci.rawUUID)
             }
         }
@@ -615,8 +615,8 @@ public final class CallService: LightweightCallManager {
     @discardableResult
     @objc
     public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
-        guard tsAccountManager.isOnboarded else {
-            Logger.warn("aborting due to user not being onboarded.")
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            Logger.warn("aborting due to user not being registered.")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
                                                                      comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
             return false
@@ -726,7 +726,7 @@ public final class CallService: LightweightCallManager {
     @objc
     private func registrationChanged() {
         AssertIsOnMainThread()
-        if let localAci = tsAccountManager.localAci {
+        if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
             callManager.setSelfUuid(localAci.rawUUID)
         }
     }

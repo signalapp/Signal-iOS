@@ -9,6 +9,7 @@ import LibSignalClient
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
 public class SecureValueRecovery2Impl: SecureValueRecovery {
 
+    private let accountAttributesUpdater: AccountAttributesUpdater
     private let appReadiness: SVR2.Shims.AppReadiness
     private let appVersion: AppVersion
     private let clientWrapper: SVR2ClientWrapper
@@ -16,15 +17,16 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
-    private let localStorage: SVRLocalStorage
+    private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
-    private let tsAccountManager: SVR.Shims.TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR.Shims.OWS2FAManager
 
     public convenience init(
+        accountAttributesUpdater: AccountAttributesUpdater,
         appReadiness: SVR2.Shims.AppReadiness,
         appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
@@ -33,12 +35,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
+        svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
-        tsAccountManager: SVR.Shims.TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.init(
+            accountAttributesUpdater: accountAttributesUpdater,
             appReadiness: appReadiness,
             appVersion: appVersion,
             clientWrapper: SVR2ClientWrapperImpl(),
@@ -48,6 +52,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
+            svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
@@ -58,6 +63,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let scheduler: Scheduler
 
     internal init(
+        accountAttributesUpdater: AccountAttributesUpdater,
         appReadiness: SVR2.Shims.AppReadiness,
         appVersion: AppVersion,
         clientWrapper: SVR2ClientWrapper,
@@ -67,11 +73,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
+        svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
-        tsAccountManager: SVR.Shims.TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
+        self.accountAttributesUpdater = accountAttributesUpdater
         self.appReadiness = appReadiness
         self.appVersion = appVersion
         self.clientWrapper = clientWrapper
@@ -79,10 +87,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.credentialStorage = credentialStorage
         self.db = db
         self.keyValueStoreFactory = keyValueStoreFactory
-        self.localStorage = SVRLocalStorage(keyValueStoreFactory: keyValueStoreFactory)
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
+        self.localStorage = svrLocalStorage
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
@@ -133,7 +141,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 return
             }
             let needsRefresh = self.db.read { tx -> Bool in
-                guard self.tsAccountManager.isRegisteredAndReady(transaction: tx) else {
+                guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
                     // Only refresh if registered.
                     return false
                 }
@@ -203,7 +211,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         // We should update account attributes so we wipe the reglock and
         // reg recovery password.
-        tsAccountManager.scheduleAccountAttributesUpdate(authedAccount: authedAccount, transaction: transaction)
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: transaction)
     }
 
     // MARK: - PIN Management
@@ -1126,7 +1134,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("Checking old enclaves to wipe")
         var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
             return (
-                self.tsAccountManager.isRegisteredAndReady(transaction: tx),
+                self.tsAccountManager.registrationState(tx: tx).isRegistered,
                 self.getOldEnclavesToDeleteFrom(tx)
             )
         }
@@ -1168,7 +1176,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return self?.db.read { tx in
                 guard
                     let self,
-                    self.tsAccountManager.isRegisteredAndReady(transaction: tx),
+                    self.tsAccountManager.registrationState(tx: tx).isRegistered,
                     let masterKey = self.localStorage.getMasterKey(tx),
                     let pin = self.twoFAManager.pinCode(transaction: tx)
                 else {
@@ -1558,7 +1566,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKeyChanged, tsAccountManager.isRegisteredAndReady(transaction: transaction) else { return }
+        guard masterKeyChanged, tsAccountManager.registrationState(tx: transaction).isRegistered else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.resetLocalData(transaction: transaction)

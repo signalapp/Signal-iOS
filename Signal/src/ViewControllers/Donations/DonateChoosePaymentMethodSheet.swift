@@ -209,7 +209,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             let paymentMethods: [DonationPaymentMethod]
             let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
 
-            if let localNumber = Self.tsAccountManager.localNumber,
+            if let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
                applePayFirstRegions.contains(e164: localNumber) {
                 paymentMethods = [
                     .applePay,

@@ -230,11 +230,11 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var e164Identifier: SignalE164Identifier? {
-        return TSAccountManager.localNumber
+        return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
     }
 
     public var serviceId: ServiceId {
-        let localIdentifiers = TSAccountManager.shared.localIdentifiers!
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         switch identity {
         case .aci: return localIdentifiers.aci
         case .pni: return localIdentifiers.pni!

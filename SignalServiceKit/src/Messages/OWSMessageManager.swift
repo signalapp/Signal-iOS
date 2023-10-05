@@ -265,7 +265,7 @@ extension OWSMessageManager {
         serverDeliveryTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        guard decryptedEnvelope.sourceAci == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard decryptedEnvelope.sourceAci == DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             // Sync messages should only come from linked devices.
             owsFailDebug("Received sync message from another user.")
             return
@@ -494,11 +494,10 @@ extension OWSMessageManager {
                 callEvent, messageTimestamp: decryptedEnvelope.timestamp, transaction: tx
             )
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
-            let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.processIncomingPniChangePhoneNumber(
+            let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
+            pniProcessor.processIncomingPniChangePhoneNumber(
                 proto: pniChangeNumber,
                 updatedPni: envelope.updatedPni,
-                preKeyManager: DependenciesBridge.shared.preKeyManager,
                 tx: tx.asV2Write
             )
         } else {
@@ -507,7 +506,7 @@ extension OWSMessageManager {
     }
 
     private func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, tx: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isRegisteredPrimaryDevice else {
             // Don't respond to sync requests from a linked device.
             return
         }
@@ -596,7 +595,7 @@ extension OWSMessageManager {
                 throw OWSGenericError("Can't receive DEMs at our PNI.")
             }
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
-            guard errorMessage.deviceId == tsAccountManager.storedDeviceId(transaction: writeTx) else {
+            guard errorMessage.deviceId == DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: writeTx.asV2Read) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
@@ -912,7 +911,7 @@ extension OWSMessageManager {
         let aci = envelope.sourceAci
         let deviceId = envelope.sourceDeviceId
 
-        guard aci == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard aci == DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             return
         }
 

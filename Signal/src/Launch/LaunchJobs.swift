@@ -8,12 +8,12 @@ import SignalServiceKit
 
 enum LaunchJobs {
     static func run(
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         databaseStorage: SDSDatabaseStorage
     ) -> Guarantee<Void> {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegistered else {
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .value(())
         }
 

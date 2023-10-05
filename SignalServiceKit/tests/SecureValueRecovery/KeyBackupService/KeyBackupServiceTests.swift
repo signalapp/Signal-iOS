@@ -26,19 +26,24 @@ class KeyBackupServiceTests: XCTestCase {
         self.mockSignalService = OWSSignalServiceMock()
         self.tsConstants = TSConstants.shared
         self.scheduler = TestScheduler()
+
+        let kvStore = InMemoryKeyValueStoreFactory()
+        let localStorage = SVRLocalStorageImpl(keyValueStoreFactory: kvStore)
+
         // Start the scheduler so everything executes synchronously.
         self.scheduler.start()
         self.keyBackupService = KeyBackupServiceImpl(
-            accountManager: SVR.TestMocks.TSAccountManager(),
             appContext: TestAppContext(),
             credentialStorage: credentialStorage,
             databaseStorage: db,
-            keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            keyValueStoreFactory: kvStore,
             remoteAttestation: remoteAttestation,
             schedulers: TestSchedulers(scheduler: scheduler),
             signalService: mockSignalService,
             storageServiceManager: FakeStorageServiceManager(),
+            svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
+            tsAccountManager: MockTSAccountManager(),
             tsConstants: tsConstants,
             twoFAManager: SVR.TestMocks.OWS2FAManager()
         )

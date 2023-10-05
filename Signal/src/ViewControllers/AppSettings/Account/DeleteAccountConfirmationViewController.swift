@@ -342,17 +342,13 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     private func unregisterAccount() -> Promise<Void> {
         Logger.info("Unregistering...")
-        let (promise, future) = Promise<Void>.pending()
-        TSAccountManager.unregisterTextSecure {
-            future.resolve()
-        } failure: { error in
-            future.reject(error)
+        return Promise.wrapAsync {
+            try await DependenciesBridge.shared.registrationStateChangeManager.unregisterFromService(auth: .implicit())
         }
-        return promise
     }
 
     var hasEnteredLocalNumber: Bool {
-        guard let localNumber = TSAccountManager.localNumber else {
+        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             owsFailDebug("local number unexpectedly nil")
             return false
         }
@@ -382,7 +378,7 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
     }
 
     func populateDefaultCountryCode() {
-        guard let localNumber = TSAccountManager.localNumber else {
+        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             return owsFailDebug("Local number unexpectedly nil")
         }
 

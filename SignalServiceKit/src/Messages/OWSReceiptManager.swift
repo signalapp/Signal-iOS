@@ -165,7 +165,7 @@ public extension OWSReceiptManager {
     func enqueueLinkedDeviceViewedReceipt(forOutgoingMessage message: TSOutgoingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
-        guard let localAddress = self.tsAccountManager.localAddress(with: transaction) else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("no local address")
             return
         }
@@ -313,7 +313,7 @@ public extension OWSReceiptManager {
             let messages = interactions.compactMap({ $0 as? TSMessage }).filter {
                 switch $0 {
                 case is TSOutgoingMessage:
-                    return senderAci == tsAccountManager.localIdentifiers(transaction: tx)?.aci
+                    return senderAci == DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
                 case let incomingMessage as TSIncomingMessage:
                     return senderAci == incomingMessage.authorAddress.serviceId
                 default:
@@ -398,7 +398,7 @@ public extension OWSReceiptManager {
                 return
             }
 
-            let localAci = self.tsAccountManager.localIdentifiers?.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
             let readTimestamp = Date.ows_millisecondTimestamp()
             let maxBatchSize = 500
 
@@ -759,7 +759,7 @@ extension OWSReceiptManager {
                 }
                 return true
             }
-            let localAci = tsAccountManager.localIdentifiers(transaction: tx)!.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!.aci
             let storyMessage = StoryFinder.story(timestamp: sentTimestamp, author: localAci, transaction: tx)
             if let storyMessage {
                 if StoryManager.areViewReceiptsEnabled {

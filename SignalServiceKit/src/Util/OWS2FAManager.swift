@@ -81,7 +81,9 @@ extension OWS2FAManager {
                 )
             }
             firstly {
-                TSAccountManager.shared.updateAccountAttributes()
+                return Promise.wrapAsync {
+                    try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+                }
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
@@ -89,7 +91,7 @@ extension OWS2FAManager {
     }
 
     public func markRegistrationLockV2Enabled(transaction: SDSAnyWriteTransaction) {
-        guard !TSAccountManager.shared.isRegistered else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             return owsFailDebug("Unexpectedly attempted to mark reglock as enabled after registration")
         }
 
@@ -118,7 +120,9 @@ extension OWS2FAManager {
                 )
             }
             firstly {
-                TSAccountManager.shared.updateAccountAttributes()
+                return Promise.wrapAsync {
+                    try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+                }
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
@@ -126,7 +130,7 @@ extension OWS2FAManager {
     }
 
     public func markRegistrationLockV2Disabled(transaction: SDSAnyWriteTransaction) {
-        guard !TSAccountManager.shared.isRegistered else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             return owsFailDebug("Unexpectedly attempted to mark reglock as disabled after registration")
         }
 

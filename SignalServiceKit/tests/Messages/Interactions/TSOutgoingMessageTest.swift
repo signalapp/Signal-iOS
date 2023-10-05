@@ -13,7 +13,12 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx.asV2Write
+            )
+        }
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
     }
@@ -107,7 +112,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let content = try! SSKProtoContent(serializedData: messageData)
 
             let messagePni = content.pniSignatureMessage!.pni
-            XCTAssertEqual(messagePni, tsAccountManager.localPni!.rawUUID.data)
+            XCTAssertEqual(messagePni, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.pni!.rawUUID.data)
 
             let aciKeyPair = identityManager.identityKeyPair(for: .aci, tx: transaction.asV2Read)!.identityKeyPair
             let pniKeyPair = identityManager.identityKeyPair(for: .pni, tx: transaction.asV2Read)!.identityKeyPair
@@ -323,9 +328,17 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
         // Change our PNI, using registerForTests(...) instead of updateLocalPhoneNumber(...) because the latter kicks
         // off a request to check with the server.
-        tsAccountManager.registerForTests(withLocalNumber: "+17775550199",
-                                          uuid: tsAccountManager.localAci!.rawUUID,
-                                          pni: UUID())
+        let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: aci,
+                    pni: .init(fromUUID: .init()),
+                    e164: .init("+17775550199")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         write { transaction in
             // Changing your number resets this setting.

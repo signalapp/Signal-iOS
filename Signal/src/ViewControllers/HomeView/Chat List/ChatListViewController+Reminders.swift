@@ -38,7 +38,7 @@ public class CLVReminderViews: Dependencies {
 
         let deregisteredText: String
         let deregisteredActionTitle: String
-        if TSAccountManager.shared.isPrimaryDevice {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true {
             deregisteredText = OWSLocalizedString(
                 "DEREGISTRATION_WARNING",
                 comment: "Label warning the user that they have been de-registered."
@@ -199,7 +199,8 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         archiveReminderView.isHidden = chatListMode != .archive
-        deregisteredView.isHidden = !tsAccountManager.isDeregistered || tsAccountManager.isTransferInProgress
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        deregisteredView.isHidden = !tsRegistrationState.isDeregistered
         outageView.isHidden = !OutageDetection.shared.hasOutage
 
         expiredView.update()

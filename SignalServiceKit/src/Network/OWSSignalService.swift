@@ -101,7 +101,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
         }
 
         guard
-            let localNumber = TSAccountManager.localNumber,
+            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
             let configuration = OWSCensorshipConfiguration(phoneNumber: localNumber)
         else {
             return .default()
@@ -205,7 +205,15 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func updateHasCensoredPhoneNumber() {
-        let localNumber = TSAccountManager.localNumber
+        updateHasCensoredPhoneNumber(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber)
+    }
+
+    public func updateHasCensoredPhoneNumberDuringProvisioning(_ e164: E164) {
+        updateHasCensoredPhoneNumber(e164.stringValue)
+    }
+
+    private func updateHasCensoredPhoneNumber(_ localNumber: String?) {
+        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
 
         if let localNumber = localNumber {
             self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensoredPhoneNumber(localNumber)

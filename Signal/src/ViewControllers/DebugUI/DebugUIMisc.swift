@@ -103,7 +103,9 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             }),
 
             OWSTableItem(title: "Update account attributes", actionBlock: {
-                TSAccountManager.shared.updateAccountAttributes()
+                Task {
+                    try? await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+                }
             }),
 
             OWSTableItem(title: "Check Prekeys", actionBlock: {
@@ -378,7 +380,7 @@ class DebugUIMisc: DebugUIPage, Dependencies {
     }
 
     private static func logLocalAccount() {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return
         }

@@ -24,7 +24,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
-        public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
 }
@@ -292,107 +291,6 @@ public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator
     public func refreshRemoteConfig(account: AuthedAccount) -> Promise<RemoteConfig.SVRConfiguration> {
         return .value(.mirroring)
     }
-}
-
-// MARK: - TSAccountManager
-
-public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordinator_TSAccountManagerShim {
-
-    public init() {}
-
-    public var hasDefinedIsDiscoverableByPhoneNumberMock: (() -> Bool)?
-
-    public func hasDefinedIsDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool {
-        return hasDefinedIsDiscoverableByPhoneNumberMock!()
-    }
-
-    public var isDiscoverableByPhoneNumberMock: () -> Bool = { true }
-
-    public func isDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool {
-        return isDiscoverableByPhoneNumberMock()
-    }
-
-    public var setIsDiscoverableByPhoneNumberMock: ((_ isDiscoverable: Bool, _ authedAccount: AuthedAccount, _ updateStorageService: Bool) -> Void)?
-
-    public func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverable: Bool,
-        updateStorageService: Bool,
-        authedAccount: AuthedAccount,
-        _ transaction: SignalServiceKit.DBWriteTransaction
-    ) {
-        setIsDiscoverableByPhoneNumberMock?(isDiscoverable, authedAccount, updateStorageService)
-    }
-
-    public var isManualMessageFetchEnabledMock: () -> Bool = { false }
-
-    public func isManualMessageFetchEnabled(_ transaction: DBReadTransaction) -> Bool {
-        return isManualMessageFetchEnabledMock()
-    }
-
-    public var setIsManualMessageFetchEnabledMock: ((_ isEnabled: Bool) -> Void)?
-
-    public func setIsManualMessageFetchEnabled(_ isEnabled: Bool, _ transaction: DBWriteTransaction) {
-        setIsManualMessageFetchEnabledMock?(isEnabled)
-    }
-
-    public var resetForReregistrationMock: ((
-        _ e164: E164,
-        _ aci: Aci
-    ) -> Void)?
-
-    public func resetForReregistration(
-        e164: E164,
-        aci: Aci,
-        _ tx: DBWriteTransaction
-    ) {
-        resetForReregistrationMock?(e164, aci)
-    }
-
-    public var didRegisterMock: ((
-        _ e164: E164,
-        _ aci: Aci,
-        _ pni: Pni,
-        _ authToken: String
-    ) -> Void)?
-
-    public func didRegister(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        authToken: String,
-        _ tx: DBWriteTransaction
-    ) {
-        didRegisterMock?(e164, aci, pni, authToken)
-    }
-
-    public var updateLocalPhoneNumberMock: ((
-        _ e164: E164,
-        _ aci: Aci,
-        _ pni: Pni
-    ) -> Void)?
-
-    public func updateLocalPhoneNumber(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        _ tx: DBWriteTransaction
-    ) {
-        updateLocalPhoneNumberMock?(e164, aci, pni)
-    }
-
-    public var registrationIdMock: (() -> UInt32) = { 8 /* an arbitrary default value */ }
-
-    public func getOrGenerateRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
-        return registrationIdMock()
-    }
-
-    public var pniRegistrationIdMock: (() -> UInt32) = { 9 /* an arbitrary default value */ }
-
-    public func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
-        return pniRegistrationIdMock()
-    }
-
-    public func setIsOnboarded(_ tx: SignalServiceKit.DBWriteTransaction) {}
 }
 
 // MARK: UDManager

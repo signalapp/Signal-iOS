@@ -193,7 +193,7 @@ private extension OWSContactsManager {
             return cachedValue
         }
         let result: Bool = {
-            guard let localAddress = tsAccountManager.localAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                 owsFailDebug("Missing localAddress.")
                 return false
             }
@@ -768,7 +768,7 @@ extension OWSContactsManager {
         allSignalAccountsBeforeFetch: [SignalServiceAddress: SignalAccount],
         allSignalAccountsAfterFetch: [SignalServiceAddress: SignalAccount]
     ) {
-        guard tsAccountManager.isPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
             Logger.info("Skipping updating StorageService on contact change, not primary device!")
             return
         }
@@ -862,7 +862,7 @@ extension OWSContactsManager {
 
     private func _updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
         let (localNumber, contactsMaps) = databaseStorage.write { tx in
-            let localNumber = tsAccountManager.localNumber(with: tx)
+            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
             let contactsMaps = ContactsMaps.build(contacts: addressBookContacts ?? [], localNumber: localNumber)
             setContactsMaps(contactsMaps, localNumber: localNumber, transaction: tx)
             return (localNumber, contactsMaps)
@@ -1185,12 +1185,13 @@ extension OWSContactsManager {
     }
 
     private func updateSystemContactsDataProvider(forcePrimary: Bool = false) {
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
         let dataProvider: SystemContactsDataProvider?
         if forcePrimary {
             dataProvider = PrimaryDeviceSystemContactsDataProvider()
-        } else if !tsAccountManager.isRegistered {
+        } else if !tsRegistrationState.isRegistered {
             dataProvider = nil
-        } else if tsAccountManager.isPrimaryDevice {
+        } else if tsRegistrationState.isPrimaryDevice ?? true {
             dataProvider = PrimaryDeviceSystemContactsDataProvider()
         } else {
             dataProvider = LinkedDeviceSystemContactsDataProvider()
@@ -1237,7 +1238,7 @@ extension OWSContactsManager {
         transaction: SDSAnyReadTransaction
     ) -> ContactsMaps {
         let systemContacts = dataProvider.fetchAllSystemContacts(transaction: transaction)
-        let localNumber = tsAccountManager.localNumber(with: transaction)
+        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.phoneNumber
         return ContactsMaps.build(contacts: systemContacts, localNumber: localNumber)
     }
 
@@ -1274,7 +1275,7 @@ extension OWSContactsManager {
             owsFailDebug("Can't access contacts until registration is finished.")
             return []
         }
-        let localNumber = tsAccountManager.localNumber(with: transaction)
+        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.phoneNumber
         return dataProvider.fetchAllSystemContacts(transaction: transaction)
             .filter { !$0.hasPhoneNumber(localNumber) }
     }

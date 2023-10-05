@@ -134,9 +134,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                                                  object:nil
                                                                userInfo:nil];
 
-        [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
-            OWSLogError(@"Error: %@", error);
-        });
+        [AccountAttributesUpdaterObjcBridge updateAccountAttributes].catch(
+            ^(NSError *error) { OWSLogError(@"Error: %@", error); });
     }];
 }
 
@@ -158,9 +157,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                                                  object:nil
                                                                userInfo:nil];
 
-        [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
-            OWSLogError(@"Error: %@", error);
-        });
+        [AccountAttributesUpdaterObjcBridge updateAccountAttributes].catch(
+            ^(NSError *error) { OWSLogError(@"Error: %@", error); });
     }];
 }
 
@@ -263,7 +261,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (BOOL)isDueForV2ReminderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+    if (![TSAccountManagerObjcBridge isRegisteredPrimaryDeviceWithMaybeTransaction]) {
         return NO;
     }
 

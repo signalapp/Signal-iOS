@@ -62,9 +62,9 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
         if CurrentAppContext().isMainApp {
             AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-                guard Self.tsAccountManager.isOnboarded else {
+                guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                     // Observe when the account is ready before we try and download.
-                    self?.observeOnboardingChanges()
+                    self?.observeRegistrationChanges()
                     return
                 }
                 self?.enqueueOnboardingStoryDownload()
@@ -172,21 +172,21 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     // MARK: - Internal Event Observation
 
-    private func observeOnboardingChanges() {
+    private func observeRegistrationChanges() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(onboardingStateDidChange),
-            name: .onboardingStateDidChange,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
             object: nil
         )
     }
 
     @objc
-    private func onboardingStateDidChange() {
-        guard Self.tsAccountManager.isOnboarded else {
+    private func registrationStateDidChange() {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
-        NotificationCenter.default.removeObserver(self, name: .onboardingStateDidChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .registrationStateDidChange, object: nil)
         _ = self.enqueueOnboardingStoryDownload()
     }
 

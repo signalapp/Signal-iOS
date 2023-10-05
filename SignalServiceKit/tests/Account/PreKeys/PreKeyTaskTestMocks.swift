@@ -13,7 +13,6 @@ import Foundation
 //
 extension PreKey.Operation {
     enum Mocks {
-        typealias AccountManager = _PreKey_AccountManagerMock
         typealias AccountServiceClient = _PreKey_AccountServiceClientMock
         typealias DateProvider = _PreKey_DateProviderMock
         typealias IdentityManager = _PreKey_IdentityManagerMock
@@ -27,11 +26,6 @@ extension PreKey.Operation {
 // MARK: - Mock Implementations
 //
 //
-
-class _PreKey_AccountManagerMock: PreKey.Operation.Shims.AccountManager {
-    var isRegisteredAndReady: Bool = true
-    func isRegisteredAndReady(tx: SignalServiceKit.DBReadTransaction) -> Bool { isRegisteredAndReady }
-}
 
 class _PreKey_IdentityManagerMock: PreKey.Operation.Shims.IdentityManager {
 

@@ -221,10 +221,12 @@ class StoryGroupReplyLoader: Dependencies {
         var messages = [(SignalServiceAddress, TSMessage)]()
         var authorAddresses = Set<SignalServiceAddress>()
 
+        let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress
+
         for interaction in loadedInteractions {
             if let outgoingMessage = interaction as? TSOutgoingMessage {
-                messages.append((tsAccountManager.localAddress!, outgoingMessage))
-                authorAddresses.insert(tsAccountManager.localAddress!)
+                messages.append((localAddress, outgoingMessage))
+                authorAddresses.insert(localAddress)
             } else if let incomingMessage = interaction as? TSIncomingMessage {
                 messages.append((incomingMessage.authorAddress, incomingMessage))
                 authorAddresses.insert(incomingMessage.authorAddress)

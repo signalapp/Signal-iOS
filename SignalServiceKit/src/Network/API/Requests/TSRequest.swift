@@ -65,7 +65,7 @@ public class TSRequest: NSMutableURLRequest {
         get {
             owsAssertDebug(shouldHaveAuthorizationHeaders)
             return authLock.withLock {
-                let result = _authUsername ?? self.tsAccountManager.storedServerUsername
+                let result = _authUsername ?? DependenciesBridge.shared.tsAccountManager.storedServerUsernameWithMaybeTransaction
                 if result.isEmptyOrNil {
                     Logger.verbose(self.debugDescription)
                 }
@@ -86,7 +86,7 @@ public class TSRequest: NSMutableURLRequest {
         get {
             owsAssertDebug(shouldHaveAuthorizationHeaders)
             return authLock.withLock {
-                let result = _authPassword ?? self.tsAccountManager.storedServerAuthToken
+                let result = _authPassword ?? DependenciesBridge.shared.tsAccountManager.storedServerAuthTokenWithMaybeTransaction
                 if result.isEmptyOrNil {
                     Logger.verbose(self.debugDescription)
                 }

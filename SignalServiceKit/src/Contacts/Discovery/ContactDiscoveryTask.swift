@@ -16,7 +16,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let recipientFetcher: RecipientFetcher
     private let recipientMerger: RecipientMerger
     private let recipientStore: RecipientDataStore
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let udManager: OWSUDManager
     private let websocketFactory: WebSocketFactory
 
@@ -25,7 +25,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
         recipientStore: RecipientDataStore,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
     ) {
@@ -75,7 +75,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             guard let aci = discoveryResult.aci else {
                 return
             }
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx)) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 throw OWSAssertionError("Not registered.")
             }
             let recipient = recipientMerger.applyMergeFromContactDiscovery(

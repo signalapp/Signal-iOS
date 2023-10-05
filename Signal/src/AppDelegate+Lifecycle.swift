@@ -78,11 +78,13 @@ extension AppDelegate {
 
         Logger.warn("handleActivation.")
 
-        databaseStorage.read { tx in
+        let tsRegistrationState: TSRegistrationState = DependenciesBridge.shared.db.read { tx in
             // Always check prekeys after app launches, and sometimes check on app activation.
-            if TSAccountManager.shared.isRegisteredAndReady(transaction: tx) {
-                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            let registrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
+            if registrationState.isRegistered {
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
             }
+            return registrationState
         }
 
         if !Self.hasActivated {
@@ -90,12 +92,11 @@ extension AppDelegate {
 
             RTCInitializeSSL()
 
-            if tsAccountManager.isRegistered {
+            if tsRegistrationState.isRegistered {
                 // At this point, potentially lengthy DB locking migrations could be running.
                 // Avoid blocking app launch by putting all further possible DB access in async block
                 DispatchQueue.global(qos: .default).async {
-                    let localAddress = self.tsAccountManager.localAddress
-                    Logger.info("running post launch block for registered user: \(String(describing: localAddress))")
+                    Logger.info("running post launch block for registered user.")
 
                     // Clean up any messages that expired since last launch immediately
                     // and continue cleaning in the background.
@@ -110,7 +111,7 @@ extension AppDelegate {
         }
 
         // Every time we become active...
-        if tsAccountManager.isRegistered {
+        if tsRegistrationState.isRegistered {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.main.async {

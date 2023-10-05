@@ -33,7 +33,7 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             owsFailDebug("Missing local identifiers!")
             return
         }

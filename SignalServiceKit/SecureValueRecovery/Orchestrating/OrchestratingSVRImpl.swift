@@ -15,7 +15,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     private let schedulers: Schedulers
 
     public init(
-        accountManager: SVR.Shims.TSAccountManager,
+        accountAttributesUpdater: AccountAttributesUpdater,
         appContext: AppContext,
         appReadiness: SVR2.Shims.AppReadiness,
         appVersion: AppVersion,
@@ -27,11 +27,14 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
+        svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
+        tsAccountManager: TSAccountManagerProtocol,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.svr2 = SecureValueRecovery2Impl(
+            accountAttributesUpdater: accountAttributesUpdater,
             appReadiness: appReadiness,
             appVersion: appVersion,
             connectionFactory: connectionFactory,
@@ -40,13 +43,13 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
+            svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
-            tsAccountManager: accountManager,
+            tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: twoFAManager
         )
         self.kbs = KeyBackupServiceImpl(
-            accountManager: accountManager,
             appContext: appContext,
             credentialStorage: credentialStorage,
             databaseStorage: databaseStorage,
@@ -55,7 +58,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
             schedulers: schedulers,
             signalService: signalService,
             storageServiceManager: storageServiceManager,
+            svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
+            tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: twoFAManager
         )

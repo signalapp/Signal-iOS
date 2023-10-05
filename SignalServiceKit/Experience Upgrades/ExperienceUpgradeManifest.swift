@@ -437,7 +437,7 @@ extension ExperienceUpgradeManifest {
 extension ExperienceUpgradeManifest {
     func shouldBeShown(transaction: SDSAnyReadTransaction) -> Bool {
         if
-            let registrationDate = tsAccountManager.registrationDate(transaction: transaction),
+            let registrationDate = DependenciesBridge.shared.tsAccountManager.registrationDate(tx: transaction.asV2Read),
             Date().timeIntervalSince(registrationDate) < delayAfterRegistration
         {
             // We have not waited long enough after registration to show this
@@ -450,7 +450,7 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        guard showOnLinkedDevices || tsAccountManager.isRegisteredPrimaryDevice else {
+        guard showOnLinkedDevices || DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice else {
             // We are a linked device, which should not show this upgrade.
             return false
         }
@@ -530,7 +530,7 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        guard !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction) else {
+        guard !DependenciesBridge.shared.tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read) else {
             // If phone number discovery is enabled, do not prompt to create a
             // username.
             return false
@@ -539,8 +539,8 @@ extension ExperienceUpgradeManifest {
         /// The elapsed interval since the user disabled phone number
         /// discovery. Note that we need to invert the sign as this date will
         /// be in the past.
-        let timeIntervalSinceDisabledDiscovery = tsAccountManager
-            .lastSetIsDiscoverablyByPhoneNumberAt(with: transaction)
+        let timeIntervalSinceDisabledDiscovery = DependenciesBridge.shared.tsAccountManager
+            .lastSetIsDiscoverablyByPhoneNumber(tx: transaction.asV2Read)
             .timeIntervalSinceNow * -1
 
         let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * kDayInterval

@@ -14,7 +14,12 @@ class TSContactThreadTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func testHasSafetyNumbersWithoutRemoteIdentity() {

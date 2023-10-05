@@ -70,11 +70,16 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private lazy var statusLabel = LinkingTextView()
 
     private static var canDonateInAnyWay: Bool {
-        DonationUtilities.canDonateInAnyWay(localNumber: tsAccountManager.localNumber)
+        DonationUtilities.canDonateInAnyWay(
+            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        )
     }
 
     private static var canSendGiftBadges: Bool {
-        DonationUtilities.canDonate(inMode: .gift, localNumber: tsAccountManager.localNumber)
+        DonationUtilities.canDonate(
+            inMode: .gift,
+            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        )
     }
 
     public override func viewDidLoad() {
@@ -226,7 +231,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func setUpAvatarView() {
         databaseStorage.read { transaction in
             self.avatarView.update(transaction) { config in
-                if let address = tsAccountManager.localAddress(with: transaction) {
+                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
                     config.dataSource = .address(address)
                     config.addBadgeIfApplicable = true
                 }

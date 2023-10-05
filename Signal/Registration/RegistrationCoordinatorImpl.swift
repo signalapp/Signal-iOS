@@ -874,9 +874,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             loadSVRAuthCredentialCandidates(tx)
-            inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx)
-            inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateRegistrationId(tx)
-            inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx)
+            inMemoryState.isManualMessageFetchEnabled = deps.tsAccountManager.isManualMessageFetchEnabled(tx: tx)
+            inMemoryState.registrationId = deps.tsAccountManager.getOrGenerateAciRegistrationId(tx: tx)
+            inMemoryState.pniRegistrationId = deps.tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
 
             inMemoryState.allowUnrestrictedUD = deps.udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
@@ -932,15 +932,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
-            deps.tsAccountManager.didRegister(
+            deps.registrationStateChangeManager.didRegisterPrimary(
                 e164: accountIdentity.e164,
                 aci: accountIdentity.aci,
                 pni: accountIdentity.pni,
                 authToken: accountIdentity.authPassword,
-                tx
+                tx: tx
             )
-            deps.tsAccountManager.setIsOnboarded(tx)
-            deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx)
+            deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
         }
 
         func setupContactsAndFinish() -> Guarantee<RegistrationStep> {
@@ -2986,7 +2985,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                 return .value(.showErrorSheet(.genericError))
                             }
                             strongSelf.db.write { tx in
-                                strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
+                                strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
                                 strongSelf.updatePersistedState(tx) {
                                     // Say that we synced push tokens so that we skip this step hereafter.
                                     $0.legacy_didSyncPushTokens = true
@@ -3305,8 +3304,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.udAccessKey = udAccessKey
         inMemoryState.hasProfileName = deps.profileManager.hasProfileName
         db.read { tx in
-            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = deps.tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx)
-            inMemoryState.isDiscoverableByPhoneNumber = deps.tsAccountManager.isDiscoverableByPhoneNumber(tx)
+            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber =
+                deps.phoneNumberDiscoverabilityManager.hasDefinedIsDiscoverableByPhoneNumber(tx: tx)
+            inMemoryState.isDiscoverableByPhoneNumber =
+                deps.phoneNumberDiscoverabilityManager.isDiscoverableByPhoneNumber(tx: tx)
         }
     }
 
@@ -3332,11 +3333,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         db.write { tx in
             // We will update storage service at the end of registration.
-            deps.tsAccountManager.setIsDiscoverableByPhoneNumber(
+            deps.phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
                 true,
                 updateStorageService: false,
                 authedAccount: accountIdentity.authedAccount,
-                tx
+                tx: tx
             )
         }
     }
@@ -3385,11 +3386,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                     // We do these here, and not in export state, so that we don't risk
                     // syncing out-of-date state to storage service.
-                    strongSelf.deps.tsAccountManager.updateLocalPhoneNumber(
-                        e164: accountIdentity.e164,
+                    strongSelf.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                        accountIdentity.e164,
                         aci: accountIdentity.aci,
                         pni: accountIdentity.pni,
-                        tx
+                        tx: tx
                     )
                     // Make sure we update our local account.
                     strongSelf.deps.storageServiceManager.recordPendingLocalAccountUpdates()
@@ -3440,10 +3441,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .reRegistering(let state):
             if persistedState.hasResetForReRegistration.negated {
                 db.write { tx in
-                    deps.tsAccountManager.resetForReregistration(
-                        e164: state.e164,
-                        aci: state.aci,
-                        tx
+                    let isPrimaryDevice = deps.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
+                    deps.registrationStateChangeManager.resetForReregistration(
+                        localPhoneNumber: state.e164,
+                        localAci: state.aci,
+                        wasPrimaryDevice: isPrimaryDevice,
+                        tx: tx
                     )
                     updatePersistedState(tx) {
                         $0.hasResetForReRegistration = true
@@ -3483,7 +3486,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
                 if isManualMessageFetchEnabled {
                     self.db.write { tx in
-                        self.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
+                        self.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
                     }
                 }
                 let accountAttributes = self.makeAccountAttributes(

@@ -41,7 +41,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             return OWSFingerprintBuilder(
                 contactsManager: contactsManager,
                 identityManager: identityManager,
-                tsAccountManager: tsAccountManager
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager
             ).fingerprints(
                 theirAddress: theirAddress,
                 theirRecipientIdentity: theirRecipientIdentity,

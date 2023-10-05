@@ -17,7 +17,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
         sharingFeatureEnabled = FeatureFlags.phoneNumberSharing
-        discoverabilityFeatureEnabled = FeatureFlags.phoneNumberDiscoverability && tsAccountManager.isPrimaryDevice
+        discoverabilityFeatureEnabled = FeatureFlags.phoneNumberDiscoverability
+            && (DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true)
         phoneNumberSharingMode = databaseStorage.read { tx in udManager.phoneNumberSharingMode(tx: tx) }
         title = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
@@ -71,7 +72,9 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     // MARK: Update Setting Values
 
     private func discoverabilityItem(_ isDiscoverable: Bool) -> OWSTableItem {
-        let currentlyIsDiscoverable = tsAccountManager.isDiscoverableByPhoneNumber()
+        let currentlyIsDiscoverable = DependenciesBridge.shared.db.read(
+            block: DependenciesBridge.shared.tsAccountManager.isDiscoverableByPhoneNumber(tx:)
+        )
         return OWSTableItem(
             text: PhoneNumberDiscoverability.nameForDiscoverability(isDiscoverable),
             actionBlock: { [weak self] in
@@ -94,17 +97,18 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     // MARK: Update Table UI
 
     private func updateDiscoverability(_ isDiscoverable: Bool) {
-        guard tsAccountManager.isDiscoverableByPhoneNumber() != isDiscoverable else { return }
+        let currentlyIsDiscoverable = DependenciesBridge.shared.db.read(
+            block: DependenciesBridge.shared.tsAccountManager.isDiscoverableByPhoneNumber(tx:)
+        )
+        guard currentlyIsDiscoverable != isDiscoverable else { return }
 
-        databaseStorage.asyncWrite(block: { [weak self] transaction in
-
-            self?.tsAccountManager.setIsDiscoverableByPhoneNumber(
+        databaseStorage.asyncWrite(block: { transaction in
+            DependenciesBridge.shared.phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
                 isDiscoverable,
                 updateStorageService: true,
                 authedAccount: .implicit(),
-                transaction: transaction
+                tx: transaction.asV2Write
             )
-
         }) { [weak self] in
             self?.updateTableContents()
         }
@@ -119,11 +123,11 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             // If sharing is set to `everybody`, discovery needs to be
             // updated to match this.
             if mode == .everybody {
-                self?.tsAccountManager.setIsDiscoverableByPhoneNumber(
+                DependenciesBridge.shared.phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
                     true,
                     updateStorageService: true,
                     authedAccount: .implicit(),
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
             }
         }) { [weak self] in
@@ -162,7 +166,10 @@ struct PhoneNumberDiscoverability {
 
 extension PhoneNumberPrivacySettingsViewController {
     fileprivate class var descriptionForCurrentDiscoverability: String {
-        return PhoneNumberDiscoverability.descriptionForDiscoverability(tsAccountManager.isDiscoverableByPhoneNumber())
+        let isDiscoverable = DependenciesBridge.shared.db.read {
+            return DependenciesBridge.shared.tsAccountManager.isDiscoverableByPhoneNumber(tx: $0)
+        }
+        return PhoneNumberDiscoverability.descriptionForDiscoverability(isDiscoverable)
     }
 
     fileprivate var descriptionForCurrentPhoneNumberSharingMode: String {

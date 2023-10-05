@@ -172,10 +172,19 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
         let localUUID = UUID()
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: localUUID),
+                    pni: nil,
+                    e164: E164(localE164Identifier)!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         self.write { transaction in
-            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+            let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                                             name: "Book Club",
                                                                             transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread,
@@ -412,7 +421,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                            name: "Lifecycle",
                                                            transaction: transaction)
         }
@@ -466,7 +475,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     func testModelLifecycle2() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                                name: "Lifecycle",
                                                                transaction: transaction)
 
@@ -495,7 +504,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     func testDiacritics() {
 
         self.write { transaction in
-            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+            let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                                name: "Lifecycle",
                                                                transaction: transaction)
 
@@ -545,7 +554,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         var thread: TSGroupThread! = nil
         self.write { transaction in
-            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+            thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                            name: "Lifecycle",
                                                            transaction: transaction)
         }
@@ -578,7 +587,16 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         let aliceE164 = "+13213214321"
         let aliceUuid = UUID()
-        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: aliceUuid),
+                    pni: nil,
+                    e164: E164(aliceE164)!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         let string1 = "krazy"
         let string2 = "kat"
@@ -586,7 +604,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.write { transaction in
-                let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, self.tsAccountManager.localAddress!],
+                let thread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
                                                                    name: "Perf",
                                                                    transaction: transaction)
 

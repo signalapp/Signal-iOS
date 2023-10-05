@@ -114,7 +114,7 @@ public protocol RegistrationStateChangeManager {
         localAci: Aci,
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 
     /**
      * Set when a transfer (incoming or outgoing) begins.
@@ -147,6 +147,28 @@ public protocol RegistrationStateChangeManager {
      * This puts the state into ``TSRegistrationState.tranferred``.
      */
     func setWasTransferred(tx: DBWriteTransaction)
+
+    /**
+     * After we succesully transfer, we need to do some cleanup the next time
+     * the app launches.
+     *
+     * We clean up all transfer in progress state (set isTransferInProgress to false).
+     * This will also run if the transfer did not finish; thats fine because transfers
+     * don't survice the app being killed, so its ok to do so on fresh app launch.
+     *
+     * This is especially important after a successful transfer; because the db,
+     * having been copied from the old device's state at the time of transfer,
+     * will have a transfer in progress, which needs to be cleaned up.
+     */
+    func cleanUpTransferStateOnAppLaunchIfNeeded()
+
+    /**
+     * When we discover the user is deregistered/delinked via a service response, or conversely
+     * discover they are _not_ deregistered, we call this method to update state.
+     *
+     * No-ops if deregistration state is unchanged.
+     */
+    func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction)
 
     /**
      * Unregisters with the server, resetting all app data after completion (if successful).

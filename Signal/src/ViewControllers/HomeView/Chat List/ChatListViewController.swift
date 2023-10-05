@@ -587,7 +587,7 @@ public class ChatListViewController: OWSViewController {
     }
 
     private func addPullToRefreshIfNeeded() {
-        if tsAccountManager.isPrimaryDevice {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true {
             return
         }
 
@@ -601,7 +601,7 @@ public class ChatListViewController: OWSViewController {
     @objc
     private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
         AssertIsOnMainThread()
-        owsAssert(!tsAccountManager.isPrimaryDevice)
+        owsAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
 
         syncManager.sendAllSyncRequestMessages(timeout: 20).ensure {
             refreshControl.endRefreshing()
@@ -983,7 +983,7 @@ extension ChatListViewController {
         let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
             avatarView.update(readTx) { config in
-                if let address = tsAccountManager.localAddress(with: readTx) {
+                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: readTx.asV2Read)?.aciAddress {
                     config.dataSource = .address(address)
                     config.applyConfigurationSynchronously()
                 }
@@ -1103,7 +1103,7 @@ extension ChatListViewController {
         case let .donate(donateMode):
             guard DonationUtilities.canDonate(
                 inMode: donateMode.asDonationMode,
-                localNumber: tsAccountManager.localNumber
+                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             ) else {
                 DonationViewsUtil.openDonateWebsite()
                 return

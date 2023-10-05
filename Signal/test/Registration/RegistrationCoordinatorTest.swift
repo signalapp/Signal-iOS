@@ -40,16 +40,18 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
     private var mockURLSession: TSRequestOWSURLSessionMock!
     private var ows2FAManagerMock: RegistrationCoordinatorImpl.TestMocks.OWS2FAManager!
+    private var phoneNumberDiscoverabilityManagerMock: MockPhoneNumberDiscoverabilityManager!
     private var preKeyManagerMock: RegistrationCoordinatorImpl.TestMocks.PreKeyManager!
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
+    private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var remoteConfigMock: RegistrationCoordinatorImpl.TestMocks.RemoteConfig!
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svr: SecureValueRecoveryMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
-    private var tsAccountManagerMock: RegistrationCoordinatorImpl.TestMocks.TSAccountManager!
+    private var tsAccountManagerMock: MockTSAccountManager!
 
     public override func setUp() {
         super.setUp()
@@ -71,14 +73,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
         mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
         ows2FAManagerMock = RegistrationCoordinatorImpl.TestMocks.OWS2FAManager()
+        phoneNumberDiscoverabilityManagerMock = MockPhoneNumberDiscoverabilityManager()
         preKeyManagerMock = RegistrationCoordinatorImpl.TestMocks.PreKeyManager()
         profileManagerMock = RegistrationCoordinatorImpl.TestMocks.ProfileManager()
         pushRegistrationManagerMock = RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager()
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
+        registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
         remoteConfigMock = RegistrationCoordinatorImpl.TestMocks.RemoteConfig()
         sessionManager = RegistrationSessionManagerMock()
         storageServiceManagerMock = FakeStorageServiceManager()
-        tsAccountManagerMock = RegistrationCoordinatorImpl.TestMocks.TSAccountManager()
+        tsAccountManagerMock = MockTSAccountManager(dateProvider: dateProvider)
 
         let mockURLSession = TSRequestOWSURLSessionMock()
         self.mockURLSession = mockURLSession
@@ -102,10 +106,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,
+            phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManagerMock,
             preKeyManager: preKeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
+            registrationStateChangeManager: registrationStateChangeManagerMock,
             remoteConfig: remoteConfigMock,
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
@@ -3346,7 +3352,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     }
 
     private func setAllProfileInfo() {
-        tsAccountManagerMock.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
+        phoneNumberDiscoverabilityManagerMock.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
         profileManagerMock.hasProfileNameMock = { true }
     }
 

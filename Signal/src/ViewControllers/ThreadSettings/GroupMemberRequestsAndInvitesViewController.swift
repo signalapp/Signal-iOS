@@ -227,7 +227,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func addContentsForPendingInvites(contents: OWSTableContents) {
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("missing local address")
             return
         }

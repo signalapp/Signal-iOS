@@ -50,12 +50,6 @@ public protocol OWSIdentityManager {
     )
 
     func processIncomingVerifiedProto(_ verified: SSKProtoVerified, tx: DBWriteTransaction) throws
-    func processIncomingPniChangePhoneNumber(
-        proto: SSKProtoSyncMessagePniChangeNumber,
-        updatedPni updatedPniString: String?,
-        preKeyManager: PreKeyManager,
-        tx: DBWriteTransaction
-    )
 
     func shouldSharePhoneNumber(with serviceId: ServiceId, tx: DBReadTransaction) -> Bool
     func setShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction)
@@ -101,12 +95,12 @@ extension OWSIdentity: CustomStringConvertible {
 public class IdentityStore: IdentityKeyStore {
     private let identityManager: OWSIdentityManager
     private let identityKeyPair: IdentityKeyPair
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     fileprivate init(
         identityManager: OWSIdentityManager,
         identityKeyPair: IdentityKeyPair,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.identityManager = identityManager
         self.identityKeyPair = identityKeyPair
@@ -119,7 +113,7 @@ public class IdentityStore: IdentityKeyStore {
 
     public func localRegistrationId(context: StoreContext) throws -> UInt32 {
         // PNI TODO: Return the PNI registration ID here if needed.
-        return tsAccountManager.getOrGenerateRegistrationId(transaction: context.asTransaction)
+        return tsAccountManager.getOrGenerateAciRegistrationId(tx: context.asTransaction.asV2Write)
     }
 
     public func saveIdentity(
@@ -206,7 +200,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let schedulers: Schedulers
     private let shareMyPhoneNumberStore: KeyValueStore
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     public init(
         aciProtocolStore: SignalProtocolStore,
@@ -219,7 +213,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.aciProtocolStore = aciProtocolStore
         self.db = db
@@ -528,7 +522,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     private func syncQueuedVerificationStates() {
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
         guard let thread = TSContactThread.getOrCreateLocalThreadWithSneakyTransaction() else {
@@ -858,127 +852,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 verificationState: verificationState,
                 isLocalChange: isLocalChange
             ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-        }
-    }
-
-    // MARK: - PNIs
-
-    private struct PniChangePhoneNumberData {
-        let identityKeyPair: ECKeyPair
-        let signedPreKey: SignalServiceKit.SignedPreKeyRecord
-        // TODO (PQXDH): 8/14/2023 - This should me made non-optional after 90 days
-        let lastResortKyberPreKey: SignalServiceKit.KyberPreKeyRecord?
-        let registrationId: UInt32
-        let e164: E164
-    }
-
-    public func processIncomingPniChangePhoneNumber(
-        proto: SSKProtoSyncMessagePniChangeNumber,
-        updatedPni updatedPniString: String?,
-        preKeyManager: PreKeyManager,
-        tx: DBWriteTransaction
-    ) {
-        guard
-            let updatedPniString,
-            let updatedPni = UUID(uuidString: updatedPniString).map({ Pni(fromUUID: $0) })
-        else {
-            owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
-            return
-        }
-
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))?.aci else {
-            owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
-            return
-        }
-
-        guard let pniChangeData = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
-            return
-        }
-
-        // Store in the right places
-
-        // attempt this first and return before writing any other information
-        do {
-            if let lastResortKey = pniChangeData.lastResortKyberPreKey {
-                try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
-                    record: lastResortKey,
-                    tx: tx
-                )
-            }
-        } catch {
-            owsFailDebug("Failed to store last resort Kyber prekey")
-            return
-        }
-
-        setIdentityKeyPair(
-            pniChangeData.identityKeyPair,
-            for: .pni,
-            tx: tx
-        )
-
-        pniChangeData.signedPreKey.markAsAcceptedByService()
-        pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
-            signedPreKeyId: pniChangeData.signedPreKey.id,
-            signedPreKeyRecord: pniChangeData.signedPreKey,
-            tx: tx
-        )
-
-        tsAccountManager.setPniRegistrationId(
-            newRegistrationId: pniChangeData.registrationId,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-
-        tsAccountManager.updateLocalPhoneNumber(
-            E164ObjC(pniChangeData.e164),
-            aci: AciObjC(localAci),
-            pni: PniObjC(updatedPni),
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-
-        // Clean up thereafter
-
-        // We need to refresh our one-time pre-keys, and should also refresh
-        // our signed pre-key so we use the one generated on the primary for as
-        // little time as possible.
-        preKeyManager.refreshOneTimePreKeys(forIdentity: .pni, alsoRefreshSignedPreKey: true)
-    }
-
-    private func deserializeIncomingPniChangePhoneNumber(
-        proto: SSKProtoSyncMessagePniChangeNumber
-    ) -> PniChangePhoneNumberData? {
-        guard
-            let pniIdentityKeyPairData = proto.identityKeyPair,
-            let pniSignedPreKeyData = proto.signedPreKey,
-            proto.hasRegistrationID, proto.registrationID > 0,
-            let newE164 = E164(proto.newE164)
-        else {
-            owsFailDebug("Invalid PNI change number proto, missing fields!")
-            return nil
-        }
-
-        do {
-            let pniIdentityKeyPair = ECKeyPair(try IdentityKeyPair(bytes: pniIdentityKeyPairData))
-            let pniSignedPreKey = try LibSignalClient.SignedPreKeyRecord(bytes: pniSignedPreKeyData).asSSKRecord()
-
-            var pniLastResortKyberPreKey: KyberPreKeyRecord?
-            if let pniLastResortKyberKeyData = proto.lastResortKyberPreKey {
-                pniLastResortKyberPreKey = try LibSignalClient.KyberPreKeyRecord(
-                    bytes: pniLastResortKyberKeyData
-                ).asSSKLastResortRecord()
-            }
-
-            let pniRegistrationId = proto.registrationID
-
-            return PniChangePhoneNumberData(
-                identityKeyPair: pniIdentityKeyPair,
-                signedPreKey: pniSignedPreKey,
-                lastResortKyberPreKey: pniLastResortKyberPreKey,
-                registrationId: pniRegistrationId,
-                e164: newE164
-            )
-        } catch let error {
-            owsFailDebug("Error while deserializing PNI change-number proto: \(error)")
-            return nil
         }
     }
 

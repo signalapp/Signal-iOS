@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
-    return TSAccountManager.localAddress;
+    return [TSAccountManagerObjcBridge localAciAddressWithMaybeTransaction];
 }
 
 - (BOOL)hasUpdatedContactsAtLeastOnce

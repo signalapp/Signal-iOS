@@ -307,7 +307,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
-        let authorAci = tsAccountManager.localIdentifiers(transaction: transaction)!.aci
+        let authorAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci
 
         // Count replies in some recipient replied and sent us the reply
         // before our linked device sent us the transcript.

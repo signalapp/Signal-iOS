@@ -47,7 +47,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId
+        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
 
         do {
             try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
@@ -216,8 +216,8 @@ final public class IndividualCallService: NSObject {
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
-        guard tsAccountManager.isOnboarded(transaction: transaction) else {
-            Logger.warn("user is not onboarded, skipping call.")
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
+            Logger.warn("user is not registered, skipping call.")
             newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
             newCall.individualCall.state = .localFailure
@@ -272,7 +272,7 @@ final public class IndividualCallService: NSObject {
             Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
 
             // Send the need permission message to the caller, so they know why we rejected their call.
-            let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
+            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
             callManager(
                 callManager,
                 shouldSendHangup: callId,
@@ -320,8 +320,8 @@ final public class IndividualCallService: NSObject {
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
-        let isPrimaryDevice = tsAccountManager.isPrimaryDevice(transaction: transaction)
+        let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
+        let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true
 
         do {
             try callManager.receivedOffer(call: newCall,

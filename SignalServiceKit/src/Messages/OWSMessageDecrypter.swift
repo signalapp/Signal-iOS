@@ -439,7 +439,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 )
                 sendReactiveProfileKeyIfNecessary(to: sourceAci, tx: transaction)
             case .preKey:
-                if tsAccountManager.isRegisteredAndReady(transaction: transaction) {
+                if DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered {
                     DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
                 }
                 let message = try PreKeySignalMessage(bytes: encryptedData)
@@ -500,7 +500,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func sendReactiveProfileKeyIfNecessary(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
-        if tsAccountManager.localIdentifiers(transaction: transaction)?.aci == sourceAci {
+        if DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci == sourceAci {
             return
         }
 
@@ -600,7 +600,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             )
         }
 
-        if decryptResult.messageType == .prekey, tsAccountManager.isRegisteredAndReady(transaction: transaction) {
+        if
+            decryptResult.messageType == .prekey,
+            DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered
+        {
             DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
         }
 

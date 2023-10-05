@@ -264,7 +264,7 @@ extension SignalApp {
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSTemporaryDirectory())
             OWSFileSystem.deleteContents(ofDirectory: NSTemporaryDirectory())
-            AppDelegate.updateApplicationShortcutItems(isRegisteredAndReady: false)
+            AppDelegate.updateApplicationShortcutItems(isRegistered: false)
         }
 
         DebugLogger.shared().wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)

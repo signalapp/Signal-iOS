@@ -527,7 +527,9 @@ public class TestableFlag: NSObject {
 
     private func updateCapabilities() {
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            TSAccountManager.shared.updateAccountAttributes().asVoid()
+            return Promise.wrapAsync {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            }
         }.done {
             Logger.info("")
         }.catch { error in

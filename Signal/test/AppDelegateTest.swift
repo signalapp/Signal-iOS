@@ -12,10 +12,10 @@ class AppDelegateTest: XCTestCase {
             shortcuts.contains(where: { $0.type.contains("quickCompose") })
         }
 
-        let unregistered = AppDelegate.applicationShortcutItems(isRegisteredAndReady: false)
+        let unregistered = AppDelegate.applicationShortcutItems(isRegistered: false)
         XCTAssertFalse(hasNewMessageShortcut(unregistered))
 
-        let registered = AppDelegate.applicationShortcutItems(isRegisteredAndReady: true)
+        let registered = AppDelegate.applicationShortcutItems(isRegistered: true)
         XCTAssertTrue(hasNewMessageShortcut(registered))
     }
 }

@@ -23,7 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
-        public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
     public enum Wrappers {
@@ -38,7 +37,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
-        public typealias TSAccountManager = _RegistrationCoordinator_TSAccountManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
 }
@@ -407,140 +405,6 @@ public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordina
         return firstly(on: DispatchQueue.main) { [remoteConfig] in
             return remoteConfig.refresh(account: account)
         }.map(on: SyncScheduler(), \.svrConfiguration)
-    }
-}
-
-// MARK: - TSAccountManager
-
-public protocol _RegistrationCoordinator_TSAccountManagerShim {
-
-    func isManualMessageFetchEnabled(_ transaction: DBReadTransaction) -> Bool
-    func setIsManualMessageFetchEnabled(_ isEnabled: Bool, _ transaction: DBWriteTransaction)
-
-    func getOrGenerateRegistrationId(_ transaction: DBWriteTransaction) -> UInt32
-    func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32
-
-    func hasDefinedIsDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool
-    func isDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool
-    func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverable: Bool,
-        updateStorageService: Bool,
-        authedAccount: AuthedAccount,
-        _ transaction: DBWriteTransaction
-    )
-
-    func resetForReregistration(
-        e164: E164,
-        aci: Aci,
-        _ tx: DBWriteTransaction
-    )
-
-    func didRegister(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        authToken: String,
-        _ tx: DBWriteTransaction
-    )
-
-    func updateLocalPhoneNumber(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        _ tx: DBWriteTransaction
-    )
-
-    func setIsOnboarded(_ tx: DBWriteTransaction)
-}
-
-public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoordinator_TSAccountManagerShim {
-
-    private let manager: TSAccountManager
-    public init(_ manager: TSAccountManager) { self.manager = manager }
-
-    public func hasDefinedIsDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool {
-        return manager.hasDefinedIsDiscoverableByPhoneNumber(with: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func setIsManualMessageFetchEnabled(_ isEnabled: Bool, _ transaction: DBWriteTransaction) {
-        manager.setIsManualMessageFetchEnabled(isEnabled, transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func isManualMessageFetchEnabled(_ transaction: DBReadTransaction) -> Bool {
-        return manager.isManualMessageFetchEnabled(SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func getOrGenerateRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
-        return manager.getOrGenerateRegistrationId(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func getOrGeneratePniRegistrationId(_ transaction: DBWriteTransaction) -> UInt32 {
-        return manager.getOrGeneratePniRegistrationId(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func isDiscoverableByPhoneNumber(_ transaction: DBReadTransaction) -> Bool {
-        return manager.isDiscoverableByPhoneNumber(with: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverable: Bool,
-        updateStorageService: Bool,
-        authedAccount: AuthedAccount,
-        _ transaction: DBWriteTransaction
-    ) {
-        manager.setIsDiscoverableByPhoneNumber(
-            isDiscoverable,
-            updateStorageService: updateStorageService,
-            authedAccount: authedAccount,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
-    }
-
-    public func resetForReregistration(
-        e164: E164,
-        aci: Aci,
-        _ tx: DBWriteTransaction
-    ) {
-        manager.resetForReregistration(
-            localPhoneNumber: e164,
-            localAci: aci,
-            wasPrimaryDevice: true,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func didRegister(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        authToken: String,
-        _ tx: DBWriteTransaction
-    ) {
-        manager.didRegisterPrimary(
-            withE164: E164ObjC(e164),
-            aci: AciObjC(aci),
-            pni: PniObjC(pni),
-            authToken: authToken,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func updateLocalPhoneNumber(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
-        _ tx: DBWriteTransaction
-    ) {
-        manager.updateLocalPhoneNumber(
-            E164ObjC(e164),
-            aci: AciObjC(aci),
-            pni: PniObjC(pni),
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func setIsOnboarded(_ tx: DBWriteTransaction) {
-        manager.setIsOnboarded(true, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

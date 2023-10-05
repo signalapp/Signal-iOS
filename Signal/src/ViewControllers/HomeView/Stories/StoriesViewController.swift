@@ -306,7 +306,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { transaction in
             avatarView.update(transaction) { config in
-                if let address = tsAccountManager.localAddress(with: transaction) {
+                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
                     config.dataSource = .address(address)
                     config.applyConfigurationSynchronously()
                 }

@@ -12,7 +12,7 @@ final class PreKeyTaskTests: XCTestCase {
 
     private var testSchedulers: TestSchedulers!
 
-    private var mockAccountManager: PreKey.Operation.Mocks.AccountManager!
+    private var mockTSAccountManager: MockTSAccountManager!
     private var mockIdentityManager: PreKey.Operation.Mocks.IdentityManager!
     private var mockLinkedDevicePniKeyManager: PreKey.Operation.Mocks.LinkedDevicePniKeyManager!
     private var mockServiceClient: PreKey.Operation.Mocks.AccountServiceClient!
@@ -26,7 +26,7 @@ final class PreKeyTaskTests: XCTestCase {
     override func setUp() {
         super.setUp()
         testSchedulers = TestSchedulers(scheduler: TestScheduler())
-        mockAccountManager = .init()
+        mockTSAccountManager = .init()
         mockIdentityManager = .init()
         mockLinkedDevicePniKeyManager = .init()
         mockServiceClient = .init(schedulers: testSchedulers)
@@ -40,7 +40,6 @@ final class PreKeyTaskTests: XCTestCase {
         )
 
         context = PreKeyTasks.Context(
-            accountManager: mockAccountManager,
             dateProvider: mockDateProvider.targetDate,
             db: MockDB(schedulers: testSchedulers),
             identityManager: mockIdentityManager,
@@ -48,7 +47,8 @@ final class PreKeyTaskTests: XCTestCase {
             messageProcessor: PreKey.Operation.Mocks.MessageProcessor(),
             protocolStoreManager: mockProtocolStoreManager,
             schedulers: testSchedulers,
-            serviceClient: mockServiceClient
+            serviceClient: mockServiceClient,
+            tsAccountManager: mockTSAccountManager
         )
     }
 

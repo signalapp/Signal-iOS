@@ -126,7 +126,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
         return @[];
     }
 
-    [groupMembers removeObject:TSAccountManager.localAddress];
+    [groupMembers removeObject:[TSAccountManagerObjcBridge localAciAddressWith:transaction]];
 
     return [groupMembers copy];
 }

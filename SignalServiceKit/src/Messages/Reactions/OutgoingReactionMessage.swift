@@ -21,7 +21,7 @@ extension OWSOutgoingReactionMessage {
         let messageAuthor: Aci?
         switch message {
         case is TSOutgoingMessage:
-            messageAuthor = tsAccountManager.localIdentifiers(transaction: tx)?.aci
+            messageAuthor = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         case let message as TSIncomingMessage:
             messageAuthor = message.authorAddress.aci
         default:
@@ -50,7 +50,7 @@ extension OWSOutgoingReactionMessage {
             return
         }
 
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             owsFailDebug("Missing localAci.")
             return
         }

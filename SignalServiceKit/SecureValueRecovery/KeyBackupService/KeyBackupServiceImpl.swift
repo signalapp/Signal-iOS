@@ -12,21 +12,20 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     // MARK: - Init
 
     private let appContext: AppContext
-    private let accountManager: SVR.Shims.TSAccountManager
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
-    private let localStorage: SVRLocalStorage
+    private let localStorage: SVRLocalStorageInternal
     private let remoteAttestation: SVR.Shims.RemoteAttestation
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
+    private let tsAccountManager: TSAccountManagerProtocol
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR.Shims.OWS2FAManager
 
     public init(
-        accountManager: SVR.Shims.TSAccountManager,
         appContext: AppContext,
         credentialStorage: SVRAuthCredentialStorage,
         databaseStorage: DB,
@@ -35,21 +34,23 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
+        svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
+        tsAccountManager: TSAccountManagerProtocol,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
-        self.accountManager = accountManager
         self.appContext = appContext
         self.credentialStorage = credentialStorage
         self.db = databaseStorage
         self.keyValueStoreFactory = keyValueStoreFactory
-        self.localStorage = SVRLocalStorage(keyValueStoreFactory: keyValueStoreFactory)
+        self.localStorage = svrLocalStorage
         self.remoteAttestation = remoteAttestation
         self.schedulers = schedulers
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
+        self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
     }
@@ -568,7 +569,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         // This should only happen if we're a linked device and received
         // the derived key via a sync message, since we won't know about
         // the master key.
-        let isPrimaryDevice = accountManager.isPrimaryDevice(transaction: transaction)
+        let isPrimaryDevice = tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? true
         if (!isPrimaryDevice || appContext.isRunningTests),
             let cachedData = getOrLoadState(transaction: transaction).syncedDerivedKeys[key] {
             return SVR.DerivedKeyData(cachedData, key)
@@ -673,7 +674,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         let syncedDerivedKeys: [SVR.DerivedKey: Data]
         let enclaveName: String?
 
-        init(localStorage: SVRLocalStorage, transaction: DBReadTransaction) {
+        init(localStorage: SVRLocalStorageInternal, transaction: DBReadTransaction) {
             masterKey = localStorage.getMasterKey(transaction)
             pinType = localStorage.getPinType(transaction)
             encodedVerificationString = localStorage.getEncodedPINVerificationString(transaction)
@@ -718,7 +719,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private func migrateEnclavesIfNecessary(state: State) {
         let (isRegisteredAndReady, pinCode) = db.read {
             return (
-                accountManager.isRegisteredAndReady(transaction: $0),
+                tsAccountManager.registrationState(tx: $0).isRegistered,
                 self.twoFAManager.pinCode(transaction: $0)
             )
         }
@@ -783,7 +784,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        owsAssertDebug(accountManager.isPrimaryDevice(transaction: transaction))
+        owsAssertDebug(tsAccountManager.registrationState(tx: transaction).isPrimaryDevice != false)
 
         let previousState = getOrLoadState(transaction: transaction)
 
@@ -811,7 +812,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         reloadState(transaction: transaction)
 
         // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKey != previousState.masterKey, accountManager.isRegisteredAndReady(transaction: transaction) else { return }
+        guard masterKey != previousState.masterKey, tsAccountManager.registrationState(tx: transaction).isRegistered else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.resetLocalData(transaction: transaction)
@@ -831,7 +832,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        guard !accountManager.isPrimaryDevice(transaction: transaction) || appContext.isRunningTests else {
+        guard tsAccountManager.registrationState(tx: transaction).isPrimaryDevice != true || appContext.isRunningTests else {
             return owsFailDebug("primary device should never store synced keys")
         }
 

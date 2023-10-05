@@ -191,7 +191,7 @@ public class QuotedReplyModel: NSObject {
 
         let authorAddress: SignalServiceAddress? = {
             if message is TSOutgoingMessage {
-                return TSAccountManager.localAddress(with: transaction)
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
             }
             if let incomingMessage = message as? TSIncomingMessage {
                 return incomingMessage.authorAddress

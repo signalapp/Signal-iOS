@@ -10,7 +10,6 @@ import SignalCoreKit
 public enum PreKeyTasks {
 
     public struct Context {
-        let accountManager: PreKey.Operation.Shims.AccountManager
         let dateProvider: DateProvider
         let db: DB
         let identityManager: PreKey.Operation.Shims.IdentityManager
@@ -19,6 +18,7 @@ public enum PreKeyTasks {
         let protocolStoreManager: SignalProtocolStoreManager
         let schedulers: Schedulers
         let serviceClient: AccountServiceClient
+        let tsAccountManager: TSAccountManagerProtocol
     }
 }
 
@@ -142,9 +142,9 @@ extension PreKeyTasks {
                 PreKey.logger.info("[\(identity)] Legacy prekey operation [\(targets)]")
                 bundlePromise = Legacy_Generate
                     .init(
-                        accountManager: context.accountManager,
                         context: generateContext,
-                        messageProcessor: context.messageProcessor
+                        messageProcessor: context.messageProcessor,
+                        tsAccountManager: context.tsAccountManager
                     )
                     .runTask(
                         identity: action.identity,

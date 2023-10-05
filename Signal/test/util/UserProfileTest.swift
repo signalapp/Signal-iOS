@@ -12,7 +12,12 @@ class UserProfileTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func testUserProfileForAci() {

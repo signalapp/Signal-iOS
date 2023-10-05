@@ -34,7 +34,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
     private var profileManagerMock: ProfileManagerMock!
     private var signalRecipientStoreMock: SignalRecipientStoreMock!
-    private var tsAccountManagerMock: TSAccountManagerMock!
+    private var tsAccountManagerMock: MockTSAccountManager!
 
     private let db = MockDB()
     private var kvStore: TestKeyValueStore!
@@ -88,8 +88,8 @@ class PniHelloWorldManagerTest: XCTestCase {
     private func setMocksForHappyPath(
         includingNetworkRequest mockNetworkRequest: Bool = false
     ) {
-        tsAccountManagerMock.isPrimaryDevice = true
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.registrationStateMock = { .registered }
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         signalRecipientStoreMock.localAccountId = "foobar"
         signalRecipientStoreMock.deviceIds = [1, 2, 3]
         profileManagerMock.isPniCapable = true
@@ -124,7 +124,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testSkipsIfLinkedDevice() {
         setMocksForHappyPath()
-        tsAccountManagerMock.isPrimaryDevice = false
+        tsAccountManagerMock.registrationStateMock = { .provisioned }
 
         runRunRun()
 
@@ -144,7 +144,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testSkipsIfMissingLocalIdentifiers() {
         setMocksForHappyPath()
-        tsAccountManagerMock.localIdentifiers = nil
+        tsAccountManagerMock.localIdentifiersMock = { nil }
 
         runRunRun()
 
@@ -154,7 +154,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testSkipsIfMissingLocalPni() {
         setMocksForHappyPath()
-        tsAccountManagerMock.localIdentifiers = .missingPni
+        tsAccountManagerMock.localIdentifiersMock = { .missingPni }
 
         runRunRun()
 
@@ -324,28 +324,5 @@ private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipien
         }
 
         return (localAccountId, deviceIds)
-    }
-}
-
-// MARK: TSAccountManager
-
-private class TSAccountManagerMock: _PniHelloWorldManagerImpl_TSAccountManager_Shim {
-    var isPrimaryDevice: Bool = false
-    var localIdentifiers: LocalIdentifiers?
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return isPrimaryDevice
-    }
-
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
-        return localIdentifiers
-    }
-
-    func localDeviceId(tx: DBReadTransaction) -> UInt32 {
-        return 1
-    }
-
-    func getPniRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        return UInt32.random(in: 0..<500)
     }
 }

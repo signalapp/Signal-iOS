@@ -245,6 +245,10 @@ extension AppDelegate {
         Logger.info("")
         AssertIsOnMainThread()
 
+        // First thing; clean up any transfer state in case we are launching after a transfer.
+        // This needs to happen before we check any registration state.
+        DependenciesBridge.shared.registrationStateChangeManager.cleanUpTransferStateOnAppLaunchIfNeeded()
+
         let regLoader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
 
         // Before we mark ready, block message processing on any pending change numbers.
@@ -254,13 +258,6 @@ extension AppDelegate {
         if hasPendingChangeNumber {
             // The registration loader will clear the suspension later on.
             messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
-        }
-
-        // If user is missing profile name, redirect to onboarding flow.
-        if !profileManager.hasProfileName {
-            databaseStorage.write { transaction in
-                tsAccountManager.setIsOnboarded(false, transaction: transaction)
-            }
         }
 
         let launchInterface = buildLaunchInterface(regLoader: regLoader)
@@ -293,7 +290,10 @@ extension AppDelegate {
             )
         case nil:
             firstly {
-                LaunchJobs.run(tsAccountManager: tsAccountManager, databaseStorage: databaseStorage)
+                LaunchJobs.run(
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                    databaseStorage: databaseStorage
+                )
             }.done(on: DispatchQueue.main) {
                 self.setAppIsReady(
                     launchInterface: launchInterface,
@@ -324,22 +324,25 @@ extension AppDelegate {
 
         CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
 
-        if tsAccountManager.isRegistered {
-            databaseStorage.read { transaction in
-                let localAddress = self.tsAccountManager.localAddress(with: transaction)
-                let deviceId = self.tsAccountManager.storedDeviceId(transaction: transaction)
-                let deviceCount = OWSDevice.anyCount(transaction: transaction)
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
+            let registrationState = tsAccountManager.registrationState(tx: tx.asV2Read)
+            if registrationState.isRegistered {
+                let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+                let deviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+                let deviceCount = OWSDevice.anyCount(transaction: tx)
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
+            return registrationState
         }
 
-        if tsAccountManager.isRegisteredAndReady {
+        if tsRegistrationState.isRegistered {
             // This should happen at any launch, background or foreground.
             SyncPushTokensJob.run()
         }
 
-        if tsAccountManager.isRegisteredAndReady {
+        if tsRegistrationState.isRegistered {
             APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(performRotation: {
                 SyncPushTokensJob.run(mode: .rotateIfEligible)
             }).map {
@@ -352,7 +355,7 @@ extension AppDelegate {
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 
         enableBackgroundRefreshIfNecessary()
-        Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)
+        Self.updateApplicationShortcutItems(isRegistered: tsRegistrationState.isRegistered)
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(
@@ -381,14 +384,17 @@ extension AppDelegate {
             )
         }
 
-        checkDatabaseIntegrityIfNecessary(isRegistered: tsAccountManager.isRegistered)
+        checkDatabaseIntegrityIfNecessary(isRegistered: tsRegistrationState.isRegistered)
 
         SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
     }
 
     private func enableBackgroundRefreshIfNecessary() {
         let interval: TimeInterval
-        if OWS2FAManager.shared.isRegistrationLockEnabled, self.tsAccountManager.isRegisteredAndReady {
+        if
+            OWS2FAManager.shared.isRegistrationLockEnabled,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        {
             // Ping server once a day to keep-alive reglock clients.
             interval = 24 * 60 * 60
         } else {
@@ -441,39 +447,45 @@ extension AppDelegate {
     // MARK: - Registration
 
     private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
+        // If user is missing profile name, we will redirect to onboarding flow.
+        let hasProfileName = profileManager.hasProfileName
+
         let (
-            isOnboarded,
-            isRegistered,
+            tsRegistrationState,
             lastMode
         ) = databaseStorage.read { tx in
             return (
-                tsAccountManager.isOnboarded(transaction: tx),
-                tsAccountManager.isRegistered(transaction: tx),
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read),
                 regLoader.restoreLastMode(transaction: tx.asV2Read)
             )
         }
         if let lastMode {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
-            // TODO[Registration]: use a db migration to move isOnboarded state to reg coordinator.
-        } else if !(isOnboarded && isRegistered) {
+        } else if !(hasProfileName && tsRegistrationState.isRegistered) {
             if UIDevice.current.isIPad {
                 return .secondaryProvisioning
             } else {
                 let desiredMode: RegistrationMode
-                if
-                    let reregNumber = tsAccountManager.reregistrationPhoneNumber,
-                    let reregE164 = E164(reregNumber),
-                    let reregAci = tsAccountManager.reregistrationAci
-                {
-                    Logger.info("Found legacy re-registration; continuing in new registration")
-                    // A user who started re-registration before the new
-                    // registration flow shipped; kick them to new re-reg.
-                    desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
-                } else {
-                    Logger.info("Found legacy initial registration; continuing in new registration")
+
+                switch tsRegistrationState {
+                case .reregistering(let reregNumber, let reregAci):
+                    if let reregE164 = E164(reregNumber), let reregAci {
+                        Logger.info("Found legacy re-registration; continuing in new registration")
+                        // A user who started re-registration before the new
+                        // registration flow shipped; kick them to new re-reg.
+                        desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
+                    } else {
+                        // If we're missing the e164 or aci, drop into normal reg.
+                        Logger.info("Found legacy initial registration; continuing in new registration")
+                        desiredMode = .registering
+                    }
+                default:
+                    // We got here (past the isRegistered check above) which means we should register
+                    // but its not a reregistration.
                     desiredMode = .registering
                 }
+
                 return .registration(regLoader, desiredMode)
             }
         } else {
@@ -774,7 +786,7 @@ extension AppDelegate {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            guard self.tsAccountManager.isRegisteredAndReady else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 Logger.info("Ignoring remote notification; user is not registered.")
                 return
             }
@@ -818,11 +830,12 @@ extension AppDelegate {
 
         enableBackgroundRefreshIfNecessary()
 
-        let isRegisteredAndReady = tsAccountManager.isRegisteredAndReady
-        if isRegisteredAndReady {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        if isRegistered {
             AppReadiness.runNowOrWhenAppDidBecomeReadySync {
                 self.databaseStorage.write { transaction in
-                    let localAddress = self.tsAccountManager.localAddress(with: transaction)
+                    let localAddress = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
                     Logger.info("localAddress: \(String(describing: localAddress))")
 
                     ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
@@ -834,7 +847,7 @@ extension AppDelegate {
             }
         }
 
-        Self.updateApplicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+        Self.updateApplicationShortcutItems(isRegistered: isRegistered)
     }
 
     @objc
@@ -844,13 +857,13 @@ extension AppDelegate {
 
     // MARK: - Utilities
 
-    public static func updateApplicationShortcutItems(isRegisteredAndReady: Bool) {
+    public static func updateApplicationShortcutItems(isRegistered: Bool) {
         guard CurrentAppContext().isMainApp else { return }
-        UIApplication.shared.shortcutItems = applicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+        UIApplication.shared.shortcutItems = applicationShortcutItems(isRegistered: isRegistered)
     }
 
-    static func applicationShortcutItems(isRegisteredAndReady: Bool) -> [UIApplicationShortcutItem] {
-        guard isRegisteredAndReady else { return [] }
+    static func applicationShortcutItems(isRegistered: Bool) -> [UIApplicationShortcutItem] {
+        guard isRegistered else { return [] }
         return [.init(
             type: "\(Bundle.main.bundleIdPrefix).quickCompose",
             localizedTitle: OWSLocalizedString(
@@ -879,7 +892,7 @@ extension AppDelegate {
         AppReadiness.runNowOrWhenUIDidBecomeReadySync {
             let urlOpener = UrlOpener(
                 databaseStorage: self.databaseStorage,
-                tsAccountManager: self.tsAccountManager
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
 
             urlOpener.openUrl(parsedUrl, in: self.window!)

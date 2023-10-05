@@ -175,7 +175,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let contactsManager: OWSContactsManager
     private let identityManager: OWSIdentityManager
     private let profileManager: OWSProfileManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let usernameLookupManager: UsernameLookupManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
@@ -188,7 +188,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
         profileManager: OWSProfileManager,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         usernameLookupManager: UsernameLookupManager,
         recipientMerger: RecipientMerger,
         recipientHidingManager: RecipientHidingManager
@@ -296,8 +296,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             //   case, we want to preserve the name the primary device
             //   originally uploaded.
 
-            let isPrimaryAndHasLocalContact = tsAccountManager.isPrimaryDevice && contact.isFromLocalAddressBook
-            let isLinkedAndHasSyncedContact = !tsAccountManager.isPrimaryDevice && !contact.isFromLocalAddressBook
+            let isPrimary = tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false
+            let isPrimaryAndHasLocalContact = isPrimary && contact.isFromLocalAddressBook
+            let isLinkedAndHasSyncedContact = !isPrimary && !contact.isFromLocalAddressBook
 
             if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
                 if let systemGivenName = contact.firstName {
@@ -566,7 +567,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         let localAccount = contactsManager.fetchSignalAccount(for: address, transaction: transaction)
 
-        if tsAccountManager.isPrimaryDevice {
+        if tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
             let localContact = localAccount?.contact?.isFromLocalAddressBook == true ? localAccount?.contact : nil
             let localSystemGivenName = localContact?.firstName?.nilIfEmpty
             let localSystemFamilyName = localContact?.lastName?.nilIfEmpty
@@ -918,13 +919,15 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let localUsernameManager: LocalUsernameManager
     private let paymentsHelper: PaymentsHelperSwift
+    private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     private let preferences: Preferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
+    private let registrationStateChangeManager: RegistrationStateChangeManager
     private let storageServiceManager: StorageServiceManager
     private let subscriptionManager: SubscriptionManager
     private let systemStoryManager: SystemStoryManagerProtocol
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
     private let usernameEducationManager: UsernameEducationManager
@@ -936,13 +939,15 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         localUsernameManager: LocalUsernameManager,
         paymentsHelper: PaymentsHelperSwift,
+        phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         preferences: Preferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
+        registrationStateChangeManager: RegistrationStateChangeManager,
         storageServiceManager: StorageServiceManager,
         subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         typingIndicators: TypingIndicators,
         udManager: OWSUDManager,
         usernameEducationManager: UsernameEducationManager
@@ -953,9 +958,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.localUsernameManager = localUsernameManager
         self.paymentsHelper = paymentsHelper
+        self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.preferences = preferences
         self.profileManager = profileManager
         self.receiptManager = receiptManager
+        self.registrationStateChangeManager = registrationStateChangeManager
         self.storageServiceManager = storageServiceManager
         self.subscriptionManager = subscriptionManager
         self.systemStoryManager = systemStoryManager
@@ -1050,7 +1057,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
-        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
+        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
         builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
 
         let pinnedConversationProtos = PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
@@ -1140,7 +1147,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // allows us to restore your profile during onboarding,
         // but ensures no other device can ever change the profile
         // key other than the primary device.
-        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !tsAccountManager.isPrimaryDevice
+        let isPrimary = tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false
+        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimary
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
@@ -1257,13 +1265,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localNotDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
-        if record.notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(with: transaction) {
-            tsAccountManager.setIsDiscoverableByPhoneNumber(
+        let localNotDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
+        if record.notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx: transaction.asV2Read) {
+            phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
                 !record.notDiscoverableByPhoneNumber,
                 updateStorageService: false,
                 authedAccount: authedAccount,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
         }
 
@@ -1368,7 +1376,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             if localAddress.e164 != serviceLocalE164 {
                 Logger.warn("localAddress.e164: \(String(describing: localAddress.e164)) != serviceLocalE164: \(serviceLocalE164)")
 
-                if tsAccountManager.isPrimaryDevice(transaction: transaction) {
+                if tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
                     // It's not clear how we got into this scenario, but if we
                     // do it's bad. Once all clients are PNI-capable we can
                     // ignore the AccountRecord's e164 entirely, and remove
@@ -1389,14 +1397,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                         // the primary needs to update the storage service.
                         self.storageServiceManager.recordPendingLocalAccountUpdates()
                     }
-                } else if let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) {
+                } else if let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) {
                     // If we're a linked device, we should always take the e164
                     // from StorageService.
-                    tsAccountManager.updateLocalPhoneNumber(
-                        E164ObjC(serviceLocalE164),
-                        aci: AciObjC(localIdentifiers.aci),
-                        pni: localIdentifiers.pni.map { PniObjC($0) },
-                        transaction: transaction
+                    registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                        serviceLocalE164,
+                        aci: localIdentifiers.aci,
+                        pni: localIdentifiers.pni,
+                        tx: transaction.asV2Write
                     )
                 } else {
                     owsFailDebug("Linked device missing local ACI!")

@@ -10,7 +10,7 @@ import LibSignalClient
 @objc
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
-        let ownAciClause = tsAccountManager.localIdentifiers(transaction: transaction).map {
+        let ownAciClause = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read).map {
             "AND \(StoryContextAssociatedData.columnName(.contactAci)) IS NOT '\($0.aci.serviceIdUppercaseString)'"
         } ?? ""
         let sql = """

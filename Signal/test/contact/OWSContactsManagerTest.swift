@@ -19,7 +19,12 @@ class OWSContactsManagerTest: SignalBaseTest {
         super.setUp()
 
         // Create local account.
-        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx.asV2Write
+            )
+        }
 
         // Replace the fake contacts manager with the real one just for this test.
         SSKEnvironment.shared.setContactsManagerForUnitTests(makeContactsManager())

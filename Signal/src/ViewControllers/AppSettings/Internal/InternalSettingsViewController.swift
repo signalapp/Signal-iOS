@@ -104,13 +104,14 @@ class InternalSettingsViewController: OWSTableViewController2 {
         // The first version of the app that was run on this device.
         infoSection.add(.copyableItem(label: "First Version", value: AppVersionImpl.shared.firstAppVersion))
 
-        infoSection.add(.copyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber))
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+        infoSection.add(.copyableItem(label: "Local Phone Number", value: localIdentifiers?.phoneNumber))
 
-        infoSection.add(.copyableItem(label: "Local ACI", value: tsAccountManager.localAci?.serviceIdString))
+        infoSection.add(.copyableItem(label: "Local ACI", value: localIdentifiers?.aci.serviceIdString))
 
-        infoSection.add(.copyableItem(label: "Local PNI", value: tsAccountManager.localPni?.serviceIdString))
+        infoSection.add(.copyableItem(label: "Local PNI", value: localIdentifiers?.pni?.serviceIdString))
 
-        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId)"))
+        infoSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
 
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {
             if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil?.prefix(12) {

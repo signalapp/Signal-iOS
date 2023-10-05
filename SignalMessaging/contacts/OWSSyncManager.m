@@ -61,11 +61,11 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
 
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         [self addObservers];
-        
-        if ([self.tsAccountManager isRegisteredAndReady]) {
+
+        if ([TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             OWSAssertDebug(self.contactsManagerImpl.isSetup);
 
-            if (self.tsAccountManager.isPrimaryDevice) {
+            if ([TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction]) {
                 // Flush any pending changes.
                 //
                 // sendSyncContactsMessageIfNecessary will skipIfRedundant,
@@ -141,10 +141,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
         // Don't bother if the contacts manager hasn't finished setup.
         return NO;
     }
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return NO;
-    }
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+    if (![TSAccountManagerObjcBridge isRegisteredPrimaryDeviceWithMaybeTransaction]) {
         return NO;
     }
     return YES;
@@ -152,7 +149,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
 
 - (void)sendConfigurationSyncMessage {
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        if (!self.tsAccountManager.isRegisteredAndReady) {
+        if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             return;
         }
 
@@ -165,7 +162,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
 - (void)sendConfigurationSyncMessage_AppReady {
     OWSLogInfo(@"");
 
-    if (!self.tsAccountManager.isRegisteredAndReady) {
+    if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
         return;
     }
 
@@ -329,7 +326,8 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
                 }
 
                 // This might create a transaction -- call it outside of our own transaction.
-                SignalServiceAddress *const localAddress = self.tsAccountManager.localAddress;
+                SignalServiceAddress *const localAddress =
+                    [TSAccountManagerObjcBridge localAciAddressWithMaybeTransaction];
 
                 __block NSString *fullSyncRequestId;
                 __block BOOL fullSyncRequired = YES;
@@ -516,7 +514,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
 {
     OWSLogInfo(@"");
 
-    if (!self.tsAccountManager.isRegisteredAndReady) {
+    if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
         OWSFailDebug(@"Unexpectedly tried to send sync message before registration.");
         return;
     }

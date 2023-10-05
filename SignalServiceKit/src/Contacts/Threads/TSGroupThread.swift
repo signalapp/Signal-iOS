@@ -88,7 +88,7 @@ extension TSGroupThread {
 
         let senderAddress: SignalServiceAddress? = {
             if message is TSOutgoingMessage {
-                return tsAccountManager.localAddress(with: tx)
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
             } else if let incomingMessage = message as? TSIncomingMessage {
                 return incomingMessage.authorAddress
             }

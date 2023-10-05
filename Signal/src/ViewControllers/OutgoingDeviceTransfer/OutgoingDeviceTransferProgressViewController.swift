@@ -9,7 +9,14 @@ import SignalUI
 
 class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewController {
 
-    override var requiresDismissConfirmation: Bool { TSAccountManager.shared.isTransferInProgress }
+    override var requiresDismissConfirmation: Bool {
+        switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
+        case .transferringLinkedOutgoing, .transferringPrimaryOutgoing:
+            return true
+        default:
+            return false
+        }
+    }
 
     let progressView: TransferProgressView
     init(progress: Progress) {

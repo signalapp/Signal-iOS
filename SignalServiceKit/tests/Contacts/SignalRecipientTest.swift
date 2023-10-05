@@ -21,7 +21,12 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(localIdentifiers: localIdentifiers)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: localIdentifiers,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func testSelfRecipientWithExistingRecord() {

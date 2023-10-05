@@ -305,7 +305,7 @@ extension TSThread {
     public func generateSendMessageIntent(context: IntentContext, transaction: SDSAnyReadTransaction) -> INSendMessageIntent? {
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("Missing local address")
             return nil
         }
@@ -453,7 +453,7 @@ extension TSThread {
     public func intentStoryAvatarImage(tx: SDSAnyReadTransaction) -> INImage? {
         if let storyThread = self as? TSPrivateStoryThread {
             if storyThread.isMyStory {
-                guard let localAddress = tsAccountManager.localAddress(with: tx) else {
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
                     Logger.warn("Missing local address")
                     return nil
                 }

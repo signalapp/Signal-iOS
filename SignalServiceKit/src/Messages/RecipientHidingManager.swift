@@ -80,13 +80,13 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
     private let profileManager: ProfileManagerProtocol
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let jobQueues: SSKJobQueues
 
     public init(
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         jobQueues: SSKJobQueues
     ) {
         self.profileManager = profileManager
@@ -229,9 +229,9 @@ private extension RecipientHidingManagerImpl {
         }
 
         if
-            tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)),
+            tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
             let recipientServiceId = recipient.address.serviceId,
-            let localAci = self.tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))?.aci,
+            let localAci = self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
             !GroupManager.hasMutualGroupThread(
                 with: recipientServiceId,
                 localAci: localAci,

@@ -16,7 +16,7 @@ public extension ContactsViewHelper {
             return allSignalAccounts
 
         case false:
-            let localNumber = tsAccountManager.localNumber
+            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             return allSignalAccounts
                 .filter { !($0.recipientAddress.isLocalAddress || $0.contact?.hasPhoneNumber(localNumber) == true) }
         }

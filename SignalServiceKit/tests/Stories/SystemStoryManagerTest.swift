@@ -21,7 +21,16 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         scheduler = TestScheduler()
-        tsAccountManager.registerForTests(withLocalNumber: "+17875550101", uuid: UUID(), pni: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: UUID()),
+                    pni: .init(fromUUID: UUID()),
+                    e164: .init("+17875550101")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
         manager = SystemStoryManager(
             fileSystem: OnboardingStoryManagerFilesystemMock.self,
             schedulers: TestSchedulers(scheduler: scheduler)

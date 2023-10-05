@@ -22,45 +22,13 @@ import Foundation
 
 extension SVR {
     public enum Shims {
-        public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerShim
         public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerShim
         public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationShim
     }
 
     public enum Wrappers {
-        public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerWrapper
         public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerWrapper
         public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationWrapper
-    }
-}
-
-// MARK: - TSAccountManager
-
-public protocol _KeyBackupServiceImpl_TSAccountManagerShim {
-
-    func isPrimaryDevice(transaction: DBReadTransaction) -> Bool
-    func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool
-
-    func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
-}
-
-public class _KeyBackupServiceImpl_TSAccountManagerWrapper: SVR.Shims.TSAccountManager {
-    private let accountManager: TSAccountManager
-    public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
-
-    public func isPrimaryDevice(transaction: DBReadTransaction) -> Bool {
-        return accountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool {
-        return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
-        accountManager.scheduleAccountAttributesUpdate(
-            authedAccount: authedAccount,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
     }
 }
 

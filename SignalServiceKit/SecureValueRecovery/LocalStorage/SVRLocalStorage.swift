@@ -5,13 +5,56 @@
 
 import Foundation
 
+public protocol SVRLocalStorage {
+
+    func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
+}
+
+public protocol SVRLocalStorageInternal: SVRLocalStorage {
+
+    func getMasterKey(_ transaction: DBReadTransaction) -> Data?
+
+    func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType?
+
+    func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String?
+
+    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
+    func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data?
+
+    func getSVR1EnclaveName(_ transaction: DBReadTransaction) -> String?
+
+    func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
+
+    // MARK: - Setters
+
+    func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
+
+    func setMasterKey(_ value: Data, _ transaction: DBWriteTransaction)
+
+    func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction)
+
+    func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction)
+
+    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
+    func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction)
+
+    func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction)
+
+    func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction)
+
+    // MARK: - Clearing Keys
+
+    func clearKeys(_ transaction: DBWriteTransaction)
+
+}
+
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
 /// what type is our pin, etc.
-internal class SVRLocalStorage {
+internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     private let keyValueStore: KeyValueStore
 
-    internal init(
+    public init(
         keyValueStoreFactory: KeyValueStoreFactory
     ) {
         // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
@@ -20,72 +63,72 @@ internal class SVRLocalStorage {
 
     // MARK: - Getters
 
-    internal func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
+    public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
         return keyValueStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
 
-    internal func getMasterKey(_ transaction: DBReadTransaction) -> Data? {
+    public func getMasterKey(_ transaction: DBReadTransaction) -> Data? {
         return keyValueStore.getData(Keys.masterKey, transaction: transaction)
     }
 
-    internal func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
+    public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
         guard let raw = keyValueStore.getInt(Keys.pinType, transaction: transaction) else {
             return nil
         }
         return SVR.PinType(rawValue: raw)
     }
 
-    internal func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String? {
+    public func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(Keys.encodedPINVerificationString, transaction: transaction)
     }
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    internal func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data? {
+    public func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data? {
         return keyValueStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
-    internal func getSVR1EnclaveName(_ transaction: DBReadTransaction) -> String? {
+    public func getSVR1EnclaveName(_ transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(Keys.svr1EnclaveName, transaction: transaction)
     }
 
-    internal func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
+    public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Setters
 
-    internal func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
+    public func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
         keyValueStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
     }
 
-    internal func setMasterKey(_ value: Data, _ transaction: DBWriteTransaction) {
+    public func setMasterKey(_ value: Data, _ transaction: DBWriteTransaction) {
         keyValueStore.setData(value, key: Keys.masterKey, transaction: transaction)
     }
 
-    internal func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
+    public func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
         keyValueStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
     }
 
-    internal func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction) {
+    public func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
     }
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    internal func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction) {
+    public func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction) {
         keyValueStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
-    internal func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
+    public func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.svr1EnclaveName, transaction: transaction)
     }
 
-    internal func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
+    public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Clearing Keys
 
-    internal func clearKeys(_ transaction: DBWriteTransaction) {
+    public func clearKeys(_ transaction: DBWriteTransaction) {
         keyValueStore.removeValues(
             forKeys: [
                 Keys.masterKey,

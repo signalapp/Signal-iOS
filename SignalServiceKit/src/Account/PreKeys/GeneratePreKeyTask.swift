@@ -167,16 +167,16 @@ extension PreKeyTasks {
     /// ALWAYS changes the targeted keys (regardless of current key state)
     internal class Legacy_Generate: GenerateBase {
 
-        private let accountManager: PreKey.Operation.Shims.AccountManager
         private let messageProcessor: PreKey.Operation.Shims.MessageProcessor
+        private let tsAccountManager: TSAccountManagerProtocol
 
         internal init(
-            accountManager: PreKey.Operation.Shims.AccountManager,
             context: Generate.Context,
-            messageProcessor: PreKey.Operation.Shims.MessageProcessor
+            messageProcessor: PreKey.Operation.Shims.MessageProcessor,
+            tsAccountManager: TSAccountManagerProtocol
         ) {
-            self.accountManager = accountManager
             self.messageProcessor = messageProcessor
+            self.tsAccountManager = tsAccountManager
             super.init(context: context)
         }
 
@@ -187,7 +187,7 @@ extension PreKeyTasks {
             let messageProcessingPromise: Promise<Void>
 
             // Legacy code was reliant on this check. To be removed soon.
-            if context.db.read(block: accountManager.isRegisteredAndReady(tx:)) {
+            if context.db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
                 messageProcessingPromise = messageProcessor.fetchingAndProcessingCompletePromise()
             } else {
                 messageProcessingPromise = .value(())

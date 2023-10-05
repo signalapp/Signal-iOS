@@ -40,7 +40,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let profileManager: Shims.ProfileManager
     private let schedulers: Schedulers
     private let signalRecipientStore: Shims.SignalRecipientStore
-    private let tsAccountManager: Shims.TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     init(
         database: DB,
@@ -53,7 +53,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         profileManager: Shims.ProfileManager,
         schedulers: Schedulers,
         signalRecipientStore: Shims.SignalRecipientStore,
-        tsAccountManager: Shims.TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.database = database
         self.identityManager = identityManager
@@ -71,7 +71,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     func sayHelloWorldIfNecessary(tx syncTx: DBWriteTransaction) {
         let logger = logger
 
-        guard tsAccountManager.isPrimaryDevice(tx: syncTx) else {
+        guard tsAccountManager.registrationState(tx: syncTx).isRegisteredPrimaryDevice else {
             logger.info("Skipping PNI Hello World, am a linked device.")
             return
         }
@@ -116,8 +116,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             return
         }
 
-        let localDeviceId = tsAccountManager.localDeviceId(tx: syncTx)
-        let localDevicePniRegistrationId = tsAccountManager.getPniRegistrationId(tx: syncTx)
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: syncTx)
+        let localDevicePniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: syncTx)
 
         firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
             logger.info("Building PNI distribution parameters.")
@@ -182,7 +182,6 @@ extension PniHelloWorldManagerImpl {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
         typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Shim
-        typealias TSAccountManager = _PniHelloWorldManagerImpl_TSAccountManager_Shim
     }
 
     enum Wrappers {
@@ -190,7 +189,6 @@ extension PniHelloWorldManagerImpl {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
         typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper
-        typealias TSAccountManager = _PniHelloWorldManagerImpl_TSAccountManager_Wrapper
     }
 }
 
@@ -280,38 +278,5 @@ class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldMana
             localRecipient.accountId,
             localRecipient.deviceIds
         )
-    }
-}
-
-// MARK: TSAccountManager
-
-protocol _PniHelloWorldManagerImpl_TSAccountManager_Shim {
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
-    func localDeviceId(tx: DBReadTransaction) -> UInt32
-    func getPniRegistrationId(tx: DBWriteTransaction) -> UInt32
-}
-
-class _PniHelloWorldManagerImpl_TSAccountManager_Wrapper: _PniHelloWorldManagerImpl_TSAccountManager_Shim {
-    private let tsAccountManager: TSAccountManager
-
-    init(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
-        return tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func localDeviceId(tx: DBReadTransaction) -> UInt32 {
-        return tsAccountManager.storedDeviceId(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func getPniRegistrationId(tx: DBWriteTransaction) -> UInt32 {
-        return tsAccountManager.getOrGeneratePniRegistrationId(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

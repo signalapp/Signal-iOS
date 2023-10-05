@@ -96,7 +96,7 @@ class MyStoryCell: UITableViewCell {
         addStoryButton.block = addStoryAction
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(Self.tsAccountManager.localAddress!)
+            config.dataSource = .address(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress)
             // We reload the row when this state changes, so don't make the avatar auto update.
             config.storyConfiguration = .fixed(model.messages.isEmpty ? .noStories : .viewed)
             config.usePlaceholderImages()

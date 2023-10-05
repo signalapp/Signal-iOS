@@ -103,9 +103,11 @@ public class PaymentsProcessor: NSObject {
             guard Self.paymentsHelper.arePaymentsEnabled else {
                 return
             }
-            guard AppReadiness.isAppReady,
-                  CurrentAppContext().isMainAppAndActive,
-                  Self.tsAccountManager.isRegisteredAndReady else {
+            guard
+                AppReadiness.isAppReady,
+                CurrentAppContext().isMainAppAndActive,
+                DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+            else {
                 return
             }
             guard !DebugFlags.paymentsHaltProcessing.get() else {

@@ -26,7 +26,7 @@ extension OWSOrphanDataCleaner {
         let currentAppVersion = AppVersionImpl.shared.currentAppReleaseVersion
 
         return databaseStorage.read { transaction -> Bool in
-            guard TSAccountManager.shared.isRegistered(transaction: transaction) else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
                 Logger.info("Orphan data audit skipped because we're not registered")
                 return false
             }

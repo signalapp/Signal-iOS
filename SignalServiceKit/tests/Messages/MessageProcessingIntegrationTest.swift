@@ -37,7 +37,16 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID, pni: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: localUUID),
+                    pni: .init(fromUUID: UUID()),
+                    e164: .init(localE164Identifier)!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
@@ -200,7 +209,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationServiceID(tsAccountManager.localIdentifiers!.pni!.serviceIdString)
+        envelopeBuilder.setDestinationServiceID(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,

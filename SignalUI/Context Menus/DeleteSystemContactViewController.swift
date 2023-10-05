@@ -22,7 +22,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let contactsManager: ContactsManagerProtocol
         let databaseStorage: SDSDatabaseStorage
         let recipientHidingManager: RecipientHidingManager
-        let tsAccountManager: TSAccountManager
+        let tsAccountManager: TSAccountManagerProtocol
     }
 
     /// The e164 of the contact represented by this contact card.
@@ -42,7 +42,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         contactsManager: ContactsManagerProtocol,
         databaseStorage: SDSDatabaseStorage,
         recipientHidingManager: RecipientHidingManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.e164 = e164
         self.serviceId = serviceId
@@ -74,7 +74,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
         // This screen is for primary devices only. If a non primary
         // manages to get here bad things could happen.
-        owsAssert(tsAccountManager.isPrimaryDevice)
+        owsAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,

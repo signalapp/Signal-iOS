@@ -190,7 +190,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        let wasRegistered = TSAccountManager.shared.isRegistered
+        let wasRegistered = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
 
         let (promise, future) = Guarantee<TransferredDbReloadResult>.pending()
         let completion: () -> Void = {
@@ -211,7 +211,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
             SSKEnvironment.shared.warmCaches()
 
-            if wasRegistered != TSAccountManager.shared.isRegistered {
+            if wasRegistered != DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                 NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
             }
             future.resolve(.success)

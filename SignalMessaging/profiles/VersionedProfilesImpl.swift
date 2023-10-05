@@ -137,7 +137,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             case .explicit(let info):
                 localAci = info.localIdentifiers.aci
             case .implicit:
-                guard let implicitLocalAci = self.tsAccountManager.localIdentifiers?.aci else {
+                guard let implicitLocalAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                     throw OWSAssertionError("Missing localUuid.")
                 }
                 localAci = implicitLocalAci

@@ -203,7 +203,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     private func createNewGroup() {
         AssertIsOnMainThread()
 
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("missing local address")
             return
         }

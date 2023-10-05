@@ -42,7 +42,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             }
 
             AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                guard self.tsAccountManager.isRegisteredAndReady else { return }
+                guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
                 // Schedule a restore. This will do nothing unless we've never
                 // registered a manifest before.
@@ -219,7 +219,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         case .implicit:
             // Under the new reg flow, we will sync kbs keys before being fully ready with
             // ts account manager auth set up. skip if so.
-            guard tsAccountManager.isRegisteredAndReady else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredOrFinishingProvisioning else {
                 Logger.info("Skipping storage service operation with implicit auth during registration.")
                 return nil
             }
@@ -721,7 +721,7 @@ class StorageServiceOperation: OWSOperation {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
         manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
-        manifestBuilder.setSourceDevice(tsAccountManager.storedDeviceId)
+        manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)
         return try manifestBuilder.build()
     }
 
@@ -762,7 +762,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if TSAccountManager.shared.isPrimaryDevice {
+                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
                         Logger.info("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
@@ -783,7 +783,7 @@ class StorageServiceOperation: OWSOperation {
                     }
                 } else if
                     case .manifestProtoDeserializationFailed(let previousManifestVersion) = storageError,
-                    TSAccountManager.shared.isPrimaryDevice
+                    DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
                 {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
@@ -1139,7 +1139,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .itemDecryptionFailed = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if TSAccountManager.shared.isPrimaryDevice {
+                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
                         Logger.info("Item decryption failed, recreating manifest.")
                         return self.createNewManifest(version: manifest.version + 1)
                     }
@@ -1160,7 +1160,7 @@ class StorageServiceOperation: OWSOperation {
                     }
                 } else if
                     case .itemProtoDeserializationFailed = storageError,
-                    TSAccountManager.shared.isPrimaryDevice
+                    DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
                 {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
@@ -1439,13 +1439,15 @@ class StorageServiceOperation: OWSOperation {
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: paymentsHelperSwift,
+                phoneNumberDiscoverabilityManager: DependenciesBridge.shared.phoneNumberDiscoverabilityManager,
                 preferences: preferences,
                 profileManager: profileManagerImpl,
                 receiptManager: receiptManager,
+                registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
                 storageServiceManager: storageServiceManager,
                 subscriptionManager: subscriptionManager,
                 systemStoryManager: systemStoryManager,
-                tsAccountManager: tsAccountManager,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 typingIndicators: typingIndicatorsImpl,
                 udManager: udManager,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager
@@ -1466,7 +1468,7 @@ class StorageServiceOperation: OWSOperation {
                 contactsManager: contactsManagerImpl,
                 identityManager: DependenciesBridge.shared.identityManager,
                 profileManager: profileManagerImpl,
-                tsAccountManager: tsAccountManager,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
                 recipientHidingManager: DependenciesBridge.shared.recipientHidingManager

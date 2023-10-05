@@ -12,7 +12,12 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {

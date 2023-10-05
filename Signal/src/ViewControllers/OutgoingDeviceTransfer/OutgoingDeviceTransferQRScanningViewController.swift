@@ -204,7 +204,8 @@ extension OutgoingDeviceTransferQRScanningViewController: QRCodeScanDelegate {
                         return
                     case .modeMismatch:
                         let desiredMode: DeviceTransferService.TransferMode =
-                            TSAccountManager.shared.isPrimaryDevice ? .linked : .primary
+                            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true
+                            ? .linked : .primary
                         switch desiredMode {
                         case .linked:
                             self.showError(

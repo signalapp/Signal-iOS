@@ -324,7 +324,7 @@ extension MessageSender {
         return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
-            guard let localIdentifiers = self.tsAccountManager.localIdentifiers(transaction: writeTx) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: writeTx.asV2Read) else {
                 throw OWSAssertionError("Not registered.")
             }
 
@@ -345,7 +345,7 @@ extension MessageSender {
             guard let skdmBytes = self.senderKeyStore.skdmBytesForThread(
                 thread,
                 localAci: localIdentifiers.aci,
-                localDeviceId: self.tsAccountManager.storedDeviceId(transaction: writeTx),
+                localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: writeTx.asV2Read),
                 tx: writeTx
             ) else {
                 throw OWSAssertionError("Couldn't build SKDM")

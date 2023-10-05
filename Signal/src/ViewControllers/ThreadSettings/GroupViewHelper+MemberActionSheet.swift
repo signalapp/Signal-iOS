@@ -57,7 +57,7 @@ extension GroupViewHelper {
             groupThread.isGroupV2Thread else {
                 return false
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return false
         }
@@ -91,7 +91,7 @@ extension GroupViewHelper {
             groupThread.isGroupV2Thread else {
                 return false
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return false
         }
@@ -125,7 +125,7 @@ extension GroupViewHelper {
             groupThread.isGroupV2Thread else {
                 return false
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return false
         }

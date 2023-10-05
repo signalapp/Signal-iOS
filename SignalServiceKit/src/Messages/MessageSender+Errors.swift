@@ -384,7 +384,7 @@ public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider,
     }
 
     public var localizedDescription: String {
-        TSAccountManager.shared.isPrimaryDevice
+        DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true
             ? OWSLocalizedString("ERROR_SENDING_DEREGISTERED",
                                 comment: "Error indicating a send failure due to a deregistered application.")
             : OWSLocalizedString("ERROR_SENDING_DELINKED",

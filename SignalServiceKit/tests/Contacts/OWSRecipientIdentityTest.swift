@@ -32,7 +32,16 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
 
     private func createFakeGroup() throws {
         // Create local account.
-        tsAccountManager.registerForTests(localIdentifiers: LocalIdentifiers(aci: localAci, pni: nil, phoneNumber: "+16505550100"))
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: localAci,
+                    pni: nil,
+                    e164: E164("+16505550100")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
         // Create recipients & identities for them.
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher

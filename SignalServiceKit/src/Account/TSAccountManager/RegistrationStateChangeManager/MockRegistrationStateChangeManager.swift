@@ -75,12 +75,11 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         _ localPhoneNumber: E164,
         _ localAci: Aci,
         _ wasPrimaryDevice: Bool
-    ) -> Bool = { [weak self] phoneNumber, aci, _ in
+    ) -> Void = { [weak self] phoneNumber, aci, _ in
         self?.registrationStateMock = { .reregistering(phoneNumber: phoneNumber.stringValue, aci: aci) }
-        return true
     }
 
-    open func resetForReregistration(localPhoneNumber: E164, localAci: Aci, wasPrimaryDevice: Bool, tx: DBWriteTransaction) -> Bool {
+    open func resetForReregistration(localPhoneNumber: E164, localAci: Aci, wasPrimaryDevice: Bool, tx: DBWriteTransaction) {
         return resetForReregistrationMock(localPhoneNumber, localAci, wasPrimaryDevice)
     }
 
@@ -106,6 +105,27 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
 
     open func setWasTransferred(tx: DBWriteTransaction) {
         setWasTransferredMock()
+    }
+
+    public var cleanUpTransferStateOnAppLaunchIfNeededMock: () -> Void = {}
+
+    open func cleanUpTransferStateOnAppLaunchIfNeeded() {
+        cleanUpTransferStateOnAppLaunchIfNeededMock()
+    }
+
+    public lazy var setIsDeregisteredOrDelinkedMock: (
+        _ isDeregisteredOrDelinked: Bool
+    ) -> Void = { [weak self] isDeregisteredOrDelinked in
+        let wasPrimary = self?.registrationStateMock().isPrimaryDevice ?? true
+        if isDeregisteredOrDelinked {
+            self?.registrationStateMock = wasPrimary ? { .deregistered } : { .delinked }
+        } else {
+            self?.registrationStateMock = wasPrimary ? { .registered } : { .provisioned }
+        }
+    }
+
+    open func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) {
+        setIsDeregisteredOrDelinkedMock(isDeregisteredOrDelinked)
     }
 
     public var unregisterFromServiceMock: (_ auth: ChatServiceAuth) async throws -> Void = { _ in }

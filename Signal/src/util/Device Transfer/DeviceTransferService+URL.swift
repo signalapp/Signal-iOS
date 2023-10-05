@@ -58,7 +58,8 @@ extension DeviceTransferService {
             throw Error.unsupportedVersion
         }
 
-        let currentMode: TransferMode = tsAccountManager.isPrimaryDevice ? .primary : .linked
+        let currentMode: TransferMode = DependenciesBridge.shared.tsAccountManager
+            .registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true ? .primary : .linked
 
         guard let rawMode = queryItemsDictionary[DeviceTransferService.transferModeKey],
             rawMode == currentMode.rawValue else {

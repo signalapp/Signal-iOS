@@ -185,13 +185,13 @@ class UserNotificationPresenter: Dependencies {
         interaction: INInteraction?,
         sound: Sound?,
         replacingIdentifier: String? = nil,
-        forceBeforeOnboarded: Bool = false,
+        forceBeforeRegistered: Bool = false,
         completion: NotificationActionCompletion?
     ) {
         dispatchPrecondition(condition: .onQueue(notifyQueue))
 
-        guard forceBeforeOnboarded || tsAccountManager.isOnboarded else {
-            Logger.info("suppressing notification since user hasn't yet completed onboarding.")
+        guard forceBeforeRegistered || DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            Logger.info("suppressing notification since user hasn't yet completed registration.")
             completion?()
             return
         }

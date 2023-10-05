@@ -215,7 +215,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
             return SignalServiceAddress(serviceId: Aci(fromUUID: UUID()), phoneNumber: phoneNumber)
         }
 
-        if let localAddress = tsAccountManager.localAddress {
+        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             recipientAddresses.append(localAddress)
         }
 

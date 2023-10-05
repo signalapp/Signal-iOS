@@ -13,7 +13,16 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: UUID()),
+                    pni: nil,
+                    e164: .init("+13235551234")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
     }
 
     func testNewEmptyKey() {

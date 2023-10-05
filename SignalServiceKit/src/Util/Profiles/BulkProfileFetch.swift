@@ -39,12 +39,12 @@ public actor BulkProfileFetch {
 
     private let databaseStorage: SDSDatabaseStorage
     private let reachabilityManager: SSKReachabilityManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     public init(
         databaseStorage: SDSDatabaseStorage,
         reachabilityManager: SSKReachabilityManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.databaseStorage = databaseStorage
         self.reachabilityManager = reachabilityManager
@@ -115,10 +115,10 @@ public actor BulkProfileFetch {
     }
 
     private func _fetchProfiles(serviceIds: [ServiceId]) async {
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
-        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             owsFailDebug("missing localIdentifiers")
             return
         }
@@ -160,7 +160,7 @@ public actor BulkProfileFetch {
         guard
             CurrentAppContext().isMainApp,
             reachabilityManager.isReachable,
-            tsAccountManager.isRegisteredAndReady,
+            tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
             !DebugFlags.reduceLogChatter
         else {
             return
@@ -226,7 +226,7 @@ public actor BulkProfileFetch {
                 lastOutcomeMap[serviceId] = UpdateOutcome(.noProfile)
             } else {
                 // TODO: We may need to handle more status codes.
-                if tsAccountManager.isRegisteredAndReady {
+                if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                     owsFailDebug("Error: \(error)")
                 } else {
                     Logger.warn("Error: \(error)")
@@ -272,7 +272,7 @@ public actor BulkProfileFetch {
         guard CurrentAppContext().isMainApp else {
             return
         }
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 

@@ -382,7 +382,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var isLocalAddress: Bool {
-        return TSAccountManager.localAddress == self
+        return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress == self
     }
 
     @objc

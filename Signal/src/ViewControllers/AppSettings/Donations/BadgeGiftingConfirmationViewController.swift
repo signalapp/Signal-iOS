@@ -160,7 +160,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     forDonationMode: .gift,
                     usingCurrency: self.price.currencyCode,
                     withConfiguration: self.paymentMethodsConfiguration,
-                    localNumber: Self.tsAccountManager.localNumber
+                    localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
                 )
             ) { [weak self] (sheet, paymentMethod) in
                 sheet.dismiss(animated: true) { [weak self] in

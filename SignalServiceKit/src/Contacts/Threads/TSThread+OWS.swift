@@ -221,7 +221,7 @@ extension TSThread {
     public func editTarget(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage? {
         guard
             let editTargetTimestamp = editTargetTimestamp?.uint64Value,
-            let localAddress = tsAccountManager.localAddress
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
         else {
             return nil
         }

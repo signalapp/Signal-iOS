@@ -193,7 +193,7 @@ public class GroupManager: NSObject {
                                            newGroupSeed: NewGroupSeed? = nil,
                                            shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             return Promise(error: OWSAssertionError("Missing localIdentifiers."))
         }
 
@@ -318,7 +318,7 @@ public class GroupManager: NSObject {
         withMembership newGroupMembership: GroupMembership,
         transaction tx: SDSAnyReadTransaction
     ) -> GroupMembership {
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             owsFailDebug("Missing localAci.")
             return newGroupMembership
         }
@@ -391,7 +391,7 @@ public class GroupManager: NSObject {
                                            groupsVersion: GroupsVersion = .V1,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             throw OWSAssertionError("Missing localIdentifiers.")
         }
 
@@ -474,7 +474,7 @@ public class GroupManager: NSObject {
         inContactOrGroupV1Thread thread: TSThread,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             owsFailDebug("Not registered.")
             return
         }
@@ -854,7 +854,7 @@ public class GroupManager: NSObject {
     // MARK: - Removed from Group or Invite Revoked
 
     public static func handleNotInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             owsFailDebug("Missing localIdentifiers.")
             return
         }
@@ -1184,8 +1184,8 @@ public class GroupManager: NSObject {
             }
 
             if
-                tsAccountManager.isPrimaryDevice(transaction: transaction),
-                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true,
+                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci,
                 oldGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci),
                 !newGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci)
             {
@@ -1470,10 +1470,10 @@ public class GroupManager: NSObject {
     /// our profile key credential from the service until we've uploaded a profile
     /// key commitment to the service.
     public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {
-        guard tsAccountManager.isOnboarded else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return Promise.value(())
         }
-        guard let localAddress = self.tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
@@ -1502,7 +1502,7 @@ public class GroupManager: NSObject {
             }
 
             guard
-                tsAccountManager.isRegisteredPrimaryDevice,
+                DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice,
                 CurrentAppContext().isMainApp
             else {
                 Logger.warn("Skipping upload of local profile key commitment, not in main app!")

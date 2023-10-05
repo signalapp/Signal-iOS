@@ -250,7 +250,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         enableRegistrationLock: Bool,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
-        assert(TSAccountManager.shared.isRegisteredPrimaryDevice)
+        assert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode
         self.pinType = pinType
@@ -671,7 +671,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // registration recovery password.
             // We might have already done this in the steps above, but re-upload to be sure.
             // Just kick it off, don't wait on the result.
-            _ = TSAccountManager.shared.updateAccountAttributes().cauterize()
+            DependenciesBridge.shared.db.write {
+                DependenciesBridge.shared.accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: $0)
+            }
         }
         .done {
             AssertIsOnMainThread()

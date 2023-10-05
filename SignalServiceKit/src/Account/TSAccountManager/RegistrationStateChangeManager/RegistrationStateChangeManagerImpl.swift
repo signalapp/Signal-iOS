@@ -165,7 +165,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         localAci: Aci,
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
-    ) -> Bool {
+    ) {
         tsAccountManager.resetForReregistration(localNumber: localPhoneNumber, localAci: localAci, tx: tx)
 
         signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.resetSessionStore(tx: tx)
@@ -189,8 +189,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 self.tmp_postOnboardingStateDidChangeNotification()
             }
         }
-
-        return true
     }
 
     public func setIsTransferInProgress(tx: DBWriteTransaction) {
@@ -223,6 +221,10 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         tx.addAsyncCompletion(on: schedulers.main) {
             self.postRegistrationStateDidChangeNotification()
         }
+    }
+
+    public func cleanUpTransferStateOnAppLaunchIfNeeded() {
+        tsAccountManager.cleanUpTransferStateOnAppLaunchIfNeeded()
     }
 
     public func unregisterFromService(auth: ChatServiceAuth) async throws {
@@ -354,3 +356,36 @@ public class _RegistrationStateChangeManagerImpl_SenderKeyStoreWrapper: _Registr
         senderKeyStore.resetSenderKeyStore(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
+
+// MARK: - Unit Tests
+
+#if TESTABLE_BUILD
+
+extension RegistrationStateChangeManagerImpl {
+
+    public func registerForTests(
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
+        owsAssertDebug(FeatureFlags.storageMode == .grdbTests)
+        owsAssertDebug(CurrentAppContext().isRunningTests)
+
+        tsAccountManager.initializeLocalIdentifiers(
+            e164: E164(localIdentifiers.phoneNumber)!,
+            aci: localIdentifiers.aci,
+            pni: localIdentifiers.pni,
+            deviceId: OWSDevice.primaryDeviceId,
+            serverAuthToken: "",
+            tmp_setIsOnboarded: true,
+            tx: tx
+        )
+        didUpdateLocalIdentifiers(
+            e164: E164(localIdentifiers.phoneNumber)!,
+            aci: localIdentifiers.aci,
+            pni: localIdentifiers.pni,
+            tx: tx
+        )
+    }
+}
+
+#endif

@@ -339,7 +339,7 @@ public class ProvisioningController: NSObject {
     public func provisioningDidComplete(from viewController: UIViewController) {
         self.databaseStorage.write {
             Logger.info("completed provisioning")
-            self.tsAccountManager.setIsOnboarded(true, transaction: $0)
+            DependenciesBridge.shared.registrationStateChangeManager.didFinishProvisioningSecondary(tx: $0.asV2Write)
         }
         SignalApp.shared.showConversationSplitView()
     }

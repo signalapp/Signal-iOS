@@ -46,7 +46,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     fileprivate var keyValueStore: SDSKeyValueStore { paymentsHelper.keyValueStore}
 
     private func updateLastKnownLocalPaymentAddressProtoDataIfNecessary() {
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
         guard AppReadiness.isAppReady else {
@@ -259,9 +259,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard canUsePayments else {
             return
         }
-        guard AppReadiness.isAppReady,
-              CurrentAppContext().isMainAppAndActive,
-              Self.tsAccountManager.isRegisteredAndReady else {
+        guard
+            AppReadiness.isAppReady,
+            CurrentAppContext().isMainAppAndActive,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        else {
             return
         }
 
@@ -620,7 +622,7 @@ public extension PaymentsImpl {
         guard paymentAmount.currency == .mobileCoin else {
             return Promise(error: OWSAssertionError("Invalid currency."))
         }
-        guard recipientAci != Self.tsAccountManager.localIdentifiers?.aci else {
+        guard recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return Promise(error: OWSAssertionError("Can't make payment to yourself."))
         }
 

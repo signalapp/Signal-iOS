@@ -290,7 +290,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             databaseStorage: databaseStorage,
             blockingManager: blockingManager,
             recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
-            accountManager: tsAccountManager,
+            accountManager: DependenciesBridge.shared.tsAccountManager,
             contactsManager: contactsManager,
             fromViewController: self
         )
@@ -447,7 +447,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         Logger.info("Beginning refreshing")
 
         let refreshPromise: AnyPromise
-        if tsAccountManager.isRegisteredPrimaryDevice {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
             refreshPromise = contactsManagerImpl.userRequestedSystemContactsRefresh()
         } else {
             refreshPromise = syncManager.sendAllSyncRequestMessages(timeout: 20)
@@ -1315,7 +1315,7 @@ extension RecipientPickerViewController {
         skipping alreadyMatchedPhoneNumbers: Set<String>
     ) -> OWSTableSection? {
         let phoneNumberFinder = PhoneNumberFinder(
-            localNumber: TSAccountManager.localNumber,
+            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
             contactDiscoveryManager: contactDiscoveryManager
         )
         var phoneNumberResults = phoneNumberFinder.parseResults(for: searchResults.searchText)

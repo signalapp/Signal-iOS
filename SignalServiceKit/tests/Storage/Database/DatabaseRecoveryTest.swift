@@ -14,7 +14,16 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(withLocalNumber: "+12225550101", uuid: UUID(), pni: UUID())
+        Self.databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: .init()),
+                    pni: .init(fromUUID: .init()),
+                    phoneNumber: "+12225550101"
+                ),
+                tx: tx.asV2Write
+            )
+        }
     }
 
     // MARK: - Rebuild existing database
@@ -116,7 +125,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
 
         let contactAci = Aci.randomForTesting()
 
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             XCTFail("No local address. Test is not set up correctly")
             return
         }

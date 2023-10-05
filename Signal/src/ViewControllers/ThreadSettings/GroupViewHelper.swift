@@ -59,7 +59,7 @@ class GroupViewHelper: Dependencies {
             // All users can edit v1 groups.
             return true
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return false
         }

@@ -260,7 +260,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private(set) var groupMemberStateMap = [SignalServiceAddress: OWSVerificationState]()
     private(set) var sortedGroupMembers = [SignalServiceAddress]()
     func updateGroupMembers(transaction tx: SDSAnyReadTransaction) {
-        guard let groupModel = currentGroupModel, !groupModel.isPlaceholder, let localAddress = tsAccountManager.localAddress else {
+        guard
+            let groupModel = currentGroupModel,
+            !groupModel.isPlaceholder,
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress
+        else {
             groupMemberStateMap = [:]
             sortedGroupMembers = []
             return
@@ -642,7 +646,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             return true
         }
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("missing local address")
             return true
         }
@@ -660,7 +664,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             return []
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("missing local address")
             return []
         }

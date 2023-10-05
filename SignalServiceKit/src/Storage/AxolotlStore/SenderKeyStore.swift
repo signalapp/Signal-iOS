@@ -173,13 +173,13 @@ public class SenderKeyStore: NSObject {
 
     @objc
     public func skdmBytesForThread(_ thread: TSThread, tx: SDSAnyWriteTransaction) -> Data? {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             return nil
         }
         return skdmBytesForThread(
             thread,
             localAci: localIdentifiers.aci,
-            localDeviceId: tsAccountManager.storedDeviceId(transaction: tx),
+            localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read),
             tx: tx
         )
     }
@@ -222,7 +222,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             throw OWSAssertionError("Invalid protocol address: must have ACI")
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             throw OWSAssertionError("Not registered.")
         }
 
@@ -238,7 +238,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
                     senderAci: senderAci,
                     senderDeviceId: sender.deviceId,
                     localIdentifiers: localIdentifiers,
-                    localDeviceId: tsAccountManager.storedDeviceId(transaction: tx),
+                    localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read),
                     distributionId: distributionId
                 )
             }
@@ -325,7 +325,7 @@ extension SenderKeyStore {
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> KeyId? {
         storageLock.assertOwner()
 
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: readTx)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: readTx.asV2Read)?.aci else {
             owsFailDebug("Not registered.")
             return nil
         }
@@ -351,7 +351,7 @@ extension SenderKeyStore {
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> KeyId? {
         storageLock.assertOwner()
 
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: writeTx)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: writeTx.asV2Read)?.aci else {
             owsFailDebug("Not registered.")
             return nil
         }
@@ -387,7 +387,7 @@ extension SenderKeyStore {
     // This method traverses all groups where `recipient` is a member and logs out information on any sent
     // sender key distribution messages.
     public func logSKDMInfo(for recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci else { return }
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci else { return }
 
         // To avoid doing too much work for a flood of failed decryptions, we'll only honor an SKDM log
         // dump request every 10s. That's frequent enough to be captured in a log zip.

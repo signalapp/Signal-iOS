@@ -141,7 +141,7 @@ class LinkDeviceViewController: OWSViewController {
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
         databaseStorage.read { tx in
-            localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx)
+            localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
             aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)

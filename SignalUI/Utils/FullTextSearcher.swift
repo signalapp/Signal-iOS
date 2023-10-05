@@ -457,7 +457,7 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        if let localAddress = TSAccountManager.localAddress {
+        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
             if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
                 if signalContactMap[localAddress] == nil {
                     let localAccount = SignalAccount(address: localAddress)
@@ -572,7 +572,7 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        if let localAddress = TSAccountManager.localAddress {
+        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
             if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
                 if signalContactMap[localAddress] == nil {
                     let localAccount = SignalAccount(address: localAddress)
@@ -623,7 +623,7 @@ public class FullTextSearcher: NSObject {
     }
 
     func matchesNoteToSelf(searchText: String, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             return false
         }
         let noteToSelfText = self.conversationIndexingString(address: localAddress, transaction: transaction)
@@ -902,7 +902,10 @@ public class FullTextSearcher: NSObject {
         }
 
         if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
-            if let localAddress = TSAccountManager.localAddress, contactsMap[localAddress] == nil {
+            if
+                let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress,
+                contactsMap[localAddress] == nil
+            {
                 let localAccount = SignalAccount(address: localAddress)
                 let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
                 contactsMap[localAddress] = localResult

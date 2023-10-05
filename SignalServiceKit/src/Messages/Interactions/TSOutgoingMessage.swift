@@ -193,7 +193,7 @@ public extension TSOutgoingMessage {
             // No PNI signature needed.
             return nil
         }
-        guard let pni = tsAccountManager.localPni else {
+        guard let pni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.pni else {
             owsFailDebug("missing PNI")
             return nil
         }
@@ -265,7 +265,7 @@ public extension TSOutgoingMessage {
             return
         }
 
-        guard let currentPni = tsAccountManager.localPni else {
+        guard let currentPni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.pni else {
             owsFailDebug("missing local PNI")
             return
         }
@@ -437,7 +437,7 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing local thread")
             }
 
-            guard let localIdentifiers = Self.tsAccountManager.localIdentifiers(transaction: tx) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 

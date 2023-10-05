@@ -444,7 +444,7 @@ extension MessageSender {
         in thread: TSThread,
         tx: SDSAnyReadTransaction
     ) throws -> [SignalServiceAddress] {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
             throw OWSAssertionError("Missing localAddress.")
         }
         if message.isSyncMessage {
@@ -584,7 +584,7 @@ extension MessageSender {
         if DependenciesBridge.shared.appExpiry.isExpired {
             return Promise(error: AppExpiredError())
         }
-        if tsAccountManager.isDeregistered || tsAccountManager.isReregistering {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered.negated {
             return Promise(error: AppDeregisteredError())
         }
         if message.shouldBeSaved {
@@ -723,7 +723,7 @@ extension MessageSender {
                 throw OWSAssertionError("Couldn't build message.")
             }
 
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
                 throw OWSAssertionError("Not registered.")
             }
 
@@ -940,7 +940,7 @@ extension MessageSender {
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message),
-                let localAddress = tsAccountManager.localAddress(with: tx),
+                let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress,
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {
                 DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
@@ -966,7 +966,12 @@ extension MessageSender {
             if message.isSyncMessage {
                 return
             }
-            let thread = self.databaseStorage.read { tx in message.thread(tx: tx) }
+            let (thread, deviceId) = self.databaseStorage.read { tx in
+                return (
+                    message.thread(tx: tx),
+                    DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+                )
+            }
             guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
                 return
             }
@@ -975,14 +980,14 @@ extension MessageSender {
                 for sendingAddress in message.sendingRecipientAddresses() {
                     message.update(
                         withReadRecipient: sendingAddress,
-                        deviceId: self.tsAccountManager.storedDeviceId,
+                        deviceId: deviceId,
                         readTimestamp: message.timestamp,
                         tx: tx
                     )
                     if message.isVoiceMessage || message.isViewOnceMessage {
                         message.update(
                             withViewedRecipient: sendingAddress,
-                            deviceId: self.tsAccountManager.storedDeviceId,
+                            deviceId: deviceId,
                             viewedTimestamp: message.timestamp,
                             tx: tx
                         )
@@ -1128,7 +1133,7 @@ extension MessageSender {
         owsAssertDebug(messageSend.message.canSendToLocalAddress)
 
         let hasMessageForLinkedDevice = deviceMessages.contains(where: {
-            $0.destinationDeviceId != tsAccountManager.storedDeviceId
+            $0.destinationDeviceId != DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
         })
 
         if hasMessageForLinkedDevice {
@@ -1164,7 +1169,7 @@ extension MessageSender {
         var recipientDeviceIds = registeredRecipient.deviceIds
 
         if messageSend.localIdentifiers.contains(serviceId: messageSend.serviceId) {
-            let localDeviceId = tsAccountManager.storedDeviceId
+            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
             recipientDeviceIds.removeAll(where: { $0 == localDeviceId })
         }
 

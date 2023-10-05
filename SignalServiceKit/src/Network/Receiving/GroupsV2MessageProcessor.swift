@@ -151,7 +151,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
         let canProcess = (
             messagePipelineSupervisor.isMessageProcessingPermitted &&
-            tsAccountManager.isRegisteredAndReady
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         )
 
         guard canProcess else {
@@ -316,7 +316,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
 
         let canProcess = (
             messagePipelineSupervisor.isMessageProcessingPermitted &&
-            tsAccountManager.isRegisteredAndReady
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         )
 
         guard canProcess else {
@@ -573,7 +573,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                     wasReceivedByUD: job.wasReceivedByUD,
                     serverDeliveryTimestamp: job.serverDeliveryTimestamp,
                     shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages,
-                    localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction)!,
+                    localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!,
                     tx: transaction
                 )
             }
@@ -1026,7 +1026,7 @@ public class GroupsV2MessageProcessor: NSObject {
         // processing if they correspond to v2 groups of which we are a
         // non-pending member.
         if shouldCheckGroupModel {
-            guard let localAddress = self.tsAccountManager.localAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
                 owsFailDebug("Missing localAddress.")
                 return .discard
             }

@@ -309,7 +309,7 @@ public class MessageProcessor: NSObject {
 
     private func drainPendingEnvelopes() {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
-        guard tsAccountManager.isRegisteredAndReady else { return }
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
         guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
 
@@ -354,10 +354,10 @@ public class MessageProcessor: NSObject {
             // This is only called via `drainPendingEnvelopes`, and that confirms that
             // we're registered. If we're registered, we must have `LocalIdentifiers`,
             // so this (generally) shouldn't fail.
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
                 return
             }
-            let localDeviceId = tsAccountManager.storedDeviceId(transaction: tx)
+            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
 
             var remainingEnvelopes = batchEnvelopes
             while !remainingEnvelopes.isEmpty {

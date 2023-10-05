@@ -226,7 +226,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 + (SignalServiceAddress *)publicAddressForAddress:(SignalServiceAddress *)address
 {
     if ([self isLocalProfileAddress:address]) {
-        SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+        SignalServiceAddress *_Nullable localAddress = [TSAccountManagerObjcBridge localAciAddressWithMaybeTransaction];
         if (localAddress == nil) {
             OWSFailDebug(@"Missing localAddress.");
         } else {
@@ -711,7 +711,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                 }
 
                 BOOL isUpdatingDatabaseInstance = self != profile;
-                if (shouldReupload && self.tsAccountManager.isPrimaryDevice
+                if (shouldReupload && [TSAccountManagerObjcBridge isPrimaryDeviceWith:transaction]
                     && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
                     // shouldReuploadProtectedProfileName has side effects,
                     // so only invoke it if shouldReupload is true.
@@ -824,7 +824,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         shouldUpdateStorageService = NO;
     }
 
-    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageService
+    if ([TSAccountManagerObjcBridge isRegisteredWith:transaction] && shouldUpdateStorageService
         && (!onlyAvatarChanged || isLocalUserProfile)) {
         [transaction addAsyncCompletionOffMain:^{
             if (isLocalUserProfile) {
@@ -833,7 +833,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                 // Replace it with the real deal, from either auth or tsAccountManager.
                 SignalServiceAddress *localAddress = [authedAccount localUserAddress];
                 if (localAddress == nil) {
-                    localAddress = self.tsAccountManager.localAddress;
+                    localAddress = [TSAccountManagerObjcBridge localAciAddressWith:transaction];
                 }
                 [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:@[ localAddress ]];
             } else {
@@ -849,7 +849,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                       // We populate an initial (empty) profile on launch of a new install, but
                                       // until we have a registered account, syncing will fail (and there could not
                                       // be any linked device to sync to at this point anyway).
-                                      if (self.tsAccountManager.isRegisteredPrimaryDevice
+                                      if ([TSAccountManagerObjcBridge isRegisteredPrimaryDeviceWithMaybeTransaction]
                                           && CurrentAppContext().isMainApp) {
                                           [self.syncManager syncLocalContact].catchInBackground(
                                               ^(NSError *error) { OWSLogError(@"Error: %@", error); });

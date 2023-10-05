@@ -39,7 +39,7 @@ extension RecipientHidingManager {
     /// - Returns: True if the address is hidden.
     public func isHiddenAddress(_ address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
         guard
-            let localAddress = tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx)),
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address) else
         {
             return false
@@ -63,7 +63,7 @@ extension RecipientHidingManager {
             throw RecipientHidingError.invalidRecipientAddress(address)
         }
         guard
-            let localAddress = tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx)),
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address)
         else {
             throw RecipientHidingError.cannotHideLocalAddress
@@ -84,7 +84,7 @@ extension RecipientHidingManager {
     /// - Parameter tx: The transaction to use for database operations.
     public func removeHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
         guard
-            let localAddress = tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx)),
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address)
         else {
             owsFailDebug("Cannot unhide the local address")
@@ -105,12 +105,4 @@ extension RecipientHidingManager {
     private func recipient(from address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
         return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: SDSDB.shimOnlyBridge(tx))
     }
-
-    /// It is not good form to access global state. It is also not good form to do "work" in an extension.
-    /// Since these extension methods _already_ make testing impossible, since they cannot be overriden
-    /// in a mock subclass, we may as well access global state in a way that breaks tests.
-    /// If you find yourself hitting this in tests: DONT USE THE FUNCTIONS IN THIS EXTENSION.
-    /// Ultimately, if you want to be able to stub out RecipientHidingManager, you should use
-    /// its SignalRecipient based methods and mock out the production of SignalRecipient instances.
-    private var tsAccountManager: TSAccountManager { .shared }
 }

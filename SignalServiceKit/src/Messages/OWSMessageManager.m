@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = decryptedEnvelope.envelope.sourceAddress;
-        if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
+        if (address.isLocalAddress && [TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction]) {
             OWSLogVerbose(@"Ignoring profile key for local device on primary.");
         } else if (profileKey.length != kAES256_KeyByteLength) {
             OWSFailDebug(
@@ -448,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![thread isKindOfClass:[TSContactThread class]]) {
         return;
     }
-    LocalIdentifiersObjC *localIdentifiers = [self.tsAccountManager localIdentifiersObjCWithTx:transaction];
+    LocalIdentifiersObjC *localIdentifiers = [TSAccountManagerObjcBridge localIdentifiersWith:transaction];
     if (localIdentifiers == nil) {
         OWSFailDebug(@"Not registered.");
         return;
@@ -572,9 +572,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureGroupIdMapping:envelope withCallMessage:callMessage transaction:transaction];
 
     // If destinationDevice is defined, ignore messages not addressed to this device.
+    uint32_t deviceId = [TSAccountManagerObjcBridge storedDeviceIdWith:transaction];
     if ([callMessage hasDestinationDeviceID]) {
-        if ([callMessage destinationDeviceID] != self.tsAccountManager.storedDeviceId) {
-            OWSLogInfo(@"Ignoring call message that is not for this device! intended: %u this: %u", [callMessage destinationDeviceID], self.tsAccountManager.storedDeviceId);
+        if ([callMessage destinationDeviceID] != deviceId) {
+            OWSLogInfo(@"Ignoring call message that is not for this device! intended: %u this: %u",
+                [callMessage destinationDeviceID],
+                deviceId);
             return;
         }
     }
@@ -582,7 +585,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
-        if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
+        if (address.isLocalAddress && [TSAccountManagerObjcBridge isPrimaryDeviceWith:transaction]) {
             OWSLogVerbose(@"Ignoring profile key for local device on primary.");
         } else if (profileKey.length != kAES256_KeyByteLength) {
             OWSFailDebug(

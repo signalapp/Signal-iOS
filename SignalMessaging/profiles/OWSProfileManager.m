@@ -107,15 +107,15 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSSingletonAssert();
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests
-            && TSAccountManager.shared.isRegistered) {
+        if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests &&
+            [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             [self logLocalAvatarStatus];
             [self fetchLocalUsersProfileWithAuthedAccount:AuthedAccount.implicit];
         }
     });
 
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        if (TSAccountManager.shared.isRegistered) {
+        if ([TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             [self rotateLocalProfileKeyIfNecessary];
             [self updateProfileOnServiceIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
             [OWSProfileManager updateStorageServiceIfNecessary];
@@ -149,7 +149,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSAssertDebug(CurrentAppContext().isMainApp);
     OWSAssertDebug(!CurrentAppContext().isRunningTests);
-    OWSAssertDebug(TSAccountManager.shared.isRegistered);
+    OWSAssertDebug([TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self logLocalAvatarStatus:self.localUserProfile label:@"cached copy"];
@@ -430,7 +430,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (authAddress != nil) {
         localAddress = authAddress;
     } else {
-        localAddress = self.tsAccountManager.localAddress;
+        localAddress = [TSAccountManagerObjcBridge localAciAddressWithMaybeTransaction];
     }
     if (!localAddress.isValid) {
         return;
@@ -445,7 +445,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
 {
-    ServiceIdObjC *_Nullable localAci = self.tsAccountManager.localAddress.serviceIdObjC;
+    LocalIdentifiersObjC *_Nullable localIdentifiers =
+        [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction];
+    if (!localIdentifiers) {
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
+    }
+    ServiceIdObjC *localAci = localIdentifiers.aci;
     if (![localAci isKindOfClass:[AciObjC class]]) {
         return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
@@ -544,9 +549,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                              transaction:transaction
                               completion:nil];
     });
-    [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
-        OWSLogError(@"Error: %@.", error);
-    });
+    [AccountAttributesUpdaterObjcBridge updateAccountAttributes].catch(
+        ^(NSError *error) { OWSLogError(@"Error: %@.", error); });
 }
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key

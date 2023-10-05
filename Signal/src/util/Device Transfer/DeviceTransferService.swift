@@ -183,11 +183,20 @@ class DeviceTransferService: NSObject {
         // Marking the transfer as "in progress" does a few things, most notably it:
         //   * prevents any WAL checkpoints while the transfer is in progress
         //   * causes the device to behave is if it's not registered
-        tsAccountManager.isTransferInProgress = true
+        DependenciesBridge.shared.db.write { tx in
+            DependenciesBridge.shared.registrationStateChangeManager.setIsTransferInProgress(tx: tx)
+        }
 
         defer {
             // If we failed to start the transfer, clear the transfer in progress flag
-            if case .idle = transferState { tsAccountManager.isTransferInProgress = false }
+            if case .idle = transferState {
+                DependenciesBridge.shared.db.write { tx in
+                    DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
+                        sendStateUpdateNotification: true,
+                        tx: tx
+                    )
+                }
+            }
         }
 
         let manifest = try buildManifest()
@@ -268,10 +277,11 @@ class DeviceTransferService: NSObject {
         // simply return in the .idle case above since none of the values being
         // reset should have values if we are idle, but I am scared of it.
         if case .idle = transferState {} else {
-            if notifyRegState {
-                tsAccountManager.isTransferInProgress = false
-            } else {
-                tsAccountManager.setIsTransferInProgressWithoutNotification(false)
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
+                    sendStateUpdateNotification: notifyRegState,
+                    tx: tx
+                )
             }
         }
 
@@ -357,7 +367,9 @@ class DeviceTransferService: NSObject {
         }
 
         Promise.when(fulfilled: promises).done {
-            self.tsAccountManager.wasTransferred = true
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setWasTransferred(tx: tx)
+            }
             try self.sendDoneMessage(to: newDevicePeerId)
         }.catch { error in
             if !(error is DeviceTransferOperation.CancelError) {

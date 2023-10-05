@@ -460,7 +460,7 @@ class MediaGallery: Dependencies {
                     return incomingMessage.authorAddress
                 }
 
-                return tsAccountManager.localAddress(with: transaction)
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
             }()
 
             if let senderAddress {

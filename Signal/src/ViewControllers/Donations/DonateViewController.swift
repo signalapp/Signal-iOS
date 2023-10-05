@@ -15,7 +15,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     ) -> Bool {
         DonationUtilities.canDonate(
             inMode: donateMode.asDonationMode,
-            localNumber: tsAccountManager.localNumber
+            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
         )
     }
 
@@ -631,7 +631,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
                 previousMonthlySubscriptionPaymentMethod: previousSubscriberPaymentMethod,
                 locale: Locale.current,
-                localNumber: Self.tsAccountManager.localNumber
+                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             )
 
             return .value(loadedState)
@@ -688,7 +688,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         databaseStorage.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
-                guard let address = self?.tsAccountManager.localAddress(with: transaction) else {
+                guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
                     return
                 }
                 config.dataSource = .address(address)

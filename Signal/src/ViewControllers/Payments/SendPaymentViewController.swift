@@ -167,7 +167,7 @@ public class SendPaymentViewController: OWSViewController {
             showEnablePaymentsActionSheet()
             return
         }
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.info("Local user is not registered and ready.")
             showNotRegisteredActionSheet()
             return
@@ -356,7 +356,7 @@ public class SendPaymentViewController: OWSViewController {
                 message: interaction.asPreparer,
                 transaction: transaction
             )
-            if let localAci = self.tsAccountManager.localIdentifiers(transaction: transaction)?.aci {
+            if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci {
                 let infoMessage = TSInfoMessage(
                     thread: thread,
                     messageType: .paymentsActivationRequest,

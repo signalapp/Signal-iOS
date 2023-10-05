@@ -29,18 +29,23 @@ class SVR2ConcurrencyTests: XCTestCase {
 
         let mockClientWrapper = MockSVR2ClientWrapper()
 
+        let kvStore = InMemoryKeyValueStoreFactory()
+        let localStorage = SVRLocalStorageImpl(keyValueStoreFactory: kvStore)
+
         self.svr = SecureValueRecovery2Impl(
+            accountAttributesUpdater: MockAccountAttributesUpdater(),
             appReadiness: SVR2.Mocks.AppReadiness(),
             appVersion: MockAppVerion(),
             clientWrapper: mockClientWrapper,
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,
-            keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            keyValueStoreFactory: kvStore,
             schedulers: Schedulers(queue),
             storageServiceManager: FakeStorageServiceManager(),
+            svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
-            tsAccountManager: SVR.TestMocks.TSAccountManager(),
+            tsAccountManager: MockTSAccountManager(),
             tsConstants: TSConstants.shared,
             twoFAManager: SVR.TestMocks.OWS2FAManager()
         )
@@ -322,18 +327,23 @@ class SVR2ConcurrencyTests: XCTestCase {
                 return requestPromise
             }
 
+            let kvStore = InMemoryKeyValueStoreFactory()
+            let localStorage = SVRLocalStorageImpl(keyValueStoreFactory: kvStore)
+
             let svr = SecureValueRecovery2Impl(
+                accountAttributesUpdater: MockAccountAttributesUpdater(),
                 appReadiness: SVR2.Mocks.AppReadiness(),
                 appVersion: MockAppVerion(),
                 clientWrapper: MockSVR2ClientWrapper(),
                 connectionFactory: mockConnectionFactory,
                 credentialStorage: credentialStorage,
                 db: db,
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+                keyValueStoreFactory: kvStore,
                 schedulers: Schedulers(queue),
                 storageServiceManager: FakeStorageServiceManager(),
+                svrLocalStorage: localStorage,
                 syncManager: OWSMockSyncManager(),
-                tsAccountManager: SVR.TestMocks.TSAccountManager(),
+                tsAccountManager: MockTSAccountManager(),
                 tsConstants: TSConstants.shared,
                 twoFAManager: SVR.TestMocks.OWS2FAManager()
             )

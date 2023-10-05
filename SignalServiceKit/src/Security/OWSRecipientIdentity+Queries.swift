@@ -93,7 +93,7 @@ extension OWSRecipientIdentity {
         case .grdbRead(let grdbTransaction):
             // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't
             // affect the results of the query.
-            let localRecipientAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            let localRecipientAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
             let sql = sqlQueryToFetchVerifiedAddresses(
                 groupUniqueID: groupUniqueID,
                 withVerificationState: state,

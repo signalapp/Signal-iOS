@@ -88,7 +88,7 @@ public class AppEnvironment: NSObject {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let isPrimaryDevice = self.databaseStorage.read { tx -> Bool in
-                return self.tsAccountManager.isPrimaryDevice(transaction: tx)
+                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
             }
 
             let db = DependenciesBridge.shared.db

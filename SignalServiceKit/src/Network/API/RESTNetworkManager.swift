@@ -88,11 +88,13 @@ public class RESTSessionManager: NSObject {
     ) {
         let isDeregisteredRequest = WhoAmIRequestFactory.amIDeregisteredRequest()
 
-        let handleDeregisteredResponse: (WhoAmIRequestFactory.Responses.AmIDeregistered?) -> Void = { [tsAccountManager] response in
+        let handleDeregisteredResponse: (WhoAmIRequestFactory.Responses.AmIDeregistered?) -> Void = { response in
             switch response {
             case .deregistered:
                 Logger.warn("AmIDeregistered response says we are deregistered, marking as such.")
-                tsAccountManager.isDeregistered = true
+                DependenciesBridge.shared.db.write { tx in
+                    DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+                }
             case .notDeregistered:
                 Logger.info("AmIDeregistered response says not deregistered; account probably disabled. Doing nothing.")
             case .none, .unexpectedError:

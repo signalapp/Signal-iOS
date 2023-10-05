@@ -348,7 +348,7 @@ extension BlockingManager {
     }
 
     private func sendBlockListSyncMessage(force: Bool) {
-        guard tsAccountManager.isRegistered else { return }
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
 
         databaseStorage.write { transaction in
             withCurrentState(transaction: transaction) { state in

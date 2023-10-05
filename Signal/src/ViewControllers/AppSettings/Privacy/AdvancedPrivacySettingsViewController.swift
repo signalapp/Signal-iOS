@@ -218,7 +218,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if tsAccountManager.isRegisteredPrimaryDevice {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
             sealedSenderSection.add(.switch(
                 withText: OWSLocalizedString(
                     "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS",

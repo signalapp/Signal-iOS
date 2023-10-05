@@ -22,7 +22,7 @@ public class InteractionReactionState: NSObject {
         // No reactions on non-message interactions
         guard let message = interaction as? TSMessage else { return nil }
 
-        guard let localAddress = TSAccountManager.shared.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("missing local address")
             return nil
         }

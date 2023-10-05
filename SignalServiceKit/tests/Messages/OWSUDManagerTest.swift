@@ -25,7 +25,12 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.registerForTests(localIdentifiers: LocalIdentifiers(aci: aliceAci, pni: nil, phoneNumber: aliceE164))
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(aci: aliceAci, pni: nil, e164: E164(aliceE164)!),
+                tx: tx.asV2Write
+            )
+        }
 
         // Configure UDManager
         self.write { transaction in
@@ -42,7 +47,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func testMode_noProfileKey() {
-        XCTAssert(tsAccountManager.isRegistered)
+        XCTAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered)
 
         // Ensure UD is enabled by setting our own access level to enabled.
         write { tx in
@@ -86,8 +91,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func testMode_withProfileKey() {
-        XCTAssert(tsAccountManager.isRegistered)
-        guard let localAddress = tsAccountManager.localAddress else {
+        XCTAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered)
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             XCTFail("localAddress was unexpectedly nil")
             return
         }

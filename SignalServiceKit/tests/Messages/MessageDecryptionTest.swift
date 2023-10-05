@@ -34,7 +34,16 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localAci, pni: localPni)
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: localAci),
+                    pni: .init(fromUUID: localPni),
+                    e164: .init(localE164Identifier)!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         (notificationsManager as! NoopNotificationsManager).expectErrors = true
         (udManager as! OWSUDManagerImpl).trustRoot = try! sealedSenderTrustRoot.ecPublicKey()
@@ -122,7 +131,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
             prepareForDecryption(localProtocolStore, transaction)
 
-            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction)!
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!
             let decryptedEnvelope: Result<DecryptedIncomingEnvelope, Error> = Result {
                 let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
                 switch validatedEnvelope.kind {
@@ -132,7 +141,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                     return try messageDecrypter.decryptUnidentifiedSenderEnvelope(
                         validatedEnvelope,
                         localIdentifiers: localIdentifiers,
-                        localDeviceId: tsAccountManager.storedDeviceId(transaction: transaction),
+                        localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction.asV2Read),
                         tx: transaction
                     )
                 case .identifiedSender(let cipherType):

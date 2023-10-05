@@ -86,7 +86,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         )
         let storyMessage = StoryMessage(
             timestamp: Date.ows_millisecondTimestamp(),
-            authorAci: tsAccountManager.localIdentifiers(transaction: transaction)!.aci,
+            authorAci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
             attachment: attachment,
@@ -178,7 +178,10 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
 
         let builder = SSKProtoStoryMessage.builder()
-        if let profileKey = profileManager.profileKeyData(for: tsAccountManager.localAddress!, transaction: transaction) {
+        if let profileKey = profileManager.profileKeyData(
+            for: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress,
+            transaction: transaction
+        ) {
             builder.setProfileKey(profileKey)
         }
 

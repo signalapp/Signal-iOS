@@ -246,7 +246,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
         }
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             return Promise(error: OWSAssertionError("Missing localAci."))
         }
 
@@ -319,7 +319,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
-        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing local identifiers!")
         }
 

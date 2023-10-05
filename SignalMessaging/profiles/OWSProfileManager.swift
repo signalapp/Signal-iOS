@@ -51,7 +51,7 @@ public extension OWSProfileManager {
             case .explicit(let info):
                 localAci = info.localIdentifiers.aci
             case .implicit:
-                guard let implicitLocalAci = TSAccountManager.shared.localIdentifiers?.aci else {
+                guard let implicitLocalAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                     throw OWSAssertionError("missing local address")
                 }
                 localAci = implicitLocalAci
@@ -154,13 +154,11 @@ public extension OWSProfileManager {
             return
         }
 
-        let isPrimaryDevice = tsAccountManager.isPrimaryDevice(transaction: tx)
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard
-            tsAccountManager.isRegistered(transaction: tx),
-            isPrimaryDevice
+            tsRegistrationState.isRegisteredPrimaryDevice
         else {
-            owsAssertDebug(self.tsAccountManager.isRegistered)
-            Logger.verbose("Not rotating profile key on unregistered and/or non-primary device")
+            owsFailDebug("Not rotating profile key on unregistered and/or non-primary device")
             return
         }
 
@@ -173,7 +171,7 @@ public extension OWSProfileManager {
 
         guard !triggers.isEmpty else {
             // No need to rotate the profile key.
-            if isPrimaryDevice {
+            if tsRegistrationState.isPrimaryDevice ?? true {
                 // But if it's been more than a week since we checked that our groups are up to date, schedule that.
                 if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > kWeekInterval {
                     self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
@@ -264,7 +262,7 @@ public extension OWSProfileManager {
             return .value(())
         }
 
-        guard tsAccountManager.isRegisteredPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
             return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
         }
 
@@ -293,7 +291,7 @@ public extension OWSProfileManager {
             let newProfileKey = OWSAES256Key.generateRandom()
             return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount).map { newProfileKey }
         }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
-            guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
+            guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                 throw OWSAssertionError("Missing localAci.")
             }
 
@@ -337,7 +335,9 @@ public extension OWSProfileManager {
             }
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             Logger.info("Updating account attributes after profile key rotation.")
-            return self.tsAccountManager.updateAccountAttributes()
+            return Promise.wrapAsync {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
+            }
         }.done(on: DispatchQueue.global()) {
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
@@ -542,12 +542,13 @@ public extension OWSProfileManager {
     }
 
     class func updateStorageServiceIfNecessary() {
-        guard CurrentAppContext().isMainApp,
-              !CurrentAppContext().isRunningTests,
-              tsAccountManager.isRegisteredAndReady,
-              tsAccountManager.isRegisteredPrimaryDevice else {
-                  return
-              }
+        guard
+            CurrentAppContext().isMainApp,
+            !CurrentAppContext().isRunningTests,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
+        else {
+              return
+          }
 
         let hasUpdated = databaseStorage.read { transaction in
             storageServiceStore.getBool(Self.hasUpdatedStorageServiceKey,
@@ -719,7 +720,7 @@ extension OWSProfileManager {
         guard AppReadiness.isAppReady else {
             return .notReady
         }
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .notReady
         }
         guard !profileManagerImpl.isUpdatingProfileOnService else {
@@ -766,7 +767,10 @@ extension OWSProfileManager {
         guard avatarRepairNeeded() else {
             return
         }
-        guard TSAccountManager.shared.isPrimaryDevice, self.localProfileAvatarData() != nil else {
+        guard
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false,
+            self.localProfileAvatarData() != nil
+        else {
             clearAvatarRepairNeeded()
             return
         }
@@ -904,7 +908,8 @@ extension OWSProfileManager {
         //
         // NOTE: We also inform the desktop in the failure case,
         //       since that _may have_ affected service state.
-        if self.tsAccountManager.isRegisteredPrimaryDevice {
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        if tsRegistrationState.isRegisteredPrimaryDevice {
             firstly {
                 self.syncManager.syncLocalContact()
             }.catch { error in
@@ -914,7 +919,7 @@ extension OWSProfileManager {
 
         // Notify all our devices that the profile has changed.
         // Older linked devices may not handle this message.
-        if tsAccountManager.isRegisteredAndReady {
+        if tsRegistrationState.isRegistered {
             self.syncManager.sendFetchLatestProfileSyncMessage()
         }
 
@@ -1068,11 +1073,12 @@ internal extension OWSProfileManager {
     /// - Parameter tx: The transaction to use for this operation.
     @objc
     func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegistered(transaction: tx) else {
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
+        guard tsRegistrationState.isRegistered else {
             OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
             return
         }
-        guard tsAccountManager.isPrimaryDevice(transaction: tx) else {
+        guard tsRegistrationState.isPrimaryDevice ?? false else {
             OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
             return
         }
@@ -1084,11 +1090,12 @@ internal extension OWSProfileManager {
 
     @objc
     func forceRotateLocalProfileKeyForGroupDepartureObjc(tx: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegistered(transaction: tx) else {
+        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
+        guard tsRegistrationState.isRegistered else {
             OWSLogger.verbose("Not rotating profile key on unregistered device.")
             return
         }
-        guard tsAccountManager.isPrimaryDevice(transaction: tx) else {
+        guard tsRegistrationState.isPrimaryDevice ?? false else {
             OWSLogger.verbose("Not rotating profile key on non-primary device.")
             return
         }

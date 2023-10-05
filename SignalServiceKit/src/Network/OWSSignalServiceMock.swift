@@ -20,6 +20,8 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol, Dependencies {
 
     public var manualCensorshipCircumventionCountryCode: String?
 
+    public func updateHasCensoredPhoneNumberDuringProvisioning(_ e164: E164) {}
+
     public var urlEndpointBuilder: ((SignalServiceInfo) -> OWSURLSessionEndpoint)?
 
     public func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {

@@ -41,7 +41,7 @@ public class MessageFetcherJob: NSObject {
                 // Fetch messages as soon as possible after launching. In particular, when
                 // launching from the background, without this, we end up waiting some extra
                 // seconds before receiving an actionable push notification.
-                if Self.tsAccountManager.isRegistered {
+                if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                     firstly(on: DispatchQueue.global()) {
                         self.run()
                     }.catch(on: DispatchQueue.global()) { error in
@@ -208,7 +208,7 @@ public class MessageFetcherJob: NSObject {
             throw OWSAssertionError("This extension should not fetch messages.")
         }
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             assert(AppReadiness.isAppReady)
             Logger.warn("Not registered.")
             return

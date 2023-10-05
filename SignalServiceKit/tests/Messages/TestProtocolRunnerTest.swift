@@ -18,7 +18,16 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
         aliceClient = FakeSignalClient.generate(e164Identifier: "+122233alice")
         bobClient = FakeSignalClient.generate(e164Identifier: "+12223334bob")
 
-        tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: .init()),
+                    pni: nil,
+                    e164: .init("+13235551234")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
     }
 
     let runner = TestProtocolRunner()
@@ -118,7 +127,16 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     func test_localClient_receives() {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: .init()),
+                    pni: nil,
+                    e164: .init("+13235551234")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
         let localClient = LocalSignalClient()
 
         write { transaction in
@@ -145,7 +163,16 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     func test_localClient_sends() {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: .init()),
+                    pni: nil,
+                    e164: .init("+13235551234")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
         let localClient = LocalSignalClient()
 
         write { transaction in

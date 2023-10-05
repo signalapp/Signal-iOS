@@ -106,7 +106,7 @@ class GroupCallViewController: UIViewController {
 
     @discardableResult
     class func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) -> Bool {
-        guard tsAccountManager.isOnboarded else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
@@ -616,7 +616,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
     var remoteVideoAddress: SignalServiceAddress {
         guard let firstMember = groupCall.remoteDeviceStates.sortedByAddedTime.first else {
-            return tsAccountManager.localAddress!
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress
         }
         return firstMember.address
     }

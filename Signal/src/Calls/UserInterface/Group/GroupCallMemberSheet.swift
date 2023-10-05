@@ -98,7 +98,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     )
                 }
 
-                guard let localAddress = self.tsAccountManager.localAddress else { return members }
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager
+                    .localIdentifiersWithMaybeSneakyTransaction?.aciAddress
+                else {
+                    return members
+                }
 
                 let displayName = CommonStrings.you
                 let comparableName = displayName

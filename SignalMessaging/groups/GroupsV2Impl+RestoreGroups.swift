@@ -111,7 +111,7 @@ public extension GroupsV2Impl {
         case .explicit:
             break
         case .implicit:
-            guard tsAccountManager.isRegisteredAndReady else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return false
             }
         }

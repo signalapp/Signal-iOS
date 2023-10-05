@@ -52,9 +52,11 @@ public class RefreshEvent: Dependencies {
     }
 
     private var canFire: Bool {
-        guard AppReadiness.isAppReady,
-              CurrentAppContext().isMainAppAndActive,
-              tsAccountManager.isRegisteredAndReady else {
+        guard
+            AppReadiness.isAppReady,
+            CurrentAppContext().isMainAppAndActive,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        else {
             return false
         }
         return true

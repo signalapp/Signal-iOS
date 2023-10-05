@@ -89,7 +89,7 @@ public class GRDBSchemaMigrator: NSObject {
             // which won't work because migrations use a barrier block to prevent observing database state
             // before migration.
             try grdbStorageAdapter.read { transaction in
-                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+                _ = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asAnyRead.asV2Read)?.aciAddress
             }
 
             // Finally, do data migrations.
@@ -2368,10 +2368,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_markOnboardedUsers_v2) { transaction in
-            if TSAccountManager.shared.isRegistered(transaction: transaction.asAnyWrite) {
-                Logger.info("marking existing user as onboarded")
-                TSAccountManager.shared.setIsOnboarded(true, transaction: transaction.asAnyWrite)
-            }
+            // No-op; this state is not read anywhere that matters.
             return .success(())
         }
 
@@ -2754,7 +2751,7 @@ public class GRDBSchemaMigrator: NSObject {
             // We only want to do this if we are the primary device, since only
             // the primary device's system contacts are synced.
 
-            guard tsAccountManager.isPrimaryDevice else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice ?? false else {
                 return .success(())
             }
 
@@ -2777,7 +2774,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
-            guard !tsAccountManager.isPrimaryDevice else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice != true else {
                 return .success(())
             }
 

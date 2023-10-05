@@ -16,7 +16,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var signedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var kyberPreKeyStoreMock: MockKyberPreKeyStore!
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
-    private var tsAccountManagerMock: TSAccountManagerMock!
+    private var tsAccountManagerMock: MockTSAccountManager!
 
     private var schedulers: TestSchedulers!
     private var db: MockDB!
@@ -131,7 +131,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         )
 
         XCTAssertEqual(
-            tsAccountManagerMock.storedPniRegistrationId,
+            tsAccountManagerMock.pniRegistrationIdMock(),
             pendingState.localDevicePniRegistrationId
         )
 
@@ -261,19 +261,5 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         case .failure:
             return .value(.failure)
         }
-    }
-}
-
-// MARK: TSAccountManager
-
-private class TSAccountManagerMock: ChangePhoneNumberPniManagerImpl.Shims.TSAccountManager {
-
-    var storedPniRegistrationId: UInt32?
-
-    func setPniRegistrationId(
-        newRegistrationId: UInt32,
-        transaction: DBWriteTransaction
-    ) {
-        storedPniRegistrationId = newRegistrationId
     }
 }

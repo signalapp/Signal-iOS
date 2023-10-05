@@ -263,7 +263,7 @@ private class StoryThreadCell: ContactTableViewCell {
             configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
         case .privateStory(_, let isMyStory):
             if isMyStory {
-                guard let localAddress = tsAccountManager.localAddress else {
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                     owsFailDebug("Unexpectedly missing local address")
                     return
                 }

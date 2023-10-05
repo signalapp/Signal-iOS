@@ -24,7 +24,6 @@
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StickerInfo.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 
@@ -196,7 +195,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     }
 
     AppReadinessRunNowOrWhenUIDidBecomeReadySync(^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
+        if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             ActionSheetController *controller = [[ActionSheetController alloc]
                 initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
                       message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)];
@@ -261,7 +260,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         }
 
         AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
+            if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
             }
@@ -292,7 +291,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         }
 
         AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
+            if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
             }
@@ -349,7 +348,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         }
 
         AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
+            if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
             }
@@ -390,7 +389,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         BOOL isVideo = startCallIntent.callCapability == INCallCapabilityVideoCall;
 
         AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
+            if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
             }

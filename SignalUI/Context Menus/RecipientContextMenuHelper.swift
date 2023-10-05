@@ -13,7 +13,7 @@ class RecipientContextMenuHelper {
     private let recipientHidingManager: RecipientHidingManager
     // TODO: When BlockingManager is protocolized, this should be the protocol type.
     private let blockingManager: BlockingManager
-    private let accountManager: TSAccountManager
+    private let accountManager: TSAccountManagerProtocol
     private let contactsManager: ContactsManagerProtocol
 
     /// The view controller from which to present action
@@ -26,7 +26,7 @@ class RecipientContextMenuHelper {
         databaseStorage: SDSDatabaseStorage,
         blockingManager: BlockingManager,
         recipientHidingManager: RecipientHidingManager,
-        accountManager: TSAccountManager,
+        accountManager: TSAccountManagerProtocol,
         contactsManager: ContactsManagerProtocol,
         fromViewController: UIViewController
     ) {
@@ -50,7 +50,7 @@ class RecipientContextMenuHelper {
             }
             let localAddress: SignalServiceAddress? = self.databaseStorage.read { [weak self] tx in
                 guard let self else { return nil }
-                return self.accountManager.localAddress(with: tx)
+                return self.accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
             }
             guard
                 let localAddress,
@@ -154,7 +154,7 @@ class RecipientContextMenuHelper {
             return
         }
         let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
-            let localAddress = accountManager.localAddress(with: tx)
+            let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
             let recipientDisplayName = contactsManager.displayName(
                 for: address,
                 transaction: tx
@@ -246,13 +246,13 @@ class RecipientContextMenuHelper {
             localAddress,
             recipientDisplayName
         ) = databaseStorage.read { tx in
-            let localAddress = accountManager.localAddress(with: tx)
+            let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
             let recipientDisplayName = contactsManager.displayName(
                 for: address,
                 transaction: tx
             ).formattedForActionSheetTitle()
             return (
-                accountManager.isPrimaryDevice(transaction: tx),
+                accountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true,
                 localAddress,
                 recipientDisplayName
             )

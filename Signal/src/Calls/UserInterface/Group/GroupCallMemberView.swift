@@ -170,7 +170,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         // In full-screen mode the image is shown as part of the "Your camera is off" message.
         videoOffIndicatorImage.isHidden = noVideoView.isHidden || isFullScreen
 
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             return owsFailDebug("missing local address")
         }
 

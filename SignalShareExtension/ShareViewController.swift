@@ -143,15 +143,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Always check prekeys after app launches, and sometimes check on app activation.
         self.databaseStorage.read { tx in
-            if TSAccountManager.shared.isRegisteredAndReady(transaction: tx) {
+            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered {
                 DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
             }
         }
 
         // We don't need to use RTCInitializeSSL() in the SAE.
 
-        if tsAccountManager.isRegistered {
-            Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            Logger.info("running post launch block for registered user: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
         } else {
             Logger.info("running post launch block for unregistered user.")
 
@@ -160,10 +160,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to prod the SocketManager in the SAE.
         }
 
-        if tsAccountManager.isRegistered {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             DispatchQueue.main.async { [weak self] in
                 guard self != nil else { return }
-                Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
+                Logger.info("running post launch block for registered user: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
 
                 // We don't need to use the SocketManager in the SAE.
 
@@ -187,8 +187,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        if tsAccountManager.isRegistered {
-            Logger.info("localAddress: \(String(describing: TSAccountManager.localAddress))")
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -210,8 +210,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        if tsAccountManager.isRegistered {
-            Logger.info("localAddress: \(String(describing: TSAccountManager.localAddress))")
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            Logger.info("localAddress: \(String(describing: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress))")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
@@ -248,7 +248,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting content view")
 
-        guard tsAccountManager.registrationState == .registered else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             showNotRegisteredView()
             return
         }
@@ -259,11 +259,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         guard localProfileExists else {
             // This is a rare edge case, but we want to ensure that the user
             // has already saved their local profile key in the main app.
-            showNotReadyView()
-            return
-        }
-
-        guard tsAccountManager.isOnboarded else {
             showNotReadyView()
             return
         }
@@ -352,7 +347,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // If a user unregisters in the main app, the SAE should shut down
         // immediately.
-        guard !tsAccountManager.isRegistered else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             // If user is registered, do nothing.
             return
         }

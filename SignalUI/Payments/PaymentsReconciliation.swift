@@ -64,9 +64,11 @@ public class PaymentsReconciliation: Dependencies {
         guard Self.paymentsHelper.arePaymentsEnabled else {
             return false
         }
-        guard AppReadiness.isAppReady,
-              CurrentAppContext().isMainAppAndActive,
-              Self.tsAccountManager.isRegisteredAndReady else {
+        guard
+            AppReadiness.isAppReady,
+            CurrentAppContext().isMainAppAndActive,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        else {
             return false
         }
         guard shouldReconcileByDateWithSneakyTransaction() else {

@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public enum TSRegistrationState {
+public enum TSRegistrationState: Equatable {
     /// We are unregistered and never have been.
     /// Depending on the device, the user might register as a primary
     /// or provision as a linked device.
@@ -74,6 +74,22 @@ extension TSRegistrationState {
         }
     }
 
+    /// Useful for checks that need to happen in the steps that themselves happen
+    /// during provisioning, but after linking.
+    public var isRegisteredOrFinishingProvisioning: Bool {
+        switch self {
+        case
+                .unregistered, .reregistering,
+                .deregistered, .delinked,
+                .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
+                .transferringIncoming,
+                .transferred:
+            return false
+        case .registered, .provisioned, .linkedButUnprovisioned:
+            return true
+        }
+    }
+
     public var wasEverRegistered: Bool {
         switch self {
         case .unregistered, .transferringIncoming, .linkedButUnprovisioned:
@@ -117,6 +133,21 @@ extension TSRegistrationState {
                 .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
                 .transferringIncoming,
                 .transferred:
+            return false
+        }
+    }
+
+    public var isDeregistered: Bool {
+        switch self {
+        case
+                .unregistered, .reregistering,
+                .linkedButUnprovisioned,
+                .registered, .provisioned,
+                .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
+                .transferringIncoming,
+                .transferred:
+            return false
+        case .deregistered, .delinked:
             return true
         }
     }

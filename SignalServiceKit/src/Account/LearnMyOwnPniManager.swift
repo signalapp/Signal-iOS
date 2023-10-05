@@ -27,7 +27,8 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private let accountServiceClient: Shims.AccountServiceClient
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let preKeyManager: PreKeyManager
-    private let tsAccountManager: Shims.TSAccountManager
+    private let registrationStateChangeManager: RegistrationStateChangeManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     private let db: DB
     private let keyValueStore: KeyValueStore
@@ -39,12 +40,14 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         keyValueStoreFactory: KeyValueStoreFactory,
         pniIdentityKeyChecker: PniIdentityKeyChecker,
         preKeyManager: PreKeyManager,
+        registrationStateChangeManager: RegistrationStateChangeManager,
         schedulers: Schedulers,
-        tsAccountManager: Shims.TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.accountServiceClient = accountServiceClient
         self.pniIdentityKeyChecker = pniIdentityKeyChecker
         self.preKeyManager = preKeyManager
+        self.registrationStateChangeManager = registrationStateChangeManager
         self.tsAccountManager = tsAccountManager
 
         self.db = db
@@ -88,7 +91,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             return .value(())
         }
 
-        guard tsAccountManager.isPrimaryDevice(tx: tx) else {
+        guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true else {
             logger.info("Skipping PNI learning on linked device.")
             return .value(())
         }
@@ -138,8 +141,8 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             }
 
             self.db.write { tx in
-                self.tsAccountManager.updateLocalIdentifiers(
-                    e164: remoteE164,
+                self.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                    remoteE164,
                     aci: remoteAci,
                     pni: remotePni,
                     tx: tx
@@ -199,12 +202,10 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 extension LearnMyOwnPniManagerImpl {
     enum Shims {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Shim
-        typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Shim
     }
 
     enum Wrappers {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Wrapper
-        typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper
     }
 }
 
@@ -223,38 +224,5 @@ class _LearnMyOwnPniManagerImpl_AccountServiceClient_Wrapper: _LearnMyOwnPniMana
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
         accountServiceClient.getAccountWhoAmI()
-    }
-}
-
-// MARK: TSAccountManager
-
-protocol _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
-    func updateLocalIdentifiers(e164: E164, aci: Aci, pni: Pni, tx: DBWriteTransaction)
-}
-
-class _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper: _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
-    private let tsAccountManager: TSAccountManager
-
-    init(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
-        return tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func updateLocalIdentifiers(e164: E164, aci: Aci, pni: Pni, tx: DBWriteTransaction) {
-        tsAccountManager.updateLocalPhoneNumber(
-            E164ObjC(e164),
-            aci: AciObjC(aci),
-            pni: PniObjC(pni),
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
     }
 }

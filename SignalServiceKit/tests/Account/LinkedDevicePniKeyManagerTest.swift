@@ -29,10 +29,13 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     private var kvStore: TestKVStore!
     private var messageProcessorMock: MessageProcessorMock!
     private var pniIdentityKeyCheckerMock: PniIdentityKeyCheckerMock!
+    private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var testScheduler: TestScheduler!
-    private var tsAccountManagerMock: TSAccountManagerMock!
+    private var tsAccountManagerMock: MockTSAccountManager!
 
     private var linkedDevicePniKeyManager: LinkedDevicePniKeyManagerImpl!
+
+    private var isMarkedDeregistered: Bool = false
 
     override func setUp() {
         let kvStoreFactory = InMemoryKeyValueStoreFactory()
@@ -44,13 +47,21 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         kvStore = TestKVStore(db: db, kvStoreFactory: kvStoreFactory)
         messageProcessorMock = MessageProcessorMock(schedulers: testSchedulers)
         pniIdentityKeyCheckerMock = PniIdentityKeyCheckerMock()
-        tsAccountManagerMock = TSAccountManagerMock()
+        registrationStateChangeManagerMock = .init()
+        tsAccountManagerMock = .init()
+
+        registrationStateChangeManagerMock.setIsDeregisteredOrDelinkedMock = { [weak self] isDeregistered in
+            self?.isMarkedDeregistered = isDeregistered
+        }
+
+        tsAccountManagerMock.registrationStateMock = { .provisioned }
 
         linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
             db: db,
             keyValueStoreFactory: kvStoreFactory,
             messageProcessor: messageProcessorMock,
             pniIdentityKeyChecker: pniIdentityKeyCheckerMock,
+            registrationStateChangeManager: registrationStateChangeManagerMock,
             schedulers: testSchedulers,
             tsAccountManager: tsAccountManagerMock
         )
@@ -74,7 +85,7 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     }
 
     func testDoesntRecordIfPrimaryDevice() {
-        tsAccountManagerMock.isPrimaryDevice = true
+        tsAccountManagerMock.registrationStateMock = { .registered }
 
         db.write { tx in
             linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
@@ -87,23 +98,23 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
 
     func testUnlinkedIfDecryptionErrorAndMissingPni() {
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .missingPni
+        tsAccountManagerMock.localIdentifiersMock = { .missingPni }
 
         runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertTrue(tsAccountManagerMock.isDeregistered)
+        XCTAssertTrue(self.isMarkedDeregistered)
     }
 
     func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() {
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .value(false)
 
         runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertTrue(tsAccountManagerMock.isDeregistered)
+        XCTAssertTrue(self.isMarkedDeregistered)
     }
 
     func testNotUnlinkedIfMessageFetchingProcessingFails() {
@@ -112,39 +123,39 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         runRunRun(recordIssue: true)
 
         XCTAssertTrue(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
     }
 
     func testNotUnlinkedIfIdentityKeyCheckingFails() {
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .error()
 
         runRunRun(recordIssue: true)
 
         XCTAssertTrue(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
     }
 
     func testNotUnlinkedIfIdentityKeyMatches() {
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .value(true)
 
         runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
     }
 
     func testEarlyExitIfPrimary() {
-        tsAccountManagerMock.isPrimaryDevice = true
+        tsAccountManagerMock.registrationStateMock = { .registered }
 
         // This will fail if it doesn't early-exit, due to missing mocks.
         runRunRun(recordIssue: false)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
     }
 
     func testEarlyExitIfNoError() {
@@ -154,7 +165,7 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         runRunRun(recordIssue: false)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
     }
 
     /// It's important that we don't check for the decryption error until
@@ -162,21 +173,21 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     /// register the error.
     func testChecksForDecryptionErrorAfterClearingQueue() {
         messageProcessorMock.fetchProcessResult = .value({ self.runRunRun(recordIssue: true) })
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .value(false)
 
         runRunRun(recordIssue: false)
 
         // Expect an unlink
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertTrue(tsAccountManagerMock.isDeregistered)
+        XCTAssertTrue(self.isMarkedDeregistered)
     }
 
     /// Checks that multiple overlapping validation attempts are collapsed into
     /// one. Also checks that a subsequent validation runs.
     func testMultipleCallsResultInOneRun() {
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .value(true)
 
         db.write { tx in
@@ -186,10 +197,10 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         testScheduler.runUntilIdle()
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertFalse(tsAccountManagerMock.isDeregistered)
+        XCTAssertFalse(self.isMarkedDeregistered)
 
         messageProcessorMock.fetchProcessResult = .value({})
-        tsAccountManagerMock.localIdentifiers = .mock
+        tsAccountManagerMock.localIdentifiersMock = { .mock }
         pniIdentityKeyCheckerMock.matchResult = .value(false)
 
         db.write { tx in
@@ -198,7 +209,7 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         testScheduler.runUntilIdle()
 
         XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertTrue(tsAccountManagerMock.isDeregistered)
+        XCTAssertTrue(self.isMarkedDeregistered)
     }
 }
 
@@ -237,23 +248,5 @@ private class PniIdentityKeyCheckerMock: PniIdentityKeyChecker {
 
     func serverHasSameKeyAsLocal(localPni: Pni, tx: DBReadTransaction) -> Promise<Bool> {
         return matchResult.consumeIntoPromise()
-    }
-}
-
-private class TSAccountManagerMock: LinkedDevicePniKeyManagerImpl.Shims.TSAccountManager {
-    var localIdentifiers: LocalIdentifiers?
-    var isPrimaryDevice = false
-    var isDeregistered = false
-
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
-        return localIdentifiers
-    }
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return isPrimaryDevice
-    }
-
-    func setIsDeregistered() {
-        isDeregistered = true
     }
 }

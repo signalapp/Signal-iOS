@@ -375,7 +375,7 @@ public class RemoteConfig: BaseFlags {
         case .explicit(let explicitAccount):
             localE164 = explicitAccount.e164.stringValue
         case .implicit:
-            guard let e164 = TSAccountManager.shared.localNumber else {
+            guard let e164 = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
                 owsFailDebug("Missing local number")
                 return nil
             }
@@ -396,7 +396,7 @@ public class RemoteConfig: BaseFlags {
         case .explicit(let explicitAccount):
             aci = explicitAccount.aci
         case .implicit:
-            guard let localAci = TSAccountManager.shared.localIdentifiers?.aci else {
+            guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                 owsFailDebug("Missing localAci.")
                 return false
             }
@@ -708,7 +708,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     private let appExpiry: AppExpiry
     private let db: DB
     private let keyValueStore: KeyValueStore
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let serviceClient: SignalServiceClient
 
     // MARK: -
@@ -731,7 +731,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         appExpiry: AppExpiry,
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         serviceClient: SignalServiceClient
     ) {
         self.appExpiry = appExpiry
@@ -744,7 +744,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         // That's not ideal, but we can't risk changing configs in the middle
         // of an app lifetime.
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            guard self.tsAccountManager.isRegistered else {
+            guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
             self.scheduleNextRefresh()
@@ -767,7 +767,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegistered && !tsAccountManager.isDeregistered else { return }
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
         refresh().catch { error in
             Logger.error("Failed to update remote config after registration change \(error)")
@@ -796,7 +796,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
             )
         }
         // swiftlint:enable large_tuple
-        if TSAccountManager.shared.isRegisteredAndReady {
+        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             let remoteConfig = cacheCurrent(
                 clockSkew: lastKnownClockSkew,
                 isEnabledFlags: isEnabledFlags,

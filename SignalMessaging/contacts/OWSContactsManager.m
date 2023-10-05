@@ -86,7 +86,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 
 - (BOOL)isEditingAllowed
 {
-    return self.tsAccountManager.isPrimaryDevice;
+    return [TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction];
 }
 
 - (ContactAuthorizationForEditing)editingAuthorization

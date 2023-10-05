@@ -171,7 +171,7 @@ extension DeviceTransferService {
             stopTransfer()
             return owsFailDebug("Failed to parse manifest proto")
         }
-        guard !tsAccountManager.isRegistered else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             stopTransfer()
             return owsFailDebug("Ignoring incoming transfer to a registered device")
         }
@@ -198,7 +198,9 @@ extension DeviceTransferService {
             progress: progress
         )
 
-        tsAccountManager.isTransferInProgress = true
+        DependenciesBridge.shared.db.write { tx in
+            DependenciesBridge.shared.registrationStateChangeManager.setIsTransferInProgress(tx: tx)
+        }
 
         notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
 

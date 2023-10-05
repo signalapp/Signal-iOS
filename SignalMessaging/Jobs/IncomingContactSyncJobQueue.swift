@@ -51,7 +51,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     }
 
     public func buildOperation(jobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingContactSyncOperation {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             throw OWSAssertionError("Not registered.")
         }
         return IncomingContactSyncOperation(jobRecord: jobRecord, localIdentifiers: localIdentifiers)

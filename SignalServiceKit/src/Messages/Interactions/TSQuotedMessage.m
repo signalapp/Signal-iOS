@@ -378,7 +378,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     if ([quotedMessage isKindOfClass:[TSIncomingMessage class]]) {
         address = ((TSIncomingMessage *)quotedMessage).authorAddress;
     } else if ([quotedMessage isKindOfClass:[TSOutgoingMessage class]]) {
-        address = [TSAccountManager localAddress];
+        address = [TSAccountManagerObjcBridge localAciAddressWith:transaction];
     } else {
         OWSFailDebug(@"Received message of type: %@", NSStringFromClass(quotedMessage.class));
         return nil;

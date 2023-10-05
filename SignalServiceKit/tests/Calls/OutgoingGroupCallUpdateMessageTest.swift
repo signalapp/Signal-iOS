@@ -11,11 +11,16 @@ import XCTest
 final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTestSwift {
     /// Confirms that an ``OutgoingGroupCallUpdateMessage`` (de)serializes.
     func testGroupCallUpdateMessageRoundTrip() throws {
-        tsAccountManager.registerForTests(localIdentifiers: LocalIdentifiers(
-            aci: Aci(fromUUID: UUID()),
-            pni: Pni(fromUUID: UUID()),
-            phoneNumber: "+17735550199"
-        ))
+        databaseStorage.write { tx in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .init(
+                    aci: .init(fromUUID: UUID()),
+                    pni: .init(fromUUID: UUID()),
+                    e164: .init("+17735550199")!
+                ),
+                tx: tx.asV2Write
+            )
+        }
 
         let updateMessage = write { tx in
             return OutgoingGroupCallUpdateMessage(

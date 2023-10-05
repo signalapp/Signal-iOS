@@ -362,7 +362,7 @@ extension DeviceTransferService: MCSessionDelegate {
         guard case .outgoing(let newDevicePeerId, let expectedCertificateHash, _, _, _) = transferState else {
             // Accept all connections if we're not doing an outgoing transfer AND we aren't yet registered.
             // Registered devices can only ever perform outgoing transfers.
-            certificateIsTrusted = !tsAccountManager.isRegistered
+            certificateIsTrusted = !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             return
         }
 

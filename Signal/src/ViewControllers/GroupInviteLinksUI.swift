@@ -423,7 +423,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
     }
 
     private var doesLocalUserSupportGroupsV2: Bool {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("missing local address")
             return false
         }

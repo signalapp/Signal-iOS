@@ -23,7 +23,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private func _sendAllSyncRequestMessages(onlyIfNecessary: Bool) -> Promise<Void> {
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
         }
 
@@ -65,11 +65,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     public func sendKeysSyncMessage() {
         Logger.info("")
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return owsFailDebug("Unexpectedly tried to send sync request before registration.")
         }
 
-        guard tsAccountManager.isRegisteredPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
             return owsFailDebug("Keys sync should only be initiated from the primary device")
         }
 
@@ -92,7 +92,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     @objc
     public func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction) {
-        guard !tsAccountManager.isRegisteredPrimaryDevice else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice else {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
@@ -161,7 +161,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     public func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType) {
         Logger.info("")
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
@@ -177,7 +177,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     ) {
         Logger.info("")
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
@@ -192,7 +192,7 @@ public extension OWSSyncManager {
 
     func sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: TimeInterval) -> Promise<[String]> {
         Logger.info("")
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
         }
 
@@ -238,11 +238,11 @@ public extension OWSSyncManager {
             Logger.info("keys")
         }
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return owsFailDebug("Unexpectedly tried to send sync request before registration.")
         }
 
-        guard !tsAccountManager.isRegisteredPrimaryDevice else {
+        guard !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
             return owsFailDebug("Sync request should only be sent from a linked device")
         }
 

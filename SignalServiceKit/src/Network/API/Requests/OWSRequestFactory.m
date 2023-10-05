@@ -260,7 +260,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
 {
     // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
-    OWSAssertDebug(!self.tsAccountManager.isPrimaryDevice);
+    OWSAssertDebug(![TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction]);
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
                               method:@"PUT"
@@ -273,10 +273,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     // tsAccountManager.isPrimaryDevice only has a valid value for registered
     // devices.
-    BOOL isRegisteredAndReady = self.tsAccountManager.isRegisteredAndReady;
+    BOOL isRegisteredAndReady = [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction];
     OWSAssertDebug(isRegisteredAndReady);
 
-    BOOL isPrimaryDevice = self.tsAccountManager.isPrimaryDevice;
+    BOOL isPrimaryDevice = [TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction];
     return [self deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:hasBackedUpMasterKey
                                                              isRegistered:isRegisteredAndReady
                                                           isPrimaryDevice:isPrimaryDevice];

@@ -144,7 +144,7 @@ public class LegacyChangePhoneNumber: NSObject {
 
         guard
             CurrentAppContext().isMainApp,
-            tsAccountManager.isRegisteredAndReady
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {
             return
         }
@@ -214,7 +214,7 @@ public class LegacyChangePhoneNumber: NSObject {
         transaction: SDSAnyWriteTransaction
     ) throws -> E164 {
         guard
-            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction),
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read),
             let localE164 = E164(localIdentifiers.phoneNumber)
         else {
             throw OWSAssertionError("Missing or invalid local parameters!")
@@ -255,11 +255,11 @@ public class LegacyChangePhoneNumber: NSObject {
                 "Recording new phone number: \(serviceE164), PNI: \(servicePni)"
             )
 
-            self.tsAccountManager.updateLocalPhoneNumber(
-               E164ObjC(serviceE164),
-                aci: AciObjC(serviceAci), // Verified equal to `localAci` above
-                pni: PniObjC(servicePni),
-                transaction: transaction
+            DependenciesBridge.shared.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                serviceE164,
+                aci: serviceAci,
+                pni: servicePni,
+                tx: transaction.asV2Write
             )
 
             self.storageServiceManager.recordPendingLocalAccountUpdates()

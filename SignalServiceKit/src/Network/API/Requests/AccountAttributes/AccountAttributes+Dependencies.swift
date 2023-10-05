@@ -12,7 +12,7 @@ extension AccountAttributes {
         svr: SecureValueRecovery,
         transaction: SDSAnyWriteTransaction
     ) -> AccountAttributes {
-        owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
+        owsAssertDebug(DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice == true)
         return generate(
             fromDependencies: dependencies,
             svr: svr,
@@ -58,11 +58,11 @@ extension AccountAttributes {
             // TODO: can we change this with atomic device linking?
             isManualMessageFetchEnabled = true
         } else {
-            isManualMessageFetchEnabled = dependencies.tsAccountManager.isManualMessageFetchEnabled(transaction)
+            isManualMessageFetchEnabled = DependenciesBridge.shared.tsAccountManager.isManualMessageFetchEnabled(tx: transaction.asV2Read)
         }
 
-        let registrationId = dependencies.tsAccountManager .getOrGenerateRegistrationId(transaction: transaction)
-        let pniRegistrationId = dependencies.tsAccountManager .getOrGeneratePniRegistrationId(transaction: transaction)
+        let registrationId = DependenciesBridge.shared.tsAccountManager.getOrGenerateAciRegistrationId(tx: transaction.asV2Write)
+        let pniRegistrationId = DependenciesBridge.shared.tsAccountManager.getOrGeneratePniRegistrationId(tx: transaction.asV2Write)
 
         let profileKey = dependencies.profileManager.localProfileKey()
         let udAccessKey: String
@@ -106,7 +106,7 @@ extension AccountAttributes {
         let encryptedDeviceName = (encryptedDeviceNameRaw?.isEmpty ?? true) ? nil : encryptedDeviceNameRaw?.base64EncodedString()
 
         let isDiscoverableByPhoneNumber: Bool? = FeatureFlags.phoneNumberDiscoverability
-            ? dependencies.tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
+            ? DependenciesBridge.shared.phoneNumberDiscoverabilityManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
             : nil
 
         let hasSVRBackups = svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)

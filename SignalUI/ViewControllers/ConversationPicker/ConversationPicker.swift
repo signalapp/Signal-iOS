@@ -685,7 +685,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             databaseStorage: databaseStorage,
             blockingManager: blockingManager,
             recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
-            accountManager: tsAccountManager,
+            accountManager: DependenciesBridge.shared.tsAccountManager,
             contactsManager: contactsManager,
             fromViewController: self
         )
@@ -1330,7 +1330,7 @@ internal class ConversationPickerCell: ContactTableViewCell {
             configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
         case .privateStory(_, let isMyStory):
             if isMyStory {
-                guard let localAddress = tsAccountManager.localAddress else {
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                     owsFailDebug("Unexpectedly missing local address")
                     return
                 }

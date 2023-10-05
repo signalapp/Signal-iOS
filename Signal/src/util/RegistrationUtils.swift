@@ -16,13 +16,13 @@ public class RegistrationUtils: Dependencies {
         AssertIsOnMainThread()
 
         // If this is not the primary device, jump directly to the re-linking flow.
-        guard tsAccountManager.isPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true else {
             showRelinkingUI()
             return
         }
 
         guard
-            let localIdentifiers = tsAccountManager.localIdentifiers,
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction,
             let e164 = E164(localIdentifiers.phoneNumber)
         else {
             owsFailDebug("could not get local address for re-registration.")
@@ -38,7 +38,7 @@ public class RegistrationUtils: Dependencies {
 
     class func showReregistrationUI(fromViewController viewController: UIViewController) {
         // If this is not the primary device, jump directly to the re-linking flow.
-        guard tsAccountManager.isPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true else {
             showRelinkingUI()
             return
         }
@@ -62,7 +62,22 @@ public class RegistrationUtils: Dependencies {
     private class func showRelinkingUI() {
         Logger.info("showRelinkingUI")
 
-        guard tsAccountManager.resetForReregistration() else {
+        let success = DependenciesBridge.shared.db.write { tx -> Bool in
+            guard
+                let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx),
+                let localE164 = E164(localIdentifiers.phoneNumber)
+            else {
+                return false
+            }
+            DependenciesBridge.shared.registrationStateChangeManager.resetForReregistration(
+                localPhoneNumber: localE164,
+                localAci: localIdentifiers.aci,
+                wasPrimaryDevice: DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? false,
+                tx: tx
+            )
+            return true
+        }
+        guard success else {
             owsFailDebug("could not reset for re-registration.")
             return
         }

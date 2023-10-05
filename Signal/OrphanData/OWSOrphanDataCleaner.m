@@ -310,7 +310,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSString *grdbHotswapDirectoryPath =
         [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeHotswapLegacy].path;
     NSString *grdbTransferDirectoryPath = nil;
-    if (GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory && TSAccountManager.shared.isTransferInProgress) {
+    if (GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory &&
+        [TSAccountManagerObjcBridge isTransferInProgressWithMaybeTransaction]) {
         grdbTransferDirectoryPath =
             [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeTransfer].path;
     }

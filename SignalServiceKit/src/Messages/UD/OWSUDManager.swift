@@ -398,7 +398,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates> {
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             // We don't want to assert but we should log and fail.
             return Promise(error: OWSGenericError("Not registered and ready."))
         }
@@ -443,12 +443,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
         let sender = certificate.sender
-        guard sender.deviceId == tsAccountManager.storedDeviceId else {
+        guard sender.deviceId == DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction else {
             Logger.warn("Sender certificate has incorrect device ID")
             return false
         }
 
-        let localIdentifiers = tsAccountManager.localIdentifiers
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
 
         guard sender.e164 == nil || sender.e164 == localIdentifiers?.phoneNumber else {
             Logger.warn("Sender certificate has incorrect phone number")
@@ -506,7 +506,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         // Try to update the account attributes to reflect this change.
         firstly(on: DispatchQueue.global()) {
-            Self.tsAccountManager.updateAccountAttributes()
+            return Promise.wrapAsync {
+                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
+            }
         }.catch(on: DispatchQueue.global()) { error in
             Logger.warn("Error: \(error)")
         }

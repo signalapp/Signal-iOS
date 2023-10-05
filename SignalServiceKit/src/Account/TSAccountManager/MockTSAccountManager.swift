@@ -70,10 +70,18 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
         return .registered
     }
 
-    public var registrationStateWithMaybeSneakyTransaction: TSRegistrationState { registrationStateMock() }
+    open var registrationStateWithMaybeSneakyTransaction: TSRegistrationState { registrationStateMock() }
 
-    public func registrationState(tx: DBReadTransaction) -> TSRegistrationState {
+    open func registrationState(tx: DBReadTransaction) -> TSRegistrationState {
         return registrationStateWithMaybeSneakyTransaction
+    }
+
+    public var registrationDateMock: (() -> Date?) = {
+        return .distantPast
+    }
+
+    open func registrationDate(tx: DBReadTransaction) -> Date? {
+        return registrationDateMock()
     }
 
     // MARK: - RegistrationIds
@@ -134,6 +142,12 @@ public class MockTSAccountManager: TSAccountManagerProtocol {
 
     open func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
         return isDiscoverableByPhoneNumberMock()
+    }
+
+    public var lastSetIsDiscoverableByPhoneNumberMock: () -> Date = { .distantPast }
+
+    open func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date {
+        return lastSetIsDiscoverableByPhoneNumberMock()
     }
 }
 

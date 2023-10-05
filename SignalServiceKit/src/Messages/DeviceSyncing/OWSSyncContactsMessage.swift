@@ -10,7 +10,7 @@ extension OWSSyncContactsMessage {
 
     @objc
     public func buildPlainTextAttachmentFile(transaction tx: SDSAnyReadTransaction) -> URL? {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
         }

@@ -41,6 +41,8 @@ public protocol TSAccountManagerProtocol {
 
     func registrationState(tx: DBReadTransaction) -> TSRegistrationState
 
+    func registrationDate(tx: DBReadTransaction) -> Date?
+
     // MARK: - RegistrationIds
 
     func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32
@@ -68,6 +70,7 @@ public protocol TSAccountManagerProtocol {
 
     func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
     func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
+    func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date
 }
 
 /// Should only be used in ``PhoneNumberDiscoverabilityManager``, so that necessary
@@ -130,4 +133,18 @@ public protocol LocalIdentifiersSetter {
 
     /// Returns true if value changed, false otherwise.
     func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool
+
+    /**
+     * After we succesully transfer, we need to do some cleanup the next time
+     * the app launches.
+     *
+     * We clean up all transfer in progress state (set isTransferInProgress to false).
+     * This will also run if the transfer did not finish; thats fine because transfers
+     * don't survice the app being killed, so its ok to do so on fresh app launch.
+     *
+     * This is especially important after a successful transfer; because the db,
+     * having been copied from the old device's state at the time of transfer,
+     * will have a transfer in progress, which needs to be cleaned up.
+     */
+    func cleanUpTransferStateOnAppLaunchIfNeeded()
 }

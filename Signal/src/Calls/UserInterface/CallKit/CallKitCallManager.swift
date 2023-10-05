@@ -86,7 +86,7 @@ final class CallKitCallManager: NSObject {
         }
 
         let phoneNumber: String? = {
-            guard let localNumber = tsAccountManager.localNumber else {
+            guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
                 return nil
             }
             let phoneNumbers = PhoneNumber.tryParsePhoneNumbers(

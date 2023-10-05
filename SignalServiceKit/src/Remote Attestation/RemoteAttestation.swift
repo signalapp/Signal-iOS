@@ -152,7 +152,7 @@ fileprivate extension RemoteAttestation.Auth {
 
         switch auth.credentials {
         case .implicit:
-            guard tsAccountManager.isRegisteredAndReady else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return Promise(error: OWSGenericError("Not registered."))
             }
         case let .explicit(username, password):

@@ -174,7 +174,14 @@ public class DatabaseChangeObserver: NSObject {
         }
 
         let shouldBeActive: Bool = {
-            guard AppReadiness.isAppReady, !tsAccountManager.isTransferInProgress else {
+            let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
+            switch tsRegistrationState {
+            case .transferringIncoming, .transferringLinkedOutgoing, .transferringPrimaryOutgoing:
+                return false
+            default:
+                break
+            }
+            guard AppReadiness.isAppReady else {
                 return false
             }
             guard !CurrentAppContext().isInBackground() else {
@@ -455,10 +462,13 @@ extension DatabaseChangeObserver: TransactionObserver {
     private func publishUpdatesIfNecessary() {
         AssertIsOnMainThread()
 
-        guard !tsAccountManager.isTransferInProgress else {
+        switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
+        case .transferringIncoming, .transferringLinkedOutgoing, .transferringPrimaryOutgoing:
             Logger.info("Skipping publishing of updates; transfer in progress.")
             displayLink?.invalidate()
             return
+        default:
+            break
         }
 
         if let lastPublishUpdatesDate = self.lastPublishUpdatesDate {

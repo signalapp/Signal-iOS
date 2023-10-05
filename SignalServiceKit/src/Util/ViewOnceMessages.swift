@@ -231,7 +231,7 @@ public class ViewOnceMessages: NSObject {
         if let incomingMessage = message as? TSIncomingMessage {
             return incomingMessage.authorAddress
         } else if message as? TSOutgoingMessage != nil {
-            guard let localAddress = tsAccountManager.localAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                 owsFailDebug("Could not process sync message; no local number.")
                 return nil
             }

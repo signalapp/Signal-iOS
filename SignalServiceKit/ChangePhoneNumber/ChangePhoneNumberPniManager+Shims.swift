@@ -10,14 +10,12 @@ extension ChangePhoneNumberPniManagerImpl {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerShim
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerShim
         typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreShim
-        typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerShim
     }
 
     enum Wrappers {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerWrapper
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerWrapper
         typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper
-        typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerWrapper
     }
 }
 
@@ -46,13 +44,6 @@ protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
     func storeSignedPreKeyAsAcceptedAndCurrent(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        transaction: DBWriteTransaction
-    )
-}
-
-protocol _ChangePhoneNumberPniManager_TSAccountManagerShim {
-    func setPniRegistrationId(
-        newRegistrationId: UInt32,
         transaction: DBWriteTransaction
     )
 }
@@ -110,24 +101,6 @@ class _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper: _ChangePhoneNumberP
         signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
             signedPreKeyId: signedPreKeyId,
             signedPreKeyRecord: signedPreKeyRecord,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
-    }
-}
-
-class _ChangePhoneNumberPniManager_TSAccountManagerWrapper: _ChangePhoneNumberPniManager_TSAccountManagerShim {
-    private let tsAccountManager: TSAccountManager
-
-    init(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
-    func setPniRegistrationId(
-        newRegistrationId: UInt32,
-        transaction: DBWriteTransaction
-    ) {
-        tsAccountManager.setPniRegistrationId(
-            newRegistrationId: newRegistrationId,
             transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }

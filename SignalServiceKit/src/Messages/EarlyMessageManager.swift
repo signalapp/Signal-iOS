@@ -240,7 +240,7 @@ public class EarlyMessageManager: NSObject {
         associatedMessageTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             return owsFailDebug("missing local address")
         }
 
@@ -342,7 +342,7 @@ public class EarlyMessageManager: NSObject {
 
     @objc
     public func applyPendingMessages(for message: TSMessage, transaction: SDSAnyWriteTransaction) {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             owsFailDebug("Can't process messages when not registered.")
             return
         }
@@ -427,7 +427,7 @@ public class EarlyMessageManager: NSObject {
             Logger.info("Not processing viewed receipt for system story")
             return
         }
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             owsFailDebug("Can't process messages when not registered.")
             return
         }

@@ -88,12 +88,13 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
     private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread,
                                                        transaction: SDSAnyWriteTransaction) {
-        guard !CurrentAppContext().isRunningTests,
-              tsAccountManager.isRegisteredAndReady,
-              tsAccountManager.isPrimaryDevice else {
+        guard
+            !CurrentAppContext().isRunningTests,
+            DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice
+        else {
             return
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("missing local address")
             return
         }
@@ -119,10 +120,11 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
     private var isUpdating = false
 
     private func tryToUpdateNext(retryDelay: TimeInterval = 1) {
-        guard CurrentAppContext().isMainAppAndActive,
-              !CurrentAppContext().isRunningTests,
-              tsAccountManager.isRegisteredAndReady,
-              tsAccountManager.isPrimaryDevice else {
+        guard
+            CurrentAppContext().isMainAppAndActive,
+            !CurrentAppContext().isRunningTests,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
+        else {
             return
         }
         guard reachabilityManager.isReachable else {
@@ -216,7 +218,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
     private func tryToUpdate(groupId: Data) -> Promise<Void> {
         let profileKeyData = profileManager.localProfileKey().keyData
-        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("missing local address")
             return Promise(error: GroupsV2Error.shouldDiscard)
         }

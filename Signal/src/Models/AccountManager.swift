@@ -54,46 +54,41 @@ public class AccountManager: NSObject, Dependencies {
     // MARK: Linking
 
     func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
-        // * Primary devices _can_ re-register with a new uuid.
-        // * Secondary devices _cannot_ be re-linked to primaries with a different uuid.
-        if tsAccountManager.isReregistering {
+        // * Primary devices that are re-registering can provision instead with a new uuid.
+        // * Secondary devices _cannot_ be re-linked to primaries with a different uuid, but
+        //   `reregistering` state does not apply to secondaries.
+        switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
+        case .reregistering(let reregistrationPhoneNumber, let reregistrationAci):
             var canChangePhoneNumbers = false
-            if let oldAci = tsAccountManager.reregistrationAci, let newAci = provisionMessage.aci {
-                if !tsAccountManager.isPrimaryDevice, oldAci != newAci {
-                    Logger.warn("Cannot re-link with a different uuid.")
-                    return Promise(error: AccountManagerError.reregistrationDifferentAccount)
-                } else if oldAci == newAci {
-                    // Secondary devices _can_ re-link to primaries with different
-                    // phone numbers if the uuid is present and has not changed.
-                    canChangePhoneNumbers = true
-                }
+            if let oldAci = reregistrationAci, let newAci = provisionMessage.aci, oldAci == newAci {
+                canChangePhoneNumbers = true
             }
-            // * Primary devices _cannot_ re-register with a new phone number.
-            // * Secondary devices _cannot_ be re-linked to primaries with a different phone number
-            //   unless the uuid is present and has not changed.
-            if !canChangePhoneNumbers,
-               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber,
-               reregistrationPhoneNumber != provisionMessage.phoneNumber {
-                Logger.warn("Cannot re-register with a different phone number.")
+            if
+                !canChangePhoneNumbers,
+                reregistrationPhoneNumber != provisionMessage.phoneNumber
+            {
+                Logger.warn("Cannot provision with a different phone number from reregistration.")
                 return Promise(error: AccountManagerError.reregistrationDifferentAccount)
             }
+        default:
+            break
         }
 
-        guard let phoneNumber = E164(provisionMessage.phoneNumber).map({ E164ObjC($0) }) else {
+        guard let phoneNumber = E164(provisionMessage.phoneNumber) else {
             return Promise(error: OWSAssertionError("Primary E164 isn't valid"))
         }
 
-        guard let aci = provisionMessage.aci.map({ AciObjC($0) }) else {
+        guard let aci = provisionMessage.aci else {
             return Promise(error: OWSAssertionError("Missing ACI in provisioning message!"))
         }
 
-        guard let pni = provisionMessage.pni.map({ PniObjC($0) }) else {
+        guard let pni = provisionMessage.pni else {
             return Promise(error: OWSAssertionError("Missing PNI in provisioning message!"))
         }
 
-        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber
-        tsAccountManager.aciAwaitingVerification = aci
-        tsAccountManager.pniAwaitingVerification = pni
+        // Cycle socket and censorship circumvention state as e164 could be changing.
+        signalService.updateHasCensoredPhoneNumberDuringProvisioning(phoneNumber)
+        socketManager.cycleSocket()
 
         let serverAuthToken = generateServerAuthToken()
 
@@ -140,7 +135,7 @@ public class AccountManager: NSObject, Dependencies {
                 prekeyBundles: prekeyBundles
             )
         }.done { (response: VerifySecondaryDeviceResponse) in
-            if pni.wrappedPniValue != response.pni {
+            if pni != response.pni {
                 throw OWSAssertionError("PNI from primary is out of sync with the server!")
             }
 
@@ -173,17 +168,13 @@ public class AccountManager: NSObject, Dependencies {
                     )
                 }
 
-                self.tsAccountManager.storeLocalNumber(
-                    phoneNumber,
+                DependenciesBridge.shared.registrationStateChangeManager.didLinkSecondary(
+                    e164: phoneNumber,
                     aci: aci,
                     pni: pni,
-                    transaction: transaction
-                )
-
-                self.tsAccountManager.setStoredServerAuthToken(
-                    serverAuthToken,
+                    authToken: serverAuthToken,
                     deviceId: response.deviceId,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
             }
         }.then { _ -> Promise<Void> in
@@ -208,7 +199,9 @@ public class AccountManager: NSObject, Dependencies {
             }
             return self.serviceClient.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey)
         }.done {
-            self.tsAccountManager.postRegistrationStateDidChangeNotification()
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.didFinishProvisioningSecondary(tx: tx)
+            }
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
 

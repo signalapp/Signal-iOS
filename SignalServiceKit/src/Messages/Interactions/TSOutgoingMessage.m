@@ -304,8 +304,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         // 1. Sync messages should only be sent to linked devices.
-        OWSAssertDebug(TSAccountManager.localAddress);
-        [recipientAddresses addObject:TSAccountManager.localAddress];
+        SignalServiceAddress *localAddress = [TSAccountManagerObjcBridge localAciAddressWith:transaction];
+        OWSAssertDebug(localAddress);
+        [recipientAddresses addObject:localAddress];
     } else {
         // 2. Most messages should only be sent to the current members of the group.
         [recipientAddresses addObjectsFromArray:[thread recipientAddressesWithTransaction:transaction]];

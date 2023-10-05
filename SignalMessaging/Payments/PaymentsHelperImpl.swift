@@ -31,10 +31,10 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     public var hasValidPhoneNumberForPayments: Bool {
-        guard Self.tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return false
         }
-        guard let localNumber = Self.tsAccountManager.localNumber else {
+        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             return false
         }
         let paymentsDisabledRegions = RemoteConfig.paymentsDisabledRegions
@@ -203,7 +203,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
         paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
-        let localAci = self.tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+        let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
         TSPaymentsActivationRequestModel
             .allThreadsWithPaymentActivationRequests(transaction: transaction)
             .forEach { thread in
@@ -248,7 +248,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard tsAccountManager.isRegisteredAndReady(transaction: transaction) else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             return .disabled
         }
         let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
@@ -344,7 +344,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         if
             Self.loadPaymentsState(transaction: transaction).isEnabled
         {
-            if self.tsAccountManager.isPrimaryDevice(transaction: transaction) {
+            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
                 let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
                 Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             }
@@ -506,7 +506,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             if
                 paymentType == .outgoingPaymentFromLinkedDevice,
                 let recipientAci,
-                recipientAci != tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+                recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
             {
                 let thread = TSContactThread.getOrCreateThread(
                     withContactAddress: SignalServiceAddress(recipientAci),

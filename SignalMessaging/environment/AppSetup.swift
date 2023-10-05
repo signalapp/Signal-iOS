@@ -112,7 +112,7 @@ public class AppSetup {
 
         // MARK: SSK environment properties
 
-        let appExpiry = DependenciesBridge.shared.appExpiry
+        let appExpiry = dependenciesBridge.appExpiry
         let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
@@ -121,8 +121,8 @@ public class AppSetup {
         let remoteConfigManager = ServiceRemoteConfigManager(
             appExpiry: appExpiry,
             db: DependenciesBridge.shared.db,
-            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            tsAccountManager: tsAccountManager,
+            keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
+            tsAccountManager: dependenciesBridge.tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
         )
         let messageDecrypter = OWSMessageDecrypter()
@@ -140,7 +140,7 @@ public class AppSetup {
         let bulkProfileFetch = BulkProfileFetch(
             databaseStorage: databaseStorage,
             reachabilityManager: reachabilityManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: dependenciesBridge.tsAccountManager
         )
         let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
@@ -157,7 +157,7 @@ public class AppSetup {
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
             recipientStore: dependenciesBridge.recipientStore,
-            tsAccountManager: tsAccountManager,
+            tsAccountManager: dependenciesBridge.tsAccountManager,
             udManager: udManager,
             websocketFactory: webSocketFactory
         )

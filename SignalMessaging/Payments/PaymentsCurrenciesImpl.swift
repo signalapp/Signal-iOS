@@ -166,9 +166,11 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
     private let isUpdateInFlight = AtomicBool(false)
 
     func updateConversationRates() {
-        guard AppReadiness.isAppReady,
-              CurrentAppContext().isMainAppAndActive,
-              Self.tsAccountManager.isRegisteredAndReady else {
+        guard
+            AppReadiness.isAppReady,
+            CurrentAppContext().isMainAppAndActive,
+            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        else {
             return
         }
         guard Self.paymentsHelper.arePaymentsEnabled else {

@@ -149,7 +149,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     public func updatePrimaryDeviceAccountAttributes(authedAccount: AuthedAccount) -> Promise<Void> {
-        guard tsAccountManager.isPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true else {
             return Promise(error: OWSAssertionError("only primary device should update account attributes"))
         }
 

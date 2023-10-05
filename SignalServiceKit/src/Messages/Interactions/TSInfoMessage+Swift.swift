@@ -18,7 +18,7 @@ public extension TSInfoMessage {
 
         guard
             let newGroupModel,
-            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction)
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)
         else {
             return GroupUpdateItemBuilderImpl(
                 contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager)
@@ -45,8 +45,8 @@ public extension TSInfoMessage {
             return nil
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(
-            transaction: transaction
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+            tx: transaction.asV2Read
         ) else {
             owsFailDebug("Missing local identifiers!")
             return nil
@@ -209,7 +209,7 @@ extension TSInfoMessage {
     private func paymentsActivationRequestType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
         guard
             let paymentActivationRequestSenderAci,
-            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
         else {
             return nil
         }
@@ -229,7 +229,7 @@ extension TSInfoMessage {
     private func paymentsActivatedType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
         guard
             let paymentActivatedAci,
-            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
         else {
             return nil
         }

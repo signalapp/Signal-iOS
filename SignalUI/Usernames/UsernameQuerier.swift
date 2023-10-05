@@ -16,7 +16,7 @@ public struct UsernameQuerier {
     private let recipientFetcher: RecipientFetcher
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
     private let usernameApiClient: UsernameApiClient
     private let usernameLinkManager: UsernameLinkManager
     private let usernameLookupManager: UsernameLookupManager
@@ -34,7 +34,7 @@ public struct UsernameQuerier {
             recipientFetcher: DependenciesBridge.shared.recipientFetcher,
             schedulers: DependenciesBridge.shared.schedulers,
             storageServiceManager: deps.storageServiceManager,
-            tsAccountManager: deps.tsAccountManager,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             usernameApiClient: DependenciesBridge.shared.usernameApiClient,
             usernameLinkManager: DependenciesBridge.shared.usernameLinkManager,
             usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
@@ -50,7 +50,7 @@ public struct UsernameQuerier {
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager,
+        tsAccountManager: TSAccountManagerProtocol,
         usernameApiClient: UsernameApiClient,
         usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager
@@ -76,7 +76,7 @@ public struct UsernameQuerier {
         onSuccess: @escaping (Aci) -> Void
     ) {
         if
-            let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
+            let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
             let localLink = localUsernameManager.usernameState(tx: tx.asV2Read).usernameLink,
             localLink == link
         {
@@ -132,7 +132,7 @@ public struct UsernameQuerier {
         onSuccess: @escaping (Aci) -> Void
     ) {
         if
-            let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
+            let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
             let localUsername = localUsernameManager.usernameState(tx: tx.asV2Read).username,
             localUsername.caseInsensitiveCompare(username) == .orderedSame
         {

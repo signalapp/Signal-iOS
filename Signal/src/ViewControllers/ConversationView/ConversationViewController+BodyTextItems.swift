@@ -34,7 +34,7 @@ extension ConversationViewController {
     public func didTapBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 
@@ -75,7 +75,7 @@ extension ConversationViewController {
     public func didLongPressBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 

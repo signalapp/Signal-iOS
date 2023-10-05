@@ -3345,7 +3345,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
     private static func createUUIDGroup() {
         let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
-        let members = uuidMembers + [TSAccountManager.localAddress!]
+        let members = uuidMembers + [DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress]
         let groupName = "UUID Group"
 
         _ = GroupManager.localCreateNewGroup(members: members, name: groupName, disappearingMessageToken: .disabledToken, shouldSendMessage: true)
@@ -3697,7 +3697,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         member: SignalServiceAddress,
         completion: @escaping (TSGroupThread) -> Void
     ) {
-        let members = [ member, TSAccountManager.localAddress! ]
+        let members = [ member, DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress ]
         GroupManager.localCreateNewGroup(
             members: members,
             disappearingMessageToken: .disabledToken,
@@ -4205,7 +4205,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         if let contactThread = thread as? TSContactThread {
             return contactThread.contactAddress
         } else if let groupThread = thread as? TSGroupThread {
-            guard let localAddress = Self.tsAccountManager.localAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                 owsFailDebug("Missing localAddress.")
                 return nil
             }
@@ -4230,7 +4230,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 wasReceivedByUD: false,
                 serverDeliveryTimestamp: 0,
                 shouldDiscardVisibleMessages: false,
-                localIdentifiers: tsAccountManager.localIdentifiers(transaction: tx)!,
+                localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!,
                 tx: tx
             )
         }

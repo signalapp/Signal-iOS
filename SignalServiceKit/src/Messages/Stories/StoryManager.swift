@@ -130,7 +130,7 @@ public class StoryManager: NSObject {
 
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
-            author: tsAccountManager.localIdentifiers(transaction: transaction)!.aci,
+            author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
             transaction: transaction
         )
 

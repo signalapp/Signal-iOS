@@ -56,6 +56,8 @@ public class DependenciesBridge {
 
     public let identityManager: OWSIdentityManager
 
+    public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
+
     public let keyValueStoreFactory: KeyValueStoreFactory
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
@@ -230,7 +232,7 @@ public class DependenciesBridge {
             recipientFetcher: recipientFetcher,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: newTSAccountManager
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
@@ -241,7 +243,7 @@ public class DependenciesBridge {
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
             registrationIdGenerator: RegistrationIdGenerator(),
             schedulers: schedulers,
-            tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
+            tsAccountManager: newTSAccountManager
         )
 
         self.deviceManager = OWSDeviceManagerImpl(
@@ -264,8 +266,25 @@ public class DependenciesBridge {
         )
 
         self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let svrLocalStorage = SVRLocalStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+
+        let accountAttributesUpdater = AccountAttributesUpdaterImpl(
+            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
+            appVersion: appVersion,
+            dateProvider: dateProvider,
+            db: db,
+            profileManager: profileManager,
+            keyValueStoreFactory: keyValueStoreFactory,
+            serviceClient: SignalServiceRestClient(),
+            schedulers: schedulers,
+            svrLocalStorage: svrLocalStorage,
+            syncManager: syncManager,
+            tsAccountManager: newTSAccountManager
+        )
+        self.accountAttributesUpdater = accountAttributesUpdater
+
         self.svr = OrchestratingSVRImpl(
-            accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
+            accountAttributesUpdater: accountAttributesUpdater,
             appContext: CurrentAppContext(),
             appReadiness: SVR2.Wrappers.AppReadiness(),
             appVersion: appVersion,
@@ -277,76 +296,11 @@ public class DependenciesBridge {
             schedulers: schedulers,
             signalService: signalService,
             storageServiceManager: storageServiceManager,
+            svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
+            tsAccountManager: newTSAccountManager,
             tsConstants: tsConstants,
             twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
-        )
-
-        let pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
-            db: db,
-            identityManager: PniIdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
-            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
-            schedulers: schedulers
-        )
-        self.linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
-            schedulers: schedulers,
-            tsAccountManager: LinkedDevicePniKeyManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
-        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
-            database: db,
-            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
-            keyValueStoreFactory: keyValueStoreFactory,
-            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
-            schedulers: schedulers,
-            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
-            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
-
-        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
-            context: .init(
-                accountManager: PreKey.Operation.Wrappers.AccountManager(accountManager: tsAccountManager),
-                dateProvider: dateProvider,
-                db: db,
-                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
-                linkedDevicePniKeyManager: linkedDevicePniKeyManager,
-                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-                protocolStoreManager: signalProtocolStoreManager,
-                schedulers: schedulers,
-                serviceClient: accountServiceClient
-            )
-        )
-        self.preKeyManager = PreKeyManagerImpl(
-            db: db,
-            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
-            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-            preKeyOperationFactory: preKeyOperationFactory,
-            protocolStoreManager: signalProtocolStoreManager
-        )
-
-        self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
-            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
-            preKeyManager: preKeyManager,
-            schedulers: schedulers,
-            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
-
-        self.registrationSessionManager = RegistrationSessionManagerImpl(
-            dateProvider: dateProvider,
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            schedulers: schedulers,
-            signalService: signalService
         )
 
         self.chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: self.keyValueStoreFactory)
@@ -360,12 +314,7 @@ public class DependenciesBridge {
             keyValueStoreFactory: self.keyValueStoreFactory,
             notificationScheduler: self.schedulers.main
         )
-
-        self.groupMemberUpdater = GroupMemberUpdaterImpl(
-            temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
-            groupMemberStore: groupMemberStore,
-            signalServiceAddressCache: signalServiceAddressCache
-        )
+        let userProfileStore = UserProfileStoreImpl()
 
         self.disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
 
@@ -383,7 +332,11 @@ public class DependenciesBridge {
             wallpaperStore: self.wallpaperStore
         )
 
-        let userProfileStore = UserProfileStoreImpl()
+        self.groupMemberUpdater = GroupMemberUpdaterImpl(
+            temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
+            groupMemberStore: groupMemberStore,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
 
         self.recipientMerger = RecipientMergerImpl(
             temporaryShims: SignalRecipientMergerTemporaryShims(
@@ -410,10 +363,96 @@ public class DependenciesBridge {
             storageServiceManager: storageServiceManager
         )
 
+        self.registrationStateChangeManager = RegistrationStateChangeManagerImpl(
+            appContext: appContext,
+            groupsV2: groupsV2,
+            identityManager: identityManager,
+            notificationPresenter: notificationsManager,
+            paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
+            recipientMerger: recipientMerger,
+            schedulers: schedulers,
+            senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
+            signalProtocolStoreManager: signalProtocolStoreManager,
+            signalService: signalService,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: newTSAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles
+        )
+
+        let pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
+            db: db,
+            identityManager: PniIdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
+            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
+            schedulers: schedulers
+        )
+        self.linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
+            pniIdentityKeyChecker: pniIdentityKeyChecker,
+            registrationStateChangeManager: registrationStateChangeManager,
+            schedulers: schedulers,
+            tsAccountManager: newTSAccountManager
+        )
+        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
+            database: db,
+            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            keyValueStoreFactory: keyValueStoreFactory,
+            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
+            schedulers: schedulers,
+            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
+            tsAccountManager: newTSAccountManager
+        )
+
+        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
+            context: .init(
+                dateProvider: dateProvider,
+                db: db,
+                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
+                linkedDevicePniKeyManager: linkedDevicePniKeyManager,
+                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+                protocolStoreManager: signalProtocolStoreManager,
+                schedulers: schedulers,
+                serviceClient: accountServiceClient,
+                tsAccountManager: newTSAccountManager
+            )
+        )
+        self.preKeyManager = PreKeyManagerImpl(
+            db: db,
+            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
+            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            preKeyOperationFactory: preKeyOperationFactory,
+            protocolStoreManager: signalProtocolStoreManager
+        )
+
+        self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
+            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            pniIdentityKeyChecker: pniIdentityKeyChecker,
+            preKeyManager: preKeyManager,
+            registrationStateChangeManager: registrationStateChangeManager,
+            schedulers: schedulers,
+            tsAccountManager: newTSAccountManager
+        )
+
+        self.registrationSessionManager = RegistrationSessionManagerImpl(
+            dateProvider: dateProvider,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers,
+            signalService: signalService
+        )
+
         self.recipientHidingManager = RecipientHidingManagerImpl(
             profileManager: profileManager,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager,
+            tsAccountManager: newTSAccountManager,
             jobQueues: jobQueues
         )
 
@@ -449,41 +488,19 @@ public class DependenciesBridge {
             usernameLinkManager: usernameLinkManager
         ))
 
-        let accountAttributesUpdater = AccountAttributesUpdaterImpl(
-            appReadiness: AccountAttributesUpdaterImpl.Wrappers.AppReadiness(),
-            appVersion: appVersion,
-            dateProvider: dateProvider,
-            db: db,
-            profileManager: profileManager,
-            keyValueStoreFactory: keyValueStoreFactory,
-            serviceClient: SignalServiceRestClient(),
-            schedulers: schedulers,
-            svr: svr,
-            syncManager: syncManager,
-            tsAccountManager: newTSAccountManager
-        )
-        self.accountAttributesUpdater = accountAttributesUpdater
         self.phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
             accountAttributesUpdater: accountAttributesUpdater,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             tsAccountManager: newTSAccountManager
         )
-        self.registrationStateChangeManager = RegistrationStateChangeManagerImpl(
-            appContext: appContext,
-            groupsV2: groupsV2,
+
+        self.incomingPniChangeNumberProcessor = IncomingPniChangeNumberProcessorImpl(
             identityManager: identityManager,
-            notificationPresenter: notificationsManager,
-            paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
-            recipientMerger: recipientMerger,
-            schedulers: schedulers,
-            senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
-            signalProtocolStoreManager: signalProtocolStoreManager,
-            signalService: signalService,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: newTSAccountManager,
-            udManager: udManager,
-            versionedProfiles: versionedProfiles
+            pniProtocolStore: pniProtocolStore,
+            preKeyManager: preKeyManager,
+            registrationStateChangeManager: registrationStateChangeManager,
+            tsAccountManager: newTSAccountManager
         )
     }
 }

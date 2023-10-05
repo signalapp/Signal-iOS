@@ -280,7 +280,8 @@ extension ConversationViewController {
                         return incoming.authorAddress.aci == draftReply.author
                     }
                     if candidate is TSOutgoingMessage {
-                        return tsAccountManager.localIdentifiers(transaction: transaction)?.aci == draftReply.author
+                        return DependenciesBridge.shared.tsAccountManager
+                            .localIdentifiers(tx: transaction.asV2Read)?.aci == draftReply.author
                     }
                     return false
                 },

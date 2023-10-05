@@ -51,7 +51,7 @@ public class CallMessageRelay: Dependencies {
                 return
             }
 
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 owsFailDebug("Can't process VoIP payload when not registered.")
                 return
             }

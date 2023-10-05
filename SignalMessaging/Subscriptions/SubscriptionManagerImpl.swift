@@ -743,7 +743,7 @@ public class SubscriptionManagerImpl: NSObject {
 
         Logger.info("[Donations] Performing subscription heartbeat")
 
-        guard tsAccountManager.isPrimaryDevice else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
             Logger.info("[Donations] Bailing out of remaining heartbeat tasks, this is not the primary device")
             return
         }

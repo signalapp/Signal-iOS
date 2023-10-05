@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   storyReactionEmoji:nil
                                            giftBadge:transcript.giftBadge] buildWithTransaction:transaction];
 
-    LocalIdentifiersObjC *_Nullable localIdentifiers = [self.tsAccountManager localIdentifiersObjCWithTx:transaction];
+    LocalIdentifiersObjC *_Nullable localIdentifiers = [TSAccountManagerObjcBridge localIdentifiersWith:transaction];
     if (localIdentifiers == nil) {
         OWSFailDebug(@"Missing localIdentifiers.");
         return;

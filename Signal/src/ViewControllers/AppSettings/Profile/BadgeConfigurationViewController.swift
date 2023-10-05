@@ -158,7 +158,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                             guard let self = self else { return cell }
                             let collectionView = BadgeCollectionView(dataSource: self)
 
-                            if let localAddress = self.tsAccountManager.localAddress {
+                            if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
                                 let localShortName = self.databaseStorage.read { self.contactsManager.shortDisplayName(for: localAddress, transaction: $0) }
                                 collectionView.badgeSelectionMode = .detailsSheet(owner: .local(shortName: localShortName))
                             } else {

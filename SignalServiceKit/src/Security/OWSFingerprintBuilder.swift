@@ -13,12 +13,12 @@ public class OWSFingerprintBuilder {
 
     private let contactsManager: ContactsManagerProtocol
     private let identityManager: OWSIdentityManager
-    private let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     public init(
         contactsManager: ContactsManagerProtocol,
         identityManager: OWSIdentityManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.contactsManager = contactsManager
         self.identityManager = identityManager
@@ -34,7 +34,7 @@ public class OWSFingerprintBuilder {
         tx: SDSAnyReadTransaction
     ) -> FingerprintResult? {
         guard
-            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx),
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read),
             let myE164 = E164(localIdentifiers.phoneNumber),
             let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey
         else {

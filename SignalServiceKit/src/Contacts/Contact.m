@@ -182,10 +182,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableDictionary<NSString *, NSString *> *parsedPhoneNumberNameMap = [NSMutableDictionary new];
     NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
 
+    LocalIdentifiersObjC *localIdentifiers = [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction];
+    // Force unwrap.
+    NSString *localNumber = localIdentifiers.phoneNumber;
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
-        for (PhoneNumber *phoneNumber in
-            [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:phoneNumberString
-                                                  clientPhoneNumber:[TSAccountManager localNumber]]) {
+        for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:phoneNumberString
+                                                                              clientPhoneNumber:localNumber]) {
             [parsedPhoneNumbers addObject:phoneNumber];
             NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];
             if (phoneNumberName) {

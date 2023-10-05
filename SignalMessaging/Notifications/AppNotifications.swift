@@ -513,7 +513,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                 return false
             }
 
-            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
 
             // Always notify for replies to group stories you sent
             if storyAuthorAci == localAci { return true }
@@ -535,7 +535,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
 
         guard thread.isGroupThread else { return false }
 
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
             owsFailDebug("Missing local address")
             return false
         }
@@ -1166,7 +1166,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
                 sound: .standard(.note),
-                forceBeforeOnboarded: true,
+                forceBeforeRegistered: true,
                 completion: {
                     innerCompletion()
                     completion?()

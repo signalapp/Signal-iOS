@@ -547,13 +547,17 @@ extension DeviceTransferService {
 
         let (promise, future) = Guarantee<Void>.pending()
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.tsAccountManager.isTransferInProgress = false
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
+                    sendStateUpdateNotification: true,
+                    tx: tx
+                )
+            }
 
             // Consult both the modern and legacy restoration flag
             let currentPhase = (try? self.restorationPhase) ?? .noCurrentRestoration
             if currentPhase == .cleanup || LegacyRestorationFlags.pendingWasTransferredClear {
                 Logger.info("Performing one-time post-restore cleanup...")
-                self.tsAccountManager.wasTransferred = false
                 GRDBDatabaseStorageAdapter.removeOrphanedGRDBDirectories()
                 LegacyRestorationFlags.pendingWasTransferredClear = false
                 self.rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue

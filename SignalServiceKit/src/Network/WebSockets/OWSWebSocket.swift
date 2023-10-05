@@ -630,8 +630,8 @@ public class OWSWebSocket: NSObject {
             // UD socket is unauthenticated.
             return nil
         case .identified:
-            let login = tsAccountManager.storedServerUsername ?? ""
-            let password = tsAccountManager.storedServerAuthToken ?? ""
+            let login = DependenciesBridge.shared.tsAccountManager.storedServerUsernameWithMaybeTransaction ?? ""
+            let password = DependenciesBridge.shared.tsAccountManager.storedServerAuthTokenWithMaybeTransaction ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
             return [
@@ -679,7 +679,7 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "!isAppReady")
         }
 
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .closed(reason: "!isRegisteredAndReady")
         }
 
@@ -1158,7 +1158,9 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
         if webSocketType == .identified {
             // If socket opens, we know we're not de-registered.
-            tsAccountManager.isDeregistered = false
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
+            }
         }
 
         outageDetection.reportConnectionSuccess()
@@ -1180,7 +1182,9 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         self.currentWebSocket = nil
 
         if webSocketType == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
-            tsAccountManager.isDeregistered = true
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+            }
         }
 
         if shouldSocketBeOpen {

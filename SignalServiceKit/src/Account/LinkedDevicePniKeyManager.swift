@@ -68,8 +68,9 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let kvStore: KeyValueStore
     private let messageProcessor: Shims.MessageProcessor
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
+    private let registrationStateChangeManager: RegistrationStateChangeManager
     private let schedulers: Schedulers
-    private let tsAccountManager: Shims.TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     private let isValidating = AtomicBool(false, lock: .init())
 
@@ -78,19 +79,21 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: Shims.MessageProcessor,
         pniIdentityKeyChecker: PniIdentityKeyChecker,
+        registrationStateChangeManager: RegistrationStateChangeManager,
         schedulers: Schedulers,
-        tsAccountManager: Shims.TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.db = db
         self.kvStore = keyValueStoreFactory.keyValueStore(collection: Constants.collection)
         self.messageProcessor = messageProcessor
         self.pniIdentityKeyChecker = pniIdentityKeyChecker
+        self.registrationStateChangeManager = registrationStateChangeManager
         self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
     }
 
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
-        guard !tsAccountManager.isPrimaryDevice(tx: tx) else {
+        guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == false else {
             logger.warn("Not recording suspected PNI identity key issue - not a linked device!")
             return
         }
@@ -112,7 +115,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
             return
         }
 
-        guard !tsAccountManager.isPrimaryDevice(tx: syncTx) else {
+        guard tsAccountManager.registrationState(tx: syncTx).isPrimaryDevice == false else {
             logger.info("Skipping validation - not a linked device!")
             return
         }
@@ -162,12 +165,11 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
                 return
             }
 
-            if interrupt.shouldResultInUnlink {
-                logger.warn("Marking as deregistered.")
-                self.tsAccountManager.setIsDeregistered()
-            }
-
             self.db.write { tx in
+                if interrupt.shouldResultInUnlink {
+                    logger.warn("Marking as deregistered.")
+                    self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+                }
                 self.clearPniMessageDecryptionError(tx: tx)
             }
         }
@@ -190,12 +192,10 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
 extension LinkedDevicePniKeyManagerImpl {
     enum Shims {
         typealias MessageProcessor = _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim
-        typealias TSAccountManager = _LinkedDevicePniKeyManagerImpl_TSAccountManager_Shim
     }
 
     enum Wrappers {
         typealias MessageProcessor = _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper
-        typealias TSAccountManager = _LinkedDevicePniKeyManagerImpl_TSAccountManager_Wrapper
     }
 }
 
@@ -214,33 +214,5 @@ class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniK
 
     public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
         messageProcessor.fetchingAndProcessingCompletePromise()
-    }
-}
-
-// MARK: TSAccountManager
-
-protocol _LinkedDevicePniKeyManagerImpl_TSAccountManager_Shim {
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool
-    func setIsDeregistered()
-}
-
-class _LinkedDevicePniKeyManagerImpl_TSAccountManager_Wrapper: _LinkedDevicePniKeyManagerImpl_TSAccountManager_Shim {
-    private let tsAccountManager: TSAccountManager
-
-    init(_ tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
-    func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers? {
-        return tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func setIsDeregistered() {
-        tsAccountManager.isDeregistered = true
     }
 }

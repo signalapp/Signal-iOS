@@ -106,7 +106,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let preKeyManager: Shims.PreKeyManager
     private let registrationIdGenerator: RegistrationIdGenerator
     private let schedulers: Schedulers
-    private let tsAccountManager: Shims.TSAccountManager
+    private let tsAccountManager: TSAccountManagerProtocol
 
     init(
         identityManager: Shims.IdentityManager,
@@ -116,7 +116,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         preKeyManager: Shims.PreKeyManager,
         registrationIdGenerator: RegistrationIdGenerator,
         schedulers: Schedulers,
-        tsAccountManager: Shims.TSAccountManager
+        tsAccountManager: TSAccountManagerProtocol
     ) {
         self.identityManager = identityManager
         self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
@@ -207,8 +207,8 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         )
 
         tsAccountManager.setPniRegistrationId(
-            newRegistrationId: pendingState.localDevicePniRegistrationId,
-            transaction: transaction
+            pendingState.localDevicePniRegistrationId,
+            tx: transaction
         )
 
         // Followup tasks

@@ -43,7 +43,7 @@ public class GroupV2UpdatesImpl: Dependencies {
     // On launch, we refresh a few randomly-selected groups.
     private func autoRefreshGroupOnLaunch() {
         guard CurrentAppContext().isMainApp,
-              tsAccountManager.isRegisteredAndReady,
+              DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
               reachabilityManager.isReachable,
               !CurrentAppContext().isRunningTests else {
             return
@@ -166,7 +166,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         guard groupThread.groupModel.groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid groupsVersion.")
         }
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
             throw OWSAssertionError("Not registered.")
         }
         let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(
@@ -637,7 +637,7 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            guard let localIdentifiers = Self.tsAccountManager.localIdentifiers(transaction: transaction) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 
@@ -1020,7 +1020,7 @@ private extension GroupV2UpdatesImpl {
         let localProfileKey = profileManager.localProfileKey()
 
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            guard let localIdentifiers = Self.tsAccountManager.localIdentifiers(transaction: transaction) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
             let localAci = localIdentifiers.aci
