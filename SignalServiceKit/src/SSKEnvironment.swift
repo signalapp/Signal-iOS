@@ -30,7 +30,6 @@ public class SSKEnvironment: NSObject {
     public let messageSenderRef: MessageSender
     public let networkManagerRef: NetworkManager
     public let paymentsHelperRef: PaymentsHelperSwift
-    public let tsAccountManagerRef: TSAccountManager
     public let groupsV2Ref: GroupsV2Swift
     #endif
 

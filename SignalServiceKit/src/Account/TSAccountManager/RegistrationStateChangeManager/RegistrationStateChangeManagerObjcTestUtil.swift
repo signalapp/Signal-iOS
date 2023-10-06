@@ -5,6 +5,8 @@
 
 import Foundation
 
+#if TESTABLE_BUILD
+
 @objcMembers
 public class RegistrationStateChangeManagerObjcTestUtil: NSObject {
 
@@ -22,3 +24,5 @@ public class RegistrationStateChangeManagerObjcTestUtil: NSObject {
         }
     }
 }
+
+#endif
