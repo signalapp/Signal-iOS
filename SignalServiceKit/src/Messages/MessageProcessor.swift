@@ -139,11 +139,13 @@ public class MessageProcessor: NSObject {
         return AnyPromise(fetchingAndProcessingCompletePromise())
     }
 
-    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
+    public func fetchingAndProcessingCompletePromise(
+        suspensionBehavior: SuspensionBehavior = .alwaysWait
+    ) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
             Self.messageFetcherJob.fetchingCompletePromise()
         }.then { () -> Promise<Void> in
-            self.processingCompletePromise()
+            self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
         }
     }
 

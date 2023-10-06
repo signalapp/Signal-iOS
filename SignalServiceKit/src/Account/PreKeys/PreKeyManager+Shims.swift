@@ -50,6 +50,8 @@ public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Manager.Shims.Messa
     }
 
     public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        messageProcessor.fetchingAndProcessingCompletePromise()
+        messageProcessor.fetchingAndProcessingCompletePromise(
+            suspensionBehavior: .onlyWaitIfAlreadyInProgress
+        )
     }
 }

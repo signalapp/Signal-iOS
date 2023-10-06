@@ -132,6 +132,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             self?.refreshPreKeysDidSucceed()
         }
 
+        PreKey.logger.info("Check prekeys (onetime = \(shouldRefreshOneTimePrekeys))")
         func addOperation(for identity: OWSIdentity) {
             operationCount += 1
             let refreshOp = preKeyOperationFactory.refreshPreKeysOperation(
@@ -153,6 +154,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+        PreKey.logger.info("Create registration prekeys")
         /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
         /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
         let (promise, future) = Promise<RegistrationPreKeyUploadBundles>.pending()
@@ -165,6 +167,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
     ) -> Promise<RegistrationPreKeyUploadBundles> {
+        PreKey.logger.info("Create provisioning prekeys")
         /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
         /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
         let (promise, future) = Promise<RegistrationPreKeyUploadBundles>.pending()
@@ -181,6 +184,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
     ) -> Promise<Void> {
+        PreKey.logger.info("Finalize registration prekeys")
         let (promise, future) = Promise<Void>.pending()
         let operation = preKeyOperationFactory.finalizeRegistrationPreKeys(
             bundles,
@@ -192,6 +196,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+        PreKey.logger.info("Rotate one-time prekeys for registration")
         let (aciPromise, aciFuture) = Promise<Void>.pending()
 
         var operationCount = 2
@@ -221,6 +226,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        PreKey.logger.info("Legacy prekey creation")
         var operationCount = 2
         let didSucceed = { [weak self] in
             operationCount -= 1
@@ -243,6 +249,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        PreKey.logger.info("Create or rotate PNI prekeys")
         let operation = preKeyOperationFactory.createOrRotatePNIPreKeysOperation(
             didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
         )
@@ -250,6 +257,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func rotateSignedPreKeys() -> Promise<Void> {
+        PreKey.logger.info("Rotate signed prekeys")
         var operationCount = 0
         let didSucceed = { [weak self] in
             operationCount -= 1
@@ -285,6 +293,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) {
+        PreKey.logger.info("[\(identity)] Refresh onetime prekeys")
         let refreshOperation = preKeyOperationFactory.refreshPreKeysOperation(
             for: identity,
             shouldRefreshOneTimePreKeys: true,
@@ -330,7 +339,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
 
         public override func run() {
-            Logger.debug("")
+            PreKey.logger.info("Waiting for message processing to idle or complete.")
 
             firstly(on: DispatchQueue.global()) {
                 self.messageProcessorWrapper.fetchingAndProcessingCompletePromise()
