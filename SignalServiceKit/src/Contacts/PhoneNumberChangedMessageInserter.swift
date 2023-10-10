@@ -70,7 +70,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
 
         // Only insert "change phone number" interaction in 1:1 thread if it already exists.
-        if let thread = threadStore.fetchThread(serviceId: aci, tx: tx) {
+        if let thread = threadStore.fetchContactThread(recipient: mergedRecipient.newRecipient, tx: tx) {
             insertChangeMessage(thread: thread)
         }
     }

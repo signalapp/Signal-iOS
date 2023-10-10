@@ -26,8 +26,23 @@ extension ThreadStore {
         return groupThread
     }
 
-    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread? {
-        return fetchContactThreads(serviceId: serviceId, tx: tx).first
+    /// Fetch a contact thread for the given recipient.
+    ///
+    /// There may be multiple threads for a given service ID, but there is only
+    /// one canonical thread for a recipient. This gets that thread.
+    ///
+    /// If you simply want a thread, and don't want to think about thread
+    /// merges, ACIs, PNIs, etc. – this is the method for you.
+    func fetchContactThread(recipient: SignalRecipient, tx: DBReadTransaction) -> TSContactThread? {
+        return UniqueRecipientObjectMerger.fetchAndExpunge(
+            for: recipient,
+            serviceIdField: \.contactUUID,
+            phoneNumberField: \.contactPhoneNumber,
+            uniqueIdField: \.uniqueId,
+            fetchObjectsForServiceId: { fetchContactThreads(serviceId: $0, tx: tx) },
+            fetchObjectsForPhoneNumber: { fetchContactThreads(phoneNumber: $0.stringValue, tx: tx) },
+            updateObject: { _ in }
+        ).first
     }
 }
 
