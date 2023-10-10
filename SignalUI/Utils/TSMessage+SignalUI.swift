@@ -56,7 +56,19 @@ public extension TSMessage {
                         // TSOutgoingDeleteMessage will automatically pass through it's send state to the message
                         // record that it is deleting.
                         latestMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: tx)
-                        latestMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: tx)
+
+                        if let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
+                            _ = TSMessage.tryToRemotelyDeleteMessage(
+                                fromAuthor: AciObjC(aci),
+                                sentAtTimestamp: latestMessage.timestamp,
+                                threadUniqueId: latestThread.uniqueId,
+                                serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
+                                transaction: tx
+                            )
+                        } else {
+                            owsFailDebug("Local ACI missing during message deletion.")
+                        }
+
                         Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: tx)
                     }
                 }
