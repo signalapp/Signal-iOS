@@ -19,9 +19,6 @@ public protocol TypingIndicators: AnyObject {
     func didStartTypingOutgoingInput(inThread thread: TSThread)
 
     @objc
-    func didStopTypingOutgoingInput(inThread thread: TSThread)
-
-    @objc
     func didSendOutgoingMessage(inThread thread: TSThread)
 
     @objc
@@ -130,16 +127,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func didStopTypingOutgoingInput(inThread thread: TSThread) {
-        AssertIsOnMainThread()
-        guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
-            owsFailDebug("Could not locate outgoing indicators state")
-            return
-        }
-        outgoingIndicators.didStopTypingOutgoingInput()
-    }
-
-    @objc
     public func didSendOutgoingMessage(inThread thread: TSThread) {
         AssertIsOnMainThread()
         guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
@@ -231,13 +218,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // A sendRefresh timer
     private class OutgoingIndicators {
         private weak var delegate: TypingIndicators?
-        private let thread: TSThread
+        private let threadUniqueId: String
         private var sendPauseTimer: Timer?
         private var sendRefreshTimer: Timer?
 
         init(delegate: TypingIndicators, thread: TSThread) {
             self.delegate = delegate
-            self.thread = thread
+            self.threadUniqueId = thread.uniqueId
         }
 
         func didStartTypingOutgoingInput() {
@@ -246,7 +233,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             if sendRefreshTimer == nil {
                 // If the user types a character into the compose box, and the sendRefresh timer isn’t running:
 
-                sendTypingMessageIfNecessary(forThread: thread, action: .started)
+                sendTypingMessageIfNecessary(for: threadUniqueId, action: .started)
 
                 sendRefreshTimer?.invalidate()
                 sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
@@ -266,23 +253,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                                                       repeats: false)
         }
 
-        func didStopTypingOutgoingInput() {
-            AssertIsOnMainThread()
-
-            sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
-
-            sendRefreshTimer?.invalidate()
-            sendRefreshTimer = nil
-
-            sendPauseTimer?.invalidate()
-            sendPauseTimer = nil
-        }
-
         @objc
         func sendPauseTimerDidFire() {
             AssertIsOnMainThread()
 
-            sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
+            sendTypingMessageIfNecessary(for: threadUniqueId, action: .stopped)
 
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
@@ -295,7 +270,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func sendRefreshTimerDidFire() {
             AssertIsOnMainThread()
 
-            sendTypingMessageIfNecessary(forThread: thread, action: .started)
+            sendTypingMessageIfNecessary(for: threadUniqueId, action: .started)
 
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
@@ -315,7 +290,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             sendPauseTimer = nil
         }
 
-        private func sendTypingMessageIfNecessary(forThread thread: TSThread, action: TypingIndicatorAction) {
+        private func sendTypingMessageIfNecessary(for threadUniqueId: String, action: TypingIndicatorAction) {
             Logger.verbose("\(action)")
 
             guard let delegate = delegate else {
@@ -327,6 +302,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
             SDSDatabaseStorage.shared.write(.promise) { transaction in
+                guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
+                    return Promise<Void>.value(())
+                }
+
                 let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
 
                 return sskJobQueues.messageSenderJobQueue.add(
