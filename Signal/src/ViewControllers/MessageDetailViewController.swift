@@ -194,7 +194,9 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         contents.add(buildMessageSection())
 
-        if let editHistorySection = buildEditHistorySection() {
+        if
+            !message.wasRemotelyDeleted,
+            let editHistorySection = buildEditHistorySection() {
             contents.add(editHistorySection)
         }
 
