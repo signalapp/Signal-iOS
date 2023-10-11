@@ -257,7 +257,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: -
 
-    private(set) var groupMemberStateMap = [SignalServiceAddress: OWSVerificationState]()
+    private(set) var groupMemberStateMap = [SignalServiceAddress: VerificationState]()
     private(set) var sortedGroupMembers = [SignalServiceAddress]()
     func updateGroupMembers(transaction tx: SDSAnyReadTransaction) {
         guard
@@ -273,7 +273,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         let groupMembership = groupModel.groupMembership
         let allMembers = groupMembership.fullMembers
         var allMembersSorted = [SignalServiceAddress]()
-        var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
+        var verificationStateMap = [SignalServiceAddress: VerificationState]()
 
         let identityManager = DependenciesBridge.shared.identityManager
         for memberAddress in allMembers {

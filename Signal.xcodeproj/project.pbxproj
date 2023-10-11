@@ -2305,7 +2305,7 @@
 		F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE6C289453B400548EEE /* OWSHTTPSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE6D289453B400548EEE /* OWSRecipientIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9E289453B200548EEE /* OWSRecipientIdentity.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE6E289453B400548EEE /* OWSRecipientIdentity+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CE6E289453B400548EEE /* OWSRecipientIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9F289453B200548EEE /* OWSRecipientIdentity.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE71289453B400548EEE /* OWSRecipientIdentity+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA2289453B200548EEE /* OWSRecipientIdentity+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE72289453B400548EEE /* GroupMembership.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA4289453B200548EEE /* GroupMembership.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA5289453B200548EEE /* GroupAccess.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4965,7 +4965,7 @@
 		F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSHTTPSecurityPolicy.m; sourceTree = "<group>"; };
 		F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSHTTPSecurityPolicy.h; sourceTree = "<group>"; };
 		F9C5CB9E289453B200548EEE /* OWSRecipientIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRecipientIdentity.m; sourceTree = "<group>"; };
-		F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSRecipientIdentity+Queries.swift"; sourceTree = "<group>"; };
+		F9C5CB9F289453B200548EEE /* OWSRecipientIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRecipientIdentity.swift; sourceTree = "<group>"; };
 		F9C5CBA2289453B200548EEE /* OWSRecipientIdentity+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSRecipientIdentity+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CBA4289453B200548EEE /* GroupMembership.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMembership.swift; sourceTree = "<group>"; };
 		F9C5CBA5289453B200548EEE /* GroupAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAccess.swift; sourceTree = "<group>"; };
@@ -9872,10 +9872,10 @@
 				667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */,
 				F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */,
 				F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */,
-				F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */,
 				F9C5CBA2289453B200548EEE /* OWSRecipientIdentity+SDS.swift */,
 				F9C5CB99289453B200548EEE /* OWSRecipientIdentity.h */,
 				F9C5CB9E289453B200548EEE /* OWSRecipientIdentity.m */,
+				F9C5CB9F289453B200548EEE /* OWSRecipientIdentity.swift */,
 			);
 			name = Security;
 			path = src/Security;
@@ -12616,9 +12616,9 @@
 				F9C5CC04289453B300548EEE /* OWSReceiptManager.m in Sources */,
 				F9C5CC80289453B300548EEE /* OWSReceiptManager.swift in Sources */,
 				F9C5CD0E289453B300548EEE /* OWSReceiptsForSenderMessage.m in Sources */,
-				F9C5CE6E289453B400548EEE /* OWSRecipientIdentity+Queries.swift in Sources */,
 				F9C5CE71289453B400548EEE /* OWSRecipientIdentity+SDS.swift in Sources */,
 				F9C5CE6D289453B400548EEE /* OWSRecipientIdentity.m in Sources */,
+				F9C5CE6E289453B400548EEE /* OWSRecipientIdentity.swift in Sources */,
 				F9C5CD07289453B300548EEE /* OWSRecordTranscriptJob.m in Sources */,
 				C1CD0E3E2A6B141D00307F1A /* OWSRecordTranscriptJob.swift in Sources */,
 				F9C5CC68289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+Replace.swift in Sources */,

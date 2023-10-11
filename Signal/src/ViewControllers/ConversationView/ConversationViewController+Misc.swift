@@ -44,53 +44,48 @@ public extension ConversationViewController {
      * returns YES if an alert was shown
      *          NO if there were no unconfirmed identities
      */
-    func showSafetyNumberConfirmationIfNecessary(confirmationText: String,
-                                                 completion: @escaping (Bool) -> Void) -> Bool {
-        SafetyNumberConfirmationSheet.presentIfNecessary(addresses: thread.recipientAddressesWithSneakyTransaction,
-                                                         confirmationText: confirmationText,
-                                                         completion: completion)
+    func showSafetyNumberConfirmationIfNecessary(
+        confirmationText: String,
+        untrustedThreshold: Date?,
+        completion: @escaping (Bool) -> Void
+    ) -> Bool {
+        SafetyNumberConfirmationSheet.presentIfNecessary(
+            addresses: thread.recipientAddressesWithSneakyTransaction,
+            confirmationText: confirmationText,
+            untrustedThreshold: untrustedThreshold,
+            completion: completion
+        )
     }
 
     // MARK: - Verification
 
-    // Returns a random sub-collection of the group members who are "no longer verified".
-    func arbitraryNoLongerVerifiedAddresses(limit: Int) -> [SignalServiceAddress] {
-        databaseStorage.read { transaction in
-            self.noLongerVerifiedAddresses(limit: limit, transaction: transaction)
-        }
-    }
-
-    func noLongerVerifiedAddresses(limit: Int, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    func noLongerVerifiedIdentityKeys(tx: SDSAnyReadTransaction) -> [SignalServiceAddress: Data] {
         if let groupThread = thread as? TSGroupThread {
-            return OWSRecipientIdentity.noLongerVerifiedAddresses(inGroup: groupThread.uniqueId, limit: limit, transaction: transaction)
+            return OWSRecipientIdentity.noLongerVerifiedIdentityKeys(in: groupThread.uniqueId, tx: tx)
         }
         let identityManager = DependenciesBridge.shared.identityManager
-        return thread.recipientAddresses(with: transaction).filter { address in
-            identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified
+        return thread.recipientAddresses(with: tx).reduce(into: [:]) { result, address in
+            guard let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx.asV2Read) else {
+                return
+            }
+            guard recipientIdentity.verificationState == .noLongerVerified else {
+                return
+            }
+            result[address] = recipientIdentity.identityKey
         }
     }
 
-    func resetVerificationStateToDefault() {
+    func resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: [SignalServiceAddress: Data]) {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
-            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses(limit: Int.max, transaction: transaction)
-            for address in noLongerVerifiedAddresses {
+            let identityManager = DependenciesBridge.shared.identityManager
+            for (address, identityKey) in noLongerVerifiedIdentityKeys {
                 owsAssertDebug(address.isValid)
-
-                let identityManager = DependenciesBridge.shared.identityManager
-                guard let recipientIdentity = identityManager.recipientIdentity(for: address, tx: transaction.asV2Read) else {
-                    owsFailDebug("Missing recipientIdentity.")
-                    continue
-                }
-                guard recipientIdentity.identityKey.count > 0 else {
-                    owsFailDebug("Invalid identityKey.")
-                    continue
-                }
-                identityManager.setVerificationState(
-                    .default,
-                    identityKey: recipientIdentity.identityKey,
-                    address: address,
+                _ = identityManager.setVerificationState(
+                    .implicit(isAcknowledged: true),
+                    of: identityKey,
+                    for: address,
                     isUserInitiatedChange: true,
                     tx: transaction.asV2Write
                 )
@@ -98,17 +93,15 @@ public extension ConversationViewController {
         }
     }
 
-    func showNoLongerVerifiedUI() {
+    func showNoLongerVerifiedUI(noLongerVerifiedIdentityKeys: [SignalServiceAddress: Data]) {
         AssertIsOnMainThread()
 
-        let addresses = arbitraryNoLongerVerifiedAddresses(limit: 2)
-        switch addresses.count {
+        switch noLongerVerifiedIdentityKeys.count {
         case 0:
              break
 
         case 1:
-            // Pick one in an arbitrary but deterministic manner.
-            showFingerprint(address: addresses[0])
+            showFingerprint(address: noLongerVerifiedIdentityKeys.first!.key)
 
         default:
             showConversationSettingsAndShowVerification()

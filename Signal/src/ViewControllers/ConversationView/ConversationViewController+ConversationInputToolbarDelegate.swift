@@ -62,6 +62,14 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     }
 
     private func tryToSendTextMessage(_ messageBody: MessageBody, updateKeyboardState: Bool) {
+        tryToSendTextMessage(
+            messageBody,
+            updateKeyboardState: updateKeyboardState,
+            untrustedThreshold: Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
+        )
+    }
+
+    private func tryToSendTextMessage(_ messageBody: MessageBody, updateKeyboardState: Bool, untrustedThreshold: Date) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -76,18 +84,20 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         guard !isBlockedConversation() else {
             showUnblockConversationUI { [weak self] isBlocked in
                 if !isBlocked {
-                    self?.tryToSendTextMessage(messageBody, updateKeyboardState: false)
+                    self?.tryToSendTextMessage(messageBody, updateKeyboardState: false, untrustedThreshold: untrustedThreshold)
                 }
             }
             return
         }
 
+        let newUntrustedThreshold = Date()
         let didShowSNAlert = showSafetyNumberConfirmationIfNecessary(
-            confirmationText: SafetyNumberStrings.confirmSendButton
+            confirmationText: SafetyNumberStrings.confirmSendButton,
+            untrustedThreshold: untrustedThreshold
         ) { [weak self] didConfirmIdentity in
             guard let self = self else { return }
             if didConfirmIdentity {
-                self.tryToSendTextMessage(messageBody, updateKeyboardState: false)
+                self.tryToSendTextMessage(messageBody, updateKeyboardState: false, untrustedThreshold: newUntrustedThreshold)
             }
         }
         if didShowSNAlert {
@@ -123,7 +133,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     Self.databaseStorage.write { transaction in
                         self.context.editManager.setShouldShowEditSendConfirmation(false, tx: transaction.asV2Write)
                     }
-                    self.tryToSendTextMessage(messageBody, updateKeyboardState: false)
+                    self.tryToSendTextMessage(messageBody, updateKeyboardState: false, untrustedThreshold: newUntrustedThreshold)
                 }
                 return
             }
@@ -374,8 +384,15 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         return false
     }
 
-    public func tryToSendAttachments(_ attachments: [SignalAttachment],
-                                     messageBody: MessageBody?) {
+    public func tryToSendAttachments(_ attachments: [SignalAttachment], messageBody: MessageBody?) {
+        tryToSendAttachments(
+            attachments,
+            messageBody: messageBody,
+            untrustedThreshold: Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
+        )
+    }
+
+    private func tryToSendAttachments(_ attachments: [SignalAttachment], messageBody: MessageBody?, untrustedThreshold: Date) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -391,16 +408,19 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             if self.isBlockedConversation() {
                 self.showUnblockConversationUI { [weak self] isBlocked in
                     if !isBlocked {
-                        self?.tryToSendAttachments(attachments, messageBody: messageBody)
+                        self?.tryToSendAttachments(attachments, messageBody: messageBody, untrustedThreshold: untrustedThreshold)
                     }
                 }
                 return
             }
 
+            let newUntrustedThreshold = Date()
             let didShowSNAlert = self.showSafetyNumberConfirmationIfNecessary(
-                confirmationText: SafetyNumberStrings.confirmSendButton) { [weak self] didConfirmIdentity in
+                confirmationText: SafetyNumberStrings.confirmSendButton,
+                untrustedThreshold: untrustedThreshold
+            ) { [weak self] didConfirmIdentity in
                 if didConfirmIdentity {
-                    self?.tryToSendAttachments(attachments, messageBody: messageBody)
+                    self?.tryToSendAttachments(attachments, messageBody: messageBody, untrustedThreshold: newUntrustedThreshold)
                 }
             }
             if didShowSNAlert {

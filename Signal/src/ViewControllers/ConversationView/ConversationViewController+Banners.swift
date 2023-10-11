@@ -453,13 +453,13 @@ extension ConversationViewController {
         // Most of these banners should hide themselves when the user scrolls
         if !userHasScrolled {
             let message: String?
-            let noLongerVerifiedAddressSample = self.arbitraryNoLongerVerifiedAddresses(limit: 2)
-            switch noLongerVerifiedAddressSample.count {
+            let noLongerVerifiedIdentityKeys = databaseStorage.read { tx in self.noLongerVerifiedIdentityKeys(tx: tx) }
+            switch noLongerVerifiedIdentityKeys.count {
             case 0:
                 message = nil
 
             case 1:
-                let address = noLongerVerifiedAddressSample.first!
+                let address = noLongerVerifiedIdentityKeys.first!.key
                 let displayName = contactsManager.displayName(for: address)
                 let format = (isGroupConversation
                                 ? OWSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
@@ -472,11 +472,14 @@ extension ConversationViewController {
                 message = OWSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
                                             comment: "Indicates that more than one member of this group conversation is no longer verified.")
             }
-            if let message = message {
-                let banner = ConversationViewController.createBanner(title: message,
-                                                                     bannerColor: .ows_accentRed) { [weak self] in
-                    self?.noLongerVerifiedBannerViewWasTapped()
-                }
+            if let message {
+                let banner = ConversationViewController.createBanner(
+                    title: message,
+                    bannerColor: .ows_accentRed,
+                    tapBlock: { [weak self] in
+                        self?.noLongerVerifiedBannerViewWasTapped(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
+                    }
+                )
                 banners.append(banner)
             }
 
@@ -588,32 +591,35 @@ extension ConversationViewController {
         }
     }
 
-    private func noLongerVerifiedBannerViewWasTapped() {
+    private func noLongerVerifiedBannerViewWasTapped(noLongerVerifiedIdentityKeys: [SignalServiceAddress: Data]) {
         AssertIsOnMainThread()
 
         let title: String
-        switch arbitraryNoLongerVerifiedAddresses(limit: 2).count {
+        switch noLongerVerifiedIdentityKeys.count {
         case 0:
             return
         case 1:
-            title = OWSLocalizedString("VERIFY_PRIVACY",
-                                      comment: "Label for button or row which allows users to verify the safety number of another user.")
+            title = OWSLocalizedString(
+                "VERIFY_PRIVACY",
+                comment: "Label for button or row which allows users to verify the safety number of another user."
+            )
         default:
-            title = OWSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
-                                      comment: "Label for button or row which allows users to verify the safety numbers of multiple users.")
+            title = OWSLocalizedString(
+                "VERIFY_PRIVACY_MULTIPLE",
+                comment: "Label for button or row which allows users to verify the safety numbers of multiple users."
+            )
         }
 
         let actionSheet = ActionSheetController()
 
-        actionSheet.addAction(ActionSheetAction(title: title,
-                                                style: .default) { [weak self] _ in
-            self?.showNoLongerVerifiedUI()
+        actionSheet.addAction(ActionSheetAction(title: title, style: .default) { [weak self] _ in
+            self?.showNoLongerVerifiedUI(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
         })
 
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.dismissButton,
                                                 accessibilityIdentifier: "dismiss",
                                                 style: .cancel) { [weak self] _ in
-            self?.resetVerificationStateToDefault()
+            self?.resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
         })
 
         dismissKeyBoard()

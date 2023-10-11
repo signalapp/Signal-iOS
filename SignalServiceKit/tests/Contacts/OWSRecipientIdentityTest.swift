@@ -74,10 +74,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     func testAllVerified() throws {
         for recipient in recipients {
             write { tx in
-                identityManager.setVerificationState(
+                _ = identityManager.setVerificationState(
                     .verified,
-                    identityKey: identityKey(recipient),
-                    address: SignalServiceAddress(recipient),
+                    of: identityKey(recipient),
+                    for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
                     tx: tx.asV2Write
                 )
@@ -91,10 +91,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     func testSomeVerified() throws {
         let recipient = recipients[0]
         write { tx in
-            identityManager.setVerificationState(
+            _ = identityManager.setVerificationState(
                 .verified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
+                of: identityKey(recipient),
+                for: SignalServiceAddress(recipient),
                 isUserInitiatedChange: true,
                 tx: tx.asV2Write
             )
@@ -108,10 +108,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         // Verify everyone
         for recipient in recipients {
             write { tx in
-                identityManager.setVerificationState(
+                _ = identityManager.setVerificationState(
                     .verified,
-                    identityKey: identityKey(recipient),
-                    address: SignalServiceAddress(recipient),
+                    of: identityKey(recipient),
+                    for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
                     tx: tx.asV2Write
                 )
@@ -121,10 +121,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         let deverifiedAcis = [aliceAci, bobAci]
         for recipient in deverifiedAcis {
             write { tx in
-                identityManager.setVerificationState(
+                _ = identityManager.setVerificationState(
                     .noLongerVerified,
-                    identityKey: identityKey(recipient),
-                    address: SignalServiceAddress(recipient),
+                    of: identityKey(recipient),
+                    for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: false,
                     tx: tx.asV2Write
                 )
@@ -136,37 +136,11 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
 
         // Check that the list of no-longer-verified addresses is just Alice and Bob.
         read { transaction in
-            let noLongerVerifiedAddresses = OWSRecipientIdentity.noLongerVerifiedAddresses(
-                inGroup: self.groupThread.uniqueId,
-                limit: 2,
-                transaction: transaction
+            let noLongerVerifiedIdentityKeys = OWSRecipientIdentity.noLongerVerifiedIdentityKeys(
+                in: self.groupThread.uniqueId,
+                tx: transaction
             )
-            XCTAssertEqual(Set(noLongerVerifiedAddresses), Set(deverifiedAcis.map { SignalServiceAddress($0) }))
-        }
-    }
-
-    func testNoLongerVerifiedLimit() throws {
-        for recipient in recipients {
-            write { tx in
-                identityManager.setVerificationState(
-                    .noLongerVerified,
-                    identityKey: identityKey(recipient),
-                    address: SignalServiceAddress(recipient),
-                    isUserInitiatedChange: false,
-                    tx: tx.asV2Write
-                )
-            }
-        }
-        // All recipients are no longer verified. Check that the limit is respected.
-        for limit in 1..<recipients.count {
-            read { tx in
-                let noLongerVerifiedAddresses = OWSRecipientIdentity.noLongerVerifiedAddresses(
-                    inGroup: self.groupThread.uniqueId,
-                    limit: limit,
-                    transaction: tx
-                )
-                XCTAssertEqual(noLongerVerifiedAddresses.count, limit)
-            }
+            XCTAssertEqual(Set(noLongerVerifiedIdentityKeys.keys), Set(deverifiedAcis.map { SignalServiceAddress($0) }))
         }
     }
 
@@ -177,10 +151,10 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 continue
             }
             write { tx in
-                identityManager.setVerificationState(
+                _ = identityManager.setVerificationState(
                     .verified,
-                    identityKey: identityKey(recipient),
-                    address: SignalServiceAddress(recipient),
+                    of: identityKey(recipient),
+                    for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
                     tx: tx.asV2Write
                 )

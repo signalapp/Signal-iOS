@@ -18,6 +18,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         let address: SignalServiceAddress
         let displayName: String
         let verificationState: OWSVerificationState
+        let identityKey: Data?
     }
 
     private var confirmationItems: [Item]
@@ -64,14 +65,16 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     fileprivate static func buildConfirmationItems(
         addressesToConfirm: [SignalServiceAddress],
-        transaction: SDSAnyReadTransaction
+        transaction tx: SDSAnyReadTransaction
     ) -> [Item] {
         let identityManager = DependenciesBridge.shared.identityManager
         return addressesToConfirm.map { address in
+            let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx.asV2Read)
             return Item(
                 address: address,
-                displayName: contactsManager.displayName(for: address, transaction: transaction),
-                verificationState: identityManager.verificationState(for: address, tx: transaction.asV2Read)
+                displayName: contactsManager.displayName(for: address, transaction: tx),
+                verificationState: recipientIdentity?.verificationState ?? .default,
+                identityKey: recipientIdentity?.identityKey
             )
         }
     }
@@ -119,7 +122,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     public class func presentIfNecessary(
         addresses: [SignalServiceAddress],
         confirmationText: String,
-        untrustedThreshold: TimeInterval = OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+        untrustedThreshold: Date? = nil,
         completion: @escaping (Bool) -> Void
     ) -> Bool {
 
@@ -226,37 +229,38 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         stackView.addHairline(with: theme.hairlineColor)
         confirmAction.button.releaseAction = { [weak self] in
             guard let self = self else { return }
-            let identityManager = DependenciesBridge.shared.identityManager
-            let unconfirmedAddresses = self.confirmationItems.map { $0.address }
-
-            self.databaseStorage.asyncWrite(block: { writeTx in
-                for address in unconfirmedAddresses {
-                    guard let identityKey = identityManager.identityKey(for: address, tx: writeTx.asV2Read) else { return }
-                    let currentState = identityManager.verificationState(for: address, tx: writeTx.asV2Read)
-
-                    // Promote any unverified verification states to default, but otherwise leave
-                    // the state intact. We don't want to overwrite any addresses that have
-                    // been verified since we last checked.
-                    let newState = (currentState == .noLongerVerified) ? .default : currentState
-                    identityManager.setVerificationState(
-                        newState,
-                        identityKey: identityKey,
-                        address: address,
+            self.databaseStorage.asyncWrite(block: { tx in
+                let identityManager = DependenciesBridge.shared.identityManager
+                for item in self.confirmationItems {
+                    guard let identityKey = item.identityKey else {
+                        return
+                    }
+                    switch identityManager.verificationState(for: item.address, tx: tx.asV2Read) {
+                    case .verified:
+                        // We don't want to overwrite any addresses that have been verified since
+                        // we last checked.
+                        return
+                    case .noLongerVerified, .implicit(isAcknowledged: _):
+                        break
+                    }
+                    _ = identityManager.setVerificationState(
+                        .implicit(isAcknowledged: true),
+                        of: identityKey,
+                        for: item.address,
                         isUserInitiatedChange: true,
-                        tx: writeTx.asV2Write
+                        tx: tx.asV2Write
                     )
                 }
             }, completionQueue: .main) {
-                self.completionHandler(true)
-                self.dismiss(animated: true)
+                self.dismiss(animated: true) { self.completionHandler(true) }
             }
         }
 
         cancelAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(cancelAction.button)
         cancelAction.button.releaseAction = { [weak self] in
-            self?.completionHandler(false)
-            self?.dismiss(animated: true)
+            guard let self else { return }
+            self.dismiss(animated: true) { self.completionHandler(false) }
         }
     }
 
@@ -598,7 +602,7 @@ private class SafetyNumberCell: ContactTableViewCell {
                     "SAFETY_NUMBER_CONFIRMATION_VERIFIED",
                     comment: "Text explaining that the given contact has had their safety number verified."
                 ))
-            case .`default`:
+            case .`default`, .defaultAcknowledged:
                 if let phoneNumber = item.address.phoneNumber {
                     let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
 

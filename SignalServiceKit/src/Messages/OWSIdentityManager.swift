@@ -26,7 +26,7 @@ public protocol OWSIdentityManager {
 
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
-        untrustedThreshold: TimeInterval,
+        untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> OWSRecipientIdentity?
 
@@ -34,20 +34,20 @@ public protocol OWSIdentityManager {
         _ identityKey: Data,
         address: SignalServiceAddress,
         direction: TSMessageDirection,
-        untrustedThreshold: TimeInterval,
+        untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> Bool
 
     func tryToSyncQueuedVerificationStates()
 
-    func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSVerificationState
+    func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> VerificationState
     func setVerificationState(
-        _ verificationState: OWSVerificationState,
-        identityKey: Data,
-        address: SignalServiceAddress,
+        _ verificationState: VerificationState,
+        of identityKey: Data,
+        for address: SignalServiceAddress,
         isUserInitiatedChange: Bool,
         tx: DBWriteTransaction
-    )
+    ) -> ChangeVerificationStateResult
 
     func processIncomingVerifiedProto(_ verified: SSKProtoVerified, tx: DBWriteTransaction) throws
 
@@ -62,6 +62,12 @@ public protocol OWSIdentityManager {
 public enum TSMessageDirection {
     case incoming
     case outgoing
+}
+
+public enum ChangeVerificationStateResult {
+    case error
+    case redundant
+    case success
 }
 
 private extension TSMessageDirection {
@@ -136,7 +142,7 @@ public class IdentityStore: IdentityKeyStore {
             identity.serializeAsData(),
             address: SignalServiceAddress(from: address),
             direction: TSMessageDirection(direction),
-            untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+            untrustedThreshold: nil,
             tx: context.asTransaction.asV2Read
         )
     }
@@ -165,8 +171,7 @@ extension OWSIdentityManagerImpl {
         fileprivate static let storedIdentityKeyLength = 32
 
         /// Don't trust an identity for sending to unless they've been around for at least this long.
-        public static let minimumUntrustedThreshold: TimeInterval = 5
-        public static let maximumUntrustedThreshold: TimeInterval = kHourInterval
+        public static let defaultUntrustedInterval: TimeInterval = 5
     }
 }
 
@@ -331,11 +336,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return false
         }
 
-        let verificationState: OWSVerificationState
+        let verificationState: VerificationState
         let wasIdentityVerified: Bool
-        switch existingIdentity.verificationState {
-        case .default:
-            verificationState = .default
+        switch VerificationState(existingIdentity.verificationState) {
+        case .implicit(isAcknowledged: _):
+            verificationState = .implicit(isAcknowledged: false)
             wasIdentityVerified = false
         case .verified, .noLongerVerified:
             verificationState = .noLongerVerified
@@ -348,7 +353,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             identityKey: identityKey,
             isFirstKnownKey: false,
             createdAt: Date(),
-            verificationState: verificationState
+            verificationState: verificationState.rawValue
         ).anyUpsert(transaction: SDSDB.shimOnlyBridge(tx))
         // PNI TODO: archive PNI sessions too
         // PNI TODO: this should end the PNI session if it was sent to our PNI.
@@ -400,7 +405,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public func untrustedIdentityForSending(
         to address: SignalServiceAddress,
-        untrustedThreshold: TimeInterval,
+        untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> OWSRecipientIdentity? {
         guard let recipientIdentity = recipientIdentity(for: address, tx: tx) else {
@@ -423,7 +428,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         _ identityKey: Data,
         address: SignalServiceAddress,
         direction: TSMessageDirection,
-        untrustedThreshold: TimeInterval,
+        untrustedThreshold: Date?,
         tx: DBReadTransaction
     ) -> Bool {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
@@ -457,7 +462,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private func isTrustedKey(
         _ identityKey: Data,
         forSendingTo recipientIdentity: OWSRecipientIdentity?,
-        untrustedThreshold: TimeInterval
+        untrustedThreshold: Date?
     ) -> Bool {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
@@ -481,17 +486,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             // This user has never been explicitly verified, but we still want to check
             // if the identity key is one we newly learned about to give the local user
             // time to ensure they wish to send. If it has been created in the last N
-            // seconds, we'll treat it as untrusted so sends fail. We enforce a minimum
-            // and maximum threshold for the new window to ensure that we never inadvertently
-            // block sending indefinitely or use a window so small it would be impossible
-            // for the local user to notice a key change. This is a best effort, and we'll
-            // continue to allow sending to the user after the "new" window elapses without
-            // any explicit action from the local user.
-            let clampedUntrustedThreshold = untrustedThreshold.clamp(Constants.minimumUntrustedThreshold, Constants.maximumUntrustedThreshold)
-            guard abs(recipientIdentity.createdAt.timeIntervalSinceNow) >= clampedUntrustedThreshold else {
+            // seconds, we'll treat it as untrusted so sends fail. This is a best
+            // effort, and we'll continue to allow sending to the user after the "new"
+            // window elapses without any explicit action from the local user.
+            let untrustedThreshold = untrustedThreshold ?? Date(timeIntervalSinceNow: -Constants.defaultUntrustedInterval)
+            guard recipientIdentity.createdAt <= untrustedThreshold else {
                 Logger.warn("Not trusting new identity for \(recipientIdentity.accountId)")
                 return false
             }
+            return true
+        case .defaultAcknowledged:
             return true
         case .verified:
             return true
@@ -666,66 +670,70 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     // MARK: - Verification
 
-    public func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSVerificationState {
-        return recipientIdentity(for: address, tx: tx)?.verificationState ?? .default
+    public func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> VerificationState {
+        return VerificationState(recipientIdentity(for: address, tx: tx)?.verificationState ?? .default)
     }
 
     public func setVerificationState(
-        _ verificationState: OWSVerificationState,
-        identityKey: Data,
-        address: SignalServiceAddress,
+        _ verificationState: VerificationState,
+        of identityKey: Data,
+        for address: SignalServiceAddress,
         isUserInitiatedChange: Bool,
         tx: DBWriteTransaction
-    ) {
-        setVerificationState(
-            verificationState,
-            identityKey: identityKey,
-            signalRecipient: OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx)),
-            isUserInitiatedChange: isUserInitiatedChange,
-            tx: tx
-        )
-    }
-
-    private func setVerificationState(
-        _ verificationState: OWSVerificationState,
-        identityKey: Data,
-        signalRecipient: SignalRecipient,
-        isUserInitiatedChange: Bool,
-        tx: DBWriteTransaction
-    ) {
+    ) -> ChangeVerificationStateResult {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
-        let recipientId = signalRecipient.uniqueId
 
-        // Ensure a remote identity exists for this key. We may be learning about
-        // it for the first time.
-        saveIdentityKey(identityKey, for: recipientId, tx: tx)
-
+        let recipient = OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
+        let recipientId = recipient.uniqueId
         let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
         guard let recipientIdentity else {
             owsFailDebug("Missing OWSRecipientIdentity.")
-            return
+            return .error
         }
 
-        if recipientIdentity.verificationState == verificationState {
-            return
+        guard recipientIdentity.identityKey == identityKey else {
+            Logger.warn("Can't change verification state for outdated identity key")
+            return .error
         }
 
-        // PNI TODO: Ensure that we only mark Acis as verified.
+        let oldVerificationState = VerificationState(recipientIdentity.verificationState)
+        if oldVerificationState == verificationState {
+            return .redundant
+        }
+
+        // If we're sending to a Pni, the identity key might change. If that
+        // happens, we can acknowledge it, but we can't mark it as verified.
+        if recipient.pni != nil, recipient.aciString == nil {
+            switch verificationState {
+            case .verified, .noLongerVerified, .implicit(isAcknowledged: false):
+                owsFailDebug("Can't mark Pni recipient as verified/no longer verified.")
+                return .error
+            case .implicit(isAcknowledged: true):
+                break
+            }
+        }
 
         Logger.info("setVerificationState for \(recipientId): \(recipientIdentity.verificationState) -> \(verificationState)")
+        recipientIdentity.update(with: verificationState.rawValue, transaction: SDSDB.shimOnlyBridge(tx))
 
-        recipientIdentity.update(with: verificationState, transaction: SDSDB.shimOnlyBridge(tx))
-
-        if isUserInitiatedChange {
-            saveChangeMessages(for: signalRecipient, verificationState: verificationState, isLocalChange: true, tx: tx)
-            enqueueSyncMessage(for: recipientId, tx: tx)
-        } else {
-            // Cancel any pending verification state sync messages for this recipient.
-            clearSyncMessage(for: recipientId, tx: tx)
+        switch (oldVerificationState, verificationState) {
+        case (.implicit, .implicit):
+            // We're only changing `isAcknowledged`, and that doesn't impact Storage
+            // Service, sync messages, or chat events.
+            break
+        default:
+            if isUserInitiatedChange {
+                saveChangeMessages(for: recipient, verificationState: verificationState, isLocalChange: true, tx: tx)
+                enqueueSyncMessage(for: recipientId, tx: tx)
+            } else {
+                // Cancel any pending verification state sync messages for this recipient.
+                clearSyncMessage(for: recipientId, tx: tx)
+            }
+            // Verification state has changed, so notify storage service.
+            storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipientId])
         }
-        // Verification state has changed, so notify storage service.
-        storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipientId])
         fireIdentityStateChangeNotification(after: tx)
+        return .success
     }
 
     // MARK: - Verified
@@ -742,16 +750,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
         switch verified.state {
         case .default:
-            applyVerificationState(
-                .default,
+            applyVerificationStateAction(
+                .clearVerification,
                 aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: false,
                 tx: tx
             )
         case .verified:
-            applyVerificationState(
-                .verified,
+            applyVerificationStateAction(
+                .markVerified,
                 aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: true,
@@ -764,8 +772,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
     }
 
-    private func applyVerificationState(
-        _ verificationState: OWSVerificationState,
+    private enum VerificationStateAction {
+        case markVerified
+        case clearVerification
+    }
+
+    private func applyVerificationStateAction(
+        _ verificationStateAction: VerificationStateAction,
         aci: Aci,
         identityKey: Data,
         overwriteOnConflict: Bool,
@@ -791,12 +804,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             }
             shouldSaveIdentityKey = didChangeIdentityKey
             shouldInsertChangeMessages = true
+        } else if verificationStateAction == .clearVerification {
+            // There's no point in creating a new recipient identity just to set its
+            // verification state to default.
+            return
         } else {
-            if verificationState == .default {
-                // There's no point in creating a new recipient identity just to set its
-                // verification state to default.
-                return
-            }
             shouldSaveIdentityKey = true
             shouldInsertChangeMessages = false
         }
@@ -818,24 +830,37 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return owsFailDebug("Unexpected identityKey for \(aci)")
         }
 
-        if recipientIdentity.verificationState == verificationState {
-            return
+        let oldVerificationState: VerificationState = VerificationState(recipientIdentity.verificationState)
+        let newVerificationState: VerificationState
+
+        switch verificationStateAction {
+        case .markVerified:
+            switch oldVerificationState {
+            case .verified:
+                return
+            case .noLongerVerified, .implicit(isAcknowledged: _):
+                newVerificationState = .verified
+            }
+        case .clearVerification:
+            switch oldVerificationState {
+            case .implicit:
+                return  // We can keep any implicit state.
+            case .verified, .noLongerVerified:
+                newVerificationState = .implicit(isAcknowledged: false)
+            }
         }
 
-        let oldVerificationState = OWSVerificationStateToString(recipientIdentity.verificationState)
-        let newVerificationState = OWSVerificationStateToString(verificationState)
         Logger.info("for \(aci): \(oldVerificationState) -> \(newVerificationState)")
-
-        recipientIdentity.update(with: verificationState, transaction: SDSDB.shimOnlyBridge(tx))
+        recipientIdentity.update(with: newVerificationState.rawValue, transaction: SDSDB.shimOnlyBridge(tx))
 
         if shouldInsertChangeMessages {
-            saveChangeMessages(for: recipient, verificationState: verificationState, isLocalChange: false, tx: tx)
+            saveChangeMessages(for: recipient, verificationState: newVerificationState, isLocalChange: false, tx: tx)
         }
     }
 
     private func saveChangeMessages(
         for signalRecipient: SignalRecipient,
-        verificationState: OWSVerificationState,
+        verificationState: VerificationState,
         isLocalChange: Bool,
         tx: DBWriteTransaction
     ) {
@@ -849,7 +874,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             OWSVerificationStateChangeMessage(
                 thread: thread,
                 recipientAddress: address,
-                verificationState: verificationState,
+                verificationState: verificationState.rawValue,
                 isLocalChange: isLocalChange
             ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
         }
@@ -995,7 +1020,7 @@ class OWSIdentityManagerObjCBridge: NSObject {
             let identityManager = DependenciesBridge.shared.identityManager
             return identityManager.untrustedIdentityForSending(
                 to: address,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: tx.asV2Read
             )
         }

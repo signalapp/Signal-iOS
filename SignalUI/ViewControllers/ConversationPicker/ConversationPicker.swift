@@ -1232,6 +1232,10 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
 extension ConversationPickerViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
+        tryToProceed(untrustedThreshold: presentationTime?.addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval))
+    }
+
+    private func tryToProceed(untrustedThreshold: Date?) {
         guard let pickerDelegate = pickerDelegate else {
             owsFailDebug("Missing delegate.")
             return
@@ -1243,7 +1247,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
         }
 
         if shouldBatchUpdateIdentityKeys {
-            guard let presentationTime = presentationTime else {
+            guard let untrustedThreshold else {
                 owsFailDebug("Unexpectedly missing presentation time")
                 return
             }
@@ -1254,15 +1258,18 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
                 }
             }
 
-            // Before continuing, prompt for any safety number changes that
-            // we have learned about since the view was presented.
+            // Before continuing, prompt for any safety number changes that we have
+            // learned about since the view was presented (to handle batch identity key
+            // updates) or since we last checked (to handle the recursive passes
+            // through this method).
+            let newUntrustedThreshold = Date()
             let didHaveSafetyNumberChanges = SafetyNumberConfirmationSheet.presentIfNecessary(
                 addresses: selectedRecipients,
                 confirmationText: SafetyNumberStrings.confirmSendButton,
-                untrustedThreshold: abs(presentationTime.timeIntervalSinceNow) + OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold
+                untrustedThreshold: untrustedThreshold
             ) { didConfirmSafetyNumberChange in
                 guard didConfirmSafetyNumberChange else { return }
-                pickerDelegate.conversationPickerDidCompleteSelection(self)
+                self.tryToProceed(untrustedThreshold: newUntrustedThreshold)
             }
 
             guard !didHaveSafetyNumberChanges else { return }

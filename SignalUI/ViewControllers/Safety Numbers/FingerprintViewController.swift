@@ -4,7 +4,7 @@
 //
 
 import Foundation
-
+import LibSignalClient
 import Lottie
 import PureLayout
 import SafariServices
@@ -68,7 +68,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         let fingerprintViewController = FingerprintViewController(
             fingerprints: fingerprintResult.fingerprints,
             initialDisplayIndex: fingerprintResult.initialDisplayIndex,
-            recipientAddress: theirAddress,
+            recipientAci: fingerprintResult.theirAci,
             recipientIdentity: theirRecipientIdentity
         )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
@@ -87,21 +87,22 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         return .portrait
     }
 
-    private let recipientAddress: SignalServiceAddress
+    private let recipientAci: Aci
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let identityKey: Data
     private let fingerprints: [OWSFingerprint]
+    private var isVerified = false
     private var selectedIndex: Int
 
     public init(
         fingerprints: [OWSFingerprint],
         initialDisplayIndex: Int,
-        recipientAddress: SignalServiceAddress,
+        recipientAci: Aci,
         recipientIdentity: OWSRecipientIdentity
     ) {
-        self.recipientAddress = recipientAddress
-        self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
+        self.recipientAci = recipientAci
+        self.contactName = Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci))
         // By capturing the identity key when we enter these views, we prevent the edge case
         // where the user verifies a key that we learned about while this view was open.
         self.recipientIdentity = recipientIdentity
@@ -376,11 +377,9 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     }
 
     private func updateVerificationStateLabel() {
-        owsAssertBeta(recipientAddress.isValid)
-
         let identityManager = DependenciesBridge.shared.identityManager
-        let isVerified = databaseStorage.read { tx in
-            return identityManager.verificationState(for: recipientAddress, tx: tx.asV2Read) == .verified
+        isVerified = databaseStorage.read { tx in
+            return identityManager.verificationState(for: SignalServiceAddress(recipientAci), tx: tx.asV2Read) == .verified
         }
 
         if isVerified {
@@ -750,12 +749,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
         databaseStorage.write { tx in
             let identityManager = DependenciesBridge.shared.identityManager
-            let isVerified = identityManager.verificationState(for: recipientAddress, tx: tx.asV2Read) == .verified
-            let newVerificationState: OWSVerificationState = isVerified ? .default : .verified
-            identityManager.setVerificationState(
+            let newVerificationState: VerificationState = isVerified ? .implicit(isAcknowledged: false) : .verified
+            identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx.asV2Write)
+            _ = identityManager.setVerificationState(
                 newVerificationState,
-                identityKey: identityKey,
-                address: recipientAddress,
+                of: identityKey,
+                for: SignalServiceAddress(recipientAci),
                 isUserInitiatedChange: true,
                 tx: tx.asV2Write
             )
@@ -801,7 +800,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     fileprivate func didTapToScan() {
         let viewController = FingerprintScanViewController(
-            recipientAddress: recipientAddress,
+            recipientAci: recipientAci,
             recipientIdentity: recipientIdentity,
             fingerprints: self.fingerprints
         )
@@ -845,7 +844,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
         FingerprintScanViewController.showVerificationSucceeded(
             from: self,
             identityKey: identityKey,
-            recipientAddress: recipientAddress,
+            recipientAci: recipientAci,
             contactName: contactName,
             tag: logTag
         )

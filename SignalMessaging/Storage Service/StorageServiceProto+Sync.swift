@@ -400,7 +400,6 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let localGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
         let localFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, tx: transaction.asV2Read)
-        let localIdentityState = identityManager.verificationState(for: address, tx: transaction.asV2Read)
         let localIsBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let localIsHidden = recipientHidingManager.isHiddenAddress(address, tx: transaction.asV2Read)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
@@ -448,20 +447,27 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         // If our local identity differs from the service, use the service's value.
-        if let identityKeyWithType = record.identityKey, let identityState = record.identityState?.verificationState,
-            let identityKey = try? identityKeyWithType.removeKeyType(),
-            localIdentityKey != identityKey || localIdentityState != identityState {
-
-            identityManager.setVerificationState(
-                identityState,
-                identityKey: identityKey,
-                address: address,
-                isUserInitiatedChange: false,
-                tx: transaction.asV2Write
-            )
-
-        // If we have a local identity for this user but the service doesn't mark it as needing update.
-        } else if localIdentityKey != nil && !record.hasIdentityKey {
+        if
+            let identityKey = try? record.identityKey?.removeKeyType(),
+            let identityState = record.identityState?.verificationState
+        {
+            if identityKey != localIdentityKey {
+                identityManager.saveIdentityKey(identityKey, for: contact.aci, tx: transaction.asV2Write)
+            }
+            // Make sure we fetch this after changing the identity key.
+            let localIdentityState = identityManager.verificationState(for: address, tx: transaction.asV2Read)
+            if identityState != localIdentityState {
+                _ = identityManager.setVerificationState(
+                    identityState,
+                    of: identityKey,
+                    for: address,
+                    isUserInitiatedChange: false,
+                    tx: transaction.asV2Write
+                )
+            }
+        }
+        // If we have a local identity for this user but the service doesn't, mark it as needing update.
+        if localIdentityKey != nil && !record.hasIdentityKey {
             needsUpdate = true
         }
 
@@ -654,28 +660,28 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 // MARK: -
 
 extension StorageServiceProtoContactRecordIdentityState {
-    static func from(_ state: OWSVerificationState) -> StorageServiceProtoContactRecordIdentityState {
+    static func from(_ state: VerificationState) -> StorageServiceProtoContactRecordIdentityState {
         switch state {
         case .verified:
             return .verified
-        case .default:
+        case .implicit(isAcknowledged: _):
             return .default
         case .noLongerVerified:
             return .unverified
         }
     }
 
-    var verificationState: OWSVerificationState {
+    var verificationState: VerificationState {
         switch self {
         case .verified:
             return .verified
         case .default:
-            return .default
+            return .implicit(isAcknowledged: false)
         case .unverified:
             return .noLongerVerified
         case .UNRECOGNIZED:
             owsFailDebug("unrecognized verification state")
-            return .default
+            return .implicit(isAcknowledged: false)
         }
     }
 }

@@ -7,6 +7,7 @@ import LibSignalClient
 
 public class OWSFingerprintBuilder {
     public struct FingerprintResult {
+        public let theirAci: Aci
         public let fingerprints: [OWSFingerprint]
         public let initialDisplayIndex: Int
     }
@@ -72,12 +73,14 @@ public class OWSFingerprintBuilder {
 
         if FeatureFlags.onlyAciSafetyNumbers {
             return FingerprintResult(
+                theirAci: theirAci,
                 fingerprints: [aciFingerprint],
                 initialDisplayIndex: 0
             )
         } else if RemoteConfig.defaultToAciSafetyNumber, let e164Fingerprint {
             // We have both, but prefer the ACI.
             return FingerprintResult(
+                theirAci: theirAci,
                 fingerprints: [e164Fingerprint, aciFingerprint],
                 initialDisplayIndex: 1
             )
@@ -85,6 +88,7 @@ public class OWSFingerprintBuilder {
             // If we default to ACI safety number and don't have the e164,
             // that's fine. Just show the ACI one.
             return FingerprintResult(
+                theirAci: theirAci,
                 fingerprints: [aciFingerprint],
                 initialDisplayIndex: 0
             )
@@ -96,6 +100,7 @@ public class OWSFingerprintBuilder {
             }
 
             return FingerprintResult(
+                theirAci: theirAci,
                 fingerprints: [e164Fingerprint, aciFingerprint],
                 initialDisplayIndex: 0
             )

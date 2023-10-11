@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /**
  * Strings re-used in multiple places should be added here.
@@ -505,8 +506,10 @@ public class MediaStrings: NSObject {
 public class SafetyNumberStrings: NSObject {
 
     static public var confirmSendButton: String {
-        OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                          comment: "button title to confirm sending to a recipient whose safety number recently changed")
+        OWSLocalizedString(
+            "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+            comment: "button title to confirm sending to a recipient whose safety number recently changed"
+        )
     }
 }
 

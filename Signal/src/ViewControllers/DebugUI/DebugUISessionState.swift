@@ -143,16 +143,21 @@ class DebugUISessionState: DebugUIPage, Dependencies {
         let stateSelection = ActionSheetController(title: "Select a verification state", message: message)
         stateSelection.addAction(OWSActionSheets.cancelAction)
 
-        let allStates: [OWSVerificationState] = [ .verified, .default, .noLongerVerified ]
+        let allStates: [VerificationState] = [
+            .verified,
+            .implicit(isAcknowledged: false),
+            .implicit(isAcknowledged: true),
+            .noLongerVerified
+        ]
         allStates.forEach { state in
             stateSelection.addAction(ActionSheetAction(
-                title: OWSVerificationStateToString(state),
+                title: "\(state)",
                 handler: { _ in
                     databaseStorage.write { tx in
-                        identityManager.setVerificationState(
+                        _ = identityManager.setVerificationState(
                             state,
-                            identityKey: identity.identityKey,
-                            address: address,
+                            of: identity.identityKey,
+                            for: address,
                             isUserInitiatedChange: false,
                             tx: tx.asV2Write
                         )

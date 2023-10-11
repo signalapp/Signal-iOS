@@ -115,7 +115,11 @@ extension DonationViewsUtil {
                 confirmationText: SafetyNumberStrings.confirmSendButton
             ) { didConfirm in
                 if didConfirm {
-                    future.resolve(.userConfirmedSafetyNumberChangeOrNoChangeWasNeeded)
+                    // After confirming, show it again if it changed *again*.
+                    future.resolve(
+                        on: DispatchQueue.main,
+                        with: showSafetyNumberConfirmationIfNecessary(for: thread).promise
+                    )
                 } else {
                     future.resolve(.userDidNotConfirmSafetyNumberChange)
                 }

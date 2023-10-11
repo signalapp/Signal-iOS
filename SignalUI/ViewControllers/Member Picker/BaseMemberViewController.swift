@@ -329,22 +329,34 @@ extension BaseMemberViewController: RecipientPickerDelegate {
                 }
             }
         } else {
-            let confirmationText = OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
-                                                      comment: "button title to confirm adding a recipient when their safety number has recently changed")
-            let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-                address: address,
-                confirmationText: confirmationText
-            ) { didConfirmIdentity in
-                guard didConfirmIdentity else { return }
-                addRecipientCompletion()
-            }
-
-            if didShowSNAlert {
-                return
-            }
-
-            addRecipientCompletion()
+            confirmSafetyNumber(for: address, untrustedThreshold: nil, thenAddRecipient: addRecipientCompletion)
         }
+    }
+
+    private func confirmSafetyNumber(
+        for address: SignalServiceAddress,
+        untrustedThreshold: Date?,
+        thenAddRecipient addRecipient: @escaping () -> Void
+    ) {
+        let confirmationText = OWSLocalizedString(
+            "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
+            comment: "button title to confirm adding a recipient when their safety number has recently changed"
+        )
+        let newUntrustedThreshold = Date()
+        let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
+            addresses: [address],
+            confirmationText: confirmationText,
+            untrustedThreshold: untrustedThreshold
+        ) { [weak self] didConfirmIdentity in
+            guard didConfirmIdentity else { return }
+            self?.confirmSafetyNumber(for: address, untrustedThreshold: newUntrustedThreshold, thenAddRecipient: addRecipient)
+        }
+
+        if didShowSNAlert {
+            return
+        }
+
+        addRecipient()
     }
 
     public func recipientPicker(

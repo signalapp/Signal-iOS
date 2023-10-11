@@ -615,6 +615,10 @@ public final class CallService: LightweightCallManager {
     @discardableResult
     @objc
     public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
+        initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: nil)
+    }
+
+    private func initiateCall(thread: TSThread, isVideo: Bool, untrustedThreshold: Date?) -> Bool {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.warn("aborting due to user not being registered.")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
@@ -636,12 +640,14 @@ public final class CallService: LightweightCallManager {
             return false
         }
 
+        let newUntrustedThreshold = Date()
         let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-            address: thread.contactAddress,
-            confirmationText: CallStrings.confirmAndCallButtonTitle
+            addresses: [thread.contactAddress],
+            confirmationText: CallStrings.confirmAndCallButtonTitle,
+            untrustedThreshold: untrustedThreshold
         ) { didConfirmIdentity in
             guard didConfirmIdentity else { return }
-            _ = self.initiateCall(thread: thread, isVideo: isVideo)
+            _ = self.initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: newUntrustedThreshold)
         }
         guard !showedAlert else {
             return false

@@ -18,6 +18,8 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
             return @"OWSVerificationStateVerified";
         case OWSVerificationStateNoLongerVerified:
             return @"OWSVerificationStateNoLongerVerified";
+        case OWSVerificationStateDefaultAcknowledged:
+            return @"OWSVerificationStateDefaultAcknowledged";
     }
 }
 
@@ -25,6 +27,7 @@ static SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationSta
 {
     switch (verificationState) {
         case OWSVerificationStateDefault:
+        case OWSVerificationStateDefaultAcknowledged:
             return SSKProtoVerifiedStateDefault;
         case OWSVerificationStateVerified:
             return SSKProtoVerifiedStateVerified;

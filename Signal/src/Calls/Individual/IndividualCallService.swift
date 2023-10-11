@@ -229,25 +229,30 @@ final public class IndividualCallService: NSObject {
         let identityManager = DependenciesBridge.shared.identityManager
         if let untrustedIdentity = identityManager.untrustedIdentityForSending(
             to: thread.contactAddress,
-            untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+            untrustedThreshold: nil,
             tx: transaction.asV2Read
         ) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
             switch untrustedIdentity.verificationState {
-            case .verified:
+            case .verified, .defaultAcknowledged:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
                 let sentAtTimestamp = Date(millisecondsSince1970: newCall.individualCall.sentAtTimestamp)
-                self.notificationPresenter.presentMissedCall(newCall,
-                                                             caller: thread.contactAddress,
-                                                             sentAt: sentAtTimestamp)
+                self.notificationPresenter.presentMissedCall(
+                    newCall,
+                    caller: thread.contactAddress,
+                    sentAt: sentAtTimestamp
+                )
             case .default:
-                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall,
-                                                                                 caller: thread.contactAddress)
+                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(
+                    call: newCall,
+                    caller: thread.contactAddress
+                )
             case .noLongerVerified:
                 self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
                     call: newCall,
-                    caller: thread.contactAddress)
+                    caller: thread.contactAddress
+                )
             }
 
             newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissedBecauseOfChangedIdentity, transaction: transaction)

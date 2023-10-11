@@ -461,13 +461,21 @@ extension SharingThreadPickerViewController {
 
         if let untrustedIdentityError = error as? UntrustedIdentityError {
             let untrustedServiceId = untrustedIdentityError.serviceId
-            let failureFormat = OWSLocalizedString("SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
-                                                  comment: "alert body when sharing file failed because of untrusted/changed identity keys")
+            let failureFormat = OWSLocalizedString(
+                "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
+                comment: "alert body when sharing file failed because of untrusted/changed identity keys"
+            )
             let displayName = self.contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId))
             let failureMessage = String(format: failureFormat, displayName)
 
             let actionSheet = ActionSheetController(title: failureTitle, message: failureMessage)
             actionSheet.addAction(cancelAction)
+
+            // Capture the identity key before showing the prompt about it.
+            let identityKey = databaseStorage.read { tx in
+                let identityManager = DependenciesBridge.shared.identityManager
+                return identityManager.identityKey(for: SignalServiceAddress(untrustedServiceId), tx: tx.asV2Read)
+            }
 
             let confirmAction = ActionSheetAction(
                 title: SafetyNumberStrings.confirmSendButton,
@@ -483,29 +491,21 @@ extension SharingThreadPickerViewController {
                         tx: transaction.asV2Write
                     )
                     switch verificationState {
-                    case .default:
-                        // If we learned of a changed SN during send, then we've already recorded the new identity
-                        // and there's nothing else we need to do for the resend to succeed.
-                        // We don't want to redundantly set status to "default" because we would create a
-                        // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
-                        // marked as "Verified".
-                        Logger.info("recipient has acceptable verification status. Next send will succeed.")
-                    case .noLongerVerified:
+                    case .verified:
+                        owsFailDebug("Unexpected state")
+                    case .noLongerVerified, .implicit(isAcknowledged: _):
                         Logger.info("marked recipient: \(untrustedServiceId) as default verification status.")
-                        guard let indentityKey = identityManager.identityKey(
+                        guard let identityKey else {
+                            owsFailDebug("Can't be untrusted unless there's already an identity key.")
+                            return
+                        }
+                        _ = identityManager.setVerificationState(
+                            .implicit(isAcknowledged: true),
+                            of: identityKey,
                             for: SignalServiceAddress(untrustedServiceId),
-                            tx: transaction.asV2Write
-                        ) else { return owsFailDebug("missing identity key") }
-
-                        identityManager.setVerificationState(
-                            .default,
-                            identityKey: indentityKey,
-                            address: SignalServiceAddress(untrustedServiceId),
                             isUserInitiatedChange: true,
                             tx: transaction.asV2Write
                         )
-                    case .verified:
-                        owsFailDebug("Unexpected state")
                     }
                 }
 

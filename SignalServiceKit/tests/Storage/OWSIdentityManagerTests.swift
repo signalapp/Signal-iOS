@@ -34,14 +34,14 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
                 newKey,
                 address: address,
                 direction: .outgoing,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
             XCTAssert(identityManager.isTrustedIdentityKey(
                 newKey,
                 address: address,
                 direction: .incoming,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
         }
@@ -57,14 +57,14 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
                 newKey,
                 address: address,
                 direction: .outgoing,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
             XCTAssert(identityManager.isTrustedIdentityKey(
                 newKey,
                 address: address,
                 direction: .incoming,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
         }
@@ -81,14 +81,14 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
                 originalKey,
                 address: address,
                 direction: .outgoing,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
             XCTAssert(identityManager.isTrustedIdentityKey(
                 originalKey,
                 address: address,
                 direction: .incoming,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
 
@@ -98,14 +98,14 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
                 otherKey,
                 address: address,
                 direction: .outgoing,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
             XCTAssert(identityManager.isTrustedIdentityKey(
                 otherKey,
                 address: address,
                 direction: .incoming,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: transaction.asV2Read
             ))
         }

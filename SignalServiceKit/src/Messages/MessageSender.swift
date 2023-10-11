@@ -338,7 +338,7 @@ private extension MessageSender {
             // Otherwise, skip the request if we don't trust the identity.
             let untrustedIdentity = identityManager.untrustedIdentityForSending(
                 to: recipient.address,
-                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                untrustedThreshold: nil,
                 tx: tx.asV2Read
             )
             return untrustedIdentity != nil

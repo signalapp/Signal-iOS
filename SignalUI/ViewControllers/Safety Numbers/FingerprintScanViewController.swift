@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 import UIKit
 
 class FingerprintScanViewController: OWSViewController, OWSNavigationChildController {
 
-    private let recipientAddress: SignalServiceAddress
+    private let recipientAci: Aci
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let identityKey: Data
@@ -18,18 +19,16 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .masked())
 
     init(
-        recipientAddress: SignalServiceAddress,
+        recipientAci: Aci,
         recipientIdentity: OWSRecipientIdentity,
         fingerprints: [OWSFingerprint]
     ) {
-        owsAssertDebug(recipientAddress.isValid)
-
-        self.recipientAddress = recipientAddress
+        self.recipientAci = recipientAci
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
 
         self.fingerprints = fingerprints
-        self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
+        self.contactName = Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci))
 
         super.init()
 
@@ -101,7 +100,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             FingerprintScanViewController.showVerificationSucceeded(
                 from: self,
                 identityKey: identityKey,
-                recipientAddress: recipientAddress,
+                recipientAci: recipientAci,
                 contactName: contactName,
                 tag: logTag
             )
@@ -144,12 +143,11 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     static func showVerificationSucceeded(
         from viewController: UIViewController,
         identityKey: Data,
-        recipientAddress: SignalServiceAddress,
+        recipientAci: Aci,
         contactName: String,
         tag: String
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(recipientAddress.isValid)
 
         Logger.info("\(tag) Successfully verified safety numbers.")
 
@@ -168,10 +166,12 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             style: .default,
             handler: { _ in
                 DependenciesBridge.shared.db.write { tx in
-                    DependenciesBridge.shared.identityManager.setVerificationState(
+                    let identityManager = DependenciesBridge.shared.identityManager
+                    identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx)
+                    _ = identityManager.setVerificationState(
                         .verified,
-                        identityKey: identityKey,
-                        address: recipientAddress,
+                        of: identityKey,
+                        for: SignalServiceAddress(recipientAci),
                         isUserInitiatedChange: true,
                         tx: tx
                     )
