@@ -80,7 +80,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "Tik om te downloaden";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video-oproep";
+"ACTION_VIDEO_CALL" = "Video";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Personen toevoegen";
@@ -128,7 +128,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Afleveringsprobleem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of een bevestiging dat een bericht gelezen is van %1$@ kan niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets probeerde naar je te verzenden in een één-op-één-gesprek of in een groepsgesprek.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of leesbevestiging van %1$@ kon niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets naar je probeerde te verzenden in een één-op-één-gesprek of in een groepsgesprek.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Verwerpen";
@@ -503,7 +503,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Doneren";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Meer leren hierover.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Meer informatie.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Maandelijkse donatie stopgezet";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Je maandelijkse donaties zijn automatisch stopgezet, omdat je te lang inactief bent geweest. Je %1$@-badge is niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal wilt ondersteunen en je badge weer wilt weergeven dan moet je je donaties vernieuwen.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Kies een badge om weer te geven op je profiel en je steun aan ons te laten zien.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Op profiel weergeven";
@@ -530,7 +530,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Als je meerdere badges hebt dan kun je er één kiezen om voor anderen op je profiel weer te geven.";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Banier sluiten";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Banner sluiten";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Je zult niet langer berichten of meldingen van deze groep ontvangen.";
@@ -551,7 +551,7 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Geblokkeerde personen";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Groepsgesprek is al geblokkeerd.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Groep is al geblokkeerd.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Deze persoon is al geblokkeerd.";
@@ -701,7 +701,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "weigeren";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Inkomend groepsgesprek...";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Inkomende groepsoproep...";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
 "CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ belt de groep …";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Donatiebedrag: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Donatiebedrag: %1$@/maand";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal verzamelt of bewaart geen persoonlijke gegevens wanneer je een donatie doet.\n\nWij gebruiken Stripe als onze betalingsverwerker om je donaties te ontvangen. Wij hebben geen toegang tot de informatie die je aan hen verstrekt en slaan die ook niet op.\n\nSignal koppelt je donatie niet aan je Signal-account en kan dat ook niet.\n\nBedankt voor je steun!";
@@ -899,7 +899,7 @@
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Jouw informatie is privé";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
-"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Meer leren hierover.";
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Meer informatie.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
 "CARD_DONATION_SUBHEADER_TEXT" = "Voer je kaartgegevens in. Signal verzamelt of bewaart geen persoonlijke gegevens.";
@@ -1001,7 +1001,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Weet je zeker dat je alle gegevens wilt wissen?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Je zult dit groepsgesprek nog wel kunnen teruglezen maar je zult niet langer berichten kunnen verzenden of ontvangen.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Je zult in deze groep niet langer berichten kunnen verzenden of ontvangen.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Wil je de groep echt verlaten?";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Kleiner weergeven";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Het overzetten kon niet worden voltooid. Zorg ervoor dat Signal op beide apparaten is geopend en probeer het opnieuw.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Kon de identiteit van het nieuwe apparaat niet verifiëren, probeer het opnieuw";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Het overzetten kon niet worden voltooid. Houd je apparaten bij elkaar in de buurt en probeer het opnieuw.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om deze iPad in te stellen als gekoppeld apparaat moet je de QR-code scannen met je oude iPad";
@@ -4130,7 +4130,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ aan %2$@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "De groep een naam geven";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Geef de groep een naam";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere Signal-gebruikers";
@@ -7220,7 +7220,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Zodra je een bericht verzendt zal de timer voor verdwijnende berichten op %1$@ worden ingesteld.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Deze persoon is een onbekende, je zit zelfs niet in een groepsgesprek met deze persoon. Overweeg daarom zorgvuldig of je dit gespreksverzoek wilt aanvaarden.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Je hebt geen gemeenschappelijke groepen met deze persoon. Beoordeel dit gespreksverzoek zorgvuldig.";
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "In deze groep zit niemand met wie je eerder een gesprek hebt gevoerd, overweeg daarom zorgvuldig of je wel lid wilt worden.";

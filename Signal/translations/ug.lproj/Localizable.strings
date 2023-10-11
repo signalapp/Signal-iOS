@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "سىز بەك ئۇزاق ۋاقىت مەشغۇلات ئېلىپ بارمىغاچقا ئايلىق ئىئانىڭىز ئاپتوماتىك بىكار قىلىندى. %1$@ ئىزنىكىڭىز ئەمدى ئارخىپىڭىزدا كۆرۈنمەيدۇ.\n\nSignal نى يەنىلا ئىشلىتەلەيسىز، لېكىن ئەپنى قوللاش ۋە ئىزنەكلىرىڭىزنى قايتا قوزغىتىش ئۈچۈن مۇشتەرىلىكنى يېڭىلاڭ.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "قوللىغانلىقىڭىزنى نامايەن قىلىش ئۈچۈن ئىزنەك تاللاپ ئارخىپىڭىزدا كۆرۈنىدىغان قىلىپ قويۇڭ.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "ئارخىپتا كۆرسىتىش";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "ئىئانە سوممىسى: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "ئىئانە سوممىسى: %1$@ / ئايلىق";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "سىز ئىئانە قىلغاندا Signal شەخسىي ئۇچۇرلىرىڭىزنى توپلىمايدۇ ياكى ساقلىمايدۇ.\n\nئىئانىڭىزنى تاپشۇرۇۋېلىش ئۈچۈن Stripe پۇل تۆلەش بىر تەرەپ قىلغۇچىسى ئورنىدا ئىشلىتىمىز. سىز ئۇلارغا تەمىنلىگەن ئۇچۇرلارنى بىز كۆرەلمەيمىز ياكى ساقلىيالمايمىز.Signal سىزنىڭ ئىئانىڭىزنى سىزنىڭ Signal ھېساباتىڭىزغا باغلىمايدۇ ۋە ئۇنداق قىلىش ھوقۇقىمۇ بولمايدۇ.قوللىغىنىڭىزغا رەھمەت!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "كىچىكرەك كۆرۈڭ";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "پۇل يۆتكەشنى تاماملىيالمىدى. ئىككىلى ئۈسكۈنىدە Signal نىڭ بار بولۇشىغا كاپالەتلىك قىلىپ قايتا سىناڭ.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "يېڭى ئۈسكۈنىڭىزنى دەلىللىيەلمىدى. قايتا سىناڭ.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "پۇل يۆتكەشنى تاماملىيالمىدى. ئۈسكۈنىلەرنى يېقىن كەلتۈرۈپ قايتا سىناڭ.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "بۇ iPad نى باغلانغان ئۈسكۈنە قىلىپ تەڭشەشتە، كونا iPad تە تارىشىڭىز زۆرۈر.";

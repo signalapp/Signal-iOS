@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal har kun tilgang til bildene og videoene du plukket ut";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Posisjon";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Sted";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Når du tar bilder og videoer, kan du se og sende dem her.";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Den månedlige pengegaven ble stoppet automatisk fordi du har vært inaktiv for lenge. %1$@-merket ditt vises ikke lenger på profilen din.\n\nDu kan fortsatt bruke Signal, men hvis du vil støtte appen og beholde merket ditt, må du gi en pengegave nå.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Velg et merke du kan legge til i profilen din for å vise at du støtter Signal.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Vis på profilen";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Pengebeløp: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Pengegavebeløp: %1$@/måned";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal lagrer ikke personopplysningene dine når du gir et pengebeløp.\n\nBetalingstjenesten Stripe behandler pengebeløpet du gir oss. Vi får ikke tilgang til og lagrer eller oppbevarer ikke noen av opplysningene du gir til Stripe.\n\nSignal vil ikke, og kan ikke, knytte pengebeløpet til Signal-kontoen din.\n\nTakk for støtten!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Åpne i lite vindu";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Overføringen kunne ikke gjennomføres. Sørg for at Signal er åpen på begge enhetene, og prøv på nytt.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Den nye enheten kunne ikke bekreftes. Prøv igjen";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Overføringen kunne ikke gjennomføres. Sørg for at enhetene befinner seg i nærheten av hverandre, og prøv på nytt.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Du må skanne med den gamle iPad-en for å kunne sette opp denne iPad-en som en koblet enhet";

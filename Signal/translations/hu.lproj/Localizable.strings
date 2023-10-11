@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "A rendszeres havi támogatásod automatikusan kikapcsolásra került, mert túl sokáig voltál inaktív. A(z) %1$@ jelvényed már nem látható a profilodon.\n\nTermészetesen továbbra is használhatod a Signalt, de az alkalmazás támogatásához és a jelvényed újraaktiválásához adományoznod kell.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Válaszd ki a profilodon megjeleníteni kívánt jelvényt és jelezd a támogatásod.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Megjelenítés profilképen";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Az adomány összege: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Az adomány összege: %1$@/hónap";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "A Signal nem gyűjti és nem tárolja a személyes adataidat, amikor adományozol.\n\nA Stripe-ot használjuk fizetésfeldolgozóként az adományok fogadására. Nem férünk hozzá, nem tárolunk és nem mentünk el semmilyen információt, amelyet megadsz számukra.\n\nA Signal nem fogja és nem is tudja összekapcsolni az adományod a Signal-fiókoddal.\n\nKöszönjük a támogatásod!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Kisebb méret";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Az átvitelt nem sikerült befejezni. Győződj meg róla, hogy mindkét eszközön nyitva van a Signal, majd próbáld újra.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nem sikerült ellenőrizni az eszközödet. Kérjük próbáld újra!";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Az átvitelt nem sikerült befejezni. Győződj meg róla, hogy az eszközök közel vannak egymáshoz, és próbáld újra.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Ahhoz, hogy az új iPad-edet csatlakozott eszközként beállíthasd, be kell olvasnod a régi iPad-eddel";

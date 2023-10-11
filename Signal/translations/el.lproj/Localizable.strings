@@ -407,7 +407,7 @@
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Πληρωμή";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Φωτογραφίες";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Φωτογραφία";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Συνημμένο";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Η τρέχουσα μηνιαία δωρεά σου ακυρώθηκε αυτόματα γιατί δεν έχεις συνδεθεί για μεγάλο χρονικό διάστημα. Το σήμα %1$@ δεν εμφανίζεται πλέον στο προφίλ σου.\n\nΜπορείς να συνεχίσεις να χρησιμοποιείς το Signal, αλλά για να υποστηρίξεις την εφαρμογή και να ενεργοποιήσεις πάλι το σήμα σου, κάνε τώρα μια δωρεά.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Διάλεξε ένα σήμα για εμφάνιση στο προφίλ σου για να δείξεις την υποστήριξή σου.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Εμφάνιση στο προφίλ";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Ποσό δωρεάς: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Ποσό δωρεάς: %1$@/μήνα";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου όταν κάνεις δωρεά.\n\nΧρησιμοποιούμε τη Stripe για την επεξεργασία πληρωμών, ώστε να λαμβάνουμε τις δωρεές μας. Δεν επεξεργαζόμαστε ούτε αποθηκεύουμε κανένα από τα στοιχεία που της παρέχεις.\n\nΤο Signal δεν μπορεί να συνδέσει τη δωρεά με τον λογαριασμό σου στο Signal.\n\nΕυχαριστούμε για την υποστήριξή σου!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Μικρότερη προβολή";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς. Βεβαιώσου πως το Signal είναι ανοιχτό και στις δύο συσκευές και δοκίμασε ξανά.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Αδυναμία επαλήθευσης της νέας συσκευής σου, παρακαλώ δοκίμασε ξανά.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς. Βεβαιώσου πως οι συσκευές είναι κοντά η μία στην άλλη και προσπάθησε ξανά.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Για να ρυθμίσεις το iPad ως συνδεδεμένη συσκευή, πρέπει να σαρώσεις με το παλιό σου iPad";

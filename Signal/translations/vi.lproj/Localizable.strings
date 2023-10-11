@@ -380,7 +380,7 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Liên hệ";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "Tập tin";
+"ATTACHMENT_KEYBOARD_FILE" = "Tệp";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "Ảnh GIF";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Khoản ủng hộ hàng tháng của bạn được tự động hủy vì bạn không hoạt động trong thời gian quá dài. Huy hiệu %1$@ của bạn không còn hiển thị trên hồ sơ.\n\nBạn vẫn có thể tiếp tục dùng Signal, nhưng nếu bạn muốn tiếp tục hỗ trợ ứng dụng và nhận lại huy hiệu, bạn cần tiến hành ủng hộ.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Chọn một huy hiệu để hiển thị trên hồ sơ của bạn để thể hiện sự ủng hộ.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Hiển thị trên thông tin cá nhân";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Số tiền ủng hộ: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Số tiền ủng hộ: %1$@/tháng";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal không thu thập hay lưu trữ thông tin cá nhân của bạn khi bạn gửi khoản ủng hộ.\n\nChúng tôi sử dụng Stripe làm hệ thống xử lý thanh toán để nhận các khoản ủng hộ. Chúng tôi không truy cập, lưu trữ, hoặc lưu bất kỳ thông tin nào bạn cung cấp cho phía hệ thống.\n\nSignal không và không thể liên kết thông tin thanh toán với tài khoản Signal của bạn.\n\nCảm ơn sự đóng góp của bạn!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Xem cỡ nhỏ hơn";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Quá trình chuyển không thể hoàn tất. Hãy đảm bảo cả hai thiết bị đều có Signal đang hoạt động và thử lại.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Không thể xác minh thiết bị mới, hãy thử lại";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Quá trình chuyển không thể hoàn tất. Hãy đảm bảo các thiết bị của bạn đang ở gần nhau và thử lại.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Để cài đặt iPad này thành thiết bị được liên kết, bạn phải quét mã bằng iPad cũ";
