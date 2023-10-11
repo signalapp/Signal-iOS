@@ -747,65 +747,6 @@ public class SignalAccountReadCache: NSObject {
 // MARK: -
 
 @objc
-public class SignalRecipientReadCache: NSObject {
-    typealias KeyType = SignalServiceAddress
-    typealias ValueType = SignalRecipient
-
-    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction tx: SDSAnyReadTransaction) -> ValueType? {
-            SignalRecipientFinder().signalRecipient(for: key, tx: tx)
-        }
-
-        override func key(forValue value: ValueType) -> KeyType {
-            value.address
-        }
-
-        override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            ModelCacheKey(key: key)
-        }
-
-        override func copy(value: ValueType) throws -> ValueType {
-            // We don't need to use a deepCopy for SignalRecipient.
-            guard let modelCopy = value.copy() as? SignalRecipient else {
-                throw OWSAssertionError("Copy failed.")
-            }
-            return modelCopy
-        }
-    }
-
-    private let cache: ModelReadCache<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalRecipient", cacheCountLimit: 256, cacheCountLimitNSE: 32)
-
-    @objc
-    public init(_ factory: ModelReadCacheFactory) {
-        cache = factory.create(mode: .read, adapter: adapter)
-    }
-
-    @objc(getSignalRecipientForAddress:transaction:)
-    public func getSignalRecipient(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        let cacheKey = adapter.cacheKey(forKey: address)
-        return cache.getValue(for: cacheKey, transaction: transaction)
-    }
-
-    @objc(didRemoveSignalRecipient:transaction:)
-    public func didRemove(signalRecipient: SignalRecipient, transaction: SDSAnyWriteTransaction) {
-        cache.didRemove(value: signalRecipient, transaction: transaction)
-    }
-
-    @objc(didInsertOrUpdateSignalRecipient:transaction:)
-    public func didInsertOrUpdate(signalRecipient: SignalRecipient, transaction: SDSAnyWriteTransaction) {
-        cache.didInsertOrUpdate(value: signalRecipient, transaction: transaction)
-    }
-
-    @objc(didReadSignalRecipient:transaction:)
-    public func didReadSignalRecipient(_ signalRecipient: SignalRecipient, transaction: SDSAnyReadTransaction) {
-        cache.didRead(value: signalRecipient, transaction: transaction)
-    }
-}
-
-// MARK: -
-
-@objc
 public class ThreadReadCache: NSObject {
     typealias KeyType = String
     typealias ValueType = TSThread
@@ -1098,7 +1039,6 @@ public class ModelReadCaches: NSObject {
     public init(factory: ModelReadCacheFactory) {
         userProfileReadCache = UserProfileReadCache(factory)
         signalAccountReadCache = SignalAccountReadCache(factory)
-        signalRecipientReadCache = SignalRecipientReadCache(factory)
         threadReadCache = ThreadReadCache(factory)
         interactionReadCache = InteractionReadCache(factory)
         attachmentReadCache = AttachmentReadCache(factory)
@@ -1116,8 +1056,6 @@ public class ModelReadCaches: NSObject {
     public let userProfileReadCache: UserProfileReadCache
     @objc
     public let signalAccountReadCache: SignalAccountReadCache
-    @objc
-    public let signalRecipientReadCache: SignalRecipientReadCache
     @objc
     public let threadReadCache: ThreadReadCache
     @objc

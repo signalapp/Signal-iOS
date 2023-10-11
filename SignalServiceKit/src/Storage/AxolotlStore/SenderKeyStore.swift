@@ -486,14 +486,9 @@ private struct KeyRecipient: Codable, Dependencies {
     }
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
-        guard
-            let recipient = SignalRecipient.fetchRecipient(
-                for: SignalServiceAddress(serviceId),
-                onlyIfRegistered: false,
-                tx: transaction
-            )
-        else {
+    static func currentState(for serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) throws -> KeyRecipient {
+        let recipientStore = DependenciesBridge.shared.recipientStore
+        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
             throw OWSAssertionError("Invalid device array")
         }
         let deviceIds = recipient.deviceIds
@@ -506,7 +501,7 @@ private struct KeyRecipient: Codable, Dependencies {
             let registrationId = try sessionStore.loadSession(
                 for: $0.serviceId,
                 deviceId: $0.deviceId,
-                tx: transaction.asV2Read
+                tx: tx.asV2Read
             )?.remoteRegistrationId()
 
             return Device(deviceId: $0.deviceId, registrationId: registrationId)

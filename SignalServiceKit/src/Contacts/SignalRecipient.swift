@@ -192,8 +192,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         tx: SDSAnyReadTransaction
     ) -> SignalRecipient? {
         owsAssertDebug(address.isValid)
-        let readCache = modelReadCaches.signalRecipientReadCache
-        guard let signalRecipient = readCache.getSignalRecipient(address: address, transaction: tx) else {
+        guard let signalRecipient = SignalRecipientFinder().signalRecipient(for: address, tx: tx) else {
             return nil
         }
         if onlyIfRegistered {
@@ -325,25 +324,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     // MARK: - Callbacks
 
-    public func anyDidInsert(transaction tx: SDSAnyWriteTransaction) {
-        modelReadCaches.signalRecipientReadCache.didInsertOrUpdate(signalRecipient: self, transaction: tx)
-    }
-
-    public func anyDidUpdate(transaction tx: SDSAnyWriteTransaction) {
-        modelReadCaches.signalRecipientReadCache.didInsertOrUpdate(signalRecipient: self, transaction: tx)
-    }
-
     public func anyDidRemove(transaction tx: SDSAnyWriteTransaction) {
-        modelReadCaches.signalRecipientReadCache.didRemove(signalRecipient: self, transaction: tx)
         storageServiceManager.recordPendingUpdates(updatedAccountIds: [uniqueId])
-    }
-
-    public func anyDidFetchOne(transaction tx: SDSAnyReadTransaction) {
-        modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(self, transaction: tx)
-    }
-
-    public func anyDidEnumerateOne(transaction tx: SDSAnyReadTransaction) {
-        modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(self, transaction: tx)
     }
 
     @objc

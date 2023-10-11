@@ -1586,7 +1586,7 @@ extension MessageSender {
         serviceId: ServiceId,
         message: TSOutgoingMessage,
         thread: TSThread,
-        transaction: SDSAnyWriteTransaction
+        transaction tx: SDSAnyWriteTransaction
     ) {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -1594,16 +1594,12 @@ extension MessageSender {
 
         if thread.isNonContactThread {
             // Mark as "skipped" group members who no longer have signal accounts.
-            message.update(withSkippedRecipient: address, transaction: transaction)
+            message.update(withSkippedRecipient: address, transaction: tx)
         }
 
-        if !SignalRecipient.isRegistered(address: address, tx: transaction) {
-            return
-        }
-
-        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
-        recipient.markAsUnregisteredAndSave(tx: transaction)
+        let recipientStore = DependenciesBridge.shared.recipientStore
+        let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)
+        recipient?.markAsUnregisteredAndSave(tx: tx)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.

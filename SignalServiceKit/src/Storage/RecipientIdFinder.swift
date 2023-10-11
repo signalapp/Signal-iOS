@@ -61,14 +61,6 @@ public final class RecipientIdFinder {
 }
 
 public final class OWSAccountIdFinder {
-    @objc
-    public class func accountId(
-        forAddress address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
-    ) -> AccountId? {
-        return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: transaction)?.accountId
-    }
-
     public class func ensureRecipient(
         forAddress address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
