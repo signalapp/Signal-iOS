@@ -48,8 +48,16 @@ public class AppSetup {
 
         // MARK: DependenciesBridge
 
+        let recipientStore = RecipientDataStoreImpl()
+        let recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+        let recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+
         let accountServiceClient = AccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(
+            for: .aci,
+            keyValueStoreFactory: keyValueStoreFactory,
+            recipientIdFinder: recipientIdFinder
+        )
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
         let messageProcessor = MessageProcessor()
@@ -57,7 +65,11 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
-        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(
+            for: .pni,
+            keyValueStoreFactory: keyValueStoreFactory,
+            recipientIdFinder: recipientIdFinder
+        )
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
@@ -81,6 +93,7 @@ public class AppSetup {
             dateProvider: dateProvider,
             groupsV2: groupsV2,
             jobQueues: sskJobQueues,
+            keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -90,6 +103,9 @@ public class AppSetup {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientFetcher: recipientFetcher,
+            recipientIdFinder: recipientIdFinder,
+            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,

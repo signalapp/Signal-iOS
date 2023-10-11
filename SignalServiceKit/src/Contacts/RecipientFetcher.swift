@@ -11,14 +11,14 @@ public protocol RecipientFetcher {
     func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient
 }
 
-class RecipientFetcherImpl: RecipientFetcher {
+public class RecipientFetcherImpl: RecipientFetcher {
     private let recipientStore: RecipientDataStore
 
-    init(recipientStore: RecipientDataStore) {
+    public init(recipientStore: RecipientDataStore) {
         self.recipientStore = recipientStore
     }
 
-    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+    public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
         if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }
@@ -27,7 +27,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         return newInstance
     }
 
-    func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient {
+    public func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient {
         if let result = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }

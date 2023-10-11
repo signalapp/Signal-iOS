@@ -71,6 +71,7 @@ public class DependenciesBridge {
 
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
+    public let recipientIdFinder: RecipientIdFinder
     public let recipientMerger: RecipientMerger
     public let recipientStore: RecipientDataStore
     public let registrationSessionManager: RegistrationSessionManager
@@ -104,6 +105,7 @@ public class DependenciesBridge {
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
         jobQueues: SSKJobQueues,
+        keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -113,6 +115,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientFetcher: RecipientFetcher,
+        recipientIdFinder: RecipientIdFinder,
+        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -131,6 +136,7 @@ public class DependenciesBridge {
             dateProvider: dateProvider,
             groupsV2: groupsV2,
             jobQueues: jobQueues,
+            keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -140,6 +146,9 @@ public class DependenciesBridge {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientFetcher: recipientFetcher,
+            recipientIdFinder: recipientIdFinder,
+            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -163,6 +172,7 @@ public class DependenciesBridge {
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
         jobQueues: SSKJobQueues,
+        keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -172,6 +182,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientFetcher: RecipientFetcher,
+        recipientIdFinder: RecipientIdFinder,
+        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -185,7 +198,7 @@ public class DependenciesBridge {
     ) {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
-        self.keyValueStoreFactory = SDSKeyValueStoreFactory()
+        self.keyValueStoreFactory = keyValueStoreFactory
 
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
@@ -215,8 +228,9 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
 
-        self.recipientStore = RecipientDataStoreImpl()
-        self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+        self.recipientFetcher = recipientFetcher
+        self.recipientIdFinder = recipientIdFinder
+        self.recipientStore = recipientStore
 
         self.identityManager = OWSIdentityManagerImpl(
             aciProtocolStore: aciProtocolStore,
@@ -226,8 +240,9 @@ public class DependenciesBridge {
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             pniProtocolStore: pniProtocolStore,
-            recipientFetcher: recipientFetcher,
-            schedulers: schedulers,
+            recipientFetcher: self.recipientFetcher,
+            recipientIdFinder: self.recipientIdFinder,
+            schedulers: self.schedulers,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )

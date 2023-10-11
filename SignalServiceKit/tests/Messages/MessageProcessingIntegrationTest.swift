@@ -20,7 +20,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     var bobClient: TestSignalClient!
     var linkedClient: TestSignalClient!
 
-    let localClient = LocalSignalClient()
+    private lazy var localClient = LocalSignalClient()
     let runner = TestProtocolRunner()
     lazy var fakeService = FakeService(localClient: localClient, runner: runner)
 

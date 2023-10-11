@@ -21,36 +21,46 @@ public enum RecipientIdError: Error {
     case mustNotUsePniBecauseAciExists
 }
 
-@objc
-public class OWSAccountIdFinder: NSObject {
-    class func recipientId(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> Result<AccountId, RecipientIdError>? {
-        let recipientStore = DependenciesBridge.shared.recipientStore
-        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
+public final class RecipientIdFinder {
+    private let recipientFetcher: RecipientFetcher
+    private let recipientStore: RecipientDataStore
+
+    public init(
+        recipientFetcher: RecipientFetcher,
+        recipientStore: RecipientDataStore
+    ) {
+        self.recipientFetcher = recipientFetcher
+        self.recipientStore = recipientStore
+    }
+
+    public func recipientId(for serviceId: ServiceId, tx: DBReadTransaction) -> Result<AccountId, RecipientIdError>? {
+        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return nil
         }
         return recipientIdResult(for: serviceId, recipient: recipient)
     }
 
-    class func recipientId(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Result<AccountId, RecipientIdError>? {
-        guard let recipient = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx) else {
+    public func recipientId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<AccountId, RecipientIdError>? {
+        guard let recipient = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: SDSDB.shimOnlyBridge(tx)) else {
             return nil
         }
         return recipientIdResult(for: address.serviceId, recipient: recipient)
     }
 
-    class func ensureRecipientId(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) -> Result<AccountId, RecipientIdError> {
-        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+    public func ensureRecipientId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<AccountId, RecipientIdError> {
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
         return recipientIdResult(for: serviceId, recipient: recipient)
     }
 
-    private static func recipientIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<AccountId, RecipientIdError> {
+    private func recipientIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<AccountId, RecipientIdError> {
         if serviceId is Pni, recipient.aciString != nil {
             return .failure(.mustNotUsePniBecauseAciExists)
         }
         return .success(recipient.uniqueId)
     }
+}
 
+public final class OWSAccountIdFinder {
     @objc
     public class func accountId(
         forAddress address: SignalServiceAddress,

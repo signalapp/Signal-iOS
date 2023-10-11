@@ -52,8 +52,16 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         // Set up DependenciesBridge
 
+        let recipientStore = RecipientDataStoreImpl()
+        let recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+        let recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+
         let accountServiceClient = FakeAccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(
+            for: .aci,
+            keyValueStoreFactory: keyValueStoreFactory,
+            recipientIdFinder: recipientIdFinder
+        )
         let dateProvider = Date.provider
         let groupsV2 = MockGroupsV2()
         let messageProcessor = MessageProcessor()
@@ -63,7 +71,11 @@ public class MockSSKEnvironment: SSKEnvironment {
         let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
         let paymentsEvents = PaymentsEventsNoop()
-        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(
+            for: .pni,
+            keyValueStoreFactory: keyValueStoreFactory,
+            recipientIdFinder: recipientIdFinder
+        )
         let profileManager = OWSFakeProfileManager()
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
@@ -88,6 +100,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             dateProvider: dateProvider,
             groupsV2: groupsV2,
             jobQueues: sskJobQueues,
+            keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -97,6 +110,9 @@ public class MockSSKEnvironment: SSKEnvironment {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientFetcher: recipientFetcher,
+            recipientIdFinder: recipientIdFinder,
+            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,

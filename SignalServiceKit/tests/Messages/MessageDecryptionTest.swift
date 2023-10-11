@@ -15,8 +15,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     let remoteE164Identifier = "+14715355555"
     lazy var remoteClient: TestSignalClient = FakeSignalClient.generate(e164Identifier: remoteE164Identifier)
 
-    let localClient = LocalSignalClient()
-    let localPniClient = LocalSignalClient(identity: .pni)
+    private lazy var localClient = LocalSignalClient()
+    private lazy var localPniClient = LocalSignalClient(identity: .pni)
     let runner = TestProtocolRunner()
 
     let sealedSenderTrustRoot = Curve25519.generateKeyPair()

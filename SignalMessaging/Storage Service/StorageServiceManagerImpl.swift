@@ -554,11 +554,12 @@ class StorageServiceOperation: OWSOperation {
         if state.accountIdChangeMap.isEmpty {
             return
         }
-        let localAciAddress = localIdentifiers.aciAddress
-        let localAccountId = OWSAccountIdFinder.accountId(forAddress: localAciAddress, transaction: transaction)
+        let localAci = localIdentifiers.aci
+        let recipientIdFinder = DependenciesBridge.shared.recipientIdFinder
+        let localRecipientId = try? recipientIdFinder.recipientId(for: localAci, tx: transaction.asV2Read)?.get()
         // If we updated a recipient, and if that recipient is ourselves, move the
         // update over to the Account record type.
-        if let localAccountId, state.accountIdChangeMap.removeValue(forKey: localAccountId) != nil {
+        if let localRecipientId, state.accountIdChangeMap.removeValue(forKey: localRecipientId) != nil {
             state.localAccountChangeState = .updated
         }
     }

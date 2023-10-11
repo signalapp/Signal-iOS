@@ -25,7 +25,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         let newKey = Randomness.generateRandomBytes(32)
         let aci = Aci.randomForTesting()
         try write { transaction in
-            _ = OWSAccountIdFinder.ensureRecipientId(for: aci, tx: transaction)
+            _ = DependenciesBridge.shared.recipientIdFinder.ensureRecipientId(for: aci, tx: transaction.asV2Write)
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
@@ -64,7 +64,6 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     func testChangedKey() throws {
         let originalKey = Randomness.generateRandomBytes(32)
         let aci = Aci.randomForTesting()
-        let address = SignalServiceAddress(aci)
         try write { transaction in
             identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction.asV2Write)
 

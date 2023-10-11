@@ -197,6 +197,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let pniProtocolStore: SignalProtocolStore
     private let queuedVerificationStateSyncMessagesKeyValueStore: KeyValueStore
     private let recipientFetcher: RecipientFetcher
+    private let recipientIdFinder: RecipientIdFinder
     private let schedulers: Schedulers
     private let shareMyPhoneNumberStore: KeyValueStore
     private let storageServiceManager: StorageServiceManager
@@ -211,6 +212,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         notificationsManager: NotificationsProtocol,
         pniProtocolStore: SignalProtocolStore,
         recipientFetcher: RecipientFetcher,
+        recipientIdFinder: RecipientIdFinder,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
@@ -228,6 +230,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages"
         )
         self.recipientFetcher = recipientFetcher
+        self.recipientIdFinder = recipientIdFinder
         self.schedulers = schedulers
         self.shareMyPhoneNumberStore = keyValueStoreFactory.keyValueStore(
             collection: "OWSIdentityManager.shareMyPhoneNumberStore"
@@ -262,7 +265,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Fetching
 
     public func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity? {
-        guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: address, tx: SDSDB.shimOnlyBridge(tx)) else {
+        guard let recipientIdResult = recipientIdFinder.recipientId(for: address, tx: tx) else {
             return nil
         }
         switch recipientIdResult {
@@ -291,7 +294,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Remote Identity Keys
 
     public func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? {
-        switch OWSAccountIdFinder.recipientId(for: address, tx: SDSDB.shimOnlyBridge(tx)) {
+        switch recipientIdFinder.recipientId(for: address, tx: tx) {
         case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             return nil
         case .some(.success(let recipientId)):
@@ -300,7 +303,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     public func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
-        guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
+        guard let recipientIdResult = recipientIdFinder.recipientId(for: serviceId, tx: tx) else {
             return nil
         }
         guard let keyData = try _identityKey(for: recipientIdResult.get(), tx: tx) else { return nil }
@@ -314,7 +317,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     @discardableResult
     public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> {
-        let recipientIdResult = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        let recipientIdResult = recipientIdFinder.ensureRecipientId(for: serviceId, tx: tx)
         return recipientIdResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipientId: $0, tx: tx) })
     }
 
@@ -451,7 +454,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         case .incoming:
             return .success(true)
         case .outgoing:
-            guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
+            guard let recipientIdResult = recipientIdFinder.recipientId(for: serviceId, tx: tx) else {
                 owsFailDebug("Couldn't find recipientId for outgoing message.")
                 return .success(false)
             }
@@ -587,7 +590,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         case let value as String:
             // Previously, we stored phone numbers in this KV store.
             let address = SignalServiceAddress(phoneNumber: value)
-            guard let accountId_ = OWSAccountIdFinder.accountId(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx)) else {
+            guard let accountId_ = try? recipientIdFinder.recipientId(for: address, tx: tx)?.get() else {
                 return nil
             }
             recipientId = accountId_

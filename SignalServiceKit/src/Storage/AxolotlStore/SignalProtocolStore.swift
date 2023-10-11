@@ -18,8 +18,16 @@ public class SignalProtocolStoreImpl: SignalProtocolStore {
     public let signedPreKeyStore: SignalSignedPreKeyStore
     public let kyberPreKeyStore: SignalKyberPreKeyStore
 
-    public init(for identity: OWSIdentity, keyValueStoreFactory: KeyValueStoreFactory) {
-        sessionStore = SSKSessionStore(for: identity)
+    public init(
+        for identity: OWSIdentity,
+        keyValueStoreFactory: KeyValueStoreFactory,
+        recipientIdFinder: RecipientIdFinder
+    ) {
+        sessionStore = SSKSessionStore(
+            for: identity,
+            keyValueStoreFactory: keyValueStoreFactory,
+            recipientIdFinder: recipientIdFinder
+        )
         preKeyStore = SSKPreKeyStore(for: identity)
         signedPreKeyStore = SSKSignedPreKeyStore(for: identity)
         kyberPreKeyStore = SSKKyberPreKeyStore(

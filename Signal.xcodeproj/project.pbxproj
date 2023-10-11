@@ -2091,7 +2091,7 @@
 		F9C5CD5B289453B300548EEE /* TSStorageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA7E289453B100548EEE /* TSStorageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD5D289453B300548EEE /* MediaGalleryFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA80289453B100548EEE /* MediaGalleryFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD5E289453B300548EEE /* YDBStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA81289453B100548EEE /* YDBStorage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD5F289453B300548EEE /* AccountIdFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA82289453B100548EEE /* AccountIdFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CD5F289453B300548EEE /* RecipientIdFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD60289453B300548EEE /* StorageCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA83289453B100548EEE /* StorageCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD77289453B300548EEE /* BaseModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA9B289453B100548EEE /* BaseModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4751,7 +4751,7 @@
 		F9C5CA7E289453B100548EEE /* TSStorageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSStorageKeys.h; sourceTree = "<group>"; };
 		F9C5CA80289453B100548EEE /* MediaGalleryFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryFinder.swift; sourceTree = "<group>"; };
 		F9C5CA81289453B100548EEE /* YDBStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YDBStorage.m; sourceTree = "<group>"; };
-		F9C5CA82289453B100548EEE /* AccountIdFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountIdFinder.swift; sourceTree = "<group>"; };
+		F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipientIdFinder.swift; sourceTree = "<group>"; };
 		F9C5CA83289453B100548EEE /* StorageCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StorageCoordinator.h; sourceTree = "<group>"; };
 		F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSYapDatabaseObject.h; sourceTree = "<group>"; };
 		F9C5CA9B289453B100548EEE /* BaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseModel.h; sourceTree = "<group>"; };
@@ -9384,7 +9384,6 @@
 				F9C5CA52289453B100548EEE /* AxolotlStore */,
 				F9C5CA31289453B100548EEE /* Database */,
 				F9C5CA85289453B100548EEE /* JobRecords */,
-				F9C5CA82289453B100548EEE /* AccountIdFinder.swift */,
 				F9C5CA9B289453B100548EEE /* BaseModel.h */,
 				F9C5CA7B289453B100548EEE /* BaseModel.m */,
 				17EC850B29133CDB00319C82 /* CancelledGroupRing.swift */,
@@ -9393,6 +9392,7 @@
 				F9C5CA80289453B100548EEE /* MediaGalleryFinder.swift */,
 				F9C5CA9C289453B100548EEE /* PendingReadReceiptRecord.swift */,
 				F9C5CA79289453B100548EEE /* PendingViewedReceiptRecord.swift */,
+				F9C5CA82289453B100548EEE /* RecipientIdFinder.swift */,
 				F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */,
 				F9C5CA83289453B100548EEE /* StorageCoordinator.h */,
 				F9C5CA51289453B100548EEE /* StorageCoordinator.m */,
@@ -12261,7 +12261,6 @@
 				6646572E2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift in Sources */,
 				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
-				F9C5CD5F289453B300548EEE /* AccountIdFinder.swift in Sources */,
 				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
 				F9C5CE13289453B400548EEE /* AppContext.m in Sources */,
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
@@ -12720,6 +12719,7 @@
 				50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */,
 				66D13F0A2A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift in Sources */,
 				E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */,
+				F9C5CD5F289453B300548EEE /* RecipientIdFinder.swift in Sources */,
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,

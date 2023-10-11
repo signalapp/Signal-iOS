@@ -9,44 +9,6 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class MockRecipientDataStore: RecipientDataStore {
-    var nextRowId = 1
-    var recipientTable: [Int: SignalRecipient] = [:]
-
-    func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        return recipientTable.values.first(where: { $0.aci == serviceId || $0.pni == serviceId })?.copyRecipient() ?? nil
-    }
-
-    func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        return recipientTable.values.first(where: { $0.phoneNumber == phoneNumber })?.copyRecipient() ?? nil
-    }
-
-    func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        precondition(rowId(for: signalRecipient) == nil)
-        recipientTable[nextRowId] = signalRecipient.copyRecipient()
-        nextRowId += 1
-    }
-
-    func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        let rowId = rowId(for: signalRecipient)!
-        recipientTable[rowId] = signalRecipient.copyRecipient()
-    }
-
-    func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        let rowId = rowId(for: signalRecipient)!
-        recipientTable[rowId] = nil
-    }
-
-    private func rowId(for signalRecipient: SignalRecipient) -> Int? {
-        for (rowId, value) in recipientTable {
-            if value.uniqueId == signalRecipient.uniqueId {
-                return rowId
-            }
-        }
-        return nil
-    }
-}
-
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool { false }
 }

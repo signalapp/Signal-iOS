@@ -160,8 +160,8 @@ public extension TestSignalClient {
         return ProtocolAddress(serviceId, deviceId: deviceId)
     }
 
-    func accountId(transaction: SDSAnyWriteTransaction) -> String {
-        try! OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: transaction).get()
+    func accountId(transaction tx: SDSAnyWriteTransaction) -> String {
+        try! DependenciesBridge.shared.recipientIdFinder.ensureRecipientId(for: serviceId, tx: tx.asV2Write).get()
     }
 }
 
@@ -219,7 +219,8 @@ public struct LocalSignalClient: TestSignalClient {
         self.identity = identity
         self.protocolStore = SignalProtocolStoreImpl(
             for: identity,
-            keyValueStoreFactory: InMemoryKeyValueStoreFactory()
+            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            recipientIdFinder: DependenciesBridge.shared.recipientIdFinder
         )
     }
 
