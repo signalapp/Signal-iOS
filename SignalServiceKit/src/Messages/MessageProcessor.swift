@@ -776,7 +776,9 @@ private struct ReceivedEnvelope {
                 return .serverReceipt(try ServerReceiptEnvelope(validatedEnvelope))
             case .identifiedSender(let cipherType):
                 return .decryptedMessage(
-                    try messageDecrypter.decryptIdentifiedEnvelope(validatedEnvelope, cipherType: cipherType, tx: tx)
+                    try messageDecrypter.decryptIdentifiedEnvelope(
+                        validatedEnvelope, cipherType: cipherType, localIdentifiers: localIdentifiers, tx: tx
+                    )
                 )
             case .unidentifiedSender:
                 return .decryptedMessage(

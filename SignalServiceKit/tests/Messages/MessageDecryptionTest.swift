@@ -148,6 +148,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                     return try messageDecrypter.decryptIdentifiedEnvelope(
                         validatedEnvelope,
                         cipherType: cipherType,
+                        localIdentifiers: localIdentifiers,
                         tx: transaction
                     )
                 }

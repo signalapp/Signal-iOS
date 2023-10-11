@@ -400,6 +400,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     func decryptIdentifiedEnvelope(
         _ validatedEnvelope: ValidatedIncomingEnvelope,
         cipherType: CiphertextMessage.MessageType,
+        localIdentifiers: LocalIdentifiers,
         tx transaction: SDSAnyWriteTransaction
     ) throws -> DecryptedIncomingEnvelope {
         // This method is only used for identified envelopes. If an unidentified
@@ -471,7 +472,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let plaintextData = Data(plaintext).withoutPadding()
-            return DecryptedIncomingEnvelope(
+            let decryptedEnvelope = DecryptedIncomingEnvelope(
                 validatedEnvelope: validatedEnvelope,
                 updatedEnvelope: validatedEnvelope.envelope,
                 sourceAci: sourceAci,
@@ -479,6 +480,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 wasReceivedByUD: false,
                 plaintextData: plaintextData
             )
+            handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: transaction)
+            return decryptedEnvelope
         } catch {
             throw processError(
                 error,
@@ -610,6 +613,23 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
         let sourceDeviceId = rawSourceDeviceId
 
+        let envelopeBuilder = validatedEnvelope.envelope.asBuilder()
+        envelopeBuilder.setSourceServiceID(decryptResult.senderAci.serviceIdString)
+        envelopeBuilder.setSourceDevice(sourceDeviceId)
+
+        let decryptedEnvelope = DecryptedIncomingEnvelope(
+            validatedEnvelope: validatedEnvelope,
+            updatedEnvelope: try envelopeBuilder.build(),
+            sourceAci: decryptResult.senderAci,
+            sourceDeviceId: sourceDeviceId,
+            wasReceivedByUD: validatedEnvelope.envelope.sourceServiceID == nil,
+            plaintextData: decryptResult.paddedPayload.withoutPadding()
+        )
+
+        // We need to handle the PNI signature first b/c the sender certificate
+        // might produce a visible event and the PNI signature won't.
+        handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: transaction)
+
         let recipient = DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
             localIdentifiers: localIdentifiers,
             aci: decryptResult.senderAci,
@@ -618,18 +638,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         )
         recipient.markAsRegisteredAndSave(deviceId: sourceDeviceId, tx: transaction)
 
-        let envelopeBuilder = validatedEnvelope.envelope.asBuilder()
-        envelopeBuilder.setSourceServiceID(decryptResult.senderAci.serviceIdString)
-        envelopeBuilder.setSourceDevice(sourceDeviceId)
-
-        return DecryptedIncomingEnvelope(
-            validatedEnvelope: validatedEnvelope,
-            updatedEnvelope: try envelopeBuilder.build(),
-            sourceAci: decryptResult.senderAci,
-            sourceDeviceId: sourceDeviceId,
-            wasReceivedByUD: validatedEnvelope.envelope.sourceServiceID == nil,
-            plaintextData: decryptResult.paddedPayload.withoutPadding()
-        )
+        return decryptedEnvelope
     }
 
     private func handleUnidentifiedSenderDecryptionError(
@@ -655,6 +664,33 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         default:
             owsFailDebug("Could not decrypt UD message: \(error), source: \(String(describing: unsealedEnvelope?.sourceAci)), envelope: \(description(for: validatedEnvelope.envelope))")
             return error
+        }
+    }
+
+    private func handlePniSignatureIfNeeded(
+        in envelope: DecryptedIncomingEnvelope,
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard FeatureFlags.phoneNumberIdentifiers else {
+            return
+        }
+        guard let pniSignatureMessage = envelope.content?.pniSignatureMessage else {
+            return
+        }
+        do {
+            try PniSignatureProcessorImpl(
+                identityManager: DependenciesBridge.shared.identityManager,
+                recipientMerger: DependenciesBridge.shared.recipientMerger,
+                recipientStore: DependenciesBridge.shared.recipientStore
+            ).handlePniSignature(
+                pniSignatureMessage,
+                from: envelope.sourceAci,
+                localIdentifiers: localIdentifiers,
+                tx: tx.asV2Write
+            )
+        } catch {
+            Logger.warn("Ignoring Pni signature message: \(error)")
         }
     }
 

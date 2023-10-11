@@ -719,6 +719,8 @@
 		50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */; };
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
+		50B62C742AB211E800705A89 /* PniSignatureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */; };
+		50B62C762AB216E300705A89 /* PniSignatureProcessorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
 		50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */; };
@@ -3277,6 +3279,8 @@
 		50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerReceiptEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
+		50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessor.swift; sourceTree = "<group>"; };
+		50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessorTest.swift; sourceTree = "<group>"; };
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
 		50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatching.swift"; sourceTree = "<group>"; };
@@ -8604,6 +8608,7 @@
 				F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */,
 				F942622C289B1B5500460798 /* OWSOutgoingReceiptManagerTests.swift */,
 				F9426237289B1B5500460798 /* OWSUDManagerTest.swift */,
+				50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */,
 				F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */,
 				F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */,
 				F942622E289B1B5500460798 /* SMKTestUtils.swift */,
@@ -8922,6 +8927,7 @@
 				F9C5C8D7289453B100548EEE /* OWSUnknownProtocolVersionMessage+SDS.swift */,
 				F9C5C952289453B100548EEE /* OWSUnknownProtocolVersionMessage.h */,
 				F9C5C99E289453B100548EEE /* OWSUnknownProtocolVersionMessage.m */,
+				50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */,
 				F9C5C96D289453B100548EEE /* PreKeyBundle+jsonDict.h */,
 				F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */,
 				66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */,
@@ -12688,6 +12694,7 @@
 				C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */,
 				D9CAF7492A09CCE50049193A /* PniHelloWorldManager.swift in Sources */,
 				D9F399AD2A95798A001599EC /* PniIdentityKeyChecker.swift in Sources */,
+				50B62C742AB211E800705A89 /* PniSignatureProcessor.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
@@ -13096,6 +13103,7 @@
 				D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */,
 				D9CAF74E2A09D2BD0049193A /* PniHelloWorldManagerTest.swift in Sources */,
 				D9F399B02A967664001599EC /* PniIdentityKeyCheckerTest.swift in Sources */,
+				50B62C762AB216E300705A89 /* PniSignatureProcessorTest.swift in Sources */,
 				C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */,
 				C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,

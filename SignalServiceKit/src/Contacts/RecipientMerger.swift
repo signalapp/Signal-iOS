@@ -42,6 +42,13 @@ public protocol RecipientMerger {
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
+
+    func applyMergeFromPniSignature(
+        localIdentifiers: LocalIdentifiers,
+        aci: Aci,
+        pni: Pni,
+        tx: DBWriteTransaction
+    )
 }
 
 protocol RecipientMergeObserver {
@@ -186,6 +193,35 @@ class RecipientMergerImpl: RecipientMerger {
             return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
         return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+    }
+
+    func applyMergeFromPniSignature(
+        localIdentifiers: LocalIdentifiers,
+        aci: Aci,
+        pni: Pni,
+        tx: DBWriteTransaction
+    ) {
+        guard
+            let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: tx),
+            let pniRecipient = dataStore.fetchRecipient(serviceId: pni, transaction: tx),
+            pniRecipient.aciString == nil
+        else {
+            owsFail("Can't apply PNI signature merge with precondition violations")
+        }
+
+        if localIdentifiers.aci == aci || localIdentifiers.pni == pni {
+            Logger.warn("Can't apply PNI signature merge with our own identifiers")
+            return
+        }
+
+        mergeAndNotify(
+            existingRecipients: [pniRecipient, aciRecipient],
+            mightReplaceNonnilPhoneNumber: true,
+            isLocalMerge: false,
+            tx: tx
+        ) {
+            owsFail("Not yet implemented.")
+        }
     }
 
     func applyMergeFromContactDiscovery(
