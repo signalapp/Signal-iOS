@@ -139,7 +139,7 @@ public class NotificationActionHandler: Dependencies {
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
-            guard let incomingMessage = interaction as? TSIncomingMessage else {
+            guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
@@ -150,6 +150,7 @@ public class NotificationActionHandler: Dependencies {
 
                     // If we're replying to a group story reply, keep the reply within that context.
                     if
+                        let incomingMessage = interaction as? TSIncomingMessage,
                         notificationMessage.isGroupStoryReply,
                         let storyTimestamp = incomingMessage.storyTimestamp,
                         let storyAuthorAci = incomingMessage.storyAuthorAci
