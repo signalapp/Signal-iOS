@@ -9,10 +9,6 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool { false }
-}
-
 private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
@@ -28,6 +24,33 @@ private class MockStorageServiceManager: StorageServiceManager {
     }
     func waitForPendingRestores() -> AnyPromise {
         AnyPromise(Promise<Void>(error: OWSGenericError("Not implemented.")))
+    }
+}
+
+private class TestDependencies {
+    let aciSessionStore: SignalSessionStore
+    let identityManager: MockIdentityManager
+    let keyValueStoreFactory = InMemoryKeyValueStoreFactory()
+    let mockDB = MockDB()
+    let recipientMerger: RecipientMerger
+    let recipientStore = MockRecipientDataStore()
+    let recipientFetcher: RecipientFetcher
+    let recipientIdFinder: RecipientIdFinder
+
+    init(observers: [RecipientMergeObserver] = []) {
+        recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+        recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+        aciSessionStore = SSKSessionStore(for: .aci, keyValueStoreFactory: keyValueStoreFactory, recipientIdFinder: recipientIdFinder)
+        identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
+        identityManager.recipientIdentities = [:]
+        recipientMerger = RecipientMergerImpl(
+            aciSessionStore: aciSessionStore,
+            identityManager: identityManager,
+            observers: observers,
+            recipientFetcher: recipientFetcher,
+            recipientStore: recipientStore,
+            storageServiceManager: MockStorageServiceManager()
+        )
     }
 }
 
@@ -81,20 +104,11 @@ class RecipientMergerTest: XCTestCase {
         ]
 
         for (idx, testCase) in testCases.enumerated() {
-            let mockDB = MockDB()
-            let mockDataStore = MockRecipientDataStore()
-            let recipientFetcher = RecipientFetcherImpl(recipientStore: mockDataStore)
-            let recipientMerger = RecipientMergerImpl(
-                temporaryShims: MockRecipientMergerTemporaryShims(),
-                observers: [],
-                recipientFetcher: recipientFetcher,
-                dataStore: mockDataStore,
-                storageServiceManager: MockStorageServiceManager()
-            )
+            let d = TestDependencies()
             func run(transaction: DBWriteTransaction) {
                 for initialRecipient in testCase.initialState {
-                    XCTAssertEqual(mockDataStore.nextRowId, initialRecipient.rowId, "\(testCase)")
-                    mockDataStore.insertRecipient(
+                    XCTAssertEqual(d.recipientStore.nextRowId, initialRecipient.rowId, "\(testCase)")
+                    d.recipientStore.insertRecipient(
                         SignalRecipient(
                             aci: initialRecipient.aci,
                             pni: nil,
@@ -106,41 +120,33 @@ class RecipientMergerTest: XCTestCase {
 
                 switch (testCase.trustLevel, testCase.mergeRequest.aci, testCase.mergeRequest.phoneNumber) {
                 case (.high, let aci?, let phoneNumber?):
-                    _ = recipientMerger.applyMergeFromLinkedDevice(
+                    _ = d.recipientMerger.applyMergeFromLinkedDevice(
                         localIdentifiers: localIdentifiers,
                         aci: aci,
                         phoneNumber: phoneNumber,
                         tx: transaction
                     )
                 case (_, let aci?, _):
-                    _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction)
+                    _ = d.recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction)
                 case (_, _, let phoneNumber):
-                    _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber!, tx: transaction)
+                    _ = d.recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber!, tx: transaction)
                 }
 
                 for finalRecipient in testCase.finalState.reversed() {
-                    let signalRecipient = mockDataStore.recipientTable.removeValue(forKey: finalRecipient.rowId)
+                    let signalRecipient = d.recipientStore.recipientTable.removeValue(forKey: finalRecipient.rowId)
                     XCTAssertEqual(signalRecipient?.aci, finalRecipient.aci, "\(idx)")
                     XCTAssertEqual(signalRecipient?.phoneNumber, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
-                XCTAssertEqual(mockDataStore.recipientTable, [:], "\(idx)")
+                XCTAssertEqual(d.recipientStore.recipientTable, [:], "\(idx)")
             }
-            mockDB.write { run(transaction: $0) }
+            d.mockDB.write { run(transaction: $0) }
         }
     }
 
     func testNotifier() {
-        let mockDB = MockDB()
-        let mockDataStore = MockRecipientDataStore()
-        let recipientFetcher = RecipientFetcherImpl(recipientStore: mockDataStore)
         let recipientMergeNotifier = RecipientMergeNotifier(scheduler: SyncScheduler())
-        let recipientMerger = RecipientMergerImpl(
-            temporaryShims: MockRecipientMergerTemporaryShims(),
-            observers: [recipientMergeNotifier],
-            recipientFetcher: recipientFetcher,
-            dataStore: mockDataStore,
-            storageServiceManager: MockStorageServiceManager()
-        )
+        let d = TestDependencies(observers: [recipientMergeNotifier])
+
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let phoneNumber = E164("+16505550101")!
 
@@ -153,8 +159,8 @@ class RecipientMergerTest: XCTestCase {
                 notificationCount += 1
             }
         )
-        mockDB.write { tx in
-            _ = recipientMerger.applyMergeFromSealedSender(
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromSealedSender(
                 localIdentifiers: .forUnitTests,
                 aci: aci,
                 phoneNumber: nil,
@@ -162,8 +168,8 @@ class RecipientMergerTest: XCTestCase {
             )
         }
         XCTAssertEqual(notificationCount, 0)
-        mockDB.write { tx in
-            _ = recipientMerger.applyMergeFromContactDiscovery(
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: .forUnitTests,
                 aci: aci,
                 phoneNumber: phoneNumber,
@@ -172,5 +178,63 @@ class RecipientMergerTest: XCTestCase {
         }
         XCTAssertEqual(notificationCount, 1)
         NotificationCenter.default.removeObserver(observer)
+    }
+
+    func testAciPhoneNumberSafetyNumberChange() {
+        let ac1 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let ac2 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+        let ik1 = IdentityKey(publicKey: IdentityKeyPair.generate().publicKey)
+        let ik2 = IdentityKey(publicKey: IdentityKeyPair.generate().publicKey)
+        let pn1 = E164("+16505550101")!
+        let pn2 = E164("+16505550102")!
+
+        let testCases: [(
+            initialState: [(aci: Aci?, phoneNumber: E164?, identityKey: IdentityKey?)],
+            shouldInsertEvent: Bool
+        )] = [
+            ([(ac1, nil, ik1), (nil, pn1, ik2)], true),
+            ([(ac1, nil, ik1), (nil, pn1, ik1)], false),
+            ([(ac1, nil, ik1), (nil, pn1, nil)], false),
+            ([(ac1, nil, nil), (nil, pn1, ik1)], false),
+            ([(ac1, pn2, ik1), (nil, pn1, ik1)], false),
+            ([(ac1, pn2, ik1), (nil, pn1, ik2)], true),
+            ([(ac1, nil, ik1), (ac2, pn1, ik1)], false),
+            ([(ac1, nil, ik1), (ac2, pn1, ik2)], false)
+        ]
+
+        for testCase in testCases {
+            let d = TestDependencies()
+
+            let aciSessionKeyValueStore = d.keyValueStoreFactory.keyValueStore(collection: "TSStorageManagerSessionStoreCollection")
+            d.identityManager.identityChangeInfoMessages = []
+
+            d.mockDB.write { tx in
+                for initialState in testCase.initialState {
+                    let recipient = SignalRecipient(aci: initialState.aci, pni: nil, phoneNumber: initialState.phoneNumber)
+                    d.recipientStore.insertRecipient(recipient, transaction: tx)
+                    if let identityKey = initialState.identityKey {
+                        d.identityManager.recipientIdentities[recipient.uniqueId] = OWSRecipientIdentity(
+                            accountId: recipient.uniqueId,
+                            identityKey: Data(identityKey.publicKey.keyBytes),
+                            isFirstKnownKey: true,
+                            createdAt: Date(),
+                            verificationState: .default
+                        )
+                        aciSessionKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
+                    }
+                }
+
+                let mergedRecipient = d.recipientMerger.applyMergeFromSealedSender(
+                    localIdentifiers: .forUnitTests,
+                    aci: ac1,
+                    phoneNumber: pn1,
+                    tx: tx
+                )
+
+                XCTAssertEqual(d.identityManager.identityChangeInfoMessages, testCase.shouldInsertEvent ? [ac1] : [])
+                XCTAssertEqual(try! d.identityManager.identityKey(for: ac1, tx: tx), ik1)
+                XCTAssertTrue(d.aciSessionStore.mightContainSession(for: mergedRecipient, tx: tx))
+            }
+        }
     }
 }

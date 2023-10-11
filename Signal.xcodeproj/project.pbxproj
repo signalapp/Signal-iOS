@@ -688,6 +688,7 @@
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */; };
 		504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */; };
+		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
 		505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */; };
 		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
@@ -741,6 +742,7 @@
 		50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */; };
 		50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */; };
 		50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */; };
+		50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
 		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
@@ -3250,6 +3252,7 @@
 		5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Operation.swift; sourceTree = "<group>"; };
 		5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cdsi.pb.swift; sourceTree = "<group>"; };
 		504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatedIncomingEnvelope.swift; sourceTree = "<group>"; };
+		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
 		505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponse.swift; sourceTree = "<group>"; };
 		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
 		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
@@ -3301,6 +3304,7 @@
 		50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesConfigurationTest.swift; sourceTree = "<group>"; };
 		50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountMergeObserver.swift; sourceTree = "<group>"; };
 		50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileWhitelistMerger.swift; sourceTree = "<group>"; };
+		50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockIdentityManager.swift; sourceTree = "<group>"; };
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -8876,6 +8880,7 @@
 				F9C5C92F289453B100548EEE /* MessageSender.m */,
 				F9C5C8D5289453B100548EEE /* MessageSender.swift */,
 				F9C5C976289453B100548EEE /* MessageSendLog.swift */,
+				50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */,
 				F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */,
 				F9C5C915289453B100548EEE /* OutgoingMessagePreparer.swift */,
 				F9C5C959289453B100548EEE /* OWSAddToContactsOfferMessage+SDS.swift */,
@@ -9249,6 +9254,7 @@
 				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				5003BB42299F034D0037159B /* E164.swift */,
+				5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */,
 				F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */,
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
 				F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */,
@@ -12471,6 +12477,7 @@
 				66FC637A29DF8C6D00F00DAC /* MentionAttribute.swift in Sources */,
 				F9C5CBDF289453B300548EEE /* MentionFinder.swift in Sources */,
 				66FC637629DF7FCC00F00DAC /* MentionHydrator.swift in Sources */,
+				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
 				F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */,
 				66FC636F29DF797700F00DAC /* MessageBodyRanges.swift in Sources */,
 				668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */,
@@ -12491,6 +12498,7 @@
 				664657352AC370670099DE1C /* MockAccountAttributesUpdater.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
+				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
 				664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */,
 				6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */,
 				6646573F2AC3B9190099DE1C /* MockRegistrationStateChangeManager.swift in Sources */,

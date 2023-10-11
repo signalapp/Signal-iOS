@@ -176,6 +176,18 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
                              }];
 }
 
+- (BOOL)wasIdentityVerified
+{
+    switch (self.verificationState) {
+        case OWSVerificationStateVerified:
+        case OWSVerificationStateNoLongerVerified:
+            return YES;
+        case OWSVerificationStateDefault:
+        case OWSVerificationStateDefaultAcknowledged:
+            return NO;
+    }
+}
+
 #pragma mark - debug
 
 + (void)printAllIdentities

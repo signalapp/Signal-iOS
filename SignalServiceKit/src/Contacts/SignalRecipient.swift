@@ -55,6 +55,10 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         set { aciString = newValue?.serviceIdUppercaseString }
     }
 
+    public var isEmpty: Bool {
+        return aciString == nil && phoneNumber == nil && pni == nil
+    }
+
     public var address: SignalServiceAddress {
         SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: phoneNumber)
     }
@@ -322,12 +326,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         }
     }
 
-    // MARK: - Callbacks
-
-    public func anyDidRemove(transaction tx: SDSAnyWriteTransaction) {
-        storageServiceManager.recordPendingUpdates(updatedAccountIds: [uniqueId])
-    }
-
     @objc
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber)
@@ -342,19 +340,5 @@ public extension String.StringInterpolation {
     }
     mutating func appendInterpolation(signalRecipientColumnFullyQualified column: SignalRecipient.CodingKeys) {
         appendLiteral(SignalRecipient.columnName(column, fullyQualified: true))
-    }
-}
-
-// MARK: -
-
-class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    private let sessionStore: SignalSessionStore
-
-    init(sessionStore: SignalSessionStore) {
-        self.sessionStore = sessionStore
-    }
-
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool {
-        return sessionStore.containsActiveSession(forAccountId: recipientId, deviceId: deviceId, tx: transaction)
     }
 }

@@ -77,15 +77,12 @@ struct MergedRecipient {
     let newRecipient: SignalRecipient
 }
 
-protocol RecipientMergerTemporaryShims {
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool
-}
-
 class RecipientMergerImpl: RecipientMerger {
-    private let temporaryShims: RecipientMergerTemporaryShims
+    private let aciSessionStore: SignalSessionStore
+    private let identityManager: OWSIdentityManager
     private let observers: [RecipientMergeObserver]
     private let recipientFetcher: RecipientFetcher
-    private let dataStore: RecipientDataStore
+    private let recipientStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
 
     /// Initializes a RecipientMerger.
@@ -95,16 +92,18 @@ class RecipientMergerImpl: RecipientMerger {
     /// which we learned about the new association, and they are notified in the
     /// order in which they are provided.
     init(
-        temporaryShims: RecipientMergerTemporaryShims,
+        aciSessionStore: SignalSessionStore,
+        identityManager: OWSIdentityManager,
         observers: [RecipientMergeObserver],
         recipientFetcher: RecipientFetcher,
-        dataStore: RecipientDataStore,
+        recipientStore: RecipientDataStore,
         storageServiceManager: StorageServiceManager
     ) {
-        self.temporaryShims = temporaryShims
+        self.aciSessionStore = aciSessionStore
+        self.identityManager = identityManager
         self.observers = observers
         self.recipientFetcher = recipientFetcher
-        self.dataStore = dataStore
+        self.recipientStore = recipientStore
         self.storageServiceManager = storageServiceManager
     }
 
@@ -202,8 +201,8 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) {
         guard
-            let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: tx),
-            let pniRecipient = dataStore.fetchRecipient(serviceId: pni, transaction: tx),
+            let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx),
+            let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx),
             pniRecipient.aciString == nil
         else {
             owsFail("Can't apply PNI signature merge with precondition violations")
@@ -250,6 +249,8 @@ class RecipientMergerImpl: RecipientMerger {
         return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
     }
 
+    // MARK: - Merge Logic
+
     /// Performs a merge for the provided identifiers.
     ///
     /// There may be a ``SignalRecipient`` for one or more of the provided
@@ -275,7 +276,7 @@ class RecipientMergerImpl: RecipientMerger {
         isLocalRecipient: Bool,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: tx)
+        let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx)
 
         // If these values have already been merged, we can return the result
         // without any modifications. This will be the path taken in 99% of cases
@@ -293,7 +294,7 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+        let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
 
         return mergeAndNotify(
             existingRecipients: [phoneNumberRecipient, aciRecipient].compacted(),
@@ -301,22 +302,14 @@ class RecipientMergerImpl: RecipientMerger {
             isLocalMerge: isLocalRecipient,
             tx: tx
         ) {
-            switch _mergeHighTrust(
+            let existingRecipient = _mergeHighTrust(
                 aci: aci,
                 phoneNumber: phoneNumber,
                 aciRecipient: aciRecipient,
                 phoneNumberRecipient: phoneNumberRecipient,
                 tx: tx
-            ) {
-            case .some(let updatedRecipient):
-                dataStore.updateRecipient(updatedRecipient, transaction: tx)
-                storageServiceManager.recordPendingUpdates(updatedAccountIds: [updatedRecipient.accountId])
-                return updatedRecipient
-            case .none:
-                let insertedRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
-                dataStore.insertRecipient(insertedRecipient, transaction: tx)
-                return insertedRecipient
-            }
+            )
+            return existingRecipient ?? SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
         }
     }
 
@@ -333,22 +326,8 @@ class RecipientMergerImpl: RecipientMerger {
                 return aciRecipient
             }
 
-            guard phoneNumberRecipient.aciString != nil else {
-                return mergeRecipients(
-                    aci: aci,
-                    aciRecipient: aciRecipient,
-                    phoneNumber: phoneNumber,
-                    phoneNumberRecipient: phoneNumberRecipient,
-                    transaction: tx
-                )
-            }
-
-            // Ordering is critical here. We must save the cleared phone number on the
-            // old recipient *before* we save the phone number on the new recipient.
-
             aciRecipient.phoneNumber = phoneNumberRecipient.phoneNumber
             phoneNumberRecipient.phoneNumber = nil
-            dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
             return aciRecipient
         }
 
@@ -358,7 +337,6 @@ class RecipientMergerImpl: RecipientMerger {
                 // a new SignalRecipient. We clear the phone number here since it will
                 // belong to the new SignalRecipient.
                 phoneNumberRecipient.phoneNumber = nil
-                dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
                 return nil
             }
 
@@ -370,58 +348,7 @@ class RecipientMergerImpl: RecipientMerger {
         return nil
     }
 
-    private func mergeRecipients(
-        aci: Aci,
-        aciRecipient: SignalRecipient,
-        phoneNumber: E164,
-        phoneNumberRecipient: SignalRecipient,
-        transaction: DBWriteTransaction
-    ) -> SignalRecipient {
-        // We have separate recipients in the db for the ACI and phone number.
-        // There isn't an ideal way to do this, but we need to converge on one
-        // recipient and discard the other.
-
-        // We try to preserve the recipient that has a session.
-        // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
-        let hasSessionForAci = temporaryShims.hasActiveSignalProtocolSession(
-            recipientId: aciRecipient.accountId,
-            deviceId: OWSDevice.primaryDeviceId,
-            transaction: transaction
-        )
-        let hasSessionForPhoneNumber = temporaryShims.hasActiveSignalProtocolSession(
-            recipientId: phoneNumberRecipient.accountId,
-            deviceId: OWSDevice.primaryDeviceId,
-            transaction: transaction
-        )
-
-        let winningRecipient: SignalRecipient
-        let losingRecipient: SignalRecipient
-
-        // We want to retain the phone number recipient only if it has a session
-        // and the ServiceId recipient doesn't. Historically, we tried to be clever and
-        // pick the session that had seen more use, but merging sessions should
-        // only happen in exceptional circumstances these days.
-        if !hasSessionForAci && hasSessionForPhoneNumber {
-            Logger.warn("Discarding ACI recipient in favor of phone number recipient.")
-            winningRecipient = phoneNumberRecipient
-            losingRecipient = aciRecipient
-        } else {
-            Logger.warn("Discarding phone number recipient in favor of ACI recipient.")
-            winningRecipient = aciRecipient
-            losingRecipient = phoneNumberRecipient
-        }
-        owsAssertBeta(winningRecipient !== losingRecipient)
-
-        // Make sure the winning recipient is fully qualified.
-        winningRecipient.phoneNumber = phoneNumber.stringValue
-        winningRecipient.aci = aci
-
-        // Discard the losing recipient.
-        // TODO: Should we clean up any state related to the discarded recipient?
-        dataStore.removeRecipient(losingRecipient, transaction: transaction)
-
-        return winningRecipient
-    }
+    // MARK: - Merge Handling
 
     @discardableResult
     private func mergeAndNotify(
@@ -455,6 +382,35 @@ class RecipientMergerImpl: RecipientMerger {
 
         let mergedRecipient = applyMerge()
 
+        let sessionEvents = sessionEventsToInsert(
+            oldRecipients: oldRecipients,
+            newRecipients: existingRecipients,
+            mergedRecipient: mergedRecipient,
+            tx: tx
+        )
+
+        // Always put `mergedRecipient` at the end to ensure we don't violate
+        // UNIQUE constraints. Note that `mergedRecipient` might be brand new, so
+        // we might not find it during the call to `removeAll`.
+        var affectedRecipients = existingRecipients
+        affectedRecipients.removeAll(where: { $0.uniqueId == mergedRecipient.uniqueId })
+        affectedRecipients.append(mergedRecipient)
+
+        for affectedRecipient in affectedRecipients {
+            if affectedRecipient.isEmpty {
+                // TODO: Should we clean up any more state related to the discarded recipient?
+                aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
+                identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
+                recipientStore.removeRecipient(affectedRecipient, transaction: tx)
+            } else if existingRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
+                recipientStore.updateRecipient(affectedRecipient, transaction: tx)
+            } else {
+                recipientStore.insertRecipient(affectedRecipient, transaction: tx)
+            }
+        }
+
+        storageServiceManager.recordPendingUpdates(updatedAccountIds: affectedRecipients.map { $0.uniqueId })
+
         for observer in observers {
             observer.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
@@ -466,7 +422,90 @@ class RecipientMergerImpl: RecipientMerger {
             )
         }
 
+        for sessionEvent in sessionEvents {
+            insertSessionEvent(sessionEvent, tx: tx)
+        }
+
         return mergedRecipient
+    }
+
+    // MARK: - Events
+
+    private enum SessionEvent {
+        case safetyNumberChange(SignalRecipient, wasIdentityVerified: Bool)
+    }
+
+    private func sessionEventsToInsert(
+        oldRecipients: [SignalRecipient],
+        newRecipients: [SignalRecipient],
+        mergedRecipient: SignalRecipient,
+        tx: DBReadTransaction
+    ) -> [SessionEvent] {
+        var result = [SessionEvent]()
+        for (oldRecipient, newRecipient) in zip(oldRecipients, newRecipients) {
+            let recipientPair = MergePair(
+                fromValue: oldRecipient,
+                intoValue: newRecipient.isEmpty ? mergedRecipient : newRecipient
+            )
+
+            guard aciSessionStore.mightContainSession(for: recipientPair.fromValue, tx: tx) else {
+                continue
+            }
+
+            // Check out `sessionIdentifier(for:)` to understand this logic.
+            let sessionIdentifier = recipientPair.map { self.sessionIdentifier(for: $0) }
+            if sessionIdentifier.fromValue != sessionIdentifier.intoValue {
+                // PNI TODO: Insert a Session Switchover Event in `newRecipient`.
+                // PNI TODO: Delete the session & identity for `oldRecipient` (TOFU).
+                continue
+            }
+
+            let recipientIdentity = recipientPair.map { identityManager.recipientIdentity(for: $0.uniqueId, tx: tx) }
+            if
+                let fromValue = recipientIdentity.fromValue,
+                let intoValue = recipientIdentity.intoValue,
+                fromValue.identityKey != intoValue.identityKey
+            {
+                result.append(.safetyNumberChange(recipientPair.intoValue, wasIdentityVerified: fromValue.wasIdentityVerified))
+                continue
+            }
+        }
+        return result
+    }
+
+    private func insertSessionEvent(_ sessionEvent: SessionEvent, tx: DBWriteTransaction) {
+        switch sessionEvent {
+        case .safetyNumberChange(let recipient, let wasIdentityVerified):
+            guard let aci = recipient.aci else {
+                owsFailDebug("Can't insert a Safety Number event without an ACI.")
+                break
+            }
+            identityManager.insertIdentityChangeInfoMessage(for: aci, wasIdentityVerified: wasIdentityVerified, tx: tx)
+        }
+    }
+
+    /// Returns an opaque "session identifier" for the recipient.
+    ///
+    /// When this identifier changes, we need to insert a session switchover
+    /// event. We do so when switching from the PNI session to the ACI session,
+    /// when losing the PNI but keeping the phone number, or when switching from
+    /// one PNI to another PNI. The latter two shouldn't happen, but they are
+    /// technically session switchovers and therefore need to be handled.
+    ///
+    /// Notable behaviors:
+    /// - Once an ACI is assigned, no session switchovers are possible.
+    /// - Once an ACI is assigned, it never changes (hence the "aci" constant).
+    /// - If the PNI changes, so does the session identifier.
+    /// - If the PNI disappears, we add a preemptive session switchover since we
+    /// won't add one when learning the new PNI.
+    /// - If a phone number-only recipient learns an ACI, that's not a session
+    /// switchover. Instead, it's part of a years-old migration from phone
+    /// numbers to ACIs.
+    private func sessionIdentifier(for recipient: SignalRecipient) -> some Equatable {
+        if recipient.aci == nil, let pni = recipient.pni {
+            return pni.serviceIdString
+        }
+        return "aci"
     }
 }
 

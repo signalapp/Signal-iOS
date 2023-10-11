@@ -7,11 +7,16 @@ import Foundation
 import LibSignalClient
 
 public protocol SignalSessionStore: LibSignalClient.SessionStore {
-    func containsActiveSession(
-        forAccountId accountId: String,
-        deviceId: UInt32,
+    func mightContainSession(
+        for recipient: SignalRecipient,
         tx: DBReadTransaction
     ) -> Bool
+
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: SignalRecipient,
+        tx: DBWriteTransaction
+    )
 
     func archiveAllSessions(
         for serviceId: ServiceId,

@@ -21,7 +21,8 @@ internal class MockSignalProtocolStore: SignalProtocolStore {
 }
 
 class MockSessionStore: SignalSessionStore {
-    func containsActiveSession(forAccountId accountId: String, deviceId: UInt32, tx: DBReadTransaction) -> Bool { false }
+    func mightContainSession(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool { false }
+    func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) { }
     func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) { }
     func archiveAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) { }
     func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBWriteTransaction) { }

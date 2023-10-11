@@ -110,12 +110,20 @@ public final class SSKSessionStore: SignalSessionStore {
         keyValueStore.setObject(dictionary, key: recipientId, transaction: tx)
     }
 
-    public func containsActiveSession(
-        forAccountId accountId: String,
-        deviceId: UInt32,
-        tx: DBReadTransaction
-    ) -> Bool {
-        return loadSerializedSession(for: accountId, deviceId: deviceId, tx: tx) != nil
+    public func mightContainSession(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
+        return keyValueStore.hasValue(recipient.uniqueId, transaction: tx)
+    }
+
+    public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
+        let recipientPair = MergePair(fromValue: recipient, intoValue: targetRecipient)
+        let sessionBlob = recipientPair.map { keyValueStore.getData($0.uniqueId, transaction: tx) }
+        guard let fromValue = sessionBlob.fromValue else {
+            return
+        }
+        if sessionBlob.intoValue == nil {
+            keyValueStore.setData(fromValue, key: targetRecipient.uniqueId, transaction: tx)
+        }
+        keyValueStore.removeValue(forKey: recipient.uniqueId, transaction: tx)
     }
 
     public func deleteAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {

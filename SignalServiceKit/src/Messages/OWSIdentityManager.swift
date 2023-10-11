@@ -10,8 +10,10 @@ import SignalCoreKit
 public protocol OWSIdentityManager {
     func libSignalStore(for identity: OWSIdentity, tx: DBReadTransaction) throws -> IdentityStore
     func groupContainsUnverifiedMember(_ groupUniqueID: String, tx: DBReadTransaction) -> Bool
-    func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity?
     func fireIdentityStateChangeNotification(after tx: DBWriteTransaction)
+
+    func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity?
+    func recipientIdentity(for recipientId: AccountId, tx: DBReadTransaction) -> OWSRecipientIdentity?
 
     func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
@@ -21,6 +23,9 @@ public protocol OWSIdentityManager {
 
     @discardableResult
     func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError>
+    func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
+
+    func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction)
 
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
@@ -78,7 +83,7 @@ private extension TSMessageDirection {
     }
 }
 
-extension LibSignalClient.IdentityKey {
+extension IdentityKey {
     fileprivate func serializeAsData() -> Data {
         return Data(publicKey.keyBytes)
     }
@@ -275,8 +280,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             // send to the ACI.
             return nil
         case .success(let recipientId):
-            return OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
+            return recipientIdentity(for: recipientId, tx: tx)
         }
+    }
+
+    public func recipientIdentity(for recipientId: AccountId, tx: DBReadTransaction) -> OWSRecipientIdentity? {
+        return OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - Local Identity
@@ -346,17 +355,14 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
 
         let verificationState: VerificationState
-        let wasIdentityVerified: Bool
         switch VerificationState(existingIdentity.verificationState) {
         case .implicit(isAcknowledged: _):
             verificationState = .implicit(isAcknowledged: false)
-            wasIdentityVerified = false
         case .verified, .noLongerVerified:
             verificationState = .noLongerVerified
-            wasIdentityVerified = true
         }
         Logger.info("Saving new identity for \(serviceId): \(existingIdentity.verificationState) -> \(verificationState)")
-        createIdentityChangeInfoMessage(for: serviceId, wasIdentityVerified: wasIdentityVerified, tx: tx)
+        insertIdentityChangeInfoMessage(for: serviceId, wasIdentityVerified: existingIdentity.wasIdentityVerified, tx: tx)
         OWSRecipientIdentity(
             accountId: recipientId,
             identityKey: identityKey,
@@ -367,12 +373,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         aciProtocolStore.sessionStore.archiveAllSessions(for: serviceId, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
         clearSyncMessage(for: recipientId, tx: tx)
-        fireIdentityStateChangeNotification(after: tx)
         storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipientId])
         return true
     }
 
-    private func createIdentityChangeInfoMessage(
+    public func insertIdentityChangeInfoMessage(
         for serviceId: ServiceId,
         wasIdentityVerified: Bool,
         tx: DBWriteTransaction
@@ -397,6 +402,27 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
 
         notificationsManager.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: SDSDB.shimOnlyBridge(tx))
+        fireIdentityStateChangeNotification(after: tx)
+    }
+
+    public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
+        let recipientPair = MergePair(fromValue: recipient, intoValue: targetRecipient)
+        let recipientIdentity = recipientPair.map {
+            OWSRecipientIdentity.anyFetch(uniqueId: $0.uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+        }
+        guard let fromValue = recipientIdentity.fromValue else {
+            return
+        }
+        if recipientIdentity.intoValue == nil {
+            OWSRecipientIdentity(
+                accountId: targetRecipient.uniqueId,
+                identityKey: fromValue.identityKey,
+                isFirstKnownKey: fromValue.isFirstKnownKey,
+                createdAt: fromValue.createdAt,
+                verificationState: fromValue.verificationState
+            ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        }
+        fromValue.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - Trust
@@ -1053,42 +1079,6 @@ extension OWSIdentityManager {
         }
         return result
     }
-}
-
-final class MockIdentityManager: OWSIdentityManager {
-
-    private let recipientIdFinder: RecipientIdFinder
-
-    init(recipientIdFinder: RecipientIdFinder) {
-        self.recipientIdFinder = recipientIdFinder
-    }
-
-    var identityKeys = [AccountId: IdentityKey]()
-    func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
-        guard let recipientId = try recipientIdFinder.recipientId(for: serviceId, tx: tx)?.get() else { return nil }
-        return identityKeys[recipientId]
-    }
-
-    func libSignalStore(for identity: OWSIdentity, tx: DBReadTransaction) throws -> IdentityStore { fatalError() }
-    func groupContainsUnverifiedMember(_ groupUniqueID: String, tx: DBReadTransaction) -> Bool { fatalError() }
-    func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }
-    func fireIdentityStateChangeNotification(after tx: DBWriteTransaction) { fatalError() }
-    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? { fatalError() }
-    func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) { fatalError() }
-    func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
-    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
-    func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }
-    func isTrustedIdentityKey(_ identityKey: Data, serviceId: ServiceId, direction: TSMessageDirection, tx: DBReadTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
-    func tryToSyncQueuedVerificationStates() { fatalError() }
-    func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> VerificationState { fatalError() }
-    func setVerificationState(_ verificationState: VerificationState, of identityKey: Data, for address: SignalServiceAddress, isUserInitiatedChange: Bool, tx: DBWriteTransaction) -> ChangeVerificationStateResult { fatalError() }
-    func processIncomingVerifiedProto(_ verified: SSKProtoVerified, tx: DBWriteTransaction) throws { fatalError() }
-    func processIncomingPniChangePhoneNumber(proto: SSKProtoSyncMessagePniChangeNumber, updatedPni updatedPniString: String?, preKeyManager: PreKeyManager, tx: DBWriteTransaction) { fatalError() }
-    func shouldSharePhoneNumber(with serviceId: ServiceId, tx: DBReadTransaction) -> Bool { fatalError() }
-    func setShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) { fatalError() }
-    func clearShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) { fatalError() }
-    func clearShouldSharePhoneNumberForEveryone(tx: DBWriteTransaction) { fatalError() }
-    func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void> { fatalError() }
 }
 
 #endif

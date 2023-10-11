@@ -351,9 +351,8 @@ public class DependenciesBridge {
         )
 
         self.recipientMerger = RecipientMergerImpl(
-            temporaryShims: SignalRecipientMergerTemporaryShims(
-                sessionStore: aciProtocolStore.sessionStore
-            ),
+            aciSessionStore: aciProtocolStore.sessionStore,
+            identityManager: self.identityManager,
             observers: RecipientMergerImpl.buildObservers(
                 chatColorSettingStore: self.chatColorSettingStore,
                 disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
@@ -371,7 +370,7 @@ public class DependenciesBridge {
                 wallpaperStore: self.wallpaperStore
             ),
             recipientFetcher: self.recipientFetcher,
-            dataStore: recipientStore,
+            recipientStore: self.recipientStore,
             storageServiceManager: storageServiceManager
         )
 

@@ -49,6 +49,8 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
                         transaction:(SDSAnyWriteTransaction *)transaction;
 
+@property (atomic, readonly) BOOL wasIdentityVerified;
+
 #pragma mark - Initializers
 
 + (instancetype)new NS_UNAVAILABLE;

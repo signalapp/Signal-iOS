@@ -7,18 +7,6 @@ import Foundation
 import LibSignalClient
 import SignalCoreKit
 
-private struct MergePair<T> {
-    let fromValue: T
-    let intoValue: T
-
-    func map<Result>(block: (T) throws -> Result) rethrows -> MergePair<Result> {
-        return MergePair<Result>(
-            fromValue: try block(fromValue),
-            intoValue: try block(intoValue)
-        )
-    }
-}
-
 final class ThreadMerger: RecipientMergeObserver {
     private let chatColorSettingStore: ChatColorSettingStore
     private let disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager
