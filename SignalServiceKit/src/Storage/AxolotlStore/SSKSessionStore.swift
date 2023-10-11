@@ -22,18 +22,18 @@ public class SSKSessionStore: NSObject {
         }
     }
 
-    fileprivate func loadSerializedSession(for address: SignalServiceAddress,
-                                           deviceId: Int32,
-                                           transaction: SDSAnyReadTransaction) -> Data? {
-        owsAssertDebug(address.isValid)
-        guard let accountId = OWSAccountIdFinder.accountId(forAddress: address, transaction: transaction) else {
-            Logger.info("No accountId for: \(address). There must not be a stored session.")
+    fileprivate func loadSerializedSession(
+        for serviceId: ServiceId,
+        deviceId: UInt32,
+        tx: SDSAnyReadTransaction
+    ) -> Data? {
+        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
             return nil
         }
-        return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
+        return loadSerializedSession(for: recipientId, deviceId: deviceId, tx: tx)
     }
 
-    fileprivate func serializedSession(fromDatabaseRepresentation entry: Any) -> Data? {
+    private func serializedSession(fromDatabaseRepresentation entry: Any) -> Data? {
         switch entry {
         case let data as Data:
             return data
@@ -50,106 +50,85 @@ public class SSKSessionStore: NSObject {
         }
     }
 
-    private func loadSerializedSession(forAccountId accountId: String,
-                                       deviceId: Int32,
-                                       transaction: SDSAnyReadTransaction) -> Data? {
-        owsAssertDebug(!accountId.isEmpty)
+    private func loadSerializedSession(
+        for recipientId: String,
+        deviceId: UInt32,
+        tx: SDSAnyReadTransaction
+    ) -> Data? {
+        owsAssertDebug(!recipientId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        let dictionary = keyValueStore.getObject(forKey: accountId,
-                                                 transaction: transaction) as! SessionsByDeviceDictionary?
-        guard let entry = dictionary?[deviceId] else {
+        let dictionary = keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary?
+        guard let entry = dictionary?[Int32(bitPattern: deviceId)] else {
             return nil
         }
         return serializedSession(fromDatabaseRepresentation: entry)
     }
 
-    fileprivate func storeSerializedSession(_ sessionData: Data,
-                                            for address: SignalServiceAddress,
-                                            deviceId: Int32,
-                                            transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(address.isValid)
-        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        storeSerializedSession(forAccountId: accountId,
-                               deviceId: deviceId,
-                               sessionData: sessionData,
-                               transaction: transaction)
+    fileprivate func storeSerializedSession(
+        _ sessionData: Data,
+        for serviceId: ServiceId,
+        deviceId: UInt32,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let recipientId = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: tx)
+        storeSerializedSession(for: recipientId, deviceId: deviceId, sessionData: sessionData, tx: tx)
     }
 
-    private func storeSerializedSession(forAccountId accountId: String,
-                                        deviceId: Int32,
-                                        sessionData: Data,
-                                        transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!accountId.isEmpty)
+    private func storeSerializedSession(
+        for recipientId: String,
+        deviceId: UInt32,
+        sessionData: Data,
+        tx: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(!recipientId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        var dictionary = (keyValueStore.getObject(forKey: accountId,
-                                                  transaction: transaction) as! SessionsByDeviceDictionary?) ?? [:]
-        dictionary[deviceId] = sessionData as NSData
-        keyValueStore.setObject(dictionary, key: accountId, transaction: transaction)
+        var dictionary = (keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary?) ?? [:]
+        dictionary[Int32(bitPattern: deviceId)] = sessionData as NSData
+        keyValueStore.setObject(dictionary, key: recipientId, transaction: tx)
     }
 
     public func containsActiveSession(
-        for serviceId: ServiceId,
-        deviceId: Int32,
-        transaction: SDSAnyReadTransaction
+        forAccountId accountId: String,
+        deviceId: UInt32,
+        tx: SDSAnyReadTransaction
     ) -> Bool {
-        let address = SignalServiceAddress(serviceId)
-        guard let accountId = OWSAccountIdFinder.accountId(forAddress: address, transaction: transaction) else {
-            Logger.info("No accountId for: \(address). There must not be a stored session.")
-            return false
+        return loadSerializedSession(for: accountId, deviceId: deviceId, tx: tx) != nil
+    }
+
+    public func deleteAllSessions(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
+        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
+            // There can't possibly be any sessions that need to be deleted.
+            return
         }
-        return containsActiveSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
+        owsAssertDebug(!recipientId.isEmpty)
+        Logger.info("deleting all sessions for \(serviceId)")
+        keyValueStore.removeValue(forKey: recipientId, transaction: tx)
     }
 
-    @objc
-    public func containsActiveSession(forAccountId accountId: String,
-                                      deviceId: Int32,
-                                      transaction: SDSAnyReadTransaction) -> Bool {
-        guard let serializedData = loadSerializedSession(forAccountId: accountId,
-                                                         deviceId: deviceId,
-                                                         transaction: transaction) else {
-            return false
+    public func archiveAllSessions(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
+        Logger.info("archiving all sessions for \(serviceId)")
+        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
+            // There can't possibly be any sessions that need to be archived.
+            return
         }
+        archiveAllSessions(for: recipientId, tx: tx)
+    }
 
-        do {
-            let session = try SessionRecord(bytes: serializedData)
-            return session.hasCurrentState
-        } catch {
-            owsFailDebug("serialized session data was not valid: \(error)")
-            return false
+    public func archiveAllSessions(for address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
+        Logger.info("archiving all sessions for \(address)")
+        guard let recipientId = OWSAccountIdFinder.accountId(forAddress: address, transaction: tx) else {
+            // There can't possibly be any sessions that need to be archived.
+            return
         }
+        archiveAllSessions(for: recipientId, tx: tx)
     }
 
-    @objc(deleteAllSessionsForAddress:transaction:)
-    public func deleteAllSessions(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(address.isValid)
-        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        return deleteAllSessions(forAccountId: accountId, transaction: transaction)
-    }
+    private func archiveAllSessions(for recipientId: AccountId, tx: SDSAnyWriteTransaction) {
+        owsAssertDebug(!recipientId.isEmpty)
 
-    private func deleteAllSessions(forAccountId accountId: String,
-                                   transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!accountId.isEmpty)
-        Logger.info("deleting all sessions for contact: \(accountId)")
-        keyValueStore.removeValue(forKey: accountId, transaction: transaction)
-    }
-
-    @objc(archiveAllSessionsForAddress:transaction:)
-    public func archiveAllSessions(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(address.isValid)
-        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        return archiveAllSessions(forAccountId: accountId, transaction: transaction)
-    }
-
-    @objc
-    public func archiveAllSessions(forAccountId accountId: String,
-                                   transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(!accountId.isEmpty)
-        Logger.info("archiving all sessions for contact: \(accountId)")
-
-        guard let dictionary = keyValueStore.getObject(forKey: accountId,
-                                                       transaction: transaction) as! SessionsByDeviceDictionary? else {
+        guard let dictionary = keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary? else {
             // We never had a session for this account in the first place.
             return
         }
@@ -170,10 +149,9 @@ public class SSKSessionStore: NSObject {
             }
         }
 
-        keyValueStore.setObject(newDictionary, key: accountId, transaction: transaction)
+        keyValueStore.setObject(newDictionary, key: recipientId, transaction: tx)
     }
 
-    @objc
     public func resetSessionStore(_ transaction: SDSAnyWriteTransaction) {
         Logger.warn("resetting session store")
         keyValueStore.removeAll(transaction: transaction)
@@ -207,34 +185,32 @@ public class SSKSessionStore: NSObject {
 
 extension SSKSessionStore {
     public func loadSession(
-        for address: SignalServiceAddress,
-        deviceId: Int32,
-        transaction: SDSAnyReadTransaction
+        for serviceId: ServiceId,
+        deviceId: UInt32,
+        tx: SDSAnyReadTransaction
     ) throws -> SessionRecord? {
-        guard let serializedData = loadSerializedSession(for: address,
-                                                         deviceId: deviceId,
-                                                         transaction: transaction) else {
+        guard let serializedData = loadSerializedSession(for: serviceId, deviceId: deviceId, tx: tx) else {
             return nil
         }
         return try SessionRecord(bytes: serializedData)
     }
 
-    fileprivate func storeSession(_ record: SessionRecord,
-                                  for address: SignalServiceAddress,
-                                  deviceId: Int32,
-                                  transaction: SDSAnyWriteTransaction) throws {
-        storeSerializedSession(Data(record.serialize()), for: address, deviceId: deviceId, transaction: transaction)
+    fileprivate func storeSession(
+        _ record: SessionRecord,
+        for serviceId: ServiceId,
+        deviceId: UInt32,
+        tx: SDSAnyWriteTransaction
+    ) throws {
+        storeSerializedSession(Data(record.serialize()), for: serviceId, deviceId: deviceId, tx: tx)
     }
 
-    public func archiveSession(for address: SignalServiceAddress,
-                               deviceId: Int32,
-                               transaction: SDSAnyWriteTransaction) {
+    public func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
         do {
-            guard let session = try self.loadSession(for: address, deviceId: deviceId, transaction: transaction) else {
+            guard let session = try loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
                 return
             }
             session.archiveCurrentState()
-            try self.storeSession(session, for: address, deviceId: deviceId, transaction: transaction)
+            try storeSession(session, for: serviceId, deviceId: deviceId, tx: tx)
         } catch {
             owsFailDebug("\(error)")
         }
@@ -243,9 +219,7 @@ extension SSKSessionStore {
 
 extension SSKSessionStore: LibSignalClient.SessionStore {
     public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SessionRecord? {
-        return try loadSession(for: SignalServiceAddress(from: address),
-                               deviceId: Int32(bitPattern: address.deviceId),
-                               transaction: context.asTransaction)
+        return try loadSession(for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction)
     }
 
     public func loadExistingSessions(
@@ -259,10 +233,7 @@ extension SSKSessionStore: LibSignalClient.SessionStore {
     }
 
     public func storeSession(_ record: SessionRecord, for address: ProtocolAddress, context: StoreContext) throws {
-        try storeSession(record,
-                         for: SignalServiceAddress(from: address),
-                         deviceId: Int32(bitPattern: address.deviceId),
-                         transaction: context.asTransaction)
+        try storeSession(record, for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction)
     }
 }
 

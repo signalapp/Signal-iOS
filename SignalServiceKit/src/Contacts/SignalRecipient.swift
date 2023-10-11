@@ -372,11 +372,7 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
         self.sessionStore = sessionStore
     }
 
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool {
-        sessionStore.containsActiveSession(
-            forAccountId: recipientId,
-            deviceId: deviceId,
-            tx: transaction
-        )
+    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool {
+        return sessionStore.containsActiveSession(forAccountId: recipientId, deviceId: deviceId, tx: transaction)
     }
 }

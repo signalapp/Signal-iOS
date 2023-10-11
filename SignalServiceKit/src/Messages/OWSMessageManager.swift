@@ -610,11 +610,7 @@ extension OWSMessageManager {
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")
-                    sessionStore.archiveSession(
-                        for: SignalServiceAddress(sourceAci),
-                        deviceId: Int32(sourceDeviceId),
-                        tx: writeTx.asV2Write
-                    )
+                    sessionStore.archiveSession(for: sourceAci, deviceId: sourceDeviceId, tx: writeTx.asV2Write)
                     didPerformSessionReset = true
                 } else {
                     Logger.info("Ratchet key mismatch. Leaving session as-is.")
@@ -950,7 +946,7 @@ extension OWSMessageManager {
         TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd).anyInsert(transaction: tx)
 
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: SignalServiceAddress(decryptedEnvelope.sourceAci), tx: tx.asV2Write)
+        sessionStore.archiveAllSessions(for: decryptedEnvelope.sourceAci, tx: tx.asV2Write)
     }
 }
 

@@ -71,7 +71,7 @@ struct MergedRecipient {
 }
 
 protocol RecipientMergerTemporaryShims {
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool
+    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool
 }
 
 class RecipientMergerImpl: RecipientMerger {
@@ -349,12 +349,12 @@ class RecipientMergerImpl: RecipientMerger {
         // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
         let hasSessionForAci = temporaryShims.hasActiveSignalProtocolSession(
             recipientId: aciRecipient.accountId,
-            deviceId: Int32(OWSDevice.primaryDeviceId),
+            deviceId: OWSDevice.primaryDeviceId,
             transaction: transaction
         )
         let hasSessionForPhoneNumber = temporaryShims.hasActiveSignalProtocolSession(
             recipientId: phoneNumberRecipient.accountId,
-            deviceId: Int32(OWSDevice.primaryDeviceId),
+            deviceId: OWSDevice.primaryDeviceId,
             transaction: transaction
         )
 

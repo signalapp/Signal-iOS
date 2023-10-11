@@ -33,6 +33,18 @@ extension MessageSender {
 // MARK: -
 
 private extension MessageSender {
+    static func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) -> Bool {
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        do {
+            guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
+                return false
+            }
+            return session.hasCurrentState
+        } catch {
+            return false
+        }
+    }
+
     /// Establishes a session with the recipient if one doesn't already exist.
     ///
     /// This may make blocking network requests.
@@ -48,11 +60,7 @@ private extension MessageSender {
         owsAssertDebug(!Thread.isMainThread)
 
         let hasSession = databaseStorage.read { tx in
-            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
-                forAccountId: recipientId,
-                deviceId: Int32(bitPattern: deviceId),
-                tx: tx.asV2Read
-            )
+            Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
         }
         if hasSession {
             return
@@ -192,15 +200,7 @@ private extension MessageSender {
 
         Logger.info("Creating session for \(serviceId), deviceId: \(deviceId)")
 
-        let containsActiveSession = { () -> Bool in
-            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
-                forAccountId: recipientId,
-                deviceId: Int32(bitPattern: deviceId),
-                tx: transaction.asV2Read
-            )
-        }
-
-        guard !containsActiveSession() else {
+        if containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) {
             Logger.warn("Session already exists.")
             return
         }
@@ -274,16 +274,18 @@ private extension MessageSender {
         } catch SignalError.untrustedIdentity(let message) {
             Logger.error("Found untrusted identity for \(serviceId): \(message)")
             handleUntrustedIdentityKeyError(
+                serviceId: serviceId,
                 recipientId: recipientId,
                 preKeyBundle: preKeyBundle,
                 transaction: transaction
             )
             throw UntrustedIdentityError(serviceId: serviceId)
         }
-        owsAssertDebug(containsActiveSession(), "Session does not exist.")
+        owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write), "Couldn't create session.")
     }
 
     private class func handleUntrustedIdentityKeyError(
+        serviceId: ServiceId,
         recipientId: AccountId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
         transaction tx: SDSAnyWriteTransaction
@@ -291,7 +293,7 @@ private extension MessageSender {
         do {
             let identityManager = DependenciesBridge.shared.identityManager
             let newIdentityKey = try preKeyBundle.identityKey.removeKeyType()
-            identityManager.saveIdentityKey(newIdentityKey, for: recipientId, tx: tx.asV2Write)
+            identityManager.saveIdentityKey(newIdentityKey, for: serviceId, tx: tx.asV2Write)
             hadUntrustedIdentityKeyError(for: recipientId)
         } catch {
             owsFailDebug("Error: \(error)")
@@ -1517,7 +1519,7 @@ extension MessageSender {
                 return
             }
 
-            handleStaleDevices(staleDevices: response.staleDevices, address: SignalServiceAddress(messageSend.serviceId))
+            handleStaleDevices(response.staleDevices, for: messageSend.serviceId)
 
             retrySend()
         case 428:
@@ -1616,12 +1618,12 @@ extension MessageSender {
     }
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
-    func handleStaleDevices(staleDevices: [UInt32]?, address: SignalServiceAddress) {
+    func handleStaleDevices(_ staleDevices: [UInt32]?, for serviceId: ServiceId) {
         owsAssertDebug(!Thread.isMainThread)
 
         let staleDevices = staleDevices ?? []
 
-        Logger.info("staleDevices: \(staleDevices) for \(address)")
+        Logger.info("staleDevices: \(staleDevices) for \(serviceId)")
 
         guard !staleDevices.isEmpty else {
             // TODO: Is this assert necessary?
@@ -1633,11 +1635,7 @@ extension MessageSender {
             Logger.info("Archiving sessions for stale devices: \(staleDevices)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for staleDeviceId in staleDevices {
-                sessionStore.archiveSession(
-                    for: address,
-                    deviceId: Int32(staleDeviceId),
-                    tx: transaction.asV2Write
-                )
+                sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: transaction.asV2Write)
             }
         }
     }
@@ -1666,11 +1664,7 @@ extension MessageSender {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(
-                    for: SignalServiceAddress(serviceId),
-                    deviceId: Int32(bitPattern: deviceId),
-                    tx: transaction.asV2Write
-                )
+                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write)
             }
         }
     }
@@ -1688,14 +1682,7 @@ private extension MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
-        guard
-            signalProtocolStore.sessionStore.containsActiveSession(
-                for: serviceId,
-                deviceId: Int32(bitPattern: deviceId),
-                tx: transaction.asV2Read
-            )
-        else {
+        guard Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
 
@@ -1705,6 +1692,7 @@ private extension MessageSender {
         let messageType: SSKProtoEnvelopeType
 
         let identityManager = DependenciesBridge.shared.identityManager
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         if let udSendingParamsProvider, let udSendingAccess = udSendingParamsProvider.udSendingAccess {
@@ -1819,10 +1807,8 @@ private extension MessageSender {
             messageType = .plaintextContent
         }
 
-        let session = try DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.loadSession(
-            for: protocolAddress,
-            context: transaction
-        )!
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        let session = try sessionStore.loadSession(for: protocolAddress, context: transaction)!
         return DeviceMessage(
             type: messageType,
             destinationDeviceId: protocolAddress.deviceId,

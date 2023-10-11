@@ -8,36 +8,31 @@ import LibSignalClient
 
 public protocol SignalSessionStore: LibSignalClient.SessionStore {
     func containsActiveSession(
-        for serviceId: ServiceId,
-        deviceId: Int32,
-        tx: DBReadTransaction
-    ) -> Bool
-
-    func containsActiveSession(
         forAccountId accountId: String,
-        deviceId: Int32,
+        deviceId: UInt32,
         tx: DBReadTransaction
     ) -> Bool
 
     func archiveAllSessions(
-        for address: SignalServiceAddress,
+        for serviceId: ServiceId,
         tx: DBWriteTransaction
     )
 
+    /// Deprecated. Prefer the variant that accepts a ServiceId.
     func archiveAllSessions(
-        forAccountId accountId: String,
+        for address: SignalServiceAddress,
         tx: DBWriteTransaction
     )
 
     func archiveSession(
-        for address: SignalServiceAddress,
-        deviceId: Int32,
+        for serviceId: ServiceId,
+        deviceId: UInt32,
         tx: DBWriteTransaction
     )
 
     func loadSession(
-        for address: SignalServiceAddress,
-        deviceId: Int32,
+        for serviceId: ServiceId,
+        deviceId: UInt32,
         tx: DBReadTransaction
     ) throws -> SessionRecord?
 
@@ -49,7 +44,7 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
     func resetSessionStore(tx: DBWriteTransaction)
 
     func deleteAllSessions(
-        for address: SignalServiceAddress,
+        for serviceId: ServiceId,
         tx: DBWriteTransaction
     )
 
@@ -63,37 +58,32 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
 }
 
 extension SSKSessionStore: SignalSessionStore {
-
-    public func containsActiveSession(for serviceId: ServiceId, deviceId: Int32, tx: DBReadTransaction) -> Bool {
-        containsActiveSession(for: serviceId, deviceId: deviceId, transaction: SDSDB.shimOnlyBridge(tx))
+    public func containsActiveSession(forAccountId accountId: String, deviceId: UInt32, tx: DBReadTransaction) -> Bool {
+        return containsActiveSession(forAccountId: accountId, deviceId: deviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func containsActiveSession(forAccountId accountId: String, deviceId: Int32, tx: DBReadTransaction) -> Bool {
-        containsActiveSession(forAccountId: accountId, deviceId: deviceId, transaction: SDSDB.shimOnlyBridge(tx))
+    public func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {
+        archiveAllSessions(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func archiveAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {
-        archiveAllSessions(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+        archiveAllSessions(for: address, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func archiveAllSessions(forAccountId accountId: String, tx: DBWriteTransaction) {
-        archiveAllSessions(forAccountId: accountId, transaction: SDSDB.shimOnlyBridge(tx))
+    public func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBWriteTransaction) {
+        archiveSession(for: serviceId, deviceId: deviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func archiveSession(for address: SignalServiceAddress, deviceId: Int32, tx: DBWriteTransaction) {
-        archiveSession(for: address, deviceId: deviceId, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func loadSession(for address: SignalServiceAddress, deviceId: Int32, tx: DBReadTransaction) throws -> SessionRecord? {
-        try loadSession(for: address, deviceId: deviceId, transaction: SDSDB.shimOnlyBridge(tx))
+    public func loadSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> SessionRecord? {
+        try loadSession(for: serviceId, deviceId: deviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func resetSessionStore(tx: DBWriteTransaction) {
         resetSessionStore(SDSDB.shimOnlyBridge(tx))
     }
 
-    public func deleteAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {
-        deleteAllSessions(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+    public func deleteAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {
+        deleteAllSessions(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func printAll(tx: DBReadTransaction) {

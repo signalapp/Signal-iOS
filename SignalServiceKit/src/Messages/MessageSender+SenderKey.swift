@@ -583,13 +583,8 @@ extension MessageSender {
                 case 410:
                     // Server reports stale devices. We should reset our session and try again.
                     let responseBody = try Self.decode410Response(data: responseData)
-
                     for account in responseBody {
-                        let address = SignalServiceAddress(account.serviceId)
-                        self.handleStaleDevices(
-                            staleDevices: account.devices.staleDevices,
-                            address: address
-                        )
+                        self.handleStaleDevices(account.devices.staleDevices, for: account.serviceId)
                     }
                     throw SenderKeyError.staleDevices
                 case 428:
@@ -794,16 +789,16 @@ fileprivate extension MessageSender {
     /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
     /// SenderKeyStore already said this address has previous Sender Key sends). We should
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
-    static func registrationIdStatus(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> RegistrationIdStatus {
-        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: transaction).devices
+    static func registrationIdStatus(for serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) -> RegistrationIdStatus {
+        let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: tx).devices
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {
             do {
                 guard
                     let sessionRecord = try sessionStore.loadSession(
-                        for: SignalServiceAddress(serviceId),
-                        deviceId: Int32(deviceId),
-                        tx: transaction.asV2Read
+                        for: serviceId,
+                        deviceId: deviceId,
+                        tx: tx.asV2Read
                     ),
                     sessionRecord.hasCurrentState
                 else { return .noSession }

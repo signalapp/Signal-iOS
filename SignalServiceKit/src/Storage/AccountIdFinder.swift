@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public typealias AccountId = String
@@ -17,23 +18,22 @@ public extension SignalRecipient {
 
 @objc
 public class OWSAccountIdFinder: NSObject {
+    public class func recipientId(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> AccountId? {
+        let recipientStore = DependenciesBridge.shared.recipientStore
+        return recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)?.uniqueId
+    }
+
+    public class func ensureRecipientId(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) -> AccountId {
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
+    }
+
     @objc
     public class func accountId(
         forAddress address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction
     ) -> AccountId? {
         return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: transaction)?.accountId
-    }
-
-    /// Fetches (or creates) a SignalRecipient for a provided address.
-    ///
-    /// In general, callers should prefer using ``RecipientFetcher`` directly.
-    @objc
-    public class func ensureAccountId(
-        forAddress address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) -> AccountId {
-        return ensureRecipient(forAddress: address, transaction: transaction).uniqueId
     }
 
     public class func ensureRecipient(
@@ -58,14 +58,5 @@ public class OWSAccountIdFinder: NSObject {
             recipient.anyInsert(transaction: transaction)
         }
         return recipient
-    }
-
-    @objc
-    public class func address(forAccountId accountId: AccountId,
-                              transaction: SDSAnyReadTransaction) -> SignalServiceAddress? {
-        guard let recipient = SignalRecipient.anyFetch(uniqueId: accountId, transaction: transaction) else {
-            return nil
-        }
-        return recipient.address
     }
 }

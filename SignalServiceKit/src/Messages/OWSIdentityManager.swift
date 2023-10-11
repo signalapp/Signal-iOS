@@ -21,8 +21,6 @@ public protocol OWSIdentityManager {
 
     @discardableResult
     func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Bool
-    @discardableResult
-    func saveIdentityKey(_ identityKey: Data, for accountId: AccountId, tx: DBWriteTransaction) -> Bool
 
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
@@ -266,10 +264,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     // MARK: - Fetching
 
-    private func ensureAccountId(for address: SignalServiceAddress, tx: DBWriteTransaction) -> AccountId {
-        return OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
     private func accountId(for address: SignalServiceAddress, tx: DBReadTransaction) -> AccountId? {
         return OWSAccountIdFinder.accountId(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -307,17 +301,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     @discardableResult
     public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Bool {
-        return saveIdentityKey(identityKey, for: ensureAccountId(for: SignalServiceAddress(serviceId), tx: tx), tx: tx)
-    }
-
-    @discardableResult
-    public func saveIdentityKey(_ identityKey: Data, for recipientId: AccountId, tx: DBWriteTransaction) -> Bool {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
+        let recipientId = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
         let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
 
         guard let existingIdentity else {
-            Logger.info("Saving first-use identity for \(recipientId)")
+            Logger.info("Saving first-use identity for \(serviceId)")
             OWSRecipientIdentity(
                 accountId: recipientId,
                 identityKey: identityKey,
@@ -346,8 +336,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             verificationState = .noLongerVerified
             wasIdentityVerified = true
         }
-        Logger.info("Saving new identity for \(recipientId): \(existingIdentity.verificationState) -> \(verificationState)")
-        createIdentityChangeInfoMessage(for: recipientId, wasIdentityVerified: wasIdentityVerified, tx: tx)
+        Logger.info("Saving new identity for \(serviceId): \(existingIdentity.verificationState) -> \(verificationState)")
+        createIdentityChangeInfoMessage(for: serviceId, wasIdentityVerified: wasIdentityVerified, tx: tx)
         OWSRecipientIdentity(
             accountId: recipientId,
             identityKey: identityKey,
@@ -355,9 +345,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             createdAt: Date(),
             verificationState: verificationState.rawValue
         ).anyUpsert(transaction: SDSDB.shimOnlyBridge(tx))
-        // PNI TODO: archive PNI sessions too
-        // PNI TODO: this should end the PNI session if it was sent to our PNI.
-        aciProtocolStore.sessionStore.archiveAllSessions(forAccountId: recipientId, tx: tx)
+        aciProtocolStore.sessionStore.archiveAllSessions(for: serviceId, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
         clearSyncMessage(for: recipientId, tx: tx)
         fireIdentityStateChangeNotification(after: tx)
@@ -366,34 +354,25 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     private func createIdentityChangeInfoMessage(
-        for accountId: AccountId,
+        for serviceId: ServiceId,
         wasIdentityVerified: Bool,
         tx: DBWriteTransaction
     ) {
-        guard let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: SDSDB.shimOnlyBridge(tx)), address.isValid else {
-            owsFailDebug("Invalid address for \(accountId)")
-            return
-        }
-        createIdentityChangeInfoMessage(for: address, wasIdentityVerified: wasIdentityVerified, tx: tx)
-    }
-
-    private func createIdentityChangeInfoMessage(
-        for address: SignalServiceAddress,
-        wasIdentityVerified: Bool,
-        tx: DBWriteTransaction
-    ) {
-        let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
+        let contactThread = TSContactThread.getOrCreateThread(
+            withContactAddress: SignalServiceAddress(serviceId),
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
         let contactThreadMessage = TSErrorMessage.nonblockingIdentityChange(
             in: contactThread,
-            address: address,
+            address: SignalServiceAddress(serviceId),
             wasIdentityVerified: wasIdentityVerified
         )
         contactThreadMessage.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 
-        for groupThread in TSGroupThread.groupThreads(with: address, transaction: SDSDB.shimOnlyBridge(tx)) {
+        for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: SDSDB.shimOnlyBridge(tx)) {
             TSErrorMessage.nonblockingIdentityChange(
                 in: groupThread,
-                address: address,
+                address: SignalServiceAddress(serviceId),
                 wasIdentityVerified: wasIdentityVerified
             ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
         }
@@ -1007,11 +986,6 @@ class OWSIdentityManagerObjCBridge: NSObject {
     @objc
     static func saveIdentityKey(_ identityKey: Data, forServiceId serviceId: ServiceIdObjC, transaction tx: SDSAnyWriteTransaction) {
         DependenciesBridge.shared.identityManager.saveIdentityKey(identityKey, for: serviceId.wrappedValue, tx: tx.asV2Write)
-    }
-
-    @objc
-    static func saveIdentityKey(_ identityKey: Data, forRecipientId recipientId: AccountId, transaction tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.identityManager.saveIdentityKey(identityKey, for: recipientId, tx: tx.asV2Write)
     }
 
     @objc

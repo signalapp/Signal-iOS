@@ -504,8 +504,8 @@ private struct KeyRecipient: Codable, Dependencies {
             // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
             // deviceIds that will need an SKDM
             let registrationId = try sessionStore.loadSession(
-                for: SignalServiceAddress(from: $0),
-                deviceId: Int32($0.deviceId),
+                for: $0.serviceId,
+                deviceId: $0.deviceId,
                 tx: transaction.asV2Read
             )?.remoteRegistrationId()
 

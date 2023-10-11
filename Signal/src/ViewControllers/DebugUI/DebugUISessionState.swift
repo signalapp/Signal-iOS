@@ -32,13 +32,13 @@ class DebugUISessionState: DebugUIPage, Dependencies {
                 OWSTableItem(title: "Delete All Sessions", actionBlock: {
                     self.databaseStorage.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.deleteAllSessions(for: contactThread.contactAddress, tx: transaction.asV2Write)
+                        sessionStore.deleteAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Archive All Sessions", actionBlock: {
                     self.databaseStorage.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: transaction.asV2Write)
+                        sessionStore.archiveAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Send Session Reset", actionBlock: {

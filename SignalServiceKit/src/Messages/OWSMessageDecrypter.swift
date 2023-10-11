@@ -385,11 +385,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             // receive-only & we don't send retries FROM our PNI back to the sender.
 
             Logger.warn("Archiving session for undecryptable message from \(senderId)")
-            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveSession(
-                for: SignalServiceAddress(sourceAci),
-                deviceId: Int32(sourceDeviceId),
-                tx: transaction.asV2Write
-            )
+            let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+            sessionStore.archiveSession(for: sourceAci, deviceId: sourceDeviceId, tx: transaction.asV2Write)
 
             trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
             return true

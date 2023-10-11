@@ -48,7 +48,7 @@ private class MockRecipientDataStore: RecipientDataStore {
 }
 
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }
+    func hasActiveSignalProtocolSession(recipientId: String, deviceId: UInt32, transaction: DBWriteTransaction) -> Bool { false }
 }
 
 private class MockStorageServiceManager: StorageServiceManager {

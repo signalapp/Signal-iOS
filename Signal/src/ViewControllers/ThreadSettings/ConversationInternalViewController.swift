@@ -101,7 +101,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             sessionSection.add(.actionItem(withText: "Delete Session") {
                 self.databaseStorage.write { transaction in
                     let aciStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
-                    aciStore.sessionStore.deleteAllSessions(for: address, tx: transaction.asV2Write)
+                    aciStore.sessionStore.deleteAllSessions(for: address.serviceId!, tx: transaction.asV2Write)
                 }
             })
 

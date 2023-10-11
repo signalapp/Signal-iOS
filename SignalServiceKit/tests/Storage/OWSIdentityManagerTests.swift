@@ -15,11 +15,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         super.setUp()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: UUID()),
-                    pni: nil,
-                    e164: .init("+13235551234")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }
@@ -27,9 +23,10 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
 
     func testNewEmptyKey() {
         let newKey = Randomness.generateRandomBytes(32)
-        let address = SignalServiceAddress(phoneNumber: "+12223334444")
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
         write { transaction in
-            _ = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+            _ = OWSAccountIdFinder.ensureRecipientId(for: aci, tx: transaction)
             XCTAssert(identityManager.isTrustedIdentityKey(
                 newKey,
                 address: address,

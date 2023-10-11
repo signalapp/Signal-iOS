@@ -19,8 +19,8 @@ public struct TestProtocolRunner {
     public func initializePreKeys(senderClient: TestSignalClient,
                                   recipientClient: TestSignalClient,
                                   transaction: SDSAnyWriteTransaction) throws {
-        _ = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
-        _ = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
+        _ = senderClient.accountId(transaction: transaction)
+        _ = recipientClient.accountId(transaction: transaction)
 
         let bobPreKey = PrivateKey.generate()
         let bobSignedPreKey = PrivateKey.generate()
@@ -161,7 +161,7 @@ public extension TestSignalClient {
     }
 
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
-        return OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        return OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: transaction)
     }
 }
 
