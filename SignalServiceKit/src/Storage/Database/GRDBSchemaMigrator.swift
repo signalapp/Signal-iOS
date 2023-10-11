@@ -290,6 +290,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_scheduleStorageServiceUpdateForSystemContacts
         case dataMigration_removeLinkedDeviceSystemContacts
         case dataMigration_reindexSignalAccounts
+        case dataMigration_ensureLocalDeviceId
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2820,6 +2821,44 @@ public class GRDBSchemaMigrator: NSObject {
                     )
                 } catch {
                     owsFail("Error: \(error)")
+                }
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_ensureLocalDeviceId) { tx in
+            let localAciSql = """
+                SELECT VALUE FROM keyvalue
+                WHERE collection = 'TSStorageUserAccountCollection'
+                    AND KEY = 'TSStorageRegisteredUUIDKey'
+            """
+            if
+                let localAciArchive = try Data.fetchOne(tx.database, sql: localAciSql),
+                let object = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(localAciArchive),
+                object is String
+            {
+                // If we have an aci, we must be registered.
+                let localDeviceIdSql = """
+                    SELECT * FROM keyvalue
+                        WHERE collection = 'TSStorageUserAccountCollection'
+                            AND KEY = 'TSAccountManager_DeviceId'
+                """
+                let localDeviceId = try Row.fetchOne(tx.database, sql: localDeviceIdSql)
+                if localDeviceId == nil {
+                    // If we don't have a device id written, put the primary device id.
+                    let deviceIdToInsert: UInt32 = 1
+                    let archiveData = try NSKeyedArchiver.archivedData(
+                        withRootObject: NSNumber(value: deviceIdToInsert),
+                        requiringSecureCoding: false
+                    )
+                    try tx.database.execute(
+                        sql: """
+                            INSERT OR REPLACE INTO keyvalue
+                                (KEY,collection,VALUE)
+                                VALUES ('TSAccountManager_DeviceId','TSStorageUserAccountCollection',?)
+                        """,
+                        arguments: [archiveData]
+                    )
                 }
             }
             return .success(())
