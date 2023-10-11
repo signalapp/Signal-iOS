@@ -17,10 +17,10 @@ public protocol OWSIdentityManager {
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
 
     func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data?
-    func identityKey(for accountId: AccountId, tx: DBReadTransaction) -> Data?
+    func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey?
 
     @discardableResult
-    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Bool
+    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError>
 
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
@@ -30,11 +30,10 @@ public protocol OWSIdentityManager {
 
     func isTrustedIdentityKey(
         _ identityKey: Data,
-        address: SignalServiceAddress,
+        serviceId: ServiceId,
         direction: TSMessageDirection,
-        untrustedThreshold: Date?,
         tx: DBReadTransaction
-    ) -> Bool
+    ) -> Result<Bool, RecipientIdError>
 
     func tryToSyncQueuedVerificationStates()
 
@@ -121,35 +120,33 @@ public class IdentityStore: IdentityKeyStore {
     }
 
     public func saveIdentity(
-        _ identity: LibSignalClient.IdentityKey,
+        _ identity: IdentityKey,
         for address: ProtocolAddress,
         context: StoreContext
     ) throws -> Bool {
-        identityManager.saveIdentityKey(
+        try identityManager.saveIdentityKey(
             identity.serializeAsData(),
             for: address.serviceId,
             tx: context.asTransaction.asV2Write
-        )
+        ).get()
     }
 
-    public func isTrustedIdentity(_ identity: LibSignalClient.IdentityKey,
-                                  for address: ProtocolAddress,
-                                  direction: Direction,
-                                  context: StoreContext) throws -> Bool {
-        return identityManager.isTrustedIdentityKey(
+    public func isTrustedIdentity(
+        _ identity: IdentityKey,
+        for address: ProtocolAddress,
+        direction: Direction,
+        context: StoreContext
+    ) throws -> Bool {
+        return try identityManager.isTrustedIdentityKey(
             identity.serializeAsData(),
-            address: SignalServiceAddress(from: address),
+            serviceId: address.serviceId,
             direction: TSMessageDirection(direction),
-            untrustedThreshold: nil,
             tx: context.asTransaction.asV2Read
-        )
+        ).get()
     }
 
     public func identity(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.IdentityKey? {
-        guard let data = identityManager.identityKey(for: SignalServiceAddress(from: address), tx: context.asTransaction.asV2Read) else {
-            return nil
-        }
-        return try LibSignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
+        return try identityManager.identityKey(for: address.serviceId, tx: context.asTransaction.asV2Read)
     }
 }
 
@@ -264,15 +261,19 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     // MARK: - Fetching
 
-    private func accountId(for address: SignalServiceAddress, tx: DBReadTransaction) -> AccountId? {
-        return OWSAccountIdFinder.accountId(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
     public func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity? {
-        guard let accountId = accountId(for: address, tx: tx) else {
+        guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: address, tx: SDSDB.shimOnlyBridge(tx)) else {
             return nil
         }
-        return OWSRecipientIdentity.anyFetch(uniqueId: accountId, transaction: SDSDB.shimOnlyBridge(tx))
+        switch recipientIdResult {
+        case .failure(.mustNotUsePniBecauseAciExists):
+            // If we pretend as though this identity doesn't exist, we'll get an error
+            // when we try to send a message, we'll retry, and then we'll correctly
+            // send to the ACI.
+            return nil
+        case .success(let recipientId):
+            return OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
+        }
     }
 
     // MARK: - Local Identity
@@ -290,22 +291,37 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Remote Identity Keys
 
     public func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? {
-        guard let accountId = accountId(for: address, tx: tx) else { return nil }
-        return identityKey(for: accountId, tx: tx)
+        switch OWSAccountIdFinder.recipientId(for: address, tx: SDSDB.shimOnlyBridge(tx)) {
+        case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
+            return nil
+        case .some(.success(let recipientId)):
+            return _identityKey(for: recipientId, tx: tx)
+        }
     }
 
-    public func identityKey(for accountId: AccountId, tx: DBReadTransaction) -> Data? {
-        owsAssertDebug(!accountId.isEmpty)
-        return OWSRecipientIdentity.anyFetch(uniqueId: accountId, transaction: SDSDB.shimOnlyBridge(tx))?.identityKey
+    public func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
+        guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
+            return nil
+        }
+        guard let keyData = try _identityKey(for: recipientIdResult.get(), tx: tx) else { return nil }
+        return try IdentityKey(publicKey: ECPublicKey(keyData: keyData).key)
+    }
+
+    private func _identityKey(for recipientId: AccountId, tx: DBReadTransaction) -> Data? {
+        owsAssertDebug(!recipientId.isEmpty)
+        return OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))?.identityKey
     }
 
     @discardableResult
-    public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Bool {
+    public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> {
+        let recipientIdResult = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        return recipientIdResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipientId: $0, tx: tx) })
+    }
+
+    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipientId: AccountId, tx: DBWriteTransaction) -> Bool {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        let recipientId = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
         let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
-
         guard let existingIdentity else {
             Logger.info("Saving first-use identity for \(serviceId)")
             OWSRecipientIdentity(
@@ -392,50 +408,70 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
 
-        let isTrusted = isTrustedIdentityKey(
-            recipientIdentity.identityKey,
+        let isTrusted = isIdentityKeyTrustedForSending(
             address: address,
-            direction: .outgoing,
+            recipientIdentity: recipientIdentity,
             untrustedThreshold: untrustedThreshold,
             tx: tx
         )
-
         return isTrusted ? nil : recipientIdentity
+    }
+
+    private func isIdentityKeyTrustedForSending(
+        address: SignalServiceAddress,
+        recipientIdentity: OWSRecipientIdentity,
+        untrustedThreshold: Date?,
+        tx: DBReadTransaction
+    ) -> Bool {
+        owsAssertDebug(address.isValid)
+        let identityKey = recipientIdentity.identityKey
+        owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
+
+        if address.isLocalAddress {
+            return isTrustedLocalKey(identityKey, tx: tx)
+        }
+
+        return isTrustedKey(identityKey, forSendingTo: recipientIdentity, untrustedThreshold: untrustedThreshold)
     }
 
     public func isTrustedIdentityKey(
         _ identityKey: Data,
-        address: SignalServiceAddress,
+        serviceId: ServiceId,
         direction: TSMessageDirection,
-        untrustedThreshold: Date?,
         tx: DBReadTransaction
-    ) -> Bool {
+    ) -> Result<Bool, RecipientIdError> {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
-        owsAssertDebug(address.isValid)
 
-        if address.isLocalAddress {
-            let localIdentityKeyPair = identityKeyPair(for: .aci, tx: tx)
-            guard localIdentityKeyPair?.publicKey == identityKey else {
-                owsFailDebug("Wrong identity key for local account.")
-                return false
-            }
-            return true
+        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+        if localIdentifiers?.aci == serviceId {
+            return .success(isTrustedLocalKey(identityKey, tx: tx))
         }
 
         switch direction {
         case .incoming:
-            return true
+            return .success(true)
         case .outgoing:
-            guard let accountId = accountId(for: address, tx: tx) else {
-                owsFailDebug("Couldn't find accountId for outgoing message.")
-                return false
+            guard let recipientIdResult = OWSAccountIdFinder.recipientId(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
+                owsFailDebug("Couldn't find recipientId for outgoing message.")
+                return .success(false)
             }
-            return isTrustedKey(
-                identityKey,
-                forSendingTo: OWSRecipientIdentity.anyFetch(uniqueId: accountId, transaction: SDSDB.shimOnlyBridge(tx)),
-                untrustedThreshold: untrustedThreshold
-            )
+            return recipientIdResult.map {
+                return isTrustedKey(
+                    identityKey,
+                    forSendingTo: OWSRecipientIdentity.anyFetch(uniqueId: $0, transaction: SDSDB.shimOnlyBridge(tx)),
+                    untrustedThreshold: nil
+                )
+            }
         }
+    }
+
+    private func isTrustedLocalKey(_ identityKey: Data, tx: DBReadTransaction) -> Bool {
+        let localIdentityKeyPair = identityKeyPair(for: .aci, tx: tx)
+        guard localIdentityKeyPair?.publicKey == identityKey else {
+            owsFailDebug("Wrong identity key for local account.")
+            return false
+        }
+        return true
     }
 
     private func isTrustedKey(
@@ -551,7 +587,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         case let value as String:
             // Previously, we stored phone numbers in this KV store.
             let address = SignalServiceAddress(phoneNumber: value)
-            guard let accountId_ = self.accountId(for: address, tx: tx) else {
+            guard let accountId_ = OWSAccountIdFinder.accountId(forAddress: address, transaction: SDSDB.shimOnlyBridge(tx)) else {
                 return nil
             }
             recipientId = accountId_

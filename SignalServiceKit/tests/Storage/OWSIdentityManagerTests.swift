@@ -21,90 +21,80 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         }
     }
 
-    func testNewEmptyKey() {
+    func testNewEmptyKey() throws {
         let newKey = Randomness.generateRandomBytes(32)
         let aci = Aci.randomForTesting()
-        let address = SignalServiceAddress(aci)
-        write { transaction in
+        try write { transaction in
             _ = OWSAccountIdFinder.ensureRecipientId(for: aci, tx: transaction)
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
-                address: address,
+                serviceId: aci,
                 direction: .outgoing,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            ).get())
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
-                address: address,
+                serviceId: aci,
                 direction: .incoming,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
+            ).get())
         }
     }
 
-    func testAlreadyRegisteredKey() {
+    func testAlreadyRegisteredKey() throws {
         let newKey = Randomness.generateRandomBytes(32)
         let aci = Aci.randomForTesting()
-        let address = SignalServiceAddress(aci)
-        write { transaction in
+        try write { transaction in
             identityManager.saveIdentityKey(newKey, for: aci, tx: transaction.asV2Write)
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
-                address: address,
+                serviceId: aci,
                 direction: .outgoing,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            ).get())
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
-                address: address,
+                serviceId: aci,
                 direction: .incoming,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
+            ).get())
         }
     }
 
-    func testChangedKey() {
+    func testChangedKey() throws {
         let originalKey = Randomness.generateRandomBytes(32)
         let aci = Aci.randomForTesting()
         let address = SignalServiceAddress(aci)
-        write { transaction in
+        try write { transaction in
             identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction.asV2Write)
 
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 originalKey,
-                address: address,
+                serviceId: aci,
                 direction: .outgoing,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            ).get())
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 originalKey,
-                address: address,
+                serviceId: aci,
                 direction: .incoming,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
+            ).get())
 
             let otherKey = Randomness.generateRandomBytes(32)
 
-            XCTAssertFalse(identityManager.isTrustedIdentityKey(
+            XCTAssertFalse(try identityManager.isTrustedIdentityKey(
                 otherKey,
-                address: address,
+                serviceId: aci,
                 direction: .outgoing,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
-            XCTAssert(identityManager.isTrustedIdentityKey(
+            ).get())
+            XCTAssert(try identityManager.isTrustedIdentityKey(
                 otherKey,
-                address: address,
+                serviceId: aci,
                 direction: .incoming,
-                untrustedThreshold: nil,
                 tx: transaction.asV2Read
-            ))
+            ).get())
         }
     }
 

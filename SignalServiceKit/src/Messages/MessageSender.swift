@@ -33,7 +33,7 @@ extension MessageSender {
 // MARK: -
 
 private extension MessageSender {
-    static func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) -> Bool {
+    static func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> Bool {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         do {
             guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
@@ -41,7 +41,12 @@ private extension MessageSender {
             }
             return session.hasCurrentState
         } catch {
-            return false
+            switch error {
+            case RecipientIdError.mustNotUsePniBecauseAciExists:
+                throw error
+            default:
+                return false
+            }
         }
     }
 
@@ -59,8 +64,8 @@ private extension MessageSender {
     ) throws {
         owsAssertDebug(!Thread.isMainThread)
 
-        let hasSession = databaseStorage.read { tx in
-            Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
+        let hasSession = try databaseStorage.read { tx in
+            try Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
         }
         if hasSession {
             return
@@ -200,7 +205,7 @@ private extension MessageSender {
 
         Logger.info("Creating session for \(serviceId), deviceId: \(deviceId)")
 
-        if containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) {
+        if try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) {
             Logger.warn("Session already exists.")
             return
         }
@@ -452,6 +457,8 @@ extension MessageSender {
         if message.isSyncMessage {
             return [localAddress]
         }
+
+        // PNI TODO: Normalize PNIs to ACIs to avoid .mustNotUsePniBecauseAciExists.
 
         if let groupThread = thread as? TSGroupThread {
             // Send to the intersection of:
@@ -1682,7 +1689,7 @@ private extension MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
+        guard try Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
 

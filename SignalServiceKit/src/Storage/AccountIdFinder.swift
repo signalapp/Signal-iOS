@@ -16,16 +16,39 @@ public extension SignalRecipient {
     }
 }
 
+public enum RecipientIdError: Error {
+    /// We can't use the Pni because it's been replaced by an Aci.
+    case mustNotUsePniBecauseAciExists
+}
+
 @objc
 public class OWSAccountIdFinder: NSObject {
-    public class func recipientId(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> AccountId? {
+    class func recipientId(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> Result<AccountId, RecipientIdError>? {
         let recipientStore = DependenciesBridge.shared.recipientStore
-        return recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)?.uniqueId
+        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
+            return nil
+        }
+        return recipientIdResult(for: serviceId, recipient: recipient)
     }
 
-    public class func ensureRecipientId(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) -> AccountId {
+    class func recipientId(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Result<AccountId, RecipientIdError>? {
+        guard let recipient = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx) else {
+            return nil
+        }
+        return recipientIdResult(for: address.serviceId, recipient: recipient)
+    }
+
+    class func ensureRecipientId(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) -> Result<AccountId, RecipientIdError> {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+        return recipientIdResult(for: serviceId, recipient: recipient)
+    }
+
+    private static func recipientIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<AccountId, RecipientIdError> {
+        if serviceId is Pni, recipient.aciString != nil {
+            return .failure(.mustNotUsePniBecauseAciExists)
+        }
+        return .success(recipient.uniqueId)
     }
 
     @objc

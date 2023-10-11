@@ -26,11 +26,18 @@ public class SSKSessionStore: NSObject {
         for serviceId: ServiceId,
         deviceId: UInt32,
         tx: SDSAnyReadTransaction
-    ) -> Data? {
-        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
+    ) throws -> Data? {
+        switch OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) {
+        case .none:
             return nil
+        case .some(.success(let recipientId)):
+            return loadSerializedSession(for: recipientId, deviceId: deviceId, tx: tx)
+        case .some(.failure(let error)):
+            switch error {
+            case .mustNotUsePniBecauseAciExists:
+                throw error
+            }
         }
-        return loadSerializedSession(for: recipientId, deviceId: deviceId, tx: tx)
     }
 
     private func serializedSession(fromDatabaseRepresentation entry: Any) -> Data? {
@@ -70,9 +77,16 @@ public class SSKSessionStore: NSObject {
         for serviceId: ServiceId,
         deviceId: UInt32,
         tx: SDSAnyWriteTransaction
-    ) {
-        let recipientId = OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: tx)
-        storeSerializedSession(for: recipientId, deviceId: deviceId, sessionData: sessionData, tx: tx)
+    ) throws {
+        switch OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: tx) {
+        case .failure(let error):
+            switch error {
+            case .mustNotUsePniBecauseAciExists:
+                throw error
+            }
+        case .success(let recipientId):
+            storeSerializedSession(for: recipientId, deviceId: deviceId, sessionData: sessionData, tx: tx)
+        }
     }
 
     private func storeSerializedSession(
@@ -98,31 +112,37 @@ public class SSKSessionStore: NSObject {
     }
 
     public func deleteAllSessions(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
-        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
+        Logger.info("deleting all sessions for \(serviceId)")
+        switch OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) {
+        case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be deleted.
             return
+        case .some(.success(let recipientId)):
+            owsAssertDebug(!recipientId.isEmpty)
+            keyValueStore.removeValue(forKey: recipientId, transaction: tx)
         }
-        owsAssertDebug(!recipientId.isEmpty)
-        Logger.info("deleting all sessions for \(serviceId)")
-        keyValueStore.removeValue(forKey: recipientId, transaction: tx)
     }
 
     public func archiveAllSessions(for serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
         Logger.info("archiving all sessions for \(serviceId)")
-        guard let recipientId = OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) else {
+        switch OWSAccountIdFinder.recipientId(for: serviceId, tx: tx) {
+        case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be archived.
             return
+        case .some(.success(let recipientId)):
+            archiveAllSessions(for: recipientId, tx: tx)
         }
-        archiveAllSessions(for: recipientId, tx: tx)
     }
 
     public func archiveAllSessions(for address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
         Logger.info("archiving all sessions for \(address)")
-        guard let recipientId = OWSAccountIdFinder.accountId(forAddress: address, transaction: tx) else {
+        switch OWSAccountIdFinder.recipientId(for: address, tx: tx) {
+        case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be archived.
             return
+        case .some(.success(let recipientId)):
+            archiveAllSessions(for: recipientId, tx: tx)
         }
-        archiveAllSessions(for: recipientId, tx: tx)
     }
 
     private func archiveAllSessions(for recipientId: AccountId, tx: SDSAnyWriteTransaction) {
@@ -189,7 +209,7 @@ extension SSKSessionStore {
         deviceId: UInt32,
         tx: SDSAnyReadTransaction
     ) throws -> SessionRecord? {
-        guard let serializedData = loadSerializedSession(for: serviceId, deviceId: deviceId, tx: tx) else {
+        guard let serializedData = try loadSerializedSession(for: serviceId, deviceId: deviceId, tx: tx) else {
             return nil
         }
         return try SessionRecord(bytes: serializedData)
@@ -201,7 +221,7 @@ extension SSKSessionStore {
         deviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) throws {
-        storeSerializedSession(Data(record.serialize()), for: serviceId, deviceId: deviceId, tx: tx)
+        try storeSerializedSession(Data(record.serialize()), for: serviceId, deviceId: deviceId, tx: tx)
     }
 
     public func archiveSession(for serviceId: ServiceId, deviceId: UInt32, tx: SDSAnyWriteTransaction) {

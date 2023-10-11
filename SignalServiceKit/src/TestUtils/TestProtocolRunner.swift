@@ -161,7 +161,7 @@ public extension TestSignalClient {
     }
 
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
-        return OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: transaction)
+        try! OWSAccountIdFinder.ensureRecipientId(for: serviceId, tx: transaction).get()
     }
 }
 
