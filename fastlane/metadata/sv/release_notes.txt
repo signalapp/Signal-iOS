@@ -1,1 +1,1 @@
-• Nu kan du redigera ett meddelande med ett långt tryck efter att det har skickats. Fixa ett stavfel, lägg till den saknade ingrediensen i mormors kakrecept eller lägg till slutklämmen i ett skämt om du trycker på skicka-knappen för snabbt. Valet är ditt. Meddelanden visar alltid när de har redigerats, och du kan se hela redigeringshistoriken för alla redigerade meddelanden.
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."

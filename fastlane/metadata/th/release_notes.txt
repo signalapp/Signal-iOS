@@ -1,1 +1,1 @@
-• แก้ไขข้อความที่ส่งแล้วได้แบบทันใจ แค่กดค้างไว้เท่านั้น! ตอบโจทย์สำหรับคนมือ(กดส่ง)ไว ไม่ว่าจะเป็นการแก้คำผิด เพิ่มเติมรายละเอียดในเรื่องที่กำลังเล่า หรืออธิบายมุกที่เพื่อนอาจยังไม่เข้าใจ โดยคุณจะทราบเสมอเมื่อมีการแก้ไขข้อความ ทั้งยังสามารถกดดูประวัติการแก้ไขทั้งหมดได้อีกด้วย
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."

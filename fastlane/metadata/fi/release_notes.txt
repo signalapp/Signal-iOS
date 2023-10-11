@@ -1,1 +1,1 @@
-• Nyt voit muokata viestiä myös sen lähettämisen jälkeen painamalla sitä pitkään. Voit korjata kirjoitusvirheen, lisätä isoäidin suklaakeksien reseptiin puuttuvan ainesosan tai kertoa vitsin loppusutkautuksen, jos painoit lähetyspainiketta liian nopeasti. Valinta on sinun. Viesteistä näkyy, milloin niitä on muokattu. Voit myös katsoa muokattujen viestien koko muokkaushistoriaa.
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."

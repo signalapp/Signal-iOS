@@ -1,1 +1,1 @@
-• עכשיו אפשר לערוך הודעה לאחר השליחה באמצעות לחיצה ארוכה! מתקנים שגיאות ומוסיפים פרטים ששכחת, כולל המרכיב החסר במתכון של סבתא לעוגיות שוקולד צ׳יפס, או מוסיפים את הפאנצ׳ליין לבדיחה אם לחצת על שליחה לפני הזמן. הבחירה היא שלך. תמיד יהיה אפשר לראות כשהודעה נערכה, וניתן לראות את היסטוריית העריכות המלאה עבור כל ההודעות שנערכו.
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."

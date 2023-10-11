@@ -1,1 +1,1 @@
-• 现在您可以在发送消息后通过长按该消息来对其进行编辑了！您可以修改错别字，补充遗漏的信息，或者增添一点笑料，以弥补“手快”的遗憾。编辑的选择权在于你。当消息被编辑后，它会始终显示已被编辑，同时您可以看到任何已编辑消息的完整编辑记录。
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."

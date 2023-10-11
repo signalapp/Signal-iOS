@@ -1,1 +1,1 @@
-• يُمكنك الآن تعديل رسالة بضغطة طويلة بعد إرسالها! أصلح خطأ إملائيًا، أو أضف المكون المفقود في وصفة كعكة الشوكولاتة لجدّتك، أو أكمل نكتة إذا ضغطت على زر الإرسال قبل الأوان. الخيار لك. سَيظهر أثر على الرسائل كلّما كانت معدّلة، ويمكنك رؤية سجلّ التعديل كاملاً لكل رسالة معدّلة.
+• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."
