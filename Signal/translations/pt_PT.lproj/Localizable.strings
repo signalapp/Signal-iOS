@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "O Signal só tem acesso às fotos e vídeos que selecionou";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Localização";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Local";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Assim que tirar uma foto ou vídeo, poderá enviar os recentes para aqui";
@@ -404,10 +404,10 @@
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Abrir definições";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Pagamentos";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Pagamento";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Fotografias";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Fotos";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Anexo";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "A sua doação mensal recorrente foi cancelada automaticamente porque a sua conta esteve inativa muito tempo. O seu crachá de %1$@ já não é visível no seu perfil.\n\nPode continuar a utilizar o Signal, mas faça uma nova doação para apoiar a app e reativar o seu crachá.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Escolha um crachá para exibir no perfil e mostrar o seu apoio.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Exibir no perfil";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Valor da doação: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Valor do donativo: %1$@/mês";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "O Signal não recolhe nem armazena nenhuma das suas informações pessoais quando faz uma doação.\n\nUsamos o Stripe como o nosso processador de pagamentos para receber as suas doações. Não acedemos, armazenamos ou guardamos quaisquer informações que lhes seja fornecida por si.\n\nO Signal não liga nem consegue ligar a sua doação à sua conta do Signal.Obrigado pelo seu apoio!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Ver mais pequeno";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "A transferência não pôde ser completada. Verifique se ambos os dispositivos têm o Signal aberto e tente outra vez.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Não é possível verificar o seu novo dispositivo. Por favor, tente novamente";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "A transferência não pôde ser completada. Assegure-se que os seus dispositivos estão perto um do outro e tente outra vez.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para definir este iPad como sendo um dispositivo associado, deverá digitalizar com o seu iPad antigo";

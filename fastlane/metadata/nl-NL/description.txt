@@ -16,4 +16,4 @@ Signal is een berichten-app waar privacy centraal staat. Het is gratis en gemakk
 
 Ga naar https://github.com/signalapp om onze broncode te bekijken 
 
-Volg ons op Twitter @signalapp en Instagram @signal_app
+Volg ons op X @signalapp en Instagram @signal_app

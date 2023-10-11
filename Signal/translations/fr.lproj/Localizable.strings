@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal peut accéder uniquement aux photos et vidéos que vous sélectionnez";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Position";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Endroit";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Une fois que vous aurez pris une photo ou enregistré une vidéo, vous pourrez envoyer vos contenus récents ici";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Votre don mensualisé a été automatiquement annulé car vous êtes resté inactif pendant trop longtemps. Votre macaron %1$@ n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal. Cependant, afin de soutenir l’appli et réactiver votre macaron, vous pouvez effectuer un don.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Choisissez le macaron que vous souhaitez afficher sur votre profil pour montrer votre soutien.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur le profil";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Montant du don : %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Montant du don : %1$@/mois";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal ne collecte ni ne sauvegarde vos informations personnelles lorsque vous faites un don.\n\nVos dons sont traités par le système de paiement Stripe. Nous n’avons pas accès et nous ne sauvegardons pas les informations que vous leur fournissez.\n\nSignal n’est pas en mesure d’associer votre don à votre compte Signal.\n\nMerci pour votre aide !";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Réduire";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Le transfert n’a pas pu être effectué. Veuillez vous assurer que Signal est ouvert sur vos deux appareils puis réessayez.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Impossible de confirmer votre nouvel appareil, veuillez réessayer plus tard";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Le transfert n’a pas pu être effectué. Veuillez vous assurer que vos appareils sont proches l’un de l’autre puis réessayez.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Afin de configurer cet iPad en tant qu’appareil relié, vous devez lire le code avec votre ancien iPad";

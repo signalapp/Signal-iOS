@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal પાસે ફક્ત તમે પસંદ કરેલા ફોટા અને વીડિયોની જ ઍક્સેસ છે";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "સ્થળ";
+"ATTACHMENT_KEYBOARD_LOCATION" = "સ્થાન";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "એકવાર તમે ફોટો કે વીડિયો લઈ લો, પછી તમે તમારા હમણાંના અહીં મોકલી શકશો";
@@ -404,7 +404,7 @@
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "સેટિંગ્સ ખોલો";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "પેમેન્ટ";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "ચુકવણી";
 
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "ફોટા";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન આપમેળે રદ થઈ ગયું હતું કારણ કે તમે ઘણા લાંબા સમયથી નિષ્ક્રિય હતા. તમારું %1$@ બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.\n\nતમે Signalનો ઉપયોગ કરવાનું ચાલુ રાખી શકો છો પરંતુ ઍપને સહયોગ આપવા અને તમારા બૅજને ફરીથી સક્રિય કરવા, હમણાં જ દાન આપો.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "તમારો સપોર્ટ બતાવવા, તમારી પ્રોફાઇલ પર પ્રદર્શિત કરવા માટે એક બૅજ પસંદ કરો.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "પ્રોફાઇલ પર દર્શાવો";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "દાનની રકમ: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "દાનની રકમ: %1$@/મહિને";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "તમે દાન કરો છો ત્યારે Signal તમારી કોઈ પણ અંગત માહિતી એકત્રિત કે સંગ્રહિત કરતું નથી.\n\nઅમે તમારા દાન મેળવવા માટે અમારા પેમેન્ટ પ્રોસેસર તરીકે Stripeનો ઉપયોગ કરીએ છીએ. તમે તેમને પ્રદાન કરો છો તે કોઈ પણ માહિતી અમે ઍક્સેસ, સ્ટોર કે સેવ કરતાં નથી.\n\nSignal તમારા દાનને તમારા Signal એકાઉન્ટ સાથે કનેક્ટ કરતું નથી અને કરી શકતું નથી.તમારા સપોર્ટ બદલ તમારો આભાર!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "નાનો કરીને જુઓ";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "ટ્રાન્સફર પૂર્ણ થઈ શક્યું નથી. ખાતરી કરો કે બંને ડિવાઇસ પર Signal ખુલ્લું છે અને પછી ફરી પ્રયાસ કરો.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "તમારા નવા ડિવાઇસને ચકાસવામાં અસમર્થ, કૃપા કરીને ફરીથી પ્રયાસ કરો";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ટ્રાન્સફર પૂર્ણ થઈ શક્યું નથી. ખાતરી કરો કે તમારા ડિવાઇસ એકબીજાની નજીક છે અને ફરીથી પ્રયાસ કરો.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "આ iPad ને કનેક્ટેડ ડિવાઇસ તરીકે સેટ કરવા માટે, તમારે તમારા જૂના iPad થી સ્કેન કરવું આવશ્યક છે";

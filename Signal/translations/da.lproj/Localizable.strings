@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din løbende månedlige donation blev automatisk annulleret, da du var inaktiv for længe. Dit %1$@-badge er ikke længere synligt på din profil.\n\nDu kan fortsætte med at bruge Signal, men for at støtte appen og genaktivere dit badge, skal du donere nu.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Vælg et badge, så du kan vise din støtte på din profil.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Vis på profil";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Donationsbeløb: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Donationsbeløb: %1$@/måned";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal indsamler eller gemmer ikke nogen af dine personlige oplysninger, når du foretager en donation.\n\nVi bruger Stripe som vores betalingsbehandler til at modtage dine donationer. Vi hverken får adgang til, opbevarer eller gemmer nogen af de oplysninger, som du giver dem.Signal har ikke mulighed for at forbinde din donation til din Signal-konto.\n\nTak for din støtte!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Se mindre";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Overførslen kunne ikke gennemføres. Sørg for, at dine enheder er tæt på hinanden, og prøv igen.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Det lykkedes ikke at bekræfte din nye enhed. Prøv igen";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Overførslen kunne ikke gennemføres. Sørg for, at dine enheder er tæt på hinanden, og prøv igen.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "For at opsætte denne iPad som en sammenkoblet enhed, skal du scanne med din gamle iPad";

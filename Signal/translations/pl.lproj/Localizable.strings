@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ma dostęp tylko do wybranych zdjęć i wideo";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Lokalizacja";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Lokaliz.";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Po zrobieniu zdjęcia lub nagraniu wideo z tego miejsca będzie można wysłać ostatnie multimedia";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Twoja comiesięczna subskrypcja została automatycznie anulowana ze względu na zbyt długą nieaktywność konta. Twoja odznaka %1$@ nie jest już widoczna na Twoim profilu.\n\nMożesz nadal korzystać z Signal, ale jeśli chcesz wesprzeć aplikację i ponownie uaktywnić swoją odznakę, wpłać darowiznę.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Wybierz odznakę do wyświetlania na Twoim profilu, by okazać wsparcie.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Pokaż w profilu";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Kwota darowizny: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Kwota darowizny: %1$@/miesiąc";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal nie gromadzi ani nie przechowuje Twoich danych osobowych pochodzących z przekazania darowizny.\n\nDo przetwarzania darowizn używamy systemu płatności Stripe. Nie uzyskujemy dostępu, nie przechowujemy ani nie zapisujemy żadnych informacji, które przekazujesz serwerom Stripe.\n\nSignal nie łączy i nie może powiązać Twojej darowizny z Twoim kontem Signal.\n\nDziękujemy za Twoje wsparcie!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Pokaż mniejszy";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Nie udało się ukończyć przelewu. Upewnij się, że oba urządzenia mają uruchomioną aplikację Signal i spróbuj ponownie.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nie udało się zweryfikować Twojego nowego urządzenia. Spróbuj ponownie.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Nie udało się ukończyć przelewu. Upewnij się, że oba urządzenia są blisko siebie i spróbuj ponownie.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Aby skonfigurować tego iPada, jako połączone urządzenie, musisz zeskanować kod swoim starym iPadem";

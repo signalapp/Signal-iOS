@@ -377,7 +377,7 @@
 "ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "انتظام کریں";
 
 /* A button to select a contact from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CONTACT" = "رابطہ کریں";
+"ATTACHMENT_KEYBOARD_CONTACT" = "رابطہ";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "فائل";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا کیونکہ آپ کافی عرصے سے غیر فعال تھے۔ آپ کا %1$@ بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں مگر صرف ایپ کو سپورٹ اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی عطیہ کریں۔";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "اپنی سپورٹ کو ظاہر کرنے کے لیے اپنی پروفائل پر ڈسپلے کرنے کے لیے کسی بیج کا انتخاب کریں۔";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "پروفائل پر ڈسپلے کریں";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "عطیے کی رقم: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "عطیے کی رقم: %1$@/ماہ";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal آپ کی جانب سے عطیہ کرنے پر آپ کی کوئی ذاتی معلومات جمع یا سٹور نہیں کرتا۔\n\nہم آپ کے عطیات وصول کرنے کے لیے Stripe کو اپنے ادائیگی کے پروسیسر کے طور پر استعمال کرتے ہیں۔ آپ انہیں جو معلومات فراہم کرتے ہیں ہم اس تک رسائی، اسے سٹور، یا محفوظ نہیں کرتے۔\n\nSignal آپ کے عطیے کو آپ کے Signal اکاؤنٹ کے ساتھ مربوط نہیں کرتا اور نہ کر سکتا ہے۔\n\nآپ کی سپورٹ کا شکریہ!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "چھوٹا کر کے دیکھیں";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "ٹرانسفر مکمل نہیں ہو سکا۔ اس بات کو یقینی بنائیں کہ دونوں ڈیوائسز میں Signal کھلا ہے اور دوبارہ کوشش کریں۔";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "آپ کے نئے device کی تصدیق کرنے سے قاصر ، براہ کرم دوبارہ کوشش کریں";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ٹرانسفر مکمل نہیں ہو سکا۔ اس بات کو یقینی بنائیں کہ آپ کی ڈیوائسز ایک دوسرے کے قریب موجود ہیں اور دوبارہ کوشش کریں۔";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "اس iPad کو ایک منسلک device کے طور پر ترتیب دینے کے لیئے آپ کو اپنے پرانے iPad سے اسکین کرنا ہوگا";

@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Регулярний щомісячний донат було автоматично скасовано, тому що ви занадто довго не були онлайн. Ваш значок %1$@ більше не відображається в профілі.\n\nВи можете продовжувати використовувати Signal. Щоб підтримати застосунок і відновити свій значок, ви можете задонатити.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Виберіть значок для відображення в профілі та розкажіть іншим про свою підтримку.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показувати в профілі";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Сума доната: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Сума доната: %1$@/місяць";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal не збирає і не зберігає вашу особисту інформацію, коли ви відправляєте донат.\n\nМи користуємося послугами компанії Stripe для обробки ваших платежів. Ми не зберігаємо інформацію, яку ви надаєте Stripe, і не маємо до неї доступу.\n\nSignal не може і не намагається встановити зв'язок між вашим донатом і вашим акаунтом Signal.\n\nДякуємо за вашу підтримку!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Зменшити";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Не вдалося завершити перенесення. Переконайтеся, що Signal відкрито на обох пристроях, і спробуйте знову.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Не вдалось перевірити ваш новий пристрій. Будь ласка, спробуйте ще раз";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Не вдалося завершити перенесення. Переконайтеся, що пристрої находяться поруч один з одним, і спробуйте знову.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Щоб налаштувати цей iPad як прив'язаний пристрій, ви повинні сканувати за допомогою свого старого iPad";

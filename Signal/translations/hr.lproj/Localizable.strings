@@ -404,7 +404,7 @@
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Otvori postavke";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Plaćanja";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Plaćanje";
 
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "Slike";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana jer ste dugo bili neaktivni. Vaša značka %1$@ ne prikazuje se više na vašem profilu.\n\nI dalje možete koristiti Signal, ali ako želite podržati aplikaciju i ponovno aktivirati svoju značku, bit će potrebno ponoviti donaciju.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Odaberite značku koja će se prikazivati na vašem profilu u znak podrške.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Prikaži na svom profilu";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Iznos donacije: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Iznos donacije: %1$@/mjesečno";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal ne prikuplja niti pohranjuje vaše osobne podatke kada izvršite donaciju.\n\nKao procesor plaćanja za primanje vaših donacija koristimo Stripe. Ne pristupamo informacijama koje dijelite s njima, ne pohranjujemo ih niti spremamo.\n\nSignal ne povezuje i ne može povezati vašu donaciju s vašim Signal računom.\n\nHvala vam na podršci!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Smanji";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Prijenos nije uspio. Provjerite je li Signal otvoren na oba uređaja i pokušajte ponovno.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Potvrda vašeg novog uređaja nije uspjela, pokušajte ponovno";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Prijenos nije uspio. Provjerite jesu li vaši uređaji blizu jedan drugome i pokušajte ponovno.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Kako bi postavili ovaj iPad kao povezani uređaj, morate skenirati kôd s vašim starim iPadom";

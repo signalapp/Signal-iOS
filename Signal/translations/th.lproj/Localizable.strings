@@ -404,7 +404,7 @@
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "เปิดการตั้งค่า";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "การชำระเงิน";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "ชำระเงิน";
 
 /* A button to open the photo picker from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PHOTOS" = "รูปภาพ";
@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "การบริจาครายเดือนของคุณถูกยกเลิกโดยอัตโนมัติ เนื่องจากไม่มีการเคลื่อนไหวเป็นเวลานาน โล่ %1$@ ของคุณจะไม่แสดงบนโปรไฟล์อีกต่อไป\n\nคุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนแอปและเปิดใช้งานโล่อีกครั้ง สามารถร่วมบริจาคได้ตอนนี้";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "เลือกโล่ไว้แสดงบนโปรไฟล์ของคุณเพื่ออวดให้ทุกคนทราบถึงการบริจาคครั้งนี้";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "แสดงบนโปรไฟล์";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "จำนวนที่ต้องการบริจาค: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "จำนวนที่ต้องการบริจาค: %1$@/เดือน";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "เมื่อคุณบริจาคเงิน Signal ไม่ได้รวบรวมหรือจัดเก็บข้อมูลส่วนบุคคลใดๆ ของคุณ\n\nเราใช้ Stripe เป็นผู้ให้บริการการชำระเงินในการรับเงินบริจาคของคุณ โดยเราจะไม่เข้าถึง จัดเก็บ หรือบันทึกข้อมูลใดๆ ที่คุณกรอกระหว่างทำธุรกรรม\n\nSignal จะไม่เชื่อมโยงการบริจาคของคุณเข้ากับบัญชี Signal ของคุณ (และนี่เป็นสิ่งที่เราไม่สามารถทำได้อีกด้วย)\n\nขอบคุณสำหรับการสนับสนุนของคุณ!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "ดูขนาดเล็กลง";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "การถ่ายโอนไม่เสร็จสมบูรณ์ โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์ทั้งสองเครื่องเปิดแอป Signal ไว้ แล้วลองใหม่อีกครั้ง";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "ไม่สามารถยืนยันอุปกรณ์ใหม่ของคุณได้ กรุณาลองอีกครั้ง";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "การถ่ายโอนไม่เสร็จสมบูรณ์ โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์ทั้งสองเครื่องวางอยู่ใกล้กัน แล้วลองใหม่อีกครั้ง";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "เพื่อตั้งค่า iPad เครื่องนี้ให้เป็นอุปกรณ์ที่เชื่อมโยง คุณต้องสแกนด้วย iPad เครื่องเก่า";

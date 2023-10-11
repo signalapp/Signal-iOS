@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "অনেক দিন ধরে নিষ্ক্রিয় থাকার কারণে আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। আপনার %1$@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।\n\nআপনি Signal ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটিকে সহায়তা করতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, এখনই ডোনেট করুন।";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "আপনার সমর্থন দেখাতে আপনার প্রোফাইলে প্রদর্শনের জন্য একটি ব্যাজ বেছে নিন।";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "প্রোফাইলে প্রদর্শন করুন";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "ডোনেশনের পরিমাণ: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "ডোনেশনের পরিমাণ: %1$@/মাস";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "আপনি যখন ডোনেট করেন তখন Signal আপনার কোনো ব্যক্তিগত তথ্য সংগ্রহ বা সংরক্ষণ করে না।\n\nআমরা আপনার পাঠানো ডোনেশন গ্রহণ করার জন্য পেমেন্ট প্রক্রিয়াকারী মাধ্যম হিসাবে Stripe ব্যবহার করি। আপনি তাদেরকে যেসব তথ্য প্রদান করেন তা আমরা অ্যাক্সেস, সংরক্ষণ বা সেভ করি না।\n\nSignal আপনার Signal অ্যাকাউন্টে আপনার ডোনেশনকে সংযুক্ত করে না এবং করতে পারে না।\n\nআপনার সহায়তার জন্য ধন্যবাদ!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "ছোট করে দেখুন";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "ট্রান্সফারটি সফল হয়নি। নিশ্চিত করুন যে উভয় ডিভাইসেই Signal খোলা আছে এবং আবার চেষ্টা করুন।";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "আপনার নতুন ডিভাইস যাচাই করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ট্রান্সফারটি সফল হয়নি। নিশ্চিত করুন যে আপনার ডিভাইসগুলো একে অপরের কাছাকাছি আছে এবং আবার চেষ্টা করুন।";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "সংযুক্ত ডিভাইস হিসাবে এই iPad সেট-আপ করতে, আপনাকে অবশ্যই আপনার পুরোনো iPad স্ক্যান করতে হবে";

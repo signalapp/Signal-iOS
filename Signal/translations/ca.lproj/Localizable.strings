@@ -515,7 +515,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "La teva donació mensual recurrent s'ha cancel·lat automàticament degut a una inactivitat prolongada. La insígnia %1$@ ja no és visible al teu perfil.\n\nPots continuar utilitzant Signal, però per donar suport a l'aplicació i reactivar la insígnia, fes una donació ara.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Tria una insígnia per mostrar el teu suport al perfil.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostra-ho al perfil";
@@ -890,7 +890,7 @@
 "CARD_DONATION_HEADER" = "Import de la donació: %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Donation amount: %1$@/month";
+"CARD_DONATION_HEADER_MONTHLY" = "Import de la donació: %1$@/mes";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal no recopila ni emmagatzema la teva informació personal quan fas una donació.\n\nUtilitzem Stripe com a processador de pagaments per rebre les teves donacions. No accedim, emmagatzemem ni desem cap de la informació que els proporciones.\n\nSignal no connecta i no pot connectar la teva donació al teu compte de Signal.\n\nGràcies per comptar amb nosaltres!";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Veure més petit";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "The transfer couldn't complete. Make sure both devices have Signal open and try again.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "La transferència no s'ha pogut completar. Assegura't que Signal està obert als dos dispositius i torna-ho a provar.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "No es pot verificar el dispositiu nou. Torneu-ho a provar.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete. Make sure your devices are near each other and try again.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "La transferència no s'ha pogut completar. Assegura't que els dispositius siguin a prop l'un de l'altre i torna-ho a provar.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Per establir aquest iPad com a dispositiu enllaçat, heu d’escanejar-lo amb l’iPad antic.";
