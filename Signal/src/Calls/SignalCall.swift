@@ -469,12 +469,20 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onPeekChanged groupCall: GroupCall) {
+        guard
+            let localAci = DependenciesBridge.shared.tsAccountManager
+                .localIdentifiersWithMaybeSneakyTransaction?.aci
+        else {
+            owsFailDebug("Peek changed for a group call, but we're not registered?")
+            return
+        }
+
         if let peekInfo = groupCall.peekInfo {
             // Note that we track this regardless of whether ringing is available.
             // There are other places that use this.
 
             let minDevicesToConsiderCallInProgress: UInt32 = {
-                if case .joined = groupCall.localDeviceState.joinState {
+                if peekInfo.joinedMembers.contains(localAci.rawUUID) {
                     // If we're joined, require us + someone else.
                     return 2
                 } else {
