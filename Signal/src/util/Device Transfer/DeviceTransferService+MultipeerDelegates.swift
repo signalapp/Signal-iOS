@@ -111,6 +111,7 @@ extension DeviceTransferService: MCSessionDelegate {
             // it can be confident that the transfer has completed successfully and
             // clear out all data from this device. This will crash the app.
             SignalApp.resetAppData()
+            SignalApp.showTransferCompleteAndExit()
 
         case .incoming(let oldDevicePeerId, _, let receivedFileIds, let skippedFileIds, _):
             guard peerId == oldDevicePeerId else {

@@ -203,7 +203,7 @@ extension ShareAppExtensionContext: AppContext {
 
     var hasActiveCall: Bool { false }
 
-    func resetAppData() {
+    func resetAppDataAndExit() {
         owsFailBeta("Not main app.")
     }
 }

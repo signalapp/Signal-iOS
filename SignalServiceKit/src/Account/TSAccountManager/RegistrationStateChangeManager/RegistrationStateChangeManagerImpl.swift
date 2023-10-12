@@ -222,7 +222,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             Logger.verbose("Successfully unregistered.")
 
             // No need to set any state, as we wipe the whole app anyway.
-            appContext.resetAppData()
+            appContext.resetAppDataAndExit()
 
             schedulers.main.async {
                 self.postRegistrationStateDidChangeNotification()

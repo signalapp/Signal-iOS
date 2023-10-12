@@ -243,10 +243,15 @@ extension SignalApp {
                 fromViewController: fromVC,
                 canCancel: true,
                 backgroundBlock: { _ in
-                    SignalApp.resetAppData()
+                    SignalApp.resetAppDataAndExit()
                 }
             )
         }
+    }
+
+    static func resetAppDataAndExit() {
+        resetAppData()
+        exit(0)
     }
 
     static func resetAppData() {
@@ -268,11 +273,9 @@ extension SignalApp {
         }
 
         DebugLogger.shared().wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
+    }
 
-        guard CurrentAppContext().isMainApp else {
-            exit(0)
-        }
-
+    static func showTransferCompleteAndExit() {
         DispatchQueue.main.async {
             let actionSheet = ActionSheetController(
                 title: OWSLocalizedString(

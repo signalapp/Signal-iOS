@@ -101,7 +101,7 @@ class NSEContext: NSObject, AppContext {
 
     func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {}
 
-    func resetAppData() {
+    func resetAppDataAndExit() {
         owsFailDebug("Should not reset app data from NSE")
     }
 

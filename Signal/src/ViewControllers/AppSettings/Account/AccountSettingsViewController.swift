@@ -139,7 +139,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_data"),
                 actionBlock: { [weak self] in
-                    self?.deleteUnregisterUserData()
+                    self?.deleteUnregisteredUserData()
                 }
             ))
         } else if tsRegistrationState.isRegisteredPrimaryDevice {
@@ -225,7 +225,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
-    private func deleteUnregisterUserData() {
+    private func deleteUnregisteredUserData() {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString("CONFIRM_DELETE_DATA_TITLE", comment: ""),
             message: OWSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
