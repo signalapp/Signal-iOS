@@ -66,7 +66,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Configure the rest of the globals before preparing the database.
         SUIEnvironment.shared.setup()
-        SMEnvironment.shared.lightweightCallManagerRef = LightweightCallManager()
+        SMEnvironment.shared.lightweightGroupCallManagerRef = LightweightGroupCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
             switch finalContinuation.finish(willResumeInProgressRegistration: false) {

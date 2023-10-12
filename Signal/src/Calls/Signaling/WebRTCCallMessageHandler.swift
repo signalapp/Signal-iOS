@@ -167,7 +167,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         completion: @escaping () -> Void
     ) {
         Logger.info("Received group call update message for thread: \(groupThread.uniqueId) eraId: \(String(describing: updateMessage.eraID))")
-        callService.peekCallAndUpdateThread(
+        callService.peekGroupCallAndUpdateThread(
             groupThread,
             expectedEraId: updateMessage.eraID,
             triggerEventTimestamp: serverReceivedTimestamp,

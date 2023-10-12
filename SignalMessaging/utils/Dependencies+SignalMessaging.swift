@@ -42,12 +42,12 @@ public extension NSObject {
         SMEnvironment.shared.avatarBuilderRef
     }
 
-    var lightweightCallManager: LightweightCallManager? {
-        SMEnvironment.shared.lightweightCallManagerRef
+    var lightweightGroupCallManager: LightweightGroupCallManager? {
+        SMEnvironment.shared.lightweightGroupCallManagerRef
     }
 
-    static var lightweightCallManager: LightweightCallManager? {
-        SMEnvironment.shared.lightweightCallManagerRef
+    static var lightweightGroupCallManager: LightweightGroupCallManager? {
+        SMEnvironment.shared.lightweightGroupCallManagerRef
     }
 
     var smJobQueues: SignalMessagingJobQueues {

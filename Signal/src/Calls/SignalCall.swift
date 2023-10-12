@@ -8,7 +8,8 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-// All Observer methods will be invoked from the main thread.
+/// Represents an observer who will receive updates about a call happening on
+/// this device. See ``SignalCall``.
 public protocol CallObserver: AnyObject {
     func individualCallStateDidChange(_ call: SignalCall, state: CallState)
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool)
@@ -47,6 +48,7 @@ public extension CallObserver {
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {}
 }
 
+/// Represents a call happening on this device.
 @objc
 public class SignalCall: NSObject, CallManagerCallReference {
     public let mode: Mode

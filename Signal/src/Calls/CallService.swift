@@ -18,7 +18,12 @@ protocol CallServiceObserver: AnyObject {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
 }
 
-public final class CallService: LightweightCallManager {
+/// Manages events related to both 1:1 and group calls, while the main app is
+/// running.
+///
+/// Responsible for the 1:1 or group call this device is currently active in, if
+/// any, as well as any other updates to other calls that we learn about.
+public final class CallService: LightweightGroupCallManager {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
     private var _callManager: CallManagerType! = nil
@@ -48,6 +53,8 @@ public final class CallService: LightweightCallManager {
     /// but othere call state may race (observer state, sleep state, etc.)
     private var _currentCallLock = UnfairLock()
     private var _currentCall: SignalCall?
+
+    /// Represents the call currently occuring on this device.
     @objc
     public private(set) var currentCall: SignalCall? {
         get {
@@ -498,7 +505,7 @@ public final class CallService: LightweightCallManager {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                peekCallAndUpdateThread(thread)
+                peekGroupCallAndUpdateThread(thread)
             } else {
                 owsFailDebug("Invalid thread type")
             }
@@ -555,7 +562,7 @@ public final class CallService: LightweightCallManager {
         }
     }
 
-    // MARK: - LightweightCallManager
+    // MARK: -
 
     func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> SignalCall? {
         AssertIsOnMainThread()
@@ -845,17 +852,19 @@ public final class CallService: LightweightCallManager {
 
     // MARK: -
 
-    override public func peekCallAndUpdateThread(_ thread: TSGroupThread,
-                                                 expectedEraId: String? = nil,
-                                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
-                                                 completion: (() -> Void)? = nil) {
+    override public func peekGroupCallAndUpdateThread(
+        _ thread: TSGroupThread,
+        expectedEraId: String? = nil,
+        triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+        completion: (() -> Void)? = nil
+    ) {
         // If the currentCall is for the provided thread, we don't need to perform an explicit
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        super.peekCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
+        super.peekGroupCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
     }
 
     override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {

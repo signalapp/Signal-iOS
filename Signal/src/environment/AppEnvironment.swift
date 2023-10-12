@@ -115,6 +115,6 @@ public class AppEnvironment: NSObject {
         }
 
         // Hang certain singletons on SMEnvironment too.
-        SMEnvironment.shared.lightweightCallManagerRef = callServiceRef
+        SMEnvironment.shared.lightweightGroupCallManagerRef = callServiceRef
     }
 }

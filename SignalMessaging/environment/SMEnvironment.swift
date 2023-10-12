@@ -34,7 +34,7 @@ public class SMEnvironment {
     public let smJobQueuesRef: SignalMessagingJobQueues
 
     // This property is configured after SMEnvironment is created.
-    public var lightweightCallManagerRef: LightweightCallManager?
+    public var lightweightGroupCallManagerRef: LightweightGroupCallManager?
 
     public init(
         preferences: Preferences,

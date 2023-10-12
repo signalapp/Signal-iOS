@@ -7,8 +7,15 @@ import LibSignalClient
 import SignalServiceKit
 import SignalRingRTC
 
-open class LightweightCallManager: NSObject, Dependencies {
-
+/// Responsible for updating group call state when we learn it may have changed.
+///
+/// Lightweight in that it does not maintain or manage state for active calls,
+/// and can be used both in the main app and in extensions.
+///
+/// - Note
+/// This class is subclassed by ``CallService`` in the main app, to additionally
+/// manage calls this device is actively participating in.
+open class LightweightGroupCallManager: NSObject, Dependencies {
     public let sfuClient: SFUClient
     public let httpClient: HTTPClient
     private var sfuUrl: String { DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL }
@@ -21,7 +28,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         httpClient.delegate = self
     }
 
-    open dynamic func peekCallAndUpdateThread(
+    open dynamic func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
         expectedEraId: String? = nil,
         triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
@@ -171,7 +178,7 @@ open class LightweightCallManager: NSObject, Dependencies {
     }
 }
 
-extension LightweightCallManager {
+extension LightweightGroupCallManager {
 
     /// Fetches a data blob that serves as proof of membership in the group
     /// Used by RingRTC to verify access to group call information
@@ -217,7 +224,7 @@ extension LightweightCallManager {
 
 // MARK: - <CallManagerLiteDelegate>
 
-extension LightweightCallManager: HTTPDelegate {
+extension LightweightGroupCallManager: HTTPDelegate {
     /**
      * A HTTP request should be sent to the given url.
      * Invoked on the main thread, asychronously.

@@ -95,7 +95,7 @@ public extension ConversationViewController {
 
     func refreshCallState() {
         if let groupThread = thread as? TSGroupThread {
-            callService.peekCallAndUpdateThread(groupThread)
+            callService.peekGroupCallAndUpdateThread(groupThread)
         }
     }
 
