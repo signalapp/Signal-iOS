@@ -183,7 +183,7 @@ public class LegacyChangePhoneNumber: NSObject {
     /// StorageService AccountRecord, we should remove this behavior as well.
     @objc
     public func deprecated_updateLocalPhoneNumberOnAccountRecordMismatch() {
-        // PNI TODO: Remove this once we've removed the e164 from AccountRecord.
+        // PNP0 TODO: Remove this once we've removed the e164 from AccountRecord.
 
         firstly { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             Self.accountServiceClient.getAccountWhoAmI()

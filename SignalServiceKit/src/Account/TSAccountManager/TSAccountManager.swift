@@ -78,7 +78,7 @@ public protocol PhoneNumberDiscoverabilitySetter {
 public protocol LocalIdentifiersSetter {
 
     /// Initialize local identifiers state after registration, linking, reregistration, or relinking.
-    /// PNI TODO: once all devices are PNI-capable, remove PNI nullability here.
+    /// PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
     /// Nil pni only happens with device linking, for registration its already non-optional.
     func initializeLocalIdentifiers(
         e164: E164,

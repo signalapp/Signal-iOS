@@ -152,7 +152,7 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        // PNI TODO: This should be an Aci for read/viewed receipts.
+        // PNP0 TODO: This should be an Aci for read/viewed receipts.
         init(receiptType: SSKProtoReceiptMessageType, sender: ServiceId, senderDeviceId: UInt32, timestamp: UInt64) {
             switch receiptType {
             case .delivery: self = .outgoingMessageDelivered(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)

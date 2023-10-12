@@ -1388,7 +1388,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                     // ignore the AccountRecord's e164 entirely, and remove
                     // this attempt to heal.
                     //
-                    // PNI TODO: remove this logic after all clients are known PNI-capable.
+                    // PNP0 TODO: remove this logic after all clients are known PNI-capable.
 
                     transaction.addAsyncCompletionOffMain {
                         owsFailDebug("Attempting to heal from primary-device e164 mismatch with AccountRecord.")
