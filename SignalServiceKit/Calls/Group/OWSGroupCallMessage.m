@@ -15,23 +15,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
-@property (nonatomic, nullable, readonly) NSString *eraId;
-/// These store ACI strings, but the properties say "UUID" for historical reasons.
-@property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
-@property (nonatomic, nullable) NSString *creatorUuid;
-@property (nonatomic) BOOL hasEnded;
-
 @end
 
 #pragma mark -
 
 @implementation OWSGroupCallMessage
 
-- (instancetype)initWithEraId:(NSString *)eraId
-             joinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
-                   creatorAci:(nullable AciObjC *)creatorAci
-                       thread:(TSGroupThread *)thread
-              sentAtTimestamp:(uint64_t)sentAtTimestamp
+- (instancetype)initWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
+                              creatorAci:(nullable AciObjC *)creatorAci
+                                  thread:(TSGroupThread *)thread
+                         sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
     self = [super initInteractionWithTimestamp:sentAtTimestamp thread:thread];
 
@@ -39,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _eraId = eraId;
     _joinedMemberUuids = [joinedMemberAcis map:^(AciObjC *aci) { return aci.serviceIdUppercaseString; }];
     _creatorUuid = creatorAci.serviceIdUppercaseString;
 
@@ -248,21 +240,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              block:^(OWSGroupCallMessage *message) {
                                                  message.hasEnded = hasEnded;
                                                  message.joinedMemberUuids = @[];
-                                             }];
-}
-
-- (void)updateWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
-                        creatorAci:(AciObjC *)creatorAci
-                                tx:(SDSAnyWriteTransaction *)tx
-{
-    [self anyUpdateGroupCallMessageWithTransaction:tx
-                                             block:^(OWSGroupCallMessage *message) {
-                                                 message.hasEnded = joinedMemberAcis.count == 0;
-                                                 message.creatorUuid = creatorAci.serviceIdUppercaseString;
-                                                 message.joinedMemberUuids =
-                                                     [joinedMemberAcis map:^(AciObjC *joinedMemberAci) {
-                                                         return joinedMemberAci.serviceIdUppercaseString;
-                                                     }];
                                              }];
 }
 

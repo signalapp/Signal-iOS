@@ -15,6 +15,7 @@ protocol CallRecordIncomingSyncMessageManager {
 
 final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMessageManager {
     private let callRecordStore: CallRecordStore
+    private let groupCallRecordManager: GroupCallRecordManager
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: InteractionStore
     private let markAsReadShims: Shims.MarkAsRead
@@ -25,6 +26,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
 
     init(
         callRecordStore: CallRecordStore,
+        groupCallRecordManager: GroupCallRecordManager,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
         markAsReadShims: Shims.MarkAsRead,
@@ -32,6 +34,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
+        self.groupCallRecordManager = groupCallRecordManager
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.markAsReadShims = markAsReadShims

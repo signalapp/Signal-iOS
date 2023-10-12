@@ -5,7 +5,7 @@
 
 import Foundation
 
-protocol InteractionStore {
+public protocol InteractionStore {
     /// Fetch the interaction with the given SQLite row ID, if one exists.
     func fetchInteraction(
         rowId interactionRowId: Int64,

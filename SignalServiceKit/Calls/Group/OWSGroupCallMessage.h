@@ -16,10 +16,30 @@ NS_ASSUME_NONNULL_BEGIN
 /// Not to be confused with an ``OutgoingGroupCallUpdateMessage``.
 @interface OWSGroupCallMessage : TSInteraction <OWSReadTracking, OWSPreviewText>
 
-// Can be nil if we weren't able to peek the call.
+/// The ACI-string of the creator of the call.
+/// - Note
+/// May be `nil` if we were unable to peek the call.
+/// - Note
+/// The name contains `Uuid` for SDS compatibility, but this is an ACI.
+@property (nonatomic, nullable) NSString *creatorUuid;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *creatorAddress;
+
+/// The ACI-strings of the members of the call.
+/// - Note
+/// May be empty if we were unable to peek the call.
+/// - Note
+/// The name contains `Uuid` for SDS compatibility, but these are ACIs.
+@property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
-@property (nonatomic, readonly) BOOL hasEnded;
+
+/// Whether the call has been ended, or is still in-progress.
+@property (nonatomic) BOOL hasEnded;
+
+/// This property is deprecated, but remains here to preserve compatibility with
+/// legacy data. Specifically, it will only be populated on old messages -
+/// recent messages will instead have a corresponding ``CallRecord`` storing a
+/// "call ID".
+@property (nonatomic, readonly, nullable) NSString *eraId;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -38,11 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithEraId:(NSString *)eraId
-             joinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
-                   creatorAci:(nullable AciObjC *)creatorAci
-                       thread:(TSGroupThread *)thread
-              sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
+                              creatorAci:(nullable AciObjC *)creatorAci
+                                  thread:(TSGroupThread *)thread
+                         sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -71,9 +90,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)updateWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
-                        creatorAci:(AciObjC *)creatorAci
-                                tx:(SDSAnyWriteTransaction *)tx;
 
 @end
 

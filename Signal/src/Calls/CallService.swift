@@ -926,7 +926,11 @@ extension CallService: CallObserver {
             return
         }
         DispatchQueue.sharedUtility.async {
-            self.updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+            self.updateGroupCallModelsForPeek(
+                peekInfo,
+                for: thread,
+                timestamp: Date.ows_millisecondTimestamp()
+            )
         }
     }
 

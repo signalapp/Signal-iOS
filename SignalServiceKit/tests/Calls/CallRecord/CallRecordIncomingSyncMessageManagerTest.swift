@@ -10,6 +10,7 @@ import XCTest
 
 final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
+    private var mockGroupCallRecordManager: MockGroupCallRecordManager!
     private var mockIndividualCallRecordManager: MockIndividualCallRecordManager!
     private var mockInteractionStore: MockInteractionStore!
     private var mockMarkAsReadShims: MockMarkAsReadShims!
@@ -21,6 +22,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
+        mockGroupCallRecordManager = MockGroupCallRecordManager()
         mockIndividualCallRecordManager = MockIndividualCallRecordManager()
         mockInteractionStore = MockInteractionStore()
         mockMarkAsReadShims = MockMarkAsReadShims()
@@ -29,6 +31,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         incomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
             callRecordStore: mockCallRecordStore,
+            groupCallRecordManager: mockGroupCallRecordManager,
             individualCallRecordManager: mockIndividualCallRecordManager,
             interactionStore: mockInteractionStore,
             markAsReadShims: mockMarkAsReadShims,
@@ -140,6 +143,14 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
 private func notImplemented() -> Never {
     owsFail("Not implemented!")
+}
+
+// MARK: MockGroupCallRecordManager
+
+private class MockGroupCallRecordManager: GroupCallRecordManager {
+    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupThread: TSGroupThread, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+        notImplemented()
+    }
 }
 
 // MARK: MockIndividualCallRecordManager

@@ -44,6 +44,7 @@ public class DependenciesBridge {
 
     public let callRecordStatusTransitionManager: CallRecordStatusTransitionManager
     public let callRecordStore: CallRecordStore
+    public let groupCallRecordManager: GroupCallRecordManager
     public let individualCallRecordManager: IndividualCallRecordManager
     let callRecordIncomingSyncMessageManager: CallRecordIncomingSyncMessageManager
 
@@ -62,6 +63,8 @@ public class DependenciesBridge {
     public let identityManager: OWSIdentityManager
 
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
+
+    public let interactionStore: InteractionStore
 
     public let keyValueStoreFactory: KeyValueStoreFactory
 
@@ -320,10 +323,12 @@ public class DependenciesBridge {
             twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
+        let interactionStore = InteractionStoreImpl()
+        self.interactionStore = interactionStore
+
         self.chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: self.keyValueStoreFactory)
         let groupMemberStore = GroupMemberStoreImpl()
         self.groupMemberStore = groupMemberStore
-        let interactionStore = InteractionStoreImpl()
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
         let threadStore = ThreadStoreImpl()
@@ -365,6 +370,12 @@ public class DependenciesBridge {
             self.callRecordStore = CallRecordStoreImpl(
                 statusTransitionManager: self.callRecordStatusTransitionManager
             )
+            self.groupCallRecordManager = GroupCallRecordManagerImpl(
+                callRecordStore: self.callRecordStore,
+                interactionStore: interactionStore,
+                outgoingSyncMessageManager: outgoingSyncMessageManager,
+                tsAccountManager: tsAccountManager
+            )
             self.individualCallRecordManager = IndividualCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,
                 interactionStore: interactionStore,
@@ -372,6 +383,7 @@ public class DependenciesBridge {
             )
             self.callRecordIncomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
                 callRecordStore: self.callRecordStore,
+                groupCallRecordManager: self.groupCallRecordManager,
                 individualCallRecordManager: self.individualCallRecordManager,
                 interactionStore: interactionStore,
                 markAsReadShims: CallRecordIncomingSyncMessageManagerImpl.ShimsImpl.MarkAsRead(

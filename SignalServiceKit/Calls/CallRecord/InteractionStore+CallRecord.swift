@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-extension InteractionStore {
+public extension InteractionStore {
     /// Fetch the interaction, of the specified type, associated with the given
     /// call record.
     func fetchAssociatedInteraction<InteractionType>(
@@ -34,6 +34,21 @@ extension InteractionStore {
     ) {
         updateInteraction(individualCallInteraction, tx: tx) { individualCallInteraction in
             individualCallInteraction.callType = newCallInteractionType
+        }
+    }
+
+    /// Update the joined members and creator of a group call on the associated
+    /// group-call interaction.
+    func updateGroupCallInteractionAcis(
+        groupCallInteraction: OWSGroupCallMessage,
+        joinedMemberAcis: [Aci],
+        creatorAci: Aci,
+        tx: DBWriteTransaction
+    ) {
+        updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
+            groupCallInteraction.hasEnded = joinedMemberAcis.isEmpty
+            groupCallInteraction.creatorUuid = creatorAci.serviceIdUppercaseString
+            groupCallInteraction.joinedMemberUuids = joinedMemberAcis.map { $0.serviceIdUppercaseString }
         }
     }
 }

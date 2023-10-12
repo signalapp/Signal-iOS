@@ -245,7 +245,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         // Track the callInProgress restriction regardless; we use that for purposes other than rings.
         let hasActiveCallMessage = Self.databaseStorage.read { transaction -> Bool in
-            !InteractionFinder.unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
+            !GroupCallInteractionFinder().unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
         }
         if hasActiveCallMessage {
             // This info may be out of date, but the first peek will update it.

@@ -13,7 +13,7 @@ class ConversationViewModel {
     let unreadMentionMessageIds: [String]
 
     static func load(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationViewModel {
-        let groupCallInProgress = InteractionFinder.unendedCallsForGroupThread(thread, transaction: tx)
+        let groupCallInProgress = GroupCallInteractionFinder().unendedCallsForGroupThread(thread, transaction: tx)
             .filter { $0.joinedMemberAddresses.count > 0 }
             .count > 0
 

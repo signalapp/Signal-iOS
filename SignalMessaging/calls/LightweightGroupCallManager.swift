@@ -18,13 +18,30 @@ import SignalRingRTC
 open class LightweightGroupCallManager: NSObject, Dependencies {
     public let sfuClient: SFUClient
     public let httpClient: HTTPClient
-    private var sfuUrl: String { DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL }
+
+    private var groupCallRecordManager: GroupCallRecordManager {
+        DependenciesBridge.shared.groupCallRecordManager
+    }
+
+    private var callRecordStore: CallRecordStore {
+        DependenciesBridge.shared.callRecordStore
+    }
+
+    private var interactionStore: InteractionStore {
+        DependenciesBridge.shared.interactionStore
+    }
+
+    private var sfuUrl: String {
+        DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+    }
 
     public override init() {
         let newClient = HTTPClient(delegate: nil)
         sfuClient = SFUClient(httpClient: newClient)
         httpClient = newClient
+
         super.init()
+
         httpClient.delegate = self
     }
 
@@ -37,18 +54,19 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         guard thread.isLocalUserFullMember else { return }
 
         firstly(on: DispatchQueue.global()) { () -> Promise<PeekInfo> in
-            if let expectedEraId = expectedEraId {
+            if let expectedEraId {
                 // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
                 // If it's the current call, we'll update with the PeekInfo once fetched
                 // Otherwise, it'll be marked as ended as soon as we complete the fetch
                 // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
                 self.insertPlaceholderGroupCallMessageIfNecessary(
                     eraId: expectedEraId,
-                    timestamp: triggerEventTimestamp,
-                    thread: thread)
+                    discoveredAtTimestamp: triggerEventTimestamp,
+                    groupThread: thread
+                )
             }
-            return self.fetchPeekInfo(for: thread)
 
+            return self.fetchPeekInfo(for: thread)
         }.then(on: DispatchQueue.sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
             // We only want to update the call message with the participants of the peekInfo if the peek's
             // era matches the era for the expected message. This wouldn't be the case if say, a device starts
@@ -56,7 +74,12 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             // two different eras.
             if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
                 Logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
-                return self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+
+                return self.updateGroupCallModelsForPeek(
+                    info,
+                    for: thread,
+                    timestamp: triggerEventTimestamp
+                )
             } else {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
                 return Guarantee.value(())
@@ -76,69 +99,237 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         }
     }
 
+    /// Update models for the group call in the given thread using the given
+    /// peek info.
     @discardableResult
-    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Guarantee<Void> {
-        databaseStorage.write(.promise) { writeTx in
-            let results = InteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
+    public func updateGroupCallModelsForPeek(
+        _ info: PeekInfo,
+        for groupThread: TSGroupThread,
+        timestamp: UInt64
+    ) -> Guarantee<Void> {
+        return databaseStorage.write(.promise) { tx in
+            let currentCallId: UInt64? = info.eraId.map { callIdFromEra($0) }
 
-            // Any call in our database that hasn't ended yet that doesn't match the current era
-            // must have ended by definition. We do that update now.
-            results
-                .filter { $0.eraId != info.eraId }
-                .forEach { toExpire in
-                    toExpire.update(withHasEnded: true, transaction: writeTx)
+            // Clean up any unended group calls that don't match the currently
+            // in-progress call.
+            let interactionForCurrentCall = self.cleanUpUnendedGroupCalls(
+                currentCallId: currentCallId,
+                groupThread: groupThread,
+                tx: tx
+            )
+
+            guard
+                let currentCallId,
+                let creatorAci = info.creator.map({ Aci(fromUUID: $0) })
+            else { return }
+
+            let joinedMemberAcis = info.joinedMembers.map { Aci(fromUUID: $0) }
+
+            let interactionToUpdate: OWSGroupCallMessage? = {
+                if let interactionForCurrentCall {
+                    return interactionForCurrentCall
                 }
 
-            // Update the message for the current era if it exists, or insert a new one.
-            guard let currentEraId = info.eraId, let creatorUuid = info.creator else {
-                Logger.info("No active call")
-                return
-            }
-            let currentEraMessages = results.filter { $0.eraId == currentEraId }
-            owsAssertDebug(currentEraMessages.count <= 1)
+                // Call IDs are server-defined, and don't reset immediately
+                // after a call finishes. That means that if a call has recently
+                // concluded – i.e., there is no "current call" interaction – we
+                // may still have a record of that concluded call that has the
+                // "current" call ID. If so, we should reuse/update it and its
+                // interaction.
+                if let existingCallRecordForCallId = self.callRecordStore.fetch(
+                    callId: currentCallId, tx: tx.asV2Write
+                ) {
+                    return self.interactionStore.fetchAssociatedInteraction(
+                        callRecord: existingCallRecordForCallId, tx: tx.asV2Read
+                    )
+                }
 
-            if let currentMessage = currentEraMessages.first {
-                let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
+                return nil
+            }()
 
-                currentMessage.update(
-                    withJoinedMemberAcis: info.joinedMembers.map { AciObjC(uuidValue: $0) },
-                    creatorAci: AciObjC(uuidValue: creatorUuid),
-                    tx: writeTx
+            if let interactionToUpdate {
+                let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
+
+                self.interactionStore.updateGroupCallInteractionAcis(
+                    groupCallInteraction: interactionToUpdate,
+                    joinedMemberAcis: joinedMemberAcis,
+                    creatorAci: creatorAci,
+                    tx: tx.asV2Write
                 )
 
-                // Only notify if the message we updated had no participants
                 if wasOldMessageEmpty {
-                    self.postUserNotificationIfNecessary(groupCallMessage: currentMessage, transaction: writeTx)
+                    self.postUserNotificationIfNecessary(
+                        groupCallMessage: interactionToUpdate, transaction: tx
+                    )
                 }
-
             } else if !info.joinedMembers.isEmpty {
-                let newMessage = OWSGroupCallMessage(
-                    eraId: currentEraId,
-                    joinedMemberAcis: info.joinedMembers.map { AciObjC(uuidValue: $0) },
-                    creatorAci: AciObjC(uuidValue: creatorUuid),
-                    thread: thread,
-                    sentAtTimestamp: timestamp)
-                newMessage.anyInsert(transaction: writeTx)
-                self.postUserNotificationIfNecessary(groupCallMessage: newMessage, transaction: writeTx)
+                let newMessage = self.createModelsForNewGroupCall(
+                    callId: currentCallId,
+                    joinedMemberAcis: joinedMemberAcis,
+                    creatorAci: creatorAci,
+                    discoveredAtTimestamp: timestamp,
+                    groupThread: groupThread,
+                    tx: tx.asV2Write
+                )
+
+                self.postUserNotificationIfNecessary(
+                    groupCallMessage: newMessage, transaction: tx
+                )
             }
         }.recover(on: DispatchQueue.sharedUtility) { error in
             owsFailDebug("Failed to update call message with error: \(error)")
         }
     }
 
-    fileprivate func insertPlaceholderGroupCallMessageIfNecessary(eraId: String, timestamp: UInt64, thread: TSGroupThread) {
+    private func createModelsForNewGroupCall(
+        callId: UInt64,
+        joinedMemberAcis: [Aci],
+        creatorAci: Aci?,
+        discoveredAtTimestamp: UInt64,
+        groupThread: TSGroupThread,
+        tx: DBWriteTransaction
+    ) -> OWSGroupCallMessage {
+        let newGroupCallInteraction = OWSGroupCallMessage(
+            joinedMemberAcis: joinedMemberAcis.map { AciObjC($0) },
+            creatorAci: creatorAci.map { AciObjC($0) },
+            thread: groupThread,
+            sentAtTimestamp: discoveredAtTimestamp
+        )
+        interactionStore.insertInteraction(
+            newGroupCallInteraction, tx: tx
+        )
+
+        _ = groupCallRecordManager.createGroupCallRecordForPeek(
+            callId: callId,
+            groupCallInteraction: newGroupCallInteraction,
+            groupThread: groupThread,
+            tx: tx
+        )
+
+        return newGroupCallInteraction
+    }
+
+    /// Ends all group calls that do not match the given call ID.
+    /// - Parameter currentCallId
+    /// The ID of the in-progress call for this group, if any.
+    /// - Parameter groupThread
+    /// The group for which to clean up calls.
+    /// - Returns
+    /// The interaction representing the in-progress call for the given group
+    /// (matching the given call ID), if any.
+    private func cleanUpUnendedGroupCalls(
+        currentCallId: UInt64?,
+        groupThread: TSGroupThread,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSGroupCallMessage? {
+        enum CallIdProvider {
+            case legacyEraId(callId: UInt64)
+            case callRecord(callRecord: CallRecord)
+
+            var callId: UInt64 {
+                switch self {
+                case .legacyEraId(let callId): return callId
+                case .callRecord(let callRecord): return callRecord.callId
+                }
+            }
+        }
+
+        let unendedCalls: [(OWSGroupCallMessage, CallIdProvider)] = GroupCallInteractionFinder()
+            .unendedCallsForGroupThread(groupThread, transaction: tx)
+            .compactMap { groupCallInteraction -> (OWSGroupCallMessage, CallIdProvider)? in
+                // Historical group call interactions stored the call's era
+                // ID, but going forward the call's "call ID" (which is derived
+                // from the era ID) is preferred and stored on a corresponding
+                // call record.
+
+                if let legacyCallInteractionEraId = groupCallInteraction.eraId {
+                    return (
+                        groupCallInteraction,
+                        .legacyEraId(callId: callIdFromEra(legacyCallInteractionEraId))
+                    )
+                } else if
+                    let callRowId = groupCallInteraction.grdbId?.int64Value,
+                    let recordForCall = callRecordStore.fetch(
+                        interactionRowId: callRowId,
+                        tx: tx.asV2Write
+                    )
+                {
+                    return (
+                        groupCallInteraction,
+                        .callRecord(callRecord: recordForCall)
+                    )
+                }
+
+                owsFailDebug("Unexpectedly had group call interaction with neither eraId nor a CallRecord!")
+                return nil
+            }
+
+        // Any call in our database that hasn't ended yet that doesn't match the
+        // current call ID must have ended by definition. We do that update now.
+        for (unendedCallInteraction, callIdProvider) in unendedCalls {
+            guard callIdProvider.callId != currentCallId else {
+                continue
+            }
+
+            unendedCallInteraction.update(withHasEnded: true, transaction: tx)
+        }
+
+        guard let currentCallId else {
+            return nil
+        }
+
+        let currentCallIdInteractions: [OWSGroupCallMessage] = unendedCalls.compactMap { (message, callIdProvider) in
+            guard callIdProvider.callId == currentCallId else {
+                return nil
+            }
+
+            return message
+        }
+
+        owsAssertDebug(currentCallIdInteractions.count <= 1)
+        return currentCallIdInteractions.first
+    }
+
+    private func insertPlaceholderGroupCallMessageIfNecessary(
+        eraId: String,
+        discoveredAtTimestamp: UInt64,
+        groupThread: TSGroupThread
+    ) {
         AssertNotOnMainThread()
 
-        databaseStorage.write { writeTx in
-            guard !InteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
+        databaseStorage.write { tx in
+            guard !GroupCallInteractionFinder().existsGroupCallMessageForEraId(
+                eraId, thread: groupThread, transaction: tx
+            ) else {
+                // It's possible this user had an interaction created for this
+                // call before the introduction of call records here. If so, we
+                // don't want to create a new placeholder.
+                return
+            }
 
-            Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
-            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: timestamp)
-            message.anyInsert(transaction: writeTx)
+            let callId = callIdFromEra(eraId)
+
+            guard callRecordStore.fetch(
+                callId: callId, tx: tx.asV2Write
+            ) == nil else {
+                // If we already have a call record for this call ID, bail.
+                return
+            }
+
+            Logger.info("Inserting placeholder group call message with callId: \(callId)")
+
+            _ = createModelsForNewGroupCall(
+                callId: callId,
+                joinedMemberAcis: [],
+                creatorAci: nil,
+                discoveredAtTimestamp: discoveredAtTimestamp,
+                groupThread: groupThread,
+                tx: tx.asV2Write
+            )
         }
     }
 
-    fileprivate func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
+    private func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
         AssertNotOnMainThread()
 
         return firstly { () -> Promise<Data> in
@@ -272,7 +463,7 @@ extension LightweightGroupCallManager: HTTPDelegate {
     }
 }
 
-// MARK: - Helpers
+// MARK: - HTTP helpers
 
 extension SignalRingRTC.HTTPMethod {
     var httpMethod: SignalServiceKit.HTTPMethod {

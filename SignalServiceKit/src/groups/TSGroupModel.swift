@@ -62,8 +62,6 @@ public class TSGroupModelV2: TSGroupModel {
                          didJustAddSelfViaGroupLink: Bool,
                          addedByAddress: SignalServiceAddress?,
                          droppedMembers: [SignalServiceAddress]) {
-        assert(secretParamsData.count > 0)
-
         self.descriptionText = descriptionText
         self.membership = groupMembership
         self.secretParamsData = secretParamsData

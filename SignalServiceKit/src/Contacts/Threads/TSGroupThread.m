@@ -110,6 +110,22 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return self;
 }
 
+#ifdef TESTABLE_BUILD
+
+- (instancetype)initWithGroupModelForTests:(TSGroupModel *)groupModel
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _groupModel = groupModel;
+
+    return self;
+}
+
+#endif
+
 + (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
