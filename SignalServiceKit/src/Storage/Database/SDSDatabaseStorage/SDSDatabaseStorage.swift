@@ -312,13 +312,14 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    @objc(touchThread:shouldReindex:transaction:)
-    public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
+    /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
+    @objc(touchThread:shouldReindex:shouldUpdateChatListUi:transaction:)
+    public func touch(thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
             DatabaseChangeObserver.serializedSync {
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.didTouch(thread: thread, transaction: grdb)
+                    databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: grdb)
                 } else if AppReadiness.isAppReady {
                     // This can race with observation setup when app becomes ready.
                     Logger.warn("databaseChangeObserver was unexpectedly nil")
@@ -328,6 +329,11 @@ public class SDSDatabaseStorage: SDSTransactable {
                 GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
             }
         }
+    }
+
+    @objc(touchThread:shouldReindex:transaction:)
+    public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
+        touch(thread: thread, shouldReindex: shouldReindex, shouldUpdateChatListUi: true, transaction: transaction)
     }
 
     @objc(touchStoryMessage:transaction:)

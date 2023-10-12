@@ -407,7 +407,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                             transaction:transaction];
         if (needsToMarkAsVisible) {
             // Non-visible threads don't get indexed, so if we're becoming visible for the first time...
-            [SDSDatabaseStorage.shared touchThread:self shouldReindex:true transaction:transaction];
+            [SDSDatabaseStorage.shared touchThread:self shouldReindex:YES transaction:transaction];
         }
         if (needsToClearLastVisibleSortId) {
             [self clearLastVisibleInteractionWithTransaction:transaction];

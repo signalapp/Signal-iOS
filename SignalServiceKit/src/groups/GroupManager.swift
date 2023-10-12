@@ -1269,7 +1269,7 @@ public class GroupManager: NSObject {
 
             TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
 
-            groupThread.update(with: newGroupModel, transaction: transaction)
+            groupThread.update(with: newGroupModel, shouldUpdateChatListUi: hasUserFacingChange, transaction: transaction)
 
             let action: UpsertGroupResult.Action = (hasUserFacingChange
                                                         ? .updatedWithUserFacingChanges

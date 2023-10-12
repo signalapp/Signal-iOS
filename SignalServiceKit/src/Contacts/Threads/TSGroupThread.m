@@ -140,7 +140,14 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return OWSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
-- (void)updateWithGroupModel:(TSGroupModel *)newGroupModel transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self updateWithGroupModel:groupModel shouldUpdateChatListUi:YES transaction:transaction];
+}
+
+- (void)updateWithGroupModel:(TSGroupModel *)newGroupModel
+      shouldUpdateChatListUi:(BOOL)shouldUpdateChatListUi
+                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(newGroupModel);
     OWSAssertDebug(transaction);
@@ -177,7 +184,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     [self updateGroupMemberRecordsWithTransaction:transaction];
 
     // We only need to re-index the group if the group name changed.
-    [SDSDatabaseStorage.shared touchThread:self shouldReindex:didNameChange transaction:transaction];
+    [SDSDatabaseStorage.shared touchThread:self
+                             shouldReindex:didNameChange
+                    shouldUpdateChatListUi:shouldUpdateChatListUi
+                               transaction:transaction];
 
     if (didAvatarChange) {
         [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];

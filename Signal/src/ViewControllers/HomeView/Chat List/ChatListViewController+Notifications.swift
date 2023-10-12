@@ -251,8 +251,8 @@ extension ChatListViewController: DatabaseChangeDelegate {
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()
         }
 
-        if !databaseChanges.threadUniqueIds.isEmpty {
-            self.loadCoordinator.scheduleLoad(updatedThreadIds: databaseChanges.threadUniqueIds)
+        if !databaseChanges.threadUniqueIdsForChatListUpdate.isEmpty {
+            self.loadCoordinator.scheduleLoad(updatedThreadIds: databaseChanges.threadUniqueIdsForChatListUpdate)
         }
     }
 

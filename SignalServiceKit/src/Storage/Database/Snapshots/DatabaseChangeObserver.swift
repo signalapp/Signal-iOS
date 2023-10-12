@@ -325,14 +325,16 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    // internal - should only be called by DatabaseStorage
-    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
+    /// internal - should only be called by DatabaseStorage
+    ///
+    /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
+    func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool = true, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
-        // a write transaction in order for the touch machinery to notify it's observers
+        // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(thread: thread)
+        pendingChanges.append(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi)
         pendingChanges.append(tableName: TSThread.table.tableName)
 
         didModifyPendingChanges()
@@ -417,6 +419,7 @@ extension DatabaseChangeObserver: TransactionObserver {
 
                 let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
                 let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
+                let uniqueIdToShouldUpdateChatListUiDict = pendingChangesToCommit.uniqueIdToShouldUpdateChatListUiDict
                 let storyMessageUniqueIds = pendingChangesToCommit.storyMessageUniqueIds
                 let storyMessageRowIds = pendingChangesToCommit.storyMessageRowIds
                 let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
@@ -426,7 +429,7 @@ extension DatabaseChangeObserver: TransactionObserver {
 
                 Self.committedChangesLock.withLock {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
-                    self.committedChanges.append(threadUniqueIds: threadUniqueIds)
+                    self.committedChanges.append(threadUniqueIds: threadUniqueIds, shouldUpdateChatListUiDictParam: uniqueIdToShouldUpdateChatListUiDict)
                     self.committedChanges.append(storyMessageUniqueIds: storyMessageUniqueIds)
                     self.committedChanges.append(storyMessageRowIds: storyMessageRowIds)
                     self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)

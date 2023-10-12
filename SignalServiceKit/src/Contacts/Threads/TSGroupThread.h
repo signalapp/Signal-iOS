@@ -92,6 +92,16 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // This method should only be called by GroupManager.
 - (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
 
+/// The `shouldUpdateChatListUi` parameter denotes whether the update of
+/// this group thread should trigger an update of the chat list UI (which
+/// is expensive; we don't want to do it unless we have to). In practice,
+/// `shouldUpdateChatListUi` should be true when the changes are user-facing.
+/// Multiple collapsed updates have `shouldUpdateChatListUi` if it is true
+/// for any of them.
+- (void)updateWithGroupModel:(TSGroupModel *)groupModel
+      shouldUpdateChatListUi:(BOOL)shouldUpdateChatListUi
+                 transaction:(SDSAnyWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

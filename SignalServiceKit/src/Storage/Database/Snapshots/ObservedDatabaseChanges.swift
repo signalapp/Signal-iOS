@@ -12,6 +12,12 @@ public protocol DatabaseChanges: AnyObject {
     typealias RowId = Int64
 
     var threadUniqueIds: Set<UniqueId> { get }
+    /// Unique ids for threads that have been changed in a user-facing way
+    /// that should affect the chat list UI.
+    var threadUniqueIdsForChatListUpdate: Set<UniqueId> { get }
+    /// Dictionary mapping thread uniqueIds to whether their corresponding
+    /// UI in the chat list should be updated.
+    var uniqueIdToShouldUpdateChatListUiDict: [String: Bool] { get }
     var interactionUniqueIds: Set<UniqueId> { get }
     var storyMessageUniqueIds: Set<UniqueId> { get }
     var storyMessageRowIds: Set<RowId> { get }
@@ -128,29 +134,42 @@ class ObservedDatabaseChanges: NSObject {
     // MARK: - Threads
 
     private var threads = ObservedModelChanges()
+    private var uniqueIdToShouldUpdateChatListUi = [String: Bool]()
 
-    func append(thread: TSThread) {
+    var threadUniqueIdsForChatListUpdate: Set<UniqueId> {
+        return threadUniqueIds.filter {
+            uniqueIdToShouldUpdateChatListUi[$0] == true
+        }
+    }
+
+    func append(thread: TSThread, shouldUpdateChatListUi: Bool = true) {
         #if TESTABLE_BUILD
         checkConcurrency()
         #endif
 
         threads.append(model: thread)
+        // If `shouldUpdateChatListUi` is false, it is important that we set the value
+        // in the dictionary to false, rather than leaving it as nil. The code in
+        // `self.mapRowIdsToUniqueIds` relies on this.
+        uniqueIdToShouldUpdateChatListUi[thread.uniqueId] = (uniqueIdToShouldUpdateChatListUi[thread.uniqueId] ?? false) || shouldUpdateChatListUi
     }
 
-    func append(threadUniqueId: UniqueId) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        threads.append(uniqueId: threadUniqueId)
-    }
-
-    func append(threadUniqueIds: Set<UniqueId>) {
+    func append(
+        threadUniqueIds: Set<UniqueId>,
+        shouldUpdateChatListUiDictParam: [String: Bool]
+    ) {
         #if TESTABLE_BUILD
         checkConcurrency()
         #endif
 
         threads.append(uniqueIds: threadUniqueIds)
+        for (key, value) in shouldUpdateChatListUiDictParam {
+            // In practice, `uniqueIdToShouldUpdateChatListUi` should always be empty to start
+            // with because this method is only called on a fresh `ObservedDatabaseChanges`
+            // object. However, we do this OR defensively.
+            let oldShouldUpdateChatListUi = uniqueIdToShouldUpdateChatListUi[key] ?? false
+            uniqueIdToShouldUpdateChatListUi[key] = oldShouldUpdateChatListUi || value
+        }
     }
 
     func append(threadRowId: RowId) {
@@ -159,14 +178,6 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         threads.append(rowId: threadRowId)
-    }
-
-    func append(threadRowIds: Set<RowId>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        threads.append(rowIds: threadRowIds)
     }
 
     // MARK: - Interactions
@@ -388,6 +399,14 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         return threads.uniqueIds
     }
 
+    var uniqueIdToShouldUpdateChatListUiDict: [String: Bool] {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        return uniqueIdToShouldUpdateChatListUi
+    }
+
     var interactionUniqueIds: Set<UniqueId> {
         #if TESTABLE_BUILD
         checkConcurrency()
@@ -491,7 +510,8 @@ extension ObservedDatabaseChanges: DatabaseChanges {
                                                            uniqueIds: threads.uniqueIds,
                                                            rowIdToUniqueIdMap: threads.rowIdToUniqueIdMap,
                                                            tableName: "\(ThreadRecord.databaseTableName)",
-                                                           uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
+                                                           uniqueIdColumnName: "\(threadColumn: .uniqueId)",
+                                                           isMappingForThreads: true))
 
         // We need to convert all interaction "row ids" to "unique ids".
         interactions.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -518,7 +538,8 @@ extension ObservedDatabaseChanges: DatabaseChanges {
                                       uniqueIds: Set<UniqueId>,
                                       rowIdToUniqueIdMap: [RowId: UniqueId],
                                       tableName: String,
-                                      uniqueIdColumnName: String) throws -> Set<String> {
+                                      uniqueIdColumnName: String,
+                                      isMappingForThreads: Bool = false) throws -> Set<String> {
         AssertHasDatabaseChangeObserverLock()
 
         // We try to avoid the query below by leveraging the
@@ -532,6 +553,13 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         for rowId in rowIds {
             if let uniqueId = rowIdToUniqueIdMap[rowId] {
                 allUniqueIds.insert(uniqueId)
+                if isMappingForThreads, uniqueIdToShouldUpdateChatListUi[uniqueId] == nil {
+                    /// When we aren't sure whether a changed thread should trigger a
+                    /// chat list UI update, we want to do so to be safe. If there is
+                    /// already a value for this uniqueId in `uniqueIdToShouldUpdateChatListUi`,
+                    /// we can trust that this is correct and do not want to override it.
+                    uniqueIdToShouldUpdateChatListUi[uniqueId] = true
+                }
             } else {
                 unresolvedRowIds.append(rowId)
             }
@@ -556,6 +584,17 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         WHERE rowid IN \(rowIdsSQL)
         """
         let fetchedUniqueIds = try String.fetchAll(db, sql: mappingSql)
+        if isMappingForThreads {
+            for id in fetchedUniqueIds {
+                if uniqueIdToShouldUpdateChatListUi[id] == nil {
+                    /// When we aren't sure whether a changed thread should trigger a
+                    /// chat list UI update, we want to do so to be safe. If there is
+                    /// already a value for this uniqueId in `uniqueIdToShouldUpdateChatListUi`,
+                    /// we can trust that this is correct and do not want to override it.
+                    uniqueIdToShouldUpdateChatListUi[id] = true
+                }
+            }
+        }
         allUniqueIds.formUnion(fetchedUniqueIds)
 
         guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
