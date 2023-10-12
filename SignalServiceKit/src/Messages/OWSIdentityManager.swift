@@ -103,16 +103,16 @@ extension OWSIdentity: CustomStringConvertible {
 public class IdentityStore: IdentityKeyStore {
     private let identityManager: OWSIdentityManager
     private let identityKeyPair: IdentityKeyPair
-    private let tsAccountManager: TSAccountManager
+    private let fetchLocalRegistrationId: (DBWriteTransaction) -> UInt32
 
     fileprivate init(
         identityManager: OWSIdentityManager,
         identityKeyPair: IdentityKeyPair,
-        tsAccountManager: TSAccountManager
+        fetchLocalRegistrationId: @escaping (DBWriteTransaction) -> UInt32
     ) {
         self.identityManager = identityManager
         self.identityKeyPair = identityKeyPair
-        self.tsAccountManager = tsAccountManager
+        self.fetchLocalRegistrationId = fetchLocalRegistrationId
     }
 
     public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
@@ -120,8 +120,7 @@ public class IdentityStore: IdentityKeyStore {
     }
 
     public func localRegistrationId(context: StoreContext) throws -> UInt32 {
-        // PNI TODO: Return the PNI registration ID here if needed.
-        return tsAccountManager.getOrGenerateAciRegistrationId(tx: context.asTransaction.asV2Write)
+        return fetchLocalRegistrationId(context.asTransaction.asV2Write)
     }
 
     public func saveIdentity(
@@ -253,7 +252,14 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return IdentityStore(
             identityManager: self,
             identityKeyPair: identityKeyPair.identityKeyPair,
-            tsAccountManager: tsAccountManager
+            fetchLocalRegistrationId: { [tsAccountManager] in
+                switch identity {
+                case .aci:
+                    return tsAccountManager.getOrGenerateAciRegistrationId(tx: $0)
+                case .pni:
+                    return tsAccountManager.getOrGeneratePniRegistrationId(tx: $0)
+                }
+            }
         )
     }
 
