@@ -470,7 +470,21 @@ extension SignalCall: GroupCallDelegate {
         if let peekInfo = groupCall.peekInfo {
             // Note that we track this regardless of whether ringing is available.
             // There are other places that use this.
-            ringRestrictions.update(.callInProgress, present: peekInfo.deviceCountExcludingPendingDevices > 0)
+
+            let minDevicesToConsiderCallInProgress: UInt32 = {
+                if case .joined = groupCall.localDeviceState.joinState {
+                    // If we're joined, require us + someone else.
+                    return 2
+                } else {
+                    // Otherwise, anyone else in the call counts.
+                    return 1
+                }
+            }()
+
+            ringRestrictions.update(
+                .callInProgress,
+                present: peekInfo.deviceCountExcludingPendingDevices >= minDevicesToConsiderCallInProgress
+            )
         }
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
