@@ -10,6 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class ThreadMergerTest: XCTestCase {
+    private var callRecordStore: MockCallRecordStore!
     private var chatColorSettingStore: ChatColorSettingStore!
     private var db: MockDB!
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
@@ -37,6 +38,7 @@ final class ThreadMergerTest: XCTestCase {
 
         _signalServiceAddressCache = SignalServiceAddressCache()
 
+        callRecordStore = MockCallRecordStore()
         chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         db = MockDB()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
@@ -62,6 +64,7 @@ final class ThreadMergerTest: XCTestCase {
             wallpaperStore: wallpaperStore
         )
         threadMerger = ThreadMerger(
+            callRecordStore: callRecordStore,
             chatColorSettingStore: chatColorSettingStore,
             disappearingMessagesConfigurationManager: disappearingMessagesConfigurationManager,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
@@ -78,6 +81,28 @@ final class ThreadMergerTest: XCTestCase {
 
         serviceIdThread = makeThread(aci: aci, phoneNumber: nil)
         phoneNumberThread = makeThread(aci: nil, phoneNumber: phoneNumber)
+    }
+
+    // MARK: - Call Records
+
+    private class MockCallRecordStore: CallRecordStore {
+        var merged: (from: Int64, into: Int64)?
+
+        func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {
+            merged = (from: fromRowId, into: intoRowId)
+        }
+
+        func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
+        func updateRecordStatusIfAllowed(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
+        func fetch(callId: UInt64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
+        func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
+    }
+
+    func testCallRecordsThreadRowIds() {
+        threadStore.threads = [serviceIdThread, phoneNumberThread]
+        performDefaultMerge()
+        XCTAssertEqual(callRecordStore.merged!.from, phoneNumberThread.grdbId!.int64Value)
+        XCTAssertEqual(callRecordStore.merged!.into, serviceIdThread.grdbId!.int64Value)
     }
 
     // MARK: - Pinned Threads
@@ -310,6 +335,7 @@ final class ThreadMergerTest: XCTestCase {
             cache: _signalServiceAddressCache,
             cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         ))
+        result.updateRowId(Int64.random(in: 1...2048))
         threadAssociatedDataStore.values[result.uniqueId] = ThreadAssociatedData(threadUniqueId: result.uniqueId)
         return result
     }

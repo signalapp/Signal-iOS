@@ -42,6 +42,11 @@ public class DependenciesBridge {
 
     public let appExpiry: AppExpiry
 
+    public let callRecordStatusTransitionManager: CallRecordStatusTransitionManager
+    public let callRecordStore: CallRecordStore
+    public let individualCallRecordManager: IndividualCallRecordManager
+    let callRecordIncomingSyncMessageManager: CallRecordIncomingSyncMessageManager
+
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
 
@@ -350,10 +355,38 @@ public class DependenciesBridge {
             signalServiceAddressCache: signalServiceAddressCache
         )
 
+        do {
+            let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
+                databaseStorage: databaseStorage,
+                messageSenderJobQueue: jobQueues.messageSenderJobQueue
+            )
+
+            self.callRecordStatusTransitionManager = CallRecordStatusTransitionManagerImpl()
+            self.callRecordStore = CallRecordStoreImpl(
+                statusTransitionManager: self.callRecordStatusTransitionManager
+            )
+            self.individualCallRecordManager = IndividualCallRecordManagerImpl(
+                callRecordStore: self.callRecordStore,
+                interactionStore: interactionStore,
+                outgoingSyncMessageManager: outgoingSyncMessageManager
+            )
+            self.callRecordIncomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
+                callRecordStore: self.callRecordStore,
+                individualCallRecordManager: self.individualCallRecordManager,
+                interactionStore: interactionStore,
+                markAsReadShims: CallRecordIncomingSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
+                    notificationPresenter: notificationsManager
+                ),
+                recipientStore: self.recipientStore,
+                threadStore: threadStore
+            )
+        }
+
         self.recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
             identityManager: self.identityManager,
             observers: RecipientMergerImpl.buildObservers(
+                callRecordStore: self.callRecordStore,
                 chatColorSettingStore: self.chatColorSettingStore,
                 disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
                 groupMemberUpdater: self.groupMemberUpdater,

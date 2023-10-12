@@ -12587,6 +12587,7 @@ public enum SSKProtoSyncMessageCallEventType: Int32 {
     case unknownType = 0
     case audioCall = 1
     case videoCall = 2
+    case groupCall = 3
 }
 
 private func SSKProtoSyncMessageCallEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.TypeEnum) -> SSKProtoSyncMessageCallEventType {
@@ -12594,6 +12595,7 @@ private func SSKProtoSyncMessageCallEventTypeWrap(_ value: SignalServiceProtos_S
     case .unknownType: return .unknownType
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
+    case .groupCall: return .groupCall
     }
 }
 
@@ -12602,6 +12604,7 @@ private func SSKProtoSyncMessageCallEventTypeUnwrap(_ value: SSKProtoSyncMessage
     case .unknownType: return .unknownType
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
+    case .groupCall: return .groupCall
     }
 }
 

@@ -489,10 +489,22 @@ extension OWSMessageManager {
                 outgoingPayment, messageTimestamp: serverDeliveryTimestamp, transaction: tx
             )
         } else if let callEvent = syncMessage.callEvent {
-            Logger.info("Received call event sync message.")
-            CallRecord.createOrUpdateForSyncMessage(
-                callEvent, messageTimestamp: decryptedEnvelope.timestamp, transaction: tx
-            )
+            let logger = CallRecordLogger.shared
+            logger.info("Received call event sync message.")
+
+            guard let incomingSyncMessageParams = try? CallRecordIncomingSyncMessageParams.parse(
+                callEventProto: callEvent
+            ) else {
+                logger.warn("Failed to parse incoming call event protobuf!")
+                return
+            }
+
+            DependenciesBridge.shared.callRecordIncomingSyncMessageManager
+                .createOrUpdateRecordForIncomingSyncMessage(
+                    incomingSyncMessage: incomingSyncMessageParams,
+                    syncMessageTimestamp: decryptedEnvelope.timestamp,
+                    tx: tx.asV2Write
+                )
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
             let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
             pniProcessor.processIncomingPniChangePhoneNumber(

@@ -3,11 +3,29 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
+import SignalCoreKit
 
 public class ThreadFinder: Dependencies {
     public init() {}
+
+    /// Fetch a thread with the given SQLite row ID, if one exists.
+    public func fetch(rowId: Int64, tx: SDSAnyReadTransaction) -> TSThread? {
+        guard let thread = TSThread.grdbFetchOne(
+            sql: """
+                SELECT *
+                FROM \(ThreadRecord.databaseTableName)
+                WHERE \(threadColumn: .id) = ?
+            """,
+            arguments: [ rowId ],
+            transaction: tx.unwrapGrdbRead
+        ) else {
+            owsFailDebug("Missing thread with row ID - how did we get this row ID?")
+            return nil
+        }
+
+        return thread
+    }
 
     /// Enumerates group threads in "last interaction" order.
     public func enumerateGroupThreads(

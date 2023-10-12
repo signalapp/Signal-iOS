@@ -265,8 +265,19 @@ public extension StoreContext {
 public extension GRDBWriteTransaction {
     /// Execute some SQL.
     func execute(sql: String, arguments: StatementArguments = .init()) {
+        database.executeHandlingErrors(sql: sql, arguments: arguments)
+    }
+
+    func executeAndCacheStatement(sql: String, arguments: StatementArguments) {
+        database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: arguments)
+    }
+}
+
+public extension Database {
+    /// Execute some SQL.
+    func executeHandlingErrors(sql: String, arguments: StatementArguments) {
         do {
-            let statement = try database.makeStatement(sql: sql)
+            let statement = try makeStatement(sql: sql)
             try statement.setArguments(arguments)
             try statement.execute()
         } catch {
@@ -278,9 +289,9 @@ public extension GRDBWriteTransaction {
     ///
     /// Caching the statement has significant performance benefits over ``execute`` for queries
     /// that are performed repeatedly.
-    func executeAndCacheStatement(sql: String, arguments: StatementArguments = .init()) {
+    func executeAndCacheStatementHandlingErrors(sql: String, arguments: StatementArguments = .init()) {
         do {
-            let statement = try database.cachedStatement(sql: sql)
+            let statement = try cachedStatement(sql: sql)
             try statement.setArguments(arguments)
             try statement.execute()
         } catch {

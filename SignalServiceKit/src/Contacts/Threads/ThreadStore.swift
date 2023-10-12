@@ -7,6 +7,7 @@ import LibSignalClient
 import SignalCoreKit
 
 protocol ThreadStore {
+    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
@@ -47,6 +48,10 @@ extension ThreadStore {
 }
 
 class ThreadStoreImpl: ThreadStore {
+    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
+        return ThreadFinder().fetch(rowId: threadRowId, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
         TSThread.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -80,6 +85,10 @@ class ThreadStoreImpl: ThreadStore {
 
 class MockThreadStore: ThreadStore {
     var threads = [TSThread]()
+
+    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
+        threads.first(where: { $0.grdbId?.int64Value == threadRowId })
+    }
 
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
         threads.first(where: { $0.uniqueId == uniqueId })

@@ -712,6 +712,15 @@ public class SignalServiceAddressCache: NSObject {
 
 extension SignalServiceAddress {
     static func randomForTesting() -> SignalServiceAddress { SignalServiceAddress(Aci.randomForTesting()) }
+
+    static func isolatedRandomForTesting() -> SignalServiceAddress {
+        SignalServiceAddress(
+            serviceId: Aci.randomForTesting(),
+            phoneNumber: nil,
+            cache: SignalServiceAddressCache(),
+            cachePolicy: .ignoreCache
+        )
+    }
 }
 
 extension SignalServiceAddressCache {

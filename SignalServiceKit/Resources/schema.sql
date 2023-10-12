@@ -1378,31 +1378,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_CallRecord" (
-            "id" INTEGER PRIMARY KEY NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"callId" TEXT NOT NULL UNIQUE
-                ON CONFLICT IGNORE
-            ,"interactionUniqueId" TEXT NOT NULL REFERENCES "model_TSInteraction"("uniqueId"
-        )
-            ON DELETE
-                CASCADE
-                ,"peerUuid" TEXT NOT NULL
-                ,"type" INTEGER NOT NULL
-                ,"direction" INTEGER NOT NULL
-                ,"status" INTEGER NOT NULL
-)
-;
-
-CREATE
-    INDEX "index_call_record_on_interaction_unique_id"
-        ON "model_CallRecord"("interactionUniqueId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "spamReportingTokenRecords" (
             "sourceUuid" BLOB PRIMARY KEY NOT NULL
             ,"spamReportingToken" BLOB NOT NULL
@@ -1439,11 +1414,11 @@ CREATE
         )
             ON DELETE
                 RESTRICT
-            ,"pastRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
-        )
-            ON DELETE
-                RESTRICT
-            ,"read" BOOLEAN NOT NULL DEFAULT 0
+                ,"pastRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
+)
+    ON DELETE
+        RESTRICT
+        ,"read" BOOLEAN NOT NULL DEFAULT 0
 )
 ;
 
@@ -1463,10 +1438,11 @@ CREATE
     TABLE
         IF NOT EXISTS "HiddenRecipient" (
             "recipientId" INTEGER PRIMARY KEY NOT NULL
-            ,FOREIGN KEY ("recipientId") REFERENCES "model_SignalRecipient"("id")
-                ON DELETE
-                    CASCADE
+            ,FOREIGN KEY ("recipientId") REFERENCES "model_SignalRecipient"("id"
         )
+            ON DELETE
+                CASCADE
+)
 ;
 
 CREATE
@@ -1487,5 +1463,24 @@ CREATE
 CREATE
     UNIQUE INDEX "index_signal_recipients_on_pni"
         ON "model_SignalRecipient"("pni"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "CallRecord" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"callId" TEXT NOT NULL UNIQUE
+            ,"interactionRowId" INTEGER NOT NULL UNIQUE REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
+)
+    ON DELETE
+        RESTRICT
+        ,"type" INTEGER NOT NULL
+        ,"direction" INTEGER NOT NULL
+        ,"status" INTEGER NOT NULL
 )
 ;

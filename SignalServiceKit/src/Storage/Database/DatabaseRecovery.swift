@@ -261,13 +261,15 @@ public extension DatabaseRecovery {
             ThreadAssociatedData.databaseTableName,
             // We'd like to get receipts back, but it's okay if we don't get them all.
             DonationReceipt.databaseTableName,
-            // We'd like to keep our own username, and lookups for our contacts'
-            // usernames. However, we don't want to block recovery on them.
+            // We'd like to lookups for our contacts' usernames. However, we
+            // don't want to block recovery on them.
             UsernameLookupRecord.databaseTableName,
             // This table should be recovered with the same effort as the
             // TSInteraction table. It doesn't hold any value without that data.
             EditRecord.databaseTableName,
-            TSPaymentsActivationRequestModel.databaseTableName
+            TSPaymentsActivationRequestModel.databaseTableName,
+            // Okay to best-effort recover calls.
+            CallRecord.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
@@ -442,9 +444,7 @@ public extension DatabaseRecovery {
             TestModel.table.tableName,
             CancelledGroupRing.databaseTableName,
             CdsPreviousE164.databaseTableName,
-            SpamReportingTokenRecord.databaseTableName,
-            // Used to update data for active calls, useless retroactively.
-            CallRecord.databaseTableName
+            SpamReportingTokenRecord.databaseTableName
         ]
 
         /// Log the tables we're explicitly skipping.

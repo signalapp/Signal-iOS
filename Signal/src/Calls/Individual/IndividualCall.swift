@@ -305,11 +305,26 @@ public class IndividualCall: NSObject {
         state: CallState,
         transaction: SDSAnyWriteTransaction
     ) {
+        func updateCallType(existingCall: TSCall) {
+            guard let newCallType = self.validateCallType(
+                callType,
+                state: state,
+                for: existingCall,
+                transaction: transaction
+            ) else { return }
+
+            DependenciesBridge.shared.individualCallRecordManager
+                .updateInteractionTypeAndRecordIfExists(
+                    individualCallInteraction: existingCall,
+                    contactThread: thread,
+                    newCallInteractionType: newCallType,
+                    tx: transaction.asV2Write
+                )
+        }
+
         if let existingCall = self.callInteraction {
             Logger.info("Existing call interaction found, updating")
-            if let newCallType = self.validateCallType(callType, state: state, for: existingCall, transaction: transaction) {
-                existingCall.updateCallType(newCallType, transaction: transaction)
-            }
+            updateCallType(existingCall: existingCall)
             return
         }
 
@@ -318,16 +333,14 @@ public class IndividualCall: NSObject {
             // this happens if a call event sync message creates the record and
             // interaction before callkit callbacks.
             let callRecord = self.fetchCallRecord(transaction: transaction),
-            let existingCall = TSCall.anyFetchCall(
-                uniqueId: callRecord.interactionUniqueId,
+            let existingCall = InteractionFinder.fetch(
+                rowId: callRecord.interactionRowId,
                 transaction: transaction
-            )
+            ) as? TSCall
         {
             Logger.info("Existing call interaction found on disk, updating")
             self.callInteraction = existingCall
-            if let newCallType = self.validateCallType(callType, state: state, for: existingCall, transaction: transaction) {
-                existingCall.updateCallType(newCallType, transaction: transaction)
-            }
+            updateCallType(existingCall: existingCall)
             return
         }
 
@@ -365,14 +378,15 @@ public class IndividualCall: NSObject {
     private func fetchCallRecord(
         transaction: SDSAnyReadTransaction
     ) -> CallRecord? {
-        if let callRecord = callRecord {
+        if let callRecord {
             return callRecord
         }
-        guard let callId = callId else {
+        guard let callId else {
             // Without a callId we can't look up a record.
             return nil
         }
-        let callRecord = CallRecord.fetch(forCallId: callId, transaction: transaction)
+        let callRecord = DependenciesBridge.shared.callRecordStore
+            .fetch(callId: callId, tx: transaction.asV2Read)
         self.callRecord = callRecord
         return callRecord
     }
@@ -411,7 +425,9 @@ public class IndividualCall: NSObject {
         }
         guard
             let callRecord = fetchCallRecord(transaction: transaction),
-            let newStatus = callType.callRecordStatus
+            let newStatus: CallRecord.CallStatus = CallRecord.CallStatus.IndividualCallStatus(
+                individualCallInteractionType: callType
+            ).map({ .individual($0) })
         else {
             return callType
         }
@@ -419,9 +435,13 @@ public class IndividualCall: NSObject {
         // but transitioning from a CallRecord.Status to itself is invalid.
         // Catch this case by letting the RPRecentCallType through if
         // it is different (checked above) but the mapped status is the same.
-        guard callRecord.status == newStatus
-                || CallRecord.isAllowedTransition(from: callRecord.status, to: newStatus)
-        else {
+        guard
+            callRecord.callStatus == newStatus
+            || DependenciesBridge.shared.callRecordStatusTransitionManager.isStatusTransitionAllowed(
+                from: callRecord.callStatus,
+                to: newStatus
+            )
+         else {
             return nil
         }
         return callType
@@ -436,11 +456,13 @@ public class IndividualCall: NSObject {
             return
         }
         Logger.info("Creating or updating call record.")
-        CallRecord.createOrUpdate(
-            interaction: callInteraction,
-            thread: thread,
-            callId: callId,
-            transaction: transaction
-        )
+
+        DependenciesBridge.shared.individualCallRecordManager
+            .createOrUpdateRecordForInteraction(
+                individualCallInteraction: callInteraction,
+                contactThread: thread,
+                callId: callId,
+                tx: transaction.asV2Write
+            )
     }
 }

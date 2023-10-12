@@ -185,7 +185,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             ExperienceUpgrade.self,
             CancelledGroupRing.self,
             CdsPreviousE164.self,
-            CallRecord.self,
             SpamReportingTokenRecord.self,
             UsernameLookupRecord.self,
             JobRecord.self,
@@ -194,7 +193,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             EditRecord.self,
             SignalRecipient.self,
             HiddenRecipient.self,
-            TSPaymentsActivationRequestModel.self
+            TSPaymentsActivationRequestModel.self,
+            CallRecord.self
         ]
     }
 

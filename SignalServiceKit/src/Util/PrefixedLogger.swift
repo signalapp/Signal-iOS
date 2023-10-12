@@ -7,11 +7,18 @@ import Foundation
 
 open class PrefixedLogger {
     private let prefix: String
-    private let suffix: String
+    private var suffix: String
 
     public init(prefix: String, suffix: String? = nil) {
         self.prefix = prefix
         self.suffix = suffix ?? ""
+    }
+
+    public func suffixed(with extraSuffix: String) -> PrefixedLogger {
+        return PrefixedLogger(
+            prefix: prefix,
+            suffix: suffix + extraSuffix
+        )
     }
 
     open func verbose(

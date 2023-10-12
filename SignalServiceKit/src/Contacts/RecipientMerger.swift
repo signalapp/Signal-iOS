@@ -108,6 +108,7 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     static func buildObservers(
+        callRecordStore: CallRecordStore,
         chatColorSettingStore: ChatColorSettingStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         groupMemberUpdater: GroupMemberUpdater,
@@ -131,6 +132,7 @@ class RecipientMergerImpl: RecipientMerger {
             ProfileWhitelistMerger(profileManager: profileManager),
             UserProfileMerger(userProfileStore: userProfileStore),
             ThreadMerger(
+                callRecordStore: callRecordStore,
                 chatColorSettingStore: chatColorSettingStore,
                 disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,

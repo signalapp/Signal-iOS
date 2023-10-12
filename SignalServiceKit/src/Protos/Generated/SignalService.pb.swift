@@ -3539,6 +3539,7 @@ struct SignalServiceProtos_SyncMessage {
       case unknownType // = 0
       case audioCall // = 1
       case videoCall // = 2
+      case groupCall // = 3
 
       init() {
         self = .unknownType
@@ -3549,6 +3550,7 @@ struct SignalServiceProtos_SyncMessage {
         case 0: self = .unknownType
         case 1: self = .audioCall
         case 2: self = .videoCall
+        case 3: self = .groupCall
         default: return nil
         }
       }
@@ -3558,6 +3560,7 @@ struct SignalServiceProtos_SyncMessage {
         case .unknownType: return 0
         case .audioCall: return 1
         case .videoCall: return 2
+        case .groupCall: return 3
         }
       }
 
@@ -8233,6 +8236,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: SwiftProtobuf._Pro
     0: .same(proto: "UNKNOWN_TYPE"),
     1: .same(proto: "AUDIO_CALL"),
     2: .same(proto: "VIDEO_CALL"),
+    3: .same(proto: "GROUP_CALL"),
   ]
 }
 

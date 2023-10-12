@@ -235,6 +235,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addPaymentsActivationRequestModel
         case addRecipientPniColumn
         case deletePhoneNumberAccessStore
+        case dropOldAndCreateNewCallRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -294,7 +295,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 59
+    public static let grdbSchemaVersionLatest: UInt = 60
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2352,6 +2353,32 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.execute(sql: """
                 DELETE FROM "keyvalue" WHERE "collection" = 'kUnidentifiedAccessCollection'
             """)
+            return .success(())
+        }
+
+        /// Create the "Call Record" table.
+        ///
+        /// We had a table for this previously, which we dropped in favor of
+        /// this newer version.
+        migrator.registerMigration(.dropOldAndCreateNewCallRecordTable) { tx in
+            try tx.database.drop(index: "index_call_record_on_interaction_unique_id")
+            try tx.database.drop(table: "model_CallRecord")
+
+            try tx.database.create(table: "CallRecord") { (table: TableDefinition) in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("callId", .text).notNull().unique()
+                table.column("interactionRowId", .integer).notNull().unique()
+                    .references("model_TSInteraction", column: "id", onDelete: .cascade)
+                table.column("threadRowId", .integer).notNull()
+                    .references("model_TSThread", column: "id", onDelete: .restrict)
+                table.column("type", .integer).notNull()
+                table.column("direction", .integer).notNull()
+                table.column("status", .integer).notNull()
+            }
+
+            // Note that because `callId` and `interactionRowId` are UNIQUE
+            // SQLite will automatically create an index on each of them.
+
             return .success(())
         }
 

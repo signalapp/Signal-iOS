@@ -8,6 +8,7 @@ import LibSignalClient
 import SignalCoreKit
 
 final class ThreadMerger: RecipientMergeObserver {
+    private let callRecordStore: CallRecordStore
     private let chatColorSettingStore: ChatColorSettingStore
     private let disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
@@ -22,6 +23,7 @@ final class ThreadMerger: RecipientMergeObserver {
     private let wallpaperStore: WallpaperStore
 
     init(
+        callRecordStore: CallRecordStore,
         chatColorSettingStore: ChatColorSettingStore,
         disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -35,6 +37,7 @@ final class ThreadMerger: RecipientMergeObserver {
         threadStore: ThreadStore,
         wallpaperStore: WallpaperStore
     ) {
+        self.callRecordStore = callRecordStore
         self.chatColorSettingStore = chatColorSettingStore
         self.disappearingMessagesConfigurationManager = disappearingMessagesConfigurationManager
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
@@ -57,6 +60,7 @@ final class ThreadMerger: RecipientMergeObserver {
         mergeThreadReplyInfo(threadPair, tx: tx)
         mergeChatColors(threadPair, tx: tx)
         mergeWallpaper(threadPair, tx: tx)
+        mergeCallRecords(threadPair, tx: tx)
         sdsThreadMerger.mergeThread(thread, into: targetThread, tx: tx)
         let shouldInsertEvent = shouldInsertThreadMergeEvent(threadPair)
         targetThread.merge(from: thread)
@@ -189,6 +193,22 @@ final class ThreadMerger: RecipientMergeObserver {
                 owsFailDebug("Couldn't copy custom wallpaper image.")
             }
         }
+    }
+
+    private func mergeCallRecords(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        guard
+            let fromThreadRowId = threadPair.fromValue.grdbId?.int64Value,
+            let intoThreadRowId = threadPair.intoValue.grdbId?.int64Value
+        else {
+            owsFailDebug("Failed to get SQLite row IDs for threads!")
+            return
+        }
+
+        callRecordStore.updateWithMergedThread(
+            fromThreadRowId: fromThreadRowId,
+            intoThreadRowId: intoThreadRowId,
+            tx: tx
+        )
     }
 
     private func shouldInsertThreadMergeEvent(_ threadPair: MergePair<TSContactThread>) -> Bool {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import LibSignalClient
 
 extension TSContactThread {
 
@@ -34,5 +34,11 @@ extension TSContactThread {
         return databaseStorage.write { transaction in
             return getOrCreateLocalThread(transaction: transaction)
         }
+    }
+}
+
+extension TSContactThread {
+    var contactServiceId: ServiceId? {
+        contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
     }
 }

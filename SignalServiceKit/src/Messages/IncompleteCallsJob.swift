@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 public class IncompleteCallsJob {
     private var count: UInt = 0
@@ -28,8 +28,11 @@ public class IncompleteCallsJob {
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         // Preconditions: Must be a valid call that started before the app launched.
-        guard let call = TSCall.anyFetchCall(uniqueId: uniqueId, transaction: writeTx) else {
-            owsFailDebug("Missing call with id: \(uniqueId)")
+        guard
+            let call = TSCall.anyFetchCall(uniqueId: uniqueId, transaction: writeTx),
+            let contactThread = call.thread(tx: writeTx) as? TSContactThread
+        else {
+            owsFailDebug("Missing call or thread!")
             return
         }
         guard call.timestamp < cutoffTimestamp else {
@@ -49,7 +52,13 @@ public class IncompleteCallsJob {
             return
         }
 
-        call.updateCallType(targetCallType, transaction: writeTx)
+        DependenciesBridge.shared.individualCallRecordManager
+            .updateInteractionTypeAndRecordIfExists(
+                individualCallInteraction: call,
+                contactThread: contactThread,
+                newCallInteractionType: targetCallType,
+                tx: writeTx.asV2Write
+            )
         count += 1
 
         // Log if appropriate

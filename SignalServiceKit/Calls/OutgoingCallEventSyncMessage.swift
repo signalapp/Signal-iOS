@@ -12,6 +12,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
     enum CallType: UInt {
         case audio
         case video
+        case group
     }
 
     enum EventDirection: UInt {
@@ -154,6 +155,8 @@ fileprivate extension OutgoingCallEvent.CallType {
             return .audioCall
         case .video:
             return .videoCall
+        case .group:
+            return .groupCall
         }
     }
 }

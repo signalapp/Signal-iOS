@@ -50,7 +50,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
-@property (nonatomic) RPRecentCallType callType;
 @property (nonatomic) TSRecentCallOfferType offerType;
 
 @end
@@ -247,29 +246,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     [self anyUpdateCallWithTransaction:transaction block:^(TSCall *call) { call.read = YES; }];
 
     // Ignore `circumstance` - we never send read receipts for calls.
-}
-
-#pragma mark - Methods
-
-- (void)updateCallType:(RPRecentCallType)callType
-{
-    DatabaseStorageAsyncWrite(self.databaseStorage,
-        ^(SDSAnyWriteTransaction *transaction) { [self updateCallType:callType transaction:transaction]; });
-}
-
-- (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    OWSLogInfo(@"updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
-        NSStringFromCallType(_callType),
-        NSStringFromCallType(callType),
-        self.uniqueId,
-        self.timestamp);
-
-    [self anyUpdateCallWithTransaction:transaction block:^(TSCall *call) { call.callType = callType; }];
-
-    [CallRecord updateIfExistsForInteraction:self transaction:transaction];
 }
 
 @end

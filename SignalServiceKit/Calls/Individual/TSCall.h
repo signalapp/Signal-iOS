@@ -46,7 +46,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 /// Encodes both what kind of call it is, and the state of that call (pending, answered, missed, etc.)
 /// Written to by CallKit callbacks, but also by incoming call event sync messages from linked
 /// devices, by way of `CallRecord`.
-@property (nonatomic, readonly) RPRecentCallType callType;
+@property (nonatomic) RPRecentCallType callType;
 @property (nonatomic, readonly) TSRecentCallOfferType offerType;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
@@ -92,9 +92,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)updateCallType:(RPRecentCallType)callType;
-- (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

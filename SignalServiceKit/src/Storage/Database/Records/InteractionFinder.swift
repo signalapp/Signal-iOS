@@ -36,17 +36,21 @@ public class InteractionFinder: NSObject {
     public class func fetch(
         rowId: Int64,
         transaction: SDSAnyReadTransaction
-    ) throws -> TSInteraction? {
-        let arguments: StatementArguments = [ rowId ]
-        return TSInteraction.grdbFetchOne(
+    ) -> TSInteraction? {
+        guard let interaction = TSInteraction.grdbFetchOne(
             sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .id) = ?
             """,
-            arguments: arguments,
+            arguments: [ rowId ],
             transaction: transaction.unwrapGrdbRead
-        )
+        ) else {
+            owsFailDebug("Missing interaction with row ID - how did we get this row ID?")
+            return nil
+        }
+
+        return interaction
     }
 
     public class func existsIncomingMessage(
