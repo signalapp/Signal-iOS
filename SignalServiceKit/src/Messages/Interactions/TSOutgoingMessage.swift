@@ -431,8 +431,8 @@ extension TSOutgoingMessage {
 // MARK: - Transcripts
 
 public extension TSOutgoingMessage {
-    func sendSyncTranscript() -> Promise<Void> {
-        return databaseStorage.write(.promise) { tx in
+    func sendSyncTranscript() async throws {
+        let messageSend = try await databaseStorage.awaitableWrite { tx in
             guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
                 throw OWSAssertionError("Missing local thread")
             }
@@ -459,8 +459,7 @@ public extension TSOutgoingMessage {
                 localIdentifiers: localIdentifiers,
                 sendErrorBlock: nil
             )
-        }.then { messageSend -> Promise<Void> in
-            Self.messageSender.performMessageSendAttempt(messageSend)
         }
+        return try await messageSender.performMessageSendAttempt(messageSend).awaitable()
     }
 }

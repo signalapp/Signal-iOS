@@ -406,25 +406,20 @@ private extension MessageSender {
 // MARK: -
 
 extension MessageSender {
-    private static func prepareToSendMessages() -> Promise<SenderCertificates> {
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            let isAppLockedDueToPreKeyUpdateFailures  = databaseStorage.read { tx in
-                DependenciesBridge.shared.preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
-            }
-            guard isAppLockedDueToPreKeyUpdateFailures else {
-                // The signed pre-key is valid, so don't rotate it.
-                return .value(())
-            }
+    private static func prepareToSendMessages() async throws -> SenderCertificates {
+        let isAppLockedDueToPreKeyUpdateFailures = databaseStorage.read { tx in
+            DependenciesBridge.shared.preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+        }
+        if isAppLockedDueToPreKeyUpdateFailures {
             Logger.info("Rotating signed pre-key before sending message.")
             // Retry prekey update every time user tries to send a message while app is
             // disabled due to prekey update failures.
             //
             // Only try to update the signed prekey; updating it is sufficient to
             // re-enable message sending.
-            return DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys()
-        }.then(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
-            self.udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive)
+            try await DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys().awaitable()
         }
+        return try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
     }
 
     // Mark skipped recipients as such. We may skip because:
@@ -558,11 +553,11 @@ extension MessageSender {
         return (serviceIds, phoneNumbers)
     }
 
-    private static func lookUpPhoneNumbers(_ phoneNumbers: [E164]) -> Promise<Void> {
-        contactDiscoveryManager.lookUp(
+    private static func lookUpPhoneNumbers(_ phoneNumbers: [E164]) async throws {
+        _ = try await contactDiscoveryManager.lookUp(
             phoneNumbers: Set(phoneNumbers.lazy.map { $0.stringValue }),
             mode: .outgoingMessage
-        ).asVoid(on: SyncScheduler())
+        ).awaitable()
     }
 }
 
@@ -586,49 +581,45 @@ extension MessageSender {
     @objc
     @available(swift, obsoleted: 1.0)
     func sendMessageToServiceObjC(_ message: TSOutgoingMessage) -> AnyPromise {
-        return AnyPromise(sendMessageToService(message))
+        return AnyPromise(Promise.wrapAsync { try await self.sendMessageToService(message) })
     }
 
-    func sendMessageToService(_ message: TSOutgoingMessage) -> Promise<Void> {
+    private func sendMessageToService(_ message: TSOutgoingMessage) async throws {
         if DependenciesBridge.shared.appExpiry.isExpired {
-            return Promise(error: AppExpiredError())
+            throw AppExpiredError()
         }
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered.negated {
-            return Promise(error: AppDeregisteredError())
+            throw AppDeregisteredError()
         }
         if message.shouldBeSaved {
             let latestCopy = databaseStorage.read { tx in
                 TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx) as? TSOutgoingMessage
             }
             guard let latestCopy, latestCopy.wasRemotelyDeleted.negated else {
-                return Promise(error: MessageDeletedBeforeSentError())
+                throw MessageDeletedBeforeSentError()
             }
         }
         if DebugFlags.messageSendsFail.get() {
-            return Promise(error: OWSUnretryableMessageSenderError())
+            throw OWSUnretryableMessageSenderError()
         }
         BenchManager.completeEvent(eventId: "sendMessagePreNetwork-\(message.timestamp)")
         BenchManager.startEvent(
             title: "Send Message Milestone: Network (\(message.timestamp))",
             eventId: "sendMessageNetwork-\(message.timestamp)"
         )
-        return Self.prepareToSendMessages().then(on: DispatchQueue.global()) { senderCertificates in
-            return try self.sendMessageToService(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
-        }.recover(on: DispatchQueue.global()) { (error) -> Promise<Void> in
-            guard message.wasSentToAnyRecipient else {
-                throw error
-            }
-            return self.handleMessageSentLocally(message).recover(on: SyncScheduler()) { (syncError) -> Promise<Void> in
+        do {
+            let senderCertificates = try await Self.prepareToSendMessages()
+            try await sendMessageToService(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
+        } catch {
+            if message.wasSentToAnyRecipient {
                 // Always ignore the sync error...
-                return .value(())
-            }.then(on: SyncScheduler()) { () -> Promise<Void> in
-                // ...so that we can throw the original error for the caller. (Note that we
-                // throw this error even if the sync message is sent successfully.)
-                throw error
+                try? await handleMessageSentLocally(message)
             }
-        }.then(on: DispatchQueue.global()) {
-            return self.handleMessageSentLocally(message)
+            // ...so that we can throw the original error for the caller. (Note that we
+            // throw this error even if the sync message is sent successfully.)
+            throw error
         }
+        try await handleMessageSentLocally(message)
     }
 
     private enum SendMessageNextAction {
@@ -649,8 +640,8 @@ extension MessageSender {
         _ message: TSOutgoingMessage,
         canLookUpPhoneNumbers: Bool,
         senderCertificates: SenderCertificates
-    ) throws -> Promise<Void> {
-        let nextAction: SendMessageNextAction? = try databaseStorage.write { tx in
+    ) async throws {
+        let nextAction: SendMessageNextAction? = try await databaseStorage.awaitableWrite { tx in
             guard let thread = message.thread(tx: tx) else {
                 throw MessageSenderError.threadMissing
             }
@@ -728,7 +719,7 @@ extension MessageSender {
                 return nil
             }
 
-            guard let serializedMessage = buildAndRecordMessage(message, in: thread, tx: tx) else {
+            guard let serializedMessage = self.buildAndRecordMessage(message, in: thread, tx: tx) else {
                 throw OWSAssertionError("Couldn't build message.")
             }
 
@@ -737,7 +728,7 @@ extension MessageSender {
             }
 
             let senderCertificate: SenderCertificate = {
-                switch udManager.phoneNumberSharingMode(tx: tx) {
+                switch self.udManager.phoneNumberSharingMode(tx: tx) {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:
@@ -752,7 +743,7 @@ extension MessageSender {
                     continue
                 }
                 let udAccess = (
-                    message.isStorySend ? udManager.storyUdAccess() : udManager.udAccess(for: serviceId, tx: tx)
+                    message.isStorySend ? self.udManager.storyUdAccess() : self.udManager.udAccess(for: serviceId, tx: tx)
                 )
                 guard let udAccess else {
                     continue
@@ -771,27 +762,28 @@ extension MessageSender {
 
         switch nextAction {
         case .none:
-            return .value(())
+            return
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
-            return Self.lookUpPhoneNumbers(phoneNumbers).then(on: DispatchQueue.global()) {
-                return try self.sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
-            }
+            try await Self.lookUpPhoneNumbers(phoneNumbers)
+            try await sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
         case .sendMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
             let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
-            return sendMessage(
-                message,
-                serializedMessage: serializedMessage,
-                in: thread,
-                to: serviceIds,
-                udAccess: udAccess,
-                localIdentifiers: localIdentifiers,
-                senderCertificates: senderCertificates,
-                sendErrorBlock: { serviceId, error in
-                    allErrors.append((serviceId, error))
-                }
-            ).recover(on: DispatchQueue.global()) { (_) -> Promise<Void> in
-                // We ignore the error for the Promise & consult `allErrors` instead.
-                return try self.handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
+            do {
+                try await sendMessage(
+                    message,
+                    serializedMessage: serializedMessage,
+                    in: thread,
+                    to: serviceIds,
+                    udAccess: udAccess,
+                    localIdentifiers: localIdentifiers,
+                    senderCertificates: senderCertificates,
+                    sendErrorBlock: { serviceId, error in
+                        allErrors.append((serviceId, error))
+                    }
+                )
+            } catch {
+                // We ignore the thrown error & consult `allErrors` instead.
+                try await handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
             }
         }
     }
@@ -805,7 +797,7 @@ extension MessageSender {
         localIdentifiers: LocalIdentifiers,
         senderCertificates: SenderCertificates,
         sendErrorBlock: @escaping (ServiceId, Error) -> Void
-    ) -> Promise<Void> {
+    ) async throws {
         // 3. If we have any participants that support sender key, build a promise
         // for their send.
         let senderKeyStatus = senderKeyStatus(for: thread, intendedRecipients: serviceIds, udAccessMap: sendingAccessMap)
@@ -855,13 +847,18 @@ extension MessageSender {
             sendPromises.append(senderKeyMessagePromise)
         }
 
-        // We use resolved, not fulfilled, because we don't want the completion
-        // promise to execute until _all_ send promises have either succeeded or
-        // failed. Fulfilled executes as soon as any of its input promises fail.
-        return Promise.when(resolved: sendPromises).map(on: SyncScheduler()) { results in
-            for result in results {
-                try result.get()
+        // We collect the errors instead of throwing immediately because we want to
+        // wait for all of them to finish before returning.
+        var promiseErrors = [Error]()
+        for sendPromise in sendPromises {
+            do {
+                try await sendPromise.awaitable()
+            } catch {
+                promiseErrors.append(error)
             }
+        }
+        if let firstError = promiseErrors.first {
+            throw firstError
         }
     }
 
@@ -869,7 +866,7 @@ extension MessageSender {
         message: TSOutgoingMessage,
         thread: TSThread,
         perRecipientErrors allErrors: [(serviceId: ServiceId, error: Error)]
-    ) throws -> Promise<Void> {
+    ) async throws {
         // Some errors should be ignored when sending messages to non 1:1 threads.
         // See discussion on NSError (MessageSender) category.
         let shouldIgnoreError = { (error: Error) -> Bool in
@@ -877,7 +874,7 @@ extension MessageSender {
         }
 
         // Record the individual error for each "failed" recipient.
-        self.databaseStorage.write { tx in
+        await databaseStorage.awaitableWrite { tx in
             for (serviceId, error) in Dictionary(allErrors, uniquingKeysWith: { _, new in new }) {
                 if shouldIgnoreError(error) {
                     continue
@@ -912,7 +909,6 @@ extension MessageSender {
         if message.sentRecipientsCount() == 0 {
             throw MessageSenderErrorNoValidRecipients()
         }
-        return .value(())
     }
 
     /// Sending a reply to a hidden recipient unhides them. But how we
@@ -944,8 +940,8 @@ extension MessageSender {
         return false
     }
 
-    private func handleMessageSentLocally(_ message: TSOutgoingMessage) -> Promise<Void> {
-        databaseStorage.write { tx in
+    private func handleMessageSentLocally(_ message: TSOutgoingMessage) async throws {
+        await databaseStorage.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message),
@@ -967,55 +963,53 @@ extension MessageSender {
                 ViewOnceMessages.completeIfNecessary(message: latestMessage, transaction: tx)
             }
         }
-        return sendSyncTranscriptIfNeeded(for: message).done(on: SyncScheduler()) {
-            // Don't mark self-sent messages as read (or sent) until the sync
-            // transcript is sent.
-            //
-            // NOTE: This only applies to the 'note to self' conversation.
-            if message.isSyncMessage {
-                return
-            }
-            let (thread, deviceId) = self.databaseStorage.read { tx in
-                return (
-                    message.thread(tx: tx),
-                    DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+
+        try await sendSyncTranscriptIfNeeded(for: message)
+
+        // Don't mark self-sent messages as read (or sent) until the sync
+        // transcript is sent.
+        //
+        // NOTE: This only applies to the 'note to self' conversation.
+        if message.isSyncMessage {
+            return
+        }
+        let thread = databaseStorage.read { tx in message.thread(tx: tx) }
+        guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
+            return
+        }
+        owsAssertDebug(message.recipientAddresses().count == 1)
+        await databaseStorage.awaitableWrite { tx in
+            let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+            for sendingAddress in message.sendingRecipientAddresses() {
+                message.update(
+                    withReadRecipient: sendingAddress,
+                    deviceId: deviceId,
+                    readTimestamp: message.timestamp,
+                    tx: tx
                 )
-            }
-            guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
-                return
-            }
-            owsAssertDebug(message.recipientAddresses().count == 1)
-            self.databaseStorage.write { tx in
-                for sendingAddress in message.sendingRecipientAddresses() {
+                if message.isVoiceMessage || message.isViewOnceMessage {
                     message.update(
-                        withReadRecipient: sendingAddress,
+                        withViewedRecipient: sendingAddress,
                         deviceId: deviceId,
-                        readTimestamp: message.timestamp,
+                        viewedTimestamp: message.timestamp,
                         tx: tx
                     )
-                    if message.isVoiceMessage || message.isViewOnceMessage {
-                        message.update(
-                            withViewedRecipient: sendingAddress,
-                            deviceId: deviceId,
-                            viewedTimestamp: message.timestamp,
-                            tx: tx
-                        )
-                    }
                 }
             }
         }
     }
 
-    private func sendSyncTranscriptIfNeeded(for message: TSOutgoingMessage) -> Promise<Void> {
+    private func sendSyncTranscriptIfNeeded(for message: TSOutgoingMessage) async throws {
         guard message.shouldSyncTranscript() else {
-            return .value(())
+            return
         }
-        return message.sendSyncTranscript().done(on: DispatchQueue.global()) {
-            Logger.info("Successfully sent sync transcript.")
-            self.databaseStorage.write { tx in
+        do {
+            try await message.sendSyncTranscript()
+            await databaseStorage.awaitableWrite { tx in
                 message.update(withHasSyncedTranscript: true, transaction: tx)
             }
-        }.catch(on: DispatchQueue.global()) { error in
+            Logger.info("Successfully sent sync transcript.")
+        } catch {
             Logger.info("Failed to send sync transcript: \(error) (isRetryable: \(error.isRetryable))")
         }
     }
