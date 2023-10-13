@@ -363,7 +363,8 @@ public class DependenciesBridge {
         do {
             let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
                 databaseStorage: databaseStorage,
-                messageSenderJobQueue: jobQueues.messageSenderJobQueue
+                messageSenderJobQueue: jobQueues.messageSenderJobQueue,
+                recipientStore: self.recipientStore
             )
 
             self.callRecordStatusTransitionManager = CallRecordStatusTransitionManagerImpl()

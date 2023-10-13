@@ -15,6 +15,34 @@ public protocol RecipientDataStore {
     func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
 }
 
+extension RecipientDataStore {
+    func fetchServiceId(for contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
+        let serviceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+        // If there's an ACI, it's *definitely* correct, and it's definitely the
+        // owner, so we can return early without issuing any queries.
+        if let aci = serviceId as? Aci {
+            return aci
+        }
+        // Otherwise, we need to figure out which recipient "owns" this thread. If
+        // the thread has a phone number but there's no SignalRecipient with that
+        // phone number, we'll return nil (even if the thread has a PNI). This is
+        // intentional. In this case, the phone number takes precedence, and this
+        // PNI definitely isn’t associated with this phone number. This situation
+        // should be impossible because ThreadMerger should keep these values in
+        // sync. (It's pre-ThreadMerger threads that might be wrong, and PNIs were
+        // introduced after ThreadMerger.)
+        if let phoneNumber = contactThread.contactPhoneNumber {
+            let ownedByRecipient = fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
+            return ownedByRecipient?.aci ?? ownedByRecipient?.pni
+        }
+        if let pni = serviceId as? Pni {
+            let ownedByRecipient = fetchRecipient(serviceId: pni, transaction: tx)
+            return ownedByRecipient?.aci ?? ownedByRecipient?.pni ?? pni
+        }
+        return nil
+    }
+}
+
 public class RecipientDataStoreImpl: RecipientDataStore {
     public init() {}
 

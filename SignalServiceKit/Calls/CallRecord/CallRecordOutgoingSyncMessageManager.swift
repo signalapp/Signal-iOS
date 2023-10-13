@@ -26,28 +26,15 @@ protocol CallRecordOutgoingSyncMessageManager {
         callInteractionTimestamp: UInt64,
         tx: DBWriteTransaction
     )
-}
-
-extension CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
         individualCallInteraction: TSCall,
         tx: DBWriteTransaction
-    ) {
-        guard let contactServiceId = contactThread.contactServiceId else {
-            owsFailBeta("Missing contact service ID - how did we get here?")
-            return
-        }
+    )
+}
 
-        sendSyncMessage(
-            conversationId: .oneToOne(contactServiceId: contactServiceId),
-            callRecord: callRecord,
-            callInteractionTimestamp: individualCallInteraction.timestamp,
-            tx: tx
-        )
-    }
-
+extension CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         groupThread: TSGroupThread,
         callRecord: CallRecord,
@@ -66,15 +53,36 @@ extension CallRecordOutgoingSyncMessageManager {
 final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMessageManager {
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
+    private let recipientStore: RecipientDataStore
 
     private var logger: CallRecordLogger { .shared }
 
     init(
         databaseStorage: SDSDatabaseStorage,
-        messageSenderJobQueue: MessageSenderJobQueue
+        messageSenderJobQueue: MessageSenderJobQueue,
+        recipientStore: RecipientDataStore
     ) {
         self.databaseStorage = databaseStorage
         self.messageSenderJobQueue = messageSenderJobQueue
+        self.recipientStore = recipientStore
+    }
+
+    func sendSyncMessage(
+        contactThread: TSContactThread,
+        callRecord: CallRecord,
+        individualCallInteraction: TSCall,
+        tx: DBWriteTransaction
+    ) {
+        guard let contactServiceId = recipientStore.fetchServiceId(for: contactThread, tx: tx) else {
+            owsFailBeta("Missing contact service ID - how did we get here?")
+            return
+        }
+        sendSyncMessage(
+            conversationId: .oneToOne(contactServiceId: contactServiceId),
+            callRecord: callRecord,
+            callInteractionTimestamp: individualCallInteraction.timestamp,
+            tx: tx
+        )
     }
 
     func sendSyncMessage(

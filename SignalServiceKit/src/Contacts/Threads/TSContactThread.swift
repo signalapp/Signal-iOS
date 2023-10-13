@@ -36,9 +36,3 @@ extension TSContactThread {
         }
     }
 }
-
-extension TSContactThread {
-    var contactServiceId: ServiceId? {
-        contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
-    }
-}
