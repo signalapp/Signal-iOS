@@ -339,8 +339,26 @@ extension TSOutgoingMessage {
         // an open write transaction, we check it for other receipts as well.
         clearMessageSendLogEntry(forRecipient: recipientAddress, deviceId: deviceId, tx: tx)
 
+        let recipientStateMerger = RecipientStateMerger(
+            recipientStore: DependenciesBridge.shared.recipientStore,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
         anyUpdateOutgoingMessage(transaction: tx) { message in
-            guard let recipientState = message.recipientAddressStates?[recipientAddress] else {
+            guard let recipientState: TSOutgoingMessageRecipientState = {
+                if let existingMatch = message.recipientAddressStates?[recipientAddress] {
+                    return existingMatch
+                }
+                if let normalizedAddress = recipientStateMerger.normalizedAddressIfNeeded(for: recipientAddress, tx: tx.asV2Read) {
+                    // If we get a receipt from a PNI, then normalizing PNIs -> ACIs won't fix
+                    // it, but normalizing the address from a PNI to an ACI might fix it.
+                    return message.recipientAddressStates?[normalizedAddress]
+                } else {
+                    // If we get a receipt from an ACI, then we might have the PNI stored, and
+                    // we need to migrate it to the ACI before we'll be able to find it.
+                    recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx.asV2Read)
+                    return message.recipientAddressStates?[recipientAddress]
+                }
+            }() else {
                 owsFailDebug("Missing recipient state for \(recipientAddress)")
                 return
             }

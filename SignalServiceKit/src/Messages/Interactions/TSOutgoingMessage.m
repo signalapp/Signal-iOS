@@ -98,8 +98,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 @property (nonatomic, readonly) TSOutgoingMessageState legacyMessageState;
 @property (nonatomic, readonly) BOOL legacyWasDelivered;
 @property (nonatomic, readonly) BOOL hasLegacyMessageState;
-@property (atomic, nullable)
-    NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
@@ -506,6 +504,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return OWSInteractionType_OutgoingMessage;
 }
 
+// MCR: Check what calls this method and if it needs to be changed.
 - (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
     return self.recipientAddressStates.allKeys;
@@ -582,6 +581,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }]].count;
 }
 
+// MCR: Check what calls this and if it needs to be changed.
 - (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);

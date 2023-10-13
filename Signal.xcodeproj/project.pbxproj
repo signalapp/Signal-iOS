@@ -720,6 +720,8 @@
 		50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */; };
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
+		50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */; };
+		50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */; };
 		50B62C742AB211E800705A89 /* PniSignatureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */; };
 		50B62C762AB216E300705A89 /* PniSignatureProcessorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3301,6 +3303,8 @@
 		50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerReceiptEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
+		50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMerger.swift; sourceTree = "<group>"; };
+		50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMergerTest.swift; sourceTree = "<group>"; };
 		50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessor.swift; sourceTree = "<group>"; };
 		50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessorTest.swift; sourceTree = "<group>"; };
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
@@ -8683,6 +8687,7 @@
 				F942622C289B1B5500460798 /* OWSOutgoingReceiptManagerTests.swift */,
 				F9426237289B1B5500460798 /* OWSUDManagerTest.swift */,
 				50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */,
+				50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */,
 				F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */,
 				F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */,
 				F942622E289B1B5500460798 /* SMKTestUtils.swift */,
@@ -9010,6 +9015,7 @@
 				F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */,
 				66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */,
 				E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */,
+				50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */,
 				50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */,
 				F9C5C947289453B100548EEE /* TypingIndicatorMessage.swift */,
 				504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */,
@@ -12819,6 +12825,7 @@
 				E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */,
 				F9C5CD5F289453B300548EEE /* RecipientIdFinder.swift in Sources */,
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
+				50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
@@ -13208,6 +13215,7 @@
 				C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */,
+				50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				F903C29B28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift in Sources */,
 				6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */,

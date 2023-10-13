@@ -16,9 +16,14 @@ public extension SignalRecipient {
     }
 }
 
-public enum RecipientIdError: Error {
+public enum RecipientIdError: Error, IsRetryableProvider {
     /// We can't use the Pni because it's been replaced by an Aci.
     case mustNotUsePniBecauseAciExists
+
+    public var isRetryableProvider: Bool {
+        // Allow retries so that we send to the Aci instead of the Pni.
+        return true
+    }
 }
 
 public final class RecipientIdFinder {

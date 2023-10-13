@@ -881,6 +881,7 @@ extension MessageSender {
                 }
                 message.update(withFailedRecipient: SignalServiceAddress(serviceId), error: error, transaction: tx)
             }
+            self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: allErrors, tx: tx)
         }
 
         let filteredErrors = allErrors.lazy.map { $0.error }.filter { !shouldIgnoreError($0) }
@@ -908,6 +909,30 @@ extension MessageSender {
         // success, unless the message could not be sent to any recipient.
         if message.sentRecipientsCount() == 0 {
             throw MessageSenderErrorNoValidRecipients()
+        }
+    }
+
+    private func normalizeRecipientStatesIfNeeded(
+        message: TSOutgoingMessage,
+        recipientErrors: [(serviceId: ServiceId, error: Error)],
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard recipientErrors.contains(where: {
+            switch $0.error {
+            case RecipientIdError.mustNotUsePniBecauseAciExists:
+                return true
+            default:
+                return false
+            }
+        }) else {
+            return
+        }
+        let recipientStateMerger = RecipientStateMerger(
+            recipientStore: DependenciesBridge.shared.recipientStore,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
+        message.anyUpdateOutgoingMessage(transaction: tx) { message in
+            recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx.asV2Read)
         }
     }
 
@@ -1250,6 +1275,8 @@ extension MessageSender {
             case MessageSenderError.prekeyRateLimit:
                 throw SignalServiceRateLimitedError()
             case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
+                throw error
+            case RecipientIdError.mustNotUsePniBecauseAciExists:
                 throw error
             default:
                 owsAssertDebug(error.isNetworkFailureOrTimeout)

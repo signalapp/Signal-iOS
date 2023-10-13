@@ -259,7 +259,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (NSArray<SignalServiceAddress *> *)recipientAddresses;
 
 // The states for all recipients.
-@property (atomic, nullable, readonly)
+@property (atomic, nullable)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 
 // All recipients of this message who we are currently trying to send to (pending, queued, uploading or during send).
