@@ -236,6 +236,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addRecipientPniColumn
         case deletePhoneNumberAccessStore
         case dropOldAndCreateNewCallRecordTable
+        case fixUniqueConstraintOnCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2377,6 +2378,43 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             // Note that because `callId` and `interactionRowId` are UNIQUE
+            // SQLite will automatically create an index on each of them.
+
+            return .success(())
+        }
+
+        /// Fix a UNIQUE constraint on the "Call Record" table.
+        ///
+        /// We previously had a UNIQUE constraint on the `callId` column, which
+        /// wasn't quite right. Instead, we want a UNIQUE constraint on
+        /// `(callId, threadRowId)`, to mitigate against call ID collision.
+        ///
+        /// Since the call record table was just added recently, we can drop it
+        /// and recreate it with the new UNIQUE constraint, via an explicit
+        /// index.
+        migrator.registerMigration(.fixUniqueConstraintOnCallRecord) { tx in
+            try tx.database.drop(table: "CallRecord")
+
+            try tx.database.create(table: "CallRecord") { (table: TableDefinition) in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("callId", .text).notNull()
+                table.column("interactionRowId", .integer).notNull().unique()
+                    .references("model_TSInteraction", column: "id", onDelete: .cascade)
+                table.column("threadRowId", .integer).notNull()
+                    .references("model_TSThread", column: "id", onDelete: .restrict)
+                table.column("type", .integer).notNull()
+                table.column("direction", .integer).notNull()
+                table.column("status", .integer).notNull()
+            }
+
+            try tx.database.create(
+                index: "index_call_record_on_callId_and_threadId",
+                on: "CallRecord",
+                columns: ["callId", "threadRowId"],
+                options: [.unique]
+            )
+
+            // Note that because `threadRowId` and `interactionRowId` are UNIQUE
             // SQLite will automatically create an index on each of them.
 
             return .success(())

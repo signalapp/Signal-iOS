@@ -15,8 +15,8 @@ class MockCallRecordStore: CallRecordStore {
         return true
     }
 
-    func fetch(callId: UInt64, tx: DBReadTransaction) -> CallRecord? {
-        return callRecords.first(where: { $0.callId == callId })
+    func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
+        return callRecords.first(where: { $0.callId == callId && $0.threadRowId == threadRowId })
     }
 
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {

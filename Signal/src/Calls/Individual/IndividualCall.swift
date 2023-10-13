@@ -313,9 +313,15 @@ public class IndividualCall: NSObject {
                 transaction: transaction
             ) else { return }
 
+            guard let existingCallRowId = existingCall.grdbId?.int64Value else {
+                owsFailDebug("Missing SQLite row ID for call!")
+                return
+            }
+
             DependenciesBridge.shared.individualCallRecordManager
                 .updateInteractionTypeAndRecordIfExists(
                     individualCallInteraction: existingCall,
+                    individualCallInteractionRowId: existingCallRowId,
                     contactThread: thread,
                     newCallInteractionType: newCallType,
                     tx: transaction.asV2Write
@@ -381,12 +387,21 @@ public class IndividualCall: NSObject {
         if let callRecord {
             return callRecord
         }
+
         guard let callId else {
             // Without a callId we can't look up a record.
             return nil
         }
-        let callRecord = DependenciesBridge.shared.callRecordStore
-            .fetch(callId: callId, tx: transaction.asV2Read)
+
+        guard let threadRowId = thread.grdbId?.int64Value else {
+            owsFailDebug("Missing SQLite row ID for thread!")
+            return nil
+        }
+
+        let callRecord = DependenciesBridge.shared.callRecordStore.fetch(
+            callId: callId, threadRowId: threadRowId, tx: transaction.asV2Read
+        )
+
         self.callRecord = callRecord
         return callRecord
     }
@@ -457,10 +472,20 @@ public class IndividualCall: NSObject {
         }
         Logger.info("Creating or updating call record.")
 
+        guard
+            let callInteractionRowId = callInteraction.grdbId?.int64Value,
+            let threadRowId = thread.grdbId?.int64Value
+        else {
+            owsFailDebug("Missing SQLite row IDs for models!")
+            return
+        }
+
         DependenciesBridge.shared.individualCallRecordManager
             .createOrUpdateRecordForInteraction(
                 individualCallInteraction: callInteraction,
+                individualCallInteractionRowId: callInteractionRowId,
                 contactThread: thread,
+                contactThreadRowId: threadRowId,
                 callId: callId,
                 tx: transaction.asV2Write
             )

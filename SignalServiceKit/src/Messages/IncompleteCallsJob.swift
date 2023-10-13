@@ -30,6 +30,7 @@ public class IncompleteCallsJob {
         // Preconditions: Must be a valid call that started before the app launched.
         guard
             let call = TSCall.anyFetchCall(uniqueId: uniqueId, transaction: writeTx),
+            let callRowId = call.grdbId?.int64Value,
             let contactThread = call.thread(tx: writeTx) as? TSContactThread
         else {
             owsFailDebug("Missing call or thread!")
@@ -55,6 +56,7 @@ public class IncompleteCallsJob {
         DependenciesBridge.shared.individualCallRecordManager
             .updateInteractionTypeAndRecordIfExists(
                 individualCallInteraction: call,
+                individualCallInteractionRowId: callRowId,
                 contactThread: contactThread,
                 newCallInteractionType: targetCallType,
                 tx: writeTx.asV2Write

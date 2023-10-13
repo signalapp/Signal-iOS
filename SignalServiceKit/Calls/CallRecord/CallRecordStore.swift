@@ -33,9 +33,11 @@ public protocol CallRecordStore {
         tx: DBWriteTransaction
     )
 
-    // [Calls] TODO: this should take a conversation ID as well
-    /// Fetch the record for the given call ID, if one exists.
-    func fetch(callId: UInt64, tx: DBReadTransaction) -> CallRecord?
+    /// Fetch the record for the given call ID in the given thread, if one
+    /// exists.
+    func fetch(
+        callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
+    ) -> CallRecord?
 
     /// Fetch the record referencing the given ``TSInteraction`` SQLite row ID,
     /// if one exists.
@@ -79,12 +81,21 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
-    func fetch(callId: UInt64, tx: DBReadTransaction) -> CallRecord? {
-        return fetch(callId: callId, db: SDSDB.shimOnlyBridge(tx).database)
+    func fetch(
+        callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
+    ) -> CallRecord? {
+        return fetch(
+            callId: callId,
+            threadRowId: threadRowId,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
     }
 
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
-        return fetch(interactionRowId: interactionRowId, db: SDSDB.shimOnlyBridge(tx).database)
+        return fetch(
+            interactionRowId: interactionRowId,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
     }
 
     // MARK: - Mutations (impl)
@@ -143,43 +154,58 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Queries (impl)
 
-    func fetch(callId: UInt64, db: Database) -> CallRecord? {
-        return fetch(column: .callIdString, arg: String(callId), db: db)
+    func fetch(
+        callId: UInt64, threadRowId: Int64, db: Database
+    ) -> CallRecord? {
+        return fetch(
+            columnArgs: [
+                (.callIdString, String(callId)),
+                (.threadRowId, threadRowId),
+            ],
+            db: db
+        )
     }
 
     func fetch(interactionRowId: Int64, db: Database) -> CallRecord? {
-        return fetch(column: .interactionRowId, arg: interactionRowId, db: db)
+        return fetch(
+            columnArgs: [(.interactionRowId, interactionRowId)],
+            db: db
+        )
     }
 
     fileprivate func fetch(
-        column: CallRecord.CodingKeys,
-        arg: DatabaseValueConvertible,
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         db: Database
     ) -> CallRecord? {
         do {
             return try CallRecord.fetchOne(db, fetchRequest(
-                column: column,
-                arg: arg,
+                columnArgs: columnArgs,
                 explain: false
             ))
         } catch let error {
-            owsFailBeta("Error fetching CallRecord by \(column): \(error)")
+            let columns = columnArgs.map { (column, _) in column }
+            owsFailBeta("Error fetching CallRecord by \(columns): \(error)")
             return nil
         }
     }
 
     fileprivate func fetchRequest(
-        column: CallRecord.CodingKeys,
-        arg: DatabaseValueConvertible,
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         explain: Bool
     ) -> SQLRequest<Row> {
+        let conditionClauses = columnArgs.map { (column, _) -> String in
+            return "\(column.rawValue) = ?"
+        }
+
+        let args: [DatabaseValueConvertible] = columnArgs.map { $1 }
+
         return SQLRequest(
             sql: """
                 \(explain ? "EXPLAIN QUERY PLAN" : "")
                 SELECT * FROM \(CallRecord.databaseTableName)
-                WHERE \(column.rawValue) = ?
+                WHERE \(conditionClauses.joined(separator: " AND "))
             """,
-            arguments: [ arg ]
+            arguments: StatementArguments(args)
         )
     }
 }
@@ -196,14 +222,12 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
     var lastExplanation: String?
 
     override func fetch(
-        column: CallRecord.CodingKeys,
-        arg: DatabaseValueConvertible,
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         db: Database
     ) -> CallRecord? {
         guard
             let explanationRow = try? Row.fetchOne(db, fetchRequest(
-                column: column,
-                arg: arg,
+                columnArgs: columnArgs,
                 explain: true
             )),
             // This isn't likely to be stable indefinitely, but it appears for
@@ -215,7 +239,7 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
 
         lastExplanation = explanation
 
-        return super.fetch(column: column, arg: arg, db: db)
+        return super.fetch(columnArgs: columnArgs, db: db)
     }
 }
 

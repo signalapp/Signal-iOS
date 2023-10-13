@@ -56,6 +56,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
         let contactServiceId = contactAddress.aci!
+        let contactRecipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
 
         let thread = TSContactThread(contactAddress: contactAddress)
         thread.updateRowId(threadRowId)
@@ -69,6 +70,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         interaction.updateRowId(interactionRowId)
 
         mockCallRecordStore.callRecords.append(callRecord)
+        mockRecipientStore.recipients.append(contactRecipient)
         mockThreadStore.threads.append(thread)
         mockInteractionStore.insertedInteractions.append(interaction)
 
@@ -106,8 +108,11 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
         let contactServiceId = contactAddress.aci!
 
+        let contactThread = TSContactThread(contactAddress: contactAddress)
+        contactThread.updateRowId(.maxRandom)
+
         mockRecipientStore.recipients.append(SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil))
-        mockThreadStore.threads.append(TSContactThread(contactAddress: contactAddress))
+        mockThreadStore.threads.append(contactThread)
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
@@ -161,7 +166,9 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
 
     func createRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
@@ -183,11 +190,11 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
         updatedRecords.append(.individual(newIndividualCallStatus))
     }
 
-    func updateInteractionTypeAndRecordIfExists(individualCallInteraction: TSCall, contactThread: TSContactThread, newCallInteractionType: RPRecentCallType, tx: SignalServiceKit.DBWriteTransaction) {
+    func updateInteractionTypeAndRecordIfExists(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, newCallInteractionType: RPRecentCallType, tx: SignalServiceKit.DBWriteTransaction) {
         notImplemented()
     }
 
-    func createOrUpdateRecordForInteraction(individualCallInteraction: TSCall, contactThread: TSContactThread, callId: UInt64, tx: DBWriteTransaction) {
+    func createOrUpdateRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, tx: SignalServiceKit.DBWriteTransaction) {
         notImplemented()
     }
 }

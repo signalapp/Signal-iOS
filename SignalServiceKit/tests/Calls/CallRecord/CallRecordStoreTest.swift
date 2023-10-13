@@ -53,10 +53,14 @@ final class CallRecordStoreTest: XCTestCase {
 
     func testFetchByCallIdUsesIndex() {
         _ = inMemoryDb.read { db in
-            callRecordStore.fetch(callId: 1234, db: db)
+            callRecordStore.fetch(
+                callId: 1234,
+                threadRowId: 6789,
+                db: db
+            )
         }
 
-        assertExplanation(contains: "sqlite_autoindex_CallRecord_1")
+        assertExplanation(contains: "index_call_record_on_callId_and_threadId")
     }
 
     func testFetchByInteractionRowIdUsesIndex() {
@@ -64,7 +68,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(interactionRowId: 1234, db: db)
         }
 
-        assertExplanation(contains: "sqlite_autoindex_CallRecord_2")
+        assertExplanation(contains: "sqlite_autoindex_CallRecord_1")
     }
 
     /// Asserts that the latest fetch explanation in the call record store
@@ -91,7 +95,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         let fetchedByCallId = inMemoryDb.read { db in
-            callRecordStore.fetch(callId: callRecord.callId, db: db)!
+            callRecordStore.fetch(
+                callId: callRecord.callId,
+                threadRowId: callRecord.threadRowId,
+                db: db
+            )!
         }
 
         XCTAssertTrue(callRecord.matches(fetchedByCallId))
@@ -121,7 +129,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         let fetched = inMemoryDb.read { db in
-            callRecordStore.fetch(callId: callRecord.callId, db: db)!
+            callRecordStore.fetch(
+                callId: callRecord.callId,
+                threadRowId: callRecord.threadRowId,
+                db: db
+            )!
         }
 
         XCTAssertEqual(callRecord.callStatus, .group(.joined))
@@ -146,7 +158,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         let fetched = inMemoryDb.read { db in
-            callRecordStore.fetch(callId: callRecord.callId, db: db)!
+            callRecordStore.fetch(
+                callId: callRecord.callId,
+                threadRowId: callRecord.threadRowId,
+                db: db
+            )!
         }
 
         XCTAssertEqual(callRecord.callStatus, .group(.generic))
@@ -172,7 +188,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         let fetched = inMemoryDb.read { db in
-            callRecordStore.fetch(callId: callRecord.callId, db: db)!
+            callRecordStore.fetch(
+                callId: callRecord.callId,
+                threadRowId: newThreadRowId,
+                db: db
+            )!
         }
 
         XCTAssertTrue(fetched.matches(
@@ -198,7 +218,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         inMemoryDb.read { db in
-            XCTAssertNil(callRecordStore.fetch(callId: callRecord.callId, db: db))
+            XCTAssertNil(callRecordStore.fetch(
+                callId: callRecord.callId,
+                threadRowId: callRecord.threadRowId,
+                db: db
+            ))
         }
     }
 

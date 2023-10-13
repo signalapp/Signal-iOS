@@ -47,13 +47,23 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        let existingCallRecord: CallRecord? = callRecordStore.fetch(
-            callId: incomingSyncMessage.callId, tx: tx
-        )
-
         switch incomingSyncMessage.conversationParams {
         case let .oneToOne(contactServiceId, individualCallStatus, individualCallInteractionType):
-            if let existingCallRecord {
+            guard
+                let contactThread = fetchThread(
+                    contactServiceId: contactServiceId, tx: tx
+                ),
+                let contactThreadRowId = contactThread.grdbId?.int64Value
+            else {
+                logger.error("Missing contact thread for incoming call event sync message!")
+                return
+            }
+
+            if let existingCallRecord = callRecordStore.fetch(
+                callId: incomingSyncMessage.callId,
+                threadRowId: contactThreadRowId,
+                tx: tx
+            ) {
                 guard
                     let existingCallInteraction: TSCall = interactionStore.fetchAssociatedInteraction(
                         callRecord: existingCallRecord, tx: tx
@@ -74,7 +84,8 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 )
             } else {
                 createIndividualCallRecordForIncomingSyncMessage(
-                    contactServiceId: contactServiceId,
+                    contactThread: contactThread,
+                    contactThreadRowId: contactThreadRowId,
                     callId: incomingSyncMessage.callId,
                     callType: incomingSyncMessage.callType,
                     callDirection: incomingSyncMessage.callDirection,
@@ -123,7 +134,8 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
     }
 
     private func createIndividualCallRecordForIncomingSyncMessage(
-        contactServiceId: ServiceId,
+        contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
@@ -133,20 +145,6 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        guard let contactRecipient = recipientStore.fetchRecipient(
-            serviceId: contactServiceId, transaction: tx
-        ) else {
-            logger.error("Incoming call event sync message for contact with unrecognized service ID!")
-            return
-        }
-
-        guard let contactThread = threadStore.fetchContactThread(
-            recipient: contactRecipient, tx: tx
-        ) else {
-            logger.error("Incoming call event sync message for contact missing contact thread!")
-            return
-        }
-
         logger.info("Creating 1:1 call record and interaction from incoming sync message.")
 
         let newIndividualCallInteraction = TSCall(
@@ -157,9 +155,15 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         )
         interactionStore.insertInteraction(newIndividualCallInteraction, tx: tx)
 
+        guard let interactionRowId = newIndividualCallInteraction.grdbId?.int64Value else {
+            owsFail("Missing SQLite row ID for just-inserted interaction!")
+        }
+
         individualCallRecordManager.createRecordForInteraction(
             individualCallInteraction: newIndividualCallInteraction,
+            individualCallInteractionRowId: interactionRowId,
             contactThread: contactThread,
+            contactThreadRowId: contactThreadRowId,
             callId: callId,
             callType: callType,
             callDirection: callDirection,
@@ -190,6 +194,24 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
             syncMessageTimestamp: syncMessageTimestamp,
             tx: tx
         )
+    }
+}
+
+private extension CallRecordIncomingSyncMessageManagerImpl {
+    func fetchThread(
+        contactServiceId: ServiceId,
+        tx: DBReadTransaction
+    ) -> TSContactThread? {
+        guard
+            let contactRecipient = recipientStore.fetchRecipient(
+                serviceId: contactServiceId, transaction: tx
+            ),
+            let contactThread = threadStore.fetchContactThread(
+                recipient: contactRecipient, tx: tx
+            )
+        else { return nil }
+
+        return contactThread
     }
 }
 

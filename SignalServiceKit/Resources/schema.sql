@@ -1470,7 +1470,7 @@ CREATE
     TABLE
         IF NOT EXISTS "CallRecord" (
             "id" INTEGER PRIMARY KEY NOT NULL
-            ,"callId" TEXT NOT NULL UNIQUE
+            ,"callId" TEXT NOT NULL
             ,"interactionRowId" INTEGER NOT NULL UNIQUE REFERENCES "model_TSInteraction"("id"
         )
             ON DELETE
@@ -1482,5 +1482,12 @@ CREATE
         ,"type" INTEGER NOT NULL
         ,"direction" INTEGER NOT NULL
         ,"status" INTEGER NOT NULL
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_call_record_on_callId_and_threadId"
+        ON "CallRecord"("callId"
+    ,"threadRowId"
 )
 ;

@@ -9,6 +9,7 @@ public protocol IndividualCallRecordManager {
     /// exists.
     func updateInteractionTypeAndRecordIfExists(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
         newCallInteractionType: RPRecentCallType,
         tx: DBWriteTransaction
@@ -18,7 +19,9 @@ public protocol IndividualCallRecordManager {
     /// or create one if none exists.
     func createOrUpdateRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         tx: DBWriteTransaction
     )
@@ -26,7 +29,9 @@ public protocol IndividualCallRecordManager {
     /// Create a call record for the given interaction's current state.
     func createRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
@@ -66,12 +71,12 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
 
     public func updateInteractionTypeAndRecordIfExists(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
         newCallInteractionType: RPRecentCallType,
         tx: DBWriteTransaction
     ) {
         guard
-            let individualCallRowId = individualCallInteraction.grdbId?.int64Value,
             let newIndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus(
                 individualCallInteractionType: newCallInteractionType
             )
@@ -87,7 +92,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         )
 
         guard let existingCallRecord = callRecordStore.fetch(
-            interactionRowId: individualCallRowId, tx: tx
+            interactionRowId: individualCallInteractionRowId, tx: tx
         ) else {
             logger.info("No existing call record found!")
             return
@@ -109,7 +114,9 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     /// Sends a sync message with the latest call record.
     public func createOrUpdateRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         tx: DBWriteTransaction
     ) {
@@ -122,7 +129,11 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             )
         else { return }
 
-        if let existingCallRecord = callRecordStore.fetch(callId: callId, tx: tx) {
+        if let existingCallRecord = callRecordStore.fetch(
+            callId: callId,
+            threadRowId: contactThreadRowId,
+            tx: tx
+        ) {
             updateRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 contactThread: contactThread,
@@ -134,7 +145,9 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         } else {
             createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
+                individualCallInteractionRowId: individualCallInteractionRowId,
                 contactThread: contactThread,
+                contactThreadRowId: contactThreadRowId,
                 callId: callId,
                 callType: CallRecord.CallType(individualCallOfferTypeType: individualCallInteraction.offerType),
                 callDirection: callDirection,
@@ -147,7 +160,9 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
 
     public func createRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
@@ -155,20 +170,12 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
-        guard
-            let individualCallRowId = individualCallInteraction.grdbId?.int64Value,
-            let threadRowId = contactThread.grdbId?.int64Value
-        else {
-            logger.error("Cannot create/update call record, missing parent model row IDs!")
-            return
-        }
-
         logger.info("Creating new 1:1 call record from interaction.")
 
         let callRecord = CallRecord(
             callId: callId,
-            interactionRowId: individualCallRowId,
-            threadRowId: threadRowId,
+            interactionRowId: individualCallInteractionRowId,
+            threadRowId: contactThreadRowId,
             callType: callType,
             callDirection: callDirection,
             callStatus: .individual(individualCallStatus)

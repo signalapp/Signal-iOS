@@ -48,6 +48,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.updateInteractionTypeAndRecordIfExists(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
                 tx: tx
@@ -76,6 +77,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.updateInteractionTypeAndRecordIfExists(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
                 tx: tx
@@ -95,7 +97,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
+                contactThreadRowId: thread.grdbId!.int64Value,
                 callId: .maxRandom,
                 tx: tx
             )
@@ -122,7 +126,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
+                contactThreadRowId: thread.grdbId!.int64Value,
                 callId: callId,
                 tx: tx
             )
@@ -140,7 +146,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
+                contactThreadRowId: thread.grdbId!.int64Value,
                 callId: .maxRandom,
                 callType: .audioCall,
                 callDirection: .incoming,
@@ -160,7 +168,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.grdbId!.int64Value,
                 contactThread: thread,
+                contactThreadRowId: thread.grdbId!.int64Value,
                 callId: .maxRandom,
                 callType: .audioCall,
                 callDirection: .incoming,
@@ -272,7 +282,9 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
 
     override func createRecordForInteraction(
         individualCallInteraction: TSCall,
+        individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
+        contactThreadRowId: Int64,
         callId: UInt64,
         callType: CallRecord.CallType,
         callDirection: CallRecord.CallDirection,
@@ -283,7 +295,9 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
         didAskToCreateRecord = individualCallStatus
         super.createRecordForInteraction(
             individualCallInteraction: individualCallInteraction,
+            individualCallInteractionRowId: individualCallInteractionRowId,
             contactThread: contactThread,
+            contactThreadRowId: contactThreadRowId,
             callId: callId,
             callType: callType,
             callDirection: callDirection,

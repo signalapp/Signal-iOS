@@ -130,6 +130,11 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     return interactionForCurrentCall
                 }
 
+                guard let groupThreadRowId = groupThread.grdbId?.int64Value else {
+                    owsFailDebug("Missing SQLite row ID for group thread!")
+                    return nil
+                }
+
                 // Call IDs are server-defined, and don't reset immediately
                 // after a call finishes. That means that if a call has recently
                 // concluded – i.e., there is no "current call" interaction – we
@@ -137,7 +142,9 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 // "current" call ID. If so, we should reuse/update it and its
                 // interaction.
                 if let existingCallRecordForCallId = self.callRecordStore.fetch(
-                    callId: currentCallId, tx: tx.asV2Write
+                    callId: currentCallId,
+                    threadRowId: groupThreadRowId,
+                    tx: tx.asV2Write
                 ) {
                     return self.interactionStore.fetchAssociatedInteraction(
                         callRecord: existingCallRecordForCallId, tx: tx.asV2Read
@@ -309,8 +316,15 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
             let callId = callIdFromEra(eraId)
 
+            guard let groupThreadRowId = groupThread.grdbId?.int64Value else {
+                owsFailDebug("Missing SQLite row ID for group thread!")
+                return
+            }
+
             guard callRecordStore.fetch(
-                callId: callId, tx: tx.asV2Write
+                callId: callId,
+                threadRowId: groupThreadRowId,
+                tx: tx.asV2Write
             ) == nil else {
                 // If we already have a call record for this call ID, bail.
                 return
