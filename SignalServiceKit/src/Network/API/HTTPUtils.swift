@@ -12,18 +12,20 @@ extension HTTPUtils {
     // This DRYs up handling of main service errors
     // so that REST and websocket errors are handled
     // in the same way.
-    public static func preprocessMainServiceHTTPError(request: TSRequest,
-                                                      requestUrl: URL,
-                                                      responseStatus: Int,
-                                                      responseHeaders: OWSHttpHeaders,
-                                                      responseError: Error?,
-                                                      responseData: Data?) -> OWSHTTPError {
-        let httpError = HTTPUtils.buildServiceError(request: request,
-                                                    requestUrl: requestUrl,
-                                                    responseStatus: responseStatus,
-                                                    responseHeaders: responseHeaders,
-                                                    responseError: responseError,
-                                                    responseData: responseData)
+    public static func preprocessMainServiceHTTPError(
+        request: TSRequest,
+        requestUrl: URL,
+        responseStatus: Int,
+        responseHeaders: OWSHttpHeaders,
+        responseData: Data?
+    ) -> OWSHTTPError {
+        let httpError = HTTPUtils.buildServiceError(
+            request: request,
+            requestUrl: requestUrl,
+            responseStatus: responseStatus,
+            responseHeaders: responseHeaders,
+            responseData: responseData
+        )
 
         applyHTTPError(httpError)
 
@@ -49,72 +51,50 @@ extension HTTPUtils {
         }
     }
 
-    private static func buildServiceError(request: TSRequest,
-                                          requestUrl: URL,
-                                          responseStatus: Int,
-                                          responseHeaders: OWSHttpHeaders,
-                                          responseError: Error?,
-                                          responseData: Data?) -> OWSHTTPError {
+    private static func buildServiceError(
+        request: TSRequest,
+        requestUrl: URL,
+        responseStatus: Int,
+        responseHeaders: OWSHttpHeaders,
+        responseData: Data?
+    ) -> OWSHTTPError {
 
-        var errorDescription = "URL: \(request.httpMethod) \(requestUrl.absoluteString), status: \(responseStatus)"
-        if let responseError = responseError {
-            errorDescription += ", error: \(responseError)"
-        }
         let retryAfterDate: Date? = responseHeaders.retryAfterDate
-        func buildServiceResponseError(description: String? = nil,
-                                       recoverySuggestion: String? = nil) -> OWSHTTPError {
-            .forServiceResponse(requestUrl: requestUrl,
-                                responseStatus: responseStatus,
-                                responseHeaders: responseHeaders,
-                                responseError: responseError,
-                                responseData: responseData,
-                                customRetryAfterDate: retryAfterDate,
-                                customLocalizedDescription: description,
-                                customLocalizedRecoverySuggestion: recoverySuggestion)
+        func buildServiceResponseError(
+            localizedDescription: String? = nil,
+            localizedRecoverySuggestion: String? = nil
+        ) -> OWSHTTPError {
+            .forServiceResponse(
+                requestUrl: requestUrl,
+                responseStatus: responseStatus,
+                responseHeaders: responseHeaders,
+                responseError: nil,
+                responseData: responseData,
+                customRetryAfterDate: retryAfterDate,
+                customLocalizedDescription: localizedDescription,
+                customLocalizedRecoverySuggestion: localizedRecoverySuggestion
+            )
         }
 
         switch responseStatus {
         case 0:
-            Logger.warn("The network request failed because of a connectivity error: \(request.httpMethod) \(requestUrl.absoluteString)")
-            let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
-            return error
-        case 400:
-            Logger.warn("The request contains an invalid parameter: \(errorDescription)")
-            return buildServiceResponseError()
-        case 401:
-            Logger.warn("The server returned an error about the authorization header: \(errorDescription)")
-            return buildServiceResponseError()
-        case 402:
-            return buildServiceResponseError()
-        case 403:
-            Logger.warn("The server returned an authentication failure: \(errorDescription)")
-            return buildServiceResponseError()
-        case 404:
-            Logger.warn("The requested resource could not be found: \(errorDescription)")
-            return buildServiceResponseError()
-        case 411:
-            Logger.info("Device limit exceeded: \(errorDescription)")
-            return buildServiceResponseError()
+            return .networkFailure(requestUrl: requestUrl)
         case 413, 429:
-            Logger.warn("Rate limit exceeded: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
             let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
-            let error = buildServiceResponseError(description: description,
-                                                  recoverySuggestion: recoverySuggestion)
-            return error
+            return buildServiceResponseError(
+                localizedDescription: description,
+                localizedRecoverySuggestion: recoverySuggestion
+            )
         case 417:
             // TODO: Is this response code obsolete?
-            Logger.warn("The number is already registered on a relay. Please unregister there first: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = OWSLocalizedString("REGISTRATION_ERROR", comment: "")
             let recoverySuggestion = OWSLocalizedString("RELAY_REGISTERED_ERROR_RECOVERY", comment: "")
-            let error = buildServiceResponseError(description: description,
-                                                  recoverySuggestion: recoverySuggestion)
-            return error
-        case 422:
-            Logger.error("The registration was requested over an unknown transport: \(errorDescription)")
-            return buildServiceResponseError()
+            return buildServiceResponseError(
+                localizedDescription: description,
+                localizedRecoverySuggestion: recoverySuggestion
+            )
         default:
-            Logger.warn("Unknown error: \(responseStatus), \(errorDescription)")
             return buildServiceResponseError()
         }
     }

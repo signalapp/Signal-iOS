@@ -461,14 +461,17 @@ public class OWSWebSocket: NSObject {
         }
         let hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299
         if hasSuccessStatus {
-            requestInfo.didSucceed(status: Int(responseStatus),
-                                   headers: headers,
-                                   bodyData: responseData)
+            requestInfo.didSucceed(
+                status: Int(responseStatus),
+                headers: headers,
+                bodyData: responseData
+            )
         } else {
-            requestInfo.didFail(responseStatus: Int(responseStatus),
-                                responseHeaders: headers,
-                                responseError: nil,
-                                responseData: responseData)
+            requestInfo.didFail(
+                responseStatus: Int(responseStatus),
+                responseHeaders: headers,
+                responseData: responseData
+            )
         }
 
         // We may have been holding the websocket open, waiting for this response.
@@ -1108,16 +1111,18 @@ private class SocketRequestInfo {
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
-    public func didFail(responseStatus: Int,
-                        responseHeaders: OWSHttpHeaders,
-                        responseError: Error?,
-                        responseData: Data?) {
-        let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
-                                                             requestUrl: requestUrl,
-                                                             responseStatus: responseStatus,
-                                                             responseHeaders: responseHeaders,
-                                                             responseError: responseError,
-                                                             responseData: responseData)
+    public func didFail(
+        responseStatus: Int,
+        responseHeaders: OWSHttpHeaders,
+        responseData: Data?
+    ) {
+        let error = HTTPUtils.preprocessMainServiceHTTPError(
+            request: request,
+            requestUrl: requestUrl,
+            responseStatus: responseStatus,
+            responseHeaders: responseHeaders,
+            responseData: responseData
+        )
         didFail(error: error)
     }
 
@@ -1129,8 +1134,7 @@ private class SocketRequestInfo {
             return false
         case .incomplete(_, let failure):
             DispatchQueue.global().async {
-                let statusCode = error.httpStatusCode ?? 0
-                Logger.warn("didFail, status: \(statusCode), error: \(error)")
+                Logger.warn("\(error)")
 
                 let error = error as! OWSHTTPError
                 let socketFailure = OWSHTTPErrorWrapper(error: error)

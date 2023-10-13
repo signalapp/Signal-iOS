@@ -55,7 +55,7 @@ public struct HTTPErrorServiceResponse {
 
 // MARK: -
 
-public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
+public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvider, UserErrorDescriptionProvider {
     case missingRequest
     case invalidAppState(requestUrl: URL)
     case invalidRequest(requestUrl: URL)
@@ -111,6 +111,23 @@ public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvid
         case .invalidResponse, .serviceResponse:
             return OWSLocalizedString("ERROR_DESCRIPTION_RESPONSE_FAILED",
                                      comment: "Error indicating that a socket response failed.")
+        }
+    }
+
+    public var debugDescription: String {
+        switch self {
+        case .missingRequest:
+            return "missingRequest"
+        case .invalidAppState(let requestUrl):
+            return "invalidAppState: \(requestUrl.absoluteString)"
+        case .invalidRequest(let requestUrl):
+            return "invalidRequest: \(requestUrl.absoluteString)"
+        case .invalidResponse(let requestUrl):
+            return "invalidResponse: \(requestUrl.absoluteString)"
+        case .networkFailure(let requestUrl):
+            return "networkFailure: \(requestUrl.absoluteString)"
+        case .serviceResponse(let serviceResponse):
+            return "HTTP \(serviceResponse.responseStatus); \(serviceResponse.responseHeaders); \(serviceResponse.requestUrl.absoluteString); \(serviceResponse.responseError)"
         }
     }
 
