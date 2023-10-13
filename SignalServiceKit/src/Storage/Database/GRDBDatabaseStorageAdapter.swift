@@ -767,7 +767,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                     try database.checkpoint(.truncate)
 
                     // If the checkpoint succeeded, wait N writes before performing another checkpoint.
-                    Logger.verbose("Checkpoint succeeded")
                     let currentTimestamp = CheckpointState.currentTimestamp()
                     checkpointState.update { mutableState in
                         mutableState.budget = 32
@@ -908,7 +907,6 @@ private struct GRDBStorage {
             // sleep N milliseconds
             let millis = 25
             usleep(useconds_t(millis * 1000))
-            Logger.verbose("retryCount: \(retryCount)")
             let accumulatedWaitMs = millis * (retryCount + 1)
             if accumulatedWaitMs > 0, (accumulatedWaitMs % 250) == 0 {
                 Logger.warn("Database busy for \(accumulatedWaitMs)ms")
@@ -917,7 +915,6 @@ private struct GRDBStorage {
             // Only time out during checkpoints, not writes.
             if let checkpointTimeout = self.checkpointTimeout {
                 if accumulatedWaitMs > checkpointTimeout {
-                    Logger.warn("Aborting busy retry.")
                     return false
                 }
                 return true

@@ -133,12 +133,11 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
 
     public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) {
-        Logger.warn("Updating isDeregisteredOrDelinked \(isDeregisteredOrDelinked)")
         let didChange = tsAccountManager.setIsDeregisteredOrDelinked(isDeregisteredOrDelinked, tx: tx)
         guard didChange else {
-            Logger.info("No change; exiting early.")
             return
         }
+        Logger.warn("Updating isDeregisteredOrDelinked \(isDeregisteredOrDelinked)")
 
         if isDeregisteredOrDelinked {
             notificationPresenter.notifyUserOfDeregistration(tx: tx)

@@ -1097,16 +1097,8 @@ private extension ServiceRemoteConfigManager {
     func checkClientExpiration(valueFlags: [String: AnyObject]) {
         var minimumVersions: [MinimumVersion]?
         defer {
-            if let minimumVersions = minimumVersions {
-                Logger.info("Minimum client versions: \(minimumVersions)")
-
-                if let remoteExpirationDate = remoteExpirationDate(minimumVersions: minimumVersions) {
-                    Logger.info("Setting client expiration date: \(remoteExpirationDate)")
-                    appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate, db: db)
-                } else {
-                    Logger.info("Clearing client expiration date")
-                    appExpiry.setExpirationDateForCurrentVersion(nil, db: db)
-                }
+            if let minimumVersions {
+                appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate(minimumVersions: minimumVersions), db: db)
             }
         }
 

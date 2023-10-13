@@ -15,7 +15,7 @@ extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Swift.Error) {
-        Logger.error("Failed to start browsing for peers \(error)")
+        Logger.warn("Failed to start browsing for peers \(error)")
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {}
@@ -33,7 +33,7 @@ extension DeviceTransferService: MCNearbyServiceAdvertiserDelegate {
     }
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {
-        Logger.error("Failed to start advertising for peers \(error)")
+        Logger.warn("Failed to start advertising for peers \(error)")
     }
 }
 

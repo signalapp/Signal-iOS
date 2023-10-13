@@ -76,8 +76,6 @@ extension AppDelegate {
     private func handleActivation() {
         AssertIsOnMainThread()
 
-        Logger.warn("handleActivation.")
-
         let tsRegistrationState: TSRegistrationState = DependenciesBridge.shared.db.read { tx in
             // Always check prekeys after app launches, and sometimes check on app activation.
             let registrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
@@ -96,15 +94,11 @@ extension AppDelegate {
                 // At this point, potentially lengthy DB locking migrations could be running.
                 // Avoid blocking app launch by putting all further possible DB access in async block
                 DispatchQueue.global(qos: .default).async {
-                    Logger.info("running post launch block for registered user.")
-
                     // Clean up any messages that expired since last launch immediately
                     // and continue cleaning in the background.
                     self.disappearingMessagesJob.startIfNecessary()
                 }
             } else {
-                Logger.info("running post launch block for unregistered user.")
-
                 // Unregistered user should have no unread messages. e.g. if you delete your account.
                 AppEnvironment.shared.notificationPresenter.clearAllNotifications()
             }

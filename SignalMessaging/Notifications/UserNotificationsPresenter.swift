@@ -419,7 +419,7 @@ class UserNotificationPresenter: Dependencies {
     }
 
     func clearAllNotifications() {
-        Logger.warn("Clearing all notifications")
+        Logger.info("Clearing all notifications")
 
         Self.notificationCenter.removeAllPendingNotificationRequests()
         Self.notificationCenter.removeAllDeliveredNotifications()

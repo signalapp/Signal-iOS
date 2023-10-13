@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // MARK: - AppExpiry protocol
 
@@ -151,10 +152,8 @@ public class AppExpiryImpl: AppExpiry {
             return owsFailDebug("Ignoring expiration date change for expired build.")
         }
 
-        Logger.warn("\(String(describing: newExpirationDate))")
-
         let newState: ExpirationState
-        if let newExpirationDate = newExpirationDate {
+        if let newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
             guard newExpirationDate < AppVersionImpl.shared.defaultExpirationDate else { return }
             newState = .init(

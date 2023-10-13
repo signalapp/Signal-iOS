@@ -132,7 +132,6 @@ public final class APNSRotationStore: NSObject {
     }
 
     public static func canRotateAPNSToken(transaction: SDSAnyReadTransaction) -> Bool {
-        Logger.info("Checking if push token should be rotated...")
         guard let currentToken = preferences.getPushToken(tx: transaction) else {
             // No need to rotate if we don't even have a token yet.
             Logger.info("No push token available, not rotating.")
@@ -171,11 +170,11 @@ public final class APNSRotationStore: NSObject {
                 now - knownGoodTokenTimestamp > Constants.lastKnownWorkingAPNSTokenExpirationTimeMs
             {
                 // Too long ago, eligible to rotate.
-                Logger.info("APNS token was known-good long ago, rotating.")
+                Logger.warn("APNS token was known-good long ago, rotating.")
                 return true
             } else {
                 // Our current token is a known working one, don't rotate.
-                Logger.warn("Has known-good APNS token, skipping rotation.")
+                Logger.info("Has known-good APNS token, skipping rotation.")
                 return false
             }
         }
