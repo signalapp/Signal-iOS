@@ -208,7 +208,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isUrgent
 {
-    return self.offerMessage ? YES : NO;
+    if (self.offerMessage != nil) {
+        return YES;
+    } else if (self.opaqueMessage != nil && self.opaqueMessage.hasUrgency) {
+        switch (self.opaqueMessage.unwrappedUrgency) {
+            case SSKProtoCallMessageOpaqueUrgencyHandleImmediately:
+                return YES;
+            case SSKProtoCallMessageOpaqueUrgencyDroppable:
+                break;
+        }
+    }
+
+    return NO;
 }
 
 - (NSString *)debugDescription
