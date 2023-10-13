@@ -101,8 +101,8 @@ final class ThreadMergerTest: XCTestCase {
     func testCallRecordsThreadRowIds() {
         threadStore.threads = [serviceIdThread, phoneNumberThread]
         performDefaultMerge()
-        XCTAssertEqual(callRecordStore.merged!.from, phoneNumberThread.grdbId!.int64Value)
-        XCTAssertEqual(callRecordStore.merged!.into, serviceIdThread.grdbId!.int64Value)
+        XCTAssertEqual(callRecordStore.merged!.from, phoneNumberThread.sqliteRowId!)
+        XCTAssertEqual(callRecordStore.merged!.into, serviceIdThread.sqliteRowId!)
     }
 
     // MARK: - Pinned Threads

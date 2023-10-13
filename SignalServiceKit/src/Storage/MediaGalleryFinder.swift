@@ -240,7 +240,7 @@ public final class MediaGalleryManager: NSObject {
 
     @objc
     public class func recordTimestamp(forRemovedMessage message: TSMessage, transaction: SDSAnyWriteTransaction) {
-        guard let messageRowId = message.grdbId?.int64Value else {
+        guard let messageRowId = message.sqliteRowId else {
             return
         }
         Self.recentlyChangedMessageTimestampsByRowId[messageRowId] = message.receivedAtTimestamp

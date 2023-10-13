@@ -68,13 +68,12 @@ public final class GroupCallRecordManagerImpl: GroupCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) -> CallRecord? {
-        guard let threadRowId = groupThread.grdbId?.int64Value else {
-            logger.error("Cannot create group call record: missing SQLite row ID for thread!")
+        guard
+            let threadRowId = groupThread.sqliteRowId,
+            let callInteractionRowId = groupCallInteraction.sqliteRowId
+        else {
+            logger.error("Cannot create group call record: missing SQLite row ID for models!")
             return nil
-        }
-
-        guard let callInteractionRowId = groupCallInteraction.grdbId?.int64Value else {
-            owsFail("Missing SQLite row ID for just-inserted interaction!")
         }
 
         let newCallRecord = CallRecord(

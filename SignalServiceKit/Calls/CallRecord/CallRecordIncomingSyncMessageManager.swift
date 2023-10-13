@@ -53,7 +53,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 let contactThread = fetchThread(
                     contactServiceId: contactServiceId, tx: tx
                 ),
-                let contactThreadRowId = contactThread.grdbId?.int64Value
+                let contactThreadRowId = contactThread.sqliteRowId
             else {
                 logger.error("Missing contact thread for incoming call event sync message!")
                 return
@@ -155,7 +155,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         )
         interactionStore.insertInteraction(newIndividualCallInteraction, tx: tx)
 
-        guard let interactionRowId = newIndividualCallInteraction.grdbId?.int64Value else {
+        guard let interactionRowId = newIndividualCallInteraction.sqliteRowId else {
             owsFail("Missing SQLite row ID for just-inserted interaction!")
         }
 

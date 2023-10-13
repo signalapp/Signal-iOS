@@ -63,7 +63,7 @@ class MockInteractionStore: InteractionStore {
         rowId interactionRowId: Int64,
         tx: DBReadTransaction
     ) -> TSInteraction? {
-        return insertedInteractions.first(where: { $0.grdbId?.int64Value == interactionRowId })
+        return insertedInteractions.first(where: { $0.sqliteRowId == interactionRowId })
     }
 
     func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {

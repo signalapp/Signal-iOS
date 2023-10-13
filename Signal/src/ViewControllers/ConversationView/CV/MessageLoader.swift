@@ -263,7 +263,7 @@ class MessageLoader {
 
         /// Fetches a batch surrounding `uniqueId`.
         func loadAround(uniqueId: String) throws -> MessageLoaderBatch {
-            guard let rowId = fetchInteractions(uniqueIds: [uniqueId], tx: tx).first?.grdbId?.int64Value else {
+            guard let rowId = fetchInteractions(uniqueIds: [uniqueId], tx: tx).first?.sqliteRowId else {
                 // We can't find the message, so just return the newest messages.
                 return try loadNewest()
             }
@@ -275,8 +275,8 @@ class MessageLoader {
 
         let priorLoad: (range: ClosedRange<Int64>, batch: MessageLoaderBatch)? = try {
             guard
-                let lowerBound = loadedInteractions.first?.grdbId?.int64Value,
-                let upperBound = loadedInteractions.last?.grdbId?.int64Value
+                let lowerBound = loadedInteractions.first?.sqliteRowId,
+                let upperBound = loadedInteractions.last?.sqliteRowId
             else {
                 return nil
             }

@@ -130,7 +130,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     return interactionForCurrentCall
                 }
 
-                guard let groupThreadRowId = groupThread.grdbId?.int64Value else {
+                guard let groupThreadRowId = groupThread.sqliteRowId else {
                     owsFailDebug("Missing SQLite row ID for group thread!")
                     return nil
                 }
@@ -255,7 +255,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                         .legacyEraId(callId: callIdFromEra(legacyCallInteractionEraId))
                     )
                 } else if
-                    let callRowId = groupCallInteraction.grdbId?.int64Value,
+                    let callRowId = groupCallInteraction.sqliteRowId,
                     let recordForCall = callRecordStore.fetch(
                         interactionRowId: callRowId,
                         tx: tx.asV2Write
@@ -316,7 +316,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
             let callId = callIdFromEra(eraId)
 
-            guard let groupThreadRowId = groupThread.grdbId?.int64Value else {
+            guard let groupThreadRowId = groupThread.sqliteRowId else {
                 owsFailDebug("Missing SQLite row ID for group thread!")
                 return
             }

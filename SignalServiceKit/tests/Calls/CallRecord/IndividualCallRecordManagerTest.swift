@@ -48,7 +48,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.updateInteractionTypeAndRecordIfExists(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
                 tx: tx
@@ -66,8 +66,8 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 
         let callRecord = CallRecord(
             callId: .maxRandom,
-            interactionRowId: interaction.grdbId!.int64Value,
-            threadRowId: thread.grdbId!.int64Value,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending)
@@ -77,7 +77,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.updateInteractionTypeAndRecordIfExists(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
                 tx: tx
@@ -97,9 +97,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
-                contactThreadRowId: thread.grdbId!.int64Value,
+                contactThreadRowId: thread.sqliteRowId!,
                 callId: .maxRandom,
                 tx: tx
             )
@@ -115,8 +115,8 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 
         let callRecord = CallRecord(
             callId: callId,
-            interactionRowId: interaction.grdbId!.int64Value,
-            threadRowId: thread.grdbId!.int64Value,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending)
@@ -126,9 +126,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
-                contactThreadRowId: thread.grdbId!.int64Value,
+                contactThreadRowId: thread.sqliteRowId!,
                 callId: callId,
                 tx: tx
             )
@@ -146,9 +146,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
-                contactThreadRowId: thread.grdbId!.int64Value,
+                contactThreadRowId: thread.sqliteRowId!,
                 callId: .maxRandom,
                 callType: .audioCall,
                 callDirection: .incoming,
@@ -168,9 +168,9 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         mockDB.write { tx in
             individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
-                individualCallInteractionRowId: interaction.grdbId!.int64Value,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
-                contactThreadRowId: thread.grdbId!.int64Value,
+                contactThreadRowId: thread.sqliteRowId!,
                 callId: .maxRandom,
                 callType: .audioCall,
                 callDirection: .incoming,

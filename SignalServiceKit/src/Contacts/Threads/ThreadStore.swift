@@ -87,7 +87,7 @@ class MockThreadStore: ThreadStore {
     var threads = [TSThread]()
 
     func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
-        threads.first(where: { $0.grdbId?.int64Value == threadRowId })
+        threads.first(where: { $0.sqliteRowId == threadRowId })
     }
 
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {

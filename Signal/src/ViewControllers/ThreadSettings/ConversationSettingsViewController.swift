@@ -1001,7 +1001,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         AssertIsOnMainThread()
 
         let attachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
-        guard attachments.contains(where: { $0.threadGrdbId == thread.grdbId?.int64Value }) else {
+        guard attachments.contains(where: { $0.threadGrdbId == thread.sqliteRowId }) else {
             return
         }
 

@@ -30,7 +30,7 @@ public class IncompleteCallsJob {
         // Preconditions: Must be a valid call that started before the app launched.
         guard
             let call = TSCall.anyFetchCall(uniqueId: uniqueId, transaction: writeTx),
-            let callRowId = call.grdbId?.int64Value,
+            let callRowId = call.sqliteRowId,
             let contactThread = call.thread(tx: writeTx) as? TSContactThread
         else {
             owsFailDebug("Missing call or thread!")

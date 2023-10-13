@@ -136,7 +136,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 contactAddress: SignalServiceAddress(contactAci),
                 transaction: transaction
             )
-            guard let contactThreadId = contactThread.grdbId?.int64Value else {
+            guard let contactThreadId = contactThread.sqliteRowId else {
                 XCTFail("Thread was not inserted properly")
                 return
             }

@@ -187,7 +187,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
 public class PendingReceiptFinder {
     public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
-        guard let threadId = thread.grdbId?.int64Value else {
+        guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
 
@@ -203,7 +203,7 @@ public class PendingReceiptFinder {
     }
 
     public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
-        guard let threadId = thread.grdbId?.int64Value else {
+        guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
 
@@ -219,7 +219,7 @@ public class PendingReceiptFinder {
     }
 
     public func pendingReadReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingReadReceiptRecord] {
-        guard let threadId = thread.grdbId?.int64Value else {
+        guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
 
@@ -231,7 +231,7 @@ public class PendingReceiptFinder {
     }
 
     public func pendingViewedReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingViewedReceiptRecord] {
-        guard let threadId = thread.grdbId?.int64Value else {
+        guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
 

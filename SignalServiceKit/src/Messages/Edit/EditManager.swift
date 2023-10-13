@@ -346,8 +346,8 @@ public class EditManager {
         )
 
         if
-            let originalId = editedMessage.grdbId?.int64Value,
-            let editId = newMessage.grdbId?.int64Value
+            let originalId = editedMessage.sqliteRowId,
+            let editId = newMessage.sqliteRowId
         {
             let editRecord = EditRecord(
                 latestRevisionId: originalId,

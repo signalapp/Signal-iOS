@@ -21,11 +21,11 @@ class MessageLoaderTest: XCTestCase {
             case .newest:
                 return Array(interactions.lazy.suffix(limit).map { $0.uniqueId })
             case .after(let rowId):
-                return Array(interactions.lazy.filter { $0.grdbId!.int64Value > rowId }.prefix(limit).map { $0.uniqueId })
+                return Array(interactions.lazy.filter { $0.sqliteRowId! > rowId }.prefix(limit).map { $0.uniqueId })
             case .before(let rowId):
-                return Array(interactions.lazy.filter { $0.grdbId!.int64Value < rowId }.suffix(limit).map { $0.uniqueId })
+                return Array(interactions.lazy.filter { $0.sqliteRowId! < rowId }.suffix(limit).map { $0.uniqueId })
             case .range(let rowIds):
-                return Array(interactions.lazy.filter { rowIds.contains($0.grdbId!.int64Value) }.map { $0.uniqueId })
+                return Array(interactions.lazy.filter { rowIds.contains($0.sqliteRowId!) }.map { $0.uniqueId })
             }
         }
     }

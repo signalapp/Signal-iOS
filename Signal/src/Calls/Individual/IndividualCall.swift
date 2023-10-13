@@ -313,7 +313,7 @@ public class IndividualCall: NSObject {
                 transaction: transaction
             ) else { return }
 
-            guard let existingCallRowId = existingCall.grdbId?.int64Value else {
+            guard let existingCallRowId = existingCall.sqliteRowId else {
                 owsFailDebug("Missing SQLite row ID for call!")
                 return
             }
@@ -393,7 +393,7 @@ public class IndividualCall: NSObject {
             return nil
         }
 
-        guard let threadRowId = thread.grdbId?.int64Value else {
+        guard let threadRowId = thread.sqliteRowId else {
             owsFailDebug("Missing SQLite row ID for thread!")
             return nil
         }
@@ -473,8 +473,8 @@ public class IndividualCall: NSObject {
         Logger.info("Creating or updating call record.")
 
         guard
-            let callInteractionRowId = callInteraction.grdbId?.int64Value,
-            let threadRowId = thread.grdbId?.int64Value
+            let callInteractionRowId = callInteraction.sqliteRowId,
+            let threadRowId = thread.sqliteRowId
         else {
             owsFailDebug("Missing SQLite row IDs for models!")
             return

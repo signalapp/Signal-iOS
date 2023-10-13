@@ -46,7 +46,7 @@ final class CallRecordStoreTest: XCTestCase {
             try! interaction.asRecord().insert(db)
         }
 
-        return (thread.grdbId!.int64Value, interaction.grdbId!.int64Value)
+        return (thread.sqliteRowId!, interaction.sqliteRowId!)
     }
 
     // MARK: - Fetches use indices

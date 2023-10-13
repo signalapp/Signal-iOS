@@ -197,8 +197,8 @@ final class ThreadMerger: RecipientMergeObserver {
 
     private func mergeCallRecords(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         guard
-            let fromThreadRowId = threadPair.fromValue.grdbId?.int64Value,
-            let intoThreadRowId = threadPair.intoValue.grdbId?.int64Value
+            let fromThreadRowId = threadPair.fromValue.sqliteRowId,
+            let intoThreadRowId = threadPair.intoValue.sqliteRowId
         else {
             owsFailDebug("Failed to get SQLite row IDs for threads!")
             return
@@ -312,7 +312,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
     }
 
     private func mergeMediaGalleryItems(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
-        let threadRowIds = threadPair.map { $0.grdbId!.int64Value }
+        let threadRowIds = threadPair.map { $0.sqliteRowId! }
         tx.unwrapGrdbWrite.execute(
             sql: """
                 UPDATE "media_gallery_items" SET "threadId" = ? WHERE "threadId" = ?
@@ -322,7 +322,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
     }
 
     private func mergeReceiptsPendingMessageRequest(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
-        let threadRowIds = threadPair.map { $0.grdbId!.int64Value }
+        let threadRowIds = threadPair.map { $0.sqliteRowId! }
         tx.unwrapGrdbWrite.execute(
             sql: """
                 UPDATE "\(PendingViewedReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
