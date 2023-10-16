@@ -313,6 +313,17 @@ extension SignalAccount {
         return nickname.displayStringIfNonEmpty
     }
 
+    /// The contact's full name, processed for display.
+    ///
+    /// - Returns: A non-empty string or nil.
+    public var contactFullName: String? {
+        guard let components = contactPersonNameComponents() else {
+            return nil
+        }
+
+        return OWSFormat.formatNameComponents(components).displayStringIfNonEmpty
+    }
+
     /// The contact's first name, processed for display.
     ///
     /// - Returns: A non-empty string or nil.

@@ -1393,8 +1393,7 @@ extension OWSContactsManager {
 
 private extension SignalAccount {
     var fullName: String? {
-        // Name may be either the nickname or the full name of the contact
-        guard let fullName = contactPreferredDisplayName() else {
+        guard let fullName = contactFullName else {
             return nil
         }
         guard let label = multipleAccountLabelText.nilIfEmpty else {
