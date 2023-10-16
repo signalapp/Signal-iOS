@@ -149,6 +149,7 @@ class RecipientMergerTest: XCTestCase {
 
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let phoneNumber = E164("+16505550101")!
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
 
         var notificationCount = 0
         let observer = NotificationCenter.default.addObserver(
@@ -171,12 +172,13 @@ class RecipientMergerTest: XCTestCase {
         d.mockDB.write { tx in
             _ = d.recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: .forUnitTests,
-                aci: aci,
                 phoneNumber: phoneNumber,
+                pni: pni,
+                aci: aci,
                 tx: tx
             )
         }
-        XCTAssertEqual(notificationCount, 1)
+        XCTAssertEqual(notificationCount, FeatureFlags.phoneNumberIdentifiers ? 2 : 1)
         NotificationCenter.default.removeObserver(observer)
     }
 
@@ -235,6 +237,75 @@ class RecipientMergerTest: XCTestCase {
                 XCTAssertEqual(try! d.identityManager.identityKey(for: ac1, tx: tx), ik1)
                 XCTAssertTrue(d.aciSessionStore.mightContainSession(for: mergedRecipient, tx: tx))
             }
+        }
+    }
+
+    func testAciPhoneNumberPniMerges() throws {
+        try XCTSkipUnless(FeatureFlags.phoneNumberIdentifiers)
+
+        let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+        let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+        let phone1 = E164("+16505550101")!
+        let phone2 = E164("+16505550102")!
+
+        let testCases: [(
+            initialState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)],
+            includeAci: Bool,
+            finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)?]
+        )] = [
+            // If they're already associated, do nothing.
+            ([(aci1, phone1, pni1)], false, [(aci1, phone1, pni1)]),
+            ([(aci1, phone1, pni1)], true, [(aci1, phone1, pni1)]),
+            ([(nil, phone1, pni1)], false, [(nil, phone1, pni1)]),
+            ([(aci1, phone1, pni1)], true, [(aci1, phone1, pni1)]),
+
+            // If the PNI doesn't exist anywhere, just add it.
+            ([(aci1, phone1, nil)], false, [(aci1, phone1, pni1)]),
+            ([(aci1, phone1, nil)], true, [(aci1, phone1, pni1)]),
+
+            // If the PNI exists elsewhere, steal it.
+            ([(nil, phone1, nil), (nil, phone2, pni1)], false, [(nil, phone1, pni1), (nil, phone2, nil)]),
+
+            // If the PNI exists, steal it if possible.
+            ([(nil, nil, pni1)], false, [(nil, phone1, pni1)]),
+            ([(nil, phone2, pni1)], false, [(nil, phone2, nil), (nil, phone1, pni1)]),
+            ([(aci1, nil, pni1)], false, [(aci1, nil, nil), (nil, phone1, pni1)]),
+
+            // If nothing exists, create it.
+            ([], false, [(nil, phone1, pni1)])
+        ]
+
+        for testCase in testCases {
+            let d = TestDependencies()
+            let mergedRecipient = d.mockDB.write { tx in
+                for initialState in testCase.initialState {
+                    d.recipientStore.insertRecipient(
+                        SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber),
+                        transaction: tx
+                    )
+                }
+                return d.recipientMerger.applyMergeFromContactDiscovery(
+                    localIdentifiers: .forUnitTests,
+                    phoneNumber: phone1,
+                    pni: pni1,
+                    aci: testCase.includeAci ? aci1 : nil,
+                    tx: tx
+                )
+            }
+
+            // Make sure the returned recipient has the correct details.
+            XCTAssertEqual(mergedRecipient?.phoneNumber, phone1.stringValue)
+            XCTAssertEqual(mergedRecipient?.pni, pni1)
+            if testCase.includeAci { XCTAssertEqual(mergedRecipient?.aci, aci1) }
+
+            // Make sure all the recipients have been updated properly.
+            for (idx, finalState) in testCase.finalState.enumerated() {
+                let recipient = try XCTUnwrap(d.recipientStore.recipientTable.removeValue(forKey: idx + 1))
+                XCTAssertEqual(recipient.phoneNumber, finalState?.phoneNumber?.stringValue)
+                XCTAssertEqual(recipient.pni, finalState?.pni)
+                XCTAssertEqual(recipient.aci, finalState?.aci)
+            }
+            XCTAssertEqual(d.recipientStore.recipientTable, [:])
         }
     }
 }

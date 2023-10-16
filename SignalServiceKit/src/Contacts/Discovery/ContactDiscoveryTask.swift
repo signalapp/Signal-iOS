@@ -71,19 +71,19 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         var registeredRecipients = Set<SignalRecipient>()
 
         try db.enumerateWithTimeBatchedWriteTx(discoveryResults) { discoveryResult, tx in
-            // PNI TODO: Pass the PNI into the merging logic.
-            guard let aci = discoveryResult.aci else {
-                return
-            }
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 throw OWSAssertionError("Not registered.")
             }
             let recipient = recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: localIdentifiers,
-                aci: aci,
                 phoneNumber: discoveryResult.e164,
+                pni: discoveryResult.pni,
+                aci: discoveryResult.aci,
                 tx: tx
             )
+            guard let recipient else {
+                return
+            }
             recipient.markAsRegisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
 
             // We process all the results that we were provided, but we only return the

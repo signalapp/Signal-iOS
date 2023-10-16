@@ -28,10 +28,11 @@ public protocol RecipientMerger {
     /// We've learned about an association from CDS.
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: Aci,
         phoneNumber: E164,
+        pni: Pni,
+        aci: Aci?,
         tx: DBWriteTransaction
-    ) -> SignalRecipient
+    ) -> SignalRecipient?
 
     /// We've learned about an association from a Sealed Sender message. These
     /// always come from an ACI, but they might not have a phone number if phone
@@ -227,11 +228,42 @@ class RecipientMergerImpl: RecipientMerger {
 
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: Aci,
         phoneNumber: E164,
+        pni: Pni,
+        aci: Aci?,
         tx: DBWriteTransaction
-    ) -> SignalRecipient {
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+    ) -> SignalRecipient? {
+        // If you type in your own phone number, ignore the result and return your
+        // own recipient.
+        if localIdentifiers.contains(phoneNumber: phoneNumber) {
+            return recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+        }
+        // Otherwise, if CDS tells us that our PNI belongs to some other account,
+        // we can't fulfill the request. If we did fulfill the request, we'd either
+        // return a result without a PNI or a result with a stale PNI. Both of
+        // those are unacceptable.
+        if localIdentifiers.pni == pni {
+            return nil
+        }
+        // Finally, if CDS tells us our ACI is associated with another phone
+        // number, ignore the ACI and process the phone number/PNI pair.
+        var aci = aci
+        if localIdentifiers.aci == aci {
+            aci = nil
+        }
+        let aciResult: SignalRecipient? = {
+            guard let aci else {
+                return nil
+            }
+            return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+        }()
+        let pniResult: SignalRecipient? = {
+            guard FeatureFlags.phoneNumberIdentifiers else {
+                return nil
+            }
+            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx)
+        }()
+        return pniResult ?? aciResult
     }
 
     /// Performs a merge unless a provided identifier refers to the local user.
@@ -297,6 +329,7 @@ class RecipientMergerImpl: RecipientMerger {
         // modifications.
 
         let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+        let alreadyKnownPni = phoneNumberRecipient?.pni
 
         return mergeAndNotify(
             existingRecipients: [phoneNumberRecipient, aciRecipient].compacted(),
@@ -311,7 +344,7 @@ class RecipientMergerImpl: RecipientMerger {
                 phoneNumberRecipient: phoneNumberRecipient,
                 tx: tx
             )
-            return existingRecipient ?? SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
+            return existingRecipient ?? SignalRecipient(aci: aci, pni: alreadyKnownPni, phoneNumber: phoneNumber)
         }
     }
 
@@ -325,11 +358,14 @@ class RecipientMergerImpl: RecipientMerger {
         if let aciRecipient {
             guard let phoneNumberRecipient else {
                 aciRecipient.phoneNumber = phoneNumber.stringValue
+                aciRecipient.pni = nil
                 return aciRecipient
             }
 
             aciRecipient.phoneNumber = phoneNumberRecipient.phoneNumber
+            aciRecipient.pni = phoneNumberRecipient.pni
             phoneNumberRecipient.phoneNumber = nil
+            phoneNumberRecipient.pni = nil
             return aciRecipient
         }
 
@@ -339,11 +375,85 @@ class RecipientMergerImpl: RecipientMerger {
                 // a new SignalRecipient. We clear the phone number here since it will
                 // belong to the new SignalRecipient.
                 phoneNumberRecipient.phoneNumber = nil
+                phoneNumberRecipient.pni = nil
                 return nil
             }
 
             phoneNumberRecipient.aci = aci
             return phoneNumberRecipient
+        }
+
+        // We couldn't find a recipient, so create a new one.
+        return nil
+    }
+
+    @discardableResult
+    private func mergeAlways(
+        phoneNumber: E164,
+        pni: Pni,
+        isLocalRecipient: Bool,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+
+        // If the phone number & PNI are already associated, do nothing.
+        if let phoneNumberRecipient, phoneNumberRecipient.pni == pni {
+            return phoneNumberRecipient
+        }
+
+        Logger.info("Associating \(pni) with a phone number")
+
+        let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx)
+
+        return mergeAndNotify(
+            existingRecipients: [pniRecipient, phoneNumberRecipient].compacted(),
+            mightReplaceNonnilPhoneNumber: false,
+            isLocalMerge: isLocalRecipient,
+            tx: tx
+        ) {
+            let existingRecipient = _mergeAlways(
+                phoneNumber: phoneNumber,
+                pni: pni,
+                phoneNumberRecipient: phoneNumberRecipient,
+                pniRecipient: pniRecipient,
+                tx: tx
+            )
+            return existingRecipient ?? SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber)
+        }
+    }
+
+    private func _mergeAlways(
+        phoneNumber: E164,
+        pni: Pni,
+        phoneNumberRecipient: SignalRecipient?,
+        pniRecipient: SignalRecipient?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient? {
+        // If we have a phoneNumberRecipient, we'll always prefer that one because
+        // the PNI is property of the phone number (not the other way).
+        if let phoneNumberRecipient {
+            guard let pniRecipient else {
+                // If the PNI isn't on some other row, add it to this one.
+                phoneNumberRecipient.pni = pni
+                return phoneNumberRecipient
+            }
+            // If the PNI is on some other row, steal it for this one.
+            phoneNumberRecipient.pni = pni
+            pniRecipient.pni = nil
+            return phoneNumberRecipient
+        }
+
+        // If we have a pniRecipient, we can use it if there aren't any other
+        // identifiers. If there are, those take precedence, and we need a new
+        // recipient for this pairing.
+        if let pniRecipient {
+            if pniRecipient.aciString != nil || pniRecipient.phoneNumber != nil {
+                pniRecipient.pni = nil
+                return nil
+            }
+
+            pniRecipient.phoneNumber = phoneNumber.stringValue
+            return pniRecipient
         }
 
         // We couldn't find a recipient, so create a new one.

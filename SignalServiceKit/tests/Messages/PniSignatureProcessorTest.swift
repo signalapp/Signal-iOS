@@ -17,7 +17,7 @@ private class MockRecipientMerger: RecipientMerger {
         fatalError()
     }
 
-    func applyMergeFromContactDiscovery(localIdentifiers: LocalIdentifiers, aci: Aci, phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient {
+    func applyMergeFromContactDiscovery(localIdentifiers: LocalIdentifiers, phoneNumber: E164, pni: Pni, aci: Aci?, tx: DBWriteTransaction) -> SignalRecipient? {
         fatalError()
     }
 
