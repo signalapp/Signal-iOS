@@ -646,6 +646,12 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 
+/* Button text to select all in batch selection mode */
+"BUTTON_SELECT_ALL" = "Select All";
+
+/* Button text to select none in batch selection mode */
+"BUTTON_SELECT_NONE" = "Select None";
+
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Set";
 

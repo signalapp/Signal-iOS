@@ -1490,6 +1490,23 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         }
         return false
     }
+  
+    func selectAll() {
+        (0..<collectionView.numberOfSections).compactMap { (section) -> [IndexPath]? in
+            return (0..<collectionView.numberOfItems(inSection: section)).compactMap({
+                (item) -> IndexPath? in
+                return IndexPath(item: item, section: section)
+            })
+        }.flatMap { $0 }.forEach { (indexPath) in
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        }
+    }
+
+    func selectNone() {
+        collectionView.indexPathsForSelectedItems?.forEach({ (indexPath) in
+            collectionView.deselectItem(at: indexPath, animated: true)
+        })
+    }
 
     func selectionInfo() -> (count: Int, totalSize: Int64)? {
         guard

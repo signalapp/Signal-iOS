@@ -27,6 +27,8 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     var isEmpty: Bool { get }
     var hasSelection: Bool { get }
     func selectionInfo() -> (count: Int, totalSize: Int64)?
+    func selectAll()
+    func selectNone()
     func disableFiltering()
     func batchSelectionModeDidChange(isInBatchSelectMode: Bool)
     func didEndSelectMode()
@@ -172,6 +174,7 @@ public class MediaGalleryAccessoriesHelper {
             updateFooterBarState()
             updateSelectionInfoLabel()
             updateSelectionModeControls()
+            updateSelectAllButton()
             updateDeleteButton()
             updateShareButton()
         }
@@ -183,6 +186,7 @@ public class MediaGalleryAccessoriesHelper {
             return
         }
         updateSelectionInfoLabel()
+        updateSelectAllButton()
         updateDeleteButton()
         updateShareButton()
     }
@@ -438,7 +442,7 @@ public class MediaGalleryAccessoriesHelper {
             case .hidden:
                 return nil
             case .selection:
-                return [ shareButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
+                return [ shareButton, selectAllButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
             case .regular:
                 let firstItem: UIBarButtonItem
                 if isGridViewAllowed {
@@ -568,6 +572,33 @@ public class MediaGalleryAccessoriesHelper {
     private func didPressShare(_ sender: Any) {
         Logger.debug("")
         viewController?.shareSelectedItems(sender)
+    }
+  
+    // MARK: - Select All/None
+  
+    private lazy var selectAllButton = UIBarButtonItem(
+        title: CommonStrings.selectAllButton,
+        style: .plain,
+        target: self,
+        action: #selector(didPressSelectAll)
+    )
+  
+    @objc
+    private func didPressSelectAll(_ sender: Any) {
+      Logger.debug("")
+      if viewController?.hasSelection == false {
+        viewController?.selectAll()
+      } else {
+        viewController?.selectNone()
+      }
+      
+      didModifySelection()
+    }
+  
+    private func updateSelectAllButton() {
+        guard let viewController else { return }
+        selectAllButton.title =
+          viewController.hasSelection ? CommonStrings.selectNoneButton : CommonStrings.selectAllButton
     }
 
     // MARK: - Selection Info
