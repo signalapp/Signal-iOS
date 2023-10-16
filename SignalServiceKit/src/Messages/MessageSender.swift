@@ -453,8 +453,6 @@ extension MessageSender {
             return [localAddress]
         }
 
-        // PNI TODO: Normalize PNIs to ACIs to avoid .mustNotUsePniBecauseAciExists.
-
         if let groupThread = thread as? TSGroupThread {
             // Send to the intersection of:
             //
