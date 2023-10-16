@@ -290,8 +290,8 @@ extension DatabaseChangeObserver: TransactionObserver {
     func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(thread: thread)
-        pendingChanges.append(tableName: TSThread.table.tableName)
+        pendingChanges.insert(thread: thread)
+        pendingChanges.insert(tableName: TSThread.table.tableName)
 
         didModifyPendingChanges()
     }
@@ -300,8 +300,8 @@ extension DatabaseChangeObserver: TransactionObserver {
     func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(interaction: interaction)
-        pendingChanges.append(tableName: TSInteraction.table.tableName)
+        pendingChanges.insert(interaction: interaction)
+        pendingChanges.insert(tableName: TSInteraction.table.tableName)
 
         didModifyPendingChanges()
     }
@@ -310,8 +310,8 @@ extension DatabaseChangeObserver: TransactionObserver {
     func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(interaction: interaction)
-        pendingChanges.append(tableName: TSInteraction.table.tableName)
+        pendingChanges.insert(interaction: interaction)
+        pendingChanges.insert(tableName: TSInteraction.table.tableName)
 
         if !pendingChanges.threadUniqueIds.contains(interaction.uniqueThreadId) {
             let interactionThread: TSThread? = interaction.thread(tx: transaction.asAnyRead)
@@ -334,8 +334,8 @@ extension DatabaseChangeObserver: TransactionObserver {
         // in the expected way.
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi)
-        pendingChanges.append(tableName: TSThread.table.tableName)
+        pendingChanges.insert(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi)
+        pendingChanges.insert(tableName: TSThread.table.tableName)
 
         didModifyPendingChanges()
     }
@@ -347,8 +347,8 @@ extension DatabaseChangeObserver: TransactionObserver {
         // in the expected way.
         AssertHasDatabaseChangeObserverLock()
 
-        pendingChanges.append(storyMessage: storyMessage)
-        pendingChanges.append(tableName: StoryMessage.databaseTableName)
+        pendingChanges.insert(storyMessage: storyMessage)
+        pendingChanges.insert(tableName: StoryMessage.databaseTableName)
 
         didModifyPendingChanges()
     }
@@ -381,19 +381,19 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         DatabaseChangeObserver.serializedSync {
 
-            pendingChanges.append(tableName: event.tableName)
+            pendingChanges.insert(tableName: event.tableName)
 
             if event.tableName == InteractionRecord.databaseTableName {
-                pendingChanges.append(interactionRowId: event.rowID)
+                pendingChanges.insert(interactionRowId: event.rowID)
             } else if event.tableName == ThreadRecord.databaseTableName {
-                pendingChanges.append(threadRowId: event.rowID)
+                pendingChanges.insert(threadRowId: event.rowID)
             } else if event.tableName == StoryMessage.databaseTableName {
-                pendingChanges.append(storyMessageRowId: event.rowID)
+                pendingChanges.insert(storyMessageRowId: event.rowID)
             }
 
             // We record certain deletions.
             if event.kind == .delete && event.tableName == InteractionRecord.databaseTableName {
-                pendingChanges.append(deletedInteractionRowId: event.rowID)
+                pendingChanges.insert(deletedInteractionRowId: event.rowID)
             }
 
             #if TESTABLE_BUILD
@@ -412,36 +412,11 @@ extension DatabaseChangeObserver: TransactionObserver {
             let pendingChangesToCommit = self.pendingChanges
             self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
-            do {
-                // finalizePublishedState() finalizes the state we're about to
-                // copy.
-                try pendingChangesToCommit.finalizePublishedState(db: db)
-
-                let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
-                let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
-                let uniqueIdToShouldUpdateChatListUiDict = pendingChangesToCommit.uniqueIdToShouldUpdateChatListUiDict
-                let storyMessageUniqueIds = pendingChangesToCommit.storyMessageUniqueIds
-                let storyMessageRowIds = pendingChangesToCommit.storyMessageRowIds
-                let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
-                let storyMessageDeletedUniqueIds = pendingChangesToCommit.storyMessageDeletedUniqueIds
-                let collections = pendingChangesToCommit.collections
-                let tableNames = pendingChangesToCommit.tableNames
-
-                Self.committedChangesLock.withLock {
-                    self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
-                    self.committedChanges.append(threadUniqueIds: threadUniqueIds, shouldUpdateChatListUiDictParam: uniqueIdToShouldUpdateChatListUiDict)
-                    self.committedChanges.append(storyMessageUniqueIds: storyMessageUniqueIds)
-                    self.committedChanges.append(storyMessageRowIds: storyMessageRowIds)
-                    self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
-                    self.committedChanges.append(storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds)
-                    self.committedChanges.append(collections: collections)
-                    self.committedChanges.append(tableNames: tableNames)
-                }
-            } catch {
-                Self.committedChangesLock.withLock {
-                    self.committedChanges.setLastError(error)
-                }
-            }
+            pendingChangesToCommit.finalizePublishedStateAndCopyToCommittedChanges(
+                self.committedChanges,
+                withLock: Self.committedChangesLock,
+                db: db
+            )
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {

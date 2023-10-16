@@ -908,6 +908,7 @@
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
+		66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BB4D582AD8BF6200A84219 /* MergingDict.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
@@ -3497,6 +3498,7 @@
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerParticleView.swift; sourceTree = "<group>"; };
 		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
+		66BB4D582AD8BF6200A84219 /* MergingDict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergingDict.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
@@ -9834,6 +9836,7 @@
 				F9C5CB24289453B200548EEE /* LRUCache.swift */,
 				F9C5CB11289453B200548EEE /* MailtoLink.swift */,
 				F9C5CB36289453B200548EEE /* Math+OWS.swift */,
+				66BB4D582AD8BF6200A84219 /* MergingDict.swift */,
 				F9C5CB02289453B200548EEE /* MessageSender+Promise.swift */,
 				F9C5CB2C289453B200548EEE /* MIMETypeUtil.h */,
 				F9C5CB5E289453B200548EEE /* MIMETypeUtil.m */,
@@ -12573,6 +12576,7 @@
 				F9C5CBDF289453B300548EEE /* MentionFinder.swift in Sources */,
 				66FC637629DF7FCC00F00DAC /* MentionHydrator.swift in Sources */,
 				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
+				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
 				F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */,
 				66FC636F29DF797700F00DAC /* MessageBodyRanges.swift in Sources */,
 				668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */,
