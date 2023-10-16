@@ -96,11 +96,19 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
-            data: syncMessage.storageService,
-            authedAccount: .implicit(),
-            transaction: transaction.asV2Write
-        )
+        if let masterKey = syncMessage.master {
+            DependenciesBridge.shared.svr.storeSyncedMasterKey(
+                data: masterKey,
+                authedAccount: .implicit(),
+                transaction: transaction.asV2Write
+            )
+        } else {
+            DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
+                data: syncMessage.storageService,
+                authedAccount: .implicit(),
+                transaction: transaction.asV2Write
+            )
+        }
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.OWSSyncManagerKeysSyncDidComplete, object: nil)

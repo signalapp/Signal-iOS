@@ -565,13 +565,17 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     }
 
     public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
-        // If we have this derived key stored in the database, use it.
-        // This should only happen if we're a linked device and received
-        // the derived key via a sync message, since we won't know about
-        // the master key.
-        let isPrimaryDevice = tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? true
-        if (!isPrimaryDevice || appContext.isRunningTests),
+        // If we have this derived key stored in the database, use it in tests.
+        if appContext.isRunningTests,
             let cachedData = getOrLoadState(transaction: transaction).syncedDerivedKeys[key] {
+            return SVR.DerivedKeyData(cachedData, key)
+        }
+        let state = getOrLoadState(transaction: transaction)
+        if
+            state.masterKey == nil,
+            key == .storageService,
+            let cachedData = state.syncedDerivedKeys[key]
+        {
             return SVR.DerivedKeyData(cachedData, key)
         }
 
@@ -717,16 +721,16 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     }
 
     private func migrateEnclavesIfNecessary(state: State) {
-        let (isRegisteredAndReady, pinCode) = db.read {
+        let (isRegisteredPrimary, pinCode) = db.read {
             return (
-                tsAccountManager.registrationState(tx: $0).isRegistered,
+                tsAccountManager.registrationState(tx: $0).isRegisteredPrimaryDevice,
                 self.twoFAManager.pinCode(transaction: $0)
             )
         }
         guard
             state.enclaveName != currentEnclave.name,
             state.masterKey != nil,
-            isRegisteredAndReady
+            isRegisteredPrimary
         else {
             return
         }
@@ -811,8 +815,14 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
         reloadState(transaction: transaction)
 
-        // Only continue if we didn't previously have a master key or our master key has changed
-        guard masterKey != previousState.masterKey, tsAccountManager.registrationState(tx: transaction).isRegistered else { return }
+        // Only continue if we didn't previously have a master key or our master key has changed,
+        // and we are on the primary.
+        guard
+            masterKey != previousState.masterKey,
+            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
+        else {
+            return
+        }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
         storageServiceManager.resetLocalData(transaction: transaction)
@@ -827,6 +837,10 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         syncManager.sendKeysSyncMessage()
     }
 
+    // TODO: By 03/2024, we can remove this method. Starting in 10/2023, we started sending
+    // master keys in syncs. 90 days later, all active primaries will be sending the master key.
+    // 30 days after that all message queues will have been flushed, at which point sync messages
+    // without a master key will be impossible.
     public func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
@@ -836,14 +850,57 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             return owsFailDebug("primary device should never store synced keys")
         }
 
+        guard let storageServiceKey = data else {
+            localStorage.setSyncedStorageServiceKey(nil, transaction)
+            return
+        }
+
+        if
+            let masterKey = getOrLoadState(transaction: transaction).masterKey,
+            SVR.DerivedKey.storageService.derivedData(from: masterKey) == storageServiceKey
+        {
+            // We already have a master key, it already produces this storage service key.
+            // Nothing needs to change.
+            return
+        }
+
+        // Otherwise we are either missing a master key or it doesn't match;
+        // in either case we want to nil out our master key and store the storage
+        // service key.
         localStorage.setSyncedStorageServiceKey(data, transaction)
+        localStorage.setMasterKey(nil, transaction)
 
         reloadState(transaction: transaction)
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
-        if data != nil {
+        storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
+    }
+
+    public func storeSyncedMasterKey(
+        data: Data,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.info("")
+        let oldMasterKey = getOrLoadState(transaction: transaction).masterKey
+        localStorage.setMasterKey(data, transaction)
+
+        // Wipe the storage service key, we don't need it anymore.
+        localStorage.setSyncedStorageServiceKey(nil, transaction)
+
+        reloadState(transaction: transaction)
+
+        // Trigger a re-fetch of the storage manifest if our keys have changed
+        if oldMasterKey != data {
             storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
         }
+    }
+
+    public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
+        Logger.info("")
+        localStorage.setSyncedStorageServiceKey(nil, transaction)
+        localStorage.setMasterKey(nil, transaction)
+        reloadState(transaction: transaction)
     }
 
     public func useDeviceLocalMasterKey(

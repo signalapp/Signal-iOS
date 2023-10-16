@@ -101,6 +101,18 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         // Do nothing
     }
 
+    public func storeSyncedMasterKey(
+        data: Data,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        // Do nothing
+    }
+
+    public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
+        // Do nothing
+    }
+
     public var hasHadBackupKeyRequestFail = false
 
     public func hasBackupKeyRequestFailed(transaction: DBReadTransaction) -> Bool {

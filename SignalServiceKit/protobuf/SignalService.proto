@@ -557,6 +557,7 @@ message SyncMessage {
 
   message Keys {
     optional bytes storageService = 1;
+    optional bytes master         = 2;
   }
 
   message MessageRequestResponse {

@@ -11705,6 +11705,18 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
         return proto.hasStorageService
     }
 
+    @objc
+    public var master: Data? {
+        guard hasMaster else {
+            return nil
+        }
+        return proto.master
+    }
+    @objc
+    public var hasMaster: Bool {
+        return proto.hasMaster
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -11781,6 +11793,9 @@ extension SSKProtoSyncMessageKeys {
         if let _value = storageService {
             builder.setStorageService(_value)
         }
+        if let _value = master {
+            builder.setMaster(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11805,6 +11820,17 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     public func setStorageService(_ valueParam: Data) {
         proto.storageService = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMaster(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.master = valueParam
+    }
+
+    public func setMaster(_ valueParam: Data) {
+        proto.master = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

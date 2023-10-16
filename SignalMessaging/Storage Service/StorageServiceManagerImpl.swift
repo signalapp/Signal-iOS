@@ -775,11 +775,7 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
-                            data: nil,
-                            authedAccount: self.authedAccount,
-                            transaction: transaction.asV2Write
-                        )
+                        DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 } else if
@@ -1152,11 +1148,7 @@ class StorageServiceOperation: OWSOperation {
                     self.databaseStorage.write { transaction in
                         // Clear out the key, it's no longer valid. This will prevent us
                         // from trying to backup again until the sync response is received.
-                        DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
-                            data: nil,
-                            authedAccount: self.authedAccount,
-                            transaction: transaction.asV2Write
-                        )
+                        DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
                         OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
                     }
                 } else if

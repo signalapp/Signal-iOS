@@ -495,6 +495,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         }
     }
 
+    // TODO: By 03/2024, we can remove this method. Starting in 10/2023, we started sending
+    // master keys in syncs. 90 days later, all active primaries will be sending the master key.
+    // 30 days after that all message queues will have been flushed, at which point sync messages
+    // without a master key will be impossible.
     public func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
@@ -511,6 +515,28 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         // short term while we use both SVRs in parallel.
         kbs.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
         svr2.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
+    }
+
+    public func storeSyncedMasterKey(
+        data: Data,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        // This is a special kind of local write; it only writes to local state
+        // and in fact doesn't affect svr1/2 at all since it only happens on linked
+        // devices which never theselves talk to svr.
+        // Ok to ignore write strategy and always write to both.
+        kbs.storeSyncedMasterKey(data: data, authedAccount: authedAccount, transaction: transaction)
+        svr2.storeSyncedMasterKey(data: data, authedAccount: authedAccount, transaction: transaction)
+    }
+
+    public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
+        // This is a special kind of local write; it only writes to local state
+        // and in fact doesn't affect svr1/2 at all since it only happens on linked
+        // devices which never theselves talk to svr.
+        // Ok to ignore write strategy and always write to both.
+        kbs.clearSyncedStorageServiceKey(transaction: transaction)
+        svr2.clearSyncedStorageServiceKey(transaction: transaction)
     }
 
     // MARK: - Value Derivation

@@ -176,11 +176,25 @@ public protocol SecureValueRecovery {
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
+    // TODO: By 03/2024, we can remove this method. Starting in 10/2023, we started sending
+    // master keys in syncs. 90 days later, all active primaries will be sending the master key.
+    // 30 days after that all message queues will have been flushed, at which point sync messages
+    // without a master key will be impossible.
     func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     )
+
+    func storeSyncedMasterKey(
+        data: Data,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    )
+
+    /// When we fail to decrypt information on storage service on a linked device, we assume the storage
+    /// service key (or master key it is derived from) we have synced from the primary is wrong/out-of-date, and wipe it.
+    func clearSyncedStorageServiceKey(transaction: DBWriteTransaction)
 
     /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
     /// local-only master key and disabling PIN usage for backup restoration.

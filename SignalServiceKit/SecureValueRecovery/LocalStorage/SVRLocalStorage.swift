@@ -29,7 +29,7 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
 
-    func setMasterKey(_ value: Data, _ transaction: DBWriteTransaction)
+    func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction)
 
     func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction)
 
@@ -37,6 +37,9 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
     func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction)
+
+    // Linked devices get the backup key and store it locally. The primary doesn't do this.
+    func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction)
 
     func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction)
 
@@ -83,6 +86,10 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     }
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
+    // TODO: By 10/2024, we can remove this method. Starting in 10/2023, we started sending
+    // master keys in syncs. A year later, any primary that has not yet delivered a master
+    // key must not have launched and is therefore deregistered; we are ok to ignore the
+    // storage service key and take the master key or bust.
     public func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data? {
         return keyValueStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
     }
@@ -101,7 +108,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         keyValueStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
     }
 
-    public func setMasterKey(_ value: Data, _ transaction: DBWriteTransaction) {
+    public func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction) {
         keyValueStore.setData(value, key: Keys.masterKey, transaction: transaction)
     }
 
@@ -116,6 +123,11 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
     public func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction) {
         keyValueStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
+    }
+
+    // Linked devices get the backup key and store it locally. The primary doesn't do this.
+    public func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction) {
+        keyValueStore.setData(value, key: Keys.syncedBackupKey, transaction: transaction)
     }
 
     public func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
@@ -152,6 +164,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let encodedPINVerificationString = "encodedVerificationString"
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let syncedStorageServiceKey = "Storage Service Encryption"
+        static let syncedBackupKey = "Backup Key"
         static let svr1EnclaveName = "enclaveName"
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
