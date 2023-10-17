@@ -9,9 +9,11 @@ import LibSignalClient
 extension SVR2 {
     public enum Shims {
         public typealias AppReadiness = _SVR2_AppReadinessShim
+        public typealias OWS2FAManager = _SVR2_OWS2FAManagerShim
     }
     public enum Wrappers {
         public typealias AppReadiness = _SVR2_AppReadinessWrapper
+        public typealias OWS2FAManager = _SVR2_OWS2FAManagerWrapper
     }
 }
 
@@ -25,6 +27,26 @@ public class _SVR2_AppReadinessWrapper: _SVR2_AppReadinessShim {
 
     public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
+    }
+}
+
+// MARK: - OWS2FAManager
+
+public protocol _SVR2_OWS2FAManagerShim {
+    func pinCode(transaction: DBReadTransaction) -> String?
+    func markDisabled(transaction: DBWriteTransaction)
+}
+
+public class _SVR2_OWS2FAManagerWrapper: SVR2.Shims.OWS2FAManager {
+    private let manager: OWS2FAManager
+    public init(_ manager: OWS2FAManager) { self.manager = manager }
+
+    public func pinCode(transaction: DBReadTransaction) -> String? {
+        return manager.pinCode(with: SDSDB.shimOnlyBridge(transaction))
+    }
+
+    public func markDisabled(transaction: DBWriteTransaction) {
+        manager.markDisabled(transaction: SDSDB.shimOnlyBridge(transaction))
     }
 }
 

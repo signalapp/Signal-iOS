@@ -23,7 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
 }
@@ -279,17 +278,6 @@ public class _RegistrationCoordinator_ReceiptManagerMock: _RegistrationCoordinat
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
         didSetAreStoryViewedReceiptsEnabled = true
         setAreStoryViewedReceiptsEnabledMock?(areEnabled)
-    }
-}
-
-// MARK: - RemoteConfig
-
-public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator_RemoteConfigShim {
-
-    public init() {}
-
-    public func refreshRemoteConfig(account: AuthedAccount) -> Promise<RemoteConfig.SVRConfiguration> {
-        return .value(.mirroring)
     }
 }
 

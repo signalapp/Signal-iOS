@@ -46,7 +46,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
-    private var remoteConfigMock: RegistrationCoordinatorImpl.TestMocks.RemoteConfig!
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svr: SecureValueRecoveryMock!
@@ -79,7 +78,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         pushRegistrationManagerMock = RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager()
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
         registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
-        remoteConfigMock = RegistrationCoordinatorImpl.TestMocks.RemoteConfig()
         sessionManager = RegistrationSessionManagerMock()
         storageServiceManagerMock = FakeStorageServiceManager()
         tsAccountManagerMock = MockTSAccountManager(dateProvider: dateProvider)
@@ -112,7 +110,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
-            remoteConfig: remoteConfigMock,
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
@@ -774,7 +771,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
                 bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
                     timeRemainingMs: 10,
-                    kbsAuthCredential: Stubs.kbsAuthCredential,
                     svr2AuthCredential: Stubs.svr2AuthCredential
                 )
             )
@@ -1033,14 +1029,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             ]
             svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
-            let kbsCredentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential,
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
-            ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: kbsCredentialCandidates, by: \.credential.username).mapValues { $0.first! }
-
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
 
@@ -1053,7 +1041,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
                 urlSuffix: expectedSVR2CheckRequest.url!.absoluteString,
                 statusCode: 200,
-                bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
                     "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
                     "aaaa:abc": .notMatch,
                     "zzzz:xyz": .invalid,
@@ -1072,8 +1060,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertNotNil(remainingCredentials["aaaa"])
             XCTAssertNil(remainingCredentials["zzzz"])
             XCTAssertNil(remainingCredentials["0000"])
-            // KBS should be untouched.
-            XCTAssertNotNil(svrAuthCredentialStore.dict[Stubs.kbsAuthCredential.credential.username])
+            // SVR should be untouched.
+            XCTAssertNotNil(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username])
 
             scheduler.stop()
             scheduler.adjustTime(to: 0)
@@ -1086,7 +1074,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr.restoreKeysMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                XCTAssertEqual(authMethod, .svrAuth(.svr2Only(Stubs.svr2AuthCredential), backup: nil))
+                XCTAssertEqual(authMethod, .svrAuth(Stubs.svr2AuthCredential, backup: nil))
                 self.svr.hasMasterKey = true
                 return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
             }
@@ -1179,7 +1167,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 XCTAssertEqual(self.scheduler.currentTime, 4)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 XCTAssertEqual(authMethod, .svrAuth(
-                    .svr2Only(Stubs.svr2AuthCredential),
+                    Stubs.svr2AuthCredential,
                     backup: .chatServerAuth(expectedAuthedAccount())
                 ))
                 XCTAssertFalse(rotateMasterKey)
@@ -1229,13 +1217,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential,
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            let credentialCandidates: [SVR2AuthCredential] = [
+                Stubs.svr2AuthCredential,
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
+            svrAuthCredentialStore.svr2Dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
@@ -1247,16 +1235,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let nextStep = coordinator.submitE164(Stubs.e164)
 
             // Don't give back any matches at t=2, which means we will want to create a session as a fallback.
-            let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+            let expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: Stubs.e164,
                 credentials: credentialCandidates
             )
             mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                    urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
                     statusCode: 200,
-                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch,
+                    bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
+                        "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .notMatch,
                         "aaaa:abc": .notMatch,
                         "zzzz:xyz": .invalid,
                         "0000:123": .unknown
@@ -1299,8 +1287,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             // We should have wipted the invalid and unknown credentials.
-            let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
+            let remainingCredentials = svrAuthCredentialStore.svr2Dict
+            XCTAssertNotNil(remainingCredentials[Stubs.svr2AuthCredential.credential.username])
             XCTAssertNotNil(remainingCredentials["aaaa"])
             XCTAssertNil(remainingCredentials["zzzz"])
             XCTAssertNil(remainingCredentials["0000"])
@@ -1316,10 +1304,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [KBSAuthCredential] = [
-                Stubs.kbsAuthCredential
+            let credentialCandidates: [SVR2AuthCredential] = [
+                Stubs.svr2AuthCredential
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
+            svrAuthCredentialStore.svr2Dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
@@ -1334,16 +1322,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
             var nextStep = coordinator.submitE164(originalE164)
 
             // Don't give back any matches at t=2, which means we will want to create a session as a fallback.
-            var expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+            var expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: originalE164,
                 credentials: credentialCandidates
             )
             mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                    urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
                     statusCode: 200,
-                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch
+                    bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
+                        "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .notMatch
                     ])
                 ),
                 atTime: 2,
@@ -1383,8 +1371,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(nextStep.value, .verificationCodeEntry(Stubs.verificationCodeEntryState(mode: self.mode)))
 
             // We should have wiped the invalid and unknown credentials.
-            let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
+            let remainingCredentials = svrAuthCredentialStore.svr2Dict
+            XCTAssertNotNil(remainingCredentials[Stubs.svr2AuthCredential.credential.username])
 
             // Now change the phone number; this should take us back to phone number entry.
             nextStep = coordinator.requestChangeE164()
@@ -1394,17 +1382,17 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it a phone number, which should cause it to check the auth credentials again.
             nextStep = coordinator.submitE164(changedE164)
 
-            // Give a match at t=5, so it registers via kbs auth credential.
-            expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+            // Give a match at t=5, so it registers via SVR auth credential.
+            expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: changedE164,
                 credentials: credentialCandidates
             )
             mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                    urlSuffix: expectedSVRCheckRequest.url!.absoluteString,
                     statusCode: 200,
-                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .match
+                    bodyJson: RegistrationServiceResponses.SVR2AuthCheckResponse(matches: [
+                        "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match
                     ])
                 ),
                 atTime: 5,
@@ -3201,7 +3189,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // )
         let reglockStateReglockedData = "7b227265676c6f636b6564223a7b2265787069726174696f6e44617465223a2d3937383239373230302c2263726564656e7469616c223a7b2263726564656e7469616c223a7b22757365726e616d65223a2261626364222c2270617373776f7264223a2278797a227d7d7d7d"
         XCTAssertEqual(
-            ReglockState.reglocked(credential: .testOnly(kbs: Stubs.kbsAuthCredential, svr2: nil), expirationDate: reglockExpirationDate),
+            ReglockState.reglocked(credential: .testOnly(svr2: nil), expirationDate: reglockExpirationDate),
             try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateReglockedData)!)
         )
 
@@ -3214,7 +3202,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // )
         let reglockStateReglockedSVR2Data = "7b227265676c6f636b6564223a7b2265787069726174696f6e44617465223a2d3937383239373230302c2263726564656e7469616c223a7b226b6273223a7b2263726564656e7469616c223a7b22757365726e616d65223a2261626364222c2270617373776f7264223a2278797a227d7d2c2273767232223a7b2263726564656e7469616c223a7b22757365726e616d65223a22787878222c2270617373776f7264223a22797979227d7d7d7d7d"
         XCTAssertEqual(
-            ReglockState.reglocked(credential: .init(kbs: Stubs.kbsAuthCredential, svr2: Stubs.svr2AuthCredential), expirationDate: reglockExpirationDate),
+            ReglockState.reglocked(credential: .init(svr2: Stubs.svr2AuthCredential), expirationDate: reglockExpirationDate),
             try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateReglockedSVR2Data)!)
         )
 
@@ -3383,7 +3371,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static let reglockData = Data(repeating: 7, count: 8)
         static var reglockToken: String { reglockData.hexadecimalString }
 
-        static let kbsAuthCredential = KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"))
         static let svr2AuthCredential = SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "xxx", password: "yyy"))
 
         static let captchaToken = "captchaToken"
@@ -3692,4 +3679,12 @@ extension RegistrationMode {
 
 private class PreKeyError: Error {
     init() {}
+}
+
+extension RegistrationServiceResponses.RegistrationLockFailureResponse: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(timeRemainingMs, forKey: .timeRemainingMs)
+        try container.encodeIfPresent(svr2AuthCredential.credential, forKey: .svr2AuthCredential)
+    }
 }

@@ -8,6 +8,8 @@ import SignalCoreKit
 @testable import SignalServiceKit
 import XCTest
 
+struct FakeError: Error {}
+
 public class TestSchedulerTest: XCTestCase {
 
     func test_fulfill() {

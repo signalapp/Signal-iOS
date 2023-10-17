@@ -783,7 +783,6 @@
 		6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */; };
 		661278112996BE0C00A1D5A1 /* TestSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278102996BE0C00A1D5A1 /* TestSchedulers.swift */; };
 		661278132996BE3400A1D5A1 /* TestScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278122996BE3400A1D5A1 /* TestScheduler.swift */; };
-		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
 		66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */; };
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
@@ -797,7 +796,6 @@
 		662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
-		662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */; };
 		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = 663BA31B2A4C9997004B9A43 /* safety-numbers.json */; };
@@ -857,7 +855,6 @@
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
-		6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
 		6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF8A297B6FA800F96CFD /* SDSDB.swift */; };
@@ -915,8 +912,6 @@
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
 		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
 		66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */; };
-		66C2B13F2A12B019008DDE72 /* KBSAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */; };
-		66C2B1412A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */; };
 		66C2B1492A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1482A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift */; };
 		66C2B14B2A13E2AC008DDE72 /* SgxWebsocketConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */; };
 		66C2B14D2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */; };
@@ -1574,22 +1569,18 @@
 		F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */; };
 		F9426250289B1B5500460798 /* SSKSignedPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */; };
 		F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E3289B1B5400460798 /* GroupModelsTest.swift */; };
-		F9426252289B1B5500460798 /* kbs_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261E5289B1B5400460798 /* kbs_vectors.json */; };
 		F9426253289B1B5500460798 /* OWSErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E6289B1B5400460798 /* OWSErrorTest.swift */; };
 		F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */; };
 		F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E8289B1B5400460798 /* UnfairLockTest.swift */; };
 		F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E9289B1B5400460798 /* NSData+ImageTest.swift */; };
-		F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */; };
 		F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261EB289B1B5400460798 /* TSMessageStorageTests.m */; };
 		F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */; };
 		F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EE289B1B5400460798 /* OWSFormatTest.swift */; };
 		F942625D289B1B5500460798 /* RefineryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F0289B1B5400460798 /* RefineryTest.swift */; };
 		F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F2289B1B5400460798 /* LRUCacheTest.swift */; };
-		F9426260289B1B5500460798 /* kbs_storage_service_encryption_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */; };
 		F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F4289B1B5400460798 /* AppVersionTests.swift */; };
 		F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F6289B1B5400460798 /* DeviceNamesTest.swift */; };
 		F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F8289B1B5400460798 /* Date+SSKTest.swift */; };
-		F9426266289B1B5500460798 /* kbs_pin_sanitation_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */; };
 		F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */; };
 		F9426268289B1B5500460798 /* OWSOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FB289B1B5400460798 /* OWSOperationTest.swift */; };
 		F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FC289B1B5400460798 /* MathOWSTests.swift */; };
@@ -2226,7 +2217,6 @@
 		F9C5CDEA289453B400548EEE /* TestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB18289453B200548EEE /* TestModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEC289453B400548EEE /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1A289453B200548EEE /* FunctionalUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3370,7 +3360,6 @@
 		6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
 		661278102996BE0C00A1D5A1 /* TestSchedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulers.swift; sourceTree = "<group>"; };
 		661278122996BE3400A1D5A1 /* TestScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScheduler.swift; sourceTree = "<group>"; };
-		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
 		66138FAE2982F4C4002E0CFE /* MockDBV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2.swift; sourceTree = "<group>"; };
 		66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery.swift; sourceTree = "<group>"; };
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
@@ -3385,7 +3374,6 @@
 		662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationTestController.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
-		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
 		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31B2A4C9997004B9A43 /* safety-numbers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "safety-numbers.json"; sourceTree = "<group>"; };
@@ -3446,7 +3434,6 @@
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
-		6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceShims.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
 		6673FF8A297B6FA800F96CFD /* SDSDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSDB.swift; sourceTree = "<group>"; };
@@ -3505,9 +3492,7 @@
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
 		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
-		66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredential.swift; sourceTree = "<group>"; };
 		66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2AuthCredential.swift; sourceTree = "<group>"; };
-		66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRAuthCredential.swift; sourceTree = "<group>"; };
 		66C2B1482A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SgxWebsocketConnectionFactory.swift; sourceTree = "<group>"; };
 		66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SgxWebsocketConnection.swift; sourceTree = "<group>"; };
 		66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SgxWebsocketConfigurator.swift; sourceTree = "<group>"; };
@@ -4263,22 +4248,18 @@
 		F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSDatabaseStorageObservationTest.swift; sourceTree = "<group>"; };
 		F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		F94261E3289B1B5400460798 /* GroupModelsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupModelsTest.swift; sourceTree = "<group>"; };
-		F94261E5289B1B5400460798 /* kbs_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_vectors.json; sourceTree = "<group>"; };
 		F94261E6289B1B5400460798 /* OWSErrorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSErrorTest.swift; sourceTree = "<group>"; };
 		F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlagsTests.swift; sourceTree = "<group>"; };
 		F94261E8289B1B5400460798 /* UnfairLockTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnfairLockTest.swift; sourceTree = "<group>"; };
 		F94261E9289B1B5400460798 /* NSData+ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSData+ImageTest.swift"; sourceTree = "<group>"; };
-		F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTests.swift; sourceTree = "<group>"; };
 		F94261EB289B1B5400460798 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
 		F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteConfigManagerTests.swift; sourceTree = "<group>"; };
 		F94261EE289B1B5400460798 /* OWSFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormatTest.swift; sourceTree = "<group>"; };
 		F94261F0289B1B5400460798 /* RefineryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefineryTest.swift; sourceTree = "<group>"; };
 		F94261F2289B1B5400460798 /* LRUCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCacheTest.swift; sourceTree = "<group>"; };
-		F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_storage_service_encryption_vectors.json; sourceTree = "<group>"; };
 		F94261F4289B1B5400460798 /* AppVersionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		F94261F6289B1B5400460798 /* DeviceNamesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceNamesTest.swift; sourceTree = "<group>"; };
 		F94261F8289B1B5400460798 /* Date+SSKTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSKTest.swift"; sourceTree = "<group>"; };
-		F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_pin_sanitation_vectors.json; sourceTree = "<group>"; };
 		F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWSTest.swift"; sourceTree = "<group>"; };
 		F94261FB289B1B5400460798 /* OWSOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOperationTest.swift; sourceTree = "<group>"; };
 		F94261FC289B1B5400460798 /* MathOWSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathOWSTests.swift; sourceTree = "<group>"; };
@@ -4915,7 +4896,6 @@
 		F9C5CB18289453B200548EEE /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
 		F9C5CB19289453B200548EEE /* JobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		F9C5CB1A289453B200548EEE /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
-		F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceImpl.swift; sourceTree = "<group>"; };
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
@@ -6904,9 +6884,7 @@
 		6673FF6A2978B5B900F96CFD /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
-				66C2B1342A0DA16F008DDE72 /* KeyBackupService */,
 				6640DD612ACDD5CD00CE9A8C /* LocalStorage */,
-				66C2B13E2A0E9147008DDE72 /* Orchestrating */,
 				66C2B13B2A0E9108008DDE72 /* SVR2 */,
 				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
@@ -6917,18 +6895,6 @@
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
 			path = SecureValueRecovery;
-			sourceTree = "<group>";
-		};
-		6673FF732979F7A400F96CFD /* KeyBackupService */ = {
-			isa = PBXGroup;
-			children = (
-				F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */,
-				F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */,
-				F94261E5289B1B5400460798 /* kbs_vectors.json */,
-				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
-				66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */,
-			);
-			path = KeyBackupService;
 			sourceTree = "<group>";
 		};
 		6673FF82297B659D00F96CFD /* SDSKeyValueStore */ = {
@@ -7030,16 +6996,6 @@
 			path = SpoilerRendering;
 			sourceTree = "<group>";
 		};
-		66C2B1342A0DA16F008DDE72 /* KeyBackupService */ = {
-			isa = PBXGroup;
-			children = (
-				66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */,
-				F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */,
-				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
-			);
-			path = KeyBackupService;
-			sourceTree = "<group>";
-		};
 		66C2B13B2A0E9108008DDE72 /* SVR2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -7051,19 +7007,9 @@
 			path = SVR2;
 			sourceTree = "<group>";
 		};
-		66C2B13E2A0E9147008DDE72 /* Orchestrating */ = {
-			isa = PBXGroup;
-			children = (
-				66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */,
-				662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */,
-			);
-			path = Orchestrating;
-			sourceTree = "<group>";
-		};
 		66C2B1422A12E043008DDE72 /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
-				6673FF732979F7A400F96CFD /* KeyBackupService */,
 				662C44142A1D20EB001F83E2 /* SVR2 */,
 				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
 			);
@@ -10842,9 +10788,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F9426266289B1B5500460798 /* kbs_pin_sanitation_vectors.json in Resources */,
-				F9426260289B1B5500460798 /* kbs_storage_service_encryption_vectors.json in Resources */,
-				F9426252289B1B5500460798 /* kbs_vectors.json in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
@@ -12542,11 +12485,8 @@
 				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
-				66C2B13F2A12B019008DDE72 /* KBSAuthCredential.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
-				F9C5CDED289453B400548EEE /* KeyBackupServiceImpl.swift in Sources */,
-				6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */,
 				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
 				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
 				F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */,
@@ -12629,8 +12569,6 @@
 				F9C5CE21289453B400548EEE /* NSUserDefaults+OWS.m in Sources */,
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
-				66C2B1412A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift in Sources */,
-				662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */,
 				F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */,
 				F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */,
 				F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */,
@@ -13170,8 +13108,6 @@
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */,
-				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
-				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
 				D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,

@@ -21,9 +21,9 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
     func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data?
 
-    func getSVR1EnclaveName(_ transaction: DBReadTransaction) -> String?
-
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
+
+    func hadSVR1Enclave(_ transaction: DBReadTransaction) -> Bool
 
     // MARK: - Setters
 
@@ -40,8 +40,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     // Linked devices get the backup key and store it locally. The primary doesn't do this.
     func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction)
-
-    func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction)
 
     func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction)
 
@@ -94,12 +92,12 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         return keyValueStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
-    public func getSVR1EnclaveName(_ transaction: DBReadTransaction) -> String? {
-        return keyValueStore.getString(Keys.svr1EnclaveName, transaction: transaction)
-    }
-
     public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
+    }
+
+    public func hadSVR1Enclave(_ transaction: DBReadTransaction) -> Bool {
+        return keyValueStore.hasValue(Keys.legacy_svr1EnclaveName, transaction: transaction)
     }
 
     // MARK: - Setters
@@ -130,10 +128,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         keyValueStore.setData(value, key: Keys.syncedBackupKey, transaction: transaction)
     }
 
-    public func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setString(value, key: Keys.svr1EnclaveName, transaction: transaction)
-    }
-
     public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -148,7 +142,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
                 Keys.encodedPINVerificationString,
                 Keys.isMasterKeyBackedUp,
                 Keys.syncedStorageServiceKey,
-                Keys.svr1EnclaveName,
+                Keys.legacy_svr1EnclaveName,
                 Keys.svr2MrEnclaveStringValue
             ],
             transaction: transaction
@@ -165,7 +159,8 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let syncedStorageServiceKey = "Storage Service Encryption"
         static let syncedBackupKey = "Backup Key"
-        static let svr1EnclaveName = "enclaveName"
+        // Kept around because its existence indicates we had an svr1 backup.
+        static let legacy_svr1EnclaveName = "enclaveName"
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
 }

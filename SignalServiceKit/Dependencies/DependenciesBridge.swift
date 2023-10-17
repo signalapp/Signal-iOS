@@ -305,24 +305,21 @@ public class DependenciesBridge {
         )
         self.accountAttributesUpdater = accountAttributesUpdater
 
-        self.svr = OrchestratingSVRImpl(
+        self.svr = SecureValueRecovery2Impl(
             accountAttributesUpdater: accountAttributesUpdater,
-            appContext: CurrentAppContext(),
             appReadiness: SVR2.Wrappers.AppReadiness(),
             appVersion: appVersion,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory),
             credentialStorage: svrCredentialStorage,
-            databaseStorage: db,
+            db: db,
             keyValueStoreFactory: keyValueStoreFactory,
-            remoteAttestation: SVR.Wrappers.RemoteAttestation(),
             schedulers: schedulers,
-            signalService: signalService,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
-            twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
+            twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
         let interactionStore = InteractionStoreImpl()

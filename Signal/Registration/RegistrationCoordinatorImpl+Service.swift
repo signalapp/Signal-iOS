@@ -10,58 +10,6 @@ extension RegistrationCoordinatorImpl {
 
     enum Service {
 
-        enum KBSAuthCheckResponse {
-            case success(RegistrationServiceResponses.KBSAuthCheckResponse)
-            case networkError
-            case genericError
-        }
-
-        static func makeKBSAuthCheckRequest(
-            e164: E164,
-            candidateCredentials: [KBSAuthCredential],
-            signalService: OWSSignalServiceProtocol,
-            schedulers: Schedulers
-        ) -> Guarantee<KBSAuthCheckResponse> {
-            let request = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-                e164: e164,
-                credentials: candidateCredentials
-            )
-            return makeRequest(
-                request,
-                signalService: signalService,
-                schedulers: schedulers,
-                handler: self.handleKBSAuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
-                fallbackError: .genericError,
-                networkFailureError: .networkError
-            )
-        }
-
-        private static func handleKBSAuthCheckResponse(
-            statusCode: Int,
-            retryAfterHeader: String?,
-            bodyData: Data?
-        ) -> KBSAuthCheckResponse {
-            let statusCode = RegistrationServiceResponses.KBSAuthCheckResponseCodes(rawValue: statusCode)
-            switch statusCode {
-            case .success:
-                guard let bodyData else {
-                    Logger.warn("Got empty KBS auth check response")
-                    return .genericError
-                }
-                guard let response = try? JSONDecoder().decode(RegistrationServiceResponses.KBSAuthCheckResponse.self, from: bodyData) else {
-                    Logger.warn("Unable to parse KBS auth check response from response")
-                    return .genericError
-                }
-
-                return .success(response)
-            case .malformedRequest, .invalidJSON:
-                Logger.error("Malformed kbs auth check request")
-                return .genericError
-            case .none, .unexpectedError:
-                return .genericError
-            }
-        }
-
         enum SVR2AuthCheckResponse {
             case success(RegistrationServiceResponses.SVR2AuthCheckResponse)
             case networkError

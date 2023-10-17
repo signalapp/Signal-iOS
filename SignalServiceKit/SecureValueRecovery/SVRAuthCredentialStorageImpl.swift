@@ -55,46 +55,6 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
-    // MARK: - KBS (SVR1)
-
-    public func storeAuthCredentialForCurrentUsername(_ credential: KBSAuthCredential, _ transaction: DBWriteTransaction) {
-        let credential = AuthCredential.from(credential)
-        updateCredentials(for: .kbs, transaction) {
-            // Sorting is handled by updateCredentials
-            $0.append(credential)
-        }
-        setCurrentUsername(credential.username, for: .kbs, transaction)
-    }
-
-    public func getAuthCredentials(_ transaction: DBReadTransaction) -> [KBSAuthCredential] {
-        return consolidateLocalAndiCloud(for: .kbs, transaction).map { $0.toKBSCredential() }
-    }
-
-    public func getAuthCredentialForCurrentUser(_ transaction: DBReadTransaction) -> KBSAuthCredential? {
-        return consolidateLocalAndiCloud(for: .kbs, transaction).first(where: {
-            return $0.username == currentUsername(for: .kbs, transaction)
-        })?.toKBSCredential()
-    }
-
-    public func deleteInvalidCredentials(_ invalidCredentials: [KBSAuthCredential], _ transaction: DBWriteTransaction) {
-        updateCredentials(for: .kbs, transaction) {
-            $0.removeAll(where: { existingCredential in
-                invalidCredentials.contains(where: { invalidCredential in
-                    existingCredential.isEqual(to: invalidCredential)
-                })
-            })
-        }
-    }
-
-    public func removeKBSCredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
-        let currentUsername = currentUsername(for: .kbs, transaction)
-        updateCredentials(for: .kbs, transaction) {
-            $0.removeAll(where: { existingCredential in
-                existingCredential.username == currentUsername
-            })
-        }
-    }
-
     // MARK: - Local Storage
 
     // Also write any KBS auth credentials we know about to local, encrypted database storage,
@@ -239,13 +199,10 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
     }
 
     internal enum CredentialType: Hashable {
-        case kbs
         case svr2
 
         var iCloudCredentialsKey: String {
             switch self {
-            case .kbs:
-                return "signal_kbs_credentials"
             case .svr2:
                 return "signal_svr2_credentials"
             }
@@ -253,8 +210,6 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
         var kvStoreCollectionName: String {
             switch self {
-            case .kbs:
-                return "KBSAuthCredential"
             case .svr2:
                 return "SVR2AuthCredential"
             }
@@ -274,33 +229,12 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             )
         }
 
-        static func from(_ credential: KBSAuthCredential) -> Self {
-            return AuthCredential(
-                username: credential.credential.username,
-                password: credential.credential.password,
-                insertionTime: Date()
-            )
-        }
-
         private var credential: RemoteAttestation.Auth {
             return RemoteAttestation.Auth(username: username, password: password)
         }
 
         func toSVR2Credential() -> SVR2AuthCredential {
             return SVR2AuthCredential(credential: credential)
-        }
-
-        func toKBSCredential() -> KBSAuthCredential {
-            return KBSAuthCredential(credential: credential)
-        }
-
-        func isEqual(to credential: KBSAuthCredential) -> Bool {
-            // Compare everything but the insertion time, make that equal.
-            return AuthCredential(
-                username: credential.credential.username,
-                password: credential.credential.password,
-                insertionTime: self.insertionTime
-            ) == self
         }
 
         func isEqual(to credential: SVR2AuthCredential) -> Bool {

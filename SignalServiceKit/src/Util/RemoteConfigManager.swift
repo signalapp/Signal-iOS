@@ -235,27 +235,6 @@ public class RemoteConfig: BaseFlags {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    /// NOTE: serialized, be careful changing raw values.
-    public enum SVRConfiguration: Int {
-        /// Exclusively read/write to KBS (as if SVR2 didn't exist)
-        case kbsOnly = 0
-        /// Write to SVR2 and then KBS. Require both to succeed.
-        /// Read from SVR2 first; if it has no backups, read from KBS.
-        case mirroring = 1
-        /// Exclusively read/write to SVR2.
-        case svr2Only = 2
-    }
-
-    public var svrConfiguration: SVRConfiguration {
-        if isEnabled(.exclusiveSVR2) {
-            return .svr2Only
-        }
-        if isEnabled(.stopMirroringToSVR2Override) {
-            return .kbsOnly
-        }
-        return .mirroring
-    }
-
     static var tryToReturnAcisWithoutUaks: Bool {
         if !FeatureFlags.phoneNumberIdentifiers {
             return true
@@ -533,8 +512,6 @@ private struct Flags {
     // marked true regardless of the remote state.
     enum StickyIsEnabledFlags: String, FlagType {
         case uuidSafetyNumbers
-        case stopMirroringToSVR2Override
-        case exclusiveSVR2
     }
 
     // Values defined in this array will update while the app is running,
@@ -542,8 +519,6 @@ private struct Flags {
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
         case barrierFsyncKillSwitch
-        case stopMirroringToSVR2Override
-        case exclusiveSVR2
     }
 
     // We filter the received config down to just the supported flags.
@@ -573,8 +548,6 @@ private struct Flags {
         case paypalMonthlyDonationKillSwitch
         case enableAutoAPNSRotation
         case ringrtcNwPathMonitorTrialKillSwitch
-        case stopMirroringToSVR2Override
-        case exclusiveSVR2
         case cdsDisableCompatibilityMode
     }
 
@@ -804,7 +777,6 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                 timeGatedFlags: timeGatedFlags,
                 account: .implicit()
             )
-            (DependenciesBridge.shared.svr as? OrchestratingSVRImpl)?.setRemoteConfiguration(remoteConfig.svrConfiguration)
         }
         warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
 

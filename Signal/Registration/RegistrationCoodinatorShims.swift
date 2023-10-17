@@ -22,7 +22,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
     public enum Wrappers {
@@ -36,7 +35,6 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
-        public typealias RemoteConfig = _RegistrationCoordinator_RemoteConfigWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
 }
@@ -386,25 +384,6 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
         StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - RemoteConfig
-
-public protocol _RegistrationCoordinator_RemoteConfigShim {
-
-    func refreshRemoteConfig(account: AuthedAccount) -> Promise<RemoteConfig.SVRConfiguration>
-}
-
-public class _RegistrationCoordinator_RemoteConfigWrapper: _RegistrationCoordinator_RemoteConfigShim {
-
-    private let remoteConfig: RemoteConfigManager
-    public init(_ remoteConfig: RemoteConfigManager) { self.remoteConfig = remoteConfig }
-
-    public func refreshRemoteConfig(account: AuthedAccount) -> Promise<RemoteConfig.SVRConfiguration> {
-        return firstly(on: DispatchQueue.main) { [remoteConfig] in
-            return remoteConfig.refresh(account: account)
-        }.map(on: SyncScheduler(), \.svrConfiguration)
     }
 }
 

@@ -47,7 +47,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             syncManager: OWSMockSyncManager(),
             tsAccountManager: MockTSAccountManager(),
             tsConstants: TSConstants.shared,
-            twoFAManager: SVR.TestMocks.OWS2FAManager()
+            twoFAManager: SVR2.TestMocks.OWS2FAManager()
         )
     }
 
@@ -345,7 +345,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 syncManager: OWSMockSyncManager(),
                 tsAccountManager: MockTSAccountManager(),
                 tsConstants: TSConstants.shared,
-                twoFAManager: SVR.TestMocks.OWS2FAManager()
+                twoFAManager: SVR2.TestMocks.OWS2FAManager()
             )
             firstBackupPromise = svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: false)
             secondBackupPromise = svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: false)

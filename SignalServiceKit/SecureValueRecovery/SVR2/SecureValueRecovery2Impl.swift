@@ -23,7 +23,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let syncManager: SyncManagerProtocolSwift
     private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
-    private let twoFAManager: SVR.Shims.OWS2FAManager
+    private let twoFAManager: SVR2.Shims.OWS2FAManager
 
     public convenience init(
         accountAttributesUpdater: AccountAttributesUpdater,
@@ -39,7 +39,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        twoFAManager: SVR.Shims.OWS2FAManager
+        twoFAManager: SVR2.Shims.OWS2FAManager
     ) {
         self.init(
             accountAttributesUpdater: accountAttributesUpdater,
@@ -77,7 +77,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        twoFAManager: SVR.Shims.OWS2FAManager
+        twoFAManager: SVR2.Shims.OWS2FAManager
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.appReadiness = appReadiness
@@ -244,10 +244,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
         Logger.info("")
-        guard let auth = auth.svr2 else {
-            owsFailDebug("Invalid auth for svr2")
-            return .init(error: SVR.SVRError.assertion)
-        }
         return doRestore(pin: pin, authMethod: .svrAuth(auth, backup: nil)).then(on: scheduler) { restoreResult -> Promise<String> in
             switch restoreResult {
             case .success(let masterKey, _):
@@ -278,10 +274,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Data> {
         Logger.info("backing up, rotating master key? \(rotateMasterKey)")
-        guard let authMethod = authMethod.svr2 else {
-            owsFailDebug("Invalid auth for svr2")
-            return .init(error: SVR.SVRError.assertion)
-        }
         return firstly(on: scheduler) { [weak self] () -> Promise<Data> in
             guard let self else {
                 return .init(error: SVR.SVRError.assertion)
@@ -298,10 +290,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         Logger.info("")
-        guard let authMethod = authMethod.svr2 else {
-            owsFailDebug("Invalid auth for svr2")
-            return .value(.genericError(SVR.SVRError.assertion))
-        }
         // When we restore, we remember which enclave it was from. On some future app startup, we check
         // this enclave, and migrate to a new one if available. This code path relies on that happening
         // asynchronously.
@@ -310,10 +298,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         Logger.info("")
-        guard let authMethod = authMethod.svr2 else {
-            owsFailDebug("Invalid auth for svr2")
-            return .value(.genericError(SVR.SVRError.assertion))
-        }
+
         return doRestore(pin: pin, authMethod: authMethod)
             .then(on: scheduler) { [weak self] restoreResult in
                 switch restoreResult {
@@ -1240,7 +1225,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     /// If there is no migration needed, returns a success promise immediately.
     private func migrateEnclavesIfNecessary() -> Promise<Void> {
         return firstly(on: scheduler) { [weak self] () -> (String?, String, Data)? in
-            return self?.db.read { tx in
+            return self?.db.read { tx -> (String?, String, Data)? in
                 guard
                     let self,
                     self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
@@ -1273,7 +1258,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     }
                     if
                         oldSVR2EnclaveString == nil,
-                        self.localStorage.getSVR1EnclaveName(tx) != nil
+                        self.localStorage.hadSVR1Enclave(tx)
                     {
                         // We have not ever backed up to svr2, but we had backed up
                         // to svr1 (kbs), so we should migrate immediately.
@@ -1659,29 +1644,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // even if it fails. In any scenario it should eventually recover once
             // both storage service and the linked device have the latest stuff.
             syncManager.sendKeysSyncMessage()
-        }
-    }
-}
-
-fileprivate extension SVR.AuthMethod {
-
-    var svr2: SVR2.AuthMethod? {
-        switch self {
-        case .svrAuth(let authCredential, let backup):
-            switch authCredential {
-            case .svr2Only(let svr2AuthCredential):
-                return .svrAuth(svr2AuthCredential, backup: backup?.svr2)
-            case .both(_, let svr2AuthCredential):
-                return .svrAuth(svr2AuthCredential, backup: backup?.svr2)
-            case .kbsOnly:
-                // We explicitly opted to kbs only, don't try
-                // the backup (its probably a chat service auth credential).
-                return nil
-            }
-        case .chatServerAuth(let authedAccount):
-            return .chatServerAuth(authedAccount)
-        case .implicit:
-            return .implicit
         }
     }
 }

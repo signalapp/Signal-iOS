@@ -17,7 +17,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var scheduler: TestScheduler!
 
     private var mockAccountAttributesUpdater: MockAccountAttributesUpdater!
-    private var mock2FAManager: SVR.TestMocks.OWS2FAManager!
+    private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
     private var keyValueStoreFactory: InMemoryKeyValueStoreFactory!
     private var localStorage: SVRLocalStorageImpl!
     private var mockConnectionFactory: MockSgxWebsocketConnectionFactory!
@@ -32,7 +32,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Start the scheduler so everything executes synchronously.
         self.scheduler.start()
 
-        mock2FAManager = SVR.TestMocks.OWS2FAManager()
+        mock2FAManager = SVR2.TestMocks.OWS2FAManager()
         keyValueStoreFactory = InMemoryKeyValueStoreFactory()
         localStorage = .init(keyValueStoreFactory: keyValueStoreFactory)
 
@@ -317,4 +317,24 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Some other password should fail to verify.
         XCTAssertFalse(SVRUtil.verifyPIN(pin: "notAPassword", againstEncodedPINVerificationString: argon2EncodedString))
     }
+}
+
+extension SVR2 {
+    public enum TestMocks {
+        public typealias OWS2FAManager = _SVR2_OWS2FAManagerTestMock
+    }
+}
+
+// MARK: - OWS2FAManager
+
+public class _SVR2_OWS2FAManagerTestMock: SVR2.Shims.OWS2FAManager {
+    public init() {}
+
+    public var pinCode: String!
+
+    public func pinCode(transaction: DBReadTransaction) -> String? {
+        return pinCode
+    }
+
+    public func markDisabled(transaction: DBWriteTransaction) {}
 }
