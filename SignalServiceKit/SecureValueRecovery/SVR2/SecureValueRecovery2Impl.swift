@@ -480,6 +480,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
+    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
+        return localStorage.getMasterKey(tx)
+    }
+
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
         Logger.info("")
         localStorage.setSyncedStorageServiceKey(nil, transaction)
@@ -534,6 +538,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return withStorageServiceKey { Self.deriveStorageServiceManifestKey(version: version, storageServiceKey: $0) }
         case .storageServiceRecord(let identifier):
             return withStorageServiceKey { Self.deriveStorageServiceRecordKey(identifier: identifier, storageServiceKey: $0) }
+        case .backupKey:
+            return withMasterKey(Self.deriveBackupKey(masterKey:))
         }
     }
 
@@ -547,6 +553,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private static func deriveRegRecoveryPwKey(masterKey: Data) -> SVR.DerivedKeyData? {
         return SVR.DerivedKeyData(SVR.DerivedKey.registrationRecoveryPassword.derivedData(from: masterKey), .registrationRecoveryPassword)
+    }
+
+    private static func deriveBackupKey(masterKey: Data) -> SVR.DerivedKeyData? {
+        return SVR.DerivedKeyData(SVR.DerivedKey.backupKey.derivedData(from: masterKey), .backupKey)
     }
 
     private static func deriveStorageServiceKey(masterKey: Data) -> SVR.DerivedKeyData? {

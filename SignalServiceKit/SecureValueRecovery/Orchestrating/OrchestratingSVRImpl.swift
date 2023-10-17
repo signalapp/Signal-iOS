@@ -530,6 +530,19 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         svr2.storeSyncedMasterKey(data: data, authedAccount: authedAccount, transaction: transaction)
     }
 
+    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
+            return kbs.masterKeyDataForKeysSyncMessage(tx: tx)
+        case .svr2Only:
+            return svr2.masterKeyDataForKeysSyncMessage(tx: tx)
+        case .fallbackToKBSForNoBackupFailureOnly, .fallbackToKBSForNonInvalidPinFailure:
+            // Local only operation; no errors to differentiate.
+            return svr2.masterKeyDataForKeysSyncMessage(tx: tx) ?? kbs.masterKeyDataForKeysSyncMessage(tx: tx)
+        }
+    }
+
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
         // This is a special kind of local write; it only writes to local state
         // and in fact doesn't affect svr1/2 at all since it only happens on linked

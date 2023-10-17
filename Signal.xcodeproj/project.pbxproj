@@ -853,6 +853,7 @@
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
+		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
@@ -3441,6 +3442,7 @@
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
+		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
@@ -6906,6 +6908,7 @@
 				6640DD612ACDD5CD00CE9A8C /* LocalStorage */,
 				66C2B13E2A0E9147008DDE72 /* Orchestrating */,
 				66C2B13B2A0E9108008DDE72 /* SVR2 */,
+				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
 				6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */,
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
@@ -12570,6 +12573,7 @@
 				D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */,
 				F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */,
 				F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */,
+				666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */,
 				F9C5CE08289453B400548EEE /* Math+OWS.swift in Sources */,
 				F9C5CD5D289453B300548EEE /* MediaGalleryFinder.swift in Sources */,
 				66FC637A29DF8C6D00F00DAC /* MentionAttribute.swift in Sources */,

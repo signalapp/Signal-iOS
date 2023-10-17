@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
              storageServiceKey:(nullable NSData *)storageServiceKey
+                     masterKey:(nullable NSData *)masterKey
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

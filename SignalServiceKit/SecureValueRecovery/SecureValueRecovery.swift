@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum SVR {
 
@@ -39,6 +40,11 @@ public enum SVR {
         case storageServiceManifest(version: UInt64)
         case storageServiceRecord(identifier: StorageService.StorageIdentifier)
 
+        /// The root key used for reads and writes to encrypted backups. NOT the same
+        /// as the Backup ID Material, that is derived from the backup key.
+        /// Referred to often as Kb (subscript b).
+        case backupKey
+
         var rawValue: String {
             switch self {
             case .registrationLock:
@@ -51,16 +57,37 @@ public enum SVR {
                 return "Manifest_\(version)"
             case .storageServiceRecord(let identifier):
                 return "Item_\(identifier.data.base64EncodedString())"
+            case .backupKey:
+                return "Backup"
             }
         }
 
         public func derivedData(from dataToDeriveFrom: Data) -> Data? {
-            guard let data = rawValue.data(using: .utf8) else {
+            guard let infoData = rawValue.data(using: .utf8) else {
                 owsFailDebug("Failed to encode data")
                 return nil
             }
-
-            return Cryptography.computeSHA256HMAC(data, key: dataToDeriveFrom)
+            switch self {
+            case
+                    .registrationLock,
+                    .registrationRecoveryPassword,
+                    .storageService,
+                    .storageServiceManifest,
+                    .storageServiceRecord:
+                return Cryptography.computeSHA256HMAC(infoData, key: dataToDeriveFrom)
+            case .backupKey:
+                guard
+                    let bytes = try? hkdf(
+                        outputLength: 32,
+                        inputKeyMaterial: dataToDeriveFrom,
+                        salt: Data(),
+                        info: infoData
+                    )
+                else {
+                    return nil
+                }
+                return Data(bytes)
+            }
         }
     }
 
@@ -109,6 +136,9 @@ public enum SVR {
                 return rawData.base64EncodedString()
             case .registrationLock:
                 return rawData.hexadecimalString
+            case .backupKey:
+                owsFailDebug("No know uses for canonical string representation")
+                return rawData.base64EncodedString()
             }
         }
     }
@@ -191,6 +221,8 @@ public protocol SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     )
+
+    func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data?
 
     /// When we fail to decrypt information on storage service on a linked device, we assume the storage
     /// service key (or master key it is derived from) we have synced from the primary is wrong/out-of-date, and wipe it.

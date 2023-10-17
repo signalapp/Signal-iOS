@@ -74,20 +74,30 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         databaseStorage.asyncWrite { [weak self] transaction in
-            guard let self = self else { return }
-
-            guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
-                return owsFailDebug("Missing thread")
-            }
-
-            let storageServiceKey = DependenciesBridge.shared.svr.data(for: .storageService, transaction: transaction.asV2Read)
-            let syncKeysMessage = OWSSyncKeysMessage(
-                thread: thread,
-                storageServiceKey: storageServiceKey?.rawData,
-                transaction: transaction
-            )
-            self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
+            self?.sendKeysSyncMessage(tx: transaction)
         }
+    }
+
+    public func sendKeysSyncMessage(tx: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Write).isRegisteredPrimaryDevice else {
+            return owsFailDebug("Keys sync should only be initiated from the registered primary device")
+        }
+
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
+            return owsFailDebug("Missing thread")
+        }
+
+        let storageServiceKey = DependenciesBridge.shared.svr.data(for: .storageService, transaction: tx.asV2Read)
+        let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
+        let syncKeysMessage = OWSSyncKeysMessage(
+            thread: thread,
+            storageServiceKey: storageServiceKey?.rawData,
+            masterKey: masterKey,
+            transaction: tx
+        )
+        self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: tx)
     }
 
     @objc

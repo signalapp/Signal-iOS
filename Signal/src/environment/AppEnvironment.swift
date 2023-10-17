@@ -112,6 +112,10 @@ public class AppEnvironment: NSObject {
                     linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary(tx: tx)
                 }
             }
+
+            db.asyncWrite { tx in
+                DependenciesBridge.shared.masterKeySyncManager.runStartupJobs(tx: tx)
+            }
         }
 
         // Hang certain singletons on SMEnvironment too.

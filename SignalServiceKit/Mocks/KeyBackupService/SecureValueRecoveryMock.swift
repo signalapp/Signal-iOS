@@ -109,6 +109,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         // Do nothing
     }
 
+    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
+        return nil
+    }
+
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
         // Do nothing
     }

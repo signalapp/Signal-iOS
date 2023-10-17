@@ -896,6 +896,10 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
+    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
+        return getOrLoadState(transaction: tx).masterKey
+    }
+
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
         Logger.info("")
         localStorage.setSyncedStorageServiceKey(nil, transaction)

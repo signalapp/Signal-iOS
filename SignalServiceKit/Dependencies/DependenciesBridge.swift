@@ -72,6 +72,8 @@ public class DependenciesBridge {
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     public let localUsernameManager: LocalUsernameManager
 
+    public let masterKeySyncManager: MasterKeySyncManager
+
     public var phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
 
     public let pniHelloWorldManager: PniHelloWorldManager
@@ -557,6 +559,14 @@ public class DependenciesBridge {
             pniProtocolStore: pniProtocolStore,
             preKeyManager: preKeyManager,
             registrationStateChangeManager: registrationStateChangeManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        self.masterKeySyncManager = MasterKeySyncManagerImpl(
+            dateProvider: dateProvider,
+            keyValueStoreFactory: keyValueStoreFactory,
+            svr: svr,
+            syncManager: MasterKeySyncManagerImpl.Wrappers.SyncManager(syncManager),
             tsAccountManager: tsAccountManager
         )
     }
