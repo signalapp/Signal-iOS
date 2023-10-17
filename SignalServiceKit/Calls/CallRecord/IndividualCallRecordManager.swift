@@ -40,10 +40,8 @@ public protocol IndividualCallRecordManager {
         tx: DBWriteTransaction
     )
 
-    /// Update the given call record for the given call interaction's current
-    /// state.
-    func updateRecordForInteraction(
-        individualCallInteraction: TSCall,
+    /// Update the given call record.
+    func updateRecord(
         contactThread: TSContactThread,
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
@@ -98,8 +96,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             return
         }
 
-        updateRecordForInteraction(
-            individualCallInteraction: individualCallInteraction,
+        updateRecord(
             contactThread: contactThread,
             existingCallRecord: existingCallRecord,
             newIndividualCallStatus: newIndividualCallStatus,
@@ -134,8 +131,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             threadRowId: contactThreadRowId,
             tx: tx
         ) {
-            updateRecordForInteraction(
-                individualCallInteraction: individualCallInteraction,
+            updateRecord(
                 contactThread: contactThread,
                 existingCallRecord: existingCallRecord,
                 newIndividualCallStatus: individualCallStatus,
@@ -178,7 +174,8 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             threadRowId: contactThreadRowId,
             callType: callType,
             callDirection: callDirection,
-            callStatus: .individual(individualCallStatus)
+            callStatus: .individual(individualCallStatus),
+            timestamp: individualCallInteraction.timestamp
         )
 
         guard callRecordStore.insert(
@@ -189,14 +186,12 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 contactThread: contactThread,
                 callRecord: callRecord,
-                individualCallInteraction: individualCallInteraction,
                 tx: tx
             )
         }
     }
 
-    public func updateRecordForInteraction(
-        individualCallInteraction: TSCall,
+    public func updateRecord(
         contactThread: TSContactThread,
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
@@ -213,7 +208,6 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 contactThread: contactThread,
                 callRecord: existingCallRecord,
-                individualCallInteraction: individualCallInteraction,
                 tx: tx
             )
         }

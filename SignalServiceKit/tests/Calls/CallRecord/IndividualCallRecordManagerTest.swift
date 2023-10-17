@@ -70,7 +70,8 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.pending)
+            callStatus: .individual(.pending),
+            timestamp: interaction.timestamp
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -119,7 +120,8 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.pending)
+            callStatus: .individual(.pending),
+            timestamp: interaction.timestamp
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -190,16 +192,16 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         let (thread, interaction) = createInteraction()
         let callRecord = CallRecord(
             callId: .maxRandom,
-            interactionRowId: .maxRandom,
-            threadRowId: .maxRandom,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.notAccepted)
+            callStatus: .individual(.notAccepted),
+            timestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
-            individualCallRecordManager.updateRecordForInteraction(
-                individualCallInteraction: interaction,
+            individualCallRecordManager.updateRecord(
                 contactThread: thread,
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .accepted,
@@ -218,16 +220,16 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         let (thread, interaction) = createInteraction()
         let callRecord = CallRecord(
             callId: .maxRandom,
-            interactionRowId: .maxRandom,
-            threadRowId: .maxRandom,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.notAccepted)
+            callStatus: .individual(.notAccepted),
+            timestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
-            individualCallRecordManager.updateRecordForInteraction(
-                individualCallInteraction: interaction,
+            individualCallRecordManager.updateRecord(
                 contactThread: thread,
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .accepted,
@@ -244,16 +246,16 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         let (thread, interaction) = createInteraction()
         let callRecord = CallRecord(
             callId: .maxRandom,
-            interactionRowId: .maxRandom,
-            threadRowId: .maxRandom,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.notAccepted)
+            callStatus: .individual(.notAccepted),
+            timestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
-            individualCallRecordManager.updateRecordForInteraction(
-                individualCallInteraction: interaction,
+            individualCallRecordManager.updateRecord(
                 contactThread: thread,
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .accepted,
@@ -307,8 +309,7 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
         )
     }
 
-    override func updateRecordForInteraction(
-        individualCallInteraction: TSCall,
+    override func updateRecord(
         contactThread: TSContactThread,
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
@@ -316,8 +317,7 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
         tx: DBWriteTransaction
     ) {
         didAskToUpdateRecord = newIndividualCallStatus
-        super.updateRecordForInteraction(
-            individualCallInteraction: individualCallInteraction,
+        super.updateRecord(
             contactThread: contactThread,
             existingCallRecord: existingCallRecord,
             newIndividualCallStatus: newIndividualCallStatus,

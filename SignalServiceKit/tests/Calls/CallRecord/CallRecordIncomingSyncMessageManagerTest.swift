@@ -51,7 +51,8 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             threadRowId: threadRowId,
             callType: .audioCall,
             callDirection: .outgoing,
-            callStatus: .individual(.notAccepted)
+            callStatus: .individual(.notAccepted),
+            timestamp: .maxRandomInt64Compat
         )
 
         let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
@@ -179,8 +180,7 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
         createdRecords.append(callId)
     }
 
-    func updateRecordForInteraction(
-        individualCallInteraction: TSCall,
+    func updateRecord(
         contactThread: TSContactThread,
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,

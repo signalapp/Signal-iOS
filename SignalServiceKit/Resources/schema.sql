@@ -1482,6 +1482,7 @@ CREATE
         ,"type" INTEGER NOT NULL
         ,"direction" INTEGER NOT NULL
         ,"status" INTEGER NOT NULL
+        ,"timestamp" INTEGER NOT NULL
 )
 ;
 

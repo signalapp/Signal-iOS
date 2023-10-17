@@ -20,6 +20,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callType = "type"
         case callDirection = "direction"
         case callStatus = "status"
+        case timestamp
     }
 
     public static let databaseTableName: String = "CallRecord"
@@ -55,13 +56,26 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public let callDirection: CallDirection
     public internal(set) var callStatus: CallStatus
 
+    /// The timestamp of the call event represented by this record.
+    ///
+    /// This value will originate locally for events we learned about locally,
+    /// such as receiving a 1:1 call offer message; receiving a group ring; or
+    /// opportunistically discovering a group call exists. For events that
+    /// occurred on linked devices, which we learned about via sync message,
+    /// this value may refer to a timestamp originating on the linked device.
+    ///
+    /// This timestamp is intended for comparison between call records as well
+    /// as display.
+    public let timestamp: UInt64
+
     init(
         callId: UInt64,
         interactionRowId: Int64,
         threadRowId: Int64,
         callType: CallType,
         callDirection: CallDirection,
-        callStatus: CallStatus
+        callStatus: CallStatus,
+        timestamp: UInt64
     ) {
         self.callIdString = String(callId)
         self.interactionRowId = interactionRowId
@@ -69,6 +83,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.callType = callType
         self.callDirection = callDirection
         self.callStatus = callStatus
+        self.timestamp = timestamp
     }
 
     /// Capture the SQLite row ID for this record, after insertion.

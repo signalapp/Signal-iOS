@@ -42,7 +42,6 @@ class MockCallRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageMan
     func sendSyncMessage(
         conversationId: CallRecordOutgoingSyncMessageConversationId,
         callRecord: CallRecord,
-        callInteractionTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
         askedToSendSyncMessage = true
@@ -51,7 +50,6 @@ class MockCallRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageMan
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
-        individualCallInteraction: TSCall,
         tx: DBWriteTransaction
     ) {
         askedToSendSyncMessage = true

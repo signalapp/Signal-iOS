@@ -33,7 +33,8 @@ final class CallRecordStoreTest: XCTestCase {
             threadRowId: threadRowId,
             callType: .audioCall,
             callDirection: .outgoing,
-            callStatus: callStatus
+            callStatus: callStatus,
+            timestamp: .maxRandomInt64Compat
         )
     }
 

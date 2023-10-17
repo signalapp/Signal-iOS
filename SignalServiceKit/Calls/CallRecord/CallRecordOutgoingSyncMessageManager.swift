@@ -23,13 +23,12 @@ protocol CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         conversationId: CallRecordOutgoingSyncMessageConversationId,
         callRecord: CallRecord,
-        callInteractionTimestamp: UInt64,
         tx: DBWriteTransaction
     )
+
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
-        individualCallInteraction: TSCall,
         tx: DBWriteTransaction
     )
 }
@@ -38,13 +37,11 @@ extension CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         groupThread: TSGroupThread,
         callRecord: CallRecord,
-        groupCallInteraction: OWSGroupCallMessage,
         tx: DBWriteTransaction
     ) {
         sendSyncMessage(
             conversationId: .group(groupId: groupThread.groupId),
             callRecord: callRecord,
-            callInteractionTimestamp: groupCallInteraction.timestamp,
             tx: tx
         )
     }
@@ -70,17 +67,16 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
-        individualCallInteraction: TSCall,
         tx: DBWriteTransaction
     ) {
         guard let contactServiceId = recipientStore.fetchServiceId(for: contactThread, tx: tx) else {
             owsFailBeta("Missing contact service ID - how did we get here?")
             return
         }
+
         sendSyncMessage(
             conversationId: .oneToOne(contactServiceId: contactServiceId),
             callRecord: callRecord,
-            callInteractionTimestamp: individualCallInteraction.timestamp,
             tx: tx
         )
     }
@@ -88,7 +84,6 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
     func sendSyncMessage(
         conversationId: CallRecordOutgoingSyncMessageConversationId,
         callRecord: CallRecord,
-        callInteractionTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
         guard let outgoingCallEventType = OutgoingCallEvent.EventType(callRecord.callStatus) else {
@@ -97,7 +92,7 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
         }
 
         let outgoingCallEvent = OutgoingCallEvent(
-            timestamp: callInteractionTimestamp,
+            timestamp: callRecord.timestamp,
             conversationId: conversationId.asData,
             callId: callRecord.callId,
             callType: OutgoingCallEvent.CallType(callRecord.callType),

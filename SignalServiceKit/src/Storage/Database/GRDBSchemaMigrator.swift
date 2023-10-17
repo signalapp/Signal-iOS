@@ -237,6 +237,7 @@ public class GRDBSchemaMigrator: NSObject {
         case deletePhoneNumberAccessStore
         case dropOldAndCreateNewCallRecordTable
         case fixUniqueConstraintOnCallRecord
+        case addTimestampToCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2416,6 +2417,21 @@ public class GRDBSchemaMigrator: NSObject {
 
             // Note that because `threadRowId` and `interactionRowId` are UNIQUE
             // SQLite will automatically create an index on each of them.
+
+            return .success(())
+        }
+
+        /// Add a timestamp column to call records. Delete any records created
+        /// prior, since we don't need them at the time of migration and we
+        /// really want timestamps to be populated in the future.
+        migrator.registerMigration(.addTimestampToCallRecord) { tx in
+            try tx.database.execute(sql: """
+                DELETE FROM CallRecord
+            """)
+
+            try tx.database.alter(table: "CallRecord") { table in
+                table.add(column: "timestamp", .integer).notNull()
+            }
 
             return .success(())
         }

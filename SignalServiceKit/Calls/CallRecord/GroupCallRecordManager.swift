@@ -82,7 +82,8 @@ public final class GroupCallRecordManagerImpl: GroupCallRecordManager {
             threadRowId: threadRowId,
             callType: .groupCall,
             callDirection: callDirection,
-            callStatus: .group(groupCallStatus)
+            callStatus: .group(groupCallStatus),
+            timestamp: groupCallInteraction.timestamp
         )
 
         guard callRecordStore.insert(
@@ -93,7 +94,6 @@ public final class GroupCallRecordManagerImpl: GroupCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 groupThread: groupThread,
                 callRecord: newCallRecord,
-                groupCallInteraction: groupCallInteraction,
                 tx: tx
             )
         }

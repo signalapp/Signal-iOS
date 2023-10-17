@@ -116,8 +116,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
             tx: tx
         )
 
-        individualCallRecordManager.updateRecordForInteraction(
-            individualCallInteraction: existingCallInteraction,
+        individualCallRecordManager.updateRecord(
             contactThread: existingCallThread,
             existingCallRecord: existingCallRecord,
             newIndividualCallStatus: newIndividualCallStatus,
