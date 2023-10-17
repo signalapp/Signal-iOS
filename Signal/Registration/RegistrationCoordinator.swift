@@ -111,7 +111,7 @@ public protocol RegistrationCoordinator {
     /// Set whether the user's PNI should be discoverable by phone number.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
-    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep>
+    func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> Guarantee<RegistrationStep>
 
     /// Set the user's profile information.
     /// If the update is rejected for any reason, the next step will be the same current
@@ -120,7 +120,7 @@ public protocol RegistrationCoordinator {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        isDiscoverableByPhoneNumber: Bool
+        phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) -> Guarantee<RegistrationStep>
 
     /// The user has hit a reglock timeout and is acknowledging it.

@@ -1063,8 +1063,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
-        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
-        builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
+        builder.setNotDiscoverableByPhoneNumber(
+            tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read).orDefault.isNotDiscoverableByPhoneNumber
+        )
 
         let pinnedConversationProtos = PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
         builder.setPinnedConversations(pinnedConversationProtos)
@@ -1271,10 +1272,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localNotDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
-        if record.notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx: transaction.asV2Read) {
-            phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
-                !record.notDiscoverableByPhoneNumber,
+        let localPhoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read)
+        if record.notDiscoverableByPhoneNumber != localPhoneNumberDiscoverability?.isNotDiscoverableByPhoneNumber {
+            phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
+                record.notDiscoverableByPhoneNumber ? .nobody : .everybody,
+                updateAccountAttributes: false,
                 updateStorageService: false,
                 authedAccount: authedAccount,
                 tx: transaction.asV2Write
@@ -1440,11 +1442,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
 // MARK: -
 
-extension PhoneNumberSharingMode {
+extension Optional where Wrapped == PhoneNumberSharingMode {
     var asProtoMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
         switch self {
-        case .everybody: return .everybody
+        case .none: return .unknown
         case .nobody: return .nobody
+        case .everybody: return .everybody
         }
     }
 }
@@ -1452,8 +1455,8 @@ extension PhoneNumberSharingMode {
 extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
     var asLocalMode: PhoneNumberSharingMode? {
         switch self {
+        case .unknown: return nil
         case .everybody: return .everybody
-        case .contactsOnly: return nil
         case .nobody: return .nobody
         default:
             owsFailDebug("unexpected case \(self)")

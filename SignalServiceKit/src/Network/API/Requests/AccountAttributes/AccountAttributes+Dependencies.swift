@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 extension AccountAttributes {
 
@@ -105,9 +106,8 @@ extension AccountAttributes {
 
         let encryptedDeviceName = (encryptedDeviceNameRaw?.isEmpty ?? true) ? nil : encryptedDeviceNameRaw?.base64EncodedString()
 
-        let isDiscoverableByPhoneNumber: Bool? = FeatureFlags.phoneNumberDiscoverability
-            ? DependenciesBridge.shared.phoneNumberDiscoverabilityManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read)
-            : nil
+        let phoneNumberDiscoverabilityManager = DependenciesBridge.shared.phoneNumberDiscoverabilityManager
+        let phoneNumberDiscoverability = phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: transaction.asV2Read)
 
         let hasSVRBackups = svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
 
@@ -120,7 +120,7 @@ extension AccountAttributes {
             twofaMode: twoFaMode,
             registrationRecoveryPassword: registrationRecoveryPassword,
             encryptedDeviceName: encryptedDeviceName,
-            discoverableByPhoneNumber: isDiscoverableByPhoneNumber,
+            discoverableByPhoneNumber: phoneNumberDiscoverability,
             hasSVRBackups: hasSVRBackups)
     }
 }

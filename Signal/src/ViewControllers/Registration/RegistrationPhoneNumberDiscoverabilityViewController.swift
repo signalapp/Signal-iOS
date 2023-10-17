@@ -7,13 +7,13 @@ import SignalMessaging
 import SignalUI
 
 protocol RegistrationPhoneNumberDiscoverabilityPresenter: AnyObject {
-    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool)
+    func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability)
     var presentedAsModal: Bool { get }
 }
 
 public struct RegistrationPhoneNumberDiscoverabilityState: Equatable {
     let e164: E164
-    let isDiscoverableByPhoneNumber: Bool
+    let phoneNumberDiscoverability: PhoneNumberDiscoverability
 }
 
 class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
@@ -40,7 +40,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     ) {
         self.state = state
         self.presenter = presenter
-        self.isDiscoverableByPhoneNumber = state.isDiscoverableByPhoneNumber
+        self.phoneNumberDiscoverability = state.phoneNumberDiscoverability
         super.init()
         render()
     }
@@ -52,7 +52,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     // MARK: State
 
-    private var isDiscoverableByPhoneNumber: Bool = true {
+    private var phoneNumberDiscoverability: PhoneNumberDiscoverability {
         didSet { render() }
     }
 
@@ -82,21 +82,16 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         return result
     }()
 
-    private lazy var everybodyButton: ButtonRow = {
-        let result = ButtonRow(title: PhoneNumberDiscoverability.nameForDiscoverability(true))
-        result.handler = { [weak self] _ in
-            self?.isDiscoverableByPhoneNumber = true
-        }
-        return result
-    }()
+    private lazy var everybodyButton: ButtonRow = createButtonForDiscoverability(.everybody)
+    private lazy var nobodyButton: ButtonRow = createButtonForDiscoverability(.nobody)
 
-    private lazy var nobodyButton: ButtonRow = {
-        let result = ButtonRow(title: PhoneNumberDiscoverability.nameForDiscoverability(false))
+    private func createButtonForDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> ButtonRow {
+        let result = ButtonRow(title: phoneNumberDiscoverability.nameForDiscoverability)
         result.handler = { [weak self] _ in
-            self?.isDiscoverableByPhoneNumber = false
+            self?.phoneNumberDiscoverability = phoneNumberDiscoverability
         }
         return result
-    }()
+    }
 
     private lazy var selectionDescriptionLabel: UILabel = {
         let result = UILabel()
@@ -181,13 +176,13 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }
 
     private func render() {
-        everybodyButton.isSelected = isDiscoverableByPhoneNumber
+        everybodyButton.isSelected = phoneNumberDiscoverability == .everybody
         everybodyButton.render()
 
-        nobodyButton.isSelected = !isDiscoverableByPhoneNumber
+        nobodyButton.isSelected = phoneNumberDiscoverability == .nobody
         nobodyButton.render()
 
-        selectionDescriptionLabel.text = PhoneNumberDiscoverability.descriptionForDiscoverability(isDiscoverableByPhoneNumber)
+        selectionDescriptionLabel.text = phoneNumberDiscoverability.descriptionForDiscoverability
 
         view.backgroundColor = Theme.backgroundColor
         continueButton.tintColor = Theme.accentBlueColor
@@ -200,7 +195,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
     @objc
     private func didTapSave() {
-        presenter?.setPhoneNumberDiscoverability(isDiscoverableByPhoneNumber)
+        presenter?.setPhoneNumberDiscoverability(phoneNumberDiscoverability)
     }
 }
 

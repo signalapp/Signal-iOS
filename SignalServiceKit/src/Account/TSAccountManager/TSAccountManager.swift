@@ -61,16 +61,15 @@ public protocol TSAccountManager {
 
     // MARK: - Phone Number Discoverability
 
-    func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
-    func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool
-    func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date
+    func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability?
+    func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date
 }
 
 /// Should only be used in ``PhoneNumberDiscoverabilityManager``, so that necessary
 /// side effects can be triggered.
 public protocol PhoneNumberDiscoverabilitySetter {
 
-    func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction)
+    func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability, tx: DBWriteTransaction)
 }
 
 /// Should only be used in ``RegistrationStateChangeManager``, so that necessary

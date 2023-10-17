@@ -530,8 +530,8 @@ extension ExperienceUpgradeManifest {
             // If we have a username, do not show the reminder.
             return false
         }
-
-        guard !DependenciesBridge.shared.tsAccountManager.isDiscoverableByPhoneNumber(tx: transaction.asV2Read) else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read).orDefault.isDiscoverable {
             // If phone number discovery is enabled, do not prompt to create a
             // username.
             return false
@@ -541,7 +541,7 @@ extension ExperienceUpgradeManifest {
         /// discovery. Note that we need to invert the sign as this date will
         /// be in the past.
         let timeIntervalSinceDisabledDiscovery = DependenciesBridge.shared.tsAccountManager
-            .lastSetIsDiscoverablyByPhoneNumber(tx: transaction.asV2Read)
+            .lastSetIsDiscoverableByPhoneNumber(tx: transaction.asV2Read)
             .timeIntervalSinceNow * -1
 
         let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * kDayInterval

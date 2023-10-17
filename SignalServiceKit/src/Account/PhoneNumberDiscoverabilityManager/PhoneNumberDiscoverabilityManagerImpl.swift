@@ -26,27 +26,22 @@ public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityMa
         self.tsAccountManager = tsAccountManager
     }
 
-    public func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber(tx: tx)
+    public func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability? {
+        return tsAccountManager.phoneNumberDiscoverability(tx: tx)
     }
 
-    public func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return tsAccountManager.isDiscoverableByPhoneNumber(tx: tx)
-    }
-
-    public func setIsDiscoverableByPhoneNumber(
-        _ isDiscoverable: Bool,
+    public func setPhoneNumberDiscoverability(
+        _ phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        updateAccountAttributes: Bool,
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberDiscoverability else {
-            return
+        tsAccountManager.setPhoneNumberDiscoverability(phoneNumberDiscoverability, tx: tx)
+
+        if updateAccountAttributes {
+            accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: tx)
         }
-
-        tsAccountManager.setIsDiscoverableByPhoneNumber(isDiscoverable, tx: tx)
-
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: tx)
 
         if updateStorageService {
             tx.addAsyncCompletion(on: schedulers.global()) {

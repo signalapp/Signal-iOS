@@ -58,11 +58,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let choochoo = build.includes(.internal)
 
-    @objc
-    public static let phoneNumberSharing = build.includes(.internal)
-
-    @objc
-    public static let phoneNumberDiscoverability = build.includes(.internal)
+    public static let phoneNumberPrivacy = build.includes(.internal)
 
     @objc
     public static let phoneNumberIdentifiers = false

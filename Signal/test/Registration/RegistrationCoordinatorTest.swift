@@ -3340,7 +3340,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     }
 
     private func setAllProfileInfo() {
-        phoneNumberDiscoverabilityManagerMock.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
+        phoneNumberDiscoverabilityManagerMock.phoneNumberDiscoverabilityMock = { .everybody }
         profileManagerMock.hasProfileNameMock = { true }
     }
 
@@ -3395,7 +3395,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 twofaMode: .none,
                 registrationRecoveryPassword: nil,
                 encryptedDeviceName: nil,
-                discoverableByPhoneNumber: false,
+                discoverableByPhoneNumber: .nobody,
                 hasSVRBackups: true
             )
         }

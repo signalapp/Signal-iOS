@@ -9,29 +9,29 @@ import Foundation
 
 open class MockPhoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager {
 
-    public var hasDefinedIsDiscoverableByPhoneNumberMock: () -> Bool = { false }
+    public var phoneNumberDiscoverabilityMock: () -> PhoneNumberDiscoverability? = { .everybody }
 
-    open func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return hasDefinedIsDiscoverableByPhoneNumberMock()
+    open func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability? {
+        return phoneNumberDiscoverabilityMock()
     }
 
-    public var isDiscoverableByPhoneNumberMock: () -> Bool = { true }
-
-    open func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return isDiscoverableByPhoneNumberMock()
-    }
-
-    public lazy var setIsDiscoverableByPhoneNumberMock: (
-        _ isDiscoverable: Bool,
+    public lazy var setPhoneNumberDiscoverabilityMock: (
+        _ phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        _ updateAccountAttributes: Bool,
         _ updateStorageService: Bool,
         _ authedAccount: AuthedAccount
-    ) -> Void = { [weak self] isDiscoverable, _, _ in
-        self?.isDiscoverableByPhoneNumberMock = { return isDiscoverable }
-        self?.hasDefinedIsDiscoverableByPhoneNumberMock = { true }
+    ) -> Void = { [weak self] phoneNumberDiscoverability, _, _, _ in
+        self?.phoneNumberDiscoverabilityMock = { return phoneNumberDiscoverability }
     }
 
-    open func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, updateStorageService: Bool, authedAccount: AuthedAccount, tx: DBWriteTransaction) {
-        setIsDiscoverableByPhoneNumberMock(isDiscoverable, updateStorageService, authedAccount)
+    open func setPhoneNumberDiscoverability(
+        _ phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        updateAccountAttributes: Bool,
+        updateStorageService: Bool,
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
+    ) {
+        setPhoneNumberDiscoverabilityMock(phoneNumberDiscoverability, updateAccountAttributes, updateStorageService, authedAccount)
     }
 }
 

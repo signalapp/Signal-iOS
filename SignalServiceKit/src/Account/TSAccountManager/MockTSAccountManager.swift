@@ -132,21 +132,15 @@ public class MockTSAccountManager: TSAccountManager {
 
     // MARK: - Phone Number Discoverability
 
-    public var hasDefinedIsDiscoverableByPhoneNumberMock: () -> Bool = { false }
+    public var phoneNumberDiscoverabilityMock: () -> PhoneNumberDiscoverability? = { .everybody }
 
-    open func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return hasDefinedIsDiscoverableByPhoneNumberMock()
-    }
-
-    public var isDiscoverableByPhoneNumberMock: () -> Bool = { true }
-
-    open func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return isDiscoverableByPhoneNumberMock()
+    open func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability? {
+        return phoneNumberDiscoverabilityMock()
     }
 
     public var lastSetIsDiscoverableByPhoneNumberMock: () -> Date = { .distantPast }
 
-    open func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date {
+    open func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date {
         return lastSetIsDiscoverableByPhoneNumberMock()
     }
 }

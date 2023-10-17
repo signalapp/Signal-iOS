@@ -141,7 +141,7 @@ public protocol OWSUDManager {
 
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
 
-    func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode
+    func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode?
 
     func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
@@ -518,17 +518,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private static var phoneNumberSharingModeKey: String { "phoneNumberSharingMode" }
 
-    public func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode {
-        let result: PhoneNumberSharingMode? = {
-            guard FeatureFlags.phoneNumberSharing else {
-                return nil
-            }
-            guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: tx) else {
-                return nil
-            }
-            return PhoneNumberSharingMode(rawValue: rawMode)
-        }()
-        return result ?? .everybody
+    public func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode? {
+        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: tx) else {
+            return nil
+        }
+        return PhoneNumberSharingMode(rawValue: rawMode)
     }
 
     public func setPhoneNumberSharingMode(
@@ -536,10 +530,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         updateStorageService: Bool,
         tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberSharing else {
-            return
-        }
-
         keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx)
 
         if updateStorageService {
@@ -556,4 +546,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 public enum PhoneNumberSharingMode: Int {
     case everybody = 0
     case nobody = 2
+}
+
+extension Optional where Wrapped == PhoneNumberSharingMode {
+    public var orDefault: PhoneNumberSharingMode {
+        return self ?? (FeatureFlags.phoneNumberPrivacy ? .nobody : .everybody)
+    }
 }

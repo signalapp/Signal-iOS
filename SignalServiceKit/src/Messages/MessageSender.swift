@@ -726,7 +726,7 @@ extension MessageSender {
             }
 
             let senderCertificate: SenderCertificate = {
-                switch self.udManager.phoneNumberSharingMode(tx: tx) {
+                switch self.udManager.phoneNumberSharingMode(tx: tx).orDefault {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:

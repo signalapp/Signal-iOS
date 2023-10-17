@@ -11,7 +11,7 @@ import SignalUI
 
 public struct RegistrationProfileState: Equatable {
     let e164: E164
-    let isDiscoverableByPhoneNumber: Bool
+    let phoneNumberDiscoverability: PhoneNumberDiscoverability
 }
 
 // MARK: - RegistrationProfilePresenter
@@ -21,7 +21,7 @@ protocol RegistrationProfilePresenter: AnyObject {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        isDiscoverableByPhoneNumber: Bool
+        phoneNumberDiscoverability: PhoneNumberDiscoverability
     )
 }
 
@@ -224,19 +224,17 @@ class RegistrationProfileViewController: OWSViewController {
     }()
 
     private lazy var phoneNumberDisclosureView: PhoneNumberPrivacyLabel = {
-        let result = PhoneNumberPrivacyLabel { [weak self] in
+        return PhoneNumberPrivacyLabel(phoneNumberDiscoverability: state.phoneNumberDiscoverability, onTap: { [weak self] in
             guard let self else { return }
             let vc = RegistrationPhoneNumberDiscoverabilityViewController(
                 state: RegistrationPhoneNumberDiscoverabilityState(
                     e164: self.state.e164,
-                    isDiscoverableByPhoneNumber: self.state.isDiscoverableByPhoneNumber
+                    phoneNumberDiscoverability: self.state.phoneNumberDiscoverability
                 ),
                 presenter: self
             )
             self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-        }
-        result.isDiscoverable = state.isDiscoverableByPhoneNumber
-        return result
+        })
     }()
 
     public override func viewDidLoad() {
@@ -281,7 +279,7 @@ class RegistrationProfileViewController: OWSViewController {
         stackView.addArrangedSubview(explanationView)
         stackView.addArrangedSubview(avatarContainerView)
         stackView.addArrangedSubview(nameStackView)
-        if FeatureFlags.phoneNumberDiscoverability {
+        if FeatureFlags.phoneNumberPrivacy {
             stackView.addArrangedSubview(phoneNumberDisclosureView)
         }
         stackView.addArrangedSubview(UIView.vStretchingSpacer())
@@ -359,7 +357,7 @@ class RegistrationProfileViewController: OWSViewController {
             givenName: normalizedGivenName,
             familyName: normalizedFamilyName,
             avatarData: avatarData,
-            isDiscoverableByPhoneNumber: state.isDiscoverableByPhoneNumber
+            phoneNumberDiscoverability: state.phoneNumberDiscoverability
         )
     }
 }
@@ -424,11 +422,11 @@ extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabil
 
     var presentedAsModal: Bool { return true }
 
-    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
-        phoneNumberDisclosureView.isDiscoverable = isDiscoverable
+    func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
+        phoneNumberDisclosureView.phoneNumberDiscoverability = phoneNumberDiscoverability
         self.state = RegistrationProfileState(
             e164: self.state.e164,
-            isDiscoverableByPhoneNumber: isDiscoverable
+            phoneNumberDiscoverability: phoneNumberDiscoverability
         )
         self.presentedViewController?.dismiss(animated: true)
     }
@@ -451,15 +449,16 @@ extension RegistrationProfileViewController {
             )
         }
 
-        var isDiscoverable: Bool = false {
+        var phoneNumberDiscoverability: PhoneNumberDiscoverability {
             didSet { render() }
         }
-        private var completion: (() -> Void)?
+        private var onTap: (() -> Void)?
 
         // MARK: Init
 
-        init(completion: (() -> Void)?) {
-            self.completion = completion
+        init(phoneNumberDiscoverability: PhoneNumberDiscoverability, onTap: (() -> Void)?) {
+            self.phoneNumberDiscoverability = phoneNumberDiscoverability
+            self.onTap = onTap
             super.init(frame: .zero)
             initialRender()
         }
@@ -562,26 +561,22 @@ extension RegistrationProfileViewController {
         public func render() {
             button.setBackgroundColors(upColor: Theme.backgroundColor)
 
-            let labelIconName = isDiscoverable ? "group" : "lock"
+            let labelIconName: String = {
+                switch phoneNumberDiscoverability {
+                case .everybody:
+                    return "group"
+                case .nobody:
+                    return "lock"
+                }
+            }()
 
             titleLabel.text = OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
                 comment: "During registration, users can choose who can see their phone number.")
 
-            if isDiscoverable {
-                subTitleLabel.text = OWSLocalizedString(
-                    "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY",
-                    comment: "A user friendly name for the 'everybody' phone number discoverability mode.")
-            } else {
-                subTitleLabel.text = OWSLocalizedString(
-                    "PHONE_NUMBER_DISCOVERABILITY_NOBODY",
-                    comment: "A user friendly name for the 'nobody' phone number discoverability mode.")
-            }
+            subTitleLabel.text = phoneNumberDiscoverability.nameForDiscoverability
 
-            iconView.setTemplateImageName(
-                labelIconName,
-                tintColor: Theme.primaryIconColor
-            )
+            iconView.setTemplateImageName(labelIconName, tintColor: Theme.primaryIconColor)
 
             titleLabel.font = UIFont.dynamicTypeBodyClamped
             titleLabel.textColor = Theme.primaryTextColor
@@ -599,7 +594,7 @@ extension RegistrationProfileViewController {
 
         @objc
         func disclosureButtonTapped() {
-            completion?()
+            onTap?()
             render()
         }
     }

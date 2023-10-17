@@ -512,14 +512,14 @@ extension RegistrationNavigationController: RegistrationProfilePresenter {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        isDiscoverableByPhoneNumber: Bool
+        phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) {
         pushNextController(
             coordinator.setProfileInfo(
                 givenName: givenName,
                 familyName: familyName,
                 avatarData: avatarData,
-                isDiscoverableByPhoneNumber: isDiscoverableByPhoneNumber
+                phoneNumberDiscoverability: phoneNumberDiscoverability
             )
         )
     }
@@ -529,8 +529,8 @@ extension RegistrationNavigationController: RegistrationPhoneNumberDiscoverabili
 
     var presentedAsModal: Bool { return false }
 
-    func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) {
-        pushNextController(coordinator.setPhoneNumberDiscoverability(isDiscoverable))
+    func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
+        pushNextController(coordinator.setPhoneNumberDiscoverability(phoneNumberDiscoverability))
     }
 }
 

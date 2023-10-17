@@ -2862,19 +2862,19 @@ extension StorageServiceProtoAccountRecordUsernameLinkBuilder {
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
     public typealias RawValue = Int
-    case everybody // 0
-    case contactsOnly // 1
+    case unknown // 0
+    case everybody // 1
     case nobody // 2
     case UNRECOGNIZED(Int)
 
     public init() {
-        self = .everybody
+        self = .unknown
     }
 
     public init?(rawValue: Int) {
         switch rawValue {
-            case 0: self = .everybody
-            case 1: self = .contactsOnly
+            case 0: self = .unknown
+            case 1: self = .everybody
             case 2: self = .nobody
             default: self = .UNRECOGNIZED(rawValue)
         }
@@ -2882,8 +2882,8 @@ public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobu
 
     public var rawValue: Int {
         switch self {
-            case .everybody: return 0
-            case .contactsOnly: return 1
+            case .unknown: return 0
+            case .everybody: return 1
             case .nobody: return 2
             case .UNRECOGNIZED(let i): return i
         }
@@ -2892,8 +2892,8 @@ public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobu
 
 private func StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(_ value: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode) -> StorageServiceProtoAccountRecordPhoneNumberSharingMode {
     switch value {
+    case .unknown: return .unknown
     case .everybody: return .everybody
-    case .contactsOnly: return .contactsOnly
     case .nobody: return .nobody
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
@@ -2901,8 +2901,8 @@ private func StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(_ value:
 
 private func StorageServiceProtoAccountRecordPhoneNumberSharingModeUnwrap(_ value: StorageServiceProtoAccountRecordPhoneNumberSharingMode) -> StorageServiceProtos_AccountRecord.PhoneNumberSharingMode {
     switch value {
+    case .unknown: return .unknown
     case .everybody: return .everybody
-    case .contactsOnly: return .contactsOnly
     case .nobody: return .nobody
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }

@@ -372,8 +372,31 @@ extension AppSetup.FinalContinuation {
                 return false
             }
             updateLocalIdentifiers(LocalIdentifiersObjC(localIdentifiers))
+            // We are fully registered, and we're not in the middle of registration, so
+            // ensure discoverability is configured.
+            setUpDefaultDiscoverability()
         }
 
         return true
+    }
+
+    private func setUpDefaultDiscoverability() {
+        let databaseStorage = sskEnvironment.databaseStorageRef
+        let phoneNumberDiscoverabilityManager = DependenciesBridge.shared.phoneNumberDiscoverabilityManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        if databaseStorage.read(block: { tsAccountManager.phoneNumberDiscoverability(tx: $0.asV2Read) }) != nil {
+            return
+        }
+
+        databaseStorage.write { tx in
+            phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
+                PhoneNumberDiscoverabilityManager.Constants.discoverabilityDefault,
+                updateAccountAttributes: true,
+                updateStorageService: true,
+                authedAccount: .implicit(),
+                tx: tx.asV2Write
+            )
+        }
     }
 }

@@ -392,7 +392,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
-    public func setPhoneNumberDiscoverability(_ isDiscoverable: Bool) -> Guarantee<RegistrationStep> {
+    public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> Guarantee<RegistrationStep> {
         Logger.info("")
         guard let accountIdentity = persistedState.accountIdentity else {
             owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
@@ -401,7 +401,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         updatePhoneNumberDiscoverability(
             accountIdentity: accountIdentity,
-            isDiscoverable: isDiscoverable
+            phoneNumberDiscoverability: phoneNumberDiscoverability
         )
 
         return self.nextStep()
@@ -411,7 +411,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        isDiscoverableByPhoneNumber: Bool
+        phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
@@ -424,7 +424,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         updatePhoneNumberDiscoverability(
             accountIdentity: accountIdentity,
-            isDiscoverable: isDiscoverableByPhoneNumber
+            phoneNumberDiscoverability: phoneNumberDiscoverability
         )
 
         return self.nextStep()
@@ -556,8 +556,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var registrationId: UInt32!
         var pniRegistrationId: UInt32!
         var isManualMessageFetchEnabled = false
-        var hasDefinedIsDiscoverableByPhoneNumber = false
-        var isDiscoverableByPhoneNumber = false
+        var phoneNumberDiscoverability: PhoneNumberDiscoverability?
 
         // OWSProfileManager state
         var profileKey: OWSAES256Key!
@@ -2737,14 +2736,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             return .value(.setupProfile(RegistrationProfileState(
                 e164: accountIdentity.e164,
-                isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
+                phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
             )))
         }
 
-        if !inMemoryState.hasDefinedIsDiscoverableByPhoneNumber, FeatureFlags.phoneNumberDiscoverability {
+        if inMemoryState.phoneNumberDiscoverability == nil, FeatureFlags.phoneNumberPrivacy {
             return .value(.phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
                 e164: accountIdentity.e164,
-                isDiscoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber
+                phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
             )))
         }
 
@@ -3074,10 +3073,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.udAccessKey = udAccessKey
         inMemoryState.hasProfileName = deps.profileManager.hasProfileName
         db.read { tx in
-            inMemoryState.hasDefinedIsDiscoverableByPhoneNumber =
-                deps.phoneNumberDiscoverabilityManager.hasDefinedIsDiscoverableByPhoneNumber(tx: tx)
-            inMemoryState.isDiscoverableByPhoneNumber =
-                deps.phoneNumberDiscoverabilityManager.isDiscoverableByPhoneNumber(tx: tx)
+            inMemoryState.phoneNumberDiscoverability =
+                deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx)
         }
     }
 
@@ -3095,16 +3092,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             )
     }
 
-    private func updatePhoneNumberDiscoverability(accountIdentity: AccountIdentity, isDiscoverable: Bool) {
+    private func updatePhoneNumberDiscoverability(accountIdentity: AccountIdentity, phoneNumberDiscoverability: PhoneNumberDiscoverability) {
         Logger.info("")
 
-        self.inMemoryState.hasDefinedIsDiscoverableByPhoneNumber = true
-        self.inMemoryState.isDiscoverableByPhoneNumber = isDiscoverable
+        self.inMemoryState.phoneNumberDiscoverability = phoneNumberDiscoverability
 
         db.write { tx in
-            // We will update storage service at the end of registration.
-            deps.phoneNumberDiscoverabilityManager.setIsDiscoverableByPhoneNumber(
-                true,
+            // We will update attributes & storage service at the end of registration.
+            deps.phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
+                phoneNumberDiscoverability,
+                updateAccountAttributes: false,
                 updateStorageService: false,
                 authedAccount: accountIdentity.authedAccount,
                 tx: tx
@@ -3669,7 +3666,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             twofaMode: twoFAMode,
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
-            discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
+            discoverableByPhoneNumber: inMemoryState.phoneNumberDiscoverability,
             hasSVRBackups: hasSVRBackups
         )
     }

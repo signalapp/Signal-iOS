@@ -754,19 +754,19 @@ struct StorageServiceProtos_AccountRecord {
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
     typealias RawValue = Int
-    case everybody // = 0
-    case contactsOnly // = 1
+    case unknown // = 0
+    case everybody // = 1
     case nobody // = 2
     case UNRECOGNIZED(Int)
 
     init() {
-      self = .everybody
+      self = .unknown
     }
 
     init?(rawValue: Int) {
       switch rawValue {
-      case 0: self = .everybody
-      case 1: self = .contactsOnly
+      case 0: self = .unknown
+      case 1: self = .everybody
       case 2: self = .nobody
       default: self = .UNRECOGNIZED(rawValue)
       }
@@ -774,8 +774,8 @@ struct StorageServiceProtos_AccountRecord {
 
     var rawValue: Int {
       switch self {
-      case .everybody: return 0
-      case .contactsOnly: return 1
+      case .unknown: return 0
+      case .everybody: return 1
       case .nobody: return 2
       case .UNRECOGNIZED(let i): return i
       }
@@ -954,8 +954,8 @@ struct StorageServiceProtos_AccountRecord {
 extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   static var allCases: [StorageServiceProtos_AccountRecord.PhoneNumberSharingMode] = [
+    .unknown,
     .everybody,
-    .contactsOnly,
     .nobody,
   ]
 }
@@ -1829,7 +1829,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _proxiedLinkPreviews: Bool = false
     var _noteToSelfMarkedUnread: Bool = false
     var _linkPreviews: Bool = false
-    var _phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .everybody
+    var _phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .unknown
     var _notDiscoverableByPhoneNumber: Bool = false
     var _pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
     var _preferContactAvatars: Bool = false
@@ -1983,7 +1983,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._linkPreviews != false {
         try visitor.visitSingularBoolField(value: _storage._linkPreviews, fieldNumber: 11)
       }
-      if _storage._phoneNumberSharingMode != .everybody {
+      if _storage._phoneNumberSharingMode != .unknown {
         try visitor.visitSingularEnumField(value: _storage._phoneNumberSharingMode, fieldNumber: 12)
       }
       if _storage._notDiscoverableByPhoneNumber != false {
@@ -2098,8 +2098,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
 
 extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "EVERYBODY"),
-    1: .same(proto: "CONTACTS_ONLY"),
+    0: .same(proto: "UNKNOWN"),
+    1: .same(proto: "EVERYBODY"),
     2: .same(proto: "NOBODY"),
   ]
 }

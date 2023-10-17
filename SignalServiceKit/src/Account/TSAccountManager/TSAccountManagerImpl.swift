@@ -151,25 +151,21 @@ public class TSAccountManagerImpl: TSAccountManager {
 
     // MARK: - Phone Number Discoverability
 
-    public func hasDefinedIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return getOrLoadAccountState(tx: tx).hasDefinedIsDiscoverableByPhoneNumber
+    public func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability? {
+        return getOrLoadAccountState(tx: tx).phoneNumberDiscoverability
     }
 
-    public func isDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Bool {
-        return getOrLoadAccountState(tx: tx).isDiscoverableByPhoneNumber
-    }
-
-    public func lastSetIsDiscoverablyByPhoneNumber(tx: DBReadTransaction) -> Date {
+    public func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date {
         return getOrLoadAccountState(tx: tx).lastSetIsDiscoverableByPhoneNumberAt
     }
 }
 
 extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 
-    public func setIsDiscoverableByPhoneNumber(_ isDiscoverable: Bool, tx: DBWriteTransaction) {
+    public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability, tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
             kvStore.setBool(
-                isDiscoverable,
+                phoneNumberDiscoverability == .everybody,
                 key: Keys.isDiscoverableByPhoneNumber,
                 transaction: tx
             )
@@ -395,8 +391,7 @@ extension TSAccountManagerImpl {
 
         fileprivate let isTransferInProgress: Bool
 
-        let isDiscoverableByPhoneNumber: Bool
-        let hasDefinedIsDiscoverableByPhoneNumber: Bool
+        let phoneNumberDiscoverability: PhoneNumberDiscoverability?
         let lastSetIsDiscoverableByPhoneNumberAt: Date
 
         let isManualMessageFetchEnabled: Bool
@@ -446,32 +441,9 @@ extension TSAccountManagerImpl {
             )
             self.registrationDate = kvStore.getDate(Keys.registrationDate, transaction: tx)
 
-            let persistedIsDiscoverable = kvStore.getBool(Keys.isDiscoverableByPhoneNumber, transaction: tx)
-            var isDiscoverableByDefault = true
-
-            // TODO: [Usernames] Confirm default discoverability
-            //
-            // When we enable the ability to change whether you're discoverable
-            // by phone number, new registrations must not be discoverable by
-            // default. In order to accommodate this, the default "isDiscoverable"
-            // flag will be NO until you have successfully registered (aka defined
-            // a local phone number).
-            if FeatureFlags.phoneNumberDiscoverability {
-                switch registrationState {
-                case .unregistered, .linkedButUnprovisioned:
-                    isDiscoverableByDefault = false
-                case
-                        .registered, .provisioned,
-                        .deregistered, .delinked,
-                        .reregistering,
-                        .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
-                        .transferred, .transferringIncoming:
-                    break
-                }
+            self.phoneNumberDiscoverability = kvStore.getBool(Keys.isDiscoverableByPhoneNumber, transaction: tx).map {
+                return $0 ? .everybody : .nobody
             }
-
-            self.isDiscoverableByPhoneNumber = persistedIsDiscoverable ?? isDiscoverableByDefault
-            self.hasDefinedIsDiscoverableByPhoneNumber = persistedIsDiscoverable != nil
             self.lastSetIsDiscoverableByPhoneNumberAt = kvStore.getDate(
                 Keys.lastSetIsDiscoverableByPhoneNumber,
                 transaction: tx
