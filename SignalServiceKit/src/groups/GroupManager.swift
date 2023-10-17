@@ -1478,6 +1478,7 @@ public class GroupManager: NSObject {
         }
 
         return databaseStorage.read(.promise) { transaction -> Bool in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] hasProfileKeyCredential") }
             return self.groupsV2Swift.hasProfileKeyCredential(for: localAddress,
                                                               transaction: transaction)
         }.then(on: DispatchQueue.global()) { hasLocalCredential -> Promise<Void> in
@@ -1488,6 +1489,7 @@ public class GroupManager: NSObject {
             // If we don't have a local profile key credential we should first
             // check if it is simply expired, by asking for a new one (which we
             // would get as part of fetching our local profile).
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch local user profile") }
             return self.profileManager.fetchLocalUsersProfilePromise(authedAccount: .implicit()).asVoid()
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
@@ -1498,6 +1500,7 @@ public class GroupManager: NSObject {
                 // We successfully refreshed our profile key credential, which
                 // means we have previously uploaded a commitment, and all is
                 // well.
+                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] got profile key credential") }
                 return .value(())
             }
 

@@ -643,6 +643,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
     private func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data,
                                              justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
         return firstly(on: DispatchQueue.global()) { () -> GroupV2Params in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] making GV2Params") }
             return try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         }.then(on: DispatchQueue.global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
             return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
@@ -654,7 +655,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         justUploadedAvatars: GroupV2DownloadedAvatars?
     ) -> Promise<GroupV2Snapshot> {
         let requestBuilder: RequestBuilder = { (authCredential) in
-            firstly(on: DispatchQueue.global()) { () -> GroupsV2Request in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] buildFetchCurrentGroupV2SnapshotRequest") }
+            return firstly(on: DispatchQueue.global()) { () -> GroupsV2Request in
                 try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
                                                                            authCredential: authCredential)
             }
@@ -662,6 +664,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
         return firstly { () -> Promise<HTTPResponse> in
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] performServiceRequest") }
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
                                               behavior400: .fail,
@@ -671,11 +674,13 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             guard let groupProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] make GroupsProtoGroup") }
             return try GroupsProtoGroup(serializedData: groupProtoData)
         }.then(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup) -> Promise<(GroupsProtoGroup, GroupV2DownloadedAvatars)> in
             return firstly {
+                if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetchAllAvatarData") }
                 // We can ignoreSignature; these protos came from the service.
-                self.fetchAllAvatarData(groupProto: groupProto,
+                return self.fetchAllAvatarData(groupProto: groupProto,
                                         justUploadedAvatars: justUploadedAvatars,
                                         ignoreSignature: true,
                                         groupV2Params: groupV2Params)
@@ -683,6 +688,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 return (groupProto, downloadedAvatars)
             }
         }.map(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup, downloadedAvatars: GroupV2DownloadedAvatars) -> GroupV2Snapshot in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] parse it all") }
             return try GroupsV2Protos.parse(groupProto: groupProto, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params)
         }
     }

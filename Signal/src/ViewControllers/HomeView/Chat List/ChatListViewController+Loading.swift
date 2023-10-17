@@ -265,6 +265,9 @@ public class CLVLoadCoordinator: Dependencies {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
+        if DebugFlags.internalLogging {
+            Logger.info("[Scroll Perf Debug] 'Other' updateThreadIds to make union with (count \(loadInfoBuilder.updatedThreadIds.count)): \(loadInfoBuilder.updatedThreadIds)")
+        }
         loadInfoBuilder.updatedThreadIds.formUnion(updatedThreadIds)
 
         loadIfNecessary()
@@ -340,10 +343,16 @@ public class CLVLoadCoordinator: Dependencies {
             // NOTE: we might not receive the kind of load that we requested.
             switch loadInfo.loadType {
             case .resetAll:
+                if DebugFlags.internalLogging {
+                    Logger.info("[Scroll Perf Debug] About to do resetAll load")
+                }
                 return viewController.loadRenderStateForReset(viewInfo: loadInfo.viewInfo,
                                                               transaction: transaction)
             case .incrementalDiff(let updatedThreadIds):
                 owsAssertDebug(!updatedThreadIds.isEmpty)
+                if DebugFlags.internalLogging {
+                    Logger.info("[Scroll Perf Debug] About to do incrementalDiff load")
+                }
                 return viewController.loadNewRenderStateWithDiff(viewInfo: loadInfo.viewInfo,
                                                                  updatedThreadIds: updatedThreadIds,
                                                                  transaction: transaction)

@@ -100,6 +100,7 @@ extension GroupManager {
             changesBlock: changesBlock
         )
 
+        if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] add rotation to op queue") }
         operationQueue(forUpdatingGroup: groupModel).addOperation(operation)
 
         return operation.promise

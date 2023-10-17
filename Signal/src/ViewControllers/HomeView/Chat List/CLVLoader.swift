@@ -138,6 +138,9 @@ public class CLVLoader: Dependencies {
         // NOTE: There's an upper bound on how long SQL queries should be.
         //       We use kMaxIncrementalRowChanges to limit query size.
         guard threadsToLoad.count <= DatabaseChangeObserver.kMaxIncrementalRowChanges else {
+            if DebugFlags.internalLogging {
+                Logger.info("[Scroll Perf Debug] Loading without cache because too many incremental row changes.")
+            }
             try loadWithoutCache()
             return buildRenderState()
         }
@@ -206,13 +209,19 @@ public class CLVLoader: Dependencies {
                 // Missing thread, it was deleted and should no longer be visible.
                 continue
             }
+            if DebugFlags.internalLogging {
+                Logger.info("[Scroll Perf Debug] Thread triggering update: \(thread.uniqueId), isGV1: \(thread.isGroupV1Thread), isGV2: \(thread.isGroupV2Thread)")
+            }
             if thread.shouldThreadBeVisible {
                 updatedItemIds.insert(threadId)
             }
         }
 
         let newRenderState = try Bench(title: "loadRenderState for diff (\(viewInfo.chatListMode))") {
-            try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
+            if DebugFlags.internalLogging {
+                Logger.info("[Scroll Perf Debug] About to do loadRenderStateInternal")
+            }
+            return try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
         }
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys

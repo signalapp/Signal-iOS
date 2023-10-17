@@ -276,6 +276,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
 
+        if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] tryToRefreshV2GroupThread") }
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false

@@ -143,9 +143,11 @@ public class MessageProcessor: NSObject {
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
-            Self.messageFetcherJob.fetchingCompletePromise()
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetchingCompletePromise") }
+            return Self.messageFetcherJob.fetchingCompletePromise()
         }.then { () -> Promise<Void> in
-            self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] processingCompletePromise") }
+            return self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
         }
     }
 
