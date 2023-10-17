@@ -57,7 +57,8 @@ public struct CallRecordIncomingSyncMessageParams {
             let callType = CallRecord.CallType(protoCallType: callEvent.type),
             let callDirection = CallRecord.CallDirection(protoCallDirection: callEvent.direction),
             callEvent.hasCallID,
-            callEvent.hasTimestamp
+            callEvent.hasTimestamp,
+            SDS.fitsInInt64(callEvent.timestamp)
         else {
             logger.warn("Call event sync message with missing or invalid parameters!")
             throw ParseError.missingOrInvalidParameters
