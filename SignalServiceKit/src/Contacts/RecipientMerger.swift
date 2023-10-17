@@ -170,7 +170,11 @@ class RecipientMergerImpl: RecipientMerger {
         pni: Pni?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
+        let aciResult = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
+        if let pni, FeatureFlags.phoneNumberIdentifiers {
+            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: true, tx: tx)
+        }
+        return aciResult
     }
 
     func applyMergeFromLinkedDevice(
