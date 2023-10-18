@@ -80,7 +80,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "Tik om te downloaden";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video";
+"ACTION_VIDEO_CALL" = "Video-oproep";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Personen toevoegen";
@@ -2459,7 +2459,7 @@
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Vrienden uitnodigen";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep aanmaken";
+"GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Ophalen van gevraagde GIF mislukt. Controleer of je wel online bent.";
@@ -4106,7 +4106,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
 
 /* Label for the 'create new group' button. */
-"NEW_GROUP_BUTTON" = "Nieuwe groep aanmaken";
+"NEW_GROUP_BUTTON" = "Nieuwe groep";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Aanmaken";
@@ -4136,7 +4136,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere Signal-gebruikers";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Leden selecteren";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Kies leden";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
 "NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ naar %2$@ · verhaal";
