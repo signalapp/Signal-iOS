@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>6.46.0</string>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -72,7 +72,7 @@
 	<key>OWSBundleIDPrefix</key>
 	<string>$(SIGNAL_BUNDLEID_PREFIX)</string>
 	<key>OWSBundleVersion4</key>
-	<string>6.46.0.8</string>
+	<string>6.46.0.9</string>
 	<key>OWSMerchantID</key>
 	<string>$(SIGNAL_MERCHANTID)</string>
 	<key>UIStatusBarStyle</key>
