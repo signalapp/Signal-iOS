@@ -86,6 +86,11 @@ extension PreKey {
 }
 
 public class PreKeyOperation: OWSOperation {
+
+    public enum Error: Swift.Error {
+        case cancelled
+    }
+
     private let context: PreKeyTasks.Context
     private let preKeyTask: PreKeyTasks.PreKeyTask
     private let future: Future<Void>?
@@ -110,6 +115,11 @@ public class PreKeyOperation: OWSOperation {
 
     public override func run() {
         PreKey.logger.info("")
+        guard !isCancelled else {
+            PreKey.logger.info("Operation cancelled")
+            self.future?.reject(Error.cancelled)
+            return
+        }
         firstly(on: context.schedulers.global()) {
             self.preKeyTask.runPreKeyTask()
         } .done(on: self.context.schedulers.global()) {

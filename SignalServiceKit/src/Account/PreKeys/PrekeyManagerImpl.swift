@@ -154,6 +154,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+        cancelAllOperations()
         PreKey.logger.info("Create registration prekeys")
         /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
         /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
@@ -167,6 +168,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
     ) -> Promise<RegistrationPreKeyUploadBundles> {
+        cancelAllOperations()
         PreKey.logger.info("Create provisioning prekeys")
         /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
         /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
@@ -304,6 +306,10 @@ public class PreKeyManagerImpl: PreKeyManager {
         Self.operationQueue.addOperation(refreshOperation)
     }
 
+    private func cancelAllOperations() {
+        Self.operationQueue.cancelAllOperations()
+    }
+
     private func runPreKeyOperations(_ operations: [Operation]) -> Promise<Void> {
 
         let (promise, future) = Promise<Void>.pending()
@@ -333,6 +339,12 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     private class MessageProcessingOperation: OWSOperation {
+
+        private enum Error: Swift.Error {
+            case timeout
+            case cancelled
+        }
+
         let messageProcessorWrapper: PreKey.Manager.Shims.MessageProcessor
         public init(messageProcessor: PreKey.Manager.Shims.MessageProcessor) {
             self.messageProcessorWrapper = messageProcessor
@@ -340,15 +352,38 @@ public class PreKeyManagerImpl: PreKeyManager {
 
         public override func run() {
             PreKey.logger.info("Waiting for message processing to idle or complete.")
+            guard !isCancelled else {
+                PreKey.logger.info("Cancelled waiting for message processing")
+                self.reportError(Error.cancelled)
+                return
+            }
 
             firstly(on: DispatchQueue.global()) {
-                self.messageProcessorWrapper.fetchingAndProcessingCompletePromise()
+                self.waitForMessageProcessing(timeout: 3)
             }.done { _ in
-                Logger.verbose("Complete.")
+                PreKey.logger.verbose("Complete.")
                 self.reportSuccess()
             }.catch { error in
                 owsFailDebug("Error: \(error)")
                 self.reportError(SSKUnretryableError.messageProcessingFailed)
+            }
+        }
+
+        private func waitForMessageProcessing(timeout: TimeInterval) -> Promise<Void> {
+            guard !self.isCancelled else {
+                return Promise(error: Error.cancelled)
+            }
+
+            return firstly(on: DispatchQueue.global()) {
+                self.messageProcessorWrapper.fetchingAndProcessingCompletePromise().timeout(seconds: timeout)
+            }.timeout(seconds: timeout) {
+                return Error.timeout
+            }.recover { error in
+                if case Error.timeout = error {
+                    return self.waitForMessageProcessing(timeout: timeout)
+                } else {
+                    return Promise(error: SSKUnretryableError.messageProcessingFailed)
+                }
             }
         }
     }
