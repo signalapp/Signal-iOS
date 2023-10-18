@@ -810,6 +810,13 @@ public class SignalAttachment: NSObject {
         dataUTI: String,
         imageQuality: ImageQualityLevel
     ) -> Bool {
+        // 10-18-2023: Due to an issue with corrupt JPEG IPTC metadata causing a
+        // crash in CGImageDestinationCopyImageSource, stop using the original
+        // JPEGs and instead go through the recompresing step.
+        // This is an iOS bug (FB13285956) still present in iOS 17 and should
+        // be revisitied in the future to see if JPEG support can be reenabled.
+        guard dataUTI != (kUTTypeJPEG as String) else { return false }
+
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else { return false }
         guard dataSource.dataLength <= imageQuality.maxFileSize else { return false }
         if dataSource.hasStickerLikeProperties { return true }
