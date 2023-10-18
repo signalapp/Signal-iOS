@@ -468,6 +468,10 @@ extension SignalCall: GroupCallDelegate {
         // TODO: Implement handling of reactions.
     }
 
+    public func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
+        // TODO: Implement handling of raise hand.
+    }
+
     public func groupCall(onPeekChanged groupCall: GroupCall) {
         guard
             let localAci = DependenciesBridge.shared.tsAccountManager
