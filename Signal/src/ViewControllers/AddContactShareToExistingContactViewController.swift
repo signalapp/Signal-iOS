@@ -7,7 +7,7 @@ import ContactsUI
 import SignalServiceKit
 import SignalUI
 
-class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPickerDelegate, CNContactViewControllerDelegate {
+class AddContactShareToExistingContactViewController: ContactPickerViewController {
 
     // TODO - there are some hard coded assumptions in this VC that assume we are *pushed* onto a
     // navigation controller. That seems fine for now, but if we need to be presented as a modal,
@@ -20,9 +20,10 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
 
     required init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
+
         super.init(allowsMultipleSelection: false, subtitleCellType: .none)
 
-        self.contactsPickerDelegate = self
+        delegate = self
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -31,33 +32,6 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
 
     required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         fatalError("init(allowsMultipleSelection:subtitleCellType:) has not been implemented")
-    }
-
-    // MARK: - ContactsPickerDelegate
-
-    func contactsPickerDidCancel(_: ContactsPicker) {
-        Logger.debug("")
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        navigationController.popViewController(animated: true)
-    }
-
-    func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
-        Logger.debug("")
-
-        guard let cnContactId = oldContact.cnContactId,
-              let oldCNContact = Self.contactsManagerImpl.cnContact(withId: cnContactId) else {
-            owsFailDebug("could not load old CNContact.")
-            return
-        }
-        guard let newCNContact = OWSContacts.systemContact(for: self.contactShare.dbRecord, imageData: self.contactShare.avatarImageData) else {
-            owsFailDebug("could not load new CNContact.")
-            return
-        }
-        merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
     }
 
     func merge(oldCNContact: CNContact, newCNContact: CNContact) {
@@ -77,14 +51,16 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         contactViewController.delegate = self
 
         let modal = OWSNavigationController(rootViewController: contactViewController)
-        self.present(modal, animated: true)
+        present(modal, animated: true)
     }
+}
 
-    func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
+extension AddContactShareToExistingContactViewController: ContactPickerDelegate {
+
+    func contactPickerDidCancel(_: ContactPickerViewController) {
         Logger.debug("")
-        owsFailDebug("only supports single contact select")
 
-        guard let navigationController = self.navigationController else {
+        guard let navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
             return
         }
@@ -92,16 +68,44 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         navigationController.popViewController(animated: true)
     }
 
-    func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
-        return true
-    }
-
-    // MARK: - CNContactViewControllerDelegate
-
-    public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+    func contactPicker(_: ContactPickerViewController, didSelect oldContact: Contact) {
         Logger.debug("")
 
-        guard let navigationController = self.navigationController else {
+        guard let cnContactId = oldContact.cnContactId,
+              let oldCNContact = contactsManager.cnContact(withId: cnContactId) else {
+            owsFailDebug("could not load old CNContact.")
+            return
+        }
+        guard let newCNContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
+            owsFailDebug("could not load new CNContact.")
+            return
+        }
+        merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
+    }
+
+    func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+        Logger.debug("")
+        owsFailDebug("only supports single contact select")
+
+        guard let navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        navigationController.popViewController(animated: true)
+    }
+
+    func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+        return true
+    }
+}
+
+extension AddContactShareToExistingContactViewController: CNContactViewControllerDelegate {
+
+    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+        Logger.debug("")
+
+        guard let navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
             return
         }
@@ -128,7 +132,7 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         let previousViewControllerIndex = navigationController.viewControllers.index(before: myIndex)
         let previousViewController = navigationController.viewControllers[previousViewControllerIndex]
 
-        self.dismiss(animated: false) {
+        dismiss(animated: false) {
             navigationController.popToViewController(previousViewController, animated: true)
         }
     }

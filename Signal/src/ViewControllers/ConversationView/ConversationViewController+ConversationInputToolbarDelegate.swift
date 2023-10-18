@@ -612,8 +612,8 @@ fileprivate extension ConversationViewController {
         contactsViewHelper.checkSharingAuthorization(
             purpose: .share,
             authorizedBehavior: .runAction({
-                let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .none)
-                contactsPicker.contactsPickerDelegate = self
+                let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)
+                contactsPicker.delegate = self
                 contactsPicker.title = OWSLocalizedString(
                     "CONTACT_PICKER_TITLE",
                     comment: "navbar title for contact picker when sharing a contact"

@@ -77,17 +77,13 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
 
 // MARK: -
 
-extension ConversationViewController: ContactsPickerDelegate {
+extension ConversationViewController: ContactPickerDelegate {
 
-    public func contactsPickerDidCancel(_: ContactsPicker) {
-        AssertIsOnMainThread()
-
-        Logger.verbose("")
-
+    public func contactPickerDidCancel(_: ContactPickerViewController) {
         dismiss(animated: true, completion: nil)
     }
 
-    public func contactsPicker(_ contactsPicker: ContactsPicker, didSelectContact contact: Contact) {
+    public func contactPicker(_ contactPicker: ContactPickerViewController, didSelect contact: Contact) {
         AssertIsOnMainThread()
         owsAssertDebug(contact.cnContactId != nil)
 
@@ -121,24 +117,19 @@ extension ConversationViewController: ContactsPickerDelegate {
 
         let approveContactShare = ContactShareApprovalViewController(contactShare: contactShare)
         approveContactShare.delegate = self
-        guard let navigationController = contactsPicker.navigationController else {
+        guard let navigationController = contactPicker.navigationController else {
             owsFailDebug("Missing contactsPicker.navigationController.")
             return
         }
         navigationController.pushViewController(approveContactShare, animated: true)
     }
 
-    public func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
-        AssertIsOnMainThread()
-
-        owsFailDebug("Contacts: \(contacts)")
-
+    public func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+        owsFailDebug("Multiple selection not allowed.")
         dismiss(animated: true, completion: nil)
     }
 
-    public func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
-        AssertIsOnMainThread()
-
+    public func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
         // Any reason to preclude contacts?
         return true
     }

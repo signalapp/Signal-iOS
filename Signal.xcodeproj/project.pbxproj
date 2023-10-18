@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1208,7 +1208,7 @@
 		88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
 		88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
-		88B986FC28807F4100F8C74D /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
+		88B986FC28807F4100F8C74D /* ContactPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */; };
 		88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
 		88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4717228664DE3001A3065 /* BaseMemberViewController.swift */; };
 		88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewMembersBar.swift */; };
@@ -2972,7 +2972,7 @@
 		34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkViewController.swift; sourceTree = "<group>"; };
 		34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkQRCodeViewController.swift; sourceTree = "<group>"; };
 		34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallViewController.swift; sourceTree = "<group>"; };
-		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
+		34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPickerViewController.swift; sourceTree = "<group>"; };
 		34B3F8441E8DF1700035BE1A /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
@@ -6039,8 +6039,8 @@
 				34A95569271B510500B05242 /* ActionSheetController.swift */,
 				34A9558E271B510500B05242 /* ApprovalFooterView.swift */,
 				34A9558A271B510500B05242 /* ContactFieldView.swift */,
+				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
 				34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */,
-				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
 				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
@@ -11244,10 +11244,10 @@
 				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
 				3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */,
+				88B986FC28807F4100F8C74D /* ContactPickerViewController.swift in Sources */,
 				503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */,
 				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
-				88B986FC28807F4100F8C74D /* ContactsPicker.swift in Sources */,
 				3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,

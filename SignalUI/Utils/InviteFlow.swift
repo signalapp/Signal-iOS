@@ -9,7 +9,7 @@ import MessageUI
 import SignalMessaging
 import SignalServiceKit
 
-public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
+public class InviteFlow: NSObject {
     private enum Channel {
         case message, mail
 
@@ -77,64 +77,19 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         }
     }
 
-    func presentViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    private func presentViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
         let navController = OWSNavigationController(rootViewController: vc)
         presentingViewController?.presentFormSheet(navController, animated: true)
         modalPresentationViewController = navController
     }
 
-    func popToPresentingViewController(animated: Bool, completion: (() -> Void)? = nil) {
+    private func popToPresentingViewController(animated: Bool, completion: (() -> Void)? = nil) {
         guard let modalVC = modalPresentationViewController else {
             owsFailDebug("Missing modal view controller")
             return
         }
         modalVC.dismiss(animated: true, completion: completion)
         self.modalPresentationViewController = nil
-    }
-
-    // MARK: ContactsPickerDelegate
-
-    public func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
-        Logger.debug("didSelectContacts:\(contacts)")
-
-        guard let inviteChannel = channel else {
-            Logger.error("unexpected nil channel after returning from contact picker.")
-            popToPresentingViewController(animated: true)
-            return
-        }
-
-        switch inviteChannel {
-        case .message:
-            let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
-            dismissAndSendSMSTo(phoneNumbers: phoneNumbers)
-        case .mail:
-            let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
-            sendMailTo(emails: recipients)
-        }
-    }
-
-    public func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
-        guard let inviteChannel = channel else {
-            Logger.error("unexpected nil channel in contact picker.")
-            return true
-        }
-
-        switch inviteChannel {
-        case .message:
-            return contact.userTextPhoneNumbers.count > 0
-        case .mail:
-            return contact.emails.count > 0
-        }
-    }
-
-    public func contactsPickerDidCancel(_: ContactsPicker) {
-        Logger.debug("")
-        popToPresentingViewController(animated: true)
-    }
-
-    public func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
-        owsFailDebug("InviteFlow only supports multi-select")
-        popToPresentingViewController(animated: true)
     }
 
     // MARK: SMS
@@ -154,8 +109,8 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         contactsViewHelper.checkSharingAuthorization(
             purpose: .invite,
             authorizedBehavior: .runAction({
-                let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
-                picker.contactsPickerDelegate = self
+                let picker = ContactPickerViewController(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
+                picker.delegate = self
                 picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
                 self.presentViewController(picker, animated: true)
             }),
@@ -163,7 +118,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         )
     }
 
-    public func dismissAndSendSMSTo(phoneNumbers: [String]) {
+    private func dismissAndSendSMSTo(phoneNumbers: [String]) {
         popToPresentingViewController(animated: true) {
             if phoneNumbers.count > 1 {
                 let warning = ActionSheetController(
@@ -199,25 +154,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         presentingViewController?.present(messageComposeViewController, animated: true)
     }
 
-    // MARK: MessageComposeViewControllerDelegate
-
-    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        presentingViewController?.dismiss(animated: true) {
-            switch result {
-            case .failed:
-                let warning = ActionSheetController(title: nil, message: OWSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
-                warning.addAction(OWSActionSheets.dismissAction)
-                self.presentingViewController?.present(warning, animated: true, completion: nil)
-            case .sent:
-                Logger.debug("user successfully invited their friends via SMS.")
-            case .cancelled:
-                Logger.debug("user cancelled message invite")
-            @unknown default:
-                owsFailDebug("unknown MessageComposeResult: \(result)")
-            }
-        }
-    }
-
     // MARK: Mail
 
     private func mailChannel() -> Channel? {
@@ -243,10 +179,81 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
             self.presentingViewController?.present(mailComposeViewController, animated: true)
         }
     }
+}
 
-    // MARK: MailComposeViewControllerDelegate
+extension InviteFlow: ContactPickerDelegate {
 
-    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+    public func contactPicker(_: ContactPickerViewController, didSelectMultiple contacts: [Contact]) {
+        Logger.debug("didSelectContacts:\(contacts)")
+
+        guard let inviteChannel = channel else {
+            Logger.error("unexpected nil channel after returning from contact picker.")
+            popToPresentingViewController(animated: true)
+            return
+        }
+
+        switch inviteChannel {
+        case .message:
+            let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
+            dismissAndSendSMSTo(phoneNumbers: phoneNumbers)
+        case .mail:
+            let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
+            sendMailTo(emails: recipients)
+        }
+    }
+
+    public func contactPicker(_: ContactPickerViewController, shouldSelect contact: Contact) -> Bool {
+        guard let inviteChannel = channel else {
+            Logger.error("unexpected nil channel in contact picker.")
+            return true
+        }
+
+        switch inviteChannel {
+        case .message:
+            return contact.userTextPhoneNumbers.count > 0
+        case .mail:
+            return contact.emails.count > 0
+        }
+    }
+
+    public func contactPickerDidCancel(_: ContactPickerViewController) {
+        Logger.debug("")
+        popToPresentingViewController(animated: true)
+    }
+
+    public func contactPicker(_: ContactPickerViewController, didSelect contact: Contact) {
+        owsFailDebug("InviteFlow only supports multi-select")
+        popToPresentingViewController(animated: true)
+    }
+}
+
+extension InviteFlow: MFMessageComposeViewControllerDelegate {
+
+    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        presentingViewController?.dismiss(animated: true) {
+            switch result {
+            case .failed:
+                let warning = ActionSheetController(title: nil, message: OWSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
+                warning.addAction(OWSActionSheets.dismissAction)
+                self.presentingViewController?.present(warning, animated: true, completion: nil)
+            case .sent:
+                Logger.debug("user successfully invited their friends via SMS.")
+            case .cancelled:
+                Logger.debug("user cancelled message invite")
+            @unknown default:
+                owsFailDebug("unknown MessageComposeResult: \(result)")
+            }
+        }
+    }
+}
+
+extension InviteFlow: MFMailComposeViewControllerDelegate {
+
+    public func mailComposeController(
+        _ controller: MFMailComposeViewController,
+        didFinishWith result: MFMailComposeResult,
+        error: Error?
+    ) {
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
