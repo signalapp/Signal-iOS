@@ -1,1 +1,1 @@
-• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."
+• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
