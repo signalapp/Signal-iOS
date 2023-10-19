@@ -1,0 +1,658 @@
+//
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package BackupProtos;
+
+message BackupInfo {
+  // @required
+  optional uint64 version = 1;
+  // @required
+  optional uint64 backupTime = 2;
+}
+
+message Frame {
+  // oneof item {
+    optional AccountData account = 1;
+    optional Recipient recipient = 2;
+    optional Chat chat = 3;
+    optional ChatItem chatItem = 4;
+    optional Call call = 5;
+    optional StickerPack stickerPack = 6;
+  // }
+}
+
+message AccountData {
+  enum PhoneNumberSharingMode {
+    EVERYBODY = 0;
+    CONTACTS_ONLY = 1;
+    NOBODY = 2;
+  }
+  message UsernameLink {
+    enum Color {
+      UNKNOWN = 0;
+      BLUE = 1;
+      WHITE = 2;
+      GREY = 3;
+      OLIVE = 4;
+      GREEN = 5;
+      ORANGE = 6;
+      PINK = 7;
+      PURPLE = 8;
+    }
+
+    // @required
+    optional bytes entropy = 1;  // 32 bytes of entropy used for encryption
+    // @required
+    optional bytes serverId = 2; // 16 bytes of encoded UUID provided by the server
+    optional Color color = 3;
+  }
+
+  message AccountSettings {
+    // @required
+    optional bool noteToSelfArchived = 1;
+    // @required
+    optional bool readReceipts = 2;
+    // @required
+    optional bool sealedSenderIndicators = 3;
+    // @required
+    optional bool typingIndicators = 4;
+    // @required
+    optional bool proxiedLinkPreviews = 5;
+    // @required
+    optional bool noteToSelfMarkedUnread = 6;
+    // @required
+    optional bool linkPreviews = 7;
+    // @required
+    optional bool unlistedPhoneNumber = 8;
+    // @required
+    optional bool preferContactAvatars = 9;
+    // @required
+    optional uint32 universalExpireTimer = 10;
+    repeated string preferredReactionEmoji = 11;
+    // @required
+    optional bool displayBadgesOnProfile = 12;
+    // @required
+    optional bool keepMutedChatsArchived = 13;
+    // @required
+    optional bool myStoriesPrivacyHasBeenSet = 14; // Removed 'has' prefix on spec definition to avoid name conflict.
+    // @required
+    optional bool onboardingStoryHasBeenViewed = 15; // Removed 'has' prefix on spec definition to avoid name conflict.
+    // @required
+    optional bool storiesDisabled = 16;
+    optional bool storyViewReceiptsEnabled = 17;
+    // @required
+    optional bool onboardingStoryHasBeenRead = 18; // Removed 'has' prefix on spec definition to avoid name conflict.
+    // @required
+    optional bool groupStoryEducationSheetHasBeenSet = 19; // Removed 'has' prefix on spec definition to avoid name conflict.
+    // @required
+    optional bool usernameOnboardingHasBeenCompleted = 20; // Removed 'has' prefix on spec definition to avoid name conflict.
+    optional PhoneNumberSharingMode phoneNumberSharingMode = 21;
+  }
+
+  // @required
+  optional bytes aciIdentityPublicKey = 1;
+  // @required
+  optional bytes aciIdentityPrivateKey = 2;
+  // @required
+  optional bytes pniIdentityPublicKey = 3;
+  // @required
+  optional bytes pniIdentityPrivateKey = 4;
+  // @required
+  optional bytes profileKey = 5;
+  optional string username = 6;
+  // @required
+  optional UsernameLink usernameLink = 7;
+  // @required
+  optional string givenName = 8;
+  // @required
+  optional string familyName = 9;
+  // @required
+  optional string avatarPath = 10;
+  // @required
+  optional bytes subscriberId = 11;
+  // @required
+  optional string subscriberCurrencyCode = 12;
+  // @required
+  optional bool subscriptionManuallyCancelled = 13;
+  // @required
+  optional AccountSettings accountSettings = 14;
+  // @required
+  optional bytes aci = 15;
+  // @required
+  optional bytes pni = 16;
+  // @required
+  optional uint64 e164 = 17;
+}
+
+message Recipient {
+  // @required
+  optional uint64 id = 1; // generated id for reference only within this file
+  // oneof destination {
+    optional Contact contact = 2;
+    optional Group group = 3;
+    optional DistributionList distributionList = 4;
+    optional SelfRecipient selfRecipient = 5;
+  // }
+}
+
+message Contact {
+  optional bytes aci = 1; // should be 16 bytes
+  optional bytes pni = 2; // should be 16 bytes
+  optional string username = 3;
+  optional uint64 e164 = 4;
+  // @required
+  optional bool blocked = 5;
+  // @required
+  optional bool hidden = 6;
+  enum Registered {
+    UNKNOWN = 0;
+    REGISTERED = 1;
+    NOT_REGISTERED = 2;
+  }
+  optional Registered registered = 7;
+  // @required
+  optional uint64 unregisteredTimestamp = 8;
+  optional bytes profileKey = 9;
+  // @required
+  optional bool profileSharing = 10;
+  optional string profileGivenName = 11;
+  optional string profileFamilyName = 12;
+  optional string profileJoinedName = 13;
+  // @required
+  optional bool hideStory = 14;
+}
+
+message Group {
+  enum StorySendMode {
+    DEFAULT = 0;
+    DISABLED = 1;
+    ENABLED = 2;
+  }
+
+  // @required
+  optional bytes masterKey = 1;
+  // @required
+  optional bool whitelisted = 2;
+  // @required
+  optional bool hideStory = 3;
+  optional StorySendMode storySendMode = 4;
+}
+
+message SelfRecipient {
+}
+
+message Chat {
+  // @required
+  optional uint64 id = 1; // generated id for reference only within this file
+  // @required
+  optional uint64 recipientId = 2;
+  // @required
+  optional bool archived = 3;
+  // @required
+  optional bool pinned = 4;
+  // @required
+  optional uint64 expirationTimer = 5;
+  // @required
+  optional uint64 muteUntil = 6;
+  // @required
+  optional bool markedUnread = 7;
+  // @required
+  optional bool dontNotifyForMentionsIfMuted = 8;
+}
+
+message DistributionList {
+  // @required
+  optional string name = 1;
+  // @required
+  optional bytes distributionId = 2; // distribution list ids are uuids
+  // @required
+  optional bool allowReplies = 3;
+  // @required
+  optional uint64 deletionTimestamp = 4;
+  // @required
+  optional bool isUnknown = 5;
+  enum PrivacyMode {
+    ONLY_WITH = 0;
+    ALL_EXCEPT = 1;
+    ALL = 2;
+  }
+  optional PrivacyMode privacyMode = 6;
+  repeated uint64 memberRecipientIds = 7; // generated recipient id
+}
+
+message Identity {
+  // @required
+  optional bytes serviceId = 1;
+  // @required
+  optional bytes identityKey = 2;
+  // @required
+  optional uint64 timestamp = 3;
+  // @required
+  optional bool firstUse = 4;
+  // @required
+  optional bool verified = 5;
+  // @required
+  optional bool nonblockingApproval = 6;
+}
+
+message Call {
+  // @required
+  optional uint64 callId = 1;
+  // @required
+  optional uint64 peerRecipientId = 2;
+  enum Type {
+    AUDIO_CALL = 0;
+    VIDEO_CALL = 1;
+    GROUP_CALL = 2;
+    AD_HOC_CALL = 3;
+  }
+  optional Type type = 3;
+  // @required
+  optional bool outgoing = 4;
+  // @required
+  optional uint64 timestamp = 5;
+  // @required
+  optional uint64 ringerRecipientId = 6;
+  enum Event {
+    OUTGOING = 0; // 1:1 calls only
+    ACCEPTED = 1; // 1:1 and group calls. Group calls: You accepted a ring.
+    NOT_ACCEPTED = 2; // 1:1 calls only,
+    MISSED = 3; // 1:1 and group/ad-hoc calls. Group calls: The remote ring has expired or was cancelled by the ringer.
+    DELETE = 4; // 1:1 and Group/Ad-Hoc Calls.
+    GENERIC_GROUP_CALL = 5; // Group/Ad-Hoc Calls only. Initial state
+    JOINED = 6; // Group Calls: User has joined the group call.
+    RINGING = 7; // Group Calls: If a ring was requested by another user.
+    DECLINED = 8; // Group Calls: If you declined a ring.
+    OUTGOING_RING = 9; // Group Calls: If you are ringing a group.
+  }
+  optional Event event = 7;
+}
+
+message ChatItem {
+  message IncomingMessageDetails {
+    // @required
+    optional uint64 dateServerSent = 1;
+    // @required
+    optional bool read = 2;
+    // @required
+    optional bool sealedSender = 3;
+  }
+
+  message OutgoingMessageDetails {
+    repeated SendStatus sendStatus = 1;
+  }
+
+  // @required
+  optional uint64 chatId = 1;   // conversation id
+  // @required
+  optional uint64 authorId = 2; // recipient id
+  // @required
+  optional uint64 dateSent = 3;
+  // @required
+  optional uint64 dateReceived = 4;
+  optional uint64 expireStart = 5; // timestamp of when expiration timer started ticking down
+  optional uint64 expiresIn = 6; // how long timer of message is (ms)
+  repeated ChatItem revisions = 7;
+  // @required
+  optional bool sms = 8;
+
+  // oneof directionalDetails {
+    optional IncomingMessageDetails incoming = 9;
+    optional OutgoingMessageDetails outgoing = 10;
+  // }
+
+  // oneof item {
+    optional StandardMessage standardMessage = 11;
+    optional ContactMessage contactMessage = 12;
+    optional VoiceMessage voiceMessage = 13;
+    optional StickerMessage stickerMessage = 14;
+    optional RemoteDeletedMessage remoteDeletedMessage = 15;
+    optional UpdateMessage updateMessage = 16;
+  // }
+}
+
+message SendStatus {
+  enum Status {
+    FAILED = 0;
+    PENDING = 1;
+    SENT = 2;
+    DELIVERED = 3;
+    READ = 4;
+    VIEWED = 5;
+    SKIPPED = 6; // e.g. user in group was blocked, so we skipped sending to them
+  }
+  // @required
+  optional uint64 recipientId = 1;
+  optional Status deliveryStatus = 2;
+  // @required
+  optional bool networkFailure = 3;
+  // @required
+  optional bool identityKeyMismatch = 4;
+  // @required
+  optional bool sealedSender = 5;
+  // @required
+  optional uint64 timestamp = 6;
+}
+
+message Text {
+  // @required
+  optional string body = 1;
+  repeated BodyRange bodyRanges = 2;
+}
+
+message StandardMessage {
+  optional Quote quote = 1;
+  optional Text text = 2;
+  repeated AttachmentPointer attachments = 3;
+  optional LinkPreview linkPreview = 4;
+  optional AttachmentPointer longText = 5;
+  repeated Reaction reactions = 6;
+}
+
+message ContactMessage {
+  repeated ContactAttachment contact = 1;
+  repeated Reaction reactions = 2;
+}
+
+message ContactAttachment {
+  message Name {
+    optional string givenName = 1;
+    optional string familyName = 2;
+    optional string prefix = 3;
+    optional string suffix = 4;
+    optional string middleName = 5;
+    optional string displayName = 6;
+  }
+
+  message Phone {
+    enum Type {
+      HOME = 0;
+      MOBILE = 1;
+      WORK = 2;
+      CUSTOM = 3;
+    }
+
+    optional string value = 1;
+    optional Type type = 2;
+    optional string label = 3;
+  }
+
+  message Email {
+    enum Type {
+      HOME = 0;
+      MOBILE = 1;
+      WORK = 2;
+      CUSTOM = 3;
+    }
+
+    optional string value = 1;
+    optional Type type = 2;
+    optional string label = 3;
+  }
+
+  message PostalAddress {
+    enum Type {
+      HOME = 0;
+      WORK = 1;
+      CUSTOM = 2;
+    }
+
+    optional Type type = 1;
+    optional string label = 2;
+    optional string street = 3;
+    optional string pobox = 4;
+    optional string neighborhood = 5;
+    optional string city = 6;
+    optional string region = 7;
+    optional string postcode = 8;
+    optional string country = 9;
+  }
+
+  message Avatar {
+    optional AttachmentPointer avatar = 1;
+    optional bool isProfile = 2;
+  }
+
+  optional Name name = 1;
+  repeated Phone number = 3;
+  repeated Email email = 4;
+  repeated PostalAddress address = 5;
+  optional Avatar avatar = 6;
+  optional string organization = 7;
+}
+
+message DocumentMessage {
+  // @required
+  optional Text text = 1;
+  // @required
+  optional AttachmentPointer document = 2;
+  repeated Reaction reactions = 3;
+}
+
+message VoiceMessage {
+  optional Quote quote = 1;
+  // @required
+  optional AttachmentPointer audio = 2;
+  repeated Reaction reactions = 3;
+}
+
+message StickerMessage {
+  // @required
+  optional Sticker sticker = 1;
+  repeated Reaction reactions = 2;
+}
+
+// Tombstone for remote delete
+message RemoteDeletedMessage {
+}
+
+message ScheduledMessage {
+  // @required
+  optional ChatItem message = 1;
+  // @required
+  optional uint64 scheduledTime = 2;
+}
+
+message Sticker {
+  optional bytes packId = 1;
+  optional bytes packKey = 2;
+  optional uint32 stickerId = 3;
+  optional AttachmentPointer data = 4;
+  optional string emoji = 5;
+}
+
+message LinkPreview {
+  optional string url = 1;
+  optional string title = 2;
+  optional AttachmentPointer image = 3;
+  optional string descriptionText = 4;
+  optional uint64 date = 5;
+}
+
+message AttachmentPointer {
+  enum Flags {
+    VOICE_MESSAGE = 0;
+    BORDERLESS = 1;
+    GIF = 2;
+  }
+
+  // oneof attachmentIdentifier {
+    optional fixed64 cdnId = 1;
+    optional string cdnKey = 2;
+  // }
+
+  optional string contentType = 3;
+  optional bytes key = 4;
+  optional uint32 size = 5;
+  optional bytes digest = 6;
+  optional bytes incrementalMac = 7;
+  optional bytes incrementalMacChunkSize = 8;
+  optional string fileName = 9;
+  optional uint32 flags = 10;
+  optional uint32 width = 11;
+  optional uint32 height = 12;
+  optional string caption = 13;
+  optional string blurHash = 14;
+  optional uint64 uploadTimestamp = 15;
+  optional uint32 cdnNumber = 16;
+}
+
+message Quote {
+  enum Type {
+    NORMAL = 0;
+    GIFTBADGE = 1;
+  }
+
+  message QuotedAttachment {
+    optional string contentType = 1;
+    optional string fileName = 2;
+    optional AttachmentPointer thumbnail = 3;
+  }
+
+  optional uint64 id = 1;
+  optional uint64 authorId = 2;
+  optional string text = 3;
+  repeated QuotedAttachment attachments = 4;
+  repeated BodyRange bodyRanges = 5;
+  optional Type type = 6;
+}
+
+message BodyRange {
+  enum Style {
+    NONE = 0;
+    BOLD = 1;
+    ITALIC = 2;
+    SPOILER = 3;
+    STRIKETHROUGH = 4;
+    MONOSPACE = 5;
+  }
+
+  optional uint32 start = 1;
+  optional uint32 length = 2;
+
+  // oneof associatedValue {
+    optional string mentionAci = 3;
+    optional Style style = 4;
+  // }
+}
+
+message Reaction {
+  // @required
+  optional string emoji = 1;
+  // @required
+  optional uint64 authorId = 2;
+  // @required
+  optional uint64 sentTimestamp = 3;
+  // @required
+  optional uint64 receivedTimestamp = 4;
+}
+
+message UpdateMessage {
+  // oneof update {
+    optional SimpleUpdate simpleUpdate = 1;
+    optional GroupDescriptionUpdate groupDescription = 2;
+    optional ExpirationTimerChange expirationTimerChange = 3;
+    optional ProfileChange profileChange = 4;
+    optional ThreadMergeEvent threadMerge = 5;
+    optional SessionSwitchoverEvent sessionSwitchover = 6;
+    optional CallingMessage callingMessage = 7;
+  // }
+}
+
+message CallingMessage {
+  // oneof call {
+    optional uint64 callId = 1; // maps to id of Call from call log
+    optional CallMessage callMessage = 2;
+    optional GroupCallMessage groupCall = 3;
+  // }
+}
+
+message CallMessage {
+  enum Type {
+    INCOMING_AUDIO_CALL = 0;
+    INCOMING_VIDEO_CALL = 1;
+    OUTGOING_AUDIO_CALL = 2;
+    OUTGOING_VIDEO_CALL = 3;
+    MISSED_AUDIO_CALL = 4;
+    MISSED_VIDEO_CALL = 5;
+  }
+}
+
+message GroupCallMessage {
+  // @required
+  optional bytes startedCallUuid = 1;
+  // @required
+  optional uint64 startedCallTimestamp = 2;
+  repeated bytes inCallUuids = 3;
+  // @required
+  optional bool isCallFull = 4;
+}
+
+message SimpleUpdate {
+  enum Type {
+    JOINED_SIGNAL = 0;
+    IDENTITY_UPDATE = 1;
+    IDENTITY_VERIFIED = 2;
+    IDENTITY_DEFAULT = 3; // marking as unverified
+    CHANGE_NUMBER = 4;
+    BOOST_REQUEST = 5;
+    END_SESSION = 6;
+    CHAT_SESSION_REFRESH = 7;
+    BAD_DECRYPT = 8;
+    PAYMENTS_ACTIVATED = 9;
+    PAYMENT_ACTIVATION_REQUEST = 10;
+  }
+}
+
+message GroupDescriptionUpdate {
+  // @required
+  optional string body = 1;
+}
+
+message ExpirationTimerChange {
+  // @required
+  optional uint32 expiresIn = 1;
+}
+
+message ProfileChange {
+  // @required
+  optional string previousName = 1;
+  // @required
+  optional string newName = 2;
+}
+
+message ThreadMergeEvent {
+  // @required
+  optional uint64 previousE164 = 1;
+}
+
+message SessionSwitchoverEvent {
+  // @required
+  optional uint64 e164 = 1;
+}
+
+message StickerPack {
+  // @required
+  optional bytes id = 1;
+  // @required
+  optional bytes key = 2;
+  // @required
+  optional string title = 3;
+  // @required
+  optional string author = 4;
+  repeated StickerPackSticker stickers = 5; // First one should be cover sticker.
+}
+
+message StickerPackSticker {
+  // @required
+  optional AttachmentPointer data = 1;
+  // @required
+  optional string emoji = 2;
+}

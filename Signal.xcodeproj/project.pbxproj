@@ -848,6 +848,8 @@
 		6659A0352A7C6E0900066AB7 /* PersistPreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */; };
 		6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
+		665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6B2AE0776700539A37 /* Backup.pb.swift */; };
+		665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6D2AE07A8A00539A37 /* BackupProto.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
@@ -3427,6 +3429,8 @@
 		6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistPreKeyTask.swift; sourceTree = "<group>"; };
 		6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningPermissionsViewController.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
+		665C0D6B2AE0776700539A37 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
+		665C0D6D2AE07A8A00539A37 /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
@@ -9218,6 +9222,8 @@
 		F9C5C9A2289453B100548EEE /* Generated */ = {
 			isa = PBXGroup;
 			children = (
+				665C0D6B2AE0776700539A37 /* Backup.pb.swift */,
+				665C0D6D2AE07A8A00539A37 /* BackupProto.swift */,
 				5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */,
 				F9C5C9A9289453B100548EEE /* DeviceTransfer.pb.swift */,
 				F9C5C9B5289453B100548EEE /* DeviceTransferProto.swift */,
@@ -12318,6 +12324,8 @@
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
+				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,
+				665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,
 				F9C5CD58289453B300548EEE /* BaseModel.m in Sources */,
