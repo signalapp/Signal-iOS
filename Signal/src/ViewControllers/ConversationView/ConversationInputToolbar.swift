@@ -2068,19 +2068,7 @@ extension ConversationInputToolbar {
             return
         }
 
-        resetKeyboardToAlphabet()
         inputToolbarDelegate.sendButtonPressed()
-    }
-
-    @objc
-    private func resetKeyboardToAlphabet() {
-        // Force a change so they keyboard returns to alphabet if
-        // it was changed to numeric.
-        inputTextView.keyboardType = .alphabet
-        inputTextView.reloadInputViews()
-        // But then return to default keyboard so we get e.g. emojis.
-        inputTextView.keyboardType = .default
-        inputTextView.reloadInputViews()
     }
 
     @objc
