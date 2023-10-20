@@ -38,7 +38,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",
                     message: "If you proceed, you will not lose any of your current messages, " +
-                        "but your account will be deactivated until you complete re-registration.",
+                    "but your account will be deactivated until you complete re-registration.",
                     proceedTitle: "Proceed",
                     proceedAction: { _ in
                         DebugUIMisc.reregister()
@@ -179,14 +179,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
             OWSTableItem(title: "Enable edit send education prompt", actionBlock: {
                 DebugUIMisc.enableEditMessagePromptMessage()
-            }),
-
-            OWSTableItem(title: "Create cloud backup proto", actionBlock: {
-                DebugUIMisc.createCloudBackupProto()
-            }),
-
-            OWSTableItem(title: "Import cloud backup proto", actionBlock: { [weak self] in
-                self?.importCloudBackupProto()
             })
         ]
         return OWSTableSection(title: name, items: items)
@@ -518,73 +510,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 tx: tx.asV2Write
             )
         }
-    }
-
-    private static func createCloudBackupProto() {
-        let vc = UIApplication.shared.frontmostViewController!
-        ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
-            Task {
-                do {
-                    let fileUrl = try await DependenciesBridge.shared.cloudBackupManager.createBackup()
-                    await MainActor.run {
-                        let activityVC = UIActivityViewController(
-                            activityItems: [fileUrl],
-                            applicationActivities: nil
-                        )
-                        let vc = UIApplication.shared.frontmostViewController!
-                        activityVC.popoverPresentationController?.sourceView = vc.view
-                        activityVC.completionWithItemsHandler = { _, _, _, _ in
-                            modal.dismiss()
-                        }
-                        vc.present(activityVC, animated: true)
-                    }
-                } catch {
-                    // Do nothing
-                    await modal.dismiss()
-                }
-            }
-        })
-    }
-
-    private func importCloudBackupProto() {
-        let vc = UIApplication.shared.frontmostViewController!
-        guard #available(iOS 14.0, *) else {
-            return
-        }
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
-        documentPicker.delegate = self
-        documentPicker.allowsMultipleSelection = false
-        vc.present(documentPicker, animated: true)
-    }
-}
-
-extension DebugUIMisc: UIDocumentPickerDelegate {
-
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let fileUrl = urls.first else {
-            return
-        }
-        let vc = UIApplication.shared.frontmostViewController!
-        ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
-            Task {
-                do {
-                    try await DependenciesBridge.shared.cloudBackupManager.importBackup(fileUrl: fileUrl)
-                    await MainActor.run {
-                        modal.dismiss {
-                            let vc = UIApplication.shared.frontmostViewController!
-                            vc.presentToast(text: "Done!")
-                        }
-                    }
-                } catch {
-                    await MainActor.run {
-                        modal.dismiss {
-                            let vc = UIApplication.shared.frontmostViewController!
-                            vc.presentToast(text: "Failed!")
-                        }
-                    }
-                }
-            }
-        })
     }
 }
 
