@@ -113,6 +113,7 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
@@ -144,6 +145,7 @@ public class DependenciesBridge {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
@@ -180,6 +182,7 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
@@ -570,10 +573,17 @@ public class DependenciesBridge {
         )
 
         self.cloudBackupManager = CloudBackupManagerImpl(
+            blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
             dateProvider: dateProvider,
             db: db,
+            dmConfigurationStore: disappearingMessagesConfigurationStore,
+            groupsV2: groupsV2,
+            profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
+            recipientHidingManager: recipientHidingManager,
             signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
+            storyFinder: CloudBackup.Wrappers.StoryFinder(),
             streamProvider: CloudBackupOutputStreamProviderImpl(),
+            tsAccountManager: tsAccountManager,
             tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
             tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
         )

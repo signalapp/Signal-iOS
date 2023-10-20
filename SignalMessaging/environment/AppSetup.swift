@@ -58,6 +58,7 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
+        let blockingManager = BlockingManager()
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
         let messageProcessor = MessageProcessor()
@@ -89,6 +90,7 @@ public class AppSetup {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
@@ -131,7 +133,6 @@ public class AppSetup {
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
         let messageManager = OWSMessageManager()
-        let blockingManager = BlockingManager()
         let remoteConfigManager = ServiceRemoteConfigManager(
             appExpiry: appExpiry,
             db: DependenciesBridge.shared.db,

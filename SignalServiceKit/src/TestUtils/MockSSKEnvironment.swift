@@ -62,6 +62,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
+        let blockingManager = BlockingManager()
         let dateProvider = Date.provider
         let groupsV2 = MockGroupsV2()
         let messageProcessor = MessageProcessor()
@@ -96,6 +97,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             accountServiceClient: accountServiceClient,
             appContext: TestAppContext(),
             appVersion: AppVersionImpl.shared,
+            blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
@@ -131,7 +133,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
         let messageManager = OWSMessageManager()
-        let blockingManager = BlockingManager()
         let remoteConfigManager = StubbableRemoteConfigManager()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()

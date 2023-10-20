@@ -15,6 +15,17 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
         self.stringValue = stringValue
     }
 
+    public init?(_ uint64Value: UInt64?) {
+        guard let uint64Value else {
+            return nil
+        }
+        let stringValue = "+" + String(uint64Value)
+        guard let result = E164(stringValue) else {
+            return nil
+        }
+        self = result
+    }
+
     public static func expectNilOrValid(stringValue: String?) -> E164? {
         let result = E164(stringValue)
         owsAssertDebug(stringValue == nil || result != nil, "Couldn't parse an E164 that should be valid")
