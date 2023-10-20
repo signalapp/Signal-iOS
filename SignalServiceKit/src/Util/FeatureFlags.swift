@@ -128,6 +128,8 @@ public class FeatureFlags: BaseFlags {
     public static let recipientHiding = build.includes(.internal)
 
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
+
+    public static let cloudBackupFileAlpha = build.includes(.internal)
 }
 
 // MARK: -

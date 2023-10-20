@@ -848,6 +848,10 @@
 		6659A0352A7C6E0900066AB7 /* PersistPreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */; };
 		6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
+		665C0D5C2ADF538100539A37 /* CloudBackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5B2ADF538100539A37 /* CloudBackupManager.swift */; };
+		665C0D5E2ADF53E200539A37 /* CloudBackupManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5D2ADF53E200539A37 /* CloudBackupManagerImpl.swift */; };
+		665C0D602ADF57D000539A37 /* CloudBackupManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5F2ADF57D000539A37 /* CloudBackupManager+Shims.swift */; };
+		665C0D622AE0552900539A37 /* CloudBackupProtoFileStreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D612AE0552900539A37 /* CloudBackupProtoFileStreams.swift */; };
 		665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6B2AE0776700539A37 /* Backup.pb.swift */; };
 		665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D6D2AE07A8A00539A37 /* BackupProto.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
@@ -3429,6 +3433,10 @@
 		6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistPreKeyTask.swift; sourceTree = "<group>"; };
 		6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningPermissionsViewController.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
+		665C0D5B2ADF538100539A37 /* CloudBackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupManager.swift; sourceTree = "<group>"; };
+		665C0D5D2ADF53E200539A37 /* CloudBackupManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupManagerImpl.swift; sourceTree = "<group>"; };
+		665C0D5F2ADF57D000539A37 /* CloudBackupManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudBackupManager+Shims.swift"; sourceTree = "<group>"; };
+		665C0D612AE0552900539A37 /* CloudBackupProtoFileStreams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupProtoFileStreams.swift; sourceTree = "<group>"; };
 		665C0D6B2AE0776700539A37 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		665C0D6D2AE07A8A00539A37 /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
@@ -6876,6 +6884,17 @@
 			path = PreKeys;
 			sourceTree = "<group>";
 		};
+		665C0D5A2ADF537000539A37 /* CloudBackup */ = {
+			isa = PBXGroup;
+			children = (
+				665C0D5F2ADF57D000539A37 /* CloudBackupManager+Shims.swift */,
+				665C0D5B2ADF538100539A37 /* CloudBackupManager.swift */,
+				665C0D5D2ADF53E200539A37 /* CloudBackupManagerImpl.swift */,
+				665C0D612AE0552900539A37 /* CloudBackupProtoFileStreams.swift */,
+			);
+			path = CloudBackup;
+			sourceTree = "<group>";
+		};
 		666BAB0E2980B76B00867196 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -8819,6 +8838,7 @@
 				F9C5C9BA289453B100548EEE /* Account */,
 				F945FE482984795A00C835C7 /* Calls */,
 				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
+				665C0D5A2ADF537000539A37 /* CloudBackup */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				6600F36A298DAA4F00B1EDB7 /* DateProvider */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
@@ -12359,6 +12379,10 @@
 				500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */,
 				664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */,
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
+				665C0D602ADF57D000539A37 /* CloudBackupManager+Shims.swift in Sources */,
+				665C0D5C2ADF538100539A37 /* CloudBackupManager.swift in Sources */,
+				665C0D5E2ADF53E200539A37 /* CloudBackupManagerImpl.swift in Sources */,
+				665C0D622AE0552900539A37 /* CloudBackupProtoFileStreams.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				F9C5CCE5289453B300548EEE /* Contact+Swift.swift in Sources */,
 				F9C5CCB5289453B300548EEE /* Contact.m in Sources */,

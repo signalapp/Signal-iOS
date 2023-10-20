@@ -51,6 +51,8 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
 
+    public let cloudBackupManager: CloudBackupManager
+
     public let deviceManager: OWSDeviceManager
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
 
@@ -565,6 +567,15 @@ public class DependenciesBridge {
             svr: svr,
             syncManager: MasterKeySyncManagerImpl.Wrappers.SyncManager(syncManager),
             tsAccountManager: tsAccountManager
+        )
+
+        self.cloudBackupManager = CloudBackupManagerImpl(
+            dateProvider: dateProvider,
+            db: db,
+            signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
+            streamProvider: CloudBackupOutputStreamProviderImpl(),
+            tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
+            tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
         )
     }
 }
