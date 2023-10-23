@@ -134,8 +134,12 @@ public final class SSKSessionStore: SignalSessionStore {
             return
         case .some(.success(let recipientId)):
             owsAssertDebug(!recipientId.isEmpty)
-            keyValueStore.removeValue(forKey: recipientId, transaction: tx)
+            deleteAllSessions(for: recipientId, tx: tx)
         }
+    }
+
+    public func deleteAllSessions(for recipientId: AccountId, tx: DBWriteTransaction) {
+        keyValueStore.removeValue(forKey: recipientId, transaction: tx)
     }
 
     public func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {

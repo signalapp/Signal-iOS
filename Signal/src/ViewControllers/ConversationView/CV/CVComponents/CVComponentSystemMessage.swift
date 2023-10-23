@@ -791,6 +791,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.settingsPayments)
             case .threadMerge:
                 return Theme.iconImage(.merge16)
+            case .sessionSwitchover:
+                return Theme.iconImage(.info16)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1380,6 +1382,8 @@ extension CVComponentSystemMessage {
                 accessibilityIdentifier: "learn_more",
                 action: .didTapThreadMergeLearnMore(phoneNumber: phoneNumber)
             )
+        case .sessionSwitchover:
+            return nil
         }
     }
 

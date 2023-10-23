@@ -39,7 +39,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         aliceThread.shouldThreadBeVisible = true
 
         let threadStore = MockThreadStore()
-        threadStore.threads = [groupWithEveryone, groupWithoutAlice, groupArchived, myThread, aliceThread]
+        threadStore.insertThreads([groupWithEveryone, groupWithoutAlice, groupArchived, myThread, aliceThread])
 
         let mockDB = MockDB()
 

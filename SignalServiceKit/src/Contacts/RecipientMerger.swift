@@ -81,7 +81,7 @@ struct MergedRecipient {
 class RecipientMergerImpl: RecipientMerger {
     private let aciSessionStore: SignalSessionStore
     private let identityManager: OWSIdentityManager
-    private let observers: [RecipientMergeObserver]
+    private let observers: Observers
     private let recipientFetcher: RecipientFetcher
     private let recipientStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
@@ -95,7 +95,7 @@ class RecipientMergerImpl: RecipientMerger {
     init(
         aciSessionStore: SignalSessionStore,
         identityManager: OWSIdentityManager,
-        observers: [RecipientMergeObserver],
+        observers: Observers,
         recipientFetcher: RecipientFetcher,
         recipientStore: RecipientDataStore,
         storageServiceManager: StorageServiceManager
@@ -106,6 +106,12 @@ class RecipientMergerImpl: RecipientMerger {
         self.recipientFetcher = recipientFetcher
         self.recipientStore = recipientStore
         self.storageServiceManager = storageServiceManager
+    }
+
+    struct Observers {
+        let preThreadMerger: [RecipientMergeObserver]
+        let threadMerger: ThreadMerger
+        let postThreadMerger: [RecipientMergeObserver]
     }
 
     static func buildObservers(
@@ -124,15 +130,17 @@ class RecipientMergerImpl: RecipientMerger {
         threadStore: ThreadStore,
         userProfileStore: UserProfileStore,
         wallpaperStore: WallpaperStore
-    ) -> [RecipientMergeObserver] {
+    ) -> Observers {
         // PNI TODO: Merge ReceiptForLinkedDevice if needed.
-        [
-            signalServiceAddressCache,
-            AuthorMergeObserver(),
-            SignalAccountMergeObserver(),
-            ProfileWhitelistMerger(profileManager: profileManager),
-            UserProfileMerger(userProfileStore: userProfileStore),
-            ThreadMerger(
+        return Observers(
+            preThreadMerger: [
+                signalServiceAddressCache,
+                AuthorMergeObserver(),
+                SignalAccountMergeObserver(),
+                ProfileWhitelistMerger(profileManager: profileManager),
+                UserProfileMerger(userProfileStore: userProfileStore),
+            ],
+            threadMerger: ThreadMerger(
                 callRecordStore: callRecordStore,
                 chatColorSettingStore: chatColorSettingStore,
                 disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
@@ -147,21 +155,23 @@ class RecipientMergerImpl: RecipientMerger {
                 threadStore: threadStore,
                 wallpaperStore: wallpaperStore
             ),
-            // The group member MergeObserver depends on `SignalServiceAddressCache`,
-            // so ensure that one's listed first.
-            GroupMemberMergeObserverImpl(
-                threadStore: threadStore,
-                groupMemberUpdater: groupMemberUpdater,
-                groupMemberStore: groupMemberStore
-            ),
-            PhoneNumberChangedMessageInserter(
-                groupMemberStore: groupMemberStore,
-                interactionStore: interactionStore,
-                threadAssociatedDataStore: threadAssociatedDataStore,
-                threadStore: threadStore
-            ),
-            recipientMergeNotifier
-        ]
+            postThreadMerger: [
+                // The group member MergeObserver depends on `SignalServiceAddressCache`,
+                // so ensure that one's listed first.
+                GroupMemberMergeObserverImpl(
+                    threadStore: threadStore,
+                    groupMemberUpdater: groupMemberUpdater,
+                    groupMemberStore: groupMemberStore
+                ),
+                PhoneNumberChangedMessageInserter(
+                    groupMemberStore: groupMemberStore,
+                    interactionStore: interactionStore,
+                    threadAssociatedDataStore: threadAssociatedDataStore,
+                    threadStore: threadStore
+                ),
+                recipientMergeNotifier
+            ]
+        )
     }
 
     func applyMergeForLocalAccount(
@@ -223,6 +233,7 @@ class RecipientMergerImpl: RecipientMerger {
         mergeAndNotify(
             existingRecipients: [pniRecipient, aciRecipient],
             mightReplaceNonnilPhoneNumber: true,
+            insertSessionSwitchoverIfNeeded: false,
             isLocalMerge: false,
             tx: tx
         ) {
@@ -338,6 +349,7 @@ class RecipientMergerImpl: RecipientMerger {
         return mergeAndNotify(
             existingRecipients: [phoneNumberRecipient, aciRecipient].compacted(),
             mightReplaceNonnilPhoneNumber: true,
+            insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: isLocalRecipient,
             tx: tx
         ) {
@@ -412,6 +424,7 @@ class RecipientMergerImpl: RecipientMerger {
         return mergeAndNotify(
             existingRecipients: [pniRecipient, phoneNumberRecipient].compacted(),
             mightReplaceNonnilPhoneNumber: false,
+            insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: isLocalRecipient,
             tx: tx
         ) {
@@ -470,6 +483,7 @@ class RecipientMergerImpl: RecipientMerger {
     private func mergeAndNotify(
         existingRecipients: [SignalRecipient],
         mightReplaceNonnilPhoneNumber: Bool,
+        insertSessionSwitchoverIfNeeded: Bool,
         isLocalMerge: Bool,
         tx: DBWriteTransaction,
         applyMerge: () -> SignalRecipient
@@ -487,18 +501,12 @@ class RecipientMergerImpl: RecipientMerger {
         // we're trying to associate PN_1 with ACI_B, then we also should ensure
         // everything that currently references PN_2 is updated to reference ACI_B.
         existingRecipients.forEach { recipient in
-            for observer in observers {
-                observer.willBreakAssociation(
-                    for: recipient,
-                    mightReplaceNonnilPhoneNumber: mightReplaceNonnilPhoneNumber,
-                    tx: tx
-                )
-            }
+            observers.willBreakAssociation(for: recipient, mightReplaceNonnilPhoneNumber: mightReplaceNonnilPhoneNumber, tx: tx)
         }
 
         let mergedRecipient = applyMerge()
 
-        let sessionEvents = sessionEventsToInsert(
+        let sessionEvents = prepareSessionEventsToInsert(
             oldRecipients: oldRecipients,
             newRecipients: existingRecipients,
             mergedRecipient: mergedRecipient,
@@ -527,19 +535,23 @@ class RecipientMergerImpl: RecipientMerger {
 
         storageServiceManager.recordPendingUpdates(updatedAccountIds: affectedRecipients.map { $0.uniqueId })
 
-        for observer in observers {
-            observer.didLearnAssociation(
-                mergedRecipient: MergedRecipient(
-                    isLocalRecipient: isLocalMerge,
-                    oldRecipient: oldRecipients.first(where: { $0.uniqueId == mergedRecipient.uniqueId }),
-                    newRecipient: mergedRecipient
-                ),
-                tx: tx
-            )
-        }
+        let threadMergeEventCount = observers.didLearnAssociation(
+            mergedRecipient: MergedRecipient(
+                isLocalRecipient: isLocalMerge,
+                oldRecipient: oldRecipients.first(where: { $0.uniqueId == mergedRecipient.uniqueId }),
+                newRecipient: mergedRecipient
+            ),
+            tx: tx
+        )
 
         for sessionEvent in sessionEvents {
-            insertSessionEvent(sessionEvent, tx: tx)
+            insertSessionEvent(
+                sessionEvent,
+                insertSessionSwitchoverIfNeeded: insertSessionSwitchoverIfNeeded,
+                mergedRecipient: mergedRecipient,
+                mergedRecipientHasThreadMergeEvent: threadMergeEventCount > 0,
+                tx: tx
+            )
         }
 
         return mergedRecipient
@@ -548,14 +560,15 @@ class RecipientMergerImpl: RecipientMerger {
     // MARK: - Events
 
     private enum SessionEvent {
+        case sessionSwitchover(SignalRecipient, phoneNumber: String?)
         case safetyNumberChange(SignalRecipient, wasIdentityVerified: Bool)
     }
 
-    private func sessionEventsToInsert(
+    private func prepareSessionEventsToInsert(
         oldRecipients: [SignalRecipient],
         newRecipients: [SignalRecipient],
         mergedRecipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBWriteTransaction
     ) -> [SessionEvent] {
         var result = [SessionEvent]()
         for (oldRecipient, newRecipient) in zip(oldRecipients, newRecipients) {
@@ -571,8 +584,7 @@ class RecipientMergerImpl: RecipientMerger {
             // Check out `sessionIdentifier(for:)` to understand this logic.
             let sessionIdentifier = recipientPair.map { self.sessionIdentifier(for: $0) }
             if sessionIdentifier.fromValue != sessionIdentifier.intoValue {
-                // PNI TODO: Insert a Session Switchover Event in `newRecipient`.
-                // PNI TODO: Delete the session & identity for `oldRecipient` (TOFU).
+                result.append(prepareSessionSwitchoverEvent(recipientPair: recipientPair, tx: tx))
                 continue
             }
 
@@ -589,8 +601,50 @@ class RecipientMergerImpl: RecipientMerger {
         return result
     }
 
-    private func insertSessionEvent(_ sessionEvent: SessionEvent, tx: DBWriteTransaction) {
+    private func prepareSessionSwitchoverEvent(
+        recipientPair: MergePair<SignalRecipient>,
+        tx: DBWriteTransaction
+    ) -> SessionEvent {
+        // If we're UPDATING a recipient, then we need to clear the session. If
+        // we're MERGING a recipient, then the merge destination should already
+        // have its own session; if it doesn't, then the caller will handle merging
+        // the session/identity for these recipients.
+        if recipientPair.fromValue.uniqueId == recipientPair.intoValue.uniqueId {
+            identityManager.removeRecipientIdentity(for: recipientPair.fromValue.uniqueId, tx: tx)
+            aciSessionStore.deleteAllSessions(for: recipientPair.fromValue.uniqueId, tx: tx)
+        }
+
+        // The canonical case is adding an ACI to a recipient that already had a
+        // phone number. Other cases shouldn't happen, so we show a generic
+        // fallback message in those cases.
+        return .sessionSwitchover(recipientPair.intoValue, phoneNumber: {
+            if let phoneNumber = recipientPair.fromValue.phoneNumber, recipientPair.intoValue.aciString != nil {
+                return phoneNumber
+            }
+            return nil
+        }())
+    }
+
+    private func insertSessionEvent(
+        _ sessionEvent: SessionEvent,
+        insertSessionSwitchoverIfNeeded: Bool,
+        mergedRecipient: SignalRecipient,
+        mergedRecipientHasThreadMergeEvent: Bool,
+        tx: DBWriteTransaction
+    ) {
         switch sessionEvent {
+        case .sessionSwitchover(let recipient, let phoneNumber):
+            guard insertSessionSwitchoverIfNeeded else {
+                // We have a valid PNI signature, so we don't need an SSE.
+                break
+            }
+            if recipient.uniqueId == mergedRecipient.uniqueId, mergedRecipientHasThreadMergeEvent {
+                // We have a thread merge event, so we don't need an SSE for this
+                // recipient. Note that we may have stolen the PNI from some other thread,
+                // and *that* thread might need an event.
+                break
+            }
+            identityManager.insertSessionSwitchoverEvent(for: recipient, phoneNumber: phoneNumber, tx: tx)
         case .safetyNumberChange(let recipient, let wasIdentityVerified):
             guard let aci = recipient.aci else {
                 owsFailDebug("Can't insert a Safety Number event without an ACI.")
@@ -622,6 +676,34 @@ class RecipientMergerImpl: RecipientMerger {
             return pni.serviceIdString
         }
         return "aci"
+    }
+}
+
+// MARK: - Observers
+
+extension RecipientMergerImpl.Observers {
+    func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {
+        return notifyObservers(
+            notifyObserver: { $0.willBreakAssociation(for: recipient, mightReplaceNonnilPhoneNumber: mightReplaceNonnilPhoneNumber, tx: tx) },
+            notifyThreadMerger: { threadMerger.willBreakAssociation(for: recipient, mightReplaceNonnilPhoneNumber: mightReplaceNonnilPhoneNumber, tx: tx) }
+        )
+    }
+
+    func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) -> Int {
+        return notifyObservers(
+            notifyObserver: { $0.didLearnAssociation(mergedRecipient: mergedRecipient, tx: tx) },
+            notifyThreadMerger: { threadMerger.didLearnAssociation(mergedRecipient: mergedRecipient, tx: tx) }
+        )
+    }
+
+    private func notifyObservers<T>(
+        notifyObserver: (RecipientMergeObserver) -> Void,
+        notifyThreadMerger: () -> T
+    ) -> T {
+        preThreadMerger.forEach(notifyObserver)
+        let result = notifyThreadMerger()
+        postThreadMerger.forEach(notifyObserver)
+        return result
     }
 }
 

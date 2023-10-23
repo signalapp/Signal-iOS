@@ -112,32 +112,6 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
 private extension TSGroupThread {
     static func randomForTesting() -> TSGroupThread {
-        let groupModel = TSGroupModelV2(
-            groupId: Data(repeating: 12, count: Int(GroupManager.groupIdLength(for: .V2))),
-            name: "grüp",
-            descriptionText: nil,
-            avatarData: nil,
-            groupMembership: GroupMembership(),
-            groupAccess: .defaultForV2,
-            revision: 5,
-            secretParamsData: Data(),
-            avatarUrlPath: nil,
-            inviteLinkPassword: nil,
-            isAnnouncementsOnly: false,
-            isPlaceholderModel: false,
-            wasJustMigrated: false,
-            wasJustCreatedByLocalUser: false,
-            didJustAddSelfViaGroupLink: false,
-            addedByAddress: nil,
-            droppedMembers: []
-        )
-
-        return TSGroupThread(groupModelForTests: groupModel)
-    }
-}
-
-private extension LocalIdentifiers {
-    static func withAci(aci: Aci) -> LocalIdentifiers {
-        return LocalIdentifiers(aci: aci, pni: .randomForTesting(), e164: E164("+7735550199")!)
+        return .forUnitTest(groupId: 12)
     }
 }

@@ -14,6 +14,7 @@ public protocol OWSIdentityManager {
 
     func recipientIdentity(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSRecipientIdentity?
     func recipientIdentity(for recipientId: AccountId, tx: DBReadTransaction) -> OWSRecipientIdentity?
+    func removeRecipientIdentity(for recipientId: AccountId, tx: DBWriteTransaction)
 
     func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
@@ -23,8 +24,9 @@ public protocol OWSIdentityManager {
 
     @discardableResult
     func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError>
-    func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
 
+    func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
+    func insertSessionSwitchoverEvent(for recipient: SignalRecipient, phoneNumber: String?, tx: DBWriteTransaction)
     func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction)
 
     func untrustedIdentityForSending(
@@ -294,6 +296,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
+    public func removeRecipientIdentity(for recipientId: AccountId, tx: DBWriteTransaction) {
+        recipientIdentity(for: recipientId, tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
     // MARK: - Local Identity
 
     public func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
@@ -409,6 +415,27 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
         notificationsManager.notifyUser(forErrorMessage: contactThreadMessage, thread: contactThread, transaction: SDSDB.shimOnlyBridge(tx))
         fireIdentityStateChangeNotification(after: tx)
+    }
+
+    public func insertSessionSwitchoverEvent(
+        for recipient: SignalRecipient,
+        phoneNumber: String?,
+        tx: DBWriteTransaction
+    ) {
+        let tx = SDSDB.shimOnlyBridge(tx)
+        guard let contactThread = TSContactThread.getWithContactAddress(recipient.address, transaction: tx) else {
+            return
+        }
+        var userInfo = [InfoMessageUserInfoKey: Any]()
+        if let phoneNumber {
+            userInfo[.sessionSwitchoverPhoneNumber] = phoneNumber
+        }
+        let sessionSwitchoverEvent = TSInfoMessage(
+            thread: contactThread,
+            messageType: .sessionSwitchover,
+            infoMessageUserInfo: userInfo
+        )
+        sessionSwitchoverEvent.anyInsert(transaction: tx)
     }
 
     public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {

@@ -43,7 +43,11 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
     func testUpdatesIndividualCallIfExists() {
         let callId = UInt64.maxRandom
         let interactionRowId = Int64.maxRandom
-        let threadRowId = Int64.maxRandom
+
+        let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
+        let thread = TSContactThread(contactAddress: contactAddress)
+        mockThreadStore.insertThread(thread)
+        let threadRowId = thread.sqliteRowId!
 
         let callRecord = CallRecord(
             callId: callId,
@@ -55,12 +59,8 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             timestamp: .maxRandomInt64Compat
         )
 
-        let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
         let contactServiceId = contactAddress.aci!
         let contactRecipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
-
-        let thread = TSContactThread(contactAddress: contactAddress)
-        thread.updateRowId(threadRowId)
 
         let interaction = TSCall(
             callType: .outgoingMissed,
@@ -72,7 +72,6 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
         mockCallRecordStore.callRecords.append(callRecord)
         mockRecipientStore.recipients.append(contactRecipient)
-        mockThreadStore.threads.append(thread)
         mockInteractionStore.insertedInteractions.append(interaction)
 
         mockDB.write { tx in
@@ -110,10 +109,9 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         let contactServiceId = contactAddress.aci!
 
         let contactThread = TSContactThread(contactAddress: contactAddress)
-        contactThread.updateRowId(.maxRandom)
 
         mockRecipientStore.recipients.append(SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil))
-        mockThreadStore.threads.append(contactThread)
+        mockThreadStore.insertThread(contactThread)
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(

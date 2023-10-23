@@ -31,6 +31,8 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPaymentActivationRequestSende
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyPaymentActivatedAci = @"InfoMessageUserInfoKeyPaymentActivatedAci";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyThreadMergePhoneNumber
     = @"InfoMessageUserInfoKeyThreadMergePhoneNumber";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeySessionSwitchoverPhoneNumber
+    = @"InfoMessageUserInfoKeySessionSwitchoverPhoneNumber";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -330,6 +332,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return [self paymentsActivatedDescriptionWithTransaction:transaction];
         case TSInfoMessageThreadMerge:
             return [self threadMergeDescriptionWithTx:transaction];
+        case TSInfoMessageSessionSwitchover:
+            return [self sessionSwitchoverDescriptionWithTx:transaction];
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -359,6 +363,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessagePaymentsActivationRequest:
         case TSInfoMessagePaymentsActivated:
         case TSInfoMessageThreadMerge:
+        case TSInfoMessageSessionSwitchover:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

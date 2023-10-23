@@ -30,6 +30,7 @@ class MockSessionStore: SignalSessionStore {
     func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.SessionRecord? { nil }
     func resetSessionStore(tx: DBWriteTransaction) { }
     func deleteAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) { }
+    func deleteAllSessions(for recipientId: AccountId, tx: DBWriteTransaction) { }
     func removeAll(tx: DBWriteTransaction) { }
     func printAll(tx: DBReadTransaction) { }
     func loadExistingSessions(for addresses: [ProtocolAddress], context: StoreContext) throws -> [LibSignalClient.SessionRecord] { [] }
