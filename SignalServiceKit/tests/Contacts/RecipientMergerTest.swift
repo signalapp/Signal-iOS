@@ -413,4 +413,28 @@ class RecipientMergerTest: XCTestCase {
             XCTAssertEqual(d.identityManager.sessionSwitchoverMessages.count, 0)
         }
     }
+
+    func testPniSignatureMerge() throws {
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+        let aciRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: nil)
+
+        let phoneNumber = E164("+16505550101")!
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+        let pniRecipient = SignalRecipient(aci: nil, pni: pni, phoneNumber: phoneNumber)
+
+        let d = TestDependencies()
+        d.mockDB.write { tx in
+            for recipient in [aciRecipient, pniRecipient] {
+                d.recipientStore.insertRecipient(recipient, transaction: tx)
+                d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
+            }
+        }
+
+        d.mockDB.write { tx in
+            d.recipientMerger.applyMergeFromPniSignature(localIdentifiers: .forUnitTests, aci: aci, pni: pni, tx: tx)
+        }
+
+        XCTAssertEqual(d.recipientStore.recipientTable.values.map({ $0.uniqueId }), [aciRecipient.uniqueId])
+        XCTAssertEqual(d.identityManager.sessionSwitchoverMessages.count, 0)
+    }
 }

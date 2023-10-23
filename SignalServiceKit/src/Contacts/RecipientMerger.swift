@@ -237,7 +237,11 @@ class RecipientMergerImpl: RecipientMerger {
             isLocalMerge: false,
             tx: tx
         ) {
-            owsFail("Not yet implemented.")
+            aciRecipient.phoneNumber = pniRecipient.phoneNumber
+            aciRecipient.pni = pniRecipient.pni
+            pniRecipient.phoneNumber = nil
+            pniRecipient.pni = nil
+            return aciRecipient
         }
     }
 
