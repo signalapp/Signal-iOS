@@ -123,10 +123,6 @@ public class FeatureFlags: BaseFlags {
 
     public static let editMessageSend = true
 
-    /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
-    @objc
-    public static let recipientHiding = build.includes(.internal)
-
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
     public static let cloudBackupFileAlpha = build.includes(.internal)
