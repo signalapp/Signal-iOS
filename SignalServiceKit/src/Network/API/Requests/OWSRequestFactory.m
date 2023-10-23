@@ -268,20 +268,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 }
 
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-    (BOOL)hasBackedUpMasterKey
-{
-    // tsAccountManager.isPrimaryDevice only has a valid value for registered
-    // devices.
-    BOOL isRegisteredAndReady = [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction];
-    OWSAssertDebug(isRegisteredAndReady);
-
-    BOOL isPrimaryDevice = [TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction];
-    return [self deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:hasBackedUpMasterKey
-                                                             isRegistered:isRegisteredAndReady
-                                                          isPrimaryDevice:isPrimaryDevice];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
                                               (BOOL)hasBackedUpMasterKey
                                                                                       isRegistered:(BOOL)isRegistered
                                                                                    isPrimaryDevice:(BOOL)isPrimaryDevice

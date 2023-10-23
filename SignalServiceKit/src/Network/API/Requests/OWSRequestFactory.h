@@ -93,9 +93,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey;
 
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-    (BOOL)hasBackedUpMasterKey;
-
 + (NSDictionary<NSString *, NSNumber *> *)
     deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
                                                 isRegistered:(BOOL)isRegistered
