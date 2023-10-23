@@ -239,16 +239,13 @@ public class RemoteConfig: BaseFlags {
         if !FeatureFlags.phoneNumberIdentifiers {
             return true
         }
-        if TSConstants.isUsingProductionService {
-            return true
+        if !TSConstants.isUsingProductionService {
+            return false
         }
-        if OWSIsDebugBuild() {
-            return true
+        if isEnabled(.cdsDisableCompatibilityMode) {
+            return false
         }
-        if !isEnabled(.cdsDisableCompatibilityMode) {
-            return true
-        }
-        return false
+        return true
     }
 
     public static var maxAttachmentDownloadSizeBytes: UInt {

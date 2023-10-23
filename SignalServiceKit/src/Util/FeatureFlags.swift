@@ -61,7 +61,7 @@ public class FeatureFlags: BaseFlags {
     public static let phoneNumberPrivacy = build.includes(.internal)
 
     @objc
-    public static let phoneNumberIdentifiers = false
+    public static let phoneNumberIdentifiers = !TSConstants.isUsingProductionService
 
     @objc
     public static let usernames = build.includes(.internal)
