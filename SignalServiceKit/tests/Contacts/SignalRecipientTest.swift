@@ -644,7 +644,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     @discardableResult
     private func mergeHighTrust(aci: Aci, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
-        return recipientMerger.applyMergeFromLinkedDevice(
+        return recipientMerger.applyMergeFromContactSync(
             localIdentifiers: localIdentifiers,
             aci: aci,
             phoneNumber: phoneNumber,

@@ -1002,7 +1002,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.wipePersistedState(tx)
                 }
                 // Do any storage service backups we have pending.
-                self.deps.storageServiceManager.backupPendingChanges(authedAccount: accountIdentity.authedAccount)
+                self.deps.storageServiceManager.backupPendingChanges(
+                    authedDevice: accountIdentity.authedDevice(isPrimaryDevice: true)
+                )
                 return .value(.done)
             }
     }
@@ -3002,7 +3004,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
-        return deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
+        let authedDevice = accountIdentity.authedDevice(isPrimaryDevice: true)
+        return deps.accountManager.performInitialStorageServiceRestore(authedDevice: authedDevice)
             .then(on: schedulers.sync) { [weak self] in
                 guard let self else {
                     return unretainedSelfError()
@@ -3699,6 +3702,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         var authedAccount: AuthedAccount {
             return AuthedAccount.explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)
+        }
+
+        func authedDevice(isPrimaryDevice: Bool) -> AuthedDevice {
+            return .explicit(AuthedDevice.Explicit(
+                aci: aci,
+                phoneNumber: e164,
+                pni: pni,
+                isPrimaryDevice: isPrimaryDevice,
+                authPassword: authPassword
+            ))
         }
 
         var chatServiceAuth: ChatServiceAuth {

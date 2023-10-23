@@ -17,10 +17,10 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(groupModel: TSGroupModel) {}
     func recordPendingLocalAccountUpdates() {}
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
-    func backupPendingChanges(authedAccount: AuthedAccount) {}
+    func backupPendingChanges(authedDevice: AuthedDevice) {}
     func resetLocalData(transaction: DBWriteTransaction) {}
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {
-        AnyPromise(Promise<Void>(error: OWSGenericError("Not implemented.")))
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> {
+        Promise<Void>(error: OWSGenericError("Not implemented."))
     }
     func waitForPendingRestores() -> AnyPromise {
         AnyPromise(Promise<Void>(error: OWSGenericError("Not implemented.")))
@@ -138,7 +138,7 @@ class RecipientMergerTest: XCTestCase {
 
                 switch (testCase.trustLevel, testCase.mergeRequest.aci, testCase.mergeRequest.phoneNumber) {
                 case (.high, let aci?, let phoneNumber?):
-                    _ = d.recipientMerger.applyMergeFromLinkedDevice(
+                    _ = d.recipientMerger.applyMergeFromContactSync(
                         localIdentifiers: localIdentifiers,
                         aci: aci,
                         phoneNumber: phoneNumber,

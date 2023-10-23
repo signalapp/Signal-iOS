@@ -311,7 +311,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     private func syncOnboardingStoryViewStatus() -> Promise<OnboardingStoryViewStatus> {
-        Self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: .implicit())
+        Self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
             .then(on: queue) { [weak self] _ -> Promise<OnboardingStoryViewStatus> in
                 guard let strongSelf = self else {
                     return .init(error: OWSAssertionError("SystemStoryManager unretained"))

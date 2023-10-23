@@ -13,7 +13,11 @@ private class MockRecipientMerger: RecipientMerger {
         fatalError()
     }
 
-    func applyMergeFromLinkedDevice(localIdentifiers: LocalIdentifiers, aci: Aci, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
+    func applyMergeFromStorageService(localIdentifiers: LocalIdentifiers, isPrimaryDevice: Bool, aci: Aci, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
+        fatalError()
+    }
+
+    func applyMergeFromContactSync(localIdentifiers: LocalIdentifiers, aci: Aci, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
         fatalError()
     }
 

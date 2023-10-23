@@ -18,9 +18,9 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManager {
 
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
 
-    public func backupPendingChanges(authedAccount: AuthedAccount) {}
-    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {
-        AnyPromise(Promise.value(()))
+    public func backupPendingChanges(authedDevice: AuthedDevice) {}
+    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> {
+        Promise.value(())
     }
 
     public func waitForPendingRestores() -> AnyPromise { AnyPromise(Promise.value(())) }

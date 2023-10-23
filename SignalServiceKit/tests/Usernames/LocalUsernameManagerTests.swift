@@ -510,8 +510,8 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) { owsFail("Not implemented!") }
-    func backupPendingChanges(authedAccount: AuthedAccount) { owsFail("Not implemented!") }
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise { owsFail("Not implemented!") }
+    func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { owsFail("Not implemented!") }
 }
 
 private class MockUsernameApiClient: UsernameApiClient {

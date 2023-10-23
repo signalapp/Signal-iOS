@@ -109,6 +109,21 @@ public class AuthedAccount: NSObject {
             return info.chatServiceAuth
         }
     }
+
+    public func authedDevice(isPrimaryDevice: Bool) -> AuthedDevice {
+        switch info {
+        case .implicit:
+            return .implicit
+        case let .explicit(info):
+            return .explicit(AuthedDevice.Explicit(
+                aci: info.aci,
+                phoneNumber: info.e164,
+                pni: info.pni,
+                isPrimaryDevice: isPrimaryDevice,
+                authPassword: info.authPassword
+            ))
+        }
+    }
 }
 
 extension AuthedAccount.Explicit {

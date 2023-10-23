@@ -21,10 +21,10 @@ public class AccountManager: NSObject, Dependencies {
         SwiftSingletons.register(self)
     }
 
-    func performInitialStorageServiceRestore(authedAccount: AuthedAccount = .implicit()) -> Promise<Void> {
+    func performInitialStorageServiceRestore(authedDevice: AuthedDevice = .implicit) -> Promise<Void> {
         BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
         return firstly {
-            self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount).asVoid()
+            self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
         }.done {
             // In the case that we restored our profile from a previous registration,
             // re-upload it so that the user does not need to refill in all the details.
@@ -39,7 +39,7 @@ public class AccountManager: NSObject, Dependencies {
                 // Note we *don't* return this promise. There's no need to block registration on
                 // it completing, and if there are any errors, it's durable.
                 firstly {
-                    self.profileManagerImpl.reuploadLocalProfilePromise(authedAccount: authedAccount)
+                    self.profileManagerImpl.reuploadLocalProfilePromise(authedAccount: authedDevice.authedAccount)
                 }.catch { error in
                     Logger.error("error: \(error)")
                 }
@@ -212,7 +212,7 @@ public class AccountManager: NSObject, Dependencies {
             let storageServiceRestorePromise = firstly {
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
             }.then {
-                StorageServiceManagerImpl.shared.restoreOrCreateManifestIfNecessary(authedAccount: .implicit()).asVoid()
+                StorageServiceManagerImpl.shared.restoreOrCreateManifestIfNecessary(authedDevice: .implicit).asVoid()
             }.ensure {
                 BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)

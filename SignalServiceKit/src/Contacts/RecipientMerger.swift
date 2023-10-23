@@ -17,8 +17,16 @@ public protocol RecipientMerger {
         tx: DBWriteTransaction
     ) -> SignalRecipient
 
-    /// We've learned about an association from another device.
-    func applyMergeFromLinkedDevice(
+    /// We've learned about an association from Storage Service.
+    func applyMergeFromStorageService(
+        localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
+        aci: Aci,
+        phoneNumber: E164?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient
+
+    func applyMergeFromContactSync(
         localIdentifiers: LocalIdentifiers,
         aci: Aci,
         phoneNumber: E164?,
@@ -187,7 +195,20 @@ class RecipientMergerImpl: RecipientMerger {
         return aciResult
     }
 
-    func applyMergeFromLinkedDevice(
+    func applyMergeFromStorageService(
+        localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
+        aci: Aci,
+        phoneNumber: E164?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        guard let phoneNumber else {
+            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+    }
+
+    func applyMergeFromContactSync(
         localIdentifiers: LocalIdentifiers,
         aci: Aci,
         phoneNumber: E164?,

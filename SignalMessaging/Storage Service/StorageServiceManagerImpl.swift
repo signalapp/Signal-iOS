@@ -46,10 +46,10 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
                 // Schedule a restore. This will do nothing unless we've never
                 // registered a manifest before.
-                self.restoreOrCreateManifestIfNecessary(authedAccount: .implicit())
+                self.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
 
                 // If we have any pending changes since we last launch, back them up now.
-                self.backupPendingChanges(authedAccount: .implicit())
+                self.backupPendingChanges(authedDevice: .implicit)
             }
         }
     }
@@ -60,7 +60,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         // to try and make sure the service doesn't get stale. If for
         // some reason we aren't able to successfully complete this backup
         // while in the background we'll try again on the next app launch.
-        backupPendingChanges(authedAccount: .implicit())
+        backupPendingChanges(authedDevice: .implicit)
     }
 
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {
@@ -84,13 +84,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             // instantiated with the necessary context to make authenticated requests.
             // This is a middle ground between the current world (implicit auth we grab
             // from tsAccountManager) and explicit auth management.
-            var authedAccount: AuthedAccount
+            var authedDevice: AuthedDevice
         }
         var pendingBackup: PendingBackup?
         var pendingBackupTimer: Timer?
 
         struct PendingRestore {
-            var authedAccount: AuthedAccount
+            var authedDevice: AuthedDevice
             var futures: [Future<Void>]
         }
         var pendingRestore: PendingRestore?
@@ -148,7 +148,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let cleanUpOperation = buildOperation(
                 managerState: managerState,
                 mode: .cleanUpUnknownData,
-                authedAccount: .implicit()
+                authedDevice: .implicit
             )
             if let cleanUpOperation {
                 return (cleanUpOperation, nil)
@@ -164,7 +164,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let restoreOperation = buildOperation(
                 managerState: managerState,
                 mode: .restoreOrCreate,
-                authedAccount: pendingRestore.authedAccount
+                authedDevice: pendingRestore.authedDevice
             )
             if let restoreOperation {
                 pendingRestore.futures.forEach {
@@ -197,7 +197,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let backupOperation = buildOperation(
                 managerState: managerState,
                 mode: .backup,
-                authedAccount: pendingBackup.authedAccount
+                authedDevice: pendingBackup.authedDevice
             )
             if let backupOperation {
                 return (backupOperation, nil)
@@ -210,16 +210,19 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     private func buildOperation(
         managerState: ManagerState,
         mode: StorageServiceOperation.Mode,
-        authedAccount: AuthedAccount
+        authedDevice: AuthedDevice
     ) -> StorageServiceOperation? {
         let localIdentifiers: LocalIdentifiers
-        switch authedAccount.info {
-        case .explicit(let info):
-            localIdentifiers = info.localIdentifiers
+        let isPrimaryDevice: Bool
+        switch authedDevice {
+        case .explicit(let explicit):
+            localIdentifiers = explicit.localIdentifiers
+            isPrimaryDevice = explicit.isPrimaryDevice
         case .implicit:
             // Under the new reg flow, we will sync kbs keys before being fully ready with
             // ts account manager auth set up. skip if so.
-            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredOrFinishingProvisioning else {
+            let registrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
+            guard registrationState.isRegisteredOrFinishingProvisioning else {
                 Logger.info("Skipping storage service operation with implicit auth during registration.")
                 return nil
             }
@@ -231,8 +234,18 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 return nil
             }
             localIdentifiers = implicitLocalIdentifiers
+            guard let implicitIsPrimaryDevice = registrationState.isPrimaryDevice else {
+                owsFailDebug("Trying to perform storage service operation without isPrimaryDevice.")
+                return nil
+            }
+            isPrimaryDevice = implicitIsPrimaryDevice
         }
-        return StorageServiceOperation(mode: mode, localIdentifiers: localIdentifiers, authedAccount: authedAccount)
+        return StorageServiceOperation(
+            mode: mode,
+            localIdentifiers: localIdentifiers,
+            isPrimaryDevice: isPrimaryDevice,
+            authedDevice: authedDevice
+        )
     }
 
     private func finishOperation(cleanupBlock: ((inout ManagerState) -> Void)?) {
@@ -311,24 +324,22 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     // MARK: - Actions
 
-    @objc
     @discardableResult
-    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {
+    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
-            var pendingRestore = managerState.pendingRestore ?? .init(authedAccount: .implicit(), futures: [])
+            var pendingRestore = managerState.pendingRestore ?? .init(authedDevice: .implicit, futures: [])
             pendingRestore.futures.append(future)
-            pendingRestore.authedAccount = authedAccount.orIfImplicitUse(pendingRestore.authedAccount)
+            pendingRestore.authedDevice = authedDevice.orIfImplicitUse(pendingRestore.authedDevice)
             managerState.pendingRestore = pendingRestore
         }
-        return AnyPromise(promise)
+        return promise
     }
 
-    @objc
-    public func backupPendingChanges(authedAccount: AuthedAccount) {
+    public func backupPendingChanges(authedDevice: AuthedDevice) {
         updateManagerState { managerState in
-            var pendingBackup = managerState.pendingBackup ?? .init(authedAccount: .implicit())
-            pendingBackup.authedAccount = authedAccount.orIfImplicitUse(pendingBackup.authedAccount)
+            var pendingBackup = managerState.pendingBackup ?? .init(authedDevice: .implicit)
+            pendingBackup.authedDevice = authedDevice.orIfImplicitUse(pendingBackup.authedDevice)
             managerState.pendingBackup = pendingBackup
 
             if let pendingBackupTimer = managerState.pendingBackupTimer {
@@ -390,7 +401,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
         Logger.info("")
 
-        backupPendingChanges(authedAccount: .implicit())
+        backupPendingChanges(authedDevice: .implicit)
     }
 }
 
@@ -435,15 +446,18 @@ class StorageServiceOperation: OWSOperation {
     }
     private let mode: Mode
     private let localIdentifiers: LocalIdentifiers
-    private let authedAccount: AuthedAccount
+    private let isPrimaryDevice: Bool
+    private let authedDevice: AuthedDevice
+    private var authedAccount: AuthedAccount { authedDevice.authedAccount }
 
     let promise: Promise<Void>
     private let future: Future<Void>
 
-    fileprivate init(mode: Mode, localIdentifiers: LocalIdentifiers, authedAccount: AuthedAccount) {
+    fileprivate init(mode: Mode, localIdentifiers: LocalIdentifiers, isPrimaryDevice: Bool, authedDevice: AuthedDevice) {
         self.mode = mode
         self.localIdentifiers = localIdentifiers
-        self.authedAccount = authedAccount
+        self.isPrimaryDevice = isPrimaryDevice
+        self.authedDevice = authedDevice
         (self.promise, self.future) = Promise<Void>.pending()
         super.init()
         self.remainingRetries = 4
@@ -1124,7 +1138,7 @@ class StorageServiceOperation: OWSOperation {
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess {
-                    StorageServiceManagerImpl.shared.backupPendingChanges(authedAccount: self.authedAccount)
+                    StorageServiceManagerImpl.shared.backupPendingChanges(authedDevice: self.authedDevice)
                 }
             }
             self.reportSuccess()
@@ -1455,6 +1469,7 @@ class StorageServiceOperation: OWSOperation {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceContactRecordUpdater(
                 localIdentifiers: localIdentifiers,
+                isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 blockingManager: blockingManager,
                 bulkProfileFetch: bulkProfileFetch,

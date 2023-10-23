@@ -169,6 +169,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     typealias RecordType = StorageServiceProtoContactRecord
 
     private let localIdentifiers: LocalIdentifiers
+    private let isPrimaryDevice: Bool
     private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
     private let bulkProfileFetch: BulkProfileFetch
@@ -182,6 +183,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
     init(
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
         bulkProfileFetch: BulkProfileFetch,
@@ -194,6 +196,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         recipientHidingManager: RecipientHidingManager
     ) {
         self.localIdentifiers = localIdentifiers
+        self.isPrimaryDevice = isPrimaryDevice
         self.authedAccount = authedAccount
         self.blockingManager = blockingManager
         self.bulkProfileFetch = bulkProfileFetch
@@ -296,7 +299,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             //   case, we want to preserve the name the primary device
             //   originally uploaded.
 
-            let isPrimary = tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false
+            let isPrimary = isPrimaryDevice
             let isPrimaryAndHasLocalContact = isPrimary && contact.isFromLocalAddressBook
             let isLinkedAndHasSyncedContact = !isPrimary && !contact.isFromLocalAddressBook
 
@@ -379,8 +382,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             return .invalid
         }
 
-        let recipient = recipientMerger.applyMergeFromLinkedDevice(
+        let recipient = recipientMerger.applyMergeFromStorageService(
             localIdentifiers: localIdentifiers,
+            isPrimaryDevice: isPrimaryDevice,
             aci: contact.aci,
             phoneNumber: contact.serviceE164,
             tx: transaction.asV2Write

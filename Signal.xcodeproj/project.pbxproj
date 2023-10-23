@@ -656,6 +656,7 @@
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
+		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */; };
@@ -3234,6 +3235,7 @@
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
+		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadRemover.swift; sourceTree = "<group>"; };
@@ -9743,6 +9745,7 @@
 				66533E3529B7B53500E8D928 /* WhoAmI */,
 				F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */,
 				66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */,
+				5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */,
 				664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */,
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
@@ -12343,6 +12346,7 @@
 				F9C5CD16289453B300548EEE /* AttachmentFinder.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
+				5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
 				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,
 				665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */,
