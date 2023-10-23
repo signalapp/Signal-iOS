@@ -464,6 +464,11 @@ extension AppDelegate {
             return .registration(regLoader, lastMode)
         } else if !(hasProfileName && tsRegistrationState.isRegistered) {
             if UIDevice.current.isIPad {
+                if tsRegistrationState == .delinked {
+                    // If we are delinked, go to the chat list in the delinked state.
+                    // The user can kick of re-linking from there.
+                    return .chatList
+                }
                 return .secondaryProvisioning
             } else {
                 let desiredMode: RegistrationMode
@@ -480,6 +485,11 @@ extension AppDelegate {
                         Logger.info("Found legacy initial registration; continuing in new registration")
                         desiredMode = .registering
                     }
+                case .deregistered:
+                    // If we are deregistered, go to the chat list in the deregistered state.
+                    // The user can kick of re-registration from there, which will set the
+                    // 'lastMode' var and short circuit before we get here next time around.
+                    return .chatList
                 default:
                     // We got here (past the isRegistered check above) which means we should register
                     // but its not a reregistration.
