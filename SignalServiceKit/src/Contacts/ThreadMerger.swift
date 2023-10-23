@@ -217,16 +217,24 @@ final class ThreadMerger: RecipientMergeObserver {
     }
 
     private func insertThreadMergeEvent(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
-        var userInfo = [InfoMessageUserInfoKey: Any]()
         // We want to show the phone number only in the specific, very standardized
         // case where you have a conversation with the phone number/PNI and you
-        // merge it into a chat with only the ACI. In all other cases, we show a
-        // generic thread merge event.
-        if let phoneNumber = threadPair.fromValue.contactPhoneNumber, threadPair.intoValue.contactPhoneNumber == nil {
-            userInfo[.threadMergePhoneNumber] = phoneNumber
+        // merge it into a chat with the ACI. In all other cases, we show a generic
+        // thread merge event.
+        let mergedPhoneNumber: String? = {
+            guard let phoneNumber = threadPair.fromValue.contactPhoneNumber else {
+                return nil
+            }
+            guard Aci.parseFrom(aciString: threadPair.intoValue.contactUUID) != nil else {
+                return nil
+            }
+            return phoneNumber
+        }()
+        var userInfo = [InfoMessageUserInfoKey: Any]()
+        if let mergedPhoneNumber {
+            userInfo[.threadMergePhoneNumber] = mergedPhoneNumber
         }
         let message = TSInfoMessage(thread: threadPair.intoValue, messageType: .threadMerge, infoMessageUserInfo: userInfo)
-        message.wasRead = true
         interactionStore.insertInteraction(message, tx: tx)
     }
 
