@@ -206,8 +206,6 @@ private extension RecipientHidingManagerImpl {
             INInteraction.delete(with: thread.uniqueId, completion: nil)
         }
 
-        /// TODO recipientHiding:
-        /// - Throw out other user's profile key if not in group with user.
         if wasLocallyInitiated {
             Logger.info("[Recipient hiding][side effects] Remove from whitelist.")
             profileManager.removeUser(
@@ -245,6 +243,10 @@ private extension RecipientHidingManagerImpl {
             self.profileManager.rotateProfileKeyUponRecipientHide(
                 withTx: SDSDB.shimOnlyBridge(tx)
             )
+            // A nice-to-have was to throw out the other user's profile key if we're
+            // not in a group with them. Product said this was not strictly necessary.
+            // Note that this _is_ something that is done on Android, so there is a
+            // slight lack of parity here.
         }
     }
 
