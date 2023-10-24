@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• قمنا بإصلاح الخلل الذي تسبب أحيانًا في توقف إعادة التسجيل بنسبة 99%، وهو أمر مزعج بنسبة 100% إذا حدث لك. نشكر كل من ساعدنا في استكشاف هذا المشكلة. 
+• نريد أن نشكر أيضًا @ovakisan من GitHub على مساعدتنا في حلّ العطل الذي كان يواجهنا مع بعض مرفقات الصور.

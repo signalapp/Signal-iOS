@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• Am remediat o eroare care determina uneori ca reînregistrarea să se blocheze la 99%, ceea ce sigur a fost 100% enervant, în caz că ți s-a întâmplat. Mulțumim tuturor celor care ne-au ajutat să remediem această problemă. 
+• De asemenea, am dori să mulțumim lui @ovakisan de pe GitHub pentru că ne-a ajutat să reproducem și să remediem o eroare care se întâmpla cu unele atașamente de imagini.

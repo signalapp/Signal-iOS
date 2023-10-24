@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• 재등록 프로세스 상의 버그를 수정했습니다. 이 문제를 해결하는 데 도움을 주신 모든 분께 감사드립니다. 
+• 또한 일부 이미지 첨부 파일에서 발생했던 충돌 문제를 재현하고 해결하는 데 도움을 주신 GitHub의 @ovakisan 님에게도 감사드립니다.

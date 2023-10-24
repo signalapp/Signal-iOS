@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• 我們修復了重新註冊時會發生的錯誤。感謝所有幫助我們解決此問題的人。 
+• 我們還要感謝 GitHub 的 @ovakisan 幫助我們重製和修復了一些有關圖片附件發生的故障。

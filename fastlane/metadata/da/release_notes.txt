@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• Vi har rettet en fejl, som nogle gange fik gentilmeldingen til at sidde fast på 99 %, hvilket var 100 % irriterende, hvis det skete for dig. Tak til alle, der hjalp os med at løse problemet. 
+• Tak til @ovakisan på GitHub, der har hjulpet os med at reproducere og rette et nedbrud, der opstod i forbindelse med nogle vedhæftede billeder.

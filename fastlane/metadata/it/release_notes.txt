@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• Abbiamo risolto un bug nel processo di ri-registrazione. Grazie a tutte le persone che ci hanno aiutato a individuare e risolvere questo problema! 
+• Vorremmo anche ringraziare @ovakisan su GitHub per averci aiutato a riprodurre e risolvere dei problemi che si presentavano nell'allegare alcune immagini.

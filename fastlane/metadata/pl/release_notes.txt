@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• Naprawiliśmy błąd, który czasami powodował, że ponowna rejestracja zatrzymywała się na 99%, co na 100% było irytujące, jeśli przytrafiło się akurat Tobie. Dziękujemy wszystkim zaangażowanym w naprawę tego błędu. 
+• Chcielibyśmy również podziękować użytkownikowi @ovakisan na GitHubie za pomoc w reprodukcji i naprawie błędu, który powodował zawieszenie się aplikacji przy wyświetlaniu załączników w postaci zdjęć.

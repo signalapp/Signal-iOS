@@ -1,2 +1,2 @@
-• We fixed a bug that sometimes caused re-registration to get stuck at 99%, which was 100% annoying if it happened to you. Thanks to everyone who helped us troubleshoot this problem. 
-• We would also like to thank @ovakisan on GitHub for helping us reproduce and fix a crash that was occurring with some image attachments.
+• Korjasimme virheen uudelleenrekisteröinnin prosessissa. Kiitos kaikille, jotka auttoivat ongelman vianmäärityksessä. 
+• Haluamme myös kiittää GitHubin käyttäjää @ovakisan hänen avustaan joidenkin kuvaliitteiden kaatumisen toistamisessa ja korjaamisessa.
