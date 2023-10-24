@@ -130,6 +130,7 @@ public struct AccountAttributes: Codable {
         public let canReceiveGiftBadges = true
         public let hasSVRBackups: Bool
         public let changeNumber = true
+        public let pni = FeatureFlags.phoneNumberIdentifiers
 
         public enum CodingKeys: String, CodingKey {
             case gv2
