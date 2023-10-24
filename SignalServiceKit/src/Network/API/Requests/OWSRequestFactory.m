@@ -294,9 +294,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         capabilities[@"stories"] = @(YES);
     }
 
-    if (SSKFeatureFlags.phoneNumberIdentifiers) {
-        capabilities[@"pni"] = @(YES);
-    }
+    capabilities[@"pni"] = @(YES);
 
     // If the storage service requires (or will require) secondary devices
     // to have a capability in order to be linked, we might need to always
