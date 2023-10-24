@@ -212,10 +212,6 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableArray<ServiceIdObjC *> *udRecipients = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
             ServiceIdObjC *serviceId = [ServiceIdObjC parseFromServiceIdString:statusProto.destinationServiceID];
-            if (!SSKFeatureFlags.phoneNumberIdentifiers && [serviceId isKindOfClass:[PniObjC class]]) {
-                OWSFailDebug(@"Delivery status proto has PNI.");
-                continue;
-            }
             if (serviceId == nil) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;

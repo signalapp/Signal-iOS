@@ -1685,9 +1685,6 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
                 return nil
             }
-            if !FeatureFlags.phoneNumberIdentifiers, serviceId is Pni {
-                return nil
-            }
             return serviceId
         }
 

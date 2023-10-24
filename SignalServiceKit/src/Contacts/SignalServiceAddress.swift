@@ -139,29 +139,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     /// Initializes an address for an Aci or Pni.
-    ///
-    /// - Warning: This method will only parse Pnis if
-    /// `FeatureFlags.phoneNumberIdentifiers` is true.
     @objc
     public convenience init(serviceIdString: String) {
-        self.init(serviceIdString: serviceIdString, allowPni: FeatureFlags.phoneNumberIdentifiers)
+        self.init(serviceIdString: serviceIdString, phoneNumber: nil)
     }
 
     /// Initializes an address for an Aci or Pni.
-    ///
-    /// - Parameter allowPni: If false, PNIs will be treated as invalid.
-    @objc
-    public convenience init(serviceIdString: String, allowPni: Bool) {
-        self.init(serviceIdString: serviceIdString, allowPni: allowPni, phoneNumber: nil)
-    }
-
-    /// Initializes an address for an Aci or Pni.
-    ///
-    /// - Warning: This method will only parse Pnis if
-    /// `FeatureFlags.phoneNumberIdentifiers` is true.
     @objc
     public convenience init(serviceIdString: String?, phoneNumber: String?) {
-        self.init(serviceIdString: serviceIdString, allowPni: FeatureFlags.phoneNumberIdentifiers, phoneNumber: phoneNumber)
+        self.init(serviceIdString: serviceIdString, allowPni: true, phoneNumber: phoneNumber)
     }
 
     /// Initializes an address for an Aci or Pni.

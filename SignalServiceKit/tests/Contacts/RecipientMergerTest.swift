@@ -196,7 +196,7 @@ class RecipientMergerTest: XCTestCase {
                 tx: tx
             )
         }
-        XCTAssertEqual(notificationCount, FeatureFlags.phoneNumberIdentifiers ? 2 : 1)
+        XCTAssertEqual(notificationCount, 2)
         NotificationCenter.default.removeObserver(observer)
     }
 
@@ -258,8 +258,6 @@ class RecipientMergerTest: XCTestCase {
     }
 
     func testAciPhoneNumberPniMerges() throws {
-        try XCTSkipUnless(FeatureFlags.phoneNumberIdentifiers)
-
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
         let phone1 = E164("+16505550101")!
@@ -327,8 +325,6 @@ class RecipientMergerTest: XCTestCase {
     }
 
     func testSessionSwitchoverEvents() throws {
-        try XCTSkipUnless(FeatureFlags.phoneNumberIdentifiers)
-
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let phone1 = E164("+16505550101")!
         let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
@@ -439,8 +435,6 @@ class RecipientMergerTest: XCTestCase {
     }
 
     func testStorageServiceMerges() throws {
-        try XCTSkipUnless(FeatureFlags.phoneNumberIdentifiers)
-
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
         let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")

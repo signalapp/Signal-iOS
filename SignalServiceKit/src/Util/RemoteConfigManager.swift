@@ -236,13 +236,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     static var tryToReturnAcisWithoutUaks: Bool {
-        if !FeatureFlags.phoneNumberIdentifiers {
-            return true
-        }
-        if isEnabled(.cdsDisableCompatibilityMode) {
-            return false
-        }
-        return true
+        return !isEnabled(.cdsDisableCompatibilityMode)
     }
 
     public static var maxAttachmentDownloadSizeBytes: UInt {

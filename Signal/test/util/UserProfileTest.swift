@@ -37,10 +37,6 @@ class UserProfileTest: SignalBaseTest {
     }
 
     func testUserProfileForPni() throws {
-        guard FeatureFlags.phoneNumberIdentifiers else {
-            throw XCTSkip("Can't run this test until `SignalServiceAddress`es can be constructed by default with a PNI.")
-        }
-
         let pni = Pni.randomForTesting()
         let address = SignalServiceAddress(pni)
         write { transaction in

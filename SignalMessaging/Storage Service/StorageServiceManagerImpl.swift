@@ -527,9 +527,6 @@ class StorageServiceOperation: OWSOperation {
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.compactMap { (serviceId: ServiceId) -> String? in
-            if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
-                return nil
-            }
             return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
         })
 

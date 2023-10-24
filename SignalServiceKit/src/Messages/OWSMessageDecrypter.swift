@@ -672,9 +672,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberIdentifiers else {
-            return
-        }
         guard let pniSignatureMessage = envelope.content?.pniSignatureMessage else {
             return
         }

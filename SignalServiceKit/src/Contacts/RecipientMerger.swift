@@ -189,7 +189,7 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         let aciResult = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
-        if let pni, FeatureFlags.phoneNumberIdentifiers {
+        if let pni {
             return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: true, tx: tx)
         }
         return aciResult
@@ -357,19 +357,10 @@ class RecipientMergerImpl: RecipientMerger {
         if localIdentifiers.aci == aci {
             aci = nil
         }
-        let aciResult: SignalRecipient? = {
-            guard let aci else {
-                return nil
-            }
-            return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
-        }()
-        let pniResult: SignalRecipient? = {
-            guard FeatureFlags.phoneNumberIdentifiers else {
-                return nil
-            }
-            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx)
-        }()
-        return pniResult ?? aciResult
+        if let aci {
+            _ = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+        }
+        return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx)
     }
 
     /// Performs a merge unless a provided identifier refers to the local user.

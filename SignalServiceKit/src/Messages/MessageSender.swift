@@ -671,10 +671,6 @@ extension MessageSender {
                     }
                 }
 
-                if !FeatureFlags.phoneNumberIdentifiers {
-                    filteredServiceIds = filteredServiceIds.filter { $0 is Aci }
-                }
-
                 serviceIds = filteredServiceIds
             }
 
