@@ -21,7 +21,7 @@ public protocol RecipientMerger {
     func applyMergeFromStorageService(
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        aci: Aci,
+        serviceIds: AtLeastOneServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -198,14 +198,80 @@ class RecipientMergerImpl: RecipientMerger {
     func applyMergeFromStorageService(
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
-        aci: Aci,
+        serviceIds: AtLeastOneServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        guard let phoneNumber else {
-            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        // The caller checks this, but we assert here to maintain consistency with
+        // all the other merging methods that check this themselves.
+        owsAssert(!localIdentifiers.containsAnyOf(aci: serviceIds.aci, phoneNumber: phoneNumber, pni: serviceIds.pni))
+
+        let updatedValues = { () -> (phoneNumber: E164, pni: Pni)? in
+            let pni = serviceIds.pni
+            // A primary device must not change an E164/PNI association based on a
+            // merge from Storage Service. Instead, it will ignore the change and trust
+            // CDS to tell it the correct value.
+            if isPrimaryDevice {
+                // If we already have a PNI for this phone number, use that.
+                if let phoneNumber, let alreadyKnownPni = fetchPni(for: phoneNumber, tx: tx) {
+                    return (phoneNumber, alreadyKnownPni)
+                }
+                // If we already have a phone number for this PNI, use that.
+                if let pni, let alreadyKnownPhoneNumber = fetchPhoneNumber(for: pni, tx: tx) {
+                    return (alreadyKnownPhoneNumber, pni)
+                }
+            } else {
+                // If no phone number is specified and we know it, use that.
+                if phoneNumber == nil, let pni, let alreadyKnownPhoneNumber = fetchPhoneNumber(for: pni, tx: tx) {
+                    return (alreadyKnownPhoneNumber, pni)
+                }
+            }
+            return nil
+        }()
+
+        return _applyValidatedMergeFromStorageService(
+            isPrimaryDevice: isPrimaryDevice,
+            serviceIds: AtLeastOneServiceId(aci: serviceIds.aci, pni: updatedValues?.pni ?? serviceIds.pni)!,
+            phoneNumber: updatedValues?.phoneNumber ?? phoneNumber,
+            tx: tx
+        )
+    }
+
+    private func _applyValidatedMergeFromStorageService(
+        isPrimaryDevice: Bool,
+        serviceIds: AtLeastOneServiceId,
+        phoneNumber: E164?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        // If there's a phone number, things are straightforward.
+        let aciPhoneNumberRecipient: SignalRecipient? = {
+            guard let aci = serviceIds.aci, let phoneNumber else {
+                return nil
+            }
+            // Explicit cast to guarantee this method doesn't return an Optional.
+            return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx) as SignalRecipient
+        }()
+        let phoneNumberPniRecipient: SignalRecipient? = {
+            guard let phoneNumber, let pni = serviceIds.pni else {
+                return nil
+            }
+            // Explicit cast to guarantee this method doesn't return an Optional.
+            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx) as SignalRecipient
+        }()
+        if let phoneNumberResult = phoneNumberPniRecipient ?? aciPhoneNumberRecipient {
+            return phoneNumberResult
         }
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+
+        // If we have an E164, then at least one of the two `mergeAlways` calls
+        // above will be triggered. This happens because we have
+        // `AtLeastOneServiceId`. If we reach this point, it means we don't have a
+        // phone number, so we try a special ACI/PNI fill-in-the-blanks merge.
+        if let aci = serviceIds.aci, let pni = serviceIds.pni {
+            return mergeAlwaysFromStorageService(isPrimaryDevice: isPrimaryDevice, aci: aci, pni: pni, tx: tx)
+        }
+
+        // Finally, we just fall back to the single present identifier.
+        return recipientFetcher.fetchOrCreate(serviceId: serviceIds.aciOrElsePni, tx: tx)
     }
 
     func applyMergeFromContactSync(
@@ -246,7 +312,7 @@ class RecipientMergerImpl: RecipientMerger {
             owsFail("Can't apply PNI signature merge with precondition violations")
         }
 
-        if localIdentifiers.aci == aci || localIdentifiers.pni == pni {
+        if localIdentifiers.containsAnyOf(aci: aci, phoneNumber: nil, pni: pni) {
             Logger.warn("Can't apply PNI signature merge with our own identifiers")
             return
         }
@@ -317,7 +383,7 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        if localIdentifiers.contains(serviceId: aci) || localIdentifiers.contains(phoneNumber: phoneNumber) {
+        if localIdentifiers.containsAnyOf(aci: aci, phoneNumber: phoneNumber, pni: nil) {
             return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
         return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
@@ -485,11 +551,10 @@ class RecipientMergerImpl: RecipientMerger {
             return phoneNumberRecipient
         }
 
-        // If we have a pniRecipient, we can use it if there aren't any other
-        // identifiers. If there are, those take precedence, and we need a new
-        // recipient for this pairing.
+        // If we have a pniRecipient, we can use it if it doesn't have a phone
+        // number. If it does, that takes precedence, and we need a new recipient.
         if let pniRecipient {
-            if pniRecipient.aciString != nil || pniRecipient.phoneNumber != nil {
+            if pniRecipient.phoneNumber != nil {
                 pniRecipient.pni = nil
                 return nil
             }
@@ -500,6 +565,100 @@ class RecipientMergerImpl: RecipientMerger {
 
         // We couldn't find a recipient, so create a new one.
         return nil
+    }
+
+    private func mergeAlwaysFromStorageService(
+        isPrimaryDevice: Bool,
+        aci: Aci,
+        pni: Pni,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient {
+        let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx)
+
+        // If the ACI & PNI are already associated, do nothing.
+        if let aciRecipient, aciRecipient.pni == pni {
+            return aciRecipient
+        }
+
+        Logger.info("Associating \(aci) with \(pni)")
+
+        let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx)
+        owsAssertDebug(pniRecipient?.phoneNumber == nil)
+
+        return mergeAndNotify(
+            existingRecipients: [aciRecipient, pniRecipient].compacted(),
+            mightReplaceNonnilPhoneNumber: false,
+            insertSessionSwitchoverIfNeeded: true,
+            isLocalMerge: false,
+            tx: tx
+        ) {
+            let existingRecipient = _mergeAlwaysFromStorageService(
+                aci: aci,
+                pni: pni,
+                isPrimaryDevice: isPrimaryDevice,
+                aciRecipient: aciRecipient,
+                pniRecipient: pniRecipient,
+                tx: tx
+            )
+            return existingRecipient ?? SignalRecipient(aci: aci, pni: pni, phoneNumber: nil)
+        }
+    }
+
+    private func _mergeAlwaysFromStorageService(
+        aci: Aci,
+        pni: Pni,
+        isPrimaryDevice: Bool,
+        aciRecipient: SignalRecipient?,
+        pniRecipient: SignalRecipient?,
+        tx: DBWriteTransaction
+    ) -> SignalRecipient? {
+        if let aciRecipient {
+            let canAssignPni: Bool = {
+                if aciRecipient.phoneNumber == nil {
+                    // If there's no phone number, we're not changing an E164/PNI association.
+                    return true
+                }
+                if aciRecipient.pni == nil {
+                    // If there's no PNI, then we're making the initial association, which is fine.
+                    return true
+                }
+                if !isPrimaryDevice {
+                    // If we're a linked device, then we're allowed to change any association.
+                    return true
+                }
+                return false
+            }()
+            if canAssignPni {
+                if let pniRecipient {
+                    pniRecipient.phoneNumber = nil
+                    pniRecipient.pni = nil
+                }
+                aciRecipient.pni = pni
+            }
+            return aciRecipient
+        }
+
+        if let pniRecipient {
+            if pniRecipient.aciString != nil {
+                pniRecipient.phoneNumber = nil
+                pniRecipient.pni = nil
+                return nil
+            }
+            pniRecipient.aci = aci
+            return pniRecipient
+        }
+
+        return nil
+    }
+
+    // MARK: - Helpers
+
+    private func fetchPni(for phoneNumber: E164, tx: DBReadTransaction) -> Pni? {
+        return recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)?.pni
+    }
+
+    private func fetchPhoneNumber(for pni: Pni, tx: DBReadTransaction) -> E164? {
+        return E164(recipientStore.fetchRecipient(serviceId: pni, transaction: tx)?.phoneNumber)
     }
 
     // MARK: - Merge Handling

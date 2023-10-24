@@ -347,9 +347,14 @@ struct StorageServiceProtos_ContactRecord {
     set {_uniqueStorage()._aci = newValue}
   }
 
-  var serviceE164: String {
-    get {return _storage._serviceE164}
-    set {_uniqueStorage()._serviceE164 = newValue}
+  var e164: String {
+    get {return _storage._e164}
+    set {_uniqueStorage()._e164 = newValue}
+  }
+
+  var pni: String {
+    get {return _storage._pni}
+    set {_uniqueStorage()._pni = newValue}
   }
 
   var profileKey: Data {
@@ -1454,7 +1459,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
   static let protoMessageName: String = _protobuf_package + ".ContactRecord"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "aci"),
-    2: .same(proto: "serviceE164"),
+    2: .same(proto: "e164"),
+    15: .same(proto: "pni"),
     3: .same(proto: "profileKey"),
     4: .same(proto: "identityKey"),
     5: .same(proto: "identityState"),
@@ -1476,7 +1482,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
 
   fileprivate class _StorageClass {
     var _aci: String = String()
-    var _serviceE164: String = String()
+    var _e164: String = String()
+    var _pni: String = String()
     var _profileKey: Data = Data()
     var _identityKey: Data = Data()
     var _identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
@@ -1501,7 +1508,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
 
     init(copying source: _StorageClass) {
       _aci = source._aci
-      _serviceE164 = source._serviceE164
+      _e164 = source._e164
+      _pni = source._pni
       _profileKey = source._profileKey
       _identityKey = source._identityKey
       _identityState = source._identityState
@@ -1538,7 +1546,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularStringField(value: &_storage._aci) }()
-        case 2: try { try decoder.decodeSingularStringField(value: &_storage._serviceE164) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._e164) }()
         case 3: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
         case 4: try { try decoder.decodeSingularBytesField(value: &_storage._identityKey) }()
         case 5: try { try decoder.decodeSingularEnumField(value: &_storage._identityState) }()
@@ -1551,6 +1559,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 12: try { try decoder.decodeSingularBoolField(value: &_storage._markedUnread) }()
         case 13: try { try decoder.decodeSingularUInt64Field(value: &_storage._mutedUntilTimestamp) }()
         case 14: try { try decoder.decodeSingularBoolField(value: &_storage._hideStory) }()
+        case 15: try { try decoder.decodeSingularStringField(value: &_storage._pni) }()
         case 16: try { try decoder.decodeSingularUInt64Field(value: &_storage._unregisteredAtTimestamp) }()
         case 17: try { try decoder.decodeSingularStringField(value: &_storage._systemGivenName) }()
         case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
@@ -1567,8 +1576,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._aci.isEmpty {
         try visitor.visitSingularStringField(value: _storage._aci, fieldNumber: 1)
       }
-      if !_storage._serviceE164.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._serviceE164, fieldNumber: 2)
+      if !_storage._e164.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._e164, fieldNumber: 2)
       }
       if !_storage._profileKey.isEmpty {
         try visitor.visitSingularBytesField(value: _storage._profileKey, fieldNumber: 3)
@@ -1606,6 +1615,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._hideStory != false {
         try visitor.visitSingularBoolField(value: _storage._hideStory, fieldNumber: 14)
       }
+      if !_storage._pni.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._pni, fieldNumber: 15)
+      }
       if _storage._unregisteredAtTimestamp != 0 {
         try visitor.visitSingularUInt64Field(value: _storage._unregisteredAtTimestamp, fieldNumber: 16)
       }
@@ -1631,7 +1643,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._aci != rhs_storage._aci {return false}
-        if _storage._serviceE164 != rhs_storage._serviceE164 {return false}
+        if _storage._e164 != rhs_storage._e164 {return false}
+        if _storage._pni != rhs_storage._pni {return false}
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._identityKey != rhs_storage._identityKey {return false}
         if _storage._identityState != rhs_storage._identityState {return false}

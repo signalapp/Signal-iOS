@@ -239,9 +239,6 @@ public class RemoteConfig: BaseFlags {
         if !FeatureFlags.phoneNumberIdentifiers {
             return true
         }
-        if !TSConstants.isUsingProductionService {
-            return false
-        }
         if isEnabled(.cdsDisableCompatibilityMode) {
             return false
         }

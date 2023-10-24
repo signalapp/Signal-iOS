@@ -37,6 +37,23 @@ extension ServiceId {
     }
 }
 
+public struct AtLeastOneServiceId {
+    /// Non-Optional because we must have at least an ACI or a PNI.
+    public let aciOrElsePni: ServiceId
+
+    public let aci: Aci?
+    public let pni: Pni?
+
+    public init?(aci: Aci?, pni: Pni?) {
+        guard let aciOrElsePni = aci ?? pni else {
+            return nil
+        }
+        self.aciOrElsePni = aciOrElsePni
+        self.aci = aci
+        self.pni = pni
+    }
+}
+
 extension ServiceId {
     public var temporary_rawUUID: UUID { rawUUID }
 }

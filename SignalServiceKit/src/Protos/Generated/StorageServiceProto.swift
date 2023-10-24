@@ -1307,14 +1307,24 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return !proto.aci.isEmpty
     }
 
-    public var serviceE164: String? {
-        guard hasServiceE164 else {
+    public var e164: String? {
+        guard hasE164 else {
             return nil
         }
-        return proto.serviceE164
+        return proto.e164
     }
-    public var hasServiceE164: Bool {
-        return !proto.serviceE164.isEmpty
+    public var hasE164: Bool {
+        return !proto.e164.isEmpty
+    }
+
+    public var pni: String? {
+        guard hasPni else {
+            return nil
+        }
+        return proto.pni
+    }
+    public var hasPni: Bool {
+        return !proto.pni.isEmpty
     }
 
     public var profileKey: Data? {
@@ -1522,8 +1532,11 @@ extension StorageServiceProtoContactRecord {
         if let _value = aci {
             builder.setAci(_value)
         }
-        if let _value = serviceE164 {
-            builder.setServiceE164(_value)
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        if let _value = pni {
+            builder.setPni(_value)
         }
         if let _value = profileKey {
             builder.setProfileKey(_value)
@@ -1600,21 +1613,23 @@ public struct StorageServiceProtoContactRecordBuilder {
     }
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setServiceE164(_ valueParam: String?) {
+    public mutating func setE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
-        proto.serviceE164 = valueParam
+        proto.e164 = valueParam
     }
 
-    public mutating func setServiceE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
+    public mutating func setE164(_ valueParam: String) {
+        proto.e164 = valueParam
+    }
 
-        proto.serviceE164 = valueParam
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPni(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.pni = valueParam
+    }
+
+    public mutating func setPni(_ valueParam: String) {
+        proto.pni = valueParam
     }
 
     @available(swift, obsoleted: 1.0)

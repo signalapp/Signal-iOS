@@ -25,7 +25,8 @@ class StorageServiceContactTest: XCTestCase {
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
                 aci: Aci.randomForTesting(),
-                serviceE164: nil,
+                phoneNumber: nil,
+                pni: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
             let actualValue = storageServiceContact.registrationStatus(currentDate: now)
@@ -49,7 +50,8 @@ class StorageServiceContactTest: XCTestCase {
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
                 aci: Aci.randomForTesting(),
-                serviceE164: nil,
+                phoneNumber: nil,
+                pni: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
             let actualValue = storageServiceContact.shouldBeInStorageService(currentDate: now)

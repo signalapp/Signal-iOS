@@ -86,6 +86,19 @@ public class LocalIdentifiers {
         return false
     }
 
+    public func containsAnyOf(aci: Aci?, phoneNumber: E164?, pni: Pni?) -> Bool {
+        if let aci, self.aci == aci {
+            return true
+        }
+        if let phoneNumber, self.phoneNumber == phoneNumber.stringValue {
+            return true
+        }
+        if let pni, self.pni == pni {
+            return true
+        }
+        return false
+    }
+
     public func isAciAddressEqualToAddress(_ address: SignalServiceAddress) -> Bool {
         if let serviceId = address.serviceId {
             return serviceId == self.aci

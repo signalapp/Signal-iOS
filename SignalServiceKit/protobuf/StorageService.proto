@@ -85,7 +85,8 @@ message ContactRecord {
   }
 
   string        aci                     = 1;
-  string        serviceE164             = 2;
+  string        e164                    = 2;
+  string        pni                     = 15;
   bytes         profileKey              = 3;
   bytes         identityKey             = 4;
   IdentityState identityState           = 5;

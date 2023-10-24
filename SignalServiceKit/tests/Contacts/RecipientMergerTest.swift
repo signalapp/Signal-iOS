@@ -286,7 +286,7 @@ class RecipientMergerTest: XCTestCase {
             // If the PNI exists, steal it if possible.
             ([(nil, nil, pni1)], false, [(nil, phone1, pni1)]),
             ([(nil, phone2, pni1)], false, [(nil, phone2, nil), (nil, phone1, pni1)]),
-            ([(aci1, nil, pni1)], false, [(aci1, nil, nil), (nil, phone1, pni1)]),
+            ([(aci1, nil, pni1)], false, [(aci1, phone1, pni1)]),
 
             // If nothing exists, create it.
             ([], false, [(nil, phone1, pni1)])
@@ -436,5 +436,148 @@ class RecipientMergerTest: XCTestCase {
 
         XCTAssertEqual(d.recipientStore.recipientTable.values.map({ $0.uniqueId }), [aciRecipient.uniqueId])
         XCTAssertEqual(d.identityManager.sessionSwitchoverMessages.count, 0)
+    }
+
+    func testStorageServiceMerges() throws {
+        try XCTSkipUnless(FeatureFlags.phoneNumberIdentifiers)
+
+        let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+        let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
+        let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+        let pni2 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b2")
+        let phoneNumber1 = E164("+16505550101")!
+        let phoneNumber2 = E164("+16505550102")!
+
+        struct TestCase {
+            let isPrimaryDevice: Bool
+            let initialState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)]
+            let mergeRequest: (aci: Aci?, phoneNumber: E164?, pni: Pni?)
+            let finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?, isResult: Bool)]
+            let lineNumber: Int
+
+            init(
+                isPrimaryDevice: Bool,
+                initialState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)],
+                mergeRequest: (aci: Aci?, phoneNumber: E164?, pni: Pni?),
+                finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?, isResult: Bool)],
+                lineNumber: Int = #line
+            ) {
+                self.isPrimaryDevice = isPrimaryDevice
+                self.initialState = initialState
+                self.mergeRequest = mergeRequest
+                self.finalState = finalState
+                self.lineNumber = lineNumber
+            }
+        }
+
+        let testCases: [TestCase] = [
+            // If we know the ACI/PNI, we can add the phone number.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, nil, pni1)],
+                mergeRequest: (nil, phoneNumber1, pni1),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+            // If we're linking a phone number/PNI across recipients, the phone number has precedence.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, nil, pni1), (aci2, phoneNumber1, nil)],
+                mergeRequest: (nil, phoneNumber1, pni1),
+                finalState: [(aci1, nil, nil, false), (aci2, phoneNumber1, pni1, true)]
+            ),
+            // If we're trying to re-associate on a primary, that's not allowed/ignored.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (nil, phoneNumber1, pni2),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+            TestCase(
+                isPrimaryDevice: false,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (nil, phoneNumber1, pni2),
+                finalState: [(aci1, phoneNumber1, pni2, true)]
+            ),
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (nil, phoneNumber2, pni1),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+            TestCase(
+                isPrimaryDevice: false,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (nil, phoneNumber2, pni1),
+                finalState: [(aci1, phoneNumber1, nil, false), (nil, phoneNumber2, pni1, true)]
+            ),
+            // If we learn the PNI but not the phone number, we should add the PNI.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, phoneNumber1, nil)],
+                mergeRequest: (aci1, nil, pni1),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+            // But not if we already know some other PNI for the phone number.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (aci1, nil, pni2),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+            // Unless we're on a linked device.
+            TestCase(
+                isPrimaryDevice: false,
+                initialState: [(aci1, phoneNumber1, pni1)],
+                mergeRequest: (aci1, nil, pni2),
+                finalState: [(aci1, phoneNumber1, pni2, true)]
+            ),
+            // But we can if we don't know a phone number.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, nil, pni1)],
+                mergeRequest: (aci1, nil, pni2),
+                finalState: [(aci1, nil, pni2, true)]
+            ),
+            // If we get an ACI/PNI result, we should infer the phone number.
+            TestCase(
+                isPrimaryDevice: true,
+                initialState: [(aci1, phoneNumber2, pni2), (nil, phoneNumber1, pni1)],
+                mergeRequest: (aci1, nil, pni1),
+                finalState: [(aci1, phoneNumber1, pni1, true)]
+            ),
+        ]
+
+        for testCase in testCases {
+            Logger.verbose("Starting test on line \(testCase.lineNumber)")
+            defer { Logger.flush() }
+            let d = TestDependencies()
+            let mergedRecipient = d.mockDB.write { tx in
+                for initialState in testCase.initialState {
+                    d.recipientStore.insertRecipient(
+                        SignalRecipient(aci: initialState.aci, pni: initialState.pni, phoneNumber: initialState.phoneNumber),
+                        transaction: tx
+                    )
+                }
+                return d.recipientMerger.applyMergeFromStorageService(
+                    localIdentifiers: .forUnitTests,
+                    isPrimaryDevice: testCase.isPrimaryDevice,
+                    serviceIds: AtLeastOneServiceId(aci: testCase.mergeRequest.aci, pni: testCase.mergeRequest.pni)!,
+                    phoneNumber: testCase.mergeRequest.phoneNumber,
+                    tx: tx
+                )
+            }
+
+            // Make sure all the recipients have been updated properly.
+            for (idx, finalState) in testCase.finalState.enumerated() {
+                let recipient = try XCTUnwrap(d.recipientStore.recipientTable.removeValue(forKey: idx + 1))
+                XCTAssertEqual(recipient.phoneNumber, finalState.phoneNumber?.stringValue)
+                XCTAssertEqual(recipient.pni, finalState.pni)
+                XCTAssertEqual(recipient.aci, finalState.aci)
+                if finalState.isResult {
+                    XCTAssertEqual(mergedRecipient.uniqueId, recipient.uniqueId)
+                }
+            }
+            XCTAssertEqual(d.recipientStore.recipientTable, [:])
+        }
     }
 }

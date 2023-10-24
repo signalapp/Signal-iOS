@@ -1108,7 +1108,7 @@ class StorageServiceOperation: OWSOperation {
                     // Only consider registered recipients as orphaned. If another client
                     // removes an unregistered recipient, allow it.
                     guard
-                        let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: transaction),
+                        let storageServiceContact = StorageServiceContact.fetch(for: accountId, tx: transaction),
                         storageServiceContact.shouldBeInStorageService(currentDate: currentDate),
                         storageServiceContact.registrationStatus(currentDate: currentDate) == .registered
                     else {
@@ -1376,7 +1376,7 @@ class StorageServiceOperation: OWSOperation {
         let currentDate = Date()
 
         func shouldRecipientBeInStorageService(accountId: AccountId, tx: SDSAnyReadTransaction) -> Bool {
-            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, transaction: tx) else {
+            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, tx: tx) else {
                 return false
             }
             return storageServiceContact.shouldBeInStorageService(currentDate: currentDate)
