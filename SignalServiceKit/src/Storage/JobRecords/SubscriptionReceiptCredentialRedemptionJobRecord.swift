@@ -6,8 +6,8 @@
 import Foundation
 import GRDB
 
-public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .receiptCredentialRedemption }
+public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
+    override class var jobRecordType: JobRecordType { .subscriptionReceiptCredentialRedemption }
 
     public let paymentProcessor: String
     public let receiptCredentialRequestContext: Data

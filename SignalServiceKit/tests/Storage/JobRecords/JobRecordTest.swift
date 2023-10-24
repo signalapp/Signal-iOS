@@ -22,7 +22,7 @@ class JobRecordTest: XCTestCase {
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
-        case .receiptCredentialRedemption: return ReceiptCredentialRedemptionJobRecord.self
+        case .subscriptionReceiptCredentialRedemption: return SubscriptionReceiptCredentialRedemptionJobRecord.self
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
         }
@@ -336,11 +336,11 @@ extension MessageSenderJobRecord: ValidatableModel {
     }
 }
 
-extension ReceiptCredentialRedemptionJobRecord: ValidatableModel {
+extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
 
-    static let constants: [(ReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
+    static let constants: [(SubscriptionReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
         (
-            ReceiptCredentialRedemptionJobRecord(
+            SubscriptionReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "bank",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
@@ -360,7 +360,7 @@ extension ReceiptCredentialRedemptionJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJ0YXJnZXRTdWJzY3JpcHRpb25MZXZlbCI6MTIsImN1cnJlbmN5Q29kZSI6InNob29wIiwicHJpb3JTdWJzY3JpcHRpb25MZXZlbCI6NCwiYW1vdW50IjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHakN3d2FWU1J1ZFd4czF3ME9EeEFSRWhNVUZSWVhHQmdaVmlSamJHRnpjMXRPVXk1dFlXNTBhWE56WVZ0T1V5NXVaV2RoZEdsMlpWdE9VeTVsZUhCdmJtVnVkRjVPVXk1dFlXNTBhWE56WVM1aWIxbE9VeTVzWlc1bmRHaGFUbE11WTI5dGNHRmpkSUFDVHhBUWZRQUFBQUFBQUFBQUFBQUFBQUFBQUFnVFwvXC9cL1wvXC9cL1wvXC9cL1wvOFFBUW5TR3h3ZEhsb2tZMnhoYzNOdVlXMWxXQ1JqYkdGemMyVnpYeEFhVGxORVpXTnBiV0ZzVG5WdFltVnlVR3hoWTJWb2IyeGtaWEtsSHlBaElpTmZFQnBPVTBSbFkybHRZV3hPZFcxaVpYSlFiR0ZqWldodmJHUmxjbDhRRDA1VFJHVmphVzFoYkU1MWJXSmxjbGhPVTA1MWJXSmxjbGRPVTFaaGJIVmxXRTVUVDJKcVpXTjBBQWdBRVFBYUFDUUFLUUF5QURjQVNRQk1BRkVBVXdCWEFGMEFiQUJ6QUg4QWl3Q1hBS1lBc0FDN0FMMEEwQURSQU5vQTNBRGRBT0lBN1FEMkFSTUJHUUUyQVVnQlVRRlpBQUFBQUFBQUFnRUFBQUFBQUFBQUpBQUFBQUFBQUFBQUFBQUFBQUFBQVdJPSIsInN1YnNjcmliZXJJRCI6ImZlZWQiLCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3QiOiJkZWFkIiwic3VwZXIiOnsiZmFpbHVyZUNvdW50IjowLCJsYWJlbCI6Indob29wIiwic3RhdHVzIjozLCJ1bmlxdWVJZCI6IjI0QzJGQjVCLTlGM0UtNDRFNy05RTkyLTBGQjEzNjA1Q0NDRiIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoiZGEgYm9vcCIsInJlY29yZFR5cGUiOjcxfSwiYm9vc3RQYXltZW50SW50ZW50SUQiOiJkZSIsInJlY2VpcHRDcmVkZW50YWlsUmVxdWVzdENvbnRleHQiOiJiZWVmIiwicmVjZWlwdENyZWRlbnRpYWxQcmVzZW50YXRpb24iOiJiYWRlIiwicGF5bWVudFByb2Nlc3NvciI6ImJhbmsiLCJpc0Jvb3N0Ijp0cnVlfQ==")!
         ),
         (
-            ReceiptCredentialRedemptionJobRecord(
+            SubscriptionReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "not svb",
                 receiptCredentialRequestContext: Data(base64Encoded: "feeb")!,
                 receiptCredentialRequest: Data(base64Encoded: "aded")!,
@@ -381,7 +381,7 @@ extension ReceiptCredentialRedemptionJobRecord: ValidatableModel {
         )
     ]
 
-    func validate(against: ReceiptCredentialRedemptionJobRecord) throws {
+    func validate(against: SubscriptionReceiptCredentialRedemptionJobRecord) throws {
         guard
             paymentProcessor == against.paymentProcessor,
             receiptCredentialRequestContext == against.receiptCredentialRequestContext,

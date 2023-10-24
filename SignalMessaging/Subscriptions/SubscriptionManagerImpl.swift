@@ -258,7 +258,7 @@ public class SubscriptionManagerImpl: NSObject {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    public static var subscriptionJobQueue: SubscriptionReceiptCredentialJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
+    public static var subscriptionJobQueue: SubscriptionReceiptCredentialRedemptionJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
     public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
     public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
@@ -541,7 +541,6 @@ public class SubscriptionManagerImpl: NSObject {
                 subscriberID: subscriberID,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
-                boostPaymentIntentID: String(),
                 transaction: transaction
             )
         }
