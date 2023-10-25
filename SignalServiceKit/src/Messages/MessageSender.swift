@@ -119,6 +119,14 @@ private extension MessageSender {
             return Promise(error: UntrustedIdentityError(serviceId: serviceId))
         }
 
+        if let recipientId, willLikelyHaveInvalidKeySignatureError(for: recipientId) {
+            Logger.info("Skipping prekey request due to invalid prekey signature.")
+
+            // Check if this error is happening repeatedly for this recipientId.
+            // If so, return an InvalidKeySignatureError as a terminal failure.
+            return Promise(error: InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: true))
+        }
+
         if isOnlineMessage || isTransientSenderKeyDistributionMessage {
             Logger.info("Skipping prekey request for transient message")
             return Promise(error: MessageSenderNoSessionForTransientMessageError())
@@ -213,7 +221,7 @@ private extension MessageSender {
         let bundle: LibSignalClient.PreKeyBundle
         if preKeyBundle.preKeyPublic.isEmpty {
             if preKeyBundle.pqPreKeyPublic.isEmpty {
-                Logger.info("Creating prekey bundle with signed prekey")
+                Logger.info("Creating prekey bundle with signed prekey (\(preKeyBundle.signedPreKeyId))")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -222,7 +230,7 @@ private extension MessageSender {
                     signedPrekeySignature: preKeyBundle.signedPreKeySignature,
                     identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
             } else {
-                Logger.info("Creating prekey bundle with signed and pq prekey")
+                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and pq (\(preKeyBundle.pqPreKeyId)) prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -237,7 +245,7 @@ private extension MessageSender {
             }
         } else {
             if preKeyBundle.pqPreKeyPublic.isEmpty {
-                Logger.info("Creating prekey bundle with signed and one-time prekey")
+                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and one-time (\(preKeyBundle.preKeyId)) prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -248,7 +256,7 @@ private extension MessageSender {
                     signedPrekeySignature: preKeyBundle.signedPreKeySignature,
                     identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
             } else {
-                Logger.info("Creating prekey bundle with signed, one-time, and pq prekey")
+                Logger.info("Creating prekey bundle with signed (\(preKeyBundle.signedPreKeyId)) and one-time (\(preKeyBundle.preKeyId)) and pq \(preKeyBundle.pqPreKeyId) prekey")
                 bundle = try LibSignalClient.PreKeyBundle(
                     registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                     deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
@@ -276,8 +284,8 @@ private extension MessageSender {
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
-        } catch SignalError.untrustedIdentity(let message) {
-            Logger.error("Found untrusted identity for \(serviceId): \(message)")
+        } catch SignalError.untrustedIdentity(_) {
+            Logger.error("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
                 recipientId: recipientId,
@@ -285,6 +293,18 @@ private extension MessageSender {
                 transaction: transaction
             )
             throw UntrustedIdentityError(serviceId: serviceId)
+        } catch SignalError.invalidSignature(_) {
+            Logger.error("Invalid key signature for \(serviceId)")
+
+            // Received this error from the server, so this could either be
+            // an invalid key due to a broken client, or it may be a random
+            // corruption in transit.  Mark having encountered an error for
+            // this recipient so later checks can determine if this has happend
+            // more than once and fail early.
+            // The error thrown here is considered non-terminal which allows
+            // the request to be retried.
+            hadInvalidKeySignatureError(for: recipientId)
+            throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: false)
         }
         owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write), "Couldn't create session.")
     }
@@ -350,6 +370,67 @@ private extension MessageSender {
             )
             return untrustedIdentity != nil
         }
+    }
+}
+
+private extension MessageSender {
+    private typealias InvalidSignatureCache = [AccountId: InvalidSignatureCacheItem]
+    private struct InvalidSignatureCacheItem {
+        let lastErrorDate: Date
+        let errorCount: UInt32
+    }
+    private static let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: AtomicLock())
+
+    class func hadInvalidKeySignatureError(for recipientId: AccountId) {
+        invalidKeySignatureCache.update { cache in
+            var errorCount: UInt32 = 1
+            if let mostRecentError = cache[recipientId] {
+                errorCount = mostRecentError.errorCount + 1
+            }
+
+            cache[recipientId] = InvalidSignatureCacheItem(
+                lastErrorDate: Date(),
+                errorCount: errorCount
+            )
+        }
+    }
+
+    class func willLikelyHaveInvalidKeySignatureError(for recipientId: AccountId) -> Bool {
+        assert(!Thread.isMainThread)
+
+        // Similar to untrusted identity errors, when an invalid signature for a prekey
+        // is encountered, it will probably be encountered for a while until the
+        // target client rotates prekeys and hopfully fixes the bad signature.
+        // To avoid running into prekey rate limits, remember when an error is
+        // encountered and slow down sending prekey requests for this recipient.
+        //
+        // Additionally, there is always a chance of corruption of the prekey
+        // bundle during data transmission, which would result in an invalid
+        // signature of an otherwise correct bundle. To handle this rare case,
+        // don't begin limiting the prekey request until after encounting the
+        // second bad signature for a particular recipient.
+
+        guard let mostRecentError = invalidKeySignatureCache.get()[recipientId] else {
+            return false
+        }
+
+        let staleIdentityLifetime = kMinuteInterval * 5
+        guard abs(mostRecentError.lastErrorDate.timeIntervalSinceNow) < staleIdentityLifetime else {
+
+            // Error has expired, remove it to reset the count
+            invalidKeySignatureCache.update { cache in
+               _ = cache.removeValue(forKey: recipientId)
+            }
+
+            return false
+        }
+
+        // Let the first error go, only skip starting on the second error
+        guard mostRecentError.errorCount > 1 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -1265,6 +1346,11 @@ extension MessageSender {
                 // rarely. We expect it to happen whenever Bob reinstalls, and Alice
                 // messages Bob before she can pull down his latest identity. If it's
                 // happening a lot, we should rethink our profile fetching strategy.
+                throw error
+            case is InvalidKeySignatureError:
+                // This should never happen unless a broken client is uploading invalid
+                // keys. The server should now enforce valid signatures on upload,
+                // resulting in this become exceedingly rare as time goes by.
                 throw error
             case MessageSenderError.prekeyRateLimit:
                 throw SignalServiceRateLimitedError()
