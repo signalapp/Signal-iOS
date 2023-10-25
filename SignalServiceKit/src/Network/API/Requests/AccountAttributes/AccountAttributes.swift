@@ -143,6 +143,7 @@ public struct AccountAttributes: Codable {
             case canReceiveGiftBadges = "giftBadges"
             case hasSVRBackups = "storage"
             case changeNumber
+            case pni
         }
     }
 }
