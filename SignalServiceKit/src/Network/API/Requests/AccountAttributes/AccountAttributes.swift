@@ -147,5 +147,14 @@ public struct AccountAttributes: Codable {
             case pni
             case paymentActivation
         }
+
+        public init(hasSVRBackups: Bool) {
+            self.hasSVRBackups = hasSVRBackups
+        }
+
+        var requestParameters: [String: NSNumber] {
+            let jsonData = try! JSONEncoder().encode(self)
+            return try! JSONSerialization.jsonObject(with: jsonData) as! [String: NSNumber]
+        }
     }
 }

@@ -197,7 +197,10 @@ public class AccountManager: NSObject, Dependencies {
             let hasBackedUpMasterKey = self.databaseStorage.read { tx in
                 DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: tx.asV2Read)
             }
-            return self.serviceClient.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey)
+            return Promise.wrapAsync {
+                let capabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
+                try await self.serviceClient.updateSecondaryDeviceCapabilities(capabilities)
+            }
         }.done {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.registrationStateChangeManager.didFinishProvisioningSecondary(tx: tx)

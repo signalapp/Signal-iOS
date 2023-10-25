@@ -43,8 +43,8 @@ public class AccountServiceClient: NSObject {
         return serviceClient.setCurrentSignedPreKey(signedPreKey, for: identity)
     }
 
-    public func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {
-        return serviceClient.updatePrimaryDeviceAccountAttributes()
+    public func updatePrimaryDeviceAccountAttributes() async throws -> AccountAttributes {
+        return try await serviceClient.updatePrimaryDeviceAccountAttributes()
     }
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {

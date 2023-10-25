@@ -735,6 +735,7 @@
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */; };
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
+		50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
 		50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */; };
 		50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */; };
@@ -3319,6 +3320,7 @@
 		50D5E2422980B53000899660 /* LinkValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidatorTest.swift; sourceTree = "<group>"; };
 		50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueObjectRecipientMerger.swift; sourceTree = "<group>"; };
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
+		50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesTest.swift; sourceTree = "<group>"; };
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
 		50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManager.swift; sourceTree = "<group>"; };
 		50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSKEnvironment.swift; path = src/SSKEnvironment.swift; sourceTree = "<group>"; };
@@ -8520,6 +8522,7 @@
 			children = (
 				F9C9610829A90FF4001E4A09 /* API */,
 				F9427EAC297F1EA5008EF0AC /* Spam */,
+				50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */,
 				F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */,
 				F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */,
 				F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */,
@@ -13100,6 +13103,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,

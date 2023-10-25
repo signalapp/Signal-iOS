@@ -256,61 +256,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
-{
-    // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
-    OWSAssertDebug(![TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction]);
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
-                              method:@"PUT"
-                          parameters:[self deviceCapabilitiesWithIsSecondaryDevice:YES
-                                                              hasBackedUpMasterKey:hasBackedUpMasterKey]];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-                                              (BOOL)hasBackedUpMasterKey
-                                                                                      isRegistered:(BOOL)isRegistered
-                                                                                   isPrimaryDevice:(BOOL)isPrimaryDevice
-{
-    OWSAssertDebug(isRegistered);
-    BOOL isSecondaryDevice = !isPrimaryDevice;
-    return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice hasBackedUpMasterKey:hasBackedUpMasterKey];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesWithIsSecondaryDevice:(BOOL)isSecondaryDevice
-                                                             hasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
-{
-    NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
-    capabilities[@"gv2"] = @(YES);
-    capabilities[@"gv2-2"] = @(YES);
-    capabilities[@"gv2-3"] = @(YES);
-    capabilities[@"transfer"] = @(YES);
-    capabilities[@"announcementGroup"] = @(YES);
-    capabilities[@"senderKey"] = @(YES);
-    capabilities[@"giftBadges"] = @(YES);
-    capabilities[@"paymentActivation"] = @(YES);
-
-    if (RemoteConfig.stories || isSecondaryDevice) {
-        capabilities[@"stories"] = @(YES);
-    }
-
-    capabilities[@"pni"] = @(YES);
-
-    // If the storage service requires (or will require) secondary devices
-    // to have a capability in order to be linked, we might need to always
-    // set that capability here if isSecondaryDevice is true.
-
-
-    if (hasBackedUpMasterKey) {
-        capabilities[@"storage"] = @(YES);
-    }
-
-    capabilities[@"changeNumber"] = @(YES);
-
-    OWSLogInfo(@"local device capabilities: %@", capabilities);
-    return [capabilities copy];
-}
-
 + (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
