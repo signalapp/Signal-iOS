@@ -131,6 +131,7 @@ public struct AccountAttributes: Codable {
         public let hasSVRBackups: Bool
         public let changeNumber = true
         public let pni = true
+        public let paymentActivation = true
 
         public enum CodingKeys: String, CodingKey {
             case gv2
@@ -144,6 +145,7 @@ public struct AccountAttributes: Codable {
             case hasSVRBackups = "storage"
             case changeNumber
             case pni
+            case paymentActivation
         }
     }
 }
