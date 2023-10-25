@@ -83,6 +83,9 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     private let tsAccountManager: TSAccountManager
     private let jobQueues: SSKJobQueues
 
+    @objc
+    public static let hideListDidChange = Notification.Name("hideListDidChange")
+
     public init(
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
@@ -192,6 +195,9 @@ private extension RecipientHidingManagerImpl {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
+        // Triggers UI updates of recipient lists.
+        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
         if let thread = TSContactThread.getWithContactAddress(
             recipient.address,
@@ -263,6 +269,9 @@ private extension RecipientHidingManagerImpl {
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
     func didSetAsUnhidden(recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
+        // Triggers UI updates of recipient lists.
+        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as unhidden.")
         if wasLocallyInitiated {
             Logger.info("[Recipient hiding][side effects] Add to whitelist.")
@@ -332,5 +341,10 @@ public class RecipientHidingManagerObjcBridge: NSObject {
     @objc
     public static func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
+    }
+
+    @objc
+    public static var hideListDidChange: Notification.Name {
+        return RecipientHidingManagerImpl.hideListDidChange
     }
 }
