@@ -164,15 +164,11 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
-               isStoriesCapable:(BOOL)isStoriesCapable
            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                    isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
                   authedAccount:(AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx;
-
-- (BOOL)recipientAddressIsStoriesCapable:(SignalServiceAddress *)address
-                             transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmCaches;
 

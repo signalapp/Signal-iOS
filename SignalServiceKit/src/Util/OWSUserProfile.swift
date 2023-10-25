@@ -475,8 +475,6 @@ public class UserProfileChanges: NSObject {
     public var badges: [OWSUserProfileBadgeInfo]?
 
     @objc
-    public var isStoriesCapable: BoolValue?
-    @objc
     public var canReceiveGiftBadges: BoolValue?
     @objc
     public var isPniCapable: BoolValue?
@@ -542,7 +540,7 @@ public extension OWSUserProfile {
         )
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:lastFetchDate:isStoriesCapable:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:lastFetchDate:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
     func update(
         givenName: String?,
         familyName: String?,
@@ -551,7 +549,6 @@ public extension OWSUserProfile {
         badges: [OWSUserProfileBadgeInfo],
         avatarUrlPath: String?,
         lastFetchDate: Date,
-        isStoriesCapable: Bool,
         canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
@@ -568,7 +565,6 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.lastFetchDate = .init(lastFetchDate)
 
-        changes.isStoriesCapable = .init(isStoriesCapable)
         changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 
@@ -581,7 +577,7 @@ public extension OWSUserProfile {
         )
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:avatarFileName:lastFetchDate:isStoriesCapable:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:avatarFileName:lastFetchDate:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
     func update(
         givenName: String?,
         familyName: String?,
@@ -591,7 +587,6 @@ public extension OWSUserProfile {
         avatarUrlPath: String?,
         avatarFileName: String?,
         lastFetchDate: Date,
-        isStoriesCapable: Bool,
         canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
@@ -609,7 +604,6 @@ public extension OWSUserProfile {
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
 
-        changes.isStoriesCapable = .init(isStoriesCapable)
         changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 
@@ -654,7 +648,6 @@ public extension OWSUserProfile {
         changes.familyName = .init(nil)
         changes.bio = .init(nil)
         changes.bioEmoji = .init(nil)
-        // builder.isStoriesCapable = .init(nil)
         changes.avatarUrlPath = .init(nil)
         changes.avatarFileName = .init(nil)
         // builder.lastFetchDate = .init(nil)
@@ -710,7 +703,6 @@ public extension OWSUserProfile {
     }
 
     func update(
-        isStoriesCapable: Bool,
         canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
@@ -718,7 +710,6 @@ public extension OWSUserProfile {
         transaction: SDSAnyWriteTransaction
     ) {
         let changes = UserProfileChanges()
-        changes.isStoriesCapable = .init(isStoriesCapable)
         changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
         apply(
@@ -732,7 +723,6 @@ public extension OWSUserProfile {
 
     func update(
         lastFetchDate: Date,
-        isStoriesCapable: Bool,
         canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
@@ -742,7 +732,6 @@ public extension OWSUserProfile {
         let changes = UserProfileChanges()
         changes.lastFetchDate = .init(lastFetchDate)
 
-        changes.isStoriesCapable = .init(isStoriesCapable)
         changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 

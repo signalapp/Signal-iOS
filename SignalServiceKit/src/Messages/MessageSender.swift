@@ -725,34 +725,16 @@ extension MessageSender {
                 throw MessageSenderError.threadMissing
             }
 
-            let serviceIds: [ServiceId]
-            do {
-                let proposedAddresses = try Self.unsentRecipients(of: message, in: thread, tx: tx)
-                let (proposedServiceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
+            let proposedAddresses = try Self.unsentRecipients(of: message, in: thread, tx: tx)
+            let (serviceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
 
-                // If we haven't yet tried to look up phone numbers, send an asynchronous
-                // request to look up phone numbers, and then try to go through this logic
-                // *again* in a new transaction. Things may change for that subsequent
-                // attempt, and if there's still missing phone numbers at that point, we'll
-                // skip them for this message.
-                if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
-                    return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
-                }
-
-                var filteredServiceIds = proposedServiceIds
-
-                // For group story replies, we must check if the recipients are stories capable.
-                if message.isGroupStoryReply {
-                    let userProfiles = Self.profileManager.getUserProfiles(
-                        forAddresses: filteredServiceIds.map { SignalServiceAddress($0) },
-                        transaction: tx
-                    )
-                    filteredServiceIds = filteredServiceIds.filter {
-                        userProfiles[SignalServiceAddress($0)]?.isStoriesCapable == true
-                    }
-                }
-
-                serviceIds = filteredServiceIds
+            // If we haven't yet tried to look up phone numbers, send an asynchronous
+            // request to look up phone numbers, and then try to go through this logic
+            // *again* in a new transaction. Things may change for that subsequent
+            // attempt, and if there's still missing phone numbers at that point, we'll
+            // skip them for this message.
+            if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
+                return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
             }
 
             Self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)

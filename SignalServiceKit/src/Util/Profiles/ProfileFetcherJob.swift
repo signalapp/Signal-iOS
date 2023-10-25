@@ -505,7 +505,6 @@ public class ProfileFetcherJob: NSObject {
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetch: Date(),
-                isStoriesCapable: profile.isStoriesCapable,
                 canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,

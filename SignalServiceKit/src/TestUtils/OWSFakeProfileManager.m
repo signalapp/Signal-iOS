@@ -295,7 +295,6 @@ NS_ASSUME_NONNULL_BEGIN
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
-               isStoriesCapable:(BOOL)isStoriesCapable
            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                    isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter

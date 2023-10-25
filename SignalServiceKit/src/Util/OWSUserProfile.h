@@ -70,7 +70,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSDate *lastMessagingDate;
 
 /// Does this profile have the Stories capability?
-@property (atomic, readonly) BOOL isStoriesCapable;
+@property (atomic, readonly) BOOL isStoriesCapable; // deprecated
 /// Does this profile have the gift badges capability?
 @property (atomic, readonly) BOOL canReceiveGiftBadges;
 /// Does this profile have the PNI capability?
