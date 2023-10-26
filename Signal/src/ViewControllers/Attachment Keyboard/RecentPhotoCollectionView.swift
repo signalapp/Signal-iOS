@@ -22,7 +22,9 @@ class RecentPhotosCollectionView: UICollectionView {
     var mediaLibraryAuthorizationStatus: PHAuthorizationStatus = .notDetermined {
         didSet {
             guard oldValue != mediaLibraryAuthorizationStatus else { return }
-            reloadUIOnMediaLibraryAuthorizationStatusChange()
+            DispatchQueue.main.async {
+                self.reloadUIOnMediaLibraryAuthorizationStatusChange()
+            }
         }
     }
 
