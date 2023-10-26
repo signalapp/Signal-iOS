@@ -242,16 +242,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
         avatarView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressAvatar)))
     }
 
-    /// Will there be anything other than the "Donate" button? Can be used to skip this screen.
-    ///
-    /// Once gift badges are added (or anything else that's always shown), we can remove this.
-    static func hasAnythingToShowWithSneakyTransaction() -> Bool {
-        (
-            hasAnyBadges() ||
-            databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
-        )
-    }
-
     // MARK: - Table contents
 
     private func updateTableContents() {
