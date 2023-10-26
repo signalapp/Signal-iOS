@@ -129,14 +129,6 @@ class OutgoingDeviceTransferQRScanningViewController: DeviceTransferBaseViewCont
         addChild(qrCodeScanViewController)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
     @objc
     private func didTapCameraToggle() {
         qrCodeScanViewController.prefersFrontFacingCamera =

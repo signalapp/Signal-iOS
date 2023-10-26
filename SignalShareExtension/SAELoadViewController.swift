@@ -92,11 +92,6 @@ class SAELoadViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = false
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-    }
-
     // MARK: - Event Handlers
 
     @objc

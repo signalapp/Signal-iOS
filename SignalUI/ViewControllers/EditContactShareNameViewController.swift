@@ -179,18 +179,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         updateNavigationBar()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override public func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
-    override public func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
     override public func loadView() {
         super.loadView()
 

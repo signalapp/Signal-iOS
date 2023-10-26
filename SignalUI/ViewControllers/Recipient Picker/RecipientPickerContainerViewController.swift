@@ -20,10 +20,6 @@ open class RecipientPickerContainerViewController: OWSViewController, OWSNavigat
         recipientPicker.applyTheme(to: self)
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
     public var childForOWSNavigationConfiguration: OWSNavigationChildController? {
         return recipientPicker
     }

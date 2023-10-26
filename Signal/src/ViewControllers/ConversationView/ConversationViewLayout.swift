@@ -931,33 +931,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
     }
 
-    // This method is called when there is an update with deletes/inserts to the collection view.
-    //
-    // It will be called prior to calling the initial/final layout attribute methods below to give
-    // the layout an opportunity to do batch computations for the insertion and deletion layout attributes.
-    //
-    // The updateItems parameter is an array of UICollectionViewUpdateItem instances for each
-    // element that is moving to a new index path.
-    public override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
-        super.prepare(forCollectionViewUpdates: updateItems)
-    }
-
-    // Called inside an animation block after the update.
-    public override func finalizeCollectionViewUpdates() {
-        super.finalizeCollectionViewUpdates()
-    }
-
-    // UICollectionView calls this when its bounds have changed inside an
-    // animation block before displaying cells in its new bounds.
-    public override func prepare(forAnimatedBoundsChange oldBounds: CGRect) {
-        super.prepare(forAnimatedBoundsChange: oldBounds)
-    }
-
-    // also called inside the animation block
-    public override func finalizeAnimatedBoundsChange() {
-        super.finalizeAnimatedBoundsChange()
-    }
-
     private var isUserScrolling: Bool {
         delegate?.conversationViewController?.isUserScrolling ?? false
     }

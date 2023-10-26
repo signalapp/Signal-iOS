@@ -41,14 +41,6 @@ public class PaymentsQRScanViewController: OWSViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
     private func createViews() {
         view.backgroundColor = .ows_black
 
