@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 24 hours from the time you sent this message.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";

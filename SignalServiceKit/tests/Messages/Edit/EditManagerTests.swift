@@ -200,6 +200,13 @@ class EditManagerTests: SSKBaseTestSwift {
         }
     }
 
+    func testEditSendWindowString() {
+        let errorMessage = EditSendValidationError.editWindowClosed.localizedDescription
+        let editMilliseconds = EditManager.Constants.editSendWindowMilliseconds
+        XCTAssertEqual(editMilliseconds % UInt64(kHourInMs), 0)
+        XCTAssert(errorMessage.range(of: " \(editMilliseconds / UInt64(kHourInMs)) ") != nil)
+    }
+
     // MARK: - Test Validation Helper
 
     func compare(
