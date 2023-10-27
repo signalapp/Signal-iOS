@@ -130,7 +130,7 @@ public struct AccountAttributes: Codable {
         public let canReceiveGiftBadges = true
         public let hasSVRBackups: Bool
         public let changeNumber = true
-        public let pni = true
+        public let pni = false
 
         public enum CodingKeys: String, CodingKey {
             case gv2
