@@ -130,7 +130,7 @@ public struct AccountAttributes: Codable {
         public let canReceiveGiftBadges = true
         public let hasSVRBackups: Bool
         public let changeNumber = true
-        public let pni = true
+        public let pni = false
         public let paymentActivation = true
 
         public enum CodingKeys: String, CodingKey {
