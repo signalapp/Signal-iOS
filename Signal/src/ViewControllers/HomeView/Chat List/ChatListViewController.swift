@@ -697,15 +697,15 @@ public class ChatListViewController: OWSViewController {
         }
 
         let (
+            subscriberID,
             expiredBadgeID,
             shouldShowExpirySheet,
-            mostRecentSubscriptionBadgeChargeFailure,
             mostRecentSubscriptionPaymentMethod,
             hasCurrentSubscription
         ) = databaseStorage.read { transaction in (
+            SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
             SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
             SubscriptionManagerImpl.showExpirySheetOnHomeScreenKey(transaction: transaction),
-            SubscriptionManagerImpl.getMostRecentSubscriptionBadgeChargeFailure(transaction: transaction),
             SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
             subscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
@@ -753,8 +753,17 @@ public class ChatListViewController: OWSViewController {
                 SubscriptionManagerImpl.fetchDonationConfiguration()
             }.map(on: DispatchQueue.global()) { donationConfiguration -> [SubscriptionLevel] in
                 donationConfiguration.subscription.levels
-            }.done(on: DispatchQueue.global()) { (subscriptions: [SubscriptionLevel]) in
-                let subscriptionLevel = subscriptions.first { $0.badge.id == expiredBadgeID }
+            }.then(on: DispatchQueue.global()) { subscriptionLevels -> Promise<([SubscriptionLevel], Subscription?)> in
+                guard let subscriberID else {
+                    return .value((subscriptionLevels, nil))
+                }
+
+                return SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID)
+                    .map(on: DispatchQueue.global()) { currentSubscription in
+                        (subscriptionLevels, currentSubscription)
+                    }
+            }.done(on: DispatchQueue.global()) { (subscriptionLevels, currentSubscription) in
+                let subscriptionLevel = subscriptionLevels.first { $0.badge.id == expiredBadgeID }
                 guard let subscriptionLevel = subscriptionLevel else {
                     owsFailDebug("Unable to find matching subscription level for expired badge")
                     return
@@ -768,9 +777,9 @@ public class ChatListViewController: OWSViewController {
                           self.conversationSplitViewController?.selectedThread == nil else { return }
 
                     let mode: BadgeExpirationSheetState.Mode
-                    if let mostRecentSubscriptionBadgeChargeFailure = mostRecentSubscriptionBadgeChargeFailure {
+                    if let currentSubscriptionChargeFailure = currentSubscription?.chargeFailure {
                         mode = .subscriptionExpiredBecauseOfChargeFailure(
-                            chargeFailure: mostRecentSubscriptionBadgeChargeFailure,
+                            chargeFailure: currentSubscriptionChargeFailure,
                             paymentMethod: mostRecentSubscriptionPaymentMethod
                         )
                     } else {
