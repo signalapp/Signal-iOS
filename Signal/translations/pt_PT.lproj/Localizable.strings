@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Todas as suas chamadas passarão pelo servidor Signal para evitar revelar o seu endereço IP ao seu contacto. A sua ativação irá reduzir a qualidade da chamada.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Remover Elementos de Rastreamento";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Remover elementos de rastreamento de URLs, por exemplo, \"igshid=\" para Instagram, \"si=\" para YouTube, \"fbid=\" para Facebook, \"t=\" para Twitter(X), \"ttclid=\" para o ID de Clique do TikTok, outros elementos de rastreamento como \"utm_campaign\" e \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Editar número";
 

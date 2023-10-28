@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Kaikki puhelut välitetään Signalin palvelimen kautta, jotta IP-osoitteesi ei paljastu yhteystiedollesi. Heikentää puhelun laatua.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Poista seurantaelementit";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Poista seurantaelementit URL-osoitteista, kuten \"igshid=\" Instagramille, \"si=\" YouTubelle, \"fbid=\" Facebookille, \"t=\" Twitterille (X), \"ttclid=\" TikTok-klikkauksen tunnisteelle, muut seurantaelementit kuten \"utm_campaign\" ja \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Muokkaa numeroa";
 

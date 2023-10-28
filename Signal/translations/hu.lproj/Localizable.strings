@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Minden hívás a Signal kiszolgálón keresztül haladjon - ezzel elfedhető IP címed a hívott fél számára. A funkció engedélyezése csökkentheti a hívásminőséget.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Nyomkövetési elemek eltávolítása";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Nyomkövetési elemek eltávolítása az URL-ekből, pl. \"igshid=\" az Instagramhoz, \"si=\" a YouTube-hoz, \"fbid=\" a Facebookhoz, \"t=\" a Twitter(X)-hez, \"ttclid=\" a TikTok Click ID-hez, egyéb nyomkövetési elemek mint például \"utm_campaign\" és \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Szám szerkesztése";
 

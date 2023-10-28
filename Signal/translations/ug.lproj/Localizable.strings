@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ھەممە چاقىرىشتا Signal مۇلازىمېتىرى ئىشلىتىلسە ئالاقەداشىڭىزنىڭ IP ئادرېسىڭىزغا ئېرىشىشنىڭ ئالدىنى ئالغىلى بولىدۇ، ئەمما بۇ ئىقتىدار سۆزلىشىش سۈپىتىنى تۆۋەنلىتىۋېتىدۇ.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "تىزىملىك ئەلەمەنتلەرنى چىقىرىۋېلىش";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "ئۆزىڭىزنىڭ URL ئادرىسىدىن ئەزالىش ئىزلەشكەن تىزىملىك پارامېتىرىلەرنى چىقىرىۋېلىش، مەسىلەن Instagram ۋاسىتىسى ۋەكىلى ۋەكىلى ئەلەمەن \"igshid=\"، YouTube ۋاسىتىسى ۋەكىلى ۋەكىلى ئەلەمەن \"si=\"، Facebook ۋاسىتىسى ۋەكىلى ۋەكىلى ئەلەمەن \"fbid=\"، Twitter(X) ۋاسىتىسى ۋەكىلى ۋەكىلى ئەلەمەن \"t=\"، TikTok Click ID ۋاسىتىسى ۋەكىلى ۋەكىلى ئەلەمەن \"ttclid=\"، بىشەي ئەلەمەنلەر \"utm_campaign\" ۋە \"utm_source\"."
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "نومۇرنى تەھرىرلەش";
 

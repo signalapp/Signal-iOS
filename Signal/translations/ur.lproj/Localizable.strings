@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "اپنے رابطوں پر اپنا IP ایڈریس ظاہر کرنے سے بچنے کیلئے Signal سرور کے ذریعے تمام کالوں کو ریلے کریں۔ فعال کرنے سے کال کا معیار کم ہوجائے گا۔";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "ٹریکنگ اجزاء ہٹائیں";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URLs سے ٹریکنگ اجزاء ہٹائیں، جیسے \"igshid=\" انسٹاگرام کے لئے، \"si=\" یوٹیوب کے لئے، \"fbid=\" فیس بک کے لئے، \"t=\" ٹویٹر (X) کے لئے، \"ttclid=\" ٹک ٹاک کلک آئی ڈی کے لئے، دیگر ٹریکنگ اجزاء \"utm_campaign\" اور \"utm_source\"۔"
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "نمبر ترتیب کرے";
 

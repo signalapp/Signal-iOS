@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "내 연락처에게 IP 주소가 표시되지 않도록 모든 통화를 Signal 서버로 중계합니다. 전화 품질이 떨어질 수 있습니다.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "추적 요소 제거";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URL에서 추적 요소를 제거합니다. 예: 인스타그램의 경우 \"igshid=\", YouTube의 경우 \"si=\", 페이스북의 경우 \"fbid=\", 트위터(X)의 경우 \"t=\", TikTok Click ID의 경우 \"ttclid=\", 기타 추적 요소로 \"utm_campaign\" 및 \"utm_source\"가 있습니다.";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "번호 편집";
 

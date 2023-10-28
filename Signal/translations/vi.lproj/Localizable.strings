@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Chuyển tiếp mọi cuộc gọi qua một máy chủ của Signal để tránh làm lộ địa chỉ IP của bạn cho các liên hệ. Bật tính năng này sẽ làm giảm chất lượng cuộc gọi.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Xóa các yếu tố theo dõi";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Xóa các yếu tố theo dõi từ các URL, ví dụ: \"igshid=\" cho Instagram, \"si=\" cho YouTube, \"fbid=\" cho Facebook, \"t=\" cho Twitter(X), \"ttclid=\" cho TikTok Click ID, các yếu tố theo dõi khác \"utm_campaign\" và \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Sửa Số";
 

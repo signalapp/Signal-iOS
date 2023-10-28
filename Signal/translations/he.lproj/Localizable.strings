@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "שדר מחדש את כל השיחות דרך שרת Signal כדי למנוע את חשיפת כתובת ה־IP שלך אל אנשי הקשר שלך. אפשור יפחית איכות שיחות.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "הסרת אלמנטים מעקב";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "הסרת אלמנטים מעקב מכתובות ה-URL, לדוגמה \"igshid=\" עבור Instagram, \"si=\" עבור YouTube, \"fbid=\" עבור Facebook, \"t=\" עבור Twitter(X), \"ttclid=\" עבור מזהה לחיצה ב-TikTok, אלמנטים אחרים לעקיבה כמו \"utm_campaign\" ו\"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "ערוך מספר";
 

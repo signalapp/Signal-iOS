@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Menyampaikan semua panggilan melalui pelayan Signal untuk elak mendedahkan alamat IP anda kepada kenalan anda. Mendayakan akan mengurangkan kualiti panggilan.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Buang Elemen Pengesan";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Buang elemen pengesan dari URL contohnya \"igshid=\" untuk Instagram, \"si=\" untuk YouTube, \"fbid=\" untuk Facebook, \"t=\" untuk Twitter(X), \"ttclid=\" untuk TikTok Click ID, elemen pengesan lain seperti \"utm_campaign\" dan \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Nombor";
 

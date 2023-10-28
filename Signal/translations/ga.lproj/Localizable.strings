@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Cuir gach glao trí fhreastalaí Signal ionas nach mbeidh an teagmhálaí a fhaigheann an glao in ann do sheoladh IP a fheiceáil. Imríonn seo drochthionchar ar cháilíocht an ghlao.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Bain na hÉilimintí Rianaithe";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Bain na hÉilimintí Rianaithe as na nascanna URL, mar shampla \"igshid=\" do Instagram, \"si=\" do YouTube, \"fbid=\" do Facebook, \"t=\" do Twitter(X), \"ttclid=\" do Thionchar Cliceáil TikTok, agus eilimintí rianaithe eile cosúil le \"utm_campaign\" agus \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
 

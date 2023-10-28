@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Omdiriger alle opkald via en Signal-server for at undgå at afsløre din IP-adresse for din samtalepartner. Aktivering vil reducere opkaldskvaliteten.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Fjern sporingselementer";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Fjern sporingselementer fra URL'er, f.eks. \"igshid=\" for Instagram, \"si=\" for YouTube, \"fbid=\" for Facebook, \"t=\" for Twitter(X), \"ttclid=\" for TikTok Click ID, andre sporingselementer som \"utm_campaign\" og \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Rediger nummer";
 

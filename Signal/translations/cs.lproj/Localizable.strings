@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Přenášet všechna volání přes server Signal, aby nedošlo k odhalení vaší IP adresy volanému. Povolením dojde ke zhoršení kvality hovoru.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Odebrat sledovací prvky";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Odstraňte sledovací prvky z URL, například \"igshid=\" pro Instagram, \"si=\" pro YouTube, \"fbid=\" pro Facebook, \"t=\" pro Twitter(X), \"ttclid=\" pro TikTok Click ID, další sledovací prvky jako \"utm_campaign\" a \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Upravit číslo";
 

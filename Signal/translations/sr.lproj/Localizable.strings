@@ -5860,6 +5860,12 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Премошћавање позива кроз Signal сервер спречава контакте да виде вашу IP адресу. Омогућавањем ће бити смањен квалитет позива.";
 
+/* Label for 'Remove Tracking Elements' */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Уклонити елементе праћења";
+
+/* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Уклоните елементе праћења из УРЛ адреса, на пример \"igshid=\" за Инстаграм, \"si=\" за Јутјуб, \"fbid=\" за Фејсбук, \"t=\" за Твитер(X), \"ttclid=\" за ТикТок идентификацију клика, други елементи праћења \"utm_campaign\" и \"utm_source\".";
+
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Уредити број";
 
