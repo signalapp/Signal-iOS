@@ -711,6 +711,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         return Promise.when(fulfilled: loadPromises)
     }
+    
+    private func removeQueryParamsFromURL(url: URL) -> URL? {
+        let paramsToRemove = ["igshid", "si", "fbid", "t", "ttclid", "utm_campaign", "utm_source"]
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        var items = components?.queryItems
+        components?.queryItems = items?.filter { item in
+            !paramsToRemove.contains(item.name)
+        }
+        return components?.url
+    }
 
     private func loadItem(unloadedItem: UnloadedItem) -> Promise<LoadedItem> {
         Logger.info("unloadedItem: \(unloadedItem)")
@@ -759,8 +769,20 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
         case .webUrl:
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeURL as String, options: nil).map { url in
-                LoadedItem(itemProvider: unloadedItem.itemProvider,
-                           payload: .webUrl(url))
+                var localURL = url
+                
+                if Self.preferences.doRemoveURLTrackers {
+                    var notTrackedURL: URL {
+                        if let cleanedURL = self.removeQueryParamsFromURL(url: url) {
+                            return cleanedURL
+                        }
+                        return url
+                    }
+                    localURL = notTrackedURL
+                }
+                
+                return LoadedItem(itemProvider: unloadedItem.itemProvider,
+                           payload: .webUrl(localURL))
             }
         case .fileUrl:
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeFileURL as String, options: nil).map { fileUrl in
