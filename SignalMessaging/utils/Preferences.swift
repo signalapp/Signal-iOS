@@ -43,7 +43,8 @@ public class Preferences: NSObject {
         case wasBlurTooltipShown = "OWSPreferencesKeyWasBlurTooltipShown"
         case wasGroupCallTooltipShown = "OWSPreferencesKeyWasGroupCallTooltipShown"
         case wasGroupCallTooltipShownCount = "OWSPreferencesKeyWasGroupCallTooltipShownCount"
-
+        case removeURLTrackers = "RemoveURLTrackers"
+        
         // Obsolete
         // case callKitEnabled = "CallKitEnabled"
         // case callKitPrivacyEnabled = "CallKitPrivacyEnabled"
@@ -265,6 +266,16 @@ public class Preferences: NSObject {
 
     public func setDoCallsHideIPAddress(_ value: Bool) {
         setBool(value, forKey: .callsHideIPAddress)
+    }
+    
+    // MARK: Trackers
+    
+    public var doRemoveURLTrackers: Bool {
+        bool(forKey: .removeURLTrackers, defaultValue: false)
+    }
+    
+    public func setDoRemoveURLTrackers(_ value: Bool) {
+        setBool(value, forKey: .removeURLTrackers)
     }
 
     // MARK: UI Tooltips

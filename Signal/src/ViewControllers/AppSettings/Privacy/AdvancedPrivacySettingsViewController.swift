@@ -153,6 +153,22 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             selector: #selector(didToggleCallsHideIPAddressSwitch)
         ))
         contents.add(relayCallsSection)
+        
+        let removeURLTrackersSection = OWSTableSection()
+        removeURLTrackersSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL",
+            comment: "User settings section footer, a detailed explanation"
+        )
+        removeURLTrackersSection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE",
+                comment: "Table cell label"
+            ),
+            isOn: { Self.preferences.doRemoveURLTrackers },
+            target: self,
+            selector: #selector(didToggleRemoveURLTrackersSwitch)
+        ))
+        contents.add(removeURLTrackersSection)
 
         let sealedSenderSection = OWSTableSection()
         sealedSenderSection.headerTitle = OWSLocalizedString(
@@ -256,6 +272,11 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     @objc
     private func didToggleCallsHideIPAddressSwitch(_ sender: UISwitch) {
         preferences.setDoCallsHideIPAddress(sender.isOn)
+    }
+    
+    @objc
+    private func didToggleRemoveURLTrackersSwitch(_ sender: UISwitch) {
+        preferences.setDoRemoveURLTrackers(sender.isOn)
     }
 
     @objc
