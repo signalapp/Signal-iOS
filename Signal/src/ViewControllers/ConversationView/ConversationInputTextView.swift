@@ -188,6 +188,21 @@ class ConversationInputTextView: BodyRangesTextView {
         super.textViewDidChangeSelection(textView)
 
         textViewToolbarDelegate?.textViewDidChangeSelection(self)
+        
+        if self.preferences.doRemoveURLTrackers {
+            if let url = URL(string: textView.text) {
+                var notTrackedURL: URL {
+                    if let cleanedURL = removeQueryParamsFromURL(url: url) {
+                        return cleanedURL
+                    }
+                    return url
+                }
+
+                if let range = textView.textRange(from: url.absoluteString.entireRange) {
+                    textView.replace(range, withText: notTrackedURL.absoluteString)
+                }
+            }
+        }
     }
 
     // MARK: - Key Commands
@@ -225,4 +240,26 @@ class ConversationInputTextView: BodyRangesTextView {
         inputTextViewDelegate?.textViewDidChange(self)
         textViewToolbarDelegate?.textViewDidChange(self)
     }
+}
+
+extension UITextView {
+    func textRange(from nsRange: NSRange) -> UITextRange? {
+        let beginning = self.beginningOfDocument
+        guard let start = self.position(from: beginning, offset: nsRange.location),
+              let end = self.position(from: start, offset: nsRange.length) else {
+            return nil
+        }
+        return self.textRange(from: start, to: end)
+    }
+}
+
+
+private func removeQueryParamsFromURL(url: URL) -> URL? {
+    let paramsToRemove = ["igshid", "si", "fbid", "t", "ttclid", "utm_campaign", "utm_source"]
+    var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+    let items = components?.queryItems
+    components?.queryItems = items?.filter { item in
+        !paramsToRemove.contains(item.name)
+    }
+    return components?.url
 }
