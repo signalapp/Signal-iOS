@@ -78,8 +78,14 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
-        if let cnContactId = contact.cnContactId,
-            let cnContact = contactsManager.cnContact(withId: cnContactId) {
+        let cnContact: CNContact?
+        if let cnContactId = contact.cnContactId {
+            cnContact = contactsManager.cnContact(withId: cnContactId)
+        } else {
+            cnContact = nil
+        }
+
+        if let cnContact {
             titleLabel.attributedText = cnContact.formattedFullName(sortOrder: sortOrder, font: titleLabel.font)
         } else {
             titleLabel.text = contact.fullName
@@ -87,9 +93,15 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
 
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
-        if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
-            contactImageView.image = contactImage
-        } else {
+        var contactImage: UIImage?
+        if let cnContact {
+            if let avatarImage = contactsManager.avatarImage(forCNContactId: cnContact.identifier) {
+                contactImage = avatarImage
+            } else if cnContact.imageDataAvailable, let contactImageData = cnContact.imageData {
+                contactImage = UIImage(data: contactImageData)
+            }
+        }
+        if contactImage == nil {
             var nameComponents = PersonNameComponents()
             nameComponents.givenName = contact.firstName
             nameComponents.familyName = contact.lastName
@@ -99,8 +111,9 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
                                                diameterPoints: ContactCell.kAvatarDiameter,
                                                transaction: transaction)
             }
-            contactImageView.image = avatar
+            contactImage = avatar
         }
+        contactImageView.image = contactImage
     }
 
     func updateSubtitle(subtitleType: SubtitleCellValue, contact: Contact) {
