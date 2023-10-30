@@ -48,7 +48,6 @@ public struct RequestMakerResult {
 public final class RequestMaker: Dependencies {
 
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
-    public typealias UDAuthFailureBlock = () -> Void
 
     public struct Options: OptionSet {
         public let rawValue: Int
@@ -71,7 +70,6 @@ public final class RequestMaker: Dependencies {
 
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
-    private let udAuthFailureBlock: UDAuthFailureBlock
     private let serviceId: ServiceId
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
@@ -81,7 +79,6 @@ public final class RequestMaker: Dependencies {
     public init(
         label: String,
         requestFactoryBlock: @escaping RequestFactoryBlock,
-        udAuthFailureBlock: @escaping UDAuthFailureBlock,
         serviceId: ServiceId,
         udAccess: OWSUDAccess?,
         authedAccount: AuthedAccount,
@@ -89,7 +86,6 @@ public final class RequestMaker: Dependencies {
     ) {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
-        self.udAuthFailureBlock = udAuthFailureBlock
         self.serviceId = serviceId
         self.address = SignalServiceAddress(serviceId)
         self.udAccess = udAccess
@@ -164,8 +160,6 @@ public final class RequestMaker: Dependencies {
             if !self.options.contains(.isProfileFetch) {
                 self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
             }
-
-            self.udAuthFailureBlock()
 
             if self.options.contains(.allowIdentifiedFallback) {
                 Logger.info("UD request '\(self.label)' auth failed; failing over to non-UD request")

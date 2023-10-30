@@ -305,10 +305,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             return .init(error: error)
         }
 
-        return firstly(on: schedulers.global()) { () throws -> DeviceMessage? in
-            // Important to wrap this in asynchronity, since it might make
-            // blocking network requests.
-            let deviceMessage: DeviceMessage? = try self.messageSender.buildDeviceMessage(
+        return Promise.wrapAsync {
+            return try await self.messageSender.buildDeviceMessage(
                 forMessagePlaintextContent: plaintextContent,
                 messageEncryptionStyle: .whisper,
                 recipientId: recipientId,
@@ -318,10 +316,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 isTransientSenderKeyDistributionMessage: false,
                 isStoryMessage: false,
                 isResendRequestMessage: false,
-                udSendingParamsProvider: nil // Sync messages do not use UD
+                sealedSenderParameters: nil // Sync messages do not use UD
             )
-
-            return deviceMessage
         }
     }
 }
@@ -351,8 +347,8 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
         isResendRequestMessage: Bool,
-        udSendingParamsProvider: UDSendingParamsProvider?
-    ) throws -> DeviceMessage?
+        sealedSenderParameters: SealedSenderParameters?
+    ) async throws -> DeviceMessage?
 }
 
 class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionParameterBuilder_MessageSender_Shim {
@@ -372,9 +368,9 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
         isResendRequestMessage: Bool,
-        udSendingParamsProvider: UDSendingParamsProvider?
-    ) throws -> DeviceMessage? {
-        try messageSender.buildDeviceMessage(
+        sealedSenderParameters: SealedSenderParameters?
+    ) async throws -> DeviceMessage? {
+        try await messageSender.buildDeviceMessage(
             messagePlaintextContent: messagePlaintextContent,
             messageEncryptionStyle: messageEncryptionStyle,
             recipientId: recipientId,
@@ -384,7 +380,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
             isStoryMessage: isStoryMessage,
             isResendRequestMessage: isResendRequestMessage,
-            udSendingParamsProvider: udSendingParamsProvider
+            sealedSenderParameters: sealedSenderParameters
         )
     }
 }

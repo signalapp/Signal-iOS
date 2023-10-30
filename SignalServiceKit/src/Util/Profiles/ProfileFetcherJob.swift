@@ -291,9 +291,6 @@ public class ProfileFetcherJob: NSObject {
                     )
                 }
             },
-            udAuthFailureBlock: {
-                // Do nothing
-            },
             serviceId: serviceId,
             udAccess: udAccess,
             authedAccount: self.options.authedAccount,

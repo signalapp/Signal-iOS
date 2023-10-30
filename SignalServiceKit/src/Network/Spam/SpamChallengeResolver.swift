@@ -251,6 +251,21 @@ extension SpamChallengeResolver {
             }
         }
     }
+
+    func tryToHandleSilently(bodyData: Data?, retryAfter: Date?) async throws {
+        guard let bodyData, let retryAfter else {
+            throw SpamChallengeRequiredError()
+        }
+        try await withCheckedThrowingContinuation { continuation in
+            handleServerChallengeBody(bodyData, retryAfter: retryAfter) { didResolve in
+                if didResolve {
+                    continuation.resume(returning: ())
+                } else {
+                    continuation.resume(throwing: SpamChallengeRequiredError())
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Storage

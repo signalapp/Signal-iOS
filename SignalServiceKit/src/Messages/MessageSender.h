@@ -22,7 +22,6 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class TSThread;
 
 @protocol ContactsManagerProtocol;
-@protocol UDSendingParamsProvider;
 
 /**
  * Useful for when you *sometimes* want to retry before giving up and calling the failure handler

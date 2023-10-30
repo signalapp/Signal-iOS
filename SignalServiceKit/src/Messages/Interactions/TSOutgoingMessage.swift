@@ -473,11 +473,9 @@ public extension TSOutgoingMessage {
                 plaintextPayloadId: serializedMessage.payloadId,
                 thread: localThread,
                 serviceId: localIdentifiers.aci,
-                udSendingAccess: nil,
-                localIdentifiers: localIdentifiers,
-                sendErrorBlock: nil
+                localIdentifiers: localIdentifiers
             )
         }
-        return try await messageSender.performMessageSendAttempt(messageSend).awaitable()
+        try await messageSender.performMessageSend(messageSend, sealedSenderParameters: nil)
     }
 }
