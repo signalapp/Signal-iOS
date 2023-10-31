@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalCoreKit
 import SignalMessaging
 import SignalUI
 import UIKit
@@ -603,13 +604,13 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                 displayBadgesOnProfile = true
             }
 
-            return Self.databaseStorage.writePromise { transaction in
+            return Self.databaseStorage.write(.promise) { transaction in
                 Self.subscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
                     transaction: transaction
                 )
-            }.asVoid()
+            }
         }.done {
             self.navigationController?.popViewController(animated: true)
         }.catch { error in

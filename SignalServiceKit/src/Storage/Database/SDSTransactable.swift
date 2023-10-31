@@ -145,26 +145,6 @@ extension SDSTransactable {
 // MARK: - Promises
 
 public extension SDSTransactable {
-    @objc
-    func readPromise(file: String = #file,
-                     function: String = #function,
-                     line: Int = #line,
-                     _ block: @escaping (SDSAnyReadTransaction) -> Void) -> AnyPromise {
-        return AnyPromise(read(.promise, file: file, function: function, line: line, block) as Promise<Void>)
-    }
-
-    func read<T>(_: PromiseNamespace,
-                 file: String = #file,
-                 function: String = #function,
-                 line: Int = #line,
-                 _ block: @escaping (SDSAnyReadTransaction) -> T) -> Promise<T> {
-        return Promise { future in
-            DispatchQueue.global().async {
-                future.resolve(self.read(file: file, function: function, line: line, block: block))
-            }
-        }
-    }
-
     func read<T>(_: PromiseNamespace,
                  file: String = #file,
                  function: String = #function,
@@ -181,26 +161,6 @@ public extension SDSTransactable {
         }
     }
 
-    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
-    func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
-        return AnyPromise(write(.promise, block) as Promise<Void>)
-    }
-
-    func write<T>(_: PromiseNamespace,
-                  file: String = #file,
-                  function: String = #function,
-                  line: Int = #line,
-                  _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
-        return Promise { future in
-            self.asyncWriteQueue.async {
-                future.resolve(self.write(file: file,
-                                            function: function,
-                                            line: line,
-                                            block: block))
-            }
-        }
-    }
-
     func write<T>(_: PromiseNamespace,
                   file: String = #file,
                   function: String = #function,
@@ -209,10 +169,7 @@ public extension SDSTransactable {
         return Promise { future in
             self.asyncWriteQueue.async {
                 do {
-                    future.resolve(try self.write(file: file,
-                                                    function: function,
-                                                    line: line,
-                                                    block: block))
+                    future.resolve(try self.write(file: file, function: function, line: line, block: block))
                 } catch {
                     future.reject(error)
                 }

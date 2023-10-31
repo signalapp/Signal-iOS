@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 class ProfileSettingsViewController: OWSTableViewController2 {
@@ -607,13 +609,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     userProfileWriter: .localUser
                 )
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                Self.databaseStorage.writePromise { transaction in
+                Self.databaseStorage.write(.promise) { transaction in
                     Self.subscriptionManager.setDisplayBadgesOnProfile(
                         displayBadgesOnProfile,
                         updateStorageService: true,
                         transaction: transaction
                     )
-                }.asVoid()
+                }
             }.done(on: DispatchQueue.main) { _ in
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()

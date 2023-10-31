@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalServiceKit
 
 public final class CachedBadge: Equatable, Dependencies {
 

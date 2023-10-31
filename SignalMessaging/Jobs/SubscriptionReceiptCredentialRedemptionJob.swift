@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalCoreKit
 import SignalServiceKit
 
 /// Manages "donation receipt credential" redemption.
@@ -286,7 +287,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                 }
             }.then(on: DispatchQueue.global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
                 Logger.info("[Donations] Storing receipt credential presentation in case the job fails")
-                return self.databaseStorage.writePromise { transaction in
+                return self.databaseStorage.write(.promise) { transaction in
                     self.jobRecord.update(
                         withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
                         transaction: transaction

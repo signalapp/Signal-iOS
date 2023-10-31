@@ -118,28 +118,6 @@ public class MockDB: DB {
         }
     }
 
-    public func read(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBReadTransaction) -> Void
-    ) {
-        queue.sync {
-            performRead(block: block)
-        }
-    }
-
-    public func write(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> Void
-    ) {
-        queue.sync {
-            performWrite(block: block)
-        }
-    }
-
     // MARK: - Async Methods
 
     public func asyncRead(
@@ -194,31 +172,6 @@ public class MockDB: DB {
 
     // MARK: - Promises
 
-    public func readPromise(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBReadTransaction) -> Void
-    ) -> AnyPromise {
-        queue.sync {
-            performRead(block: block)
-        }
-        return AnyPromise(Promise<Void>.value(()))
-    }
-
-    public func readPromise<T>(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBReadTransaction) -> T
-    ) -> Promise<T> {
-        let t = queue.sync {
-            return performRead(block: block)
-        }
-        return Promise<T>.value(t)
-    }
-
-    // throws version
     public func readPromise<T>(
         file: String,
         function: String,
@@ -235,31 +188,6 @@ public class MockDB: DB {
         }
     }
 
-    public func writePromise(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBWriteTransaction) -> Void
-    ) -> AnyPromise {
-        queue.sync {
-            performWrite(block: block)
-        }
-        return AnyPromise(Promise<Void>.value(()))
-    }
-
-    public func writePromise<T>(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBWriteTransaction) -> T
-    ) -> Promise<T> {
-        let t = queue.sync {
-            return performWrite(block: block)
-        }
-        return Promise<T>.value(t)
-    }
-
-    // throws version
     public func writePromise<T>(
         file: String,
         function: String,

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public extension SDSAnyReadTransaction {
     /// Bridging from a SDS transaction to a DB transaction can be done at the seams;
@@ -78,26 +79,6 @@ public class SDSDB: DB {
         self.databaseStorage = databaseStorage
     }
 
-    // MARK: - API
-
-    public func read(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: (DBReadTransaction) -> Void
-    ) {
-        databaseStorage.read(file: file, function: function, line: line, block: {block(ReadTx($0))})
-    }
-
-    public func write(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: (DBWriteTransaction) -> Void
-    ) {
-        databaseStorage.write(file: file, function: function, line: line, block: {block(WriteTx($0))})
-    }
-
     // MARK: Async Methods
 
     public func asyncRead(
@@ -135,25 +116,6 @@ public class SDSDB: DB {
 
     // MARK: Promises
 
-    public func readPromise(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBReadTransaction) -> Void
-    ) -> AnyPromise {
-        return databaseStorage.readPromise(file: file, function: function, line: line, {block(ReadTx($0))})
-    }
-
-    public func readPromise<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBReadTransaction) -> T
-    ) -> Promise<T> {
-        return databaseStorage.read(.promise, file: file, function: function, line: line, {block(ReadTx($0))})
-    }
-
-    // throws version
     public func readPromise<T>(
         file: String = #file,
         function: String = #function,
@@ -163,25 +125,6 @@ public class SDSDB: DB {
         return databaseStorage.read(.promise, file: file, function: function, line: line, {try block(ReadTx($0))})
     }
 
-    public func writePromise(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) -> Void
-    ) -> AnyPromise {
-        return AnyPromise(databaseStorage.write(.promise, file: file, function: function, line: line, {block(WriteTx($0))}))
-    }
-
-    public func writePromise<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) -> T
-    ) -> Promise<T> {
-        return databaseStorage.write(.promise, file: file, function: function, line: line, {block(WriteTx($0))})
-    }
-
-    // throws version
     public func writePromise<T>(
         file: String = #file,
         function: String = #function,
