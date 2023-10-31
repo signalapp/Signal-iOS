@@ -10,7 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class JobRecordTest: XCTestCase {
-    private let inMemoryDatabase = InMemoryDatabase()
+    private let inMemoryDB = InMemoryDB()
 
     private func jobRecordClass(
         forRecordType recordType: JobRecord.JobRecordType
@@ -32,9 +32,9 @@ class JobRecordTest: XCTestCase {
 
     func testRoundTrip() {
         func roundTripValidateConstant<T: JobRecord & ValidatableModel>(constant: T, index: Int) {
-            inMemoryDatabase.insert(record: constant)
+            inMemoryDB.insert(record: constant)
 
-            let deserialized: T? = inMemoryDatabase.fetchExactlyOne(modelType: T.self)
+            let deserialized: T? = inMemoryDB.fetchExactlyOne(modelType: T.self)
 
             guard let deserialized else {
                 XCTFail("Failed to fetch constant \(index) for class \(T.self)!")
@@ -50,7 +50,7 @@ class JobRecordTest: XCTestCase {
                 XCTFail("Unexpected error while validating constant \(index) for class \(T.self)!")
             }
 
-            inMemoryDatabase.remove(model: deserialized)
+            inMemoryDB.remove(model: deserialized)
         }
 
         for jobRecordType in JobRecord.JobRecordType.allCases {

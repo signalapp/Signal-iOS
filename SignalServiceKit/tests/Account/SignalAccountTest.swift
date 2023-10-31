@@ -12,13 +12,13 @@ class SignalAccountTest: XCTestCase {
 
     // MARK: - (De)Serialization Tests
 
-    private let inMemoryDatabase = InMemoryDatabase()
+    private let inMemoryDB = InMemoryDB()
 
     func testInMemoryDatabaseRoundTrip() {
         for (idx, (constant, _)) in SignalAccount.constants.enumerated() {
-            inMemoryDatabase.insert(record: constant)
+            inMemoryDB.insert(record: constant)
 
-            guard let deserialized = inMemoryDatabase.fetchExactlyOne(modelType: SignalAccount.self) else {
+            guard let deserialized = inMemoryDB.fetchExactlyOne(modelType: SignalAccount.self) else {
                 XCTFail("Failed to fetch constant \(idx)!")
                 continue
             }
@@ -31,7 +31,7 @@ class SignalAccountTest: XCTestCase {
                 XCTFail("Unexpected error while validating constant \(idx)!")
             }
 
-            inMemoryDatabase.remove(model: deserialized)
+            inMemoryDB.remove(model: deserialized)
         }
     }
 

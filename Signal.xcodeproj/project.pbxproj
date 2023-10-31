@@ -1451,7 +1451,7 @@
 		D9B8541229137C150058F97B /* JobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B8541129137C150058F97B /* JobRecord.swift */; };
 		D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */; };
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
-		D9B95A9B29E8923B00D7CB95 /* InMemoryDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDatabase.swift */; };
+		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
 		D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
@@ -4118,7 +4118,7 @@
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
-		D9B95A9929E8918200D7CB95 /* InMemoryDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDatabase.swift; sourceTree = "<group>"; };
+		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
@@ -8370,7 +8370,6 @@
 			isa = PBXGroup;
 			children = (
 				D9F6554329D798CC002A330A /* FactoryInitialization.swift */,
-				D9B95A9929E8918200D7CB95 /* InMemoryDatabase.swift */,
 				D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */,
 				D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */,
 				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
@@ -9497,6 +9496,7 @@
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
+				D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */,
 				F9C5CA45289453B100548EEE /* SDSCrossProcess.h */,
 				F9C5CA50289453B100548EEE /* SDSCrossProcess.m */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
@@ -12512,7 +12512,7 @@
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
-				D9B95A9B29E8923B00D7CB95 /* InMemoryDatabase.swift in Sources */,
+				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
 				6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */,
 				F9C5CC12289453B300548EEE /* InstalledSticker+SDS.swift in Sources */,
 				F9C5CC15289453B300548EEE /* InstalledSticker.m in Sources */,
