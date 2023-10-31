@@ -4,14 +4,6 @@ PODS:
   - CocoaLumberjack (3.7.4):
     - CocoaLumberjack/Core (= 3.7.4)
   - CocoaLumberjack/Core (3.7.4)
-  - Curve25519Kit (2.1.0):
-    - CocoaLumberjack
-    - LibSignalClient (>= 0.15.0)
-    - SignalCoreKit
-  - Curve25519Kit/Tests (2.1.0):
-    - CocoaLumberjack
-    - LibSignalClient (>= 0.15.0)
-    - SignalCoreKit
   - GRDB.swift/SQLCipher (5.26.0):
     - SQLCipher (>= 3.4.0)
   - LibMobileCoin/CoreHTTP (5.0.0):
@@ -76,8 +68,6 @@ DEPENDENCIES:
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
   - CocoaLumberjack
-  - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
-  - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, commit `5cd4f39a24d06708d1c19aced8384740689d7f61`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
@@ -117,9 +107,6 @@ EXTERNAL SOURCES:
   blurhash:
     :branch: signal-master
     :git: https://github.com/signalapp/blurhash
-  Curve25519Kit:
-    :branch: feature/SignalClient-adoption
-    :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
     :commit: 5cd4f39a24d06708d1c19aced8384740689d7f61
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
@@ -157,9 +144,6 @@ CHECKOUT OPTIONS:
   blurhash:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
-  Curve25519Kit:
-    :commit: 0af175812b5335dd32879a3556524c569dea95c9
-    :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
     :commit: 5cd4f39a24d06708d1c19aced8384740689d7f61
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
@@ -195,7 +179,6 @@ SPEC CHECKSUMS:
   blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
-  Curve25519Kit: 003b546a89ceb374a64c7771b40f8362d63b91bd
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: b1a473933091536cb87fc92a7ca35c63855451f3
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
@@ -216,6 +199,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: f836e7dd326831911a85d3a42b21bdb015ff90dd
+PODFILE CHECKSUM: 298e6e543767061c4ba6dbdd571794eb29cdcccf
 
 COCOAPODS: 1.12.1

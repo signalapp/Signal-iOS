@@ -17,9 +17,6 @@ ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '33d29e8d4ebf0acd861ca6a934ac038b187f43
 pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.33.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
-pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
-# pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
-
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 

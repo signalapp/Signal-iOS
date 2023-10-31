@@ -99,7 +99,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
         OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
-            ECKeyPair *keyPair = [Curve25519 generateKeyPair];
+            ECKeyPair *keyPair = [ECKeyPair generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId
                                                             keyPair:keyPair
                                                           createdAt:[NSDate date]];

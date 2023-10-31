@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Curve25519Kit
 import Foundation
 import LibSignalClient
 
@@ -20,26 +19,17 @@ public class DeviceNames: NSObject {
 
     private static let syntheticIVLength: UInt = 16
 
-    @objc
-    public class func encryptDeviceName(plaintext: String,
-                                        identityKeyPair: ECKeyPair) throws -> Data {
+    public class func encryptDeviceName(plaintext: String, identityKeyPair: IdentityKeyPair) throws -> Data {
 
         guard let plaintextData = plaintext.data(using: .utf8) else {
             owsFailDebug("Could not convert text to UTF-8.")
             throw DeviceNameError.invalidInput
         }
 
-        let ephemeralKeyPair = Curve25519.generateKeyPair()
+        let ephemeralKeyPair = IdentityKeyPair.generate()
 
         // master_secret = ECDH(ephemeral_private, identity_public).
-        let masterSecret: Data
-        do {
-            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: identityKeyPair.publicKey,
-                                                               privateKey: ephemeralKeyPair.privateKey)
-        } catch {
-            Logger.error("Could not generate shared secret: \(error)")
-            throw error
-        }
+        let masterSecret = Data(ephemeralKeyPair.privateKey.keyAgreement(with: identityKeyPair.publicKey))
 
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
         let syntheticIV = try computeSyntheticIV(masterSecret: masterSecret,
@@ -54,7 +44,7 @@ public class DeviceNames: NSObject {
         try Aes256Ctr32.process(&ciphertext, key: cipherKey, nonce: Data(count: Aes256Ctr32.nonceLength))
 
         let protoBuilder = SignalIOSProtoDeviceName.builder(
-            ephemeralPublic: ephemeralKeyPair.publicKey.prependKeyType(),
+            ephemeralPublic: Data(ephemeralKeyPair.publicKey.serialize()),
             syntheticIv: syntheticIV,
             ciphertext: ciphertext
         )
@@ -97,22 +87,17 @@ public class DeviceNames: NSObject {
         return cipherKey
     }
 
-    @objc
-    public class func decryptDeviceName(base64String: String,
-                                        identityKeyPair: ECKeyPair) throws -> String {
+    public class func decryptDeviceName(base64String: String, identityKeyPair: IdentityKeyPair) throws -> String {
 
         guard let protoData = Data(base64Encoded: base64String) else {
             // Not necessarily an error; might be a legacy device name.
             throw DeviceNameError.invalidInput
         }
 
-        return try decryptDeviceName(protoData: protoData,
-                                     identityKeyPair: identityKeyPair)
+        return try decryptDeviceName(protoData: protoData, identityKeyPair: identityKeyPair)
     }
 
-    @objc
-    public class func decryptDeviceName(protoData: Data,
-                                        identityKeyPair: ECKeyPair) throws -> String {
+    public class func decryptDeviceName(protoData: Data, identityKeyPair: IdentityKeyPair) throws -> String {
 
         let proto: SignalIOSProtoDeviceName
         do {
@@ -127,9 +112,9 @@ public class DeviceNames: NSObject {
         let receivedSyntheticIV = proto.syntheticIv
         let ciphertext = proto.ciphertext
 
-        let ephemeralPublic: Data
+        let ephemeralPublic: PublicKey
         do {
-            ephemeralPublic = try ephemeralPublicData.removeKeyType()
+            ephemeralPublic = try PublicKey(ephemeralPublicData)
         } catch {
             owsFailDebug("failed to remove key type")
             throw DeviceNameError.invalidInput
@@ -145,14 +130,7 @@ public class DeviceNames: NSObject {
         }
 
         // master_secret = ECDH(identity_private, ephemeral_public)
-        let masterSecret: Data
-        do {
-            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublic,
-                                                               privateKey: identityKeyPair.privateKey)
-        } catch {
-            Logger.error("Could not generate shared secret: \(error)")
-            throw error
-        }
+        let masterSecret = Data(identityKeyPair.privateKey.keyAgreement(with: ephemeralPublic))
 
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, input=“cipher”), input=synthetic_iv)
         let cipherKey = try computeCipherKey(masterSecret: masterSecret, syntheticIV: receivedSyntheticIV)

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Curve25519Kit
 import LibSignalClient
 import SignalCoreKit
 
@@ -189,7 +188,7 @@ private extension OWSIdentity {
 
 extension OWSIdentityManager {
     func generateNewIdentityKeyPair() -> ECKeyPair {
-        Curve25519.generateKeyPair()
+        ECKeyPair.generateKeyPair()
     }
 }
 
@@ -328,7 +327,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
         guard let keyData = try _identityKey(for: recipientIdResult.get(), tx: tx) else { return nil }
-        return try IdentityKey(publicKey: ECPublicKey(keyData: keyData).key)
+        return try IdentityKey(publicKey: PublicKey(keyData: keyData))
     }
 
     private func _identityKey(for recipientId: AccountId, tx: DBReadTransaction) -> Data? {

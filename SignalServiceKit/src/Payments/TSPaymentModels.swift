@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import Curve25519Kit
 import LibSignalClient
 
 @objc
@@ -141,9 +140,8 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
                                 publicAddressData: Data,
                                 signatureData: Data) -> Bool {
         do {
-            let publicKey = try ECPublicKey(keyData: publicIdentityKeyData).key
-            return try publicKey.verifySignature(message: publicAddressData,
-                                                 signature: signatureData)
+            let publicKey = try PublicKey(keyData: publicIdentityKeyData)
+            return try publicKey.verifySignature(message: publicAddressData, signature: signatureData)
         } catch {
             owsFailDebug("Error: \(error)")
             return false

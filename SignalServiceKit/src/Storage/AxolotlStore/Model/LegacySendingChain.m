@@ -5,6 +5,7 @@
 
 #import "LegacySendingChain.h"
 #import "LegacyChainKey.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface LegacySendingChain ()
 

@@ -570,7 +570,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let decryptResult: SMKDecryptResult
         do {
             decryptResult = try cipher.decryptMessage(
-                trustRoot: Self.udManager.trustRoot.key,
+                trustRoot: Self.udManager.trustRoot,
                 cipherTextData: encryptedData,
                 timestamp: validatedEnvelope.serverTimestamp,
                 localIdentifiers: localIdentifiers,

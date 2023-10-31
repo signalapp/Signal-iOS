@@ -29,7 +29,7 @@ final class MockIdentityManager: OWSIdentityManager {
     func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
         guard let recipientId = try recipientIdFinder.recipientId(for: serviceId, tx: tx)?.get() else { return nil }
         guard let recipientIdentity = recipientIdentities[recipientId] else { return nil}
-        return try IdentityKey(publicKey: ECPublicKey(keyData: recipientIdentity.identityKey).key)
+        return try IdentityKey(publicKey: PublicKey(keyData: recipientIdentity.identityKey))
     }
 
     var identityChangeInfoMessages: [ServiceId]!

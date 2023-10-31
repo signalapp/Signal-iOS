@@ -92,7 +92,7 @@ public extension OWSDevice {
                 do {
                     return try DeviceNames.decryptDeviceName(
                         base64String: encryptedName,
-                        identityKeyPair: identityKeyPair
+                        identityKeyPair: identityKeyPair.keyPair
                     )
                 } catch let error {
                     Logger.error("Failed to decrypt device name: \(error). Is this a legacy device name?")

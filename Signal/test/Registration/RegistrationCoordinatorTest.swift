@@ -3436,14 +3436,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func preKeyBundle(identity: OWSIdentity) -> RegistrationPreKeyUploadBundle {
-            let identityKeyPair = Curve25519.generateKeyPair()
+            let identityKeyPair = ECKeyPair.generateKeyPair()
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
                 signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
                 lastResortPreKey: {
                     let keyPair = KEMKeyPair.generate()
-                    let signature = try! Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+                    let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
                     let record = SignalServiceKit.KyberPreKeyRecord(
                         0,

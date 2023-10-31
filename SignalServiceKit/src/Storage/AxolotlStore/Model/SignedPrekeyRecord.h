@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Curve25519Kit/Curve25519.h>
 #import <Foundation/Foundation.h>
 #import <SignalServiceKit/PreKeyRecord.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class ECKeyPair;
 
 @interface SignedPreKeyRecord : PreKeyRecord <NSSecureCoding>
 

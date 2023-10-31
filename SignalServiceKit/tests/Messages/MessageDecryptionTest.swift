@@ -19,7 +19,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     private lazy var localPniClient = LocalSignalClient(identity: .pni)
     let runner = TestProtocolRunner()
 
-    let sealedSenderTrustRoot = Curve25519.generateKeyPair()
+    let sealedSenderTrustRoot = IdentityKeyPair.generate()
 
     private var fakeMessageSender: FakeMessageSender {
         MockSSKEnvironment.shared.messageSender as! FakeMessageSender
@@ -46,7 +46,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         }
 
         (notificationsManager as! NoopNotificationsManager).expectErrors = true
-        (udManager as! OWSUDManagerImpl).trustRoot = try! sealedSenderTrustRoot.ecPublicKey()
+        (udManager as! OWSUDManagerImpl).trustRoot = sealedSenderTrustRoot.publicKey
     }
 
     // MARK: - Tests
@@ -104,7 +104,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
             if type == .unidentifiedSender {
                 let senderCert = SMKSecretSessionCipherTest.createCertificateFor(
-                    trustRoot: sealedSenderTrustRoot.identityKeyPair,
+                    trustRoot: sealedSenderTrustRoot,
                     senderAddress: try! SealedSenderAddress(
                         e164: remoteClient.e164Identifier,
                         aci: remoteClient.serviceId as! Aci,

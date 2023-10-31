@@ -9,7 +9,6 @@
 #import "SDSKeyValueStore+ObjC.h"
 #import "SSKPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
-#import <Curve25519Kit/Ed25519.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -90,35 +89,12 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 #pragma mark -
 
-+ (SignedPreKeyRecord *)generateSignedPreKeySignedWithIdentityKey:(ECKeyPair *)identityKeyPair
-{
-    OWSAssert(identityKeyPair);
-
-    ECKeyPair *keyPair = [Curve25519 generateKeyPair];
-
-    // Signed prekey ids must be > 0.
-    int preKeyId = 1 + (int)arc4random_uniform(INT32_MAX - 1);
-
-    @try {
-        NSData *signature = [Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair];
-        return [[SignedPreKeyRecord alloc] initWithId:preKeyId
-                                              keyPair:keyPair
-                                            signature:signature
-                                          generatedAt:[NSDate date]];
-    } @catch (NSException *exception) {
-        // throws_sign only throws when the data to sign is empty or `keyPair` is nil.
-        // Neither of which should happen.
-        OWSFail(@"exception: %@", exception);
-        return nil;
-    }
-}
-
 - (SignedPreKeyRecord *)generateRandomSignedRecord
 {
     ECKeyPair *_Nullable identityKeyPair = [OWSIdentityManagerObjCBridge identityKeyPairForIdentity:_identity];
     OWSAssert(identityKeyPair);
 
-    return [SSKSignedPreKeyStore generateSignedPreKeySignedWithIdentityKey:identityKeyPair];
+    return [SSKSignedPreKeyStore generateSignedPreKeyWithSignedBy:identityKeyPair];
 }
 
 - (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction

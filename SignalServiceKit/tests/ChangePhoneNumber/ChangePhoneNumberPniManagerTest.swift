@@ -191,7 +191,7 @@ private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.Identit
     var storedKeyPairs: [OWSIdentity: ECKeyPair] = [:]
 
     func generateNewIdentityKeyPair() -> ECKeyPair {
-        let keyPair = Curve25519.generateKeyPair()
+        let keyPair = ECKeyPair.generateKeyPair()
         generatedKeyPairs.append(keyPair)
         return keyPair
     }

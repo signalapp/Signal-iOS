@@ -33,7 +33,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
             session.setState(state)
 
             state.receivingChains = (1...5).map { _ in
-                let senderRatchetKey = Curve25519.generateKeyPair().publicKey
+                let senderRatchetKey = ECKeyPair.generateKeyPair().publicKey
                 let chain = LegacyReceivingChain(chainKey: LegacyChainKey(data: senderRatchetKey, index: 0),
                                            senderRatchetKey: senderRatchetKey)!
                 let dummyKeys = LegacyMessageKeys(cipherKey: Data(repeating: 1, count: 32),

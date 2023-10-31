@@ -42,7 +42,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     }
 
     func testBuildParametersHappyPath() async {
-        let pniKeyPair = Curve25519.generateKeyPair()
+        let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
@@ -87,7 +87,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     }
 
     func testBuildParametersFailsBeforeMessageBuildingIfDeviceIdsMismatched() async {
-        let pniKeyPair = Curve25519.generateKeyPair()
+        let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
@@ -114,7 +114,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     /// If one of our linked devices is invalid, per the message sender, we
     /// should skip it and generate identity without parameters for it.
     func testBuildParametersWithInvalidDevice() async {
-        let pniKeyPair = Curve25519.generateKeyPair()
+        let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in
@@ -153,7 +153,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     }
 
     func testBuildParametersWithError() async {
-        let pniKeyPair = Curve25519.generateKeyPair()
+        let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
         let localPqLastResortPreKey = try! db.write { tx in

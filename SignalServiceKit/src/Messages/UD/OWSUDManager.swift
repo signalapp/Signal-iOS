@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import Curve25519Kit
 import SignalCoreKit
 import LibSignalClient
 
@@ -112,7 +111,7 @@ public class OWSUDSendingAccess: NSObject {
 
 public protocol OWSUDManager {
 
-    var trustRoot: ECPublicKey { get }
+    var trustRoot: PublicKey { get }
 
     // MARK: - Recipient State
 
@@ -169,7 +168,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: Recipient State
 
     // Exposed for testing
-    public internal(set) var trustRoot: ECPublicKey
+    public internal(set) var trustRoot: PublicKey
 
     public required override init() {
         self.trustRoot = OWSUDManagerImpl.trustRoot()
@@ -466,21 +465,21 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let nowMs = NSDate.ows_millisecondTimeStamp()
         let anHourFromNowMs = nowMs + kHourInMs
 
-        if case .some(true) = try? certificate.validate(trustRoot: trustRoot.key, time: anHourFromNowMs) {
+        if case .some(true) = try? certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) {
             return true
         }
         Logger.error("Invalid certificate")
         return false
     }
 
-    public class func trustRoot() -> ECPublicKey {
+    public class func trustRoot() -> PublicKey {
         guard let trustRootData = NSData(fromBase64String: TSConstants.kUDTrustRoot) else {
             // This exits.
             owsFail("Invalid trust root data.")
         }
 
         do {
-            return try ECPublicKey(serializedKeyData: trustRootData as Data)
+            return try PublicKey(trustRootData as Data)
         } catch {
             // This exits.
             owsFail("Invalid trust root.")

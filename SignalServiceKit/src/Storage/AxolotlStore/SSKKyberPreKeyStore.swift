@@ -202,7 +202,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         isLastResort: Bool
     ) throws -> KyberPreKeyRecord {
         let keyPair = KEMKeyPair.generate()
-        let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+        let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
         let record = KyberPreKeyRecord(
             id,

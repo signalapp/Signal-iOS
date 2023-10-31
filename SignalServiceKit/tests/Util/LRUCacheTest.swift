@@ -5,7 +5,6 @@
 
 import Foundation
 import XCTest
-import Curve25519Kit
 
 @testable import SignalServiceKit
 

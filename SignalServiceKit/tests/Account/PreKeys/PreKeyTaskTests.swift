@@ -146,7 +146,7 @@ final class PreKeyTaskTests: XCTestCase {
     // Test that the IdentityMananger keypair makes it through to the
     // service client
     func testMockPreKeyTaskCreateWithExistingIdentityKey() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -169,7 +169,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testMockCreateSignedPreKeyWithExisting() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -193,7 +193,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testMockCreatePreKeyOnlyWithExisting() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -266,7 +266,7 @@ final class PreKeyTaskTests: XCTestCase {
     //
 
     func testMockPreKeyTaskUpdate() {
-        let aciKeyPair = Curve25519.generateKeyPair()
+        let aciKeyPair = ECKeyPair.generateKeyPair()
         mockIdentityManager.aciKeyPair = aciKeyPair
 
         let originalSignedPreKey = mockAciProtocolStore.mockSignedPreKeyStore.generateRandomSignedRecord()
@@ -298,7 +298,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testMockPreKeyTaskNoUpdate() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -352,7 +352,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testMockUpdateSkipSignedPreKey() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -380,7 +380,7 @@ final class PreKeyTaskTests: XCTestCase {
     //
 
     func testRefreshNoUpdatesNeeded() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -410,7 +410,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testForceRefreshAll() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -439,7 +439,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testForceRefreshOnlyPreKeys() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -492,7 +492,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func test403WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() {
-        mockIdentityManager.pniKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.pniKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .error(OWSHTTPError.forServiceResponse(
             requestUrl: URL(string: "https://example.com")!,
             responseStatus: 403,
@@ -519,7 +519,7 @@ final class PreKeyTaskTests: XCTestCase {
     //
 
     func testSignedPreKeyExpired() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
@@ -544,7 +544,7 @@ final class PreKeyTaskTests: XCTestCase {
     }
 
     func testRefreshOnlyPreKeysBasedOnCount() {
-        mockIdentityManager.aciKeyPair = Curve25519.generateKeyPair()
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(

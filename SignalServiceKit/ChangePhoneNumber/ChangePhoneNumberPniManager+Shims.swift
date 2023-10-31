@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Curve25519Kit
-
 extension ChangePhoneNumberPniManagerImpl {
     enum Shims {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerShim

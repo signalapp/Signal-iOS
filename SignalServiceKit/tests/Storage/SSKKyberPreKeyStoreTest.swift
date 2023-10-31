@@ -22,7 +22,7 @@ class KyberPreKeyStoreTest: XCTestCase {
     override func setUp() {
         keyValueStoreFactory = InMemoryKeyValueStoreFactory()
         dateProvider = { return self.currentDate }
-        identityKey = Curve25519.generateKeyPair()
+        identityKey = ECKeyPair.generateKeyPair()
         kyberPreKeyStore = SSKKyberPreKeyStore(
             for: .aci,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -39,10 +39,9 @@ class KyberPreKeyStoreTest: XCTestCase {
         }
 
         XCTAssert(
-            try! Ed25519.verifySignature(
-                key.signature,
-                publicKey: self.identityKey.publicKey,
-                data: Data(key.keyPair.publicKey.serialize())
+            try! self.identityKey.keyPair.publicKey.verifySignature(
+                message: Data(key.keyPair.publicKey.serialize()),
+                signature: key.signature
             )
         )
         XCTAssertNotNil(key)
@@ -63,10 +62,9 @@ class KyberPreKeyStoreTest: XCTestCase {
 
         XCTAssertEqual(record.id, decodedRecord.id)
         XCTAssert(
-            try Ed25519.verifySignature(
-                decodedRecord.signature,
-                publicKey: self.identityKey.publicKey,
-                data: Data(decodedRecord.keyPair.publicKey.serialize())
+            try self.identityKey.keyPair.publicKey.verifySignature(
+                message: Data(decodedRecord.keyPair.publicKey.serialize()),
+                signature: decodedRecord.signature
             )
         )
     }
@@ -166,10 +164,9 @@ class KyberPreKeyStoreTest: XCTestCase {
 
         XCTAssertNotNil(key)
         XCTAssert(
-            try! Ed25519.verifySignature(
-                key!.signature,
-                publicKey: self.identityKey.publicKey,
-                data: Data(key!.keyPair.publicKey.serialize())
+            try! self.identityKey.keyPair.publicKey.verifySignature(
+                message: Data(key!.keyPair.publicKey.serialize()),
+                signature: key!.signature
             )
         )
         XCTAssertFalse(key!.isLastResort)
@@ -385,7 +382,7 @@ class KyberPreKeyStoreTest: XCTestCase {
 
     func testPniStoreIsSeparate() {
 
-        let pniIdentityKey = Curve25519.generateKeyPair()
+        let pniIdentityKey = ECKeyPair.generateKeyPair()
         let pniKyberPreKeyStore = SSKKyberPreKeyStore(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,

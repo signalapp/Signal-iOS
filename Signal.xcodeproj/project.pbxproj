@@ -657,6 +657,7 @@
 		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
+		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */; };
@@ -678,6 +679,8 @@
 		503AECC629B2AD6700642F66 /* VoiceMessageInterruptedDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A1271B510500B05242 /* VoiceMessageInterruptedDraft.swift */; };
 		503AECC829B2AEFA00642F66 /* VoiceMessageSendableDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC729B2AEFA00642F66 /* VoiceMessageSendableDraft.swift */; };
 		503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */; };
+		503B47222AF0569B00978266 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471E2AF0569A00978266 /* PublicKey.swift */; };
+		503B47232AF0569B00978266 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471F2AF0569A00978266 /* ECKeyPair.swift */; };
 		503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */; };
 		503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */; };
 		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
@@ -3239,6 +3242,7 @@
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
+		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadRemover.swift; sourceTree = "<group>"; };
@@ -3269,6 +3273,8 @@
 		503AECC429B2A4D300642F66 /* VoiceMessageInProgressDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageInProgressDraft.swift; sourceTree = "<group>"; };
 		503AECC729B2AEFA00642F66 /* VoiceMessageSendableDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageSendableDraft.swift; sourceTree = "<group>"; };
 		503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageConstants.swift; sourceTree = "<group>"; };
+		503B471E2AF0569A00978266 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
+		503B471F2AF0569A00978266 /* ECKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPair.swift; sourceTree = "<group>"; };
 		503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProviderTest.swift; sourceTree = "<group>"; };
 		503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactReminderTableViewCell.swift; sourceTree = "<group>"; };
 		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
@@ -6582,6 +6588,14 @@
 			path = OrphanData;
 			sourceTree = "<group>";
 		};
+		501AD1C22AF17A0B001B796A /* Curve25519 */ = {
+			isa = PBXGroup;
+			children = (
+				501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */,
+			);
+			path = Curve25519;
+			sourceTree = "<group>";
+		};
 		5033D46C29DCA8DE007FEADA /* URLs */ = {
 			isa = PBXGroup;
 			children = (
@@ -6615,6 +6629,15 @@
 				3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */,
 			);
 			path = VoiceMessage;
+			sourceTree = "<group>";
+		};
+		503B471C2AF0566B00978266 /* Curve25519 */ = {
+			isa = PBXGroup;
+			children = (
+				503B471F2AF0569A00978266 /* ECKeyPair.swift */,
+				503B471E2AF0569A00978266 /* PublicKey.swift */,
+			);
+			path = Curve25519;
 			sourceTree = "<group>";
 		};
 		5045F44129E0DAA400058E5F /* Launch */ = {
@@ -8867,6 +8890,7 @@
 				D9C2D78529A80BE700D79715 /* ChangePhoneNumber */,
 				665C0D5A2ADF537000539A37 /* CloudBackup */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
+				503B471C2AF0566B00978266 /* Curve25519 */,
 				6600F36A298DAA4F00B1EDB7 /* DateProvider */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
@@ -8906,6 +8930,7 @@
 				F945FE4B298481D800C835C7 /* Calls */,
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
 				F9426205289B1B5500460798 /* Contacts */,
+				501AD1C22AF17A0B001B796A /* Curve25519 */,
 				F94261C7289B1B5300460798 /* Devices */,
 				F908AA7B28CE628700472E68 /* Fixtures */,
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
@@ -10958,7 +10983,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
-				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${BUILT_PRODUCTS_DIR}/LibSignalClient/LibSignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
@@ -10985,7 +11009,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibSignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
@@ -11040,7 +11063,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
-				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${BUILT_PRODUCTS_DIR}/LibSignalClient/LibSignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
@@ -11060,7 +11082,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibSignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
@@ -11134,7 +11155,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
-				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${BUILT_PRODUCTS_DIR}/LibSignalClient/LibSignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
@@ -11154,7 +11174,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibSignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
@@ -12469,6 +12488,7 @@
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
 				5003BB43299F034D0037159B /* E164.swift in Sources */,
 				F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */,
+				503B47232AF0569B00978266 /* ECKeyPair.swift in Sources */,
 				66F2CE1F2A3A37CB00519342 /* EditableMessageBody.swift in Sources */,
 				C1DB22C329C9F95500757380 /* EditManager.swift in Sources */,
 				C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */,
@@ -12828,6 +12848,7 @@
 				F9C5CC95289453B300548EEE /* ProvisioningProto.swift in Sources */,
 				F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */,
 				F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */,
+				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
@@ -13157,6 +13178,7 @@
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
+				501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */,
 				C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */,
 				D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */,
 				502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */,

@@ -62,7 +62,7 @@ public class MockPreKeyStore: SignalPreKeyStore {
     }
 
     internal func generatePreKeyRecord() -> SignalServiceKit.PreKeyRecord {
-        let keyPair = Curve25519.generateKeyPair()
+        let keyPair = ECKeyPair.generateKeyPair()
         let record = SignalServiceKit.PreKeyRecord(
             id: preKeyId,
             keyPair: keyPair,
@@ -138,7 +138,7 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
     }
 
     func generateRandomSignedRecord() -> SignalServiceKit.SignedPreKeyRecord {
-        let identityKeyPair = Curve25519.generateKeyPair()
+        let identityKeyPair = ECKeyPair.generateKeyPair()
         return self.generateSignedPreKey(signedBy: identityKeyPair)
     }
 
@@ -192,7 +192,7 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
 internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
 
     private(set) var nextKeyId: Int32 = 0
-    var identityKeyPair = Curve25519.generateKeyPair()
+    var identityKeyPair = ECKeyPair.generateKeyPair()
     var dateProvider: DateProvider
 
     private(set) var lastPreKeyRotation: Date?
@@ -237,7 +237,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool) throws -> SignalServiceKit.KyberPreKeyRecord {
 
         let keyPair = KEMKeyPair.generate()
-        let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+        let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
         let record = SignalServiceKit.KyberPreKeyRecord(
             nextKeyId,
@@ -253,7 +253,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         let keyId = self.nextKeyId
         self.nextKeyId += 1
         let keyPair = KEMKeyPair.generate()
-        let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+        let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
         return try LibSignalClient.KyberPreKeyRecord(
             id: UInt32(bitPattern: keyId),
             timestamp: Date().ows_millisecondsSince1970,

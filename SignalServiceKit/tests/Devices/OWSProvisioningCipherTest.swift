@@ -5,9 +5,9 @@
 
 import Foundation
 import XCTest
-import Curve25519Kit
 import SignalCoreKit
-import SignalServiceKit
+
+@testable import SignalServiceKit
 
 final class OWSProvisioningCipherTest: XCTestCase {
     private let knownInitializationVector = Data([

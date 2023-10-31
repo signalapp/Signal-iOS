@@ -124,7 +124,8 @@ public class AccountManager: NSObject, Dependencies {
         }.then { (apnRegistrationId, prekeyBundles) throws -> Promise<VerifySecondaryDeviceResponse> in
             let encryptedDeviceName = try DeviceNames.encryptDeviceName(
                 plaintext: deviceName,
-                identityKeyPair: provisionMessage.aciIdentityKeyPair)
+                identityKeyPair: provisionMessage.aciIdentityKeyPair.keyPair
+            )
 
             return self.accountServiceClient.verifySecondaryDevice(
                 verificationCode: provisionMessage.provisioningCode,
