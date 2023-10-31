@@ -151,7 +151,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: self.profileManager.badgeStore)
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        let profileBadgeLookupPromise = loadProfileBadgeLookup(hasAnyDonationReceipts: hasAnyDonationReceipts)
+        let profileBadgeLookupPromise = loadProfileBadgeLookup()
 
         return profileBadgeLookupPromise.then { profileBadgeLookup -> Guarantee<State> in
             subscriptionLevelsPromise.then { subscriptionLevels -> Promise<State> in
@@ -202,10 +202,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         return !allBadges.isEmpty
     }
 
-    private func loadProfileBadgeLookup(hasAnyDonationReceipts: Bool) -> Guarantee<ProfileBadgeLookup> {
-        let willEverShowBadges = hasAnyDonationReceipts
-        guard willEverShowBadges else { return Guarantee.value(ProfileBadgeLookup()) }
-
+    private func loadProfileBadgeLookup() -> Guarantee<ProfileBadgeLookup> {
         return firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
             SubscriptionManagerImpl.fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadgeLookup in
