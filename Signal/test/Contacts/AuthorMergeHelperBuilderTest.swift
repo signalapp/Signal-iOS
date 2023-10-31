@@ -17,7 +17,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
         let appContext = TestAppContext()
         let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: InMemoryKeyValueStoreFactory())
         let inMemoryDb = InMemoryDB()
-        let recipientStore = MockRecipientDataStore()
+        let recipientDatabaseTable = MockRecipientDatabaseTable()
 
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
@@ -25,7 +25,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
         let phoneNumber2 = E164("+16505550102")!
 
         inMemoryDb.write { tx in
-            recipientStore.insertRecipient(SignalRecipient(aci: aci1, pni: nil, phoneNumber: phoneNumber1), transaction: tx)
+            recipientDatabaseTable.insertRecipient(SignalRecipient(aci: aci1, pni: nil, phoneNumber: phoneNumber1), transaction: tx)
         }
 
         inMemoryDb.write { tx in
@@ -47,7 +47,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
             db: inMemoryDb,
             dbFromTx: { tx in InMemoryDB.shimOnlyBridge(tx).db },
             modelReadCaches: AuthorMergeHelperBuilder_MockModelReadCaches(),
-            recipientStore: recipientStore
+            recipientDatabaseTable: recipientDatabaseTable
         ).buildTableIfNeeded()
 
         inMemoryDb.read { tx in

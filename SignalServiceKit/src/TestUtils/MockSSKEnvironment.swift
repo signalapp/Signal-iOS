@@ -52,9 +52,9 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         // Set up DependenciesBridge
 
-        let recipientStore = RecipientDataStoreImpl()
-        let recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
-        let recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+        let recipientDatabaseTable = RecipientDatabaseTableImpl()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
         let accountServiceClient = FakeAccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
@@ -112,9 +112,9 @@ public class MockSSKEnvironment: SSKEnvironment {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
-            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -164,9 +164,9 @@ public class MockSSKEnvironment: SSKEnvironment {
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: dependenciesBridge.db,
+            recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable,
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
-            recipientStore: dependenciesBridge.recipientStore,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             udManager: udManager,
             websocketFactory: webSocketFactory

@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public protocol RecipientDataStore {
+public protocol RecipientDatabaseTable {
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient?
 
@@ -15,7 +15,7 @@ public protocol RecipientDataStore {
     func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
 }
 
-extension RecipientDataStore {
+extension RecipientDatabaseTable {
     func fetchServiceId(for contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
         let serviceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         // If there's an ACI, it's *definitely* correct, and it's definitely the
@@ -43,7 +43,7 @@ extension RecipientDataStore {
     }
 }
 
-public class RecipientDataStoreImpl: RecipientDataStore {
+public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
     public init() {}
 
     public func fetchRecipient(serviceId: ServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
@@ -69,7 +69,7 @@ public class RecipientDataStoreImpl: RecipientDataStore {
 
 #if TESTABLE_BUILD
 
-class MockRecipientDataStore: RecipientDataStore {
+class MockRecipientDatabaseTable: RecipientDatabaseTable {
     var nextRowId = 1
     var recipientTable: [Int: SignalRecipient] = [:]
 

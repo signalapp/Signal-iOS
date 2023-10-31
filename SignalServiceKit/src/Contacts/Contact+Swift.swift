@@ -9,9 +9,9 @@ import Foundation
 public extension Contact {
 
     func signalRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
-        let recipientStore = DependenciesBridge.shared.recipientStore
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         return e164sForIntersection.compactMap { e164Number in
-            guard let recipient = recipientStore.fetchRecipient(phoneNumber: e164Number, transaction: tx.asV2Read) else {
+            guard let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: e164Number, transaction: tx.asV2Read) else {
                 return nil
             }
             guard recipient.isRegistered else {

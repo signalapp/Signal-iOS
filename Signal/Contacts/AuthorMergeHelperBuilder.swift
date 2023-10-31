@@ -14,7 +14,7 @@ final class AuthorMergeHelperBuilder {
     private let db: DB
     private let dbFromTx: (DBReadTransaction) -> Database
     private let modelReadCaches: Shims.ModelReadCaches
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     init(
         appContext: AppContext,
@@ -22,14 +22,14 @@ final class AuthorMergeHelperBuilder {
         db: DB,
         dbFromTx: @escaping (DBReadTransaction) -> Database,
         modelReadCaches: Shims.ModelReadCaches,
-        recipientStore: RecipientDataStore
+        recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.appContext = appContext
         self.authorMergeHelper = authorMergeHelper
         self.db = db
         self.dbFromTx = dbFromTx
         self.modelReadCaches = modelReadCaches
-        self.recipientStore = recipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     private enum Constants {
@@ -93,7 +93,7 @@ final class AuthorMergeHelperBuilder {
 
         var hasMore = false
         var mostRecentRowId: Int64?
-        let batch = AuthorMergeHelperBuilderBatch(recipientStore: recipientStore)
+        let batch = AuthorMergeHelperBuilderBatch(recipientDatabaseTable: recipientDatabaseTable)
         let cursor = try cursorForBatch(table: table, tx: tx)
         while let row = try cursor.next() {
             let rowId = row[0] as Int64
@@ -167,7 +167,7 @@ final class AuthorMergeHelperBuilder {
 }
 
 private class AuthorMergeHelperBuilderBatch {
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     private var phoneNumberAciStringCache = [String: String?]()
 
@@ -175,8 +175,8 @@ private class AuthorMergeHelperBuilderBatch {
     private(set) var tableUpdates = [(rowId: Int64, aciString: String)]()
     private(set) var phoneNumbersMissingAnAciString = Set<String>()
 
-    init(recipientStore: RecipientDataStore) {
-        self.recipientStore = recipientStore
+    init(recipientDatabaseTable: RecipientDatabaseTable) {
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     func processRow(rowId: Int64, aciString: String?, phoneNumber: String?, tx: DBReadTransaction) {
@@ -205,7 +205,7 @@ private class AuthorMergeHelperBuilderBatch {
         if let aciString = phoneNumberAciStringCache[phoneNumber] {
             return aciString
         }
-        let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
+        let phoneNumberRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
         let aciString: String? = phoneNumberRecipient?.aciString
         phoneNumberAciStringCache[phoneNumber] = aciString
         return aciString

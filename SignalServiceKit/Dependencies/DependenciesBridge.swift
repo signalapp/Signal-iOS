@@ -82,11 +82,11 @@ public class DependenciesBridge {
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
 
+    public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
     public let recipientIdFinder: RecipientIdFinder
     public let recipientMerger: RecipientMerger
-    public let recipientStore: RecipientDataStore
     public let registrationSessionManager: RegistrationSessionManager
 
     public var registrationStateChangeManager: RegistrationStateChangeManager
@@ -129,9 +129,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
-        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -161,9 +161,9 @@ public class DependenciesBridge {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
-            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -198,9 +198,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
-        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -244,9 +244,9 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
 
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
-        self.recipientStore = recipientStore
 
         self.identityManager = OWSIdentityManagerImpl(
             aciProtocolStore: aciProtocolStore,
@@ -369,7 +369,7 @@ public class DependenciesBridge {
             let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
                 databaseStorage: databaseStorage,
                 messageSenderJobQueue: jobQueues.messageSenderJobQueue,
-                recipientStore: self.recipientStore
+                recipientDatabaseTable: self.recipientDatabaseTable
             )
 
             self.callRecordStatusTransitionManager = CallRecordStatusTransitionManagerImpl()
@@ -395,7 +395,7 @@ public class DependenciesBridge {
                 markAsReadShims: CallRecordIncomingSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
                     notificationPresenter: notificationsManager
                 ),
-                recipientStore: self.recipientStore,
+                recipientDatabaseTable: self.recipientDatabaseTable,
                 threadStore: threadStore
             )
         }
@@ -422,8 +422,8 @@ public class DependenciesBridge {
                 userProfileStore: userProfileStore,
                 wallpaperStore: self.wallpaperStore
             ),
+            recipientDatabaseTable: self.recipientDatabaseTable,
             recipientFetcher: self.recipientFetcher,
-            recipientStore: self.recipientStore,
             storageServiceManager: storageServiceManager
         )
 

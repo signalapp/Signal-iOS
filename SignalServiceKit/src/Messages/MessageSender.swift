@@ -985,7 +985,7 @@ extension MessageSender {
             return
         }
         let recipientStateMerger = RecipientStateMerger(
-            recipientStore: DependenciesBridge.shared.recipientStore,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
             signalServiceAddressCache: signalServiceAddressCache
         )
         message.anyUpdateOutgoingMessage(transaction: tx) { message in
@@ -1258,9 +1258,9 @@ extension MessageSender {
         messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [DeviceMessage] {
-        let recipientStore = DependenciesBridge.shared.recipientStore
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let recipient = databaseStorage.read { tx in
-            return recipientStore.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx.asV2Read)
+            return recipientDatabaseTable.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx.asV2Read)
         }
 
         // If we think the recipient isn't registered, don't build any device
@@ -1638,8 +1638,8 @@ extension MessageSender {
             message.update(withSkippedRecipient: address, transaction: tx)
         }
 
-        let recipientStore = DependenciesBridge.shared.recipientStore
-        let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)
         recipient?.markAsUnregisteredAndSave(tx: tx)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every

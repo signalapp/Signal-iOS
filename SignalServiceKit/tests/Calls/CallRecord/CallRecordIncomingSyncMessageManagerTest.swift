@@ -14,7 +14,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
     private var mockIndividualCallRecordManager: MockIndividualCallRecordManager!
     private var mockInteractionStore: MockInteractionStore!
     private var mockMarkAsReadShims: MockMarkAsReadShims!
-    private var mockRecipientStore: MockRecipientStore!
+    private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
     private var mockThreadStore: MockThreadStore!
 
     private var mockDB = MockDB()
@@ -26,7 +26,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         mockIndividualCallRecordManager = MockIndividualCallRecordManager()
         mockInteractionStore = MockInteractionStore()
         mockMarkAsReadShims = MockMarkAsReadShims()
-        mockRecipientStore = MockRecipientStore()
+        mockRecipientDatabaseTable = MockRecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
         incomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
@@ -35,7 +35,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             individualCallRecordManager: mockIndividualCallRecordManager,
             interactionStore: mockInteractionStore,
             markAsReadShims: mockMarkAsReadShims,
-            recipientStore: mockRecipientStore,
+            recipientDatabaseTable: mockRecipientDatabaseTable,
             threadStore: mockThreadStore
         )
     }
@@ -71,7 +71,9 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         interaction.updateRowId(interactionRowId)
 
         mockCallRecordStore.callRecords.append(callRecord)
-        mockRecipientStore.recipients.append(contactRecipient)
+        mockDB.write { tx in
+            mockRecipientDatabaseTable.insertRecipient(contactRecipient, transaction: tx)
+        }
         mockInteractionStore.insertedInteractions.append(interaction)
 
         mockDB.write { tx in
@@ -109,8 +111,11 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         let contactServiceId = contactAddress.aci!
 
         let contactThread = TSContactThread(contactAddress: contactAddress)
+        mockDB.write { tx in
+            let recipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
+            mockRecipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+        }
 
-        mockRecipientStore.recipients.append(SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil))
         mockThreadStore.insertThread(contactThread)
 
         mockDB.write { tx in
@@ -209,28 +214,5 @@ private class MockMarkAsReadShims: CallRecordIncomingSyncMessageManagerImpl.Shim
         tx: DBWriteTransaction
     ) {
         hasMarkedAsRead = true
-    }
-}
-
-// MARK: MockRecipientStore
-
-private class MockRecipientStore: RecipientDataStore {
-    var recipients = [SignalRecipient]()
-
-    func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        return recipients.first(where: { $0.aci == serviceId })
-    }
-
-    func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        notImplemented()
-    }
-    func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        notImplemented()
-    }
-    func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        notImplemented()
-    }
-    func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
-        notImplemented()
     }
 }

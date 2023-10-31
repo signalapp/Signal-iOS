@@ -90,8 +90,8 @@ class RecipientMergerImpl: RecipientMerger {
     private let aciSessionStore: SignalSessionStore
     private let identityManager: OWSIdentityManager
     private let observers: Observers
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
-    private let recipientStore: RecipientDataStore
     private let storageServiceManager: StorageServiceManager
 
     /// Initializes a RecipientMerger.
@@ -104,15 +104,15 @@ class RecipientMergerImpl: RecipientMerger {
         aciSessionStore: SignalSessionStore,
         identityManager: OWSIdentityManager,
         observers: Observers,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
-        recipientStore: RecipientDataStore,
         storageServiceManager: StorageServiceManager
     ) {
         self.aciSessionStore = aciSessionStore
         self.identityManager = identityManager
         self.observers = observers
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
-        self.recipientStore = recipientStore
         self.storageServiceManager = storageServiceManager
     }
 
@@ -306,8 +306,8 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) {
         guard
-            let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx),
-            let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx),
+            let aciRecipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx),
+            let pniRecipient = recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx),
             pniRecipient.aciString == nil
         else {
             owsFail("Can't apply PNI signature merge with precondition violations")
@@ -408,7 +408,7 @@ class RecipientMergerImpl: RecipientMerger {
         isLocalRecipient: Bool,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx)
+        let aciRecipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
 
         // If these values have already been merged, we can return the result
         // without any modifications. This will be the path taken in 99% of cases
@@ -426,7 +426,7 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+        let phoneNumberRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
         let alreadyKnownPni = phoneNumberRecipient?.pni
 
         return mergeAndNotify(
@@ -493,7 +493,7 @@ class RecipientMergerImpl: RecipientMerger {
         isLocalRecipient: Bool,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        let phoneNumberRecipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+        let phoneNumberRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
 
         // If the phone number & PNI are already associated, do nothing.
         if let phoneNumberRecipient, phoneNumberRecipient.pni == pni {
@@ -502,7 +502,7 @@ class RecipientMergerImpl: RecipientMerger {
 
         Logger.info("Associating \(pni) with a phone number")
 
-        let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx)
+        let pniRecipient = recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)
 
         return mergeAndNotify(
             existingRecipients: [pniRecipient, phoneNumberRecipient].compacted(),
@@ -565,7 +565,7 @@ class RecipientMergerImpl: RecipientMerger {
         pni: Pni,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        let aciRecipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx)
+        let aciRecipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
 
         // If the ACI & PNI are already associated, do nothing.
         if let aciRecipient, aciRecipient.pni == pni {
@@ -574,7 +574,7 @@ class RecipientMergerImpl: RecipientMerger {
 
         Logger.info("Associating \(aci) with \(pni)")
 
-        let pniRecipient = recipientStore.fetchRecipient(serviceId: pni, transaction: tx)
+        let pniRecipient = recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)
         owsAssertDebug(pniRecipient?.phoneNumber == nil)
 
         return mergeAndNotify(
@@ -646,11 +646,11 @@ class RecipientMergerImpl: RecipientMerger {
     // MARK: - Helpers
 
     private func fetchPni(for phoneNumber: E164, tx: DBReadTransaction) -> Pni? {
-        return recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)?.pni
+        return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)?.pni
     }
 
     private func fetchPhoneNumber(for pni: Pni, tx: DBReadTransaction) -> E164? {
-        return E164(recipientStore.fetchRecipient(serviceId: pni, transaction: tx)?.phoneNumber)
+        return E164(recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)?.phoneNumber)
     }
 
     // MARK: - Merge Handling
@@ -701,11 +701,11 @@ class RecipientMergerImpl: RecipientMerger {
                 // TODO: Should we clean up any more state related to the discarded recipient?
                 aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
-                recipientStore.removeRecipient(affectedRecipient, transaction: tx)
+                recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if existingRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
-                recipientStore.updateRecipient(affectedRecipient, transaction: tx)
+                recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)
             } else {
-                recipientStore.insertRecipient(affectedRecipient, transaction: tx)
+                recipientDatabaseTable.insertRecipient(affectedRecipient, transaction: tx)
             }
         }
 

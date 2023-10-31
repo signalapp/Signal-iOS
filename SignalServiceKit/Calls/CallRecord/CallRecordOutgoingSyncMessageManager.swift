@@ -50,18 +50,18 @@ extension CallRecordOutgoingSyncMessageManager {
 final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMessageManager {
     private let databaseStorage: SDSDatabaseStorage
     private let messageSenderJobQueue: MessageSenderJobQueue
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
     private var logger: CallRecordLogger { .shared }
 
     init(
         databaseStorage: SDSDatabaseStorage,
         messageSenderJobQueue: MessageSenderJobQueue,
-        recipientStore: RecipientDataStore
+        recipientDatabaseTable: RecipientDatabaseTable
     ) {
         self.databaseStorage = databaseStorage
         self.messageSenderJobQueue = messageSenderJobQueue
-        self.recipientStore = recipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     func sendSyncMessage(
@@ -69,7 +69,7 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
         callRecord: CallRecord,
         tx: DBWriteTransaction
     ) {
-        guard let contactServiceId = recipientStore.fetchServiceId(for: contactThread, tx: tx) else {
+        guard let contactServiceId = recipientDatabaseTable.fetchServiceId(for: contactThread, tx: tx) else {
             owsFailBeta("Missing contact service ID - how did we get here?")
             return
         }

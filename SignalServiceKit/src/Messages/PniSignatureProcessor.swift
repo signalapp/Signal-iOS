@@ -24,17 +24,17 @@ enum PniSignatureProcessorError: Error {
 
 final class PniSignatureProcessorImpl: PniSignatureProcessor {
     private let identityManager: OWSIdentityManager
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientMerger: RecipientMerger
-    private let recipientStore: RecipientDataStore
 
     init(
         identityManager: OWSIdentityManager,
-        recipientMerger: RecipientMerger,
-        recipientStore: RecipientDataStore
+        recipientDatabaseTable: RecipientDatabaseTable,
+        recipientMerger: RecipientMerger
     ) {
         self.identityManager = identityManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientMerger = recipientMerger
-        self.recipientStore = recipientStore
     }
 
     func handlePniSignature(

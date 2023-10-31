@@ -678,8 +678,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         do {
             try PniSignatureProcessorImpl(
                 identityManager: DependenciesBridge.shared.identityManager,
-                recipientMerger: DependenciesBridge.shared.recipientMerger,
-                recipientStore: DependenciesBridge.shared.recipientStore
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+                recipientMerger: DependenciesBridge.shared.recipientMerger
             ).handlePniSignature(
                 pniSignatureMessage,
                 from: envelope.sourceAci,

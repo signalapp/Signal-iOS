@@ -8,9 +8,9 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class RecipientDataStoreTest: XCTestCase {
+final class RecipientDatabaseTableTest: XCTestCase {
     func testFetchServiceIdForContactThread() {
-        let s = MockRecipientDataStore()
+        let s = MockRecipientDatabaseTable()
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
         let phoneNumber1 = E164("+16505550101")!

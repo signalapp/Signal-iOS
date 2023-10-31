@@ -327,7 +327,7 @@ extension AppDelegate {
                     db: DependenciesBridge.shared.db,
                     dbFromTx: { tx in SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database },
                     modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(ModelReadCaches.shared),
-                    recipientStore: DependenciesBridge.shared.recipientStore
+                    recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
                 ).buildTableIfNeeded()
             }
         }

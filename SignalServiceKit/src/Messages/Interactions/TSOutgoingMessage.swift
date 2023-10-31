@@ -340,7 +340,7 @@ extension TSOutgoingMessage {
         clearMessageSendLogEntry(forRecipient: recipientAddress, deviceId: deviceId, tx: tx)
 
         let recipientStateMerger = RecipientStateMerger(
-            recipientStore: DependenciesBridge.shared.recipientStore,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
             signalServiceAddressCache: signalServiceAddressCache
         )
         anyUpdateOutgoingMessage(transaction: tx) { message in
