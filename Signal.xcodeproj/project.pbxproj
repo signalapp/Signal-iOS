@@ -1975,8 +1975,6 @@
 		F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4666,8 +4664,6 @@
 		F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
-		F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationQuote.m; sourceTree = "<group>"; };
-		F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationQuote.h; sourceTree = "<group>"; };
 		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
@@ -9326,8 +9322,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */,
-				F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */,
-				F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */,
 			);
 			name = "Remote Attestation";
 			path = "src/Remote Attestation";
@@ -10188,7 +10182,6 @@
 				F9C5CD46289453B300548EEE /* PreKeyRecord.h in Headers */,
 				F9C5CCE7289453B300548EEE /* ProfileManagerProtocol.h in Headers */,
 				F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */,
-				F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */,
 				F9C5CDAD289453B400548EEE /* RESTNetworkManager.h in Headers */,
 				F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
@@ -12859,7 +12852,6 @@
 				6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */,
 				6640DD5E2ACCCDC000CE9A8C /* RegistrationStateChangeManagerObjcTestUtil.swift in Sources */,
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
-				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
 				D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */,
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,

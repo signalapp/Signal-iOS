@@ -32,7 +32,6 @@ public enum SignalServiceType {
     case storageService
     case cdn0
     case cdn2
-    case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
     case kbs
     case updates
     case updates2
@@ -75,18 +74,6 @@ public extension OWSSignalServiceProtocol {
 
     func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSessionProtocol {
         buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
-    }
-
-    func urlSessionForRemoteAttestation(
-        host: String,
-        censorshipCircumventionPrefix: String
-    ) -> OWSURLSessionProtocol {
-        buildUrlSession(
-            for: .remoteAttestation(
-                host: host,
-                censorshipCircumventionPrefix: censorshipCircumventionPrefix
-            )
-        )
     }
 
     func urlSessionForKBS() -> OWSURLSessionProtocol {
@@ -147,13 +134,6 @@ extension SignalServiceType {
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
                 censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
-                shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: false
-            )
-        case .remoteAttestation(let host, let censorshipCircumventionPrefix):
-            return SignalServiceInfo(
-                baseUrl: URL(string: host)!,
-                censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: false
             )
