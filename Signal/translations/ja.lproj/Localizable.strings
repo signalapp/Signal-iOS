@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "トラッキング要素の削除";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URLからトラッキング要素を削除します。例: インスタグラム用の \"igshid=\", YouTube用の \"si=\", フェイスブック用の \"fbid=\", Twitter(X)用の \"t=\", TikTok Click ID用の \"ttclid=\", その他のトラッキング要素として \"utm_campaign\" および \"utm_source\" があります。";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URLからトラッキング要素を削除します。例: インスタグラム用の \"igshid=\", YouTube用の \"si=\", フェイスブック用の \"fbclid=\", Twitter(X)用の \"t=\", TikTok Click ID用の \"ttclid=\", その他のトラッキング要素として \"utm_campaign\" および \"utm_source\" があります。";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "電話番号を編集";

@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Usuń elementy śledzące";
 
 /* User settings section footer, with a detailed explanation of what tracking elements will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Usuń elementy śledzące z adresów URL, np. \"igshid=\" dla Instagrama, \"si=\" dla YouTube, \"fbid=\" dla Facebooka, \"t=\" dla Twittera(X), \"ttclid=\" dla identyfikatora kliknięcia TikTok, inne parametry śledzące \"utm_campaign\" i \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Usuń elementy śledzące z adresów URL, np. \"igshid=\" dla Instagrama, \"si=\" dla YouTube, \"fbclid=\" dla Facebooka, \"t=\" dla Twittera(X), \"ttclid=\" dla identyfikatora kliknięcia TikTok, inne parametry śledzące \"utm_campaign\" i \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edytuj numer";

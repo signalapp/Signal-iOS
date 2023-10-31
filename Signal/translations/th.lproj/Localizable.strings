@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "ลบองค์ประกอบการติดตาม";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "ลบองค์ประกอบการติดตามออกจาก URL ตัวอย่างเช่น \"igshid=\" สำหรับ Instagram, \"si=\" สำหรับ YouTube, \"fbid=\" สำหรับ Facebook, \"t=\" สำหรับ Twitter(X), \"ttclid=\" สำหรับ TikTok Click ID, องค์ประกอบการติดตามอื่น ๆ เช่น \"utm_campaign\" และ \"utm_source\"";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "ลบองค์ประกอบการติดตามออกจาก URL ตัวอย่างเช่น \"igshid=\" สำหรับ Instagram, \"si=\" สำหรับ YouTube, \"fbclid=\" สำหรับ Facebook, \"t=\" สำหรับ Twitter(X), \"ttclid=\" สำหรับ TikTok Click ID, องค์ประกอบการติดตามอื่น ๆ เช่น \"utm_campaign\" และ \"utm_source\"";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "แก้ไขหมายเลข";

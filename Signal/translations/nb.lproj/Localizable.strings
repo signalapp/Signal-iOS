@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Fjern Sporings­elementer";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Fjern sporings­elementer fra URL-er, f.eks. \"igshid=\" for Instagram, \"si=\" for YouTube, \"fbid=\" for Facebook, \"t=\" for Twitter(X), \"ttclid=\" for TikTok Click ID, andre sporings­elementer som \"utm_campaign\" og \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Fjern sporings­elementer fra URL-er, f.eks. \"igshid=\" for Instagram, \"si=\" for YouTube, \"fbclid=\" for Facebook, \"t=\" for Twitter(X), \"ttclid=\" for TikTok Click ID, andre sporings­elementer som \"utm_campaign\" og \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Endre nummer";

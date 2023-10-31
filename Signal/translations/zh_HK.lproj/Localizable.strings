@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "移除追踪元素";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "从URL中移除追踪元素，例如 Instagram 的 \"igshid=\", YouTube 的 \"si=\", Facebook 的 \"fbid=\", Twitter(X) 的 \"t=\", TikTok Click ID 的 \"ttclid=\", 以及其他追踪元素如 \"utm_campaign\" 和 \"utm_source\"。";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "从URL中移除追踪元素，例如 Instagram 的 \"igshid=\", YouTube 的 \"si=\", Facebook 的 \"fbclid=\", Twitter(X) 的 \"t=\", TikTok Click ID 的 \"ttclid=\", 以及其他追踪元素如 \"utm_campaign\" 和 \"utm_source\"。";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "編輯號碼";

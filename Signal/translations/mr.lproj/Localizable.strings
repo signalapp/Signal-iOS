@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "ट्रॅकिंग घटक काढा";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URL पासून ट्रॅकिंग घटक काढून टाका, उदा. इंस्टाग्रामसाठी \"igshid=\", यूट्यूबसाठी \"si=\", फेसबुकसाठी \"fbid=\", ट्विटरसाठी \"t=\", टिकटॉक क्लिक IDसाठी \"ttclid=\", इतर ट्रॅकिंग घटक असा \"utm_campaign\" आणि \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "URL पासून ट्रॅकिंग घटक काढून टाका, उदा. इंस्टाग्रामसाठी \"igshid=\", यूट्यूबसाठी \"si=\", फेसबुकसाठी \"fbclid=\", ट्विटरसाठी \"t=\", टिकटॉक क्लिक IDसाठी \"ttclid=\", इतर ट्रॅकिंग घटक असा \"utm_campaign\" आणि \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "क्रमांक संपादित करा";

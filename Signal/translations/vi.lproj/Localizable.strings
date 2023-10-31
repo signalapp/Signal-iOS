@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Xóa các yếu tố theo dõi";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Xóa các yếu tố theo dõi từ các URL, ví dụ: \"igshid=\" cho Instagram, \"si=\" cho YouTube, \"fbid=\" cho Facebook, \"t=\" cho Twitter(X), \"ttclid=\" cho TikTok Click ID, các yếu tố theo dõi khác \"utm_campaign\" và \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Xóa các yếu tố theo dõi từ các URL, ví dụ: \"igshid=\" cho Instagram, \"si=\" cho YouTube, \"fbclid=\" cho Facebook, \"t=\" cho Twitter(X), \"ttclid=\" cho TikTok Click ID, các yếu tố theo dõi khác \"utm_campaign\" và \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Sửa Số";

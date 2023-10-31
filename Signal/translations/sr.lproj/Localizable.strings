@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Уклонити елементе праћења";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Уклоните елементе праћења из УРЛ адреса, на пример \"igshid=\" за Инстаграм, \"si=\" за Јутјуб, \"fbid=\" за Фејсбук, \"t=\" за Твитер(X), \"ttclid=\" за ТикТок идентификацију клика, други елементи праћења \"utm_campaign\" и \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Уклоните елементе праћења из УРЛ адреса, на пример \"igshid=\" за Инстаграм, \"si=\" за Јутјуб, \"fbclid=\" за Фејсбук, \"t=\" за Твитер(X), \"ttclid=\" за ТикТок идентификацију клика, други елементи праћења \"utm_campaign\" и \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Уредити број";

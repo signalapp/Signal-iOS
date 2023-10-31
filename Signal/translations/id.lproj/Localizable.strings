@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Hapus Elemen Pelacakan";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Hapus elemen pelacakan dari URL, contoh: \"igshid=\" untuk Instagram, \"si=\" untuk YouTube, \"fbid=\" untuk Facebook, \"t=\" untuk Twitter(X), \"ttclid=\" untuk TikTok Click ID, elemen pelacakan lainnya seperti \"utm_campaign\" dan \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Hapus elemen pelacakan dari URL, contoh: \"igshid=\" untuk Instagram, \"si=\" untuk YouTube, \"fbclid=\" untuk Facebook, \"t=\" untuk Twitter(X), \"ttclid=\" untuk TikTok Click ID, elemen pelacakan lainnya seperti \"utm_campaign\" dan \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Sunting Nomor";

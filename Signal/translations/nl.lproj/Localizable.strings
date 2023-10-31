@@ -5864,7 +5864,7 @@
 "SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE" = "Verwijder Tracking Elementen";
 
 /* User settings section footer, with a detailed explanation of what tracking parameters will be removed from pasted URLs */
-"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Verwijder tracking elementen uit URL's, bijvoorbeeld \"igshid=\" voor Instagram, \"si=\" voor YouTube, \"fbid=\" voor Facebook, \"t=\" voor Twitter(X), \"ttclid=\" voor TikTok Click ID, andere tracking elementen zoals \"utm_campaign\" en \"utm_source\".";
+"SETTINGS_REMOVE_URL_TRACKERS_PREFERENCE_TITLE_DETAIL" = "Verwijder tracking elementen uit URL's, bijvoorbeeld \"igshid=\" voor Instagram, \"si=\" voor YouTube, \"fbclid=\" voor Facebook, \"t=\" voor Twitter(X), \"ttclid=\" voor TikTok Click ID, andere tracking elementen zoals \"utm_campaign\" en \"utm_source\".";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Onjuist telefoonnummer bewerken";
