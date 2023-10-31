@@ -713,7 +713,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
     
     private func removeQueryParamsFromURL(url: URL) -> URL? {
-        let paramsToRemove = ["igshid", "si", "fbid", "t", "ttclid", "utm_campaign", "utm_source"]
+        let paramsToRemove = ["igshid", "si", "fbclid", "t", "ttclid", "utm_campaign", "utm_source", "utm_medium", "gclid"]
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         var items = components?.queryItems
         components?.queryItems = items?.filter { item in
