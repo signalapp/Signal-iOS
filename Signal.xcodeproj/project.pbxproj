@@ -725,12 +725,16 @@
 		50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */; };
 		50B62C742AB211E800705A89 /* PniSignatureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */; };
 		50B62C762AB216E300705A89 /* PniSignatureProcessorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */; };
+		50B6BCB12AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB02AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift */; };
+		50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB32AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift */; };
+		50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
 		50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */; };
 		50C38CAD2A8EB2610030A731 /* DB+TimeBatchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */; };
 		50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
+		50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */; };
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */; };
@@ -3310,12 +3314,16 @@
 		50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMergerTest.swift; sourceTree = "<group>"; };
 		50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessor.swift; sourceTree = "<group>"; };
 		50B62C752AB216E300705A89 /* PniSignatureProcessorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessorTest.swift; sourceTree = "<group>"; };
+		50B6BCB02AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelperBuilder.swift; sourceTree = "<group>"; };
+		50B6BCB32AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelperBuilderTest.swift; sourceTree = "<group>"; };
+		50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelperTest.swift; sourceTree = "<group>"; };
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
 		50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatching.swift"; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatchingTest.swift"; sourceTree = "<group>"; };
 		50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProvider.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
+		50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelper.swift; sourceTree = "<group>"; };
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
 		50D5E2422980B53000899660 /* LinkValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidatorTest.swift; sourceTree = "<group>"; };
 		50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniqueObjectRecipientMerger.swift; sourceTree = "<group>"; };
@@ -6658,6 +6666,22 @@
 			path = GroupMembers;
 			sourceTree = "<group>";
 		};
+		50B6BCAF2AEC4F3B0010FB3B /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				50B6BCB02AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		50B6BCB22AEC58190010FB3B /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				50B6BCB32AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
 		50EF8DC82A1885B100A00935 /* Badge */ = {
 			isa = PBXGroup;
 			children = (
@@ -7844,6 +7868,7 @@
 				1704690725D4C2DA000793D8 /* attachments */,
 				50EF8DD02A1E96EA00A00935 /* Badge */,
 				B660F6751C29867F00687D6E /* contact */,
+				50B6BCB22AEC58190010FB3B /* Contacts */,
 				349BC85F253A2651003C949A /* Groups */,
 				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
@@ -8047,6 +8072,7 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
+				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
 				6600F38C29918A5100B1EDB7 /* Registration */,
@@ -8628,6 +8654,7 @@
 			isa = PBXGroup;
 			children = (
 				5075004528B09CCC001922C9 /* Discovery */,
+				50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */,
 				F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */,
 				F9426218289B1B5500460798 /* BlockingManagerTests.swift */,
 				50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */,
@@ -9311,6 +9338,7 @@
 			children = (
 				F9C5C9D5289453B100548EEE /* Discovery */,
 				F9C5C9E3289453B100548EEE /* Threads */,
+				50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */,
 				500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */,
 				F9C5C9FF289453B100548EEE /* Contact+Swift.swift */,
 				F9C5C9E2289453B100548EEE /* Contact.h */,
@@ -11662,6 +11690,7 @@
 				17ACF11E267D71E0009BE867 /* AudioSession+WebRTC.swift in Sources */,
 				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
+				50B6BCB12AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift in Sources */,
 				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
 				8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */,
 				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,
@@ -12260,6 +12289,7 @@
 				6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */,
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
+				50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */,
 				F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */,
 				F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */,
 				50EF8DD12A1E9B3800A00935 /* BadgeManagerTest.swift in Sources */,
@@ -12350,6 +12380,7 @@
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
 				5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */,
+				50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
 				665C0D6C2AE0776700539A37 /* Backup.pb.swift in Sources */,
 				665C0D6E2AE07A8A00539A37 /* BackupProto.swift in Sources */,
@@ -13107,6 +13138,7 @@
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,
+				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift in Sources */,

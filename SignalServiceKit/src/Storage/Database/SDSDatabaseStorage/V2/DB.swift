@@ -121,7 +121,7 @@ extension DB {
 
     // MARK: - Awaitable Methods
 
-    func awaitableWrite<T>(
+    public func awaitableWrite<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,

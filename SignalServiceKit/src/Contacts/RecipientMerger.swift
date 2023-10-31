@@ -123,6 +123,7 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     static func buildObservers(
+        authorMergeHelper: AuthorMergeHelper,
         callRecordStore: CallRecordStore,
         chatColorSettingStore: ChatColorSettingStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -143,7 +144,7 @@ class RecipientMergerImpl: RecipientMerger {
         return Observers(
             preThreadMerger: [
                 signalServiceAddressCache,
-                AuthorMergeObserver(),
+                AuthorMergeObserver(authorMergeHelper: authorMergeHelper),
                 SignalAccountMergeObserver(),
                 ProfileWhitelistMerger(profileManager: profileManager),
                 UserProfileMerger(userProfileStore: userProfileStore),

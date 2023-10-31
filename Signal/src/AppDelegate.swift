@@ -319,10 +319,23 @@ extension AppDelegate {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
         }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task.detached(priority: .low) {
+                await AuthorMergeHelperBuilder(
+                    appContext: appContext,
+                    authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,
+                    db: DependenciesBridge.shared.db,
+                    dbFromTx: { tx in SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database },
+                    modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(ModelReadCaches.shared),
+                    recipientStore: DependenciesBridge.shared.recipientStore
+                ).buildTableIfNeeded()
+            }
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
-        CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
+        appContext.appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in

@@ -41,6 +41,7 @@ public class DependenciesBridge {
     public var accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
+    public let authorMergeHelper: AuthorMergeHelper
 
     public let callRecordStatusTransitionManager: CallRecordStatusTransitionManager
     public let callRecordStore: CallRecordStore
@@ -399,10 +400,12 @@ public class DependenciesBridge {
             )
         }
 
+        self.authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: keyValueStoreFactory)
         self.recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
             identityManager: self.identityManager,
             observers: RecipientMergerImpl.buildObservers(
+                authorMergeHelper: self.authorMergeHelper,
                 callRecordStore: self.callRecordStore,
                 chatColorSettingStore: self.chatColorSettingStore,
                 disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
