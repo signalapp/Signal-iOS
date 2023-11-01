@@ -32,6 +32,7 @@ public enum SignalServiceType {
     case storageService
     case cdn0
     case cdn2
+    case cdn3
     case kbs
     case updates
     case updates2
@@ -44,6 +45,8 @@ public enum SignalServiceType {
             return cdn0
         case 2:
             return cdn2
+        case 3:
+            return cdn3
         default:
             owsFailDebug("Unrecognized CDN number configuration requested: \(cdnNumber)")
             return cdn2
@@ -134,6 +137,13 @@ extension SignalServiceType {
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
                 censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
+                shouldUseSignalCertificate: true,
+                shouldHandleRemoteDeprecation: false
+            )
+        case .cdn3:
+            return SignalServiceInfo(
+                baseUrl: URL(string: TSConstants.textSecureCDN3ServerURL)!,
+                censorshipCircumventionPathPrefix: TSConstants.cdn3CensorshipPrefix,
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: false
             )
