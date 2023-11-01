@@ -120,8 +120,8 @@ public class EditMessageFinder {
             arguments: arguments
         )
 
-        return try records.map { record -> (EditRecord, TSMessage?) in
-            let interaction = try InteractionFinder.fetch(
+        return records.map { record -> (EditRecord, TSMessage?) in
+            let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
                 transaction: transaction
             )
@@ -156,8 +156,8 @@ public class EditMessageFinder {
             arguments: arguments
         )
 
-        return try records.map { record -> (EditRecord, TSMessage?) in
-            let interaction = try InteractionFinder.fetch(
+        return records.map { record -> (EditRecord, TSMessage?) in
+            let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
                 transaction: transaction
             )

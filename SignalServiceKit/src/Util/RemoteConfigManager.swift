@@ -758,7 +758,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         }
         // swiftlint:enable large_tuple
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            let remoteConfig = cacheCurrent(
+            _ = cacheCurrent(
                 clockSkew: lastKnownClockSkew,
                 isEnabledFlags: isEnabledFlags,
                 valueFlags: valueFlags,
