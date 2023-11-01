@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "메시지 수정";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "메시지 수정은 발송 시간으로부터 3시간 이내로 제한됩니다.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "메시지 수정은 발송 시간으로부터 24시간 이내에 해야 합니다.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2381,7 +2381,7 @@
 "EXPIRATION_WARNING_TODAY" = "이 Signal 버전은 오늘 만료됩니다. 업데이트하여 계속 메시지를 주고받으세요.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Couldn't send message because %1$@ needs to update and open Signal.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "메시지를 전송하지 못했습니다. %1$@님이 Signal을 업데이트한 후 다시 열어야 합니다.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "이 연락처에서 너무 많은 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
@@ -5756,7 +5756,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "대화 세션을 새로 고침";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%1$@ belongs to %2$@";
+"SESSION_SWITCHOVER_EVENT" = "%1$@번은 %2$@ 님의 전화번호입니다.";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "갤러리에서 선택";

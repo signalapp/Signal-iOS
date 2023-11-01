@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "संदेश संपादित करा";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "आपण हा संदेश पाठवल्यापासून फक्त 3 तासांच्या आत संपादन करणे लागू केले जाऊ शकते.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "आपण हा संदेश पाठवल्यापासून फक्त 24 तासांच्या आत संपादन करणे लागू केले जाऊ शकते.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2381,7 +2381,7 @@
 "EXPIRATION_WARNING_TODAY" = "Signal ची ही आवृत्ती आज कालबाह्य होईल. संदेशन करणे सुरू करण्यासाठी अद्यतन करा.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Couldn't send message because %1$@ needs to update and open Signal.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "संदेश पाठवू शकत नाही कारण %1$@ Signal अपडेट करण्याची आणि उघडण्याची गरज आहे.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "या संपर्कासोबत खूप सारे अपयश. कृपया नंतर पुन्हा प्रयत्न करा";
@@ -5756,7 +5756,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "चॅट सत्र रिफ्रेश झाले";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%1$@ belongs to %2$@";
+"SESSION_SWITCHOVER_EVENT" = "%1$@ हा %2$@ शी संबंधित आहे";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "फोटोमधून निवडा";

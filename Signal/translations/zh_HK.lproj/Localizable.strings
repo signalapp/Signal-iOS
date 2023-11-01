@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "編輯訊息";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "編輯只能在你傳送此訊息後的 3 小時內套用。";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "編輯只能在你傳送此訊息後的 24 小時內套用。";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2381,7 +2381,7 @@
 "EXPIRATION_WARNING_TODAY" = "此版本的 Signal 將於今天到期。請更新以繼續收發訊息。";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Couldn't send message because %1$@ needs to update and open Signal.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "無法傳送訊息，因為 %1$@ 需要更新並開啟 Signal。";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "與該聯絡人對話時失敗次數過多。請稍後再試。";
@@ -5756,7 +5756,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "聊天工作階段已重新整理";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%1$@ belongs to %2$@";
+"SESSION_SWITCHOVER_EVENT" = "%1$@ 是 %2$@ 的手機號碼";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "從照片中選取";
