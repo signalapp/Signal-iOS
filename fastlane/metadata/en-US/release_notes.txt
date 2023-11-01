@@ -1,1 +1,2 @@
-• We’ve added a new way to keep your Signal contacts nice and tidy. This Halloween season, remove the ghost of an old contact by long-pressing on their name in the contact list on the New Chat screen and selecting the “Remove” option.
+• In the halcyon world of user interface design, a "toast" is a tiny status message that briefly appears on the screen. After removing a contact in Signal, sometimes the confirmation message would get partially covered up by the keyboard (like a piece of toast stuck in the toaster). If you're on iOS 15+, please raise a glass and toast to never seeing that bug again. Cheers!
+• We also fixed a couple of broken animations in chats with a custom background.

@@ -2,7 +2,7 @@ Signal is een berichten-app waar privacy centraal staat. Het is gratis en gemakk
 
 • Stuur tekst- en spraakberichten, foto's, video's, GIF's en bestanden, allemaal gratis. Signal maakt gebruik van de mobiele data van je telefoon, zodat je sms- en mms-kosten kunt vermijden.
 
-• Bel je vrienden met versleutelde spraak- en video-oproepen. Groepsgesprekken worden ondersteund tot wel 40 personen.
+• Bel je vrienden met versleutelde spraak- en video-oproepen. Groepsoproepen worden ondersteund tot wel 40 personen.
 
 • Houd contact via groepschats met tot wel 1000 mensen. Bepaal wie kan posten en groepsleden kan beheren met instellingen voor beheerdersmachtigingen.
 
