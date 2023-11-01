@@ -61,8 +61,8 @@ extension SignalServiceClient {
 // MARK: -
 
 public enum RemoteConfigItem {
-    case isEnabled(isEnabled: Bool)
-    case value(value: AnyObject)
+    case isEnabled(Bool)
+    case value(String)
 }
 
 public struct RemoteConfigResponse {
@@ -280,10 +280,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
                 let name: String = try itemParser.required(key: "name")
                 let isEnabled: Bool = try itemParser.required(key: "enabled")
 
-                if let value: AnyObject = try itemParser.optional(key: "value") {
-                    accum[name] = RemoteConfigItem.value(value: value)
+                if let value: String = try itemParser.optional(key: "value") {
+                    accum[name] = .value(value)
                 } else {
-                    accum[name] = RemoteConfigItem.isEnabled(isEnabled: isEnabled)
+                    accum[name] = .isEnabled(isEnabled)
                 }
 
                 return accum
