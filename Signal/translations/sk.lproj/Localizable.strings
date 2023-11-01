@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Upraviť správu";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Úpravy je možné vykonať len do 3 hodín od odoslania tejto správy.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Úpravy je možné vykonať len do 24 hodín od odoslania tejto správy.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2381,7 +2381,7 @@
 "EXPIRATION_WARNING_TODAY" = "Táto verzia Signalu vyprší dnes. Ak chcete naďalej posielať správy, je potrebná aktualizácia.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Couldn't send message because %1$@ needs to update and open Signal.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Správu nebolo možné odoslať, pretože %1$@ si musí aktualizovať a otvoriť Signal.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Priveľa zlyhaní s týmto kontaktom. Prosím, skúste to znovu neskôr.";
@@ -5756,7 +5756,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Relácia četu bola obnovená";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%1$@ belongs to %2$@";
+"SESSION_SWITCHOVER_EVENT" = "%1$@ patrí používateľovi %2$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Vybrať z fotografií";

@@ -1,1 +1,1 @@
-• We’ve added a new way to keep your Signal contacts nice and tidy. This Halloween season, remove the ghost of an old contact by long-pressing on their name in the contact list on the New Chat screen and selecting the “Remove” option.
+• 新規チャット画面の連絡先リストで、もう使わなくなった連絡先の名前を長押しして[削除] オプションを選択すると、削除できるようになりました。
