@@ -77,31 +77,19 @@ public class OWSFingerprintBuilder {
                 fingerprints: [aciFingerprint],
                 initialDisplayIndex: 0
             )
-        } else if RemoteConfig.defaultToAciSafetyNumber, let e164Fingerprint {
+        } else if let e164Fingerprint {
             // We have both, but prefer the ACI.
             return FingerprintResult(
                 theirAci: theirAci,
-                fingerprints: [e164Fingerprint, aciFingerprint],
-                initialDisplayIndex: 1
+                fingerprints: [aciFingerprint, e164Fingerprint],
+                initialDisplayIndex: 0
             )
-        } else if RemoteConfig.defaultToAciSafetyNumber {
+        } else {
             // If we default to ACI safety number and don't have the e164,
             // that's fine. Just show the ACI one.
             return FingerprintResult(
                 theirAci: theirAci,
                 fingerprints: [aciFingerprint],
-                initialDisplayIndex: 0
-            )
-        } else {
-            guard let e164Fingerprint else {
-                // We want to default to the e164 one, so we _require_ it.
-                owsFailDebug("Needed e164, but it was missing!")
-                return nil
-            }
-
-            return FingerprintResult(
-                theirAci: theirAci,
-                fingerprints: [e164Fingerprint, aciFingerprint],
                 initialDisplayIndex: 0
             )
         }
