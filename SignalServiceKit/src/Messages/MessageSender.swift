@@ -1135,7 +1135,7 @@ extension MessageSender {
         orThrow error: Error,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
-        guard remainingAttempts > 0 else {
+        guard remainingAttempts > 1 else {
             throw error
         }
         try await performMessageSendAttempt(
