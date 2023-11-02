@@ -576,7 +576,7 @@ private class SafetyNumberCell: ContactTableViewCell {
 
     func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
         button.setPressedBlock {
-            FingerprintViewController.present(from: viewController, address: item.address)
+            FingerprintViewController.present(for: item.address.aci, from: viewController)
         }
 
         Self.databaseStorage.read { transaction in

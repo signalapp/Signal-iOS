@@ -7,20 +7,17 @@ import CommonCrypto
 import LibSignalClient
 
 public class OWSFingerprint {
+    public let myAci: Aci
+    public let theirAci: Aci
 
-    public enum Source {
-        case aci(myAci: Aci, theirAci: Aci)
-        case e164(myE164: E164, theirE164: E164)
-    }
-
-    public let source: Source
     public let myAciIdentityKey: Data
     public let theirAciIdentityKey: Data
 
-    private let hashIterations: UInt32
     private let myFingerprintData: Data
     private let theirFingerprintData: Data
-    private let theirName: String
+
+    private let hashIterations: UInt32
+    public let theirName: String
 
     /**
      * Formats numeric fingerprint, 3 lines in groups of 5 digits.
@@ -34,13 +31,15 @@ public class OWSFingerprint {
     }
 
     public init(
-        source: Source,
+        myAci: Aci,
+        theirAci: Aci,
         myAciIdentityKey: Data,
         theirAciIdentityKey: Data,
         theirName: String,
         hashIterations: UInt32 = Constants.defaultHashIterations
     ) {
-        self.source = source
+        self.myAci = myAci
+        self.theirAci = theirAci
         let myAciIdentityKey = myAciIdentityKey.prependKeyType()
         self.myAciIdentityKey = myAciIdentityKey
         let theirAciIdentityKey = theirAciIdentityKey.prependKeyType()
@@ -48,7 +47,7 @@ public class OWSFingerprint {
         self.hashIterations = hashIterations
         self.theirName = theirName
 
-        let (myStableSourceData, theirStableSourceData) = Self.stableData(for: source)
+        let (myStableSourceData, theirStableSourceData) = Self.stableData(myAci: myAci, theirAci: theirAci)
         self.myFingerprintData = Self.dataForStableAddress(
             myStableSourceData,
             publicKey: myAciIdentityKey,
@@ -208,19 +207,8 @@ public class OWSFingerprint {
 
     // MARK: - Private helpers
 
-    private static func stableData(for source: Source) -> (my: Data, their: Data) {
-        switch source {
-        case let .aci(myAci, theirAci):
-            return (my: myAci.rawUUID.data, their: theirAci.rawUUID.data)
-        case let .e164(myE164, theirE164):
-            guard
-                let myData = myE164.stringValue.data(using: .utf8),
-                let theirData = theirE164.stringValue.data(using: .utf8)
-            else {
-                owsFail("Unable to serialize e164")
-            }
-            return (my: myData, their: theirData)
-        }
+    private static func stableData(myAci: Aci, theirAci: Aci) -> (my: Data, their: Data) {
+        return (my: myAci.rawUUID.data, their: theirAci.rawUUID.data)
     }
 
     /**
@@ -296,17 +284,11 @@ public class OWSFingerprint {
     }
 
     private var scannableFingerprintVersion: UInt32 {
-        switch source {
-        case .e164:
-            return Constants.e164ScannableFormatVersion
-        case .aci:
-            return Constants.aciScannableFormatVersion
-        }
+        return Constants.aciScannableFormatVersion
     }
 
     public enum Constants {
         static let hashingVersion: UInt32 = 0
-        static let e164ScannableFormatVersion: UInt32 = 1
         static let aciScannableFormatVersion: UInt32 = 2
         public static let defaultHashIterations: UInt32 = 5200
     }

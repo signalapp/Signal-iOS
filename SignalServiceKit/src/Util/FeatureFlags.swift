@@ -114,10 +114,6 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
-    /// If true, _only_ aci safety numbers will be displayed, and e164 safety numbers will not
-    /// be displayed.
-    public static let onlyAciSafetyNumbers = false
-
     public static let editMessageSend = true
 
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false

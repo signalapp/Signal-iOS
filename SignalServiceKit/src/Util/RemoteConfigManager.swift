@@ -221,10 +221,6 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
     }
 
-    public static var defaultToAciSafetyNumber: Bool {
-        return isEnabled(.safetyNumberAci)
-    }
-
     /// The minimum length for a valid nickname, in Unicode codepoints.
     public static var minNicknameLength: UInt32 {
         getUInt32Value(forFlag: .minNicknameLength, defaultValue: 3)
@@ -582,9 +578,16 @@ private struct Flags {
     // Even if we don't fetch a fresh remote config, we may cross the time threshold
     // while the app is in memory, updating the value from false to true.
     // As such we also take fresh remote config values and swap them in at runtime.
+#if false
+    // If there are time-gated flags, use this definition.
     enum SupportedTimeGatedFlags: String, FlagType {
-        case safetyNumberAci
     }
+#else
+    // If there aren't any time-gated flags, use this definition.
+    enum SupportedTimeGatedFlags: FlagType {
+        var rawValue: String { fatalError() }
+    }
+#endif
 }
 
 // MARK: -
@@ -610,7 +613,6 @@ private extension FlagType {
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         case "minNicknameLength": return "global.nicknames.min"
         case "maxNicknameLength": return "global.nicknames.max"
-        case "safetyNumberAci": return "global.safetyNumberAci"
         case "cdsDisableCompatibilityMode": return "cds.disableCompatibilityMode"
         case "maxAttachmentDownloadSizeBytes": return "global.attachments.maxBytes"
         default: return Flags.prefix + rawValue

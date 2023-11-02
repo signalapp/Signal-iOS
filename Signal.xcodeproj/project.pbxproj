@@ -807,7 +807,6 @@
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
 		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
-		663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = 663BA31B2A4C9997004B9A43 /* safety-numbers.json */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -3398,7 +3397,6 @@
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
-		663BA31B2A4C9997004B9A43 /* safety-numbers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "safety-numbers.json"; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -7720,7 +7718,6 @@
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
 				346EFC3825FFDC6900F493C7 /* restore-dark.json */,
 				346EFC3725FFDC6900F493C7 /* restore.json */,
-				663BA31B2A4C9997004B9A43 /* safety-numbers.json */,
 				66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */,
 				66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */,
 				66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */,
@@ -10802,7 +10799,6 @@
 				346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */,
 				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
-				663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,

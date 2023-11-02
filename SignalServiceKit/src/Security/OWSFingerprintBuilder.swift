@@ -8,8 +8,8 @@ import LibSignalClient
 public class OWSFingerprintBuilder {
     public struct FingerprintResult {
         public let theirAci: Aci
-        public let fingerprints: [OWSFingerprint]
-        public let initialDisplayIndex: Int
+        public let theirRecipientIdentity: OWSRecipientIdentity
+        public let fingerprint: OWSFingerprint
     }
 
     private let contactsManager: ContactsManagerProtocol
@@ -30,13 +30,12 @@ public class OWSFingerprintBuilder {
     /// identity key. You can use these to present a new identity key for
     /// verification.
     public func fingerprints(
-        theirAddress: SignalServiceAddress,
+        theirAci: Aci,
         theirRecipientIdentity: OWSRecipientIdentity,
         tx: SDSAnyReadTransaction
     ) -> FingerprintResult? {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read),
-            let myE164 = E164(localIdentifiers.phoneNumber),
             let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey
         else {
             owsFailDebug("Missing local properties!")
@@ -44,54 +43,21 @@ public class OWSFingerprintBuilder {
         }
         let myAci = localIdentifiers.aci
 
-        guard let theirAci = theirAddress.aci else {
-            Logger.warn("Missing their ACI!")
-            return nil
-        }
         let theirAciIdentityKey = theirRecipientIdentity.identityKey
-        let theirE164 = theirAddress.e164
-        let theirName = contactsManager.displayName(
-            for: SignalServiceAddress(serviceId: theirAci, e164: theirE164),
-            transaction: tx
-        )
+        let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), transaction: tx)
 
         let aciFingerprint = OWSFingerprint(
-            source: .aci(myAci: myAci, theirAci: theirAci),
+            myAci: myAci,
+            theirAci: theirAci,
             myAciIdentityKey: myAciIdentityKey,
             theirAciIdentityKey: theirAciIdentityKey,
             theirName: theirName
         )
 
-        let e164Fingerprint: OWSFingerprint? = theirE164.map { theirE164 in
-            return OWSFingerprint(
-                source: .e164(myE164: myE164, theirE164: theirE164),
-                myAciIdentityKey: myAciIdentityKey,
-                theirAciIdentityKey: theirAciIdentityKey,
-                theirName: theirName
-            )
-        }
-
-        if FeatureFlags.onlyAciSafetyNumbers {
-            return FingerprintResult(
-                theirAci: theirAci,
-                fingerprints: [aciFingerprint],
-                initialDisplayIndex: 0
-            )
-        } else if let e164Fingerprint {
-            // We have both, but prefer the ACI.
-            return FingerprintResult(
-                theirAci: theirAci,
-                fingerprints: [aciFingerprint, e164Fingerprint],
-                initialDisplayIndex: 0
-            )
-        } else {
-            // If we default to ACI safety number and don't have the e164,
-            // that's fine. Just show the ACI one.
-            return FingerprintResult(
-                theirAci: theirAci,
-                fingerprints: [aciFingerprint],
-                initialDisplayIndex: 0
-            )
-        }
+        return FingerprintResult(
+            theirAci: theirAci,
+            theirRecipientIdentity: theirRecipientIdentity,
+            fingerprint: aciFingerprint
+        )
     }
 }
