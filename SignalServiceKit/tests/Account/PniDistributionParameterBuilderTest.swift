@@ -15,7 +15,6 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
 
     private var dateProvider: DateProvider!
-    private var schedulers: TestSchedulers!
     private var db: DB!
 
     private var pniDistributionParameterBuilder: PniDistributionParameterBuilderImpl!
@@ -28,16 +27,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         registrationIdGeneratorMock = .init()
         db = MockDB()
 
-        schedulers = TestSchedulers(scheduler: TestScheduler())
-        schedulers.scheduler.start()
-
         pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             db: db,
             messageSender: messageSenderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
             registrationIdGenerator: registrationIdGeneratorMock,
-            schedulers: schedulers
+            schedulers: DispatchQueueSchedulers()
         )
     }
 
