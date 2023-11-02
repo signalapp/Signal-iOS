@@ -503,7 +503,7 @@ public class ChatListViewController: OWSViewController {
         if SignalProxy.isEnabled {
             let proxyStatusImage: UIImage?
             let tintColor: UIColor
-            switch socketManager.socketState(forType: .identified) {
+            switch DependenciesBridge.shared.socketManager.socketState(forType: .identified) {
             case .open:
                 proxyStatusImage = UIImage(named: "safety-number")
                 tintColor = UIColor.ows_accentGreen

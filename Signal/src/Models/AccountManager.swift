@@ -88,7 +88,7 @@ public class AccountManager: NSObject, Dependencies {
 
         // Cycle socket and censorship circumvention state as e164 could be changing.
         signalService.updateHasCensoredPhoneNumberDuringProvisioning(phoneNumber)
-        socketManager.cycleSocket()
+        DependenciesBridge.shared.socketManager.cycleSocket()
 
         let serverAuthToken = generateServerAuthToken()
 

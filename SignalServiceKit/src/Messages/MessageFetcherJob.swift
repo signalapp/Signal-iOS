@@ -158,8 +158,10 @@ public class MessageFetcherJob: NSObject {
     @objc
     public var hasCompletedInitialFetch: Bool {
         if Self.shouldUseWebSocket {
-            let isWebsocketDrained = (socketManager.socketState(forType: .identified) == .open &&
-                                        socketManager.hasEmptiedInitialQueue)
+            let isWebsocketDrained = (
+                DependenciesBridge.shared.socketManager.socketState(forType: .identified) == .open &&
+                DependenciesBridge.shared.socketManager.hasEmptiedInitialQueue
+            )
             guard isWebsocketDrained else { return false }
         } else {
             guard completedRestFetches > 0 else { return false }
@@ -216,7 +218,7 @@ public class MessageFetcherJob: NSObject {
 
         if shouldUseWebSocket {
             Logger.info("Fetching messages via Web Socket.")
-            socketManager.didReceivePush()
+            DependenciesBridge.shared.socketManager.didReceivePush()
             // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
         } else {
             Logger.info("Fetching messages via REST.")

@@ -34,7 +34,7 @@ public class NetworkManager: NSObject {
     }
 
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        Self.socketManager.makeRequestPromise(request: request)
+        DependenciesBridge.shared.socketManager.makeRequestPromise(request: request)
     }
 }
 

@@ -142,7 +142,6 @@ public class AppSetup {
         )
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = SSKReachabilityManagerImpl()
@@ -204,7 +203,6 @@ public class AppSetup {
             udManager: udManager,
             messageDecrypter: messageDecrypter,
             groupsV2MessageProcessor: groupsV2MessageProcessor,
-            socketManager: socketManager,
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,

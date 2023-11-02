@@ -142,7 +142,7 @@ public class OWSAttachmentUploadV2: NSObject {
             request: request,
             canUseWebSocket: (
                 OWSWebSocket.canAppUseSocketsToMakeRequests
-                && socketManager.canMakeRequests(webSocketType: .identified)
+                && DependenciesBridge.shared.socketManager.canMakeRequests(webSocketType: .identified)
             )
         )
     }

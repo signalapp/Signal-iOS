@@ -92,6 +92,7 @@ public class DependenciesBridge {
     public var registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
+    public let socketManager: SocketManager
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
 
@@ -590,5 +591,7 @@ public class DependenciesBridge {
             tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
             tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
         )
+
+        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
     }
 }

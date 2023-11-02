@@ -303,7 +303,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             self.profileManager.fetchProfile(for: self.address, authedAccount: .implicit())
 
             if self.address.isLocalAddress {
-                self.socketManager.cycleSocket()
+                DependenciesBridge.shared.socketManager.cycleSocket()
             }
         }
     }

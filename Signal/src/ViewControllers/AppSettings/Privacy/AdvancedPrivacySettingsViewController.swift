@@ -69,7 +69,10 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number."
                 )
             }
-        } else if !signalService.isCensorshipCircumventionActive, socketManager.isAnySocketOpen {
+        } else if
+            !signalService.isCensorshipCircumventionActive,
+            DependenciesBridge.shared.socketManager.isAnySocketOpen
+        {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",

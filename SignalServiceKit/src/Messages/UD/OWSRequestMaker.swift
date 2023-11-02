@@ -113,13 +113,13 @@ public final class RequestMaker: Dependencies {
             shouldUseWebsocket = (
                 !options.contains(.skipWebSocket)
                 && OWSWebSocket.canAppUseSocketsToMakeRequests
-                && socketManager.canMakeRequests(webSocketType: webSocketType)
+                && DependenciesBridge.shared.socketManager.canMakeRequests(webSocketType: webSocketType)
             )
         }
 
         if shouldUseWebsocket {
             return firstly {
-                socketManager.makeRequestPromise(request: request)
+                DependenciesBridge.shared.socketManager.makeRequestPromise(request: request)
             }.map(on: DispatchQueue.global()) { response in
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: true)
