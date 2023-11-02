@@ -14,20 +14,20 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let identityKey: Data
-    private let fingerprints: [OWSFingerprint]
+    private let fingerprint: OWSFingerprint
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .masked())
 
     init(
         recipientAci: Aci,
         recipientIdentity: OWSRecipientIdentity,
-        fingerprints: [OWSFingerprint]
+        fingerprint: OWSFingerprint
     ) {
         self.recipientAci = recipientAci
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
 
-        self.fingerprints = fingerprints
+        self.fingerprint = fingerprint
         self.contactName = Self.contactsManager.displayName(for: SignalServiceAddress(recipientAci))
 
         super.init()
@@ -117,26 +117,12 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             )
         }
 
-        // Check all of them, if any succeed its success.
-        var localizedErrorDescriptionToShow: String?
-        for (i, fingerprint) in fingerprints.enumerated() {
-            switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
-            case .match:
-                showSuccess()
-                return
-            case .noMatch(let localizedErrorDescription):
-                // Prefer no match errors to version erorrs, if we end
-                // up displaying an error.
-                localizedErrorDescriptionToShow = localizedErrorDescription
-                fallthrough
-            case
-                    .weHaveOldVersion(let localizedErrorDescription),
-                    .theyHaveOldVersion(let localizedErrorDescription):
-                if i == fingerprints.count - 1 {
-                    // We reached the end, show the error for the last one.
-                    showFailure(localizedErrorDescription: localizedErrorDescriptionToShow ?? localizedErrorDescription)
-                }
-            }
+        switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
+        case .match:
+            showSuccess()
+        case .noMatch(let localizedErrorDescription), .weHaveOldVersion(let localizedErrorDescription), .theyHaveOldVersion(let localizedErrorDescription):
+            // We reached the end, show the error for the last one.
+            showFailure(localizedErrorDescription: localizedErrorDescription)
         }
     }
 

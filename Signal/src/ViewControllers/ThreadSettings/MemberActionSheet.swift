@@ -241,7 +241,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             actionBlock: { [weak self] in
                 guard let self = self, let fromViewController = self.fromViewController else { return }
                 self.dismiss(animated: true) {
-                    FingerprintViewController.present(from: fromViewController, address: self.address)
+                    FingerprintViewController.present(for: self.address.aci, from: fromViewController)
                 }
             }
         ))
