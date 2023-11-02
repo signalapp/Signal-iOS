@@ -51,6 +51,30 @@ public extension String {
         allSatisfy { $0.isASCII && $0.isNumber }
     }
 
+    /// A version of the string that only contains ASCII alphanumerics.
+    ///
+    /// ```swift
+    /// "abc1️⃣23".asciiAlphanumericOnly
+    /// // => "abc23"
+    /// "ábc123".asciiAlphanumericOnly
+    /// // => "bc123"
+    /// ```
+    var asciiAlphanumericsOnly: String {
+        filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
+    }
+
+    /// Is every character an ASCII alphanumeric?
+    ///
+    /// Not that this returns `true` for the empty string.
+    ///
+    /// ```swift
+    /// "aBc123".isAsciiAlphanumericsOnly // => true
+    /// "abc12#".isAsciiAlphanumericsOnly // => false
+    /// ```
+    var isAsciiAlphanumericsOnly: Bool {
+        allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+    }
+
     func substring(from index: Int) -> String {
         return String(self[self.index(self.startIndex, offsetBy: index)...])
     }

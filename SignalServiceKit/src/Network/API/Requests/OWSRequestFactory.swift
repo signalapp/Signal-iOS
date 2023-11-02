@@ -294,6 +294,23 @@ public extension OWSRequestFactory {
         result.shouldHaveAuthorizationHeaders = false
         return result
     }
+
+    @nonobjc
+    static func bankMandateRequest(bankTransferType: StripePaymentMethod.BankTransfer) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                "bank_mandate",
+                bankTransferType.rawValue,
+            ])!,
+            method: "GET",
+            // TODO: [SEPA] "Accept-Language" header
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        return result
+    }
 }
 
 // MARK: - Messages

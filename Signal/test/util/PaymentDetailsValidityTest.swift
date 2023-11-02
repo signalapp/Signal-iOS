@@ -6,7 +6,7 @@
 import XCTest
 @testable import Signal
 
-final class CreditAndDebitCardsTest: XCTestCase {
+final class PaymentDetailsValidityTest: XCTestCase {
     typealias CardType = CreditAndDebitCards.CardType
     typealias Validity = CreditAndDebitCards.Validity
 
@@ -64,7 +64,7 @@ final class CreditAndDebitCardsTest: XCTestCase {
         XCTAssertEqual(n("424242424242424242"), .fullyValid)
 
         // Luhn-invalid cards
-        XCTAssertEqual(n("4242424242424"), .invalid)
+        XCTAssertEqual(n("4242424242424"), .invalid(()))
         XCTAssertEqual(n("4242424242424", focused: true), .potentiallyValid)
 
         // UnionPay cards
@@ -72,13 +72,13 @@ final class CreditAndDebitCardsTest: XCTestCase {
         XCTAssertEqual(n("6200000000000005"), .fullyValid)
 
         // Too long
-        XCTAssertEqual(n("42424242424242424242"), .invalid)
+        XCTAssertEqual(n("42424242424242424242"), .invalid(()))
 
         // Invalid characters
-        XCTAssertEqual(n("X"), .invalid)
-        XCTAssertEqual(n("42X"), .invalid)
-        XCTAssertEqual(n("424242424242X"), .invalid)
-        XCTAssertEqual(n("4242 4242 4242 4242"), .invalid)
+        XCTAssertEqual(n("X"), .invalid(()))
+        XCTAssertEqual(n("42X"), .invalid(()))
+        XCTAssertEqual(n("424242424242X"), .invalid(()))
+        XCTAssertEqual(n("4242 4242 4242 4242"), .invalid(()))
     }
 
     func testValidityOfExpirationDate() {
@@ -112,8 +112,8 @@ final class CreditAndDebitCardsTest: XCTestCase {
         XCTAssertEqual(d("3", "21"), .fullyValid)
         XCTAssertEqual(d("3", "40"), .fullyValid)
 
-        XCTAssertEqual(d("2", "20"), .invalid)
-        XCTAssertEqual(d("3", "41"), .invalid)
+        XCTAssertEqual(d("2", "20"), .invalid(()))
+        XCTAssertEqual(d("3", "41"), .invalid(()))
         XCTAssertEqual(d("3", "41", currentYear: 2021), .fullyValid)
         XCTAssertEqual(d("01", "99", currentYear: 2098), .fullyValid)
         XCTAssertEqual(d("3", "00", currentYear: 2099), .fullyValid)
@@ -121,17 +121,17 @@ final class CreditAndDebitCardsTest: XCTestCase {
         XCTAssertEqual(d("3", "19", currentYear: 2099), .fullyValid)
         XCTAssertEqual(d("12", "19", currentYear: 2099), .fullyValid)
 
-        XCTAssertEqual(d("00", "20"), .invalid)
-        XCTAssertEqual(d("X", ""), .invalid)
-        XCTAssertEqual(d("1X", ""), .invalid)
-        XCTAssertEqual(d("123", ""), .invalid)
-        XCTAssertEqual(d("", "X"), .invalid)
-        XCTAssertEqual(d("", "2X"), .invalid)
-        XCTAssertEqual(d("", "202"), .invalid)
-        XCTAssertEqual(d("", "2020"), .invalid)
-        XCTAssertEqual(d("X", "X"), .invalid)
-        XCTAssertEqual(d(" 3", "40"), .invalid)
-        XCTAssertEqual(d("3", " 40"), .invalid)
+        XCTAssertEqual(d("00", "20"), .invalid(()))
+        XCTAssertEqual(d("X", ""), .invalid(()))
+        XCTAssertEqual(d("1X", ""), .invalid(()))
+        XCTAssertEqual(d("123", ""), .invalid(()))
+        XCTAssertEqual(d("", "X"), .invalid(()))
+        XCTAssertEqual(d("", "2X"), .invalid(()))
+        XCTAssertEqual(d("", "202"), .invalid(()))
+        XCTAssertEqual(d("", "2020"), .invalid(()))
+        XCTAssertEqual(d("X", "X"), .invalid(()))
+        XCTAssertEqual(d(" 3", "40"), .invalid(()))
+        XCTAssertEqual(d("3", " 40"), .invalid(()))
     }
 
     func testValidityOfCvv() {
@@ -145,7 +145,7 @@ final class CreditAndDebitCardsTest: XCTestCase {
             XCTAssertEqual(c("1", cardType), .potentiallyValid)
             XCTAssertEqual(c("12", cardType), .potentiallyValid)
             XCTAssertEqual(c("123", cardType), .fullyValid)
-            XCTAssertEqual(c("1234", cardType), .invalid)
+            XCTAssertEqual(c("1234", cardType), .invalid(()))
         }
 
         XCTAssertEqual(c("", .americanExpress), .potentiallyValid)
@@ -153,11 +153,41 @@ final class CreditAndDebitCardsTest: XCTestCase {
         XCTAssertEqual(c("12", .americanExpress), .potentiallyValid)
         XCTAssertEqual(c("123", .americanExpress), .potentiallyValid)
         XCTAssertEqual(c("1234", .americanExpress), .fullyValid)
-        XCTAssertEqual(c("12345", .americanExpress), .invalid)
+        XCTAssertEqual(c("12345", .americanExpress), .invalid(()))
 
-        XCTAssertEqual(c("X", .other), .invalid)
-        XCTAssertEqual(c("1X", .other), .invalid)
-        XCTAssertEqual(c("X1", .other), .invalid)
-        XCTAssertEqual(c(" 123", .other), .invalid)
+        XCTAssertEqual(c("X", .other), .invalid(()))
+        XCTAssertEqual(c("1X", .other), .invalid(()))
+        XCTAssertEqual(c("X1", .other), .invalid(()))
+        XCTAssertEqual(c(" 123", .other), .invalid(()))
+    }
+
+    // TODO: [SEPA] Test SEPA validation
+}
+
+extension PaymentMethodFieldValidity: Equatable {
+    public static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
+        switch (lhs, rhs) {
+        case (.potentiallyValid, .potentiallyValid):
+            return true
+        case (.fullyValid, .fullyValid):
+            return true
+        case let (.invalid(invalidLHS), .invalid(invalidRHS)):
+            return invalidLHS == invalidRHS
+        default:
+            return false
+        }
+    }
+
+    public static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool {
+        switch (lhs, rhs) {
+        case (.potentiallyValid, .potentiallyValid):
+            return true
+        case (.fullyValid, .fullyValid):
+            return true
+        case (.invalid, .invalid):
+            return true
+        default:
+            return false
+        }
     }
 }

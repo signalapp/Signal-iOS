@@ -27,6 +27,29 @@ public enum FormattedNumberField {
         case forward
     }
 
+    public enum AllowedCharacters {
+        case numbers
+        case alphanumeric
+
+        public var keyboardType: UIKeyboardType {
+            switch self {
+            case .numbers:
+                return .asciiCapableNumberPad
+            case .alphanumeric:
+                return .asciiCapable
+            }
+        }
+
+        fileprivate var stringFilter: KeyPath<String, String> {
+            switch self {
+            case .numbers:
+                return \.asciiDigitsOnly
+            case .alphanumeric:
+                return \.asciiAlphanumericsOnly
+            }
+        }
+    }
+
     /// Call this from your [`UITextFieldDelgate#textField`][0] method.
     /// This will restrict inputs and format the text.
     ///
@@ -36,8 +59,8 @@ public enum FormattedNumberField {
     /// The range to be replaced. Pass the value from your delegate method.
     /// - Parameter replacementString:
     /// The replacement string. Pass the value from your delegate method.
-    /// - Parameter maxDigits:
-    /// The maximum number of digits allowed. Trying to type more digits than
+    /// - Parameter maxCharacters:
+    /// The maximum number of characters allowed. Trying to type more characters than
     /// this won't be allowed, but it's possible for the field to be longer
     /// than this if you set the value programatically or change this value.
     /// - Parameter format:
@@ -55,7 +78,8 @@ public enum FormattedNumberField {
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString: String,
-        maxDigits: Int,
+        allowedCharacters: AllowedCharacters,
+        maxCharacters: Int,
         format: (String) -> String
     ) -> Bool {
         let operationResult: OperationResult? = {
@@ -68,6 +92,7 @@ public enum FormattedNumberField {
                 )
                 return singleDelete(
                     formattedString: oldFormattedString,
+                    allowedCharacters: allowedCharacters,
                     cursorPosition: cursorPosition,
                     direction: cursorPosition == range.location ? .forward : .backward,
                     format: format
@@ -75,10 +100,11 @@ public enum FormattedNumberField {
             } else {
                 return insertOrReplace(
                     formattedString: oldFormattedString,
+                    allowedCharacters: allowedCharacters,
                     selectionStart: range.location,
                     selectionEnd: range.upperBound,
                     rawInsertion: replacementString,
-                    maxDigits: maxDigits,
+                    maxCharacters: maxCharacters,
                     format: format
                 )
             }
@@ -117,6 +143,7 @@ public enum FormattedNumberField {
     ///
     /// - Precondition:
     /// The position is actually in the string.
+    /// The string has invalid characters filtered out.
     /// - Parameter formattedString:
     /// The formatted string (`12 34 56 7` in the example above).
     /// - Parameter positionInFormattedString:
@@ -129,7 +156,7 @@ public enum FormattedNumberField {
     ) -> Int {
         formattedString
             .prefix(positionInFormattedString)
-            .reduce(0) { $0 + ($1.isNumber ? 1 : 0) }
+            .reduce(0) { $0 + (($1.isNumber || $1.isLetter) ? 1 : 0) }
     }
 
     /// Turn the cursor position inside an unformatted string into the cursor
@@ -209,11 +236,12 @@ public enum FormattedNumberField {
     /// makes no change, `nil` is returned.
     static func singleDelete(
         formattedString: String,
+        allowedCharacters: AllowedCharacters,
         cursorPosition: Int,
         direction: SingleDeletionDirection,
         format: (String) -> String
     ) -> OperationResult? {
-        let oldUnformattedString = formattedString.asciiDigitsOnly
+        let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
         if oldUnformattedString.isEmpty {
             return nil
         }
@@ -269,8 +297,8 @@ public enum FormattedNumberField {
     /// The end of the current selection. May be the same as `selectionStart`.
     /// - Parameter rawInsertion:
     /// The string to be inserted, possibly empty. Non-numbers are filtered.
-    /// - Parameter maxDigits:
-    /// The maximum number of digits. See earlier comments for details.
+    /// - Parameter maxCharacters:
+    /// The maximum number of characters. See earlier comments for details.
     /// - Parameter format:
     /// A function to format the string. See earlier comments for details.
     /// - Returns:
@@ -278,13 +306,14 @@ public enum FormattedNumberField {
     /// makes no change, `nil` is returned.
     static func insertOrReplace(
         formattedString: String,
+        allowedCharacters: AllowedCharacters,
         selectionStart: Int,
         selectionEnd: Int,
         rawInsertion: String,
-        maxDigits: Int,
+        maxCharacters: Int,
         format: (String) -> String
     ) -> OperationResult? {
-        let insertion = rawInsertion.asciiDigitsOnly
+        let insertion = rawInsertion[keyPath: allowedCharacters.stringFilter].uppercased()
 
         let selectionStartInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
@@ -294,7 +323,7 @@ public enum FormattedNumberField {
             formattedString: formattedString,
             positionInFormattedString: selectionEnd
         )
-        let oldUnformattedString = formattedString.asciiDigitsOnly
+        let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
 
         let newUnformattedString: String = {
             let prefix = oldUnformattedString.prefix(selectionStartInOldUnformattedString)
@@ -316,7 +345,7 @@ public enum FormattedNumberField {
         // This could happen if the field's text is programatically changed or
         // if the maximum digit count is changed dynamically. Therefore, we only
         // prevent input if the change causes us to *further* exceed the limit.
-        if newUnformattedString.count > oldUnformattedString.count, newUnformattedString.count > maxDigits {
+        if newUnformattedString.count > oldUnformattedString.count, newUnformattedString.count > maxCharacters {
             return nil
         }
 

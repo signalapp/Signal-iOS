@@ -7,7 +7,7 @@ import Foundation
 import AuthenticationServices
 import SignalMessaging
 
-extension CreditOrDebitCardDonationViewController {
+extension DonationPaymentDetailsViewController {
     func show3DS(for redirectUrl: URL) -> Promise<String> {
         owsAssert(
             threeDSecureAuthenticationSession == nil,
@@ -62,7 +62,7 @@ extension CreditOrDebitCardDonationViewController {
 
 // MARK: - ASWebAuthenticationPresentationContextProviding
 
-extension CreditOrDebitCardDonationViewController: ASWebAuthenticationPresentationContextProviding {
+extension DonationPaymentDetailsViewController: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         view.window!
     }

@@ -6,12 +6,12 @@
 import Foundation
 import SignalMessaging
 
-extension CreditOrDebitCardDonationViewController {
+extension DonationPaymentDetailsViewController {
     /// Make a monthly donation.
     ///
     /// See also: code for other payment methods, such as Apple Pay.
     func monthlyDonation(
-        with creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard,
+        with validForm: FormState.ValidForm,
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?,
         subscriberID existingSubscriberId: Data?
@@ -46,7 +46,7 @@ extension CreditOrDebitCardDonationViewController {
 
                     return Stripe.setupNewSubscription(
                         clientSecret: clientSecret,
-                        paymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
+                        paymentMethod: validForm.paymentMethod,
                         show3DS: { redirectUrl in
                             Logger.info("[Donations] Monthly card donation needs 3DS. Presenting...")
                             return self.show3DS(for: redirectUrl).asVoid()

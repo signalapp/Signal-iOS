@@ -252,6 +252,9 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         switch payment {
         case let .forStripe(paymentIntentClientSecret, paymentIntentId, paymentMethodId):
             return Stripe.confirmPaymentIntent(
+                // Bank transfers not supported on gift badges,
+                // so the bank mandate can be left nil.
+                mandate: nil,
                 paymentIntentClientSecret: paymentIntentClientSecret,
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId,

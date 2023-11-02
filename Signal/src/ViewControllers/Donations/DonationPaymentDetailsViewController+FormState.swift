@@ -6,23 +6,42 @@
 import Foundation
 import SignalMessaging
 
-extension CreditOrDebitCardDonationViewController {
-    enum FormField {
+extension DonationPaymentDetailsViewController {
+    enum InvalidFormField: Hashable {
+        // Credit card
         case cardNumber
         case expirationDate
         case cvv
+        // SEPA
+        case iban(SEPABankAccounts.IBANInvalidity)
     }
 
     enum FormState: Equatable {
+        enum ValidForm: Equatable {
+            case card(Stripe.PaymentMethod.CreditOrDebitCard)
+            case sepa(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.SEPA)
+
+            var paymentMethod: Stripe.PaymentMethod {
+                switch self {
+                case let .card(card):
+                    return .creditOrDebitCard(creditOrDebitCard: card)
+                case let .sepa(mandate: mandate, account: sepaAccount):
+                    return .bankTransferSEPA(mandate: mandate, account: sepaAccount)
+                }
+            }
+        }
+
         /// At least one of the form's fields are invalid.
-        case invalid(invalidFields: Set<FormField>)
+        case invalid(invalidFields: Set<InvalidFormField>)
 
         /// The form is potentially valid, but not ready to submit yet.
         case potentiallyValid
 
         /// The form is fully valid and ready to submit.
-        case fullyValid(creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard)
+        case fullyValid(ValidForm)
     }
+
+    // MARK: Card
 
     static func formState(
         cardNumber rawNumber: String,
@@ -30,7 +49,7 @@ extension CreditOrDebitCardDonationViewController {
         expirationDate rawExpirationDate: String,
         cvv rawCvv: String
     ) -> FormState {
-        var invalidFields = Set<FormField>()
+        var invalidFields = Set<InvalidFormField>()
         var hasPotentiallyValidFields = false
 
         let numberForValidation = rawNumber.removeCharacters(characterSet: .whitespaces)
@@ -66,7 +85,7 @@ extension CreditOrDebitCardDonationViewController {
             } else {
                 expirationMonth = ""
                 expirationTwoDigitYear = ""
-                expirationValidity = .invalid
+                expirationValidity = .invalid(())
             }
         case 2:
             expirationMonth = expirationComponents[0]
@@ -80,7 +99,7 @@ extension CreditOrDebitCardDonationViewController {
         default:
             expirationMonth = ""
             expirationTwoDigitYear = ""
-            expirationValidity = .invalid
+            expirationValidity = .invalid(())
         }
         switch expirationValidity {
         case .invalid: invalidFields.insert(.expirationDate)
@@ -107,7 +126,7 @@ extension CreditOrDebitCardDonationViewController {
             return .potentiallyValid
         }
 
-        return .fullyValid(creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard(
+        return .fullyValid(.card(Stripe.PaymentMethod.CreditOrDebitCard(
             cardNumber: numberForValidation,
             expirationMonth: {
                 guard let result = UInt8(String(expirationMonth)) else {
@@ -122,7 +141,7 @@ extension CreditOrDebitCardDonationViewController {
                 return result
             }(),
             cvv: cvv
-        ))
+        )))
     }
 
     private static func parseAsExpirationMonth(slashlessString str: String) -> String? {
@@ -164,6 +183,60 @@ extension CreditOrDebitCardDonationViewController {
         default:
             return nil
         }
+    }
+
+    // MARK: SEPA
+
+    static func formState(
+        mandate: Stripe.PaymentMethod.Mandate,
+        iban: String,
+        isIBANFieldFocused: Bool,
+        name: String,
+        email: String,
+        isEmailFieldFocused: Bool
+    ) -> FormState {
+        var invalidFields = Set<InvalidFormField>()
+        var hasPotentiallyValidFields = false
+
+        let ibanValidity = SEPABankAccounts.validity(
+            of: iban.removeCharacters(characterSet: .whitespaces),
+            isFieldFocused: isIBANFieldFocused
+        )
+        switch ibanValidity {
+        case .potentiallyValid:
+            hasPotentiallyValidFields = true
+        case .fullyValid:
+            break
+        case .invalid(let invalidity):
+            invalidFields.insert(.iban(invalidity))
+        }
+
+        if name.count <= 2 {
+            hasPotentiallyValidFields = true
+        }
+        if email.isEmpty {
+            hasPotentiallyValidFields = true
+        }
+
+        if !invalidFields.isEmpty {
+            return .invalid(invalidFields: invalidFields)
+        }
+
+        if hasPotentiallyValidFields {
+            return .potentiallyValid
+        }
+
+        // All `Mandate` instances represent an acceptance, so we don't
+        // actually need to check anything specific on it
+
+        return .fullyValid(.sepa(
+            mandate: mandate,
+            account: .init(
+                name: name,
+                iban: iban,
+                email: email
+            )
+        ))
     }
 }
 

@@ -22,6 +22,8 @@ extension DonationViewsUtil {
                 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE",
                 comment: "Action sheet message for Couldn't Add Badge sheet"
             )
+        case .sepa:
+            return "" // TODO: [SEPA] Fill this in
         }
     }
 

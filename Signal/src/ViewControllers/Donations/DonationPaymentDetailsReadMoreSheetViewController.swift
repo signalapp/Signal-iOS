@@ -6,7 +6,7 @@
 import SignalCoreKit
 import SignalUI
 
-public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewController {
+public class DonationPaymentDetailsReadMoreSheetViewController: OWSTableSheetViewController {
     override public func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }

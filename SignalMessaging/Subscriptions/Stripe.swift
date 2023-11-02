@@ -7,6 +7,22 @@ import Foundation
 import PassKit
 import SignalServiceKit
 
+/// Stripe donations
+///
+/// One-time donation ("boost") process:
+/// 1. Start flow
+///     - ``Stripe/boost(amount:level:for:)``
+/// 2. Intent creation
+///     - ``Stripe/createBoostPaymentIntent(for:level:paymentMethod:)``
+/// 3. Payment source tokenization
+///     - `Stripe.API.createToken(with:)`
+///     - Cards need to be tokenized.
+///     - SEPA transfers are not tokenized.
+/// 4. PaymentMethod creation
+///     - ``Stripe/createPaymentMethod(with:)``
+/// 5. Intent confirmation
+///     - Charges the user's payment method
+///     - ``Stripe/confirmPaymentIntent(paymentIntentClientSecret:paymentIntentId:paymentMethodId:idempotencyKey:)``
 public struct Stripe: Dependencies {
     public struct PaymentIntent {
         let id: String
@@ -18,13 +34,14 @@ public struct Stripe: Dependencies {
         }
     }
 
+    /// Step 1: Starts the boost payment flow.
     public static func boost(
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for paymentMethod: PaymentMethod
     ) -> Promise<ConfirmedIntent> {
         firstly { () -> Promise<PaymentIntent> in
-            createBoostPaymentIntent(for: amount, level: level)
+            createBoostPaymentIntent(for: amount, level: level, paymentMethod: paymentMethod.stripePaymentMethod)
         }.then { intent in
             confirmPaymentIntent(
                 for: paymentMethod,
@@ -34,9 +51,11 @@ public struct Stripe: Dependencies {
         }
     }
 
+    /// Step 2: Creates boost payment intent
     public static func createBoostPaymentIntent(
         for amount: FiatMoney,
-        level: OneTimeBadgeLevel
+        level: OneTimeBadgeLevel,
+        paymentMethod: OWSRequestFactory.StripePaymentMethod
     ) -> Promise<PaymentIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             // The description is never translated as it's populated into an
@@ -44,7 +63,8 @@ public struct Stripe: Dependencies {
             let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
-                level: level.rawValue
+                level: level.rawValue,
+                paymentMethod: paymentMethod
             )
 
             return networkManager.makePromise(request: request)
@@ -61,16 +81,11 @@ public struct Stripe: Dependencies {
         }
     }
 
+    /// Steps 3 and 4: Payment source tokenization and creates payment method
     public static func createPaymentMethod(
         with paymentMethod: PaymentMethod
-    ) -> Promise<String> {
-        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<String> in
-            API.createToken(with: paymentMethod)
-        }.then(on: DispatchQueue.sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
-
-            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
-            return try API.postForm(endpoint: "payment_methods", parameters: parameters)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response in
+    ) -> Promise<PaymentMethodID> {
+        requestPaymentMethod(with: paymentMethod).map(on: DispatchQueue.sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing responseBodyJson")
             }
@@ -78,8 +93,44 @@ public struct Stripe: Dependencies {
                 throw OWSAssertionError("Failed to decode JSON response")
             }
             return try parser.required(key: "id")
-        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<String> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<PaymentMethodID> in
             throw convertToStripeErrorIfPossible(error)
+        }
+    }
+
+    private static func requestPaymentMethod(
+        with paymentMethod: PaymentMethod
+    ) -> Promise<HTTPResponse> {
+        switch paymentMethod {
+        case let .applePay(payment: payment):
+            return requestPaymentMethod(with: API.parameters(for: payment))
+        case let .creditOrDebitCard(creditOrDebitCard: card):
+            return requestPaymentMethod(with: API.parameters(for: card))
+        case let .bankTransferSEPA(mandate: _, account: sepaAccount):
+            return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
+                // Step 3 not required.
+                // Step 4: Payment method creation
+                let parameters: [String: String] = [
+                    "billing_details[name]": sepaAccount.name,
+                    "billing_details[email]": sepaAccount.email,
+                    "sepa_debit[iban]": sepaAccount.iban,
+                    "type": "sepa_debit",
+                ]
+                return try API.postForm(endpoint: "payment_methods", parameters: parameters)
+            }
+        }
+    }
+
+    private static func requestPaymentMethod(
+        with tokenizationParameters: [String: any Encodable]
+    ) -> Promise<HTTPResponse> {
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<API.Token> in
+            // Step 3: Payment source tokenization
+            API.createToken(with: tokenizationParameters)
+        }.then(on: DispatchQueue.sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
+            // Step 4: Payment method creation
+            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
+            return try API.postForm(endpoint: "payment_methods", parameters: parameters)
         }
     }
 
@@ -88,15 +139,21 @@ public struct Stripe: Dependencies {
         public let redirectToUrl: URL?
     }
 
+    public typealias PaymentMethodID = String
+
+    /// Steps 3, 4, and 5: Tokenizes payment source, creates payment method, and confirms payment intent.
     static func confirmPaymentIntent(
         for paymentMethod: PaymentMethod,
         clientSecret: String,
         paymentIntentId: String
     ) -> Promise<ConfirmedIntent> {
-        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<String> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PaymentMethodID> in
+            // Steps 3 and 4: Payment source tokenization and payment method creation
             createPaymentMethod(with: paymentMethod)
         }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
+            // Step 5: Confirm payment intent
             confirmPaymentIntent(
+                mandate: paymentMethod.mandate,
                 paymentIntentClientSecret: clientSecret,
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId
@@ -104,20 +161,27 @@ public struct Stripe: Dependencies {
         }
     }
 
+    /// Step 5: Confirms payment intent
     public static func confirmPaymentIntent(
+        mandate: PaymentMethod.Mandate?,
         paymentIntentClientSecret: String,
         paymentIntentId: String,
-        paymentMethodId: String,
+        paymentMethodId: PaymentMethodID,
         idempotencyKey: String? = nil
     ) -> Promise<ConfirmedIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
-                             parameters: [
-                                "payment_method": paymentMethodId,
-                                "client_secret": paymentIntentClientSecret,
-                                "return_url": RETURN_URL_FOR_3DS
-                             ],
-                             idempotencyKey: idempotencyKey)
+            try API.postForm(
+                endpoint: "payment_intents/\(paymentIntentId)/confirm",
+                parameters: [
+                    "payment_method": paymentMethodId,
+                    "client_secret": paymentIntentClientSecret,
+                    "return_url": RETURN_URL_FOR_3DS,
+                ].merging(
+                    mandate?.parameters ?? [:],
+                    uniquingKeysWith: { _, new in new }
+                ),
+                idempotencyKey: idempotencyKey
+            )
         }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
             .init(
                 intentId: paymentIntentId,
@@ -129,16 +193,23 @@ public struct Stripe: Dependencies {
     }
 
     public static func confirmSetupIntent(
+        mandate: PaymentMethod.Mandate?,
         for paymentIntentID: String,
         clientSecret: String
     ) -> Promise<ConfirmedIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
-            return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: [
-                "payment_method": paymentIntentID,
-                "client_secret": clientSecret,
-                "return_url": RETURN_URL_FOR_3DS
-            ])
+            return try API.postForm(
+                endpoint: "setup_intents/\(setupIntentId)/confirm",
+                parameters: [
+                    "payment_method": paymentIntentID,
+                    "client_secret": clientSecret,
+                    "return_url": RETURN_URL_FOR_3DS,
+                ].merging(
+                    mandate?.parameters ?? [:],
+                    uniquingKeysWith: { _, new in new }
+                )
+            )
         }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
             .init(
                 intentId: paymentIntentID,
@@ -177,8 +248,8 @@ fileprivate extension Stripe {
 
         // MARK: Common Stripe integrations
 
-        static func parameters(for payment: PKPayment) -> [String: Any] {
-            var parameters = [String: Any]()
+        static func parameters(for payment: PKPayment) -> [String: any Encodable] {
+            var parameters = [String: any Encodable]()
             parameters["pk_token"] = String(data: payment.token.paymentData, encoding: .utf8)
 
             if let billingContact = payment.billingContact {
@@ -242,23 +313,12 @@ fileprivate extension Stripe {
             ]
         }
 
-        /// Get the query parameters for a request to make a Stripe token.
-        ///
-        /// See [Stripe's docs][0].
-        ///
-        /// [0]: https://stripe.com/docs/api/tokens/create_card
-        static func parameters(for paymentMethod: PaymentMethod) -> [String: Any] {
-            switch paymentMethod {
-            case let .applePay(payment):
-                return parameters(for: payment)
-            case let .creditOrDebitCard(creditOrDebitCard):
-                return parameters(for: creditOrDebitCard)
-            }
-        }
+        typealias Token = String
 
-        static func createToken(with paymentMethod: PaymentMethod) -> Promise<String> {
+        /// Step 3 of the process. Payment source tokenization
+        static func createToken(with tokenizationParameters: [String: any Encodable]) -> Promise<Token> {
             firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                return try postForm(endpoint: "tokens", parameters: parameters(for: paymentMethod))
+                return try postForm(endpoint: "tokens", parameters: tokenizationParameters)
             }.map(on: DispatchQueue.sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing responseBodyJson")
@@ -270,6 +330,7 @@ fileprivate extension Stripe {
             }
         }
 
+        /// Make a `POST` request to the Stripe API.
         static func postForm(endpoint: String,
                              parameters: [String: Any],
                              idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {

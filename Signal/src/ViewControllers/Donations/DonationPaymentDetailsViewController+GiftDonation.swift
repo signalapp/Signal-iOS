@@ -6,7 +6,7 @@
 import Foundation
 import SignalMessaging
 
-extension CreditOrDebitCardDonationViewController {
+extension DonationPaymentDetailsViewController {
     /// Make a gift donation.
     ///
     /// See also: code for other payment methods, such as Apple Pay.

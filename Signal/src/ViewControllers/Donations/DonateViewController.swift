@@ -213,10 +213,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
+    // TODO: [SEPA] Rename to not be card-specific
     private func startCreditOrDebitCard(
         with amount: FiatMoney,
         badge: ProfileBadge?,
-        donateMode: DonateMode
+        donateMode: DonateMode,
+        paymentMethod: DonationPaymentDetailsViewController.PaymentMethod
     ) {
         guard let navigationController else {
             owsFail("[Donations] Cannot open credit/debit card screen if we're not in a navigation controller")
@@ -226,7 +228,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] Missing badge")
         }
 
-        let cardDonationMode: CreditOrDebitCardDonationViewController.DonationMode
+        let cardDonationMode: DonationPaymentDetailsViewController.DonationMode
         switch donateMode {
         case .oneTime:
             cardDonationMode = .oneTime
@@ -247,9 +249,10 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
 
-        let vc = CreditOrDebitCardDonationViewController(
+        let vc = DonationPaymentDetailsViewController(
             donationAmount: amount,
-            donationMode: cardDonationMode
+            donationMode: cardDonationMode,
+            paymentMethod: paymentMethod
         ) { [weak self] in
             self?.didCompleteDonation(
                 badge: badge,
@@ -301,7 +304,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     self.startCreditOrDebitCard(
                         with: amount,
                         badge: badge,
-                        donateMode: donateMode
+                        donateMode: donateMode,
+                        paymentMethod: .card
                     )
                 case .paypal:
                     self.startPaypal(
@@ -309,6 +313,20 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         badge: badge,
                         donateMode: donateMode
                     )
+                case .sepa:
+                    let mandateViewController = BankTransferMandateViewController { [weak self] mandate in
+                        guard let self else { return }
+                        self.dismiss(animated: true) {
+                            self.startCreditOrDebitCard(
+                                with: amount,
+                                badge: badge,
+                                donateMode: donateMode,
+                                paymentMethod: .sepa(mandate: mandate)
+                            )
+                        }
+                    }
+                    let navigationController = OWSNavigationController(rootViewController: mandateViewController)
+                    self.presentFormSheet(navigationController, animated: true)
                 }
             }
         }

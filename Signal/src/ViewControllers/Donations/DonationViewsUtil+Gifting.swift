@@ -91,7 +91,7 @@ extension DonationViewsUtil {
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
         ) -> Promise<PreparedGiftPayment> {
             firstly(on: DispatchQueue.sharedUserInitiated) {
-                Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift))
+                Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift), paymentMethod: paymentMethod.stripePaymentMethod)
             }.then(on: DispatchQueue.sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
                 Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in
                     .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)

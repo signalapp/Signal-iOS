@@ -6,7 +6,7 @@
 import Foundation
 import SignalMessaging
 
-extension CreditOrDebitCardDonationViewController {
+extension DonationPaymentDetailsViewController {
     enum DonationMode {
         case oneTime
         case monthly(

@@ -11,9 +11,11 @@ extension BadgeGiftingConfirmationViewController {
             owsFail("[Gifting] Cannot open credit/debit card screen if we're not in a navigation controller")
         }
 
-        let vc = CreditOrDebitCardDonationViewController(
+        let vc = DonationPaymentDetailsViewController(
             donationAmount: price,
-            donationMode: .gift(thread: thread, messageText: messageText)
+            donationMode: .gift(thread: thread, messageText: messageText),
+            // Gifting does not support bank transfers
+            paymentMethod: .card
         ) { [weak self] in
             self?.didCompleteDonation()
         }

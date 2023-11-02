@@ -161,6 +161,8 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             return createCreditOrDebitCardButton()
         case .paypal:
             return createPaypalButton()
+        case .sepa:
+            return createSEPAButton()
         }
     }
 
@@ -188,10 +190,11 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             guard let self else { return }
             self.didChoosePaymentMethod(self, .creditOrDebitCard)
         }
-        guard let image = UIImage(named: "credit-or-debit-card") else {
+        guard let image = UIImage(systemName: "creditcard") else {
             owsFail("Card asset not found")
         }
         creditOrDebitCardButton.setImage(image, for: .normal)
+        creditOrDebitCardButton.imageView?.tintColor = .ows_white
         creditOrDebitCardButton.setPaddingBetweenImageAndText(
             to: 8,
             isRightToLeft: CurrentAppContext().isRTL
@@ -202,6 +205,34 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
 
         return creditOrDebitCardButton
+    }
+
+    private func createSEPAButton() -> OWSButton {
+        let title = OWSLocalizedString(
+            "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
+            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer."
+        )
+
+        let sepaButton = OWSButton(title: title) { [weak self] in
+            guard let self else { return }
+            self.didChoosePaymentMethod(self, .sepa)
+        }
+
+        guard let image = UIImage(systemName: "building.columns") else {
+            owsFail("Bank asset not found")
+        }
+        sepaButton.setImage(image, for: .normal)
+        sepaButton.imageView?.tintColor = .ows_white
+        sepaButton.setPaddingBetweenImageAndText(
+            to: 8,
+            isRightToLeft: CurrentAppContext().isRTL
+        )
+        sepaButton.layer.cornerRadius = 12
+        sepaButton.backgroundColor = .ows_accentBlue
+        sepaButton.dimsWhenHighlighted = true
+        sepaButton.titleLabel?.font = .dynamicTypeBody.semibold()
+
+        return sepaButton
     }
 
     private func updateBottom() {
@@ -215,12 +246,14 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                     .applePay,
                     .creditOrDebitCard,
                     .paypal,
+                    .sepa,
                 ]
             } else {
                 paymentMethods = [
                     .creditOrDebitCard,
                     .paypal,
                     .applePay,
+                    .sepa,
                 ]
             }
 

@@ -7,12 +7,12 @@ import Foundation
 import SignalMessaging
 import SignalUI
 
-extension CreditOrDebitCardDonationViewController {
+extension DonationPaymentDetailsViewController {
     /// Make a one-time donation.
     /// 
     /// See also: code for other payment methods, such as Apple Pay.
-    func oneTimeDonation(with creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard) {
-        Logger.info("[Donations] Starting one-time card donation")
+    func oneTimeDonation(with validForm: FormState.ValidForm) {
+        Logger.info("[Donations] Starting one-time donation")
 
         let amount = self.donationAmount
 
@@ -22,7 +22,7 @@ extension CreditOrDebitCardDonationViewController {
                 Stripe.boost(
                     amount: amount,
                     level: .boostBadge,
-                    for: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard)
+                    for: validForm.paymentMethod
                 )
             }.then(on: DispatchQueue.main) { confirmedIntent in
                 if let redirectUrl = confirmedIntent.redirectToUrl {
