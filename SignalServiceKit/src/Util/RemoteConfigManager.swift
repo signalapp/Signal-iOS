@@ -490,7 +490,8 @@ private struct Flags {
     // as soon as we fetch an update to the remote config. They will not
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
-        case barrierFsyncKillSwitch
+        // This can't be empty, so we define a bogus case. Remove this if you add a flag here.
+        case __noHotSwappableIsEnabledFlags
     }
 
     // We filter the received config down to just the supported flags.
@@ -499,7 +500,6 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
-        case barrierFsyncKillSwitch
         case deprecated_uuidSafetyNumbers = "uuidSafetyNumbers"
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
@@ -728,25 +728,19 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        // swiftlint:disable large_tuple
         let (
             lastKnownClockSkew,
             isEnabledFlags,
             valueFlags,
-            timeGatedFlags,
-            isUsingBarrierFsync
-        ): (TimeInterval, [String: Bool], [String: String], [String: Date], Bool) = db.read { transaction in
+            timeGatedFlags
+        ): (TimeInterval, [String: Bool], [String: String], [String: Date]) = db.read { transaction in
             return (
                 self.keyValueStore.getLastKnownClockSkew(transaction: transaction),
                 self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:],
                 self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:],
-                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) ?? [:],
-                SqliteUtil.isUsingBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbRead.database
-                )
+                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) ?? [:]
             )
         }
-        // swiftlint:enable large_tuple
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             _ = cacheCurrent(
                 clockSkew: lastKnownClockSkew,
@@ -756,7 +750,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                 account: .implicit()
             )
         }
-        warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
+        warmSecondaryCaches(valueFlags: valueFlags)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             RemoteConfig.logFlags()
@@ -786,29 +780,8 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         return remoteConfig
     }
 
-    fileprivate func warmSecondaryCaches(
-        isEnabledFlags: [String: Bool],
-        valueFlags: [String: String],
-        isUsingBarrierFsync: Bool
-    ) {
-        // This will be tripped in the unlikely event that the kill switch is enabled,
-        // but typically won't result in a write.
-        let shouldUseBarrierFsync: Bool = {
-            let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
-            let isKilled = isEnabledFlags[rawFlag] ?? false
-            return !isKilled
-        }()
-        if shouldUseBarrierFsync != isUsingBarrierFsync {
-            self.db.write { tx in
-                try? SqliteUtil.setBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-                    enabled: shouldUseBarrierFsync
-                )
-            }
-        }
-
+    fileprivate func warmSecondaryCaches(valueFlags: [String: String]) {
         checkClientExpiration(valueFlags: valueFlags)
-
         hasWarmedCache.set(true)
     }
 
@@ -915,14 +888,12 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
 
             // Persist all flags in the database to be applied on next launch.
 
-            var isUsingBarrierFsync: Bool = false
             self.db.write { transaction in
                 // Preserve any sticky flags.
                 if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
                     existingConfig.forEach { (key: String, value: Bool) in
                         // Preserve "is enabled" flags if they are sticky and already set.
-                        if Flags.StickyIsEnabledFlags.allRawFlags.contains(key),
-                            value == true {
+                        if Flags.StickyIsEnabledFlags.allRawFlags.contains(key), value == true {
                             isEnabledFlags[key] = value
                         }
                     }
@@ -935,17 +906,6 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                         }
                     }
                 }
-
-                isUsingBarrierFsync = {
-                    let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
-                    let isKilled = isEnabledFlags[rawFlag] ?? false
-                    return !isKilled
-                }()
-
-                try? SqliteUtil.setBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbWrite.database,
-                    enabled: isUsingBarrierFsync
-                )
 
                 self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
                 self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
@@ -981,7 +941,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                     timeGatedFlags: timeGatedFlags,
                     account: account
                 )
-                self.warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
+                self.warmSecondaryCaches(valueFlags: valueFlags)
             } else {
                 remoteConfig = RemoteConfig(
                     clockSkew: clockSkew,

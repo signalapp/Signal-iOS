@@ -40,17 +40,6 @@ public enum SqliteUtil {
         sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
     }
 
-    /// Are we using `F_BARRIERFSYNC`?
-    ///
-    /// Under the hood, this calls [`PRAGMA fullfsync`][0]. You'd think that this would affect
-    /// `FULLFSYNC` instead, but we modify SQLCipher to replace `FULLFSYNC` with `FULLFSYNC` with
-    /// `BARRIERFSYNC`. This helps us balance reliability and performance.
-    ///
-    /// [0]: https://www.sqlite.org/pragma.html#pragma_fullfsync
-    public static func isUsingBarrierFsync(db: Database) -> Bool {
-        return (try? Bool.fetchOne(db, sql: "PRAGMA fullfsync")) ?? false
-    }
-
     /// Enable or disable `F_BARRIERFSYNC`.
     ///
     /// Under the hood, this calls [`PRAGMA fullfsync`][0]. You'd think that this would affect
