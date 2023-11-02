@@ -9,11 +9,7 @@ import LibSignalClient
 public struct ContactDetails {
     public let aci: Aci?
     public let phoneNumber: E164?
-    public let verifiedProto: SSKProtoVerified?
-    public let profileKey: Data?
-    public let isBlocked: Bool
     public let expireTimer: UInt32
-    public let isArchived: Bool?
     public let inboxSortOrder: UInt32?
 }
 
@@ -40,25 +36,21 @@ public class ContactsInputStream {
         var contactData: Data = Data()
         try inputStream.decodeData(value: &contactData, count: Int(contactDataLength))
 
-        let contactDetails = try SSKProtoContactDetails(serializedData: contactData)
+        let contactDetails = try SignalServiceProtos_ContactDetails(serializedData: contactData)
 
-        if let avatar = contactDetails.avatar {
+        if contactDetails.hasAvatar {
             // Consume but discard the incoming contact avatar.
             var decodedData = Data()
-            try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
+            try inputStream.decodeData(value: &decodedData, count: Int(contactDetails.avatar.length))
         }
 
-        let aci = Aci.parseFrom(aciString: contactDetails.aci)
-        let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.contactE164)
+        let aci = Aci.parseFrom(aciString: contactDetails.hasAci ? contactDetails.aci : nil)
+        let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.hasContactE164 ? contactDetails.contactE164 : nil)
 
         return ContactDetails(
             aci: aci,
             phoneNumber: phoneNumber,
-            verifiedProto: contactDetails.verified,
-            profileKey: contactDetails.profileKey,
-            isBlocked: contactDetails.blocked,
             expireTimer: contactDetails.expireTimer,
-            isArchived: contactDetails.hasArchived ? contactDetails.archived : nil,
             inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil
         )
     }

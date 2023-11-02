@@ -54,16 +54,10 @@ extension OWSSyncContactsMessage {
         // We use batching to place an upper bound on memory usage.
         for signalAccount in signalAccounts {
             autoreleasepool {
-                let identityManager = DependenciesBridge.shared.identityManager
-                let recipientIdentity = identityManager.recipientIdentity(for: signalAccount.recipientAddress, tx: tx.asV2Read)
-                let profileKeyData: Data? = Self.profileManager.profileKeyData(for: signalAccount.recipientAddress, transaction: tx)
                 let contactThread = TSContactThread.getWithContactAddress(signalAccount.recipientAddress, transaction: tx)
-                var isArchived: NSNumber?
                 var inboxPosition: NSNumber?
                 var dmConfiguration: OWSDisappearingMessagesConfiguration?
                 if let contactThread {
-                    let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, ignoreMissing: false, transaction: tx)
-                    isArchived = NSNumber(value: associatedData.isArchived)
                     inboxPosition = try? ThreadFinder().sortIndex(thread: contactThread, transaction: tx)
                         .map { NSNumber(value: $0) }
                     let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -73,11 +67,8 @@ extension OWSSyncContactsMessage {
 
                 contactsOutputStream.write(
                     signalAccount,
-                    recipientIdentity: recipientIdentity,
-                    profileKeyData: profileKeyData,
                     contactsManager: Self.contactsManager,
                     disappearingMessagesConfiguration: dmConfiguration,
-                    isArchived: isArchived,
                     inboxPosition: inboxPosition,
                     isBlocked: isBlocked
                 )

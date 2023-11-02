@@ -265,10 +265,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             contactThread.anyInsert(transaction: transaction)
             let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
             newThreads.append((threadId: contactThread.uniqueId, sortOrder: inboxSortOrder))
-            if let isArchived = contactDetails.isArchived, isArchived == true {
-                let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, transaction: transaction)
-                associatedData.updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
-            }
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
@@ -279,31 +275,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
             transaction: transaction
         )
-
-        if let verifiedProto = contactDetails.verifiedProto {
-            let identityManager = DependenciesBridge.shared.identityManager
-            try identityManager.processIncomingVerifiedProto(verifiedProto, tx: transaction.asV2Write)
-        }
-
-        if let profileKey = contactDetails.profileKey {
-            self.profileManager.setProfileKeyData(
-                profileKey,
-                for: address,
-                userProfileWriter: .syncMessage,
-                authedAccount: .implicit(),
-                transaction: transaction
-            )
-        }
-
-        if contactDetails.isBlocked {
-            if !self.blockingManager.isAddressBlocked(address, transaction: transaction) {
-                self.blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
-            }
-        } else {
-            if self.blockingManager.isAddressBlocked(address, transaction: transaction) {
-                self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
-            }
-        }
 
         return address
     }

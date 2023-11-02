@@ -24,7 +24,7 @@ class ContactStreamTest: SignalBaseTest {
 
     // MARK: -
 
-    let outputContactSyncData = "GwoMKzEzMjMxMTExMTExEgdBbGljZS0xQABYADMSB0FsaWNlLTJAAEokMzFjZTE0MTItOWEyOC00ZTZmLWI0ZWUtMjIyMjIyMjIyMjIyWABBCgwrMTMyMTMzMzMzMzMSB0FsaWNlLTNAAEokMWQ0YWIwNDUtODhmYi00YzRlLTlmNmEtMzMzMzMzMzMzMzMzWAA="
+    let outputContactSyncData = "GQoMKzEzMjMxMTExMTExEgdBbGljZS0xQAAxEgdBbGljZS0yQABKJDMxY2UxNDEyLTlhMjgtNGU2Zi1iNGVlLTIyMjIyMjIyMjIyMj8KDCsxMzIxMzMzMzMzMxIHQWxpY2UtM0AASiQxZDRhYjA0NS04OGZiLTRjNGUtOWY2YS0zMzMzMzMzMzMzMzM="
 
     func test_writeContactSync() throws {
         let signalAccounts = [
@@ -62,11 +62,7 @@ class ContactStreamTest: SignalBaseTest {
             let contact = contacts[0]
             XCTAssertEqual("+13231111111", contact.phoneNumber?.stringValue)
             XCTAssertNil(contact.aci)
-            XCTAssertNil(contact.verifiedProto)
-            XCTAssertNil(contact.profileKey)
-            XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
 
@@ -74,11 +70,7 @@ class ContactStreamTest: SignalBaseTest {
             let contact = contacts[1]
             XCTAssertNil(contact.phoneNumber)
             XCTAssertEqual("31CE1412-9A28-4E6F-B4EE-222222222222", contact.aci?.serviceIdUppercaseString)
-            XCTAssertNil(contact.verifiedProto)
-            XCTAssertNil(contact.profileKey)
-            XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
 
@@ -86,11 +78,7 @@ class ContactStreamTest: SignalBaseTest {
             let contact = contacts[2]
             XCTAssertEqual("+13213333333", contact.phoneNumber?.stringValue)
             XCTAssertEqual("1D4AB045-88FB-4C4E-9F6A-333333333333", contact.aci?.serviceIdUppercaseString)
-            XCTAssertNil(contact.verifiedProto)
-            XCTAssertNil(contact.profileKey)
-            XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
     }
@@ -111,14 +99,13 @@ class ContactStreamTest: SignalBaseTest {
 
             signalAccount.replaceContactForTests(try contactFactory.build())
 
-            contactsOutputStream.write(signalAccount,
-                                       recipientIdentity: nil,
-                                       profileKeyData: nil,
-                                       contactsManager: contactsManager,
-                                       disappearingMessagesConfiguration: nil,
-                                       isArchived: false,
-                                       inboxPosition: nil,
-                                       isBlocked: false)
+            contactsOutputStream.write(
+                signalAccount,
+                contactsManager: contactsManager,
+                disappearingMessagesConfiguration: nil,
+                inboxPosition: nil,
+                isBlocked: false
+            )
         }
 
         dataOutputStream.close()

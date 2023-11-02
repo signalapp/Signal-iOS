@@ -21,11 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSContactsOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
-                    recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
-                       profileKeyData:(nullable NSData *)profileKeyData
                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
     disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
-                           isArchived:(nullable NSNumber *)isArchived
                         inboxPosition:(nullable NSNumber *)inboxPosition
                             isBlocked:(BOOL)isBlocked
 {
@@ -44,30 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
     // `system[Given|Family]Name` fields from StorageService ContactRecords.
     [contactBuilder setName:signalAccount.contact.fullName];
 
-    if (isArchived != nil) {
-        [contactBuilder setArchived:isArchived.boolValue];
-    }
-
     if (inboxPosition != nil) {
         [contactBuilder setInboxPosition:inboxPosition.unsignedIntValue];
-    }
-
-    if (recipientIdentity != nil) {
-        if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
-            // We only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
-            // will figure that out on it's own.
-            return;
-        }
-
-        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithAddress(signalAccount.recipientAddress,
-            [recipientIdentity.identityKey prependKeyType],
-            recipientIdentity.verificationState,
-            0);
-        if (!verified) {
-            OWSLogError(@"could not build protobuf.");
-            return;
-        }
-        contactBuilder.verified = verified;
     }
 
     NSData *_Nullable avatarJpegData = [signalAccount buildContactAvatarJpegData];
@@ -76,11 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
         [avatarBuilder setContentType:OWSMimeTypeImageJpeg];
         [avatarBuilder setLength:(uint32_t)avatarJpegData.length];
         [contactBuilder setAvatar:[avatarBuilder buildInfallibly]];
-    }
-
-    if (profileKeyData) {
-        OWSAssertDebug(profileKeyData.length == kAES256_KeyByteLength);
-        [contactBuilder setProfileKey:profileKeyData];
     }
 
     // Always ensure the "expire timer" property is set so that desktop
@@ -92,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
+    // TODO: Stop writing this once all iPads are running at least v6.50.
     if (isBlocked) {
         [contactBuilder setBlocked:YES];
     }
