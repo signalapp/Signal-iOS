@@ -119,7 +119,7 @@ public class ThreadFinder: Dependencies {
     public func sortIndex(
         thread: TSThread,
         transaction: SDSAnyReadTransaction
-    ) throws -> UInt? {
+    ) throws -> Int64? {
         let sql = """
             SELECT sortIndex
             FROM (
@@ -136,7 +136,7 @@ public class ThreadFinder: Dependencies {
             throw OWSAssertionError("grdbId was unexpectedly nil")
         }
 
-        return try UInt.fetchOne(
+        return try Int64.fetchOne(
             transaction.unwrapGrdbRead.database,
             sql: sql,
             arguments: [grdbId.intValue]

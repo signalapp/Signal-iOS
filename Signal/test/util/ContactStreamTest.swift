@@ -6,6 +6,7 @@
 import XCTest
 import Contacts
 
+@testable import SignalMessaging
 @testable import SignalServiceKit
 
 class ContactStreamTest: SignalBaseTest {
@@ -87,7 +88,8 @@ class ContactStreamTest: SignalBaseTest {
         let contactsManager = TestContactsManager()
         let dataOutputStream = OutputStream(toMemory: ())
         dataOutputStream.open()
-        let contactsOutputStream = OWSContactsOutputStream(outputStream: dataOutputStream)
+        defer { dataOutputStream.close() }
+        let contactOutputStream = ContactOutputStream(outputStream: dataOutputStream)
 
         for signalAccount in signalAccounts {
             let contactFactory = ContactFactory()
@@ -99,18 +101,13 @@ class ContactStreamTest: SignalBaseTest {
 
             signalAccount.replaceContactForTests(try contactFactory.build())
 
-            contactsOutputStream.write(
-                signalAccount,
+            try contactOutputStream.writeContact(
+                signalAccount: signalAccount,
                 contactsManager: contactsManager,
                 disappearingMessagesConfiguration: nil,
                 inboxPosition: nil,
                 isBlocked: false
             )
-        }
-
-        dataOutputStream.close()
-        guard !contactsOutputStream.hasError else {
-            throw OWSAssertionError("contactsOutputStream.hasError")
         }
 
         return dataOutputStream.property(forKey: .dataWrittenToMemoryStreamKey) as! Data

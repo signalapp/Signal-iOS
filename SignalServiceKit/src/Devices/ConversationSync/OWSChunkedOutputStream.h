@@ -5,19 +5,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSChunkedOutputStream : NSObject
+extern NSErrorDomain const OWSChunkedOutputStreamErrorDomain;
+typedef NS_ERROR_ENUM(OWSChunkedOutputStreamErrorDomain, OWSChunkedOutputStreamError) {
+    OWSChunkedOutputStreamErrorWriteFailed,
+};
 
-// Indicates whether any write failed.
-@property (nonatomic, readonly) BOOL hasError;
+@interface OWSChunkedOutputStream : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithOutputStream:(NSOutputStream *)outputStream;
+- (instancetype)initWithOutputStream:(NSOutputStream *)outputStream NS_DESIGNATED_INITIALIZER;
 
-// Returns NO on error.
-- (BOOL)writeData:(NSData *)data;
-- (BOOL)writeVariableLengthUInt32:(UInt32)value;
+- (BOOL)writeData:(NSData *)value error:(NSError **)error NS_SWIFT_NAME(writeData(_:));
+- (BOOL)writeVariableLengthUInt32:(UInt32)value error:(NSError **)error;
 
 @end
 

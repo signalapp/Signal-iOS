@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification;
 extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
-extern NSString *const OWSSyncManagerSyncRequestedAppVersionKey;
 
 @class AnyPromise;
 @class MessageSender;
@@ -29,6 +28,8 @@ extern NSString *const OWSSyncManagerSyncRequestedAppVersionKey;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic) BOOL isRequestInFlight;
 
 @end
 

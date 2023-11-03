@@ -8,10 +8,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSErrorDomain const OWSChunkedOutputStreamErrorDomain = @"OWSChunkedOutputStreamErrorDomain";
+
 @interface OWSChunkedOutputStream ()
 
 @property (nonatomic, readonly) NSOutputStream *outputStream;
-@property (nonatomic) BOOL hasError;
 
 @end
 
@@ -21,43 +22,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithOutputStream:(NSOutputStream *)outputStream
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         OWSAssertDebug(outputStream);
         _outputStream = outputStream;
     }
-
     return self;
 }
 
-- (BOOL)writeByte:(uint8_t)value
+- (BOOL)writeByte:(uint8_t)value error:(NSError **)error
 {
     NSInteger written = [self.outputStream write:&value maxLength:sizeof(value)];
     if (written != sizeof(value)) {
-        OWSFailDebug(@"could not write to output stream.");
-        self.hasError = YES;
+        if (error != NULL) {
+            *error = buildWriteError();
+        }
         return NO;
     }
     return YES;
 }
 
-- (BOOL)writeData:(NSData *)data
+- (BOOL)writeData:(NSData *)value error:(NSError **)error
 {
-    OWSAssertDebug(data);
+    OWSAssertDebug(value);
 
-    if (data.length < 1) {
+    if (value.length < 1) {
         return YES;
     }
 
     while (YES) {
-        NSInteger signed_written = [self.outputStream write:data.bytes maxLength:data.length];
+        NSInteger signed_written = [self.outputStream write:value.bytes maxLength:value.length];
         if (signed_written < 1) {
-            OWSFailDebug(@"could not write to output stream.");
-            self.hasError = YES;
+            if (error != NULL) {
+                *error = buildWriteError();
+            }
             return NO;
         }
         NSUInteger unsigned_written = (NSUInteger)signed_written;
-        if (unsigned_written < data.length) {
-            data = [data subdataWithRange:NSMakeRange(unsigned_written, data.length - unsigned_written)];
+        if (unsigned_written < value.length) {
+            value = [value subdataWithRange:NSMakeRange(unsigned_written, value.length - unsigned_written)];
         } else {
             return YES;
         }
@@ -65,18 +68,25 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (BOOL)writeVariableLengthUInt32:(UInt32)value
+- (BOOL)writeVariableLengthUInt32:(UInt32)value error:(NSError **)error
 {
     while (YES) {
         if (value <= 0x7F) {
-            return [self writeByte:(uint8_t)value];
+            return [self writeByte:(uint8_t)value error:error];
         } else {
-            if (![self writeByte:((value & 0x7F) | 0x80)]) {
+            if (![self writeByte:((value & 0x7F) | 0x80) error:error]) {
                 return NO;
             }
             value >>= 7;
         }
     }
+}
+
+static NSError *buildWriteError(void)
+{
+    return [NSError errorWithDomain:OWSChunkedOutputStreamErrorDomain
+                               code:OWSChunkedOutputStreamErrorWriteFailed
+                           userInfo:nil];
 }
 
 @end
