@@ -305,9 +305,9 @@ public extension OWSRequestFactory {
                 bankTransferType.rawValue,
             ])!,
             method: "GET",
-            // TODO: [SEPA] "Accept-Language" header
             parameters: nil
         )
+        result.addValue(OWSHttpHeaders.acceptLanguageHeaderValue, forHTTPHeaderField: OWSHttpHeaders.acceptLanguageHeaderKey)
         result.shouldHaveAuthorizationHeaders = false
         return result
     }

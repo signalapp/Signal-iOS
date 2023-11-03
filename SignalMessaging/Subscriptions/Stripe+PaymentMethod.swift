@@ -64,16 +64,8 @@ public extension Stripe {
 
             private let mode: Mode
 
-            private init(mode: Mode) {
+            public init(mode: Mode) {
                 self.mode = mode
-            }
-
-            // TODO: [SEPA] Move to a fileprivate extension in the mandate view controller file to ensure only it can accept?
-            public static func accept() -> Self {
-                .init(mode: .online(
-                    userAgent: OWSURLSession.userAgentHeaderValueSignalIos,
-                    ipAddress: "0.0.0.0"
-                ))
             }
 
             var parameters: [String: any Encodable] {

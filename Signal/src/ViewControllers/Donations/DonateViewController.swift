@@ -213,8 +213,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
-    // TODO: [SEPA] Rename to not be card-specific
-    private func startCreditOrDebitCard(
+    private func startManualPaymentDetails(
         with amount: FiatMoney,
         badge: ProfileBadge?,
         donateMode: DonateMode,
@@ -280,6 +279,26 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
+    private func startSEPA(
+        with amount: FiatMoney,
+        badge: ProfileBadge?,
+        donateMode: DonateMode
+    ) {
+        let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.startManualPaymentDetails(
+                    with: amount,
+                    badge: badge,
+                    donateMode: donateMode,
+                    paymentMethod: .sepa(mandate: mandate)
+                )
+            }
+        }
+        let navigationController = OWSNavigationController(rootViewController: mandateViewController)
+        self.presentFormSheet(navigationController, animated: true)
+    }
+
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge,
@@ -301,7 +320,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 case .applePay:
                     self.startApplePay(with: amount, donateMode: donateMode)
                 case .creditOrDebitCard:
-                    self.startCreditOrDebitCard(
+                    self.startManualPaymentDetails(
                         with: amount,
                         badge: badge,
                         donateMode: donateMode,
@@ -314,19 +333,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         donateMode: donateMode
                     )
                 case .sepa:
-                    let mandateViewController = BankTransferMandateViewController { [weak self] mandate in
-                        guard let self else { return }
-                        self.dismiss(animated: true) {
-                            self.startCreditOrDebitCard(
-                                with: amount,
-                                badge: badge,
-                                donateMode: donateMode,
-                                paymentMethod: .sepa(mandate: mandate)
-                            )
-                        }
-                    }
-                    let navigationController = OWSNavigationController(rootViewController: mandateViewController)
-                    self.presentFormSheet(navigationController, animated: true)
+                    self.startSEPA(
+                        with: amount,
+                        badge: badge,
+                        donateMode: donateMode
+                    )
                 }
             }
         }
@@ -944,9 +955,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
         button.dimsWhenHighlighted = true
         button.dimsWhenDisabled = true
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 12
         button.backgroundColor = .ows_accentBlue
-        button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+        button.titleLabel?.font = .dynamicTypeHeadline
         button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return button
     }()
