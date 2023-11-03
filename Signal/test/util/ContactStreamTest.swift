@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import Contacts
+import LibSignalClient
+import XCTest
 
 @testable import SignalMessaging
 @testable import SignalServiceKit
@@ -102,8 +103,9 @@ class ContactStreamTest: SignalBaseTest {
             signalAccount.replaceContactForTests(try contactFactory.build())
 
             try contactOutputStream.writeContact(
+                aci: signalAccount.recipientServiceId as? Aci,
+                phoneNumber: E164(signalAccount.recipientPhoneNumber),
                 signalAccount: signalAccount,
-                contactsManager: contactsManager,
                 disappearingMessagesConfiguration: nil,
                 inboxPosition: nil,
                 isBlocked: false

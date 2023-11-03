@@ -8,26 +8,25 @@ import SignalServiceKit
 
 final class ContactOutputStream: OWSChunkedOutputStream {
     func writeContact(
-        signalAccount: SignalAccount,
-        contactsManager: ContactsManagerProtocol,
+        aci: Aci?,
+        phoneNumber: E164?,
+        signalAccount: SignalAccount?,
         disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration?,
-        inboxPosition: Int64?,
+        inboxPosition: Int?,
         isBlocked: Bool
     ) throws {
-        owsAssertDebug(signalAccount.contact != nil)
-
         let contactBuilder = SSKProtoContactDetails.builder()
-        if let phoneNumber = signalAccount.recipientPhoneNumber {
-            contactBuilder.setContactE164(phoneNumber)
+        if let phoneNumber {
+            contactBuilder.setContactE164(phoneNumber.stringValue)
         }
-        if let aci = signalAccount.recipientServiceId as? Aci {
+        if let aci {
             contactBuilder.setAci(aci.serviceIdString)
         }
 
         // TODO: this should be removed after a 90-day timer from when Desktop stops
         // relying on names in contact sync messages, and is instead using the
         // `system[Given|Family]Name` fields from StorageService ContactRecords.
-        if let fullName = signalAccount.contact?.fullName {
+        if let fullName = signalAccount?.contact?.fullName {
             contactBuilder.setName(fullName)
         }
 
@@ -35,7 +34,7 @@ final class ContactOutputStream: OWSChunkedOutputStream {
             contactBuilder.setInboxPosition(truncatedInboxPosition)
         }
 
-        let avatarJpegData = signalAccount.buildContactAvatarJpegData()
+        let avatarJpegData = signalAccount?.buildContactAvatarJpegData()
         if let avatarJpegData {
             let avatarBuilder = SSKProtoContactDetailsAvatar.builder()
             avatarBuilder.setContentType(OWSMimeTypeImageJpeg)
