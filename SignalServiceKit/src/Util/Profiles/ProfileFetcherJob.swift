@@ -502,7 +502,6 @@ public class ProfileFetcherJob: NSObject {
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetch: Date(),
-                canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
                 authedAccount: authedAccount,
@@ -517,13 +516,6 @@ public class ProfileFetcherJob: NSObject {
                 hasPaymentsEnabled: paymentAddress != nil,
                 transaction: transaction
             )
-
-            if self.isFetchForLocalAccount(authedAccount: authedAccount) {
-                self.legacyChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
-                    profile.supportsChangeNumber,
-                    transaction: transaction
-                )
-            }
         }
     }
 

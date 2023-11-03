@@ -62,15 +62,6 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                           value: identityKey?.hexadecimalString,
                                           accessibilityIdentifier: "identity_key"))
 
-                var canReceiveGiftBadgesString: String
-                if let profile = profileManager.getUserProfile(for: address, transaction: transaction) {
-                    canReceiveGiftBadgesString = profile.canReceiveGiftBadges ? "Yes" : "No"
-                } else {
-                    canReceiveGiftBadgesString = "Profile not found!"
-                }
-                section.add(.label(withText: String(format: "Can Receive Gift Badges? %@",
-                                                    canReceiveGiftBadgesString)))
-
                 let arePaymentsEnabled = paymentsHelper.arePaymentsEnabled(for: address,
                                                                      transaction: transaction)
                 section.add(.label(withText: String(format: "Payments Enabled: %@",

@@ -122,7 +122,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSDate *lastMessagingDate;
 
 @property (atomic) BOOL isStoriesCapable; // deprecated
-@property (atomic) BOOL canReceiveGiftBadges;
+@property (atomic) BOOL canReceiveGiftBadges; // deprecated
 @property (atomic) BOOL isPniCapable;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
@@ -520,10 +520,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
     if (changes.badges != nil) {
         profile.profileBadgeInfo = changes.badges;
-    }
-
-    if (changes.canReceiveGiftBadges != nil) {
-        profile.canReceiveGiftBadges = changes.canReceiveGiftBadges.value;
     }
     if (changes.isPniCapable != nil) {
         profile.isPniCapable = changes.isPniCapable.value;
