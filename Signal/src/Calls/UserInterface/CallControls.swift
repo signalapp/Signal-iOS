@@ -141,8 +141,8 @@ class CallControls: UIView {
 
         stackView.addArrangedSubview(audioSourceButton)
         stackView.addArrangedSubview(flipCameraButton)
-        stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(videoButton)
+        stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(ringButton)
         stackView.addArrangedSubview(hangUpButton)
 
