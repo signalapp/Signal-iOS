@@ -25,7 +25,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     let donationAmount: FiatMoney
     let donationMode: DonationMode
     let paymentMethod: PaymentMethod
-    let onFinished: () -> Void
+    let onFinished: (Error?) -> Void
     var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
 
     public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
@@ -35,7 +35,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         donationAmount: FiatMoney,
         donationMode: DonationMode,
         paymentMethod: PaymentMethod,
-        onFinished: @escaping () -> Void
+        onFinished: @escaping (Error?) -> Void
     ) {
         self.donationAmount = donationAmount
         self.donationMode = donationMode
@@ -107,20 +107,6 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 }
             }
         }
-    }
-
-    func didFailDonation(error: Error) {
-        DonationViewsUtil.presentDonationErrorSheet(
-            from: self,
-            error: error,
-            paymentMethod: .creditOrDebitCard,
-            currentSubscription: {
-                switch donationMode {
-                case .oneTime, .gift: return nil
-                case let .monthly(_, _, currentSubscription, _): return currentSubscription
-                }
-            }()
-        )
     }
 
     // MARK: - Rendering

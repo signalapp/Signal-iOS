@@ -85,6 +85,7 @@ extension JobRecord {
         case currencyCode
         case boostPaymentIntentID
         case paymentProcessor
+        case paymentMethod
         /// Uses a misspelled raw value for historical compatibility.
         case receiptCredentialRequest = "receiptCredentailRequest"
         /// Uses a misspelled raw value for historical compatibility.

@@ -27,8 +27,6 @@ extension DonateViewController {
 
         Logger.info("[Donations] Starting monthly Apple Pay donation")
 
-        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
-
         // See also: code for other payment methods, such as credit/debit card.
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
             if let existingSubscriberId = monthly.subscriberID {
@@ -70,6 +68,7 @@ extension DonateViewController {
             return SubscriptionManagerImpl.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 withPaymentId: paymentId,
+                usingPaymentProcessor: .stripe,
                 usingPaymentMethod: .applePay,
                 subscription: selectedSubscriptionLevel,
                 currencyCode: monthly.selectedCurrencyCode
@@ -80,28 +79,34 @@ extension DonateViewController {
 
             Logger.info("[Donations] Redeeming monthly receipt for Apple Pay donation")
 
-            DonationViewsUtil.redeemMonthlyReceipts(
-                usingPaymentProcessor: .stripe,
-                subscriberID: subscriberID,
-                newSubscriptionLevel: selectedSubscriptionLevel,
-                priorSubscriptionLevel: monthly.currentSubscriptionLevel
+            SubscriptionManagerImpl.requestAndRedeemReceipt(
+                subscriberId: subscriberID,
+                subscriptionLevel: selectedSubscriptionLevel.level,
+                priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
+                paymentProcessor: .stripe,
+                paymentMethod: .applePay
             )
 
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
-                promise: DonationViewsUtil.waitForSubscriptionJob()
+                promise: DonationViewsUtil.waitForSubscriptionJob(
+                    paymentMethod: .applePay
+                )
             ).done(on: DispatchQueue.main) {
                 Logger.info("[Donations] Monthly card donation finished")
 
                 self.didCompleteDonation(
-                    badge: selectedSubscriptionLevel.badge,
-                    thanksSheetType: .subscription,
-                    oldBadgesSnapshot: badgesSnapshot
+                    receiptCredentialSuccessMode: .recurringSubscription
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 Logger.info("[Donations] Monthly card donation failed")
 
-                self?.didFailDonation(error: error, mode: .monthly, paymentMethod: .applePay)
+                self?.didFailDonation(
+                    error: error,
+                    mode: .monthly,
+                    badge: selectedSubscriptionLevel.badge,
+                    paymentMethod: .applePay
+                )
             }
         }.catch(on: DispatchQueue.main) { error in
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])

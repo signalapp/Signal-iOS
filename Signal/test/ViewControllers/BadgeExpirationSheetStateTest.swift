@@ -7,8 +7,8 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
-class BadgeExpirationSheetStateTest: XCTestCase {
-    typealias State = BadgeExpirationSheetState
+class BadgeIssueSheetStateTest: XCTestCase {
+    typealias State = BadgeIssueSheetState
 
     private func getSubscriptionBadge(populateAssets: Bool = true) -> ProfileBadge {
         let result = try! ProfileBadge(jsonDictionary: [

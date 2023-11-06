@@ -21,12 +21,19 @@ extension DonationPaymentDetailsViewController {
             case card(Stripe.PaymentMethod.CreditOrDebitCard)
             case sepa(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.SEPA)
 
-            var paymentMethod: Stripe.PaymentMethod {
+            var stripePaymentMethod: Stripe.PaymentMethod {
                 switch self {
                 case let .card(card):
                     return .creditOrDebitCard(creditOrDebitCard: card)
                 case let .sepa(mandate: mandate, account: sepaAccount):
                     return .bankTransferSEPA(mandate: mandate, account: sepaAccount)
+                }
+            }
+
+            var donationPaymentMethod: DonationPaymentMethod {
+                switch self {
+                case .card: return .creditOrDebitCard
+                case .sepa: return .sepa
                 }
             }
         }

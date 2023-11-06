@@ -14,7 +14,6 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = IncomingContactSyncOperation
     public let requiresInternet: Bool = true
     public let isEnabled: Bool = true
-    public static let maxRetries: UInt = 4
     public static let jobRecordLabel: String = IncomingContactSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -73,9 +72,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
     public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
     public let jobRecord: IncomingContactSyncJobRecord
-    public var operation: OWSOperation {
-        return self
-    }
+    public var operation: OWSOperation { return self }
+    public let maxRetries: UInt = 4
 
     public var newThreads: [(threadId: String, sortOrder: UInt32)] = []
 

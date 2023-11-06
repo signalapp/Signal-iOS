@@ -3,26 +3,31 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import GRDB
+import SignalCoreKit
 
 public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
     override class var jobRecordType: JobRecordType { .subscriptionReceiptCredentialRedemption }
 
     public let paymentProcessor: String
+    public let paymentMethod: String?
     public let receiptCredentialRequestContext: Data
     public let receiptCredentialRequest: Data
     public var receiptCredentialPresentation: Data?
+
+    public let isBoost: Bool
+
     public let subscriberID: Data
     public let targetSubscriptionLevel: UInt
     public let priorSubscriptionLevel: UInt
-    public let isBoost: Bool
+
+    public let boostPaymentIntentID: String
+
     public let amount: Decimal?
     public let currencyCode: String?
-    public let boostPaymentIntentID: String
 
     public init(
         paymentProcessor: String,
+        paymentMethod: String?,
         receiptCredentialRequestContext: Data,
         receiptCredentialRequest: Data,
         receiptCredentialPresentation: Data? = nil,
@@ -39,6 +44,7 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         status: Status = .ready
     ) {
         self.paymentProcessor = paymentProcessor
+        self.paymentMethod = paymentMethod
         self.receiptCredentialRequestContext = receiptCredentialRequestContext
         self.receiptCredentialRequest = receiptCredentialRequest
         self.receiptCredentialPresentation = receiptCredentialPresentation
@@ -62,13 +68,20 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         paymentProcessor = try container.decode(String.self, forKey: .paymentProcessor)
+        paymentMethod = try container.decodeIfPresent(String.self, forKey: .paymentMethod)
+
         receiptCredentialRequestContext = try container.decode(Data.self, forKey: .receiptCredentialRequestContext)
         receiptCredentialRequest = try container.decode(Data.self, forKey: .receiptCredentialRequest)
         receiptCredentialPresentation = try container.decodeIfPresent(Data.self, forKey: .receiptCredentialPresentation)
+
+        isBoost = try container.decode(Bool.self, forKey: .isBoost)
+
         subscriberID = try container.decode(Data.self, forKey: .subscriberID)
         targetSubscriptionLevel = try container.decode(UInt.self, forKey: .targetSubscriptionLevel)
         priorSubscriptionLevel = try container.decode(UInt.self, forKey: .priorSubscriptionLevel)
-        isBoost = try container.decode(Bool.self, forKey: .isBoost)
+
+        boostPaymentIntentID = try container.decode(String.self, forKey: .boostPaymentIntentID)
+
         amount = try container.decodeIfPresent(
             Data.self,
             forKey: .amount
@@ -79,7 +92,6 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
             )
         }
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
-        boostPaymentIntentID = try container.decode(String.self, forKey: .boostPaymentIntentID)
 
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
     }
@@ -90,6 +102,7 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         try super.encode(to: container.superEncoder())
 
         try container.encode(paymentProcessor, forKey: .paymentProcessor)
+        try container.encodeIfPresent(paymentMethod, forKey: .paymentMethod)
         try container.encode(receiptCredentialRequestContext, forKey: .receiptCredentialRequestContext)
         try container.encode(receiptCredentialRequest, forKey: .receiptCredentialRequest)
         try container.encodeIfPresent(receiptCredentialPresentation, forKey: .receiptCredentialPresentation)

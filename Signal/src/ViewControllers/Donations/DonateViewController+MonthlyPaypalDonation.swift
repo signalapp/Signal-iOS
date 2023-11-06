@@ -23,8 +23,6 @@ extension DonateViewController {
 
         Logger.info("[Donations] Starting monthly PayPal donation")
 
-        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
-
         firstly(on: DispatchQueue.main) { () -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
             self.preparePaypalSubscriptionBehindActivityIndicator(
                 monthlyState: monthly,
@@ -52,9 +50,7 @@ extension DonateViewController {
             Logger.info("[Donations] Monthly PayPal donation finished")
 
             self.didCompleteDonation(
-                badge: selectedSubscriptionLevel.badge,
-                thanksSheetType: .subscription,
-                oldBadgesSnapshot: badgesSnapshot
+                receiptCredentialSuccessMode: .recurringSubscription
             )
         }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
@@ -69,7 +65,12 @@ extension DonateViewController {
             } else {
                 Logger.info("[Donations] Monthly PayPal donation failed")
 
-                self.didFailDonation(error: error, mode: .monthly, paymentMethod: .paypal)
+                self.didFailDonation(
+                    error: error,
+                    mode: .monthly,
+                    badge: selectedSubscriptionLevel.badge,
+                    paymentMethod: .paypal
+                )
             }
         }
     }
@@ -139,6 +140,7 @@ extension DonateViewController {
             return SubscriptionManagerImpl.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
                 withPaymentId: paymentId,
+                usingPaymentProcessor: .braintree,
                 usingPaymentMethod: .paypal,
                 subscription: selectedSubscriptionLevel,
                 currencyCode: monthly.selectedCurrencyCode
@@ -146,14 +148,17 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
             Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
 
-            DonationViewsUtil.redeemMonthlyReceipts(
-                usingPaymentProcessor: .braintree,
-                subscriberID: subscriberId,
-                newSubscriptionLevel: selectedSubscriptionLevel,
-                priorSubscriptionLevel: monthly.currentSubscriptionLevel
+            SubscriptionManagerImpl.requestAndRedeemReceipt(
+                subscriberId: subscriberId,
+                subscriptionLevel: selectedSubscriptionLevel.level,
+                priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
+                paymentProcessor: .braintree,
+                paymentMethod: .paypal
             )
 
-            return DonationViewsUtil.waitForSubscriptionJob()
+            return DonationViewsUtil.waitForSubscriptionJob(
+                paymentMethod: .paypal
+            )
         }
 
         return DonationViewsUtil.wrapPromiseInProgressView(

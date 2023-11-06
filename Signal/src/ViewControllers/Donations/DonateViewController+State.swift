@@ -34,6 +34,7 @@ extension DonateViewController {
             }
 
             enum OneTimePaymentRequest: Equatable {
+                case alreadyHasPaymentProcessing(paymentMethod: DonationPaymentMethod)
                 case noAmountSelected
                 case amountIsTooSmall(minimumAmount: FiatMoney)
                 case canContinue(amount: FiatMoney, supportedPaymentMethods: Set<DonationPaymentMethod>)
@@ -45,6 +46,7 @@ extension DonateViewController {
             fileprivate let presets: [Currency.Code: DonationUtilities.Preset]
             fileprivate let minimumAmounts: [Currency.Code: FiatMoney]
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
+            fileprivate let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
             fileprivate let localNumber: String?
 
             public var amount: FiatMoney? {
@@ -80,6 +82,18 @@ extension DonateViewController {
             }
 
             public var paymentRequest: OneTimePaymentRequest {
+                if
+                    let receiptCredentialRequestError,
+                    case .paymentStillProcessing = receiptCredentialRequestError.errorCode
+                {
+                    guard let paymentMethod = receiptCredentialRequestError.paymentMethod else {
+                        owsFailBeta("Missing payment method for processing one-time payment. This should be impossible!")
+                        return .alreadyHasPaymentProcessing(paymentMethod: .applePay)
+                    }
+
+                    return .alreadyHasPaymentProcessing(paymentMethod: paymentMethod)
+                }
+
                 guard let amount = amount else {
                     return .noAmountSelected
                 }
@@ -115,6 +129,7 @@ extension DonateViewController {
                     presets: presets,
                     minimumAmounts: minimumAmounts,
                     paymentMethodConfiguration: paymentMethodConfiguration,
+                    receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }
@@ -146,6 +161,7 @@ extension DonateViewController {
                     presets: presets,
                     minimumAmounts: minimumAmounts,
                     paymentMethodConfiguration: paymentMethodConfiguration,
+                    receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }
@@ -176,10 +192,10 @@ extension DonateViewController {
             public let selectedSubscriptionLevel: SubscriptionLevel?
             public let currentSubscription: Subscription?
             public let subscriberID: Data?
-            public let lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason
             public let previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?
 
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
+            fileprivate let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
             fileprivate let localNumber: String?
 
             /// Get the currency codes supported by all subscription levels.
@@ -221,6 +237,27 @@ extension DonateViewController {
                 }
             }
 
+            public var paymentProcessingWithPaymentMethod: DonationPaymentMethod? {
+                guard let subscription = currentSubscription else { return nil }
+
+                let subscriptionProcessing = subscription.isPaymentProcessing
+                let receiptCredentialRequestErrorProcessing = receiptCredentialRequestError?.errorCode == .paymentStillProcessing
+
+                if subscriptionProcessing || receiptCredentialRequestErrorProcessing {
+                    guard
+                        let paymentMethod = subscription.paymentMethod
+                            ?? receiptCredentialRequestError?.paymentMethod
+                    else {
+                        owsFailDebug("Missing payment method for processing subscription payment!")
+                        return .applePay
+                    }
+
+                    return paymentMethod
+                }
+
+                return nil
+            }
+
             public var paymentRequest: MonthlyPaymentRequest? {
                 guard
                     let selectedSubscriptionLevel = selectedSubscriptionLevel,
@@ -229,7 +266,7 @@ extension DonateViewController {
                     return nil
                 }
 
-                return .init(
+                return MonthlyPaymentRequest(
                     amount: amount,
                     profileBadge: selectedSubscriptionLevel.badge,
                     supportedPaymentMethods: supportedPaymentMethods(forCurrencyCode: selectedCurrencyCode)
@@ -250,9 +287,9 @@ extension DonateViewController {
                     selectedSubscriptionLevel: selectedSubscriptionLevel,
                     currentSubscription: currentSubscription,
                     subscriberID: subscriberID,
-                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
                     paymentMethodConfiguration: paymentMethodConfiguration,
+                    receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }
@@ -265,9 +302,9 @@ extension DonateViewController {
                     selectedSubscriptionLevel: newValue,
                     currentSubscription: currentSubscription,
                     subscriberID: subscriberID,
-                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
                     paymentMethodConfiguration: paymentMethodConfiguration,
+                    receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }
@@ -408,9 +445,10 @@ extension DonateViewController {
             paymentMethodsConfig: PaymentMethodsConfiguration,
             currentMonthlySubscription: Subscription?,
             subscriberID: Data?,
-            lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason,
             previousMonthlySubscriptionCurrencyCode: Currency.Code?,
             previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?,
+            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
+            recurringSubscriptionReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
             locale: Locale,
             localNumber: String?
         ) -> State {
@@ -441,6 +479,7 @@ extension DonateViewController {
                     presets: oneTimeConfig.presetAmounts,
                     minimumAmounts: oneTimeConfig.minimumAmounts,
                     paymentMethodConfiguration: paymentMethodsConfig,
+                    receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }()
@@ -487,9 +526,9 @@ extension DonateViewController {
                     selectedSubscriptionLevel: selectedMonthlySubscriptionLevel,
                     currentSubscription: currentMonthlySubscription,
                     subscriberID: subscriberID,
-                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
                     paymentMethodConfiguration: paymentMethodsConfig,
+                    receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
                     localNumber: localNumber
                 )
             }()

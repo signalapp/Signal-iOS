@@ -8,16 +8,16 @@ import UIKit
 import SignalMessaging
 import SignalUI
 
-protocol BadgeExpirationSheetDelegate: AnyObject {
-    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction)
+protocol BadgeIssueSheetDelegate: AnyObject {
+    func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction)
 }
 
-public enum BadgeExpirationSheetAction {
+public enum BadgeIssueSheetAction {
     case dismiss
     case openDonationView
 }
 
-public class BadgeExpirationSheetState {
+public class BadgeIssueSheetState {
     public enum Mode {
         case subscriptionExpiredBecauseOfChargeFailure(
             chargeFailure: Subscription.ChargeFailure,
@@ -26,25 +26,30 @@ public class BadgeExpirationSheetState {
         case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
         case giftBadgeExpired(hasCurrentSubscription: Bool)
+
         case giftNotRedeemed(fullName: String)
+
+        case bankPaymentFailed
+        case boostBankPaymentProcessing
+        case subscriptionBankPaymentProcessing
     }
 
     public struct Body {
         public let text: String
-        public let hasLearnMoreLink: Bool
+        public let learnMoreLink: URL?
 
-        public init(_ text: String, hasLearnMoreLink: Bool = false) {
+        public init(_ text: String, learnMoreLink: URL? = nil) {
             self.text = text
-            self.hasLearnMoreLink = hasLearnMoreLink
+            self.learnMoreLink = learnMoreLink
         }
     }
 
     public struct ActionButton {
-        public let action: BadgeExpirationSheetAction
+        public let action: BadgeIssueSheetAction
         public let text: String
         public let hasNotNow: Bool
 
-        public init(action: BadgeExpirationSheetAction, text: String, hasNotNow: Bool = false) {
+        public init(action: BadgeIssueSheetAction, text: String, hasNotNow: Bool) {
             self.action = action
             self.text = text
             self.hasNotNow = hasNotNow
@@ -83,6 +88,16 @@ public class BadgeExpirationSheetState {
                 "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE",
                 comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet."
             )
+        case .bankPaymentFailed:
+            return OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE",
+                comment: "Title for a sheet explaining that a donation via bank payment has failed."
+           )
+        case .boostBankPaymentProcessing, .subscriptionBankPaymentProcessing:
+            return OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE",
+                comment: "Title for a sheet explaining that a donation via bank payment is pending."
+            )
         }
     }()
 
@@ -95,15 +110,21 @@ public class BadgeExpirationSheetState {
             )
             let formatText = OWSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}."
+                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. Will have a 'learn more' link appended, when it is rendered."
             )
-            return Body(String(format: formatText, failureSpecificText), hasLearnMoreLink: true)
+            return Body(
+                String(format: formatText, failureSpecificText),
+                learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
+            )
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = OWSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
-                comment: "Body of the sheet shown when your subscription is canceled due to inactivity"
+                comment: "Body of the sheet shown when your subscription is canceled due to inactivity. Will have a 'learn more' link appended, when it is rendered."
             )
-            return Body(String(format: formatText, badge.localizedName), hasLearnMoreLink: true)
+            return Body(
+                String(format: formatText, badge.localizedName),
+                learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
+            )
         case let .boostExpired(hasCurrentSubscription):
             let bodyText: String
             if hasCurrentSubscription {
@@ -130,41 +151,99 @@ public class BadgeExpirationSheetState {
                 comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}."
             )
             return Body(String(format: formatText, fullName))
+        case .bankPaymentFailed:
+            let bodyText = OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE",
+                comment: "Message for a sheet explaining that a donation via bank payment has failed."
+            )
+            return Body(bodyText)
+        case .boostBankPaymentProcessing:
+            let bodyFormat = OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE",
+                comment: "Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
+            )
+
+            return Body(
+                String(format: bodyFormat, badge.localizedName),
+                learnMoreLink: SupportConstants.donationPendingLearnMoreURL
+            )
+        case .subscriptionBankPaymentProcessing:
+            let bodyFormat = OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE",
+                comment: "Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
+            )
+
+            return Body(
+                String(format: bodyFormat, badge.localizedName),
+                learnMoreLink: SupportConstants.donationPendingLearnMoreURL
+            )
         }
     }()
 
     public lazy var actionButton: ActionButton = {
-        let shouldAskUsersToDonate: Bool = {
-            guard canDonate else { return false }
+        enum AskUserToDonateMode {
+            case dontAsk
+            case askToDonate
+            case askToTryAgain
+        }
+
+        let askUserToDonateMode: AskUserToDonateMode = {
+            guard canDonate else { return .dontAsk }
+
             switch mode {
-            case .subscriptionExpiredBecauseNotRenewed, .boostExpired:
-                return true
-            case let .giftBadgeExpired(hasCurrentSubscription):
-                return !hasCurrentSubscription
-            case .subscriptionExpiredBecauseOfChargeFailure, .giftNotRedeemed:
-                return false
+            case
+                    .subscriptionExpiredBecauseNotRenewed,
+                    .boostExpired,
+                    .giftBadgeExpired(hasCurrentSubscription: false):
+                return .askToDonate
+            case .bankPaymentFailed:
+                return .askToTryAgain
+            case
+                    .giftBadgeExpired(hasCurrentSubscription: true),
+                    .subscriptionExpiredBecauseOfChargeFailure,
+                    .giftNotRedeemed,
+                    .boostBankPaymentProcessing,
+                    .subscriptionBankPaymentProcessing:
+                return .dontAsk
             }
         }()
 
-        if shouldAskUsersToDonate {
-            let text = OWSLocalizedString(
-                "BADGE_EXPIRED_DONATE_BUTTON",
-                comment: "Button text when a badge expires, asking users to donate"
+        switch askUserToDonateMode {
+        case .dontAsk:
+            return ActionButton(
+                action: .dismiss,
+                text: CommonStrings.okayButton,
+                hasNotNow: false
             )
-            return .init(action: .openDonationView, text: text, hasNotNow: true)
-        } else {
-            return .init(action: .dismiss, text: CommonStrings.okayButton)
+        case .askToDonate:
+            return ActionButton(
+                action: .openDonationView,
+                text: OWSLocalizedString(
+                    "BADGE_EXPIRED_DONATE_BUTTON",
+                    comment: "Button text when a badge expires, asking users to donate"
+                ),
+                hasNotNow: true
+            )
+        case .askToTryAgain:
+            return ActionButton(
+                action: .openDonationView,
+                text: OWSLocalizedString(
+                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
+                    comment: "Title for a button asking the user to try their donation again, because something went wrong."
+                ),
+                hasNotNow: true
+            )
         }
     }()
 }
 
-class BadgeExpirationSheet: OWSTableSheetViewController {
-    private let state: BadgeExpirationSheetState
+class BadgeIssueSheet: OWSTableSheetViewController {
+    private let state: BadgeIssueSheetState
 
-    public weak var delegate: BadgeExpirationSheetDelegate?
+    public weak var delegate: BadgeIssueSheetDelegate?
 
-    public init(badge: ProfileBadge, mode: BadgeExpirationSheetState.Mode) {
-        self.state = BadgeExpirationSheetState(
+    public init(badge: ProfileBadge, mode: BadgeIssueSheetState.Mode) {
+        self.state = BadgeIssueSheetState(
             badge: badge,
             mode: mode,
             canDonate: DonationUtilities.canDonateInAnyWay(
@@ -221,11 +300,11 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let bodyLabel: UIView
-            if self.state.body.hasLearnMoreLink {
+            if let learnMoreLink = self.state.body.learnMoreLink {
                 let learnMore = OWSLocalizedString(
                     "BADGE_EXPIRED_LEARN_MORE_LINK",
-                    comment: "Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure"
-                ).styled(with: .link(SupportConstants.badgeExpirationLearnMoreURL))
+                    comment: "Text for the 'learn more' link in a sheet explaining there's been an issue with your badge."
+                ).styled(with: .link(learnMoreLink))
                 let label = LinkingTextView()
                 label.attributedText = .composed(of: [self.state.body.text, " ", learnMore]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
                 label.textAlignment = .center
@@ -300,7 +379,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
     @objc
     private func didTapAction() {
         didDismiss()
-        delegate?.badgeExpirationSheetActionTapped(state.actionButton.action)
+        delegate?.badgeIssueSheetActionTapped(state.actionButton.action)
     }
 
     @objc

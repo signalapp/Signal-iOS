@@ -475,6 +475,7 @@ public extension OWSTableItem {
         accessoryText: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
+        accessoryContentView: UIView? = nil,
         accessibilityIdentifier: String? = nil
     ) -> UITableViewCell {
         var imageView: UIImageView?
@@ -492,6 +493,7 @@ public extension OWSTableItem {
             accessoryText: accessoryText,
             accessoryTextColor: accessoryTextColor,
             accessoryType: accessoryType,
+            accessoryContentView: accessoryContentView,
             accessibilityIdentifier: accessibilityIdentifier
         )
     }

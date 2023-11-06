@@ -34,6 +34,12 @@ public protocol DurableOperation: AnyObject, Equatable {
     var jobRecord: JobRecordType { get }
     var durableOperationDelegate: DurableOperationDelegateType? { get set }
     var operation: OWSOperation { get }
+
+    var maxRetries: UInt { get }
+
+    /// This could be computed using ``maxRetries`` and ``JobRecord/failureCount``,
+    /// but because in practice these are ``OWSOperation``s we make it a mutable
+    /// stored property instead for compatibility.
     var remainingRetries: UInt { get set }
 }
 
@@ -64,7 +70,6 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     /// However, because these jobs will likely fail many times in succession, their `retryInterval` could be quite long by the time we
     /// are back online.
     var requiresInternet: Bool { get }
-    static var maxRetries: UInt { get }
 
     var isEnabled: Bool { get }
 }
@@ -89,18 +94,6 @@ public extension JobQueue {
 
         transaction.addAsyncCompletion(queue: .global()) {
             self.startWorkWhenAppIsReady()
-        }
-    }
-
-    func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
-        do {
-            return try JobRecordFinderImpl().getNextReady(
-                label: self.jobRecordLabel,
-                transaction: transaction.asV2Read
-            ) != nil
-        } catch let error {
-            Logger.error("Couldn't fetch pending job: \(error)")
-            return false
         }
     }
 
@@ -296,7 +289,7 @@ public extension JobQueue {
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {
-        let maxRetries = type(of: self).maxRetries
+        let maxRetries = durableOperation.maxRetries
         let failureCount = durableOperation.jobRecord.failureCount
 
         guard maxRetries > failureCount else {

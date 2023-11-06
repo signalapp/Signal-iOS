@@ -134,18 +134,24 @@ final class DonateViewControllerTest: SignalBaseTest {
 
     // MARK: - Subscription fixtures
 
-    private static func subscription(at level: UInt) -> Subscription {
+    private static func subscription(
+        at level: UInt,
+        isPaymentProcessing: Bool = false,
+        paymentMethod: String = "CARD"
+    ) -> Subscription {
         try! .init(
             subscriptionDict: [
                 "level": level,
-                "currency": "USD",
+                "currency": isPaymentProcessing ? "EUR" : "USD",
                 "amount": 12,
                 "endOfCurrentPeriod": TimeInterval(1234),
                 "billingCycleAnchor": TimeInterval(5678),
                 "active": true,
                 "cancelAtPeriodEnd": false,
                 "status": "active",
-                "processor": "STRIPE"
+                "processor": "STRIPE",
+                "paymentMethod": paymentMethod,
+                "paymentProcessing": isPaymentProcessing
             ],
             chargeFailureDict: nil
         )
@@ -172,9 +178,10 @@ final class DonateViewControllerTest: SignalBaseTest {
             paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
             currentMonthlySubscription: nil,
             subscriberID: nil,
-            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: nil,
             previousMonthlySubscriptionPaymentMethod: nil,
+            oneTimeBoostReceiptCredentialRequestError: nil,
+            recurringSubscriptionReceiptCredentialRequestError: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -187,9 +194,10 @@ final class DonateViewControllerTest: SignalBaseTest {
             paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
             currentMonthlySubscription: Self.subscription(at: 2),
             subscriberID: Data([1, 2, 3]),
-            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: "USD",
             previousMonthlySubscriptionPaymentMethod: .applePay,
+            oneTimeBoostReceiptCredentialRequestError: nil,
+            recurringSubscriptionReceiptCredentialRequestError: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -210,10 +218,50 @@ final class DonateViewControllerTest: SignalBaseTest {
             paymentMethodsConfig: paymentMethodsConfig,
             currentMonthlySubscription: currentMonthlySubscription,
             subscriberID: subscriberID,
-            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: previousMonthlySubscriptionCurrencyCode,
             previousMonthlySubscriptionPaymentMethod: .applePay,
+            oneTimeBoostReceiptCredentialRequestError: nil,
+            recurringSubscriptionReceiptCredentialRequestError: nil,
             locale: locale,
+            localNumber: Self.localNumber
+        )
+    }
+
+    func loadWithPaymentsProcessing(
+        recurringProcessingViaSubscription: Bool,
+        recurringProcessingViaError: Bool
+    ) -> State {
+        let recurringError: SubscriptionReceiptCredentialRequestError? = {
+            guard recurringProcessingViaError else { return nil }
+
+            return SubscriptionReceiptCredentialRequestError(
+                errorCode: .paymentStillProcessing,
+                badge: MonthlyFixtures.badgeOne,
+                amount: FiatMoney(currencyCode: "EUR", value: 5),
+                paymentMethod: .sepa
+            )
+        }()
+
+        return loading.loaded(
+            oneTimeConfig: Self.defaultOneTimeConfig,
+            monthlyConfig: Self.defaultMonthlyConfig,
+            paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
+            currentMonthlySubscription: Self.subscription(
+                at: 2,
+                isPaymentProcessing: recurringProcessingViaSubscription,
+                paymentMethod: "SEPA_DEBIT"
+            ),
+            subscriberID: Data([1, 2, 3]),
+            previousMonthlySubscriptionCurrencyCode: nil,
+            previousMonthlySubscriptionPaymentMethod: .applePay,
+            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError(
+                errorCode: .paymentStillProcessing,
+                badge: OneTimeFixtures.badge,
+                amount: FiatMoney(currencyCode: "EUR", value: 100),
+                paymentMethod: .sepa
+            ),
+            recurringSubscriptionReceiptCredentialRequestError: recurringError,
+            locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
     }
@@ -439,6 +487,43 @@ final class DonateViewControllerTest: SignalBaseTest {
         let monthlyPaymentRequest = state.monthly!.paymentRequest!
         XCTAssertEqual(monthlyPaymentRequest.amount, 15.as("USD"))
         XCTAssertEqual(monthlyPaymentRequest.supportedPaymentMethods, [.paypal, .applePay])
+    }
+
+    func testPaymentProcessing() {
+        let oneTimeProcessing = loadWithPaymentsProcessing(
+            recurringProcessingViaSubscription: false,
+            recurringProcessingViaError: false
+        )
+
+        switch oneTimeProcessing.oneTime!.paymentRequest {
+        case let .alreadyHasPaymentProcessing(paymentMethod):
+            XCTAssertEqual(paymentMethod, .sepa)
+        case .noAmountSelected, .amountIsTooSmall, .canContinue:
+            XCTFail("Should be payment processing!")
+        }
+
+        /// Simulates a payment that has not yet processed.
+        let recurringProcessingViaSubscription = loadWithPaymentsProcessing(
+            recurringProcessingViaSubscription: true,
+            recurringProcessingViaError: true
+        )
+
+        XCTAssertEqual(
+            recurringProcessingViaSubscription.monthly!.paymentProcessingWithPaymentMethod,
+            .sepa
+        )
+
+        /// Simulates a payment that has processed, but our client hasn't yet
+        /// redeemed a badge for it.
+        let recurringProcessingOnlyViaError = loadWithPaymentsProcessing(
+            recurringProcessingViaSubscription: false,
+            recurringProcessingViaError: true
+        )
+
+        XCTAssertEqual(
+            recurringProcessingOnlyViaError.monthly!.paymentProcessingWithPaymentMethod,
+            .sepa
+        )
     }
 }
 

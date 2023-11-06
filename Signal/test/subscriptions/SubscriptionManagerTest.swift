@@ -44,7 +44,9 @@ class SubscriptionTest: XCTestCase {
             "active": true,
             "cancelAtPeriodEnd": false,
             "status": "active",
-            "processor": "STRIPE"
+            "processor": "STRIPE",
+            "paymentMethod": "CARD",
+            "paymentProcessing": false
         ]
     }()
 

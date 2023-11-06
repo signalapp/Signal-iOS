@@ -22,7 +22,7 @@ extension DonationPaymentDetailsViewController {
                 Stripe.boost(
                     amount: amount,
                     level: .boostBadge,
-                    for: validForm.paymentMethod
+                    for: validForm.stripePaymentMethod
                 )
             }.then(on: DispatchQueue.main) { confirmedIntent in
                 if let redirectUrl = confirmedIntent.redirectToUrl {
@@ -34,19 +34,24 @@ extension DonationPaymentDetailsViewController {
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
                 Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
-                SubscriptionManagerImpl.createAndRedeemBoostReceipt(
-                    for: intentId,
-                    withPaymentProcessor: .stripe,
-                    amount: amount
+
+                SubscriptionManagerImpl.requestAndRedeemReceipt(
+                    boostPaymentIntentId: intentId,
+                    amount: amount,
+                    paymentProcessor: .stripe,
+                    paymentMethod: validForm.donationPaymentMethod
                 )
-                return DonationViewsUtil.waitForSubscriptionJob()
+
+                return DonationViewsUtil.waitForSubscriptionJob(
+                    paymentMethod: .creditOrDebitCard
+                )
             }
         ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Donations] One-time card donation finished")
-            self?.onFinished()
+            self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
             Logger.warn("[Donations] One-time card donation failed")
-            self?.didFailDonation(error: error)
+            self?.onFinished(error)
         }
     }
 }

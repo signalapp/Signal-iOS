@@ -46,7 +46,7 @@ extension DonationPaymentDetailsViewController {
 
                     return Stripe.setupNewSubscription(
                         clientSecret: clientSecret,
-                        paymentMethod: validForm.paymentMethod,
+                        paymentMethod: validForm.stripePaymentMethod,
                         show3DS: { redirectUrl in
                             Logger.info("[Donations] Monthly card donation needs 3DS. Presenting...")
                             return self.show3DS(for: redirectUrl).asVoid()
@@ -61,6 +61,7 @@ extension DonationPaymentDetailsViewController {
                 return SubscriptionManagerImpl.finalizeNewSubscription(
                     forSubscriberId: subscriberId,
                     withPaymentId: paymentId,
+                    usingPaymentProcessor: .stripe,
                     usingPaymentMethod: .creditOrDebitCard,
                     subscription: newSubscriptionLevel,
                     currencyCode: currencyCode
@@ -68,21 +69,24 @@ extension DonationPaymentDetailsViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId in
                 Logger.info("[Donations] Redeeming monthly receipts for card donation")
 
-                DonationViewsUtil.redeemMonthlyReceipts(
-                    usingPaymentProcessor: .stripe,
-                    subscriberID: subscriberId,
-                    newSubscriptionLevel: newSubscriptionLevel,
-                    priorSubscriptionLevel: priorSubscriptionLevel
+                SubscriptionManagerImpl.requestAndRedeemReceipt(
+                    subscriberId: subscriberId,
+                    subscriptionLevel: newSubscriptionLevel.level,
+                    priorSubscriptionLevel: priorSubscriptionLevel?.level,
+                    paymentProcessor: .stripe,
+                    paymentMethod: validForm.donationPaymentMethod
                 )
 
-                return DonationViewsUtil.waitForSubscriptionJob()
+                return DonationViewsUtil.waitForSubscriptionJob(
+                    paymentMethod: .creditOrDebitCard
+                )
             }
         ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Donations] Monthly card donation finished")
-            self?.onFinished()
+            self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
             Logger.info("[Donations] Monthly card donation failed")
-            self?.didFailDonation(error: error)
+            self?.onFinished(error)
         }
     }
 }

@@ -93,6 +93,9 @@ public class DependenciesBridge {
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let socketManager: SocketManager
+
+    public let subscriptionReceiptCredentialResultStore: SubscriptionReceiptCredentialResultStore
+
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
 
@@ -522,6 +525,10 @@ public class DependenciesBridge {
         )
 
         self.signalProtocolStoreManager = signalProtocolStoreManager
+
+        self.subscriptionReceiptCredentialResultStore = SubscriptionReceiptCredentialResultStoreImpl(
+            kvStoreFactory: keyValueStoreFactory
+        )
 
         self.usernameApiClient = UsernameApiClientImpl(
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),

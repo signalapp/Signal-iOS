@@ -66,10 +66,12 @@ extension DonationPaymentDetailsViewController {
             }
         ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Gifting] Gifting card donation finished")
-            self?.onFinished()
+            self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
+            owsAssert(error is DonationViewsUtil.Gifts.SendGiftError)
+
             Logger.warn("[Gifting] Gifting card donation failed")
-            self?.didFailDonation(error: error)
+            self?.onFinished(error)
         }
     }
 }

@@ -502,20 +502,26 @@
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
 
-/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+/* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Learn more.";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Canceled";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. Will have a 'learn more' link appended, when it is rendered. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
-/* Body of the sheet shown when your subscription is canceled due to inactivity */
+/* Body of the sheet shown when your subscription is canceled due to inactivity. Will have a 'learn more' link appended, when it is rendered. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
 
+/* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Your bank transfer was received. You can choose to display this badge on your profile to show off your support.";
+
+/* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
+"BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Donation Complete";
+
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Choose a badge to display on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "You can choose to display this badge on your profile to show off your support.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
@@ -1930,11 +1936,29 @@
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
 
+/* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Bank transfers usually take 1 business day to process. Please wait until this payment completes before making another donation.";
+
+/* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Bank transfers usually take 1 business day to process. Please wait until this payment completes before updating your subscription.";
+
+/* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Your payment is still being processed. This can take a few minutes depending on your connection. Please wait until this payment completes before making another donation.";
+
+/* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Your payment is still being processed. This can take a few minutes depending on your connection. Please wait until this payment completes before updating your subscription.";
+
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
+
+/* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "You have a donation pending";
+
+/* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "You have a donation processing";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
@@ -1956,6 +1980,24 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
+
+/* Message for a sheet explaining that a donation via bank payment has failed. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "We’re having trouble processing your bank transfer. You have not been charged. Try another payment method or contact your bank for more information.";
+
+/* Title for a sheet explaining that a donation via bank payment has failed. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Donation Couldn’t Be Processed";
+
+/* Title for a sheet explaining that a donation via bank payment is pending. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+
+/* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your one-time donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+
+/* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your monthly donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+
+/* Title for a button asking the user to try their donation again, because something went wrong. */
+"DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Try Again";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %@";
@@ -2113,6 +2155,39 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
 
+/* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your bank transfer is pending. Bank transfers usually take 1 business day to process.";
+
+/* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+
+/* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_PENDING" = "Donation Pending";
+
+/* A label describing a donation payment that has failed to process. */
+"DONATION_SETTINGS_MY_SUPPORT_ERROR_PROCESSING_PAYMENT" = "Error Processing Payment";
+
+/* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
+"DONATION_SETTINGS_MY_SUPPORT_MONTHLY_DONATION_CANCELED" = "Monthly Donation Canceled";
+
+/* Message shown in a sheet explaining that a payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_PAYMENT_FAILED_ALERT_MESSAGE" = "Try another payment method or contact your bank for more information.";
+
+/* Title for a sheet explaining that a payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_PAYMENT_FAILED_ALERT_TITLE" = "Error Processing Payment";
+
+/* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
+"DONATION_SETTINGS_MY_SUPPORT_PROCESSING_PAYMENT" = "Processing Payment...";
+
+/* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_ALERT_MESSAGE" = "Your recurring monthly donation has ended because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTry another payment method or contact your bank for more information.";
+
+/* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Monthly Donation Canceled";
+
+/* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ one-time";
+
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
 
@@ -2124,9 +2199,6 @@
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Badges";
-
-/* Title for the 'Manage Subscription' button on the donation screen */
-"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
 "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
@@ -7183,32 +7255,20 @@
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
 
-/* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
-
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
-/* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
-
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
-
-/* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
-
-/* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";

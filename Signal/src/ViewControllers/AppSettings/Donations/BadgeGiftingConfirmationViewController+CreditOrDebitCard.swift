@@ -16,9 +16,21 @@ extension BadgeGiftingConfirmationViewController {
             donationMode: .gift(thread: thread, messageText: messageText),
             // Gifting does not support bank transfers
             paymentMethod: .card
-        ) { [weak self] in
-            self?.didCompleteDonation()
+        ) { [weak self] error in
+            guard let self else { return }
+
+            guard let error else {
+                self.didCompleteDonation()
+                return
+            }
+
+            guard let sendGiftError = error as? DonationViewsUtil.Gifts.SendGiftError else {
+                owsFail("Non-gift error in gifting flow!")
+            }
+
+            DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: sendGiftError)
         }
+
         navigationController.pushViewController(vc, animated: true)
     }
 }

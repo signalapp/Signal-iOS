@@ -16,7 +16,6 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = IncomingGroupSyncOperation
     public let requiresInternet: Bool = false
     public let isEnabled: Bool = true
-    public static let maxRetries: UInt = 0
     public let jobRecordLabel: String = IncomingGroupSyncJobRecord.defaultLabel
 
     public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
@@ -58,6 +57,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
     public weak var durableOperationDelegate: IncomingGroupSyncJobQueue?
     public var jobRecord: IncomingGroupSyncJobRecord
     public var operation: OWSOperation { return self }
+    public let maxRetries: UInt = 0
 
     // MARK: -
 
