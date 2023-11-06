@@ -214,7 +214,7 @@ extension DonationSettingsViewController {
                 case let .paymentProcessing(paymentMethod):
                     self.presentPaymentProcessingActionSheet(paymentMethod: paymentMethod)
                 case .paymentFailed:
-                    self.presentPaymentFailedActionSheet()
+                    self.presentPaymentFailedActionSheet(errorMode: .recurringSubscription)
                 }
             }
         )
@@ -272,7 +272,7 @@ extension DonationSettingsViewController {
                 case let .paymentProcessing(paymentMethod):
                     self.presentPaymentProcessingActionSheet(paymentMethod: paymentMethod)
                 case .paymentFailed:
-                    self.presentPaymentFailedActionSheet()
+                    self.presentPaymentFailedActionSheet(errorMode: .oneTimeBoost)
                 }
             }
         )
@@ -307,7 +307,9 @@ extension DonationSettingsViewController {
         self.presentActionSheet(actionSheet, animated: true)
     }
 
-    private func presentPaymentFailedActionSheet() {
+    private func presentPaymentFailedActionSheet(
+        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+    ) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_PAYMENT_FAILED_ALERT_TITLE",
@@ -319,7 +321,9 @@ extension DonationSettingsViewController {
             )
         )
 
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(okayAndClearErrorActionSheetAction(
+            errorMode: errorMode
+        ))
         actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
             url: SupportConstants.badgeExpirationLearnMoreURL
         ))
@@ -337,10 +341,31 @@ extension DonationSettingsViewController {
             )
         )
 
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(okayAndClearErrorActionSheetAction(
+            errorMode: .recurringSubscription
+        ))
         actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
             url: SupportConstants.badgeExpirationLearnMoreURL
         ))
+    }
+
+    private func okayAndClearErrorActionSheetAction(
+        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+    ) -> ActionSheetAction {
+        return ActionSheetAction(
+            title: CommonStrings.okButton,
+            style: .default
+        ) { _ in
+            self.databaseStorage.write { tx in
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .clearRequestError(errorMode: errorMode, tx: tx.asV2Write)
+            }
+
+            // Not ideal, because this makes network requests. However, this
+            // should be rare, and doing it this way avoids us needing to add
+            // methods for updating the state outside the normal loading flow.
+            self.loadAndUpdateState()
+        }
     }
 
     private func mySupportErrorIconView() -> UIView {

@@ -110,7 +110,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Data loading
 
-    private func loadAndUpdateState() {
+    func loadAndUpdateState() {
         switch state {
         case .loading:
             return

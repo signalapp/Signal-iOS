@@ -56,10 +56,6 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
     ) {
         Logger.info("[Donations] Adding a boost job")
 
-        // Clear any errors from prior boosts.
-        DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-            .clearRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Write)
-
         let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             paymentMethod: paymentMethod.rawValue,
@@ -95,10 +91,6 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
-
-        // Clear any errors from prior subscriptions.
-        DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-            .clearRequestError(errorMode: .recurringSubscription, tx: transaction.asV2Write)
 
         let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
