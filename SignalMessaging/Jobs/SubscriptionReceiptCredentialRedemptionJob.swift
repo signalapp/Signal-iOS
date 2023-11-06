@@ -654,13 +654,6 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             return
         }
 
-        guard
-            let amount = self.amount,
-            let badge = self.badge
-        else {
-            owsFail("How did we get an operation error without an amount and badge?")
-        }
-
         let persistArtificialPaymentFailure: Bool
 
         switch operationError {
@@ -679,6 +672,13 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         case let .other(errorCode):
             Logger.error("[Donations] Failed to redeem receipt credential! \(errorCode)")
             persistArtificialPaymentFailure = false
+        }
+
+        guard
+            let amount = self.amount,
+            let badge = self.badge
+        else {
+            owsFail("How did we get a operation error by interacting with the service, without an amount and badge?")
         }
 
         self.databaseStorage.write { tx in
