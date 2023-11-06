@@ -327,6 +327,7 @@ extension DonationSettingsViewController {
         actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
             url: SupportConstants.badgeExpirationLearnMoreURL
         ))
+        self.presentActionSheet(actionSheet, animated: true)
     }
 
     private func presentRecurringSubscriptionLapsedActionSheet() {
@@ -347,6 +348,7 @@ extension DonationSettingsViewController {
         actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
             url: SupportConstants.badgeExpirationLearnMoreURL
         ))
+        self.presentActionSheet(actionSheet, animated: true)
     }
 
     private func okayAndClearErrorActionSheetAction(
