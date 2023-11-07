@@ -94,8 +94,7 @@ public class DonationUtilities: Dependencies {
         }()
 
         let isSEPAAvailable = {
-            guard FeatureFlags.allowSEPADonations else { return false }
-            // TODO: [SEPA] Read remote config supported regions
+            guard RemoteConfig.sepaEnabledRegions.contains(e164: localNumber) || FeatureFlags.allowSEPADonations else { return false }
             switch donationMode {
             case .oneTime, .monthly:
                 return true

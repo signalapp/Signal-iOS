@@ -86,7 +86,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let allowSEPADonations = build.includes(.dev)
+    public static let allowSEPADonations = build.includes(.internal)
 
     @objc
     public static var notificationServiceExtension: Bool {

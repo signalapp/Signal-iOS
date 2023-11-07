@@ -28,6 +28,7 @@ public class RemoteConfig: BaseFlags {
     private let applePayDisabledRegions: PhoneNumberRegions
     private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
     private let paypalDisabledRegions: PhoneNumberRegions
+    private let sepaEnabledRegions: PhoneNumberRegions
 
     init(
         clockSkew: TimeInterval,
@@ -45,6 +46,7 @@ public class RemoteConfig: BaseFlags {
         self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
         self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
         self.paypalDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paypalDisabledRegions)
+        self.sepaEnabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .sepaEnabledRegions)
     }
 
     @objc
@@ -104,6 +106,11 @@ public class RemoteConfig: BaseFlags {
     public static var creditAndDebitCardDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.creditAndDebitCardDisabledRegions
+    }
+
+    public static var sepaEnabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.sepaEnabledRegions
     }
 
     public static var canDonateOneTimeWithApplePay: Bool {
@@ -542,6 +549,7 @@ private struct Flags {
         case applePayDisabledRegions
         case creditAndDebitCardDisabledRegions
         case paypalDisabledRegions
+        case sepaEnabledRegions
         case maxGroupCallRingSize
     }
 
@@ -563,6 +571,7 @@ private struct Flags {
         case applePayDisabledRegions
         case creditAndDebitCardDisabledRegions
         case paypalDisabledRegions
+        case sepaEnabledRegions
         case maxGroupCallRingSize
         case minNicknameLength
         case maxNicknameLength
@@ -610,6 +619,7 @@ private extension FlagType {
         case "applePayDisabledRegions": return "global.donations.apayDisabledRegions"
         case "creditAndDebitCardDisabledRegions": return "global.donations.ccDisabledRegions"
         case "paypalDisabledRegions": return "global.donations.paypalDisabledRegions"
+        case "sepaEnabledRegions": return "global.donations.sepaEnabledRegions"
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         case "minNicknameLength": return "global.nicknames.min"
         case "maxNicknameLength": return "global.nicknames.max"
