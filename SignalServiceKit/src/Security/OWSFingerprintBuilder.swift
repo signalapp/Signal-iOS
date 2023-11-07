@@ -36,14 +36,14 @@ public class OWSFingerprintBuilder {
     ) -> FingerprintResult? {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read),
-            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey
+            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.keyPair.identityKey,
+            let theirAciIdentityKey = try? theirRecipientIdentity.identityKeyObject
         else {
             owsFailDebug("Missing local properties!")
             return nil
         }
         let myAci = localIdentifiers.aci
 
-        let theirAciIdentityKey = theirRecipientIdentity.identityKey
         let theirName = contactsManager.displayName(for: SignalServiceAddress(theirAci), transaction: tx)
 
         let aciFingerprint = OWSFingerprint(

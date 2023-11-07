@@ -10,11 +10,10 @@ public class SignalServiceProfile {
 
     public enum ValidationError: Error {
         case invalid(description: String)
-        case invalidIdentityKey(description: String)
     }
 
     public let serviceId: ServiceId
-    public let identityKey: Data
+    public let identityKey: IdentityKey
     public let profileNameEncrypted: Data?
     public let bioEncrypted: Data?
     public let bioEmojiEncrypted: Data?
@@ -33,16 +32,7 @@ public class SignalServiceProfile {
 
         self.serviceId = serviceId
 
-        let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        guard identityKeyWithType.count == OWSIdentityManagerImpl.Constants.identityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
-        }
-        do {
-            self.identityKey = try identityKeyWithType.removeKeyType()
-        } catch {
-            owsFailDebug("identify key had unexpected format")
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString)")
-        }
+        self.identityKey = try IdentityKey(bytes: try params.requiredBase64EncodedData(key: "identityKey"))
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
 

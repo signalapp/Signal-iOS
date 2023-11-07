@@ -67,7 +67,7 @@ final class MockIdentityManager: OWSIdentityManager {
     func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
     func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
     func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }
-    func isTrustedIdentityKey(_ identityKey: Data, serviceId: ServiceId, direction: TSMessageDirection, tx: DBReadTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
+    func isTrustedIdentityKey(_ identityKey: IdentityKey, serviceId: ServiceId, direction: TSMessageDirection, tx: DBReadTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
     func tryToSyncQueuedVerificationStates() { fatalError() }
     func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> VerificationState { fatalError() }
     func setVerificationState(_ verificationState: VerificationState, of identityKey: Data, for address: SignalServiceAddress, isUserInitiatedChange: Bool, tx: DBWriteTransaction) -> ChangeVerificationStateResult { fatalError() }

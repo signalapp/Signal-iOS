@@ -694,7 +694,6 @@
 		504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */; };
 		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
 		505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */; };
-		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
@@ -2085,7 +2084,6 @@
 		F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4F289453B100548EEE /* SDSSerializable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA51289453B100548EEE /* StorageCoordinator.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA54289453B100548EEE /* CallKitIdStore.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2095,7 +2093,6 @@
 		F9C5CD38289453B300548EEE /* SSKPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3A289453B300548EEE /* CallKitIdStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5C289453B100548EEE /* CallKitIdStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA61289453B100548EEE /* LegacyRootKey.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3291,7 +3288,6 @@
 		504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
 		505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponse.swift; sourceTree = "<group>"; };
-		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
 		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
@@ -4782,7 +4778,6 @@
 		F9C5CA4F289453B100548EEE /* SDSSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSSerializable.swift; sourceTree = "<group>"; };
 		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
 		F9C5CA51289453B100548EEE /* StorageCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StorageCoordinator.m; sourceTree = "<group>"; };
-		F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+keyVersionByte.h"; sourceTree = "<group>"; };
 		F9C5CA54289453B100548EEE /* CallKitIdStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallKitIdStore.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
@@ -4792,7 +4787,6 @@
 		F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKPreKeyStore.h; sourceTree = "<group>"; };
 		F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxolotlExceptions.h; sourceTree = "<group>"; };
 		F9C5CA5C289453B100548EEE /* CallKitIdStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallKitIdStore.h; sourceTree = "<group>"; };
-		F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+keyVersionByte.m"; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
 		F9C5CA61289453B100548EEE /* LegacyRootKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyRootKey.m; sourceTree = "<group>"; };
@@ -9609,9 +9603,6 @@
 				F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */,
 				F9C5CA5C289453B100548EEE /* CallKitIdStore.h */,
 				F9C5CA54289453B100548EEE /* CallKitIdStore.m */,
-				505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */,
-				F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */,
-				F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
 				C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */,
@@ -10143,7 +10134,6 @@
 				F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */,
 				F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
-				F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */,
 				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
 				F9C5CE15289453B400548EEE /* NSTimer+OWS.h in Headers */,
 				F9C5CDE9289453B400548EEE /* NSUserDefaults+OWS.h in Headers */,
@@ -12473,7 +12463,6 @@
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
-				505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
@@ -12668,7 +12657,6 @@
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
-				F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,

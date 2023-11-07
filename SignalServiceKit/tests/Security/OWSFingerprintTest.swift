@@ -13,8 +13,8 @@ final class OWSFingerprintTest: XCTestCase {
         let aliceAci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let bobAci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000b1")
 
-        let aliceIdentityKey = ECKeyPair.generateKeyPair().publicKey
-        let bobIdentityKey = ECKeyPair.generateKeyPair().publicKey
+        let aliceIdentityKey = IdentityKeyPair.generate().identityKey
+        let bobIdentityKey = IdentityKeyPair.generate().identityKey
 
         let aliceToBobFingerprint = OWSFingerprint(
             myAci: aliceAci,
@@ -46,9 +46,9 @@ final class OWSFingerprintTest: XCTestCase {
         let bobAci = Aci.randomForTesting()
         let charlieAci = Aci.randomForTesting()
 
-        let aliceIdentityKey = ECKeyPair.generateKeyPair().publicKey
-        let bobIdentityKey = ECKeyPair.generateKeyPair().publicKey
-        let charlieIdentityKey = ECKeyPair.generateKeyPair().publicKey
+        let aliceIdentityKey = IdentityKeyPair.generate().identityKey
+        let bobIdentityKey = IdentityKeyPair.generate().identityKey
+        let charlieIdentityKey = IdentityKeyPair.generate().identityKey
 
         let aliceToBobFingerprint = OWSFingerprint(
             myAci: aliceAci,

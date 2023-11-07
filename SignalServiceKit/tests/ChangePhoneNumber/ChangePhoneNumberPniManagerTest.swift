@@ -64,7 +64,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertEqual(e164, pendingState.newE164)
 
         XCTAssertEqual(identityManagerMock.generatedKeyPairs.count, 1)
-        XCTAssertEqual(identityManagerMock.generatedKeyPairs.first?.publicKey, parameters.pniIdentityKey)
+        XCTAssertEqual(identityManagerMock.generatedKeyPairs.first?.keyPair.identityKey, parameters.pniIdentityKey)
         XCTAssertEqual(identityManagerMock.generatedKeyPairs.first, pendingState.pniIdentityKeyPair)
 
         XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)

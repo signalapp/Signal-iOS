@@ -4,7 +4,6 @@
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
-#import "NSData+keyVersionByte.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSContactThread.h"
 #import "TSOutgoingMessage.h"

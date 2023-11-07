@@ -58,7 +58,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localDevicePniRegistrationId: localRegistrationId
         ).awaitable().unwrapSuccess
 
-        XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.publicKey)
+        XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
         XCTAssertEqual(
             Set(parameters.devicePniSignedPreKeys.values),
@@ -131,7 +131,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localDevicePniRegistrationId: localRegistrationId
         ).awaitable().unwrapSuccess
 
-        XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.publicKey)
+        XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
         // We should have generated a pre-key we threw away, for the invalid
         // device.

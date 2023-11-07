@@ -10,8 +10,8 @@ public class OWSFingerprint {
     public let myAci: Aci
     public let theirAci: Aci
 
-    public let myAciIdentityKey: Data
-    public let theirAciIdentityKey: Data
+    public let myAciIdentityKey: IdentityKey
+    public let theirAciIdentityKey: IdentityKey
 
     private let myFingerprintData: Data
     private let theirFingerprintData: Data
@@ -33,16 +33,14 @@ public class OWSFingerprint {
     public init(
         myAci: Aci,
         theirAci: Aci,
-        myAciIdentityKey: Data,
-        theirAciIdentityKey: Data,
+        myAciIdentityKey: IdentityKey,
+        theirAciIdentityKey: IdentityKey,
         theirName: String,
         hashIterations: UInt32 = Constants.defaultHashIterations
     ) {
         self.myAci = myAci
         self.theirAci = theirAci
-        let myAciIdentityKey = myAciIdentityKey.prependKeyType()
         self.myAciIdentityKey = myAciIdentityKey
-        let theirAciIdentityKey = theirAciIdentityKey.prependKeyType()
         self.theirAciIdentityKey = theirAciIdentityKey
         self.hashIterations = hashIterations
         self.theirName = theirName
@@ -223,8 +221,10 @@ public class OWSFingerprint {
      * @return
      *      All-number textual representation
      */
-    private static func dataForStableAddress(_ stableAddressData: Data, publicKey: Data, hashIterations: UInt32) -> Data {
-        var hash = Constants.hashingVersion.bigEndianData.suffix(2)
+    private static func dataForStableAddress(_ stableAddressData: Data, publicKey: IdentityKey, hashIterations: UInt32) -> Data {
+        let publicKey = publicKey.serialize().asData
+
+        var hash = Constants.hashingVersion.bigEndianData
         hash.append(publicKey)
         hash.append(stableAddressData)
 
@@ -288,7 +288,7 @@ public class OWSFingerprint {
     }
 
     public enum Constants {
-        static let hashingVersion: UInt32 = 0
+        static let hashingVersion: UInt16 = 0
         static let aciScannableFormatVersion: UInt32 = 2
         public static let defaultHashIterations: UInt32 = 5200
     }

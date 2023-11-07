@@ -35,7 +35,7 @@ public protocol OWSIdentityManager {
     ) -> OWSRecipientIdentity?
 
     func isTrustedIdentityKey(
-        _ identityKey: Data,
+        _ identityKey: IdentityKey,
         serviceId: ServiceId,
         direction: TSMessageDirection,
         tx: DBReadTransaction
@@ -62,6 +62,13 @@ public protocol OWSIdentityManager {
     func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void>
 }
 
+extension OWSIdentityManager {
+    @discardableResult
+    public func saveIdentityKey(_ identityKey: IdentityKey, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> {
+        return saveIdentityKey(identityKey.publicKey.keyBytes.asData, for: serviceId, tx: tx)
+    }
+}
+
 public enum TSMessageDirection {
     case incoming
     case outgoing
@@ -81,12 +88,6 @@ private extension TSMessageDirection {
         case .sending:
             self = .outgoing
         }
-    }
-}
-
-extension IdentityKey {
-    fileprivate func serializeAsData() -> Data {
-        return Data(publicKey.keyBytes)
     }
 }
 
@@ -125,25 +126,25 @@ public class IdentityStore: IdentityKeyStore {
     }
 
     public func saveIdentity(
-        _ identity: IdentityKey,
+        _ identityKey: IdentityKey,
         for address: ProtocolAddress,
         context: StoreContext
     ) throws -> Bool {
         try identityManager.saveIdentityKey(
-            identity.serializeAsData(),
+            identityKey,
             for: address.serviceId,
             tx: context.asTransaction.asV2Write
         ).get()
     }
 
     public func isTrustedIdentity(
-        _ identity: IdentityKey,
+        _ identityKey: IdentityKey,
         for address: ProtocolAddress,
         direction: Direction,
         context: StoreContext
     ) throws -> Bool {
         return try identityManager.isTrustedIdentityKey(
-            identity.serializeAsData(),
+            identityKey,
             serviceId: address.serviceId,
             direction: TSMessageDirection(direction),
             tx: context.asTransaction.asV2Read
@@ -496,16 +497,14 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     public func isTrustedIdentityKey(
-        _ identityKey: Data,
+        _ identityKey: IdentityKey,
         serviceId: ServiceId,
         direction: TSMessageDirection,
         tx: DBReadTransaction
     ) -> Result<Bool, RecipientIdError> {
-        owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
-
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         if localIdentifiers?.aci == serviceId {
-            return .success(isTrustedLocalKey(identityKey, tx: tx))
+            return .success(isTrustedLocalKey(identityKey.publicKey.keyBytes.asData, tx: tx))
         }
 
         switch direction {
@@ -518,7 +517,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             }
             return recipientIdResult.map {
                 return isTrustedKey(
-                    identityKey,
+                    identityKey.publicKey.keyBytes.asData,
                     forSendingTo: OWSRecipientIdentity.anyFetch(uniqueId: $0, transaction: SDSDB.shimOnlyBridge(tx)),
                     untrustedThreshold: nil
                 )
@@ -668,8 +667,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return nil
         }
 
-        let identityKey = recipientIdentity.identityKey.prependKeyType()
-        guard identityKey.count == Constants.identityKeyLength else {
+        guard let identityKey = try? recipientIdentity.identityKeyObject else {
             owsFailDebug("Invalid recipient identity key for \(recipientId)")
             return nil
         }
@@ -690,7 +688,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         return OWSVerificationStateSyncMessage(
             thread: localThread,
             verificationState: recipientIdentity.verificationState,
-            identityKey: identityKey,
+            identityKey: identityKey.serialize().asData,
             verificationForRecipientAddress: recipient.address,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
@@ -819,10 +817,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             return owsFailDebug("Verification state sync message missing destination.")
         }
         Logger.info("Received verification state message for \(aci)")
-        guard let rawIdentityKey = verified.identityKey, rawIdentityKey.count == Constants.identityKeyLength else {
+        guard let rawIdentityKey = verified.identityKey else {
             return owsFailDebug("Verification state sync message for \(aci) with malformed identityKey")
         }
-        let identityKey = try rawIdentityKey.removeKeyType()
+        let identityKey = try IdentityKey(bytes: rawIdentityKey)
 
         switch verified.state {
         case .default:
@@ -856,7 +854,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private func applyVerificationStateAction(
         _ verificationStateAction: VerificationStateAction,
         aci: Aci,
-        identityKey: Data,
+        identityKey: IdentityKey,
         overwriteOnConflict: Bool,
         tx: DBWriteTransaction
     ) {
@@ -871,7 +869,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             if recipientIdentity.accountId != recipientId {
                 return owsFailDebug("Unexpected recipientId for \(aci)")
             }
-            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey
+            let didChangeIdentityKey = recipientIdentity.identityKey != identityKey.publicKey.keyBytes.asData
             if didChangeIdentityKey, !overwriteOnConflict {
                 // The conflict case where we receive a verification sync message whose
                 // identity key disagrees with the local identity key for this recipient.
@@ -902,7 +900,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         guard recipientIdentity.accountId == recipientId else {
             return owsFailDebug("Unexpected recipientId for \(aci)")
         }
-        guard recipientIdentity.identityKey == identityKey else {
+        guard recipientIdentity.identityKey == identityKey.publicKey.keyBytes.asData else {
             return owsFailDebug("Unexpected identityKey for \(aci)")
         }
 
@@ -994,9 +992,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
             let elements = self.db.read { tx in
                 batchServiceIds.compactMap { serviceId -> [String: String]? in
-                    guard let identityKey = self.identityKey(for: SignalServiceAddress(serviceId), tx: tx) else { return nil }
+                    guard let identityKey = try? self.identityKey(for: serviceId, tx: tx) else { return nil }
 
-                    let externalIdentityKey = identityKey.prependKeyType()
+                    let externalIdentityKey = identityKey.serialize().asData
                     guard let identityKeyDigest = Cryptography.computeSHA256Digest(externalIdentityKey) else {
                         owsFailDebug("Failed to calculate SHA-256 digest for batch identity key update")
                         return nil
@@ -1037,8 +1035,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     guard
                         let encodedIdentityKey = element["identityKey"],
                         let externalIdentityKey = Data(base64Encoded: encodedIdentityKey),
-                        externalIdentityKey.count == Constants.identityKeyLength,
-                        let identityKey = try? externalIdentityKey.removeKeyType()
+                        let identityKey = try? IdentityKey(bytes: externalIdentityKey)
                     else {
                         owsFailDebug("Missing or invalid identity key in batch identity response")
                         continue

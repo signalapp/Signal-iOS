@@ -273,8 +273,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Identity
 
-        if let identityKey = identityManager.identityKey(for: anyAddress, tx: tx.asV2Read) {
-            builder.setIdentityKey(identityKey.prependKeyType())
+        if let identityKey = try? identityManager.identityKey(for: contact.serviceIds.aciOrElsePni, tx: tx.asV2Read) {
+            builder.setIdentityKey(identityKey.serialize().asData)
         }
 
         let verificationState = identityManager.verificationState(for: anyAddress, tx: tx.asV2Read)
@@ -487,9 +487,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         // If our local identity differs from the service, use the service's value.
-        let localIdentityKey = identityManager.identityKey(for: anyAddress, tx: tx)
+        let localIdentityKey = try? identityManager.identityKey(for: serviceIds.aciOrElsePni, tx: tx)
         if
-            let identityKey = try? record.identityKey?.removeKeyType(),
+            let identityKey = record.identityKey.flatMap({ try? IdentityKey(bytes: $0) }),
             let identityState = record.identityState?.verificationState
         {
             if identityKey != localIdentityKey {
@@ -500,7 +500,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             if identityState != localIdentityState {
                 _ = identityManager.setVerificationState(
                     identityState,
-                    of: identityKey,
+                    of: identityKey.publicKey.keyBytes.asData,
                     for: anyAddress,
                     isUserInitiatedChange: false,
                     tx: tx

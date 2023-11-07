@@ -22,7 +22,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     }
 
     func testNewEmptyKey() throws {
-        let newKey = Randomness.generateRandomBytes(32)
+        let newKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
             _ = DependenciesBridge.shared.recipientIdFinder.ensureRecipientId(for: aci, tx: transaction.asV2Write)
@@ -42,7 +42,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     }
 
     func testAlreadyRegisteredKey() throws {
-        let newKey = Randomness.generateRandomBytes(32)
+        let newKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
             identityManager.saveIdentityKey(newKey, for: aci, tx: transaction.asV2Write)
@@ -62,7 +62,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     }
 
     func testChangedKey() throws {
-        let originalKey = Randomness.generateRandomBytes(32)
+        let originalKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
             identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction.asV2Write)
@@ -80,7 +80,7 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
                 tx: transaction.asV2Read
             ).get())
 
-            let otherKey = Randomness.generateRandomBytes(32)
+            let otherKey = IdentityKeyPair.generate().identityKey
 
             XCTAssertFalse(try identityManager.isTrustedIdentityKey(
                 otherKey,

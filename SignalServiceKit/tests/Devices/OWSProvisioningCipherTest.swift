@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import XCTest
+import LibSignalClient
 import SignalCoreKit
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -17,7 +18,7 @@ final class OWSProvisioningCipherTest: XCTestCase {
         0xab, 0x79, 0xe0, 0x09
     ])
 
-    private let knownPublicKey = Data([
+    private let knownPublicKey = try! PublicKey(keyData: Data([
         0x5e, 0x23, 0xe8, 0x49,
         0xb2, 0x23, 0x21, 0xdb,
         0x2e, 0x3a, 0x77, 0x74,
@@ -26,7 +27,7 @@ final class OWSProvisioningCipherTest: XCTestCase {
         0xd5, 0xc2, 0x91, 0xaf,
         0xed, 0xfb, 0x21, 0x4e,
         0x59, 0xcc, 0x19, 0xa4
-    ])
+    ]))
 
     private let knownKeyPair = try! ECKeyPair(
         publicKeyData: Data([

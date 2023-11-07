@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 
 class DeviceProvisioningURL {
 
     let ephemeralDeviceId: String
 
-    let publicKey: Data
+    let publicKey: PublicKey
 
     init?(urlString: String) {
         guard let queryItems = URLComponents(string: urlString)?.queryItems else {
@@ -17,7 +18,7 @@ class DeviceProvisioningURL {
         }
 
         var ephemeralDeviceId: String?
-        var publicKey: Data?
+        var publicKey: PublicKey?
         for queryItem in queryItems {
             switch queryItem.name {
             case "uuid":
@@ -37,18 +38,18 @@ class DeviceProvisioningURL {
         self.publicKey = publicKey
     }
 
-    private static func decodePublicKey(_ encodedPublicKey: String?) -> Data? {
+    private static func decodePublicKey(_ encodedPublicKey: String?) -> PublicKey? {
         guard let encodedPublicKey else {
             return nil
         }
-        guard let annotatedKey = Data(base64Encoded: encodedPublicKey, options: [.ignoreUnknownCharacters]) else {
+        guard let annotatedPublicKey = Data(base64Encoded: encodedPublicKey, options: [.ignoreUnknownCharacters]) else {
             return nil
         }
-        let publicKey: Data
+        let publicKey: PublicKey
         do {
-            publicKey = try (annotatedKey as NSData).removeKeyType() as Data
+            publicKey = try PublicKey(annotatedPublicKey)
         } catch {
-            owsFailDebug("failed to strip key type: \(error)")
+            owsFailDebug("failed to parse key: \(error)")
             return nil
         }
         return publicKey

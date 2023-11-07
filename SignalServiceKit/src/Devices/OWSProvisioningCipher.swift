@@ -19,29 +19,30 @@ public class OWSProvisioningCipher: NSObject {
     private static let cipherKeyLength: Int = 32
     private static let macKeyLength: Int = 32
 
-    private let theirPublicKeyData: Data
+    private let theirPublicKey: PublicKey
     private let ourKeyPair: IdentityKeyPair
     private let initializationVector: Data
 
-    @objc
-    public convenience init(theirPublicKey: Data) {
+    public convenience init(theirPublicKey: PublicKey) {
         self.init(
             theirPublicKey: theirPublicKey,
             ourKeyPair: IdentityKeyPair.generate(),
-            initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128)))
+            initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128))
+        )
     }
 
     #if TESTABLE_BUILD
-    public convenience init(theirPublicKey: Data, ourKeyPair: ECKeyPair, initializationVector: Data) {
+    public convenience init(theirPublicKey: PublicKey, ourKeyPair: ECKeyPair, initializationVector: Data) {
         self.init(
             theirPublicKey: theirPublicKey,
             ourKeyPair: ourKeyPair.identityKeyPair,
-            initializationVector: initializationVector)
+            initializationVector: initializationVector
+        )
     }
     #endif
 
-    private init(theirPublicKey: Data, ourKeyPair: IdentityKeyPair, initializationVector: Data) {
-        self.theirPublicKeyData = theirPublicKey
+    private init(theirPublicKey: PublicKey, ourKeyPair: IdentityKeyPair, initializationVector: Data) {
+        self.theirPublicKey = theirPublicKey
         self.ourKeyPair = ourKeyPair
         self.initializationVector = initializationVector
     }
@@ -53,8 +54,7 @@ public class OWSProvisioningCipher: NSObject {
     @objc
     public func encrypt(_ data: Data) -> Data? {
         do {
-            let theirPublicKey = try! PublicKey(keyData: theirPublicKeyData)
-            let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
+            let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)
 
             let infoData = ProvisioningCipher.messageInfo
             let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {

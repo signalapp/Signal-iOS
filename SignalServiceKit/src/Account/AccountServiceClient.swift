@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum AccountServiceClientError: Error {
     case captchaRequired
@@ -21,9 +22,9 @@ public class AccountServiceClient: NSObject {
 
     public func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: Data,
-        signedPreKeyRecord: SignedPreKeyRecord?,
-        preKeyRecords: [PreKeyRecord]?,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
+        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
@@ -39,7 +40,7 @@ public class AccountServiceClient: NSObject {
         )
     }
 
-    public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
+    public func setSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
         return serviceClient.setCurrentSignedPreKey(signedPreKey, for: identity)
     }
 

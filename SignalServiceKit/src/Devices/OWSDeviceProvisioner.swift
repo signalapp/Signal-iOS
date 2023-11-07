@@ -16,7 +16,7 @@ public final class OWSDeviceProvisioner {
 
     private let myAciIdentityKeyPair: IdentityKeyPair
     private let myPniIdentityKeyPair: IdentityKeyPair
-    private let theirPublicKey: Data
+    private let theirPublicKey: PublicKey
     private let ephemeralDeviceId: String
     private let myAci: Aci
     private let myPhoneNumber: String
@@ -31,7 +31,7 @@ public final class OWSDeviceProvisioner {
     public init(
         myAciIdentityKeyPair: IdentityKeyPair,
         myPniIdentityKeyPair: IdentityKeyPair,
-        theirPublicKey: Data,
+        theirPublicKey: PublicKey,
         theirEphemeralDeviceId: String,
         myAci: Aci,
         myPhoneNumber: String,

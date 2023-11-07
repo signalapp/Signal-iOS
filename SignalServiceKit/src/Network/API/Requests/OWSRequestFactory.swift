@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -334,18 +335,18 @@ extension DeviceMessage {
 
 extension OWSRequestFactory {
     @objc
-    static func preKeyRequestParameters(_ preKeyRecord: PreKeyRecord) -> [String: Any] {
+    static func preKeyRequestParameters(_ preKeyRecord: SignalServiceKit.PreKeyRecord) -> [String: Any] {
         [
             "keyId": preKeyRecord.id,
-            "publicKey": preKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding()
+            "publicKey": preKeyRecord.keyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding()
         ]
     }
 
     @objc
-    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignedPreKeyRecord) -> [String: Any] {
+    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord) -> [String: Any] {
         [
             "keyId": signedPreKeyRecord.id,
-            "publicKey": signedPreKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
+            "publicKey": signedPreKeyRecord.keyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
             "signature": signedPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
@@ -353,7 +354,7 @@ extension OWSRequestFactory {
     static func pqPreKeyRequestParameters(_ pqPreKeyRecord: KyberPreKeyRecord) -> [String: Any] {
         [
             "keyId": pqPreKeyRecord.id,
-            "publicKey": Data(pqPreKeyRecord.keyPair.publicKey.serialize()).base64EncodedStringWithoutPadding(),
+            "publicKey": pqPreKeyRecord.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
             "signature": pqPreKeyRecord.signature.base64EncodedStringWithoutPadding()
         ]
     }
@@ -363,15 +364,13 @@ extension OWSRequestFactory {
     /// TSAccountManager).
     static func registerPrekeysRequest(
         identity: OWSIdentity,
-        identityKey: Data,
-        signedPreKeyRecord: SignedPreKeyRecord?,
-        prekeyRecords: [PreKeyRecord]?,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
+        prekeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> TSRequest {
-        owsAssertDebug(identityKey.count > 0)
-
         var path = textSecureKeysAPI
         if let queryParam = queryParam(for: identity) {
             path = path.appending("?\(queryParam)")
@@ -379,7 +378,7 @@ extension OWSRequestFactory {
 
         var parameters = [String: Any]()
 
-        parameters["identityKey"] = identityKey.prependKeyType().base64EncodedStringWithoutPadding()
+        parameters["identityKey"] = identityKey.serialize().asData.base64EncodedStringWithoutPadding()
         if let signedPreKeyRecord {
             parameters["signedPreKey"] = signedPreKeyRequestParameters(signedPreKeyRecord)
         }

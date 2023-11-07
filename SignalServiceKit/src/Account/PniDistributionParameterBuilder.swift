@@ -14,13 +14,13 @@ public enum PniDistribution {
 
     /// Parameters for distributing PNI information to linked devices.
     public struct Parameters {
-        let pniIdentityKey: Data
+        let pniIdentityKey: IdentityKey
         private(set) var devicePniSignedPreKeys: [String: SignalServiceKit.SignedPreKeyRecord] = [:]
         private(set) var devicePniPqLastResortPreKeys: [String: KyberPreKeyRecord] = [:]
         private(set) var pniRegistrationIds: [String: UInt32] = [:]
         private(set) var deviceMessages: [DeviceMessage] = []
 
-        fileprivate init(pniIdentityKey: Data) {
+        fileprivate init(pniIdentityKey: IdentityKey) {
             self.pniIdentityKey = pniIdentityKey
         }
 
@@ -33,7 +33,7 @@ public enum PniDistribution {
             localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) -> Parameters {
-            var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
+            var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.keyPair.identityKey)
             mock.addLocalDevice(
                 localDeviceId: localDeviceId,
                 signedPreKey: localDevicePniSignedPreKey,
@@ -73,7 +73,7 @@ public enum PniDistribution {
 
         func requestParameters() -> [String: Any] {
             [
-                "pniIdentityKey": pniIdentityKey.prependKeyType().base64EncodedString(),
+                "pniIdentityKey": pniIdentityKey.serialize().asData.base64EncodedString(),
                 "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
                 "devicePniPqLastResortPrekeys": devicePniPqLastResortPreKeys.mapValues { OWSRequestFactory.pqPreKeyRequestParameters($0) },
                 "deviceMessages": deviceMessages.map { $0.requestParameters() },
@@ -143,7 +143,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
-        var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.publicKey)
+        var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.keyPair.identityKey)
 
         // Include the signed pre key & registration ID for the current device.
         parameters.addLocalDevice(

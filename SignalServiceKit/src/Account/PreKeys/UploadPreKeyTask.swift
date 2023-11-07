@@ -42,7 +42,7 @@ extension PreKeyTasks {
 
             return self.serviceClient.setPreKeys(
                 for: bundle.identity,
-                identityKey: bundle.identityKeyPair.publicKey,
+                identityKey: bundle.identityKeyPair.keyPair.identityKey,
                 signedPreKeyRecord: bundle.getSignedPreKey(),
                 preKeyRecords: bundle.getPreKeyRecords(),
                 pqLastResortPreKeyRecord: bundle.getLastResortPreKey(),

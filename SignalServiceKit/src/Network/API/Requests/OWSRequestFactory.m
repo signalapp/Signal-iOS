@@ -4,7 +4,6 @@
 //
 
 #import "OWSRequestFactory.h"
-#import "NSData+keyVersionByte.h"
 #import "OWS2FAManager.h"
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"

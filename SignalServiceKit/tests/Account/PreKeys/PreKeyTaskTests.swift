@@ -161,7 +161,7 @@ final class PreKeyTaskTests: XCTestCase {
         testSchedulers.scheduler.start()
 
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertEqual(mockServiceClient.identityKey, mockIdentityManager.aciKeyPair!.publicKey)
+        XCTAssertEqual(mockServiceClient.identityKey, mockIdentityManager.aciKeyPair!.keyPair.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
         XCTAssertEqual(mockServiceClient.pqPreKeyRecords?.count, 100)

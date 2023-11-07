@@ -40,6 +40,12 @@ public enum VerificationState: Equatable {
 }
 
 extension OWSRecipientIdentity {
+    public var identityKeyObject: IdentityKey {
+        get throws {
+            try IdentityKey(publicKey: PublicKey(keyData: identityKey))
+        }
+    }
+
     public class func groupContainsUnverifiedMember(
         _ threadUniqueId: String,
         transaction: SDSAnyReadTransaction

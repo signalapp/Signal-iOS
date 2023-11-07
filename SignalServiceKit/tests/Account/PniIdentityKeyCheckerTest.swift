@@ -63,29 +63,29 @@ final class PniIdentityKeyCheckerTest: XCTestCase {
     }
 
     func testErrorMatchingIfProfileFetchFails() {
-        identityManagerMock.pniPublicKeyData = Data()
+        identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .error()
 
         XCTAssertThrowsError(try checkForMatch())
     }
 
     func testDoesNotMatchIfRemotePniIdentityKeyMissing() throws {
-        identityManagerMock.pniPublicKeyData = Data()
+        identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .value(nil)
 
         XCTAssertFalse(try checkForMatch())
     }
 
     func testDoesNotMatchIfRemotePniIdentityKeyDiffers() throws {
-        identityManagerMock.pniPublicKeyData = Data([1])
-        profileFetcherMock.profileFetchResult = .value(Data([2]))
+        identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
+        profileFetcherMock.profileFetchResult = .value(try! IdentityKey(bytes: [0x05] + Data(repeating: 1, count: 32)))
 
         XCTAssertFalse(try checkForMatch())
     }
 
     func testMatchesIfRemotePniIdentityKeyMatches() throws {
-        identityManagerMock.pniPublicKeyData = Data()
-        profileFetcherMock.profileFetchResult = .value(Data())
+        identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
+        profileFetcherMock.profileFetchResult = .value(try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32)))
 
         XCTAssertTrue(try checkForMatch())
     }
@@ -96,19 +96,19 @@ final class PniIdentityKeyCheckerTest: XCTestCase {
 // MARK: IdentityManager
 
 private class IdentityManagerMock: PniIdentityKeyCheckerImpl.Shims.IdentityManager {
-    var pniPublicKeyData: Data?
+    var pniIdentityKey: IdentityKey?
 
-    func pniIdentityPublicKeyData(tx _: DBReadTransaction) -> Data? {
-        return pniPublicKeyData
+    func pniIdentityKey(tx _: DBReadTransaction) -> IdentityKey? {
+        return pniIdentityKey
     }
 }
 
 // MARK: ProfileFetcher
 
 private class ProfileFetcherMock: PniIdentityKeyCheckerImpl.Shims.ProfileFetcher {
-    var profileFetchResult: ConsumableMockPromise<Data?> = .unset
+    var profileFetchResult: ConsumableMockPromise<IdentityKey?> = .unset
 
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?> {
         return profileFetchResult.consumeIntoPromise()
     }
 }

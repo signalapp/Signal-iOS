@@ -8,7 +8,6 @@
 #import "AxolotlExceptions.h"
 #import "FunctionalUtil.h"
 #import "HTTPUtils.h"
-#import "NSData+keyVersionByte.h"
 #import "OWSBackgroundTask.h"
 #import "OWSContact.h"
 #import "OWSDisappearingMessagesJob.h"
