@@ -12,7 +12,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         case card
         case sepa(mandate: Stripe.PaymentMethod.Mandate)
 
-        var stripePaymentMethod: OWSRequestFactory.StripePaymentMethod {
+        fileprivate var stripePaymentMethod: OWSRequestFactory.StripePaymentMethod {
             switch self {
             case .card:
                 return .card

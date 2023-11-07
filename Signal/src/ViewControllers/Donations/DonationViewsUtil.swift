@@ -9,6 +9,7 @@ import Lottie
 import SignalMessaging
 import SignalUI
 import UIKit
+import SafariServices
 
 // MARK: - Profile badge lookup
 
@@ -288,18 +289,29 @@ extension DonateViewController {
         forDonationChargeErrorCode chargeErrorCode: String,
         using paymentMethod: DonationPaymentMethod?
     ) {
+        let errorSheetDetails = DonationViewsUtil.localizedDonationFailure(
+            chargeErrorCode: chargeErrorCode,
+            paymentMethod: paymentMethod
+        )
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE",
                 comment: "Action sheet title for Error Processing Payment sheet"
             ),
-            message: DonationViewsUtil.localizedDonationFailure(
-                chargeErrorCode: chargeErrorCode,
-                paymentMethod: paymentMethod
-            )
+            message: errorSheetDetails.message
         )
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton, style: .cancel, handler: nil))
+        actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel, handler: nil))
+
+        switch errorSheetDetails.actions {
+        case .dismiss:
+            break // No other actions needed
+        case .learnMore(let learnMoreUrl):
+            actionSheet.addAction(.init(title: CommonStrings.learnMore, style: .default) { _ in
+                let vc = SFSafariViewController(url: learnMoreUrl)
+                self.present(vc, animated: true, completion: nil)
+            })
+        }
 
         self.presentActionSheet(actionSheet)
     }

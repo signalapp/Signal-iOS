@@ -8,7 +8,8 @@ import XCTest
 
 final class PaymentDetailsValidityTest: XCTestCase {
     typealias CardType = CreditAndDebitCards.CardType
-    typealias Validity = CreditAndDebitCards.Validity
+
+    // MARK: Cards
 
     func testCardType() {
         func cardType(_ number: String) -> CardType {
@@ -49,7 +50,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
     }
 
     func testValidityOfNumber() {
-        func n(_ number: String, focused: Bool = false) -> Validity {
+        func n(_ number: String, focused: Bool = false) -> CreditAndDebitCards.Validity {
             CreditAndDebitCards.validity(ofNumber: number, isNumberFieldFocused: focused)
         }
 
@@ -82,7 +83,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
     }
 
     func testValidityOfExpirationDate() {
-        func d(_ month: String, _ year: String, currentYear: Int = 2020) -> Validity {
+        func d(_ month: String, _ year: String, currentYear: Int = 2020) -> CreditAndDebitCards.Validity {
             CreditAndDebitCards.validity(
                 ofExpirationMonth: month,
                 andYear: year,
@@ -135,7 +136,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
     }
 
     func testValidityOfCvv() {
-        func c(_ cvv: String, _ cardType: CardType) -> Validity {
+        func c(_ cvv: String, _ cardType: CardType) -> CreditAndDebitCards.Validity {
             CreditAndDebitCards.validity(ofCvv: cvv, cardType: cardType)
         }
 
@@ -161,10 +162,118 @@ final class PaymentDetailsValidityTest: XCTestCase {
         XCTAssertEqual(c(" 123", .other), .invalid(()))
     }
 
-    // TODO: [SEPA] Test SEPA validation
+    // MARK: SEPA
+
+    func testValidityOfIBAN() throws {
+        func n(_ number: String, focused: Bool) -> SEPABankAccounts.IBANValidity {
+            SEPABankAccounts.validity(of: number, isFieldFocused: focused)
+        }
+
+        let supportedCountryCodes = [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CY",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IE",
+            "IT",
+            "LV",
+            "LT",
+            "LU",
+            "NL",
+            "MT",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH",
+            "GB",
+            "SM",
+            "VA",
+            "AD",
+            "MC",
+            "IS",
+            "NO",
+            "LI",
+        ]
+
+        for countryCode in supportedCountryCodes {
+            XCTAssertEqual(n(countryCode, focused: true), .potentiallyValid)
+        }
+
+        var stripeTestIBANs = [
+            "AT611904300234573201",
+            "BE62510007547061",
+            "HR7624020064583467589",
+            "EE382200221020145685",
+            "FI2112345600000785",
+            "FR1420041010050500013M02606",
+            "DE89370400440532013000",
+            "GI60MPFS599327643783385",
+            "IE29AIBK93115212345678",
+            "LI0508800636123378777",
+            "LT121000011101001000",
+            "LU280019400644750000",
+            "NO9386011117947",
+            "PT50000201231234567890154",
+            "ES0700120345030000067890",
+            "SE3550000000054910000003",
+            "CH9300762011623852957",
+            "GB82WEST12345698765432",
+        ]
+
+        for iban in stripeTestIBANs {
+            XCTAssertEqual(n(iban, focused: false), .fullyValid)
+            XCTAssertEqual(n(iban, focused: true), .fullyValid)
+
+            XCTAssertEqual(n(String(iban.dropLast()), focused: true), .potentiallyValid)
+            XCTAssertEqual(n(String(iban.dropLast()), focused: false), .invalid(.tooShort))
+            XCTAssertEqual(n(iban + "0", focused: true), .invalid(.tooLong))
+        }
+
+        let ibanPlus1 = "AT611904300234573202"
+        XCTAssertEqual(n(ibanPlus1, focused: true), .invalid(.invalidCheck))
+        let ibanPlus97 = "AT611904300234573298"
+        XCTAssertEqual(n(ibanPlus97, focused: true), .fullyValid)
+
+        XCTAssertEqual(n("XX", focused: true), .invalid(.invalidCountry))
+        XCTAssertEqual(n("EE.0", focused: true), .invalid(.invalidCharacters))
+    }
+
 }
 
-extension PaymentMethodFieldValidity: Equatable {
+private func XCTAssertEqual(
+    _ expression1: @autoclosure () throws -> CreditAndDebitCards.Validity,
+    _ expression2: @autoclosure () throws -> CreditAndDebitCards.Validity,
+    file: StaticString = #filePath,
+    line: UInt = #line
+) rethrows {
+    let lhs = try expression1()
+    let rhs = try expression2()
+    switch (lhs, rhs) {
+    case (.fullyValid, .fullyValid):
+        break
+    case (.potentiallyValid, .potentiallyValid):
+        break
+    case (.invalid, .invalid):
+        break
+    default:
+        XCTFail("(\"\(lhs)\") is not equal to (\"\(rhs)\")", file: file, line: line)
+    }
+}
+
+extension PaymentMethodFieldValidity: Equatable where Invalidity: Equatable {
     public static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
         switch (lhs, rhs) {
         case (.potentiallyValid, .potentiallyValid):
@@ -173,19 +282,6 @@ extension PaymentMethodFieldValidity: Equatable {
             return true
         case let (.invalid(invalidLHS), .invalid(invalidRHS)):
             return invalidLHS == invalidRHS
-        default:
-            return false
-        }
-    }
-
-    public static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool {
-        switch (lhs, rhs) {
-        case (.potentiallyValid, .potentiallyValid):
-            return true
-        case (.fullyValid, .fullyValid):
-            return true
-        case (.invalid, .invalid):
-            return true
         default:
             return false
         }

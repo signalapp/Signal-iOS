@@ -379,53 +379,91 @@ enum SEPABankAccounts {
 
     // MARK: Supported countries
 
-    /// The expected length of an IBAN by a SEPA-participating country's two-character ISO country code.
-    ///
-    /// List of SEPA-participating countries from [Stripe docs][0].
+    /// The expected length of an IBAN by a country's two-character ISO country code.
     ///
     /// Expected IBAN lengths from [Wikipedia][1].
     ///
-    /// [0]:https://stripe.com/resources/more/sepa-country-list#which-countries-are-in-the-sepa-zone
     /// [1]:https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
     static let expectedIBANLengthByCountryCode: [String: Int] = [
-        // EU members
-        "AT": 20, // Austria
-        "BE": 16, // Belgium
-        "BG": 22, // Bulgaria
-        "HR": 21, // Croatia
-        "CY": 28, // Cyprus
-        "CZ": 24, // Czech Republic
-        "DK": 18, // Denmark
-        "EE": 20, // Estonia
-        "FI": 18, // Finland
-        "FR": 27, // France
-        "DE": 22, // Germany
-        "GR": 27, // Greece
-        "HU": 28, // Hungary
-        "IE": 22, // Ireland
-        "IT": 27, // Italy
-        "LV": 21, // Latvia
-        "LT": 20, // Lithuania
-        "LU": 20, // Luxembourg
-        "MT": 31, // Malta
-        // Use iDEAL instead of SEPA for Netherlands
-        "PL": 28, // Poland
-        "PT": 25, // Portugal
-        "RO": 24, // Romania
-        "SK": 24, // Slovakia
-        "SI": 19, // Slovenia
-        "ES": 24, // Spain
-        "SE": 24, // Sweden
-        // Others
-        "CH": 21, // Switzerland
-        "GB": 22, // United Kingdom
-        "SM": 27, // San Marino
-        "VA": 22, // Vatican City
-        "AD": 24, // Andorra
-        "MC": 27, // Monaco
-        // EEA members
-        "IS": 26, // Iceland
-        "NO": 15, // Norway
-        "LI": 21, // Liechtenstein
+        "AL": 28,
+        "AD": 24,
+        "AT": 20,
+        "AZ": 28,
+        "BH": 22,
+        "BY": 28,
+        "BE": 16,
+        "BA": 20,
+        "BR": 29,
+        "BG": 22,
+        "CR": 22,
+        "HR": 21,
+        "CY": 28,
+        "CZ": 24,
+        "DK": 18,
+        "DO": 28,
+        "TL": 23,
+        "EG": 29,
+        "SV": 28,
+        "EE": 20,
+        "FO": 18,
+        "FI": 18,
+        "FR": 27,
+        "GE": 22,
+        "DE": 22,
+        "GI": 23,
+        "GR": 27,
+        "GL": 18,
+        "GT": 28,
+        "HU": 28,
+        "IS": 26,
+        "IQ": 23,
+        "IE": 22,
+        "IL": 23,
+        "IT": 27,
+        "JO": 30,
+        "KZ": 20,
+        "XK": 20,
+        "KW": 30,
+        "LV": 21,
+        "LB": 28,
+        "LY": 25,
+        "LI": 21,
+        "LT": 20,
+        "LU": 20,
+        "MT": 31,
+        "MR": 27,
+        "MU": 30,
+        "MC": 27,
+        "MD": 24,
+        "ME": 22,
+        "NL": 18,
+        "MK": 19,
+        "NO": 15,
+        "PK": 24,
+        "PS": 29,
+        "PL": 28,
+        "PT": 25,
+        "QA": 29,
+        "RO": 24,
+        "RU": 33,
+        "LC": 32,
+        "SM": 27,
+        "ST": 25,
+        "SA": 24,
+        "RS": 22,
+        "SC": 31,
+        "SK": 24,
+        "SI": 19,
+        "ES": 24,
+        "SD": 18,
+        "SE": 24,
+        "CH": 21,
+        "TN": 24,
+        "TR": 26,
+        "UA": 29,
+        "AE": 23,
+        "GB": 22,
+        "VA": 22,
+        "VG": 24,
     ]
 }

@@ -5818,6 +5818,21 @@
 /* Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing. */
 "SEPA_DONATION_EMAIL_PLACEHOLDER" = "Email Address";
 
+/* SEPA bank account donation error for insufficient funds. */
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.";
+
+/* SEPA bank account donation error for missing or incorrect mandate information. */
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "An error occurred while processing this payment, please try again.";
+
+/* SEPA bank account donation error for the account details not being able to be processed. */
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "The bank details provided could not be processed, contact your bank for more information.";
+
+/* SEPA bank account donation error for unspecified decline failures. */
+"SEPA_DONATION_ERROR_OTHER" = "Verify your bank details are correct and try again. If the problem continues, contact your bank.";
+
+/* SEPA bank account donation error for the payment not being authorizing by the account holder. */
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "This payment was revoked by the account holder and could not be processed. You haven’t been charged.";
+
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
 "SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN can only contain A-Z and 0-9";
 
