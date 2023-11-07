@@ -261,5 +261,6 @@ private func removeQueryParamsFromURL(url: URL) -> URL? {
     components?.queryItems = items?.filter { item in
         !paramsToRemove.contains(item.name)
     }
+    if let noQueryItemsLeft = components?.queryItems?.isEmpty, noQueryItemsLeft { components?.query = nil }
     return components?.url
 }
