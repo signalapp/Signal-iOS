@@ -76,6 +76,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
             XCTAssertEqual(provisionMessage.aciIdentityKeyPair.publicKey, Data(myAciIdentityKeyPair.publicKey.keyBytes))
             XCTAssertEqual(provisionMessage.pniIdentityKeyPair.publicKey, Data(myPniIdentityKeyPair.publicKey.keyBytes))
             XCTAssertEqual(provisionMessage.profileKey.keyData, profileKey)
+            XCTAssertEqual(provisionMessage.masterKey, masterKey)
             XCTAssertEqual(provisionMessage.areReadReceiptsEnabled, readReceiptsEnabled)
             XCTAssertEqual(provisionMessage.provisioningCode, provisioningCode)
         }.wait()

@@ -14,6 +14,7 @@ public struct ProvisionMessage {
     public let aciIdentityKeyPair: ECKeyPair
     public let pniIdentityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
+    public let masterKey: Data?
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
     public let provisioningCode: String
@@ -142,6 +143,11 @@ public class ProvisioningCipher {
             }
         }()
 
+        // TODO: eventually this will become required, at which point
+        // we should throw an invalidProvisionMessage error if it is
+        // not present.
+        let masterKey: Data? = proto.masterKey
+
         return ProvisionMessage(
             aci: aci,
             phoneNumber: phoneNumber,
@@ -149,6 +155,7 @@ public class ProvisioningCipher {
             aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
             pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
             profileKey: profileKey,
+            masterKey: masterKey,
             areReadReceiptsEnabled: areReadReceiptsEnabled,
             primaryUserAgent: primaryUserAgent,
             provisioningCode: provisioningCode,

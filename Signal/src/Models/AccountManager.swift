@@ -161,6 +161,13 @@ public class AccountManager: NSObject, Dependencies {
                     authedAccount: .implicit(),
                     transaction: transaction
                 )
+                if let masterKey = provisionMessage.masterKey {
+                    DependenciesBridge.shared.svr.storeSyncedMasterKey(
+                        data: masterKey,
+                        authedDevice: .implicit,
+                        transaction: transaction.asV2Write
+                    )
+                }
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                     self.receiptManager.setAreReadReceiptsEnabled(
