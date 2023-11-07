@@ -55,7 +55,7 @@
 		3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */; };
 		3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95507271B510400B05242 /* GroupViewUtils.swift */; };
 		3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95506271B510400B05242 /* ConversationStyle.swift */; };
-		3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldView.swift */; };
+		3402AA30271D9DCD0084CBAE /* ContactFieldViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */; };
 		3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557F271B510500B05242 /* TextApprovalViewController.swift */; };
 		3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557B271B510500B05242 /* ConversationPicker.swift */; };
 		3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95598271B510500B05242 /* AttachmentItemCollection.swift */; };
@@ -67,7 +67,6 @@
 		3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95571271B510500B05242 /* StickerPackDataSource.swift */; };
 		3402AA3F271D9DCD0084CBAE /* ApprovalRailCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559B271B510500B05242 /* ApprovalRailCellView.swift */; };
 		3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */; };
-		3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */; };
 		3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */; };
 		3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95572271B510500B05242 /* StickerHorizontalListView.swift */; };
 		3402AA48271D9DCD0084CBAE /* StickerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95573271B510500B05242 /* StickerPicker.swift */; };
@@ -1033,6 +1032,8 @@
 		76E02C1E2A0A1ADD008BC372 /* DebugUIPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */; };
 		76E02C202A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C1F2A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift */; };
 		76E02C222A0B1370008BC372 /* DebugUIMessagesAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C212A0B1370008BC372 /* DebugUIMessagesAction.swift */; };
+		76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F3D2AE8763900032BC9 /* ContactShareField.swift */; };
+		76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
 		76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */; };
 		76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */; };
@@ -2951,12 +2952,11 @@
 		34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		34A9557F271B510500B05242 /* TextApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
-		34A9558A271B510500B05242 /* ContactFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldView.swift; sourceTree = "<group>"; };
+		34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldViewHelper.swift; sourceTree = "<group>"; };
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34A9558E271B510500B05242 /* ApprovalFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalFooterView.swift; sourceTree = "<group>"; };
 		34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalActivityIndicatorViewController.swift; sourceTree = "<group>"; };
-		34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95595271B510500B05242 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		34A95597271B510500B05242 /* AttachmentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		34A95598271B510500B05242 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
@@ -3630,6 +3630,8 @@
 		76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPage.swift; sourceTree = "<group>"; };
 		76E02C1F2A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIMessagesAssetLoader.swift; sourceTree = "<group>"; };
 		76E02C212A0B1370008BC372 /* DebugUIMessagesAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIMessagesAction.swift; sourceTree = "<group>"; };
+		76E08F3D2AE8763900032BC9 /* ContactShareField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareField.swift; sourceTree = "<group>"; };
+		76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewController.swift; sourceTree = "<group>"; };
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
 		76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUITableViewController.swift; sourceTree = "<group>"; };
@@ -6061,6 +6063,7 @@
 			isa = PBXGroup;
 			children = (
 				34A95596271B510500B05242 /* AttachmentApproval */,
+				76E08F3C2AE8761D00032BC9 /* Contact Sharing */,
 				34A9557A271B510500B05242 /* ConversationPicker */,
 				88A47174286666AF001A3065 /* Member Picker */,
 				765283AC2A00D893004583A9 /* OWSTableView */,
@@ -6070,12 +6073,9 @@
 				8868A087287F44F3000E74A5 /* Stories */,
 				34A95569271B510500B05242 /* ActionSheetController.swift */,
 				34A9558E271B510500B05242 /* ApprovalFooterView.swift */,
-				34A9558A271B510500B05242 /* ContactFieldView.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
-				34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */,
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
-				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
 				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
@@ -7171,6 +7171,17 @@
 				45906C6A29D238560025906D /* WidePhotoCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		76E08F3C2AE8761D00032BC9 /* Contact Sharing */ = {
+			isa = PBXGroup;
+			children = (
+				34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */,
+				76E08F3D2AE8763900032BC9 /* ContactShareField.swift */,
+				76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */,
+				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
+			);
+			path = "Contact Sharing";
 			sourceTree = "<group>";
 		};
 		76EB03C118170B33006006FC /* src */ = {
@@ -11325,10 +11336,11 @@
 				88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */,
 				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
-				3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */,
+				3402AA30271D9DCD0084CBAE /* ContactFieldViewHelper.swift in Sources */,
 				88B986FC28807F4100F8C74D /* ContactPickerViewController.swift in Sources */,
 				503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */,
-				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
+				76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */,
+				76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
 				3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,

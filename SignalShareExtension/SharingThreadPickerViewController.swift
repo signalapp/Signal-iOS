@@ -178,9 +178,9 @@ extension SharingThreadPickerViewController {
             }
 
             let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord, avatarImageData: avatarImageData)
-            let approvalView = ContactShareApprovalViewController(contactShare: contactShare)
+            let approvalView = ContactShareViewController(contactShare: contactShare)
             approvalVC = approvalView
-            approvalView.delegate = self
+            approvalView.shareDelegate = self
 
         } else {
             let approvalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
@@ -647,24 +647,22 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
 
 // MARK: -
 
-extension SharingThreadPickerViewController: ContactShareApprovalViewControllerDelegate {
-    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                             didApproveContactShare contactShare: ContactShareViewModel) {
-        approvedContactShare = contactShare
+extension SharingThreadPickerViewController: ContactShareViewControllerDelegate {
 
+    func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel) {
+        approvedContactShare = contactShare
         send()
     }
 
-    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                             didCancelContactShare contactShare: ContactShareViewModel) {
+    func contactShareViewControllerDidCancel(_ viewController: ContactShareViewController) {
         shareViewDelegate?.shareViewWasCancelled()
     }
 
-    func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
+    func titleForContactShareViewController(_ viewController: ContactShareViewController) -> String? {
         return nil
     }
 
-    func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
+    func recipientsDescriptionForContactShareViewController(_ viewController: ContactShareViewController) -> String? {
         let conversations = selectedConversations
         guard conversations.count > 0 else {
             return nil
@@ -672,7 +670,7 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
         return conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
     }
 
-    func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
+    func approvalModeForContactShareViewController(_ viewController: ContactShareViewController) -> SignalUI.ApprovalMode {
         return .send
     }
 }

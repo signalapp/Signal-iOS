@@ -88,7 +88,7 @@ public class CVViewState: NSObject {
 
     public let mediaCache = CVMediaCache()
 
-    public let contactShareViewHelper = ContactShareViewHelper()
+    let contactShareViewHelper = ContactShareViewHelper()
 
     public var userHasScrolled = false
 

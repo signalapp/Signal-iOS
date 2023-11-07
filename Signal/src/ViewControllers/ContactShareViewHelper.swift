@@ -9,17 +9,17 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-public protocol ContactShareViewHelperDelegate: AnyObject {
+protocol ContactShareViewHelperDelegate: AnyObject {
     func didCreateOrEditContact()
 }
 
 // MARK: -
 
-public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
+class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     weak var delegate: ContactShareViewHelperDelegate?
 
-    public required override init() {
+    required override init() {
         AssertIsOnMainThread()
 
         super.init()
@@ -27,19 +27,19 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: Actions
 
-    public func sendMessage(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func sendMessage(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         presentThreadAndPeform(action: .compose, contactShare: contactShare, fromViewController: fromViewController)
     }
 
-    public func audioCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func audioCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         presentThreadAndPeform(action: .audioCall, contactShare: contactShare, fromViewController: fromViewController)
     }
 
-    public func videoCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func videoCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         presentThreadAndPeform(action: .videoCall, contactShare: contactShare, fromViewController: fromViewController)
@@ -66,7 +66,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private var inviteFlow: InviteFlow?
 
-    public func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
         guard MFMessageComposeViewController.canSendText() else {
@@ -90,15 +90,22 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
-                                                                     comment: "Label for 'new contact' button in conversation settings view."),
-                                            style: .default) { _ in
-                                                self.didPressCreateNewContact(contactShare: contactShare, fromViewController: fromViewController)
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "CONVERSATION_SETTINGS_NEW_CONTACT",
+                comment: "Label for 'new contact' button in conversation settings view."
+            ),
+            style: .default
+        ) { _ in
+            self.didPressCreateNewContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                                     comment: "Label for 'new contact' button in conversation settings view."),
-                                            style: .default) { _ in
-                                                self.didPressAddToExistingContact(contactShare: contactShare, fromViewController: fromViewController)
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                                      comment: "Label for 'new contact' button in conversation settings view."
+                                     ),
+            style: .default
+        ) { _ in
+            self.didPressAddToExistingContact(contactShare: contactShare, fromViewController: fromViewController)
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -110,9 +117,11 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         let actionSheet = ActionSheetController(title: nil, message: nil)
 
         for phoneNumber in phoneNumbers {
-            actionSheet.addAction(ActionSheetAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
-                                                          style: .default) { _ in
-                                                            completion(phoneNumber)
+            actionSheet.addAction(ActionSheetAction(
+                title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
+                style: .default
+            ) { _ in
+                completion(phoneNumber)
             })
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -172,10 +181,10 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: - CNContactViewControllerDelegate
 
-    public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
         Logger.info("")
 
-        guard let delegate = delegate else {
+        guard let delegate else {
             owsFailDebug("missing delegate")
             return
         }
@@ -187,7 +196,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func didFinishEditingContact() {
         Logger.info("")
 
-        guard let delegate = delegate else {
+        guard let delegate else {
             owsFailDebug("missing delegate")
             return
         }

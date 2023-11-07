@@ -73,9 +73,6 @@
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Send Message";
 
-/* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
-
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
 
@@ -1033,32 +1030,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Unregistered Number";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
 
 /* Label for the 'family name' field of a contact. */
 "CONTACT_FIELD_FAMILY_NAME" = "Family Name";
