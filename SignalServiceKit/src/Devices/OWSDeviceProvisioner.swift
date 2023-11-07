@@ -22,6 +22,7 @@ public final class OWSDeviceProvisioner {
     private let myPhoneNumber: String
     private let myPni: Pni
     private let profileKey: Data
+    private let masterKey: Data
     private let readReceiptsEnabled: Bool
 
     private let provisioningService: DeviceProvisioningService
@@ -36,6 +37,7 @@ public final class OWSDeviceProvisioner {
         myPhoneNumber: String,
         myPni: Pni,
         profileKey: Data,
+        masterKey: Data,
         readReceiptsEnabled: Bool,
         provisioningService: DeviceProvisioningService,
         schedulers: Schedulers
@@ -48,6 +50,7 @@ public final class OWSDeviceProvisioner {
         self.myPhoneNumber = myPhoneNumber
         self.myPni = myPni
         self.profileKey = profileKey
+        self.masterKey = masterKey
         self.readReceiptsEnabled = readReceiptsEnabled
         self.provisioningService = provisioningService
         self.schedulers = schedulers
@@ -86,6 +89,7 @@ public final class OWSDeviceProvisioner {
         messageBuilder.setNumber(myPhoneNumber)
         messageBuilder.setAci(myAci.rawUUID.uuidString.lowercased())
         messageBuilder.setPni(myPni.rawUUID.uuidString.lowercased())
+        messageBuilder.setMasterKey(masterKey)
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()
         let cipher = OWSProvisioningCipher(theirPublicKey: theirPublicKey)

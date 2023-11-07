@@ -206,6 +206,16 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `provisioningVersion`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningVersion() {self._provisioningVersion = nil}
 
+  /// NEXT ID: 14
+  var masterKey: Data {
+    get {return _masterKey ?? Data()}
+    set {_masterKey = newValue}
+  }
+  /// Returns true if `masterKey` has been explicitly set.
+  var hasMasterKey: Bool {return self._masterKey != nil}
+  /// Clears the value of `masterKey`. Subsequent reads from it will return its default value.
+  mutating func clearMasterKey() {self._masterKey = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -222,6 +232,7 @@ struct ProvisioningProtos_ProvisionMessage {
   fileprivate var _profileKey: Data? = nil
   fileprivate var _readReceipts: Bool? = nil
   fileprivate var _provisioningVersion: UInt32? = nil
+  fileprivate var _masterKey: Data? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
@@ -327,6 +338,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     6: .same(proto: "profileKey"),
     7: .same(proto: "readReceipts"),
     9: .same(proto: "provisioningVersion"),
+    13: .same(proto: "masterKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -347,6 +359,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 10: try { try decoder.decodeSingularStringField(value: &self._pni) }()
       case 11: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPublic) }()
       case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
+      case 13: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
       default: break
       }
     }
@@ -393,6 +406,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._pniIdentityKeyPrivate {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
     } }()
+    try { if let v = self._masterKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -409,6 +425,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._profileKey != rhs._profileKey {return false}
     if lhs._readReceipts != rhs._readReceipts {return false}
     if lhs._provisioningVersion != rhs._provisioningVersion {return false}
+    if lhs._masterKey != rhs._masterKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
