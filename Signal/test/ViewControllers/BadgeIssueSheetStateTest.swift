@@ -24,6 +24,20 @@ class BadgeIssueSheetStateTest: XCTestCase {
         return result
     }
 
+    private func getBoostBadge(populateAssets: Bool = true) -> ProfileBadge {
+        let result = try! ProfileBadge(jsonDictionary: [
+            "id": "BOOST",
+            "category": "donor",
+            "name": "A Boost",
+            "description": "A boost badge!",
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+        ])
+        if populateAssets {
+            result._testingOnly_populateAssets()
+        }
+        return result
+    }
+
     private func getGiftBadge(populateAssets: Bool = true) -> ProfileBadge {
         let result = try! ProfileBadge(jsonDictionary: [
             "id": "GIFT",
@@ -48,39 +62,9 @@ class BadgeIssueSheetStateTest: XCTestCase {
         XCTAssertIdentical(state.badge, badge)
     }
 
-    func testBodyChangesForChargeFailuresWithDifferentPaymentMethods() throws {
-        let subscriptionBadge = getSubscriptionBadge()
-
-        let paymentMethods: [DonationPaymentMethod] = [.applePay, .creditOrDebitCard, .paypal]
-        let bodyTexts = paymentMethods
-            .map { paymentMethod in
-                State(
-                    badge: subscriptionBadge,
-                    mode: .subscriptionExpiredBecauseOfChargeFailure(
-                        chargeFailure: .init(code: "test error"),
-                        paymentMethod: paymentMethod
-                    ),
-                    canDonate: true
-                )
-            }
-            .map { $0.body.text }
-
-        let uniqueBodyTexts = Set(bodyTexts)
-
-        XCTAssertEqual(bodyTexts.count, uniqueBodyTexts.count, "Expected different body texts")
-    }
-
     func testActionButton() throws {
         let dismissButtonStates: [State] = [
             .init(
-                badge: getSubscriptionBadge(),
-                mode: .subscriptionExpiredBecauseOfChargeFailure(
-                    chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds"),
-                    paymentMethod: nil
-                ),
-                canDonate: true
-            ),
-            .init(
                 badge: getGiftBadge(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: true),
                 canDonate: true
@@ -91,13 +75,23 @@ class BadgeIssueSheetStateTest: XCTestCase {
                 canDonate: true
             ),
             .init(
-                badge: getSubscriptionBadge(),
+                badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: true),
                 canDonate: false
             ),
             .init(
                 badge: getGiftBadge(),
                 mode: .giftNotRedeemed(fullName: ""),
+                canDonate: true
+            ),
+            .init(
+                badge: getBoostBadge(),
+                mode: .boostBankPaymentProcessing,
+                canDonate: true
+            ),
+            .init(
+                badge: getSubscriptionBadge(),
+                mode: .subscriptionBankPaymentProcessing,
                 canDonate: true
             )
         ]
@@ -109,22 +103,32 @@ class BadgeIssueSheetStateTest: XCTestCase {
         let donateButtonStates: [State] = [
             .init(
                 badge: getSubscriptionBadge(),
+                mode: .subscriptionExpiredBecauseOfChargeFailure,
+                canDonate: true
+            ),
+            .init(
+                badge: getSubscriptionBadge(),
                 mode: .subscriptionExpiredBecauseNotRenewed,
                 canDonate: true
             ),
             .init(
-                badge: getSubscriptionBadge(),
+                badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: false),
                 canDonate: true
             ),
             .init(
-                badge: getSubscriptionBadge(),
+                badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: true),
                 canDonate: true
             ),
             .init(
                 badge: getGiftBadge(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: false),
+                canDonate: true
+            ),
+            .init(
+                badge: getSubscriptionBadge(),
+                mode: .bankPaymentFailed,
                 canDonate: true
             )
         ]

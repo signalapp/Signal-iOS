@@ -908,15 +908,13 @@ public class ChatListViewController: OWSViewController {
                         return
                     }
 
-                    let mode: BadgeIssueSheetState.Mode
-                    if let currentSubscriptionChargeFailure = currentSubscription?.chargeFailure {
-                        mode = .subscriptionExpiredBecauseOfChargeFailure(
-                            chargeFailure: currentSubscriptionChargeFailure,
-                            paymentMethod: mostRecentSubscriptionPaymentMethod
-                        )
-                    } else {
-                        mode = .subscriptionExpiredBecauseNotRenewed
-                    }
+                    let mode: BadgeIssueSheetState.Mode = {
+                        if currentSubscription?.chargeFailure != nil {
+                            return .subscriptionExpiredBecauseOfChargeFailure
+                        } else {
+                            return .subscriptionExpiredBecauseNotRenewed
+                        }
+                    }()
                     let badgeSheet = BadgeIssueSheet(badge: subscriptionLevel.badge, mode: mode)
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)

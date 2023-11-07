@@ -19,10 +19,7 @@ public enum BadgeIssueSheetAction {
 
 public class BadgeIssueSheetState {
     public enum Mode {
-        case subscriptionExpiredBecauseOfChargeFailure(
-            chargeFailure: Subscription.ChargeFailure,
-            paymentMethod: DonationPaymentMethod?
-        )
+        case subscriptionExpiredBecauseOfChargeFailure
         case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
         case giftBadgeExpired(hasCurrentSubscription: Bool)
@@ -103,23 +100,19 @@ public class BadgeIssueSheetState {
 
     public lazy var body: Body = {
         switch mode {
-        case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure, paymentMethod):
-            let failureSpecificText = DonationViewsUtil.localizedDonationFailure(
-                chargeErrorCode: chargeFailure.code,
-                paymentMethod: paymentMethod
-            )
+        case .subscriptionExpiredBecauseOfChargeFailure:
             let formatText = OWSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. Will have a 'learn more' link appended, when it is rendered."
+                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
             )
             return Body(
-                String(format: formatText, failureSpecificText),
+                String(format: formatText, badge.localizedName),
                 learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
             )
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = OWSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
-                comment: "Body of the sheet shown when your subscription is canceled due to inactivity. Will have a 'learn more' link appended, when it is rendered."
+                comment: "Body of the sheet shown when your subscription is canceled due to inactivity. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
             )
             return Body(
                 String(format: formatText, badge.localizedName),
@@ -185,6 +178,7 @@ public class BadgeIssueSheetState {
             case dontAsk
             case askToDonate
             case askToTryAgain
+            case askToRenewSubscription
         }
 
         let askUserToDonateMode: AskUserToDonateMode = {
@@ -192,15 +186,17 @@ public class BadgeIssueSheetState {
 
             switch mode {
             case
-                    .subscriptionExpiredBecauseNotRenewed,
                     .boostExpired,
                     .giftBadgeExpired(hasCurrentSubscription: false):
                 return .askToDonate
             case .bankPaymentFailed:
                 return .askToTryAgain
             case
-                    .giftBadgeExpired(hasCurrentSubscription: true),
                     .subscriptionExpiredBecauseOfChargeFailure,
+                    .subscriptionExpiredBecauseNotRenewed:
+                return .askToRenewSubscription
+            case
+                    .giftBadgeExpired(hasCurrentSubscription: true),
                     .giftNotRedeemed,
                     .boostBankPaymentProcessing,
                     .subscriptionBankPaymentProcessing:
@@ -230,6 +226,15 @@ public class BadgeIssueSheetState {
                 text: OWSLocalizedString(
                     "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
                     comment: "Title for a button asking the user to try their donation again, because something went wrong."
+                ),
+                hasNotNow: true
+            )
+        case .askToRenewSubscription:
+            return ActionButton(
+                action: .openDonationView,
+                text: OWSLocalizedString(
+                    "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE",
+                    comment: "Title for a button asking the user to renew their subscription, because it has expired."
                 ),
                 hasNotNow: true
             )
