@@ -5,6 +5,7 @@
 
 import Foundation
 import PushKit
+import SignalCoreKit
 import SignalServiceKit
 import SignalMessaging
 

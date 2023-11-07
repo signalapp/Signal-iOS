@@ -41,7 +41,7 @@ class _PreKey_IdentityManagerMock: PreKey.Operation.Shims.IdentityManager {
         }
     }
 
-    func generateNewIdentityKeyPair() -> ECKeyPair { Curve25519.generateKeyPair() }
+    func generateNewIdentityKeyPair() -> ECKeyPair { ECKeyPair.generateKeyPair() }
 
     func store(keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
         switch identity {

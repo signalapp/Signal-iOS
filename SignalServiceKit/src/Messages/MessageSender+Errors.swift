@@ -212,6 +212,43 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
     public var isRetryableProvider: Bool { false }
 }
 
+public class InvalidKeySignatureError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+    public let serviceId: ServiceId
+    public let isTerminalFailure: Bool
+
+    init(serviceId: ServiceId, isTerminalFailure: Bool) {
+        self.serviceId = serviceId
+        self.isTerminalFailure = isTerminalFailure
+    }
+
+    // NSError bridging: the domain of the error.
+    public static var errorDomain: String { OWSSignalServiceKitErrorDomain }
+
+    public static var errorCode: Int { OWSErrorCode.invalidKeySignature.rawValue }
+
+    // NSError bridging: the error code within the given domain.
+    public var errorUserInfo: [String: Any] {
+        [NSLocalizedDescriptionKey: self.localizedDescription]
+    }
+
+    public var localizedDescription: String {
+        let format = OWSLocalizedString(
+            "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE",
+            comment: "action sheet header when re-sending message which failed because of an invalid key signature"
+        )
+        return String(format: format, contactsManager.displayName(for: SignalServiceAddress(serviceId)))
+    }
+
+    // NSError bridging: the error code within the given domain.
+    public var errorCode: Int { Self.errorCode }
+
+    /// Key will continue to be invalidly signed, so no need to retry. It'll only
+    /// cause us to hit the Pre-Key request rate limit.
+    public var isRetryableProvider: Bool {
+        !isTerminalFailure
+    }
+}
+
 // MARK: -
 
 class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {

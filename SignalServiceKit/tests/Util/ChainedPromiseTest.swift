@@ -111,12 +111,16 @@ public class ChainedPromiseTest: XCTestCase {
         let hasResolvedUpTo = AtomicUInt(0)
         var pendingFutures = [Future<Void>]()
         var resultPromises = [Promise<Void>]()
+        var enqueuePromises = [Promise<Void>]()
         (1...10).forEach { i in
             let (promise, future) = Promise<Void>.pending()
+            let (enqueuePromise, enqueueFuture) = Promise<Void>.pending()
             resultPromises.append(chainedPromise.enqueue {
                 XCTAssertEqual(hasResolvedUpTo.get(), UInt(i - 1))
+                enqueueFuture.resolve(())
                 return promise
             })
+            enqueuePromises.append(enqueuePromise)
             pendingFutures.append(future)
         }
 
@@ -124,6 +128,7 @@ public class ChainedPromiseTest: XCTestCase {
         expectSuccess(firstResultPromise, description: "initial", timeout: 1)
 
         pendingFutures.enumerated().forEach { i, future in
+            expectSuccess(enqueuePromises[i], description: "\(i)-th enqueue promise", timeout: 1)
             hasResolvedUpTo.set(UInt(i + 1))
             future.resolve(())
             expectSuccess(resultPromises[i], description: "\(i)-th promise", timeout: 1)

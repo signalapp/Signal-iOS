@@ -29,7 +29,6 @@ public class SignalServiceProfile {
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
 
-    public let isStoriesCapable: Bool
     public let canReceiveGiftBadges: Bool
     public let isPniCapable: Bool
 
@@ -77,8 +76,6 @@ public class SignalServiceProfile {
                                                              requireCapability: true)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
-
-        self.isStoriesCapable = Self.parseCapabilityFlag(capabilityKey: "stories", params: params, requireCapability: true)
 
         self.canReceiveGiftBadges = Self.parseCapabilityFlag(capabilityKey: "giftBadges", params: params, requireCapability: true)
 

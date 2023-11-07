@@ -498,31 +498,10 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapDonate() {
-        let vc: UIViewController
-        if DonationSettingsViewController.hasAnythingToShowWithSneakyTransaction() {
-            vc = DonationSettingsViewController()
-        } else if DonationUtilities.canDonateInAnyWay(
-            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-        ) {
-            vc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
-                let frontVc = { CurrentAppContext().frontmostViewController() }
-                switch finishResult {
-                case let .completedDonation(donateSheet, thanksSheet):
-                    donateSheet.dismiss(animated: true) {
-                        frontVc()?.present(thanksSheet, animated: true)
-                    }
-                case let .monthlySubscriptionCancelled(donateSheet, toastText):
-                    donateSheet.dismiss(animated: true) {
-                        frontVc()?.presentToast(text: toastText)
-                    }
-                }
-            }
-        } else {
-            DonationViewsUtil.openDonateWebsite()
-            return
-        }
-
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(
+            DonationSettingsViewController(),
+            animated: true
+        )
     }
 }
 

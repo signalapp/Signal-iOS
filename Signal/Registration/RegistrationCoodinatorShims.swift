@@ -43,7 +43,7 @@ extension RegistrationCoordinatorImpl {
 
 public protocol _RegistrationCoordinator_AccountManagerShim {
 
-    func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void>
+    func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void>
 }
 
 public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordinator_AccountManagerShim {
@@ -51,8 +51,8 @@ public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordi
     private let manager: AccountManager
     public init(_ manager: AccountManager) { self.manager = manager }
 
-    public func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void> {
-        return manager.performInitialStorageServiceRestore(authedAccount: authedAccount)
+    public func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void> {
+        return manager.performInitialStorageServiceRestore(authedDevice: authedDevice)
     }
 }
 

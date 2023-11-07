@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ma dostęp tylko do wybranych zdjęć i wideo";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Lokaliz.";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Lokalizacja";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Po zrobieniu zdjęcia lub nagraniu wideo z tego miejsca będzie można wysłać ostatnie multimedia";
@@ -1778,13 +1778,13 @@
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Pokaż mniejszy";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Nie udało się ukończyć przelewu. Upewnij się, że oba urządzenia mają uruchomioną aplikację Signal i spróbuj ponownie.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Nie udało się ukończyć przenoszenia. Upewnij się, że oba urządzenia mają uruchomioną aplikację Signal i spróbuj ponownie.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nie udało się zweryfikować Twojego nowego urządzenia. Spróbuj ponownie.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Nie udało się ukończyć przelewu. Upewnij się, że oba urządzenia są blisko siebie i spróbuj ponownie.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Nie udało się ukończyć przenoszenia. Upewnij się, że oba urządzenia są blisko siebie i spróbuj ponownie.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Aby skonfigurować tego iPada, jako połączone urządzenie, musisz zeskanować kod swoim starym iPadem";
@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edytuj wiadomość";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edycji można dokonać tylko w przeciągu 3 godzin od wysłania wiadomości.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edycji można dokonać tylko w przeciągu 24 godzin od wysłania wiadomości.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2379,6 +2379,9 @@
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Ta wersja Signal wygaśnie dzisiaj. Zaktualizuj aplikację, aby dalej otrzymywać wiadomości.";
+
+/* action sheet header when re-sending message which failed because of an invalid key signature */
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Wysłanie wiadomości nie powiodło się, ponieważ %1$@ musi zaktualizować i otworzyć Signal.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zbyt dużo nieudanych prób dla tego kontaktu. Spróbuj ponownie później.";
@@ -5751,6 +5754,9 @@
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sesja czatu odświeżona";
+
+/* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
+"SESSION_SWITCHOVER_EVENT" = "%1$@ należy do: %2$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Wybierz ze zdjęć";

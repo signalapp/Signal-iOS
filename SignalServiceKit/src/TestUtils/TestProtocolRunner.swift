@@ -19,8 +19,8 @@ public struct TestProtocolRunner {
     public func initializePreKeys(senderClient: TestSignalClient,
                                   recipientClient: TestSignalClient,
                                   transaction: SDSAnyWriteTransaction) throws {
-        _ = senderClient.accountId(transaction: transaction)
-        _ = recipientClient.accountId(transaction: transaction)
+        senderClient.ensureRecipientId(tx: transaction)
+        recipientClient.ensureRecipientId(tx: transaction)
 
         let bobPreKey = PrivateKey.generate()
         let bobSignedPreKey = PrivateKey.generate()
@@ -160,8 +160,8 @@ public extension TestSignalClient {
         return ProtocolAddress(serviceId, deviceId: deviceId)
     }
 
-    func accountId(transaction tx: SDSAnyWriteTransaction) -> String {
-        try! DependenciesBridge.shared.recipientIdFinder.ensureRecipientId(for: serviceId, tx: tx.asV2Write).get()
+    func ensureRecipientId(tx: SDSAnyWriteTransaction) {
+        _ = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
     }
 }
 

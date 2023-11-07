@@ -94,7 +94,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         signalRecipientStoreMock.deviceIds = [1, 2, 3]
         profileManagerMock.isPniCapable = true
 
-        let keyPair = Curve25519.generateKeyPair()
+        let keyPair = ECKeyPair.generateKeyPair()
         identityManagerMock.identityKeyPair = keyPair
         pniSignedPreKeyStoreMock.setCurrentSignedPreKey(
             pniSignedPreKeyStoreMock.generateSignedPreKey(

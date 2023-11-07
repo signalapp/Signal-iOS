@@ -27,19 +27,19 @@ public enum RecipientIdError: Error, IsRetryableProvider {
 }
 
 public final class RecipientIdFinder {
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
-    private let recipientStore: RecipientDataStore
 
     public init(
-        recipientFetcher: RecipientFetcher,
-        recipientStore: RecipientDataStore
+        recipientDatabaseTable: RecipientDatabaseTable,
+        recipientFetcher: RecipientFetcher
     ) {
         self.recipientFetcher = recipientFetcher
-        self.recipientStore = recipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     public func recipientId(for serviceId: ServiceId, tx: DBReadTransaction) -> Result<AccountId, RecipientIdError>? {
-        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return nil
         }
         return recipientIdResult(for: serviceId, recipient: recipient)

@@ -127,7 +127,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case .networkFailure(let requestUrl):
             return "networkFailure: \(requestUrl.absoluteString)"
         case .serviceResponse(let serviceResponse):
-            return "HTTP \(serviceResponse.responseStatus); \(serviceResponse.responseHeaders); \(serviceResponse.requestUrl.absoluteString); \(serviceResponse.responseError)"
+            return "HTTP \(serviceResponse.responseStatus); \(serviceResponse.responseHeaders); \(serviceResponse.requestUrl.absoluteString); \(String(describing: serviceResponse.responseError))"
         }
     }
 

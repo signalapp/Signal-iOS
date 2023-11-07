@@ -423,7 +423,17 @@ public class FullTextSearcher: NSObject {
                 assert(signalContactMap[signalAccount.recipientAddress] == nil)
                 signalContactMap[signalAccount.recipientAddress] = searchResult
             case let signalRecipient as SignalRecipient:
-                guard signalRecipient.isRegistered else {
+                guard
+                    signalRecipient.isRegistered,
+                    !DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                        signalRecipient.address,
+                        tx: transaction.asV2Read
+                    ),
+                    !blockingManager.isAddressBlocked(
+                        signalRecipient.address,
+                        transaction: transaction
+                    )
+                else {
                     return
                 }
                 let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)

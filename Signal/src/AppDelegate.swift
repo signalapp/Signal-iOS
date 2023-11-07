@@ -319,10 +319,23 @@ extension AppDelegate {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
         }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task.detached(priority: .low) {
+                await AuthorMergeHelperBuilder(
+                    appContext: appContext,
+                    authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,
+                    db: DependenciesBridge.shared.db,
+                    dbFromTx: { tx in SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database },
+                    modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(ModelReadCaches.shared),
+                    recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
+                ).buildTableIfNeeded()
+            }
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
-        CurrentAppContext().appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
+        appContext.appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
@@ -464,6 +477,11 @@ extension AppDelegate {
             return .registration(regLoader, lastMode)
         } else if !(hasProfileName && tsRegistrationState.isRegistered) {
             if UIDevice.current.isIPad {
+                if tsRegistrationState == .delinked {
+                    // If we are delinked, go to the chat list in the delinked state.
+                    // The user can kick of re-linking from there.
+                    return .chatList
+                }
                 return .secondaryProvisioning
             } else {
                 let desiredMode: RegistrationMode
@@ -480,6 +498,11 @@ extension AppDelegate {
                         Logger.info("Found legacy initial registration; continuing in new registration")
                         desiredMode = .registering
                     }
+                case .deregistered:
+                    // If we are deregistered, go to the chat list in the deregistered state.
+                    // The user can kick of re-registration from there, which will set the
+                    // 'lastMode' var and short circuit before we get here next time around.
+                    return .chatList
                 default:
                     // We got here (past the isRegistered check above) which means we should register
                     // but its not a reregistration.

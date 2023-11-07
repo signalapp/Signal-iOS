@@ -13,7 +13,11 @@ private class MockRecipientMerger: RecipientMerger {
         fatalError()
     }
 
-    func applyMergeFromLinkedDevice(localIdentifiers: LocalIdentifiers, aci: Aci, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
+    func applyMergeFromStorageService(localIdentifiers: LocalIdentifiers, isPrimaryDevice: Bool, serviceIds: AtLeastOneServiceId, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
+        fatalError()
+    }
+
+    func applyMergeFromContactSync(localIdentifiers: LocalIdentifiers, aci: Aci, phoneNumber: E164?, tx: DBWriteTransaction) -> SignalRecipient {
         fatalError()
     }
 
@@ -36,7 +40,7 @@ final class PniSignatureProcessorTest: XCTestCase {
     private var mockDB: MockDB!
     private var pniSignatureProcessor: PniSignatureProcessor!
     private var recipientMerger: MockRecipientMerger!
-    private var recipientStore: MockRecipientDataStore!
+    private var recipientDatabaseTable: MockRecipientDatabaseTable!
 
     private var aci: Aci!
     private var aciRecipient: SignalRecipient!
@@ -50,16 +54,16 @@ final class PniSignatureProcessorTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        recipientStore = MockRecipientDataStore()
-        let recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
-        let recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+        recipientDatabaseTable = MockRecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
         identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
         mockDB = MockDB()
         recipientMerger = MockRecipientMerger()
         pniSignatureProcessor = PniSignatureProcessorImpl(
             identityManager: identityManager,
-            recipientMerger: recipientMerger,
-            recipientStore: recipientStore
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientMerger: recipientMerger
         )
 
         aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
@@ -72,8 +76,8 @@ final class PniSignatureProcessorTest: XCTestCase {
         pniIdentityKeyPair = IdentityKeyPair.generate()
 
         mockDB.write { tx in
-            recipientStore.insertRecipient(aciRecipient, transaction: tx)
-            recipientStore.insertRecipient(pniRecipient, transaction: tx)
+            recipientDatabaseTable.insertRecipient(aciRecipient, transaction: tx)
+            recipientDatabaseTable.insertRecipient(pniRecipient, transaction: tx)
         }
         identityManager.recipientIdentities = [
             aciRecipient.uniqueId: OWSRecipientIdentity(
@@ -135,7 +139,7 @@ final class PniSignatureProcessorTest: XCTestCase {
         let otherAci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
         mockDB.write { tx in
             pniRecipient.aci = otherAci
-            recipientStore.updateRecipient(pniRecipient, transaction: tx)
+            recipientDatabaseTable.updateRecipient(pniRecipient, transaction: tx)
         }
         let signature = Data(pniIdentityKeyPair.signAlternateIdentity(aciIdentityKeyPair.identityKey))
         XCTAssertThrowsError(

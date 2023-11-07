@@ -363,7 +363,15 @@ class BaseContext(object):
         matching_context = self.context_for_proto_type(field)
         if matching_context is not None:
             if type(matching_context) is MessageContext:
-                return matching_context.can_init_throw()
+                if matching_context.proto_name is self.proto_name:
+                    for other_field in self.fields():
+                        if other_field.index == field.index:
+                            continue
+                        elif self.context_for_proto_type(field).can_init_throw():
+                            return True
+                    return False
+                else:
+                    return matching_context.can_init_throw()
         return False
 
     def can_field_be_optional_objc(self, field):

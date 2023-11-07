@@ -532,29 +532,6 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
     });
 }
 
-- (void)processIncomingFetchLatestSyncMessage:(SSKProtoSyncMessageFetchLatest *)syncMessage
-                                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    switch (syncMessage.unwrappedType) {
-        case SSKProtoSyncMessageFetchLatestTypeUnknown:
-            OWSFailDebug(@"Unknown fetch latest type");
-            break;
-        case SSKProtoSyncMessageFetchLatestTypeLocalProfile: {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                ^{ [self.profileManager fetchLocalUsersProfileWithAuthedAccount:AuthedAccount.implicit]; });
-            break;
-        }
-        case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
-            [SSKEnvironment.shared.storageServiceManagerObjc
-                restoreOrCreateManifestIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
-            break;
-        case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:
-
-            [SubscriptionManagerImpl performDeviceSubscriptionExpiryUpdate];
-            break;
-    }
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

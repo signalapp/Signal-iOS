@@ -89,18 +89,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest());
 
-#pragma mark - Attributes and Capabilities
-
-+ (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey;
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-    (BOOL)hasBackedUpMasterKey;
-
-+ (NSDictionary<NSString *, NSNumber *> *)
-    deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
-                                                isRegistered:(BOOL)isRegistered
-                                             isPrimaryDevice:(BOOL)isPrimaryDevice;
-
 #pragma mark - Prekeys
 
 + (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity;

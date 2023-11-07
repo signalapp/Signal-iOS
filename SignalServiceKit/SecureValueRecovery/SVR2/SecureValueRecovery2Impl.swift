@@ -444,12 +444,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         localStorage.setMasterKey(nil, transaction)
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
-        storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
+        storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: false))
     }
 
     public func storeSyncedMasterKey(
         data: Data,
-        authedAccount: AuthedAccount,
+        authedDevice: AuthedDevice,
         transaction: DBWriteTransaction
     ) {
         Logger.info("")
@@ -461,7 +461,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
         if oldMasterKey != data {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
         }
     }
 
@@ -1632,7 +1632,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // If the app is ready start that restoration.
         guard AppReadiness.isAppReady else { return }
 
-        storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
+        storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: true))
 
         let syncManager = self.syncManager
         storageServiceManager.waitForPendingRestores().observe { _ in

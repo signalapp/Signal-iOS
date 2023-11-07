@@ -570,7 +570,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let decryptResult: SMKDecryptResult
         do {
             decryptResult = try cipher.decryptMessage(
-                trustRoot: Self.udManager.trustRoot.key,
+                trustRoot: Self.udManager.trustRoot,
                 cipherTextData: encryptedData,
                 timestamp: validatedEnvelope.serverTimestamp,
                 localIdentifiers: localIdentifiers,
@@ -672,17 +672,14 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberIdentifiers else {
-            return
-        }
         guard let pniSignatureMessage = envelope.content?.pniSignatureMessage else {
             return
         }
         do {
             try PniSignatureProcessorImpl(
                 identityManager: DependenciesBridge.shared.identityManager,
-                recipientMerger: DependenciesBridge.shared.recipientMerger,
-                recipientStore: DependenciesBridge.shared.recipientStore
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+                recipientMerger: DependenciesBridge.shared.recipientMerger
             ).handlePniSignature(
                 pniSignatureMessage,
                 from: envelope.sourceAci,

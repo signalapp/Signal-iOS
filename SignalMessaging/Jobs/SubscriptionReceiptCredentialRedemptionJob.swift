@@ -4,11 +4,45 @@
 //
 
 import LibSignalClient
+import SignalCoreKit
 import SignalServiceKit
 
-public class SubscriptionReceiptCredentialJobQueue: JobQueue {
-
-    // Add optional paymentIntentID / isBoost
+/// Manages "donation receipt credential" redemption.
+///
+/// Donation payments are handled differently depending on the payment method.
+/// Ultimately, however, all payments are "confirmed" – this means the user has
+/// authorized the payment. Once that happens, we end up with a "payment intent
+/// ID" as well as a "receipt credential request/context".
+///
+/// At this point, we're in a zero-knowledge world – neither the payment intent
+/// ID nor the receipt credential request are associated with our account.
+///
+/// We take the payment intent ID and receipt credential request, and send them
+/// (unauthenticated) to Signal servers. If the payment in question has been
+/// "processed" (per the relevant payment processor, such as Stripe), the server
+/// returns us a value that we can combine with our receipt credential request
+/// context to create a zero-knowledge "receipt credential".
+///
+/// Note that if the payment has not processed successfully we instead receive
+/// an error, which can tell us the status of the payment and how to proceed.
+/// For example, the payment may have failed to process, or may still be pending
+/// but not have affirmatively failed – we want to respond differently to those
+/// scenarios.
+///
+/// *Finally*, we make an authenticated request to send a presentation for the
+/// ZK receipt credential to the service – thereby proving that we have made a
+/// donation – which assigns a badge to our account.
+///
+/// - Note
+/// Some payment types (such as credit cards) usually process immediately, but
+/// others (such as SEPA debit transfers) can take days/weeks to process.
+///
+/// - Note
+/// The term "subscription" is overloaded. It can either refer to a donation,
+/// either one-time or recurring, as in the context of this class name. It can
+/// also refer to a recurring donation, as in "subscriber ID", which is only
+/// relevant for recurring donations. Good luck.
+public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
 
     public func addBoostJob(
         amount: FiatMoney,
@@ -19,13 +53,13 @@ public class SubscriptionReceiptCredentialJobQueue: JobQueue {
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a boost job")
-        let jobRecord = ReceiptCredentialRedemptionJobRecord(
+        let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentialRequest: receiptCredentialRequest,
-            subscriberID: Data(),
-            targetSubscriptionLevel: 0,
-            priorSubscriptionLevel: 0,
+            subscriberID: Data(), // Unused
+            targetSubscriptionLevel: 0, // Unused
+            priorSubscriptionLevel: 0, // Unused
             isBoost: true,
             amount: amount.value,
             currencyCode: amount.currencyCode,
@@ -42,11 +76,10 @@ public class SubscriptionReceiptCredentialJobQueue: JobQueue {
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
-        boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
-        let jobRecord = ReceiptCredentialRedemptionJobRecord(
+        let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentialRequest: receiptCredentialRequest,
@@ -56,17 +89,20 @@ public class SubscriptionReceiptCredentialJobQueue: JobQueue {
             isBoost: false,
             amount: nil,
             currencyCode: nil,
-            boostPaymentIntentID: boostPaymentIntentID,
+            boostPaymentIntentID: String(), // Unused
             label: self.jobRecordLabel
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     public typealias DurableOperationType = SubscriptionReceiptCredentailRedemptionOperation
+
+    /// The value of this string is persisted, and must not change.
     public static let jobRecordLabel: String = "SubscriptionReceiptCredentailRedemption"
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
+
     // per OWSOperation.retryIntervalForExponentialBackoff(failureCount:),
     // 110 retries will yield ~24 hours of retry.
     public static let maxRetries: UInt = 110
@@ -92,46 +128,66 @@ public class SubscriptionReceiptCredentialJobQueue: JobQueue {
 
     let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "SubscriptionReceiptCredentialJobQueue"
+        operationQueue.name = "SubscriptionReceiptCredentialRedemptionJobQueue"
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: ReceiptCredentialRedemptionJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord) -> OperationQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: ReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentailRedemptionOperation {
+    public func buildOperation(jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentailRedemptionOperation {
         return try SubscriptionReceiptCredentailRedemptionOperation(jobRecord)
     }
 }
 
 public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, DurableOperation {
+    /// Represents the type of payment that resulted in this receipt credential
+    /// redemption.
+    private enum PaymentType: CustomStringConvertible {
+        /// A one-time payment, or "boost".
+        case oneTime(paymentIntentId: String)
 
-    // MARK: DurableOperation
+        /// A recurring payment, or (an overloaded term) "subscription".
+        case recurring(
+            subscriberId: Data,
+            targetSubscriptionLevel: UInt,
+            priorSubscriptionLevel: UInt
+        )
 
-    public let jobRecord: ReceiptCredentialRedemptionJobRecord
-
-    weak public var durableOperationDelegate: SubscriptionReceiptCredentialJobQueue?
-
-    public var operation: OWSOperation {
-        return self
+        var description: String {
+            switch self {
+            case .oneTime: return "one-time"
+            case .recurring: return "recurring"
+            }
+        }
     }
 
-    let paymentProcessor: PaymentProcessor
-    let isBoost: Bool
-    let subscriberID: Data
-    var receiptCredentialRequestContext: ReceiptCredentialRequestContext
-    var receiptCredentialRequest: ReceiptCredentialRequest
-    var receiptCredentialPresentation: ReceiptCredentialPresentation?
-    let targetSubscriptionLevel: UInt
-    let priorSubscriptionLevel: UInt
-    let boostPaymentIntentID: String
+    public let jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord
+    weak public var durableOperationDelegate: SubscriptionReceiptCredentialRedemptionJobQueue?
+    public var operation: OWSOperation { self }
 
-    // For boosts, these should always be present.
-    // For subscriptions, these will be absent until the job runs, which should populate them.
-    var amount: FiatMoney?
+    private let paymentProcessor: PaymentProcessor
+    private let receiptCredentialRequest: ReceiptCredentialRequest
+    private let receiptCredentialRequestContext: ReceiptCredentialRequestContext
+    private var receiptCredentialPresentation: ReceiptCredentialPresentation?
 
-    public required init(_ jobRecord: ReceiptCredentialRedemptionJobRecord) throws {
+    private let paymentType: PaymentType
+
+    var isBoost: Bool {
+        switch paymentType {
+        case .oneTime: return true
+        case .recurring: return false
+        }
+    }
+
+    /// For one-time payments, this should always be present.
+    ///
+    /// For recurring payments, this will be absent until the job runs, which
+    /// should populate it.
+    private var amount: FiatMoney?
+
+    fileprivate init(_ jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
         self.paymentProcessor = {
             guard let paymentProcessor = PaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
@@ -141,7 +197,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
             return paymentProcessor
         }()
-        self.isBoost = jobRecord.isBoost
+
         self.amount = {
             if
                 let value = jobRecord.amount.map({ $0 as Decimal }),
@@ -151,39 +207,52 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                 return nil
             }
         }()
-        self.subscriberID = jobRecord.subscriberID
-        self.targetSubscriptionLevel = jobRecord.targetSubscriptionLevel
-        self.priorSubscriptionLevel = jobRecord.priorSubscriptionLevel
-        self.boostPaymentIntentID = jobRecord.boostPaymentIntentID
+
+        if jobRecord.isBoost {
+            self.paymentType = .oneTime(paymentIntentId: jobRecord.boostPaymentIntentID)
+        } else {
+            self.paymentType = .recurring(
+                subscriberId: jobRecord.subscriberID,
+                targetSubscriptionLevel: jobRecord.targetSubscriptionLevel,
+                priorSubscriptionLevel: jobRecord.priorSubscriptionLevel
+            )
+        }
+
         self.receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
-            contents: [UInt8](jobRecord.receiptCredentialRequestContext))
+            contents: [UInt8](jobRecord.receiptCredentialRequestContext)
+        )
         self.receiptCredentialRequest = try ReceiptCredentialRequest(
-            contents: [UInt8](jobRecord.receiptCredentialRequest))
+            contents: [UInt8](jobRecord.receiptCredentialRequest)
+        )
+
         if let receiptCredentialPresentation = jobRecord.receiptCredentialPresentation {
             self.receiptCredentialPresentation = try ReceiptCredentialPresentation(
-                contents: [UInt8](receiptCredentialPresentation))
+                contents: [UInt8](receiptCredentialPresentation)
+            )
         }
     }
 
     override public func run() {
-        assert(self.durableOperationDelegate != nil)
+        Logger.info("[Donations] Running job for \(paymentType).")
 
-        Logger.info("[Donations] Running job for \(isBoost ? "boost" : "subscription")")
+        let getMoneyPromise: Promise<Void> = {
+            switch paymentType {
+            case .oneTime:
+                return .value(())
+            case let .recurring(subscriberId, _, _):
+                return SubscriptionManagerImpl
+                    .getCurrentSubscriptionStatus(for: subscriberId)
+                    .done(on: DispatchQueue.global()) { subscription in
+                        guard let subscription else {
+                            throw OWSAssertionError("Missing subscription")
+                        }
 
-        let getMoneyPromise: Promise<Void>
-        if isBoost {
-            getMoneyPromise = Promise.value(())
-        } else {
-            getMoneyPromise = SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID).done { subscription in
-                guard let subscription = subscription else {
-                    throw OWSAssertionError("Missing subscription")
-                }
+                        Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
 
-                Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
-
-                self.amount = subscription.amount
+                        self.amount = subscription.amount
+                    }
             }
-        }
+        }()
 
         let getReceiptCredentialPresentationPromise: Promise<ReceiptCredentialPresentation> = firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
             // We already have a receiptCredentialPresentation, lets use it
@@ -196,33 +265,34 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
             // Create a new receipt credential presentation
             return firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
-                if self.isBoost {
+                switch self.paymentType {
+                case let .oneTime(paymentIntentId):
                     Logger.info("[Donations] Durable job requesting receipt for boost")
                     return try SubscriptionManagerImpl.requestBoostReceiptCredentialPresentation(
-                        for: self.boostPaymentIntentID,
+                        for: paymentIntentId,
                         context: self.receiptCredentialRequestContext,
                         request: self.receiptCredentialRequest,
                         expectedBadgeLevel: .boostBadge,
                         paymentProcessor: self.paymentProcessor
                     )
-                } else {
+                case let .recurring(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel):
                     Logger.info("[Donations] Durable job requesting receipt for subscription")
                     return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
-                        for: self.subscriberID,
-                           context: self.receiptCredentialRequestContext,
-                           request: self.receiptCredentialRequest,
-                           targetSubscriptionLevel: self.targetSubscriptionLevel,
-                           priorSubscriptionLevel: self.priorSubscriptionLevel
+                        for: subscriberId,
+                        context: self.receiptCredentialRequestContext,
+                        request: self.receiptCredentialRequest,
+                        targetSubscriptionLevel: targetSubscriptionLevel,
+                        priorSubscriptionLevel: priorSubscriptionLevel
                     )
                 }
             }.then(on: DispatchQueue.global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
                 Logger.info("[Donations] Storing receipt credential presentation in case the job fails")
-                return self.databaseStorage.writePromise { transaction in
+                return self.databaseStorage.write(.promise) { transaction in
                     self.jobRecord.update(
                         withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
                         transaction: transaction
                     )
-                }.map { _ in newReceiptCredentialPresentation }
+                }.map(on: DispatchQueue.global()) { _ in newReceiptCredentialPresentation }
             }
         }
 
@@ -241,26 +311,36 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func didSucceed() {
         Logger.info("[Donations] Redemption job succeeded")
         self.databaseStorage.write { transaction in
-            if !self.isBoost {
+            defer {
+                self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+
+                NotificationCenter.default.postNotificationNameAsync(
+                    SubscriptionManagerImpl.SubscriptionJobQueueDidFinishJobNotification,
+                    object: nil
+                )
+            }
+
+            guard let amount = self.amount else {
+                owsFailDebug("[Donations] Amount was missing. Is this an old job?")
+                return
+            }
+
+            let receiptType: DonationReceipt.DonationReceiptType
+
+            switch paymentType {
+            case .oneTime:
+                receiptType = .boost
+            case let .recurring(_, targetSubscriptionLevel, _):
                 SubscriptionManagerImpl.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
+
+                receiptType = .subscription(subscriptionLevel: targetSubscriptionLevel)
             }
 
-            if let amount = amount {
-                DonationReceipt(
-                    receiptType: self.isBoost ? .boost : .subscription(subscriptionLevel: targetSubscriptionLevel),
-                    timestamp: Date(),
-                    amount: amount
-                ).anyInsert(transaction: transaction)
-            } else {
-                Logger.warn("[Donations] amount was missing. Is this an old job?")
-            }
-
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
-
-            NotificationCenter.default.postNotificationNameAsync(
-                SubscriptionManagerImpl.SubscriptionJobQueueDidFinishJobNotification,
-                object: nil
-            )
+            DonationReceipt(
+                receiptType: receiptType,
+                timestamp: Date(),
+                amount: amount
+            ).anyInsert(transaction: transaction)
         }
     }
 

@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Upravit zprávu";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Úpravy lze provádět pouze do 3 hodin od odeslání zprávy.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Úpravy lze provádět pouze do 24 hodin od odeslání této zprávy.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2379,6 +2379,9 @@
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Platnost této verze aplikace Signal dnes vyprší. Aktualizujte si ji, abyste mohli dál posílat zprávy.";
+
+/* action sheet header when re-sending message which failed because of an invalid key signature */
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Zprávu se nepodařilo odeslat, protože si uživatel %1$@ musí aktualizovat a otevřít Signal.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Příliš mnoho selhání s tímto kontaktem. Zkuste to znovu později.";
@@ -5751,6 +5754,9 @@
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Relace chatu byla obnovena";
+
+/* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
+"SESSION_SWITCHOVER_EVENT" = "%1$@ patří uživateli %2$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Vybrat z fotografií";

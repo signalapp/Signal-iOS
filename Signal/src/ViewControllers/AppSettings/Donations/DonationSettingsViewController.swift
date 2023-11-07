@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalCoreKit
 import SignalMessaging
 import SignalUI
 import UIKit
@@ -151,7 +152,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: self.profileManager.badgeStore)
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        let profileBadgeLookupPromise = loadProfileBadgeLookup(hasAnyDonationReceipts: hasAnyDonationReceipts)
+        let profileBadgeLookupPromise = loadProfileBadgeLookup()
 
         return profileBadgeLookupPromise.then { profileBadgeLookup -> Guarantee<State> in
             subscriptionLevelsPromise.then { subscriptionLevels -> Promise<State> in
@@ -202,10 +203,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         return !allBadges.isEmpty
     }
 
-    private func loadProfileBadgeLookup(hasAnyDonationReceipts: Bool) -> Guarantee<ProfileBadgeLookup> {
-        let willEverShowBadges = hasAnyDonationReceipts
-        guard willEverShowBadges else { return Guarantee.value(ProfileBadgeLookup()) }
-
+    private func loadProfileBadgeLookup() -> Guarantee<ProfileBadgeLookup> {
         return firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
             SubscriptionManagerImpl.fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadgeLookup in
@@ -240,16 +238,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         avatarView.isUserInteractionEnabled = true
         avatarView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressAvatar)))
-    }
-
-    /// Will there be anything other than the "Donate" button? Can be used to skip this screen.
-    ///
-    /// Once gift badges are added (or anything else that's always shown), we can remove this.
-    static func hasAnythingToShowWithSneakyTransaction() -> Bool {
-        (
-            hasAnyBadges() ||
-            databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
-        )
     }
 
     // MARK: - Table contents
@@ -616,13 +604,13 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                 displayBadgesOnProfile = true
             }
 
-            return Self.databaseStorage.writePromise { transaction in
+            return Self.databaseStorage.write(.promise) { transaction in
                 Self.subscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
                     transaction: transaction
                 )
-            }.asVoid()
+            }
         }.done {
             self.navigationController?.popViewController(animated: true)
         }.catch { error in

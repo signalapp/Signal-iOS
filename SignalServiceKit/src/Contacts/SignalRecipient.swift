@@ -79,6 +79,24 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         )
     }
 
+    public static func proofOfConcept_forBackup(
+        aci: Aci?,
+        pni: Pni?,
+        phoneNumber: E164?,
+        isRegistered: Bool?,
+        unregisteredAtTimestamp: UInt64?
+    ) -> Self {
+        return Self.init(
+            id: nil,
+            uniqueId: UUID().uuidString,
+            aciString: aci?.serviceIdUppercaseString,
+            pni: pni,
+            phoneNumber: phoneNumber?.stringValue,
+            deviceIds: isRegistered == true ? [OWSDevice.primaryDeviceId] : [],
+            unregisteredAtTimestamp: unregisteredAtTimestamp
+        )
+    }
+
     private init(
         id: RowId?,
         uniqueId: String,

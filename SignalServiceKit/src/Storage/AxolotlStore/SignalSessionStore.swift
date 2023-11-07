@@ -53,6 +53,11 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
         tx: DBWriteTransaction
     )
 
+    func deleteAllSessions(
+        for recipientId: AccountId,
+        tx: DBWriteTransaction
+    )
+
     // MARK: - Debug
 
     func printAll(tx: DBReadTransaction)

@@ -89,6 +89,22 @@ public extension TSInfoMessage {
         }
     }
 
+    @objc
+    func sessionSwitchoverDescription(tx: SDSAnyReadTransaction) -> String {
+        if let phoneNumber = infoMessageUserInfo?[.sessionSwitchoverPhoneNumber] as? String {
+            let displayName = contactThreadDisplayName(tx: tx)
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            let formatString = OWSLocalizedString(
+                "SESSION_SWITCHOVER_EVENT",
+                comment: "If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient."
+            )
+            return String(format: formatString, formattedPhoneNumber, displayName)
+        } else {
+            let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx)
+            return TSErrorMessage.safetyNumberChangeDescription(for: address, tx: tx)
+        }
+    }
+
     private func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
         let result: String? = {
             guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {

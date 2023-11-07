@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
@@ -141,9 +142,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         if let expiration = expiration {
             let messageTimerView = componentView.messageTimerView
-            messageTimerView.configure(expirationTimestamp: expiration.expirationTimestamp,
-                                       initialDurationSeconds: expiration.expiresInSeconds,
-                                       tintColor: textColor)
+            messageTimerView.configure(
+                expirationTimestampMs: expiration.expirationTimestamp,
+                disappearingMessageInterval: expiration.expiresInSeconds,
+                tintColor: textColor
+            )
             innerViews.append(messageTimerView)
         }
 

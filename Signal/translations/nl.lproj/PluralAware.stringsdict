@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Persoon toevoegen</string>
+			<string>Groepslid toevoegen</string>
 			<key>other</key>
-			<string>Personen toevoegen</string>
+			<string>Groepsleden toevoegen</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -61,9 +61,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Persoon toevoegen</string>
+			<string>Nieuw lid toevoegen</string>
 			<key>other</key>
-			<string>Personen toevoegen</string>
+			<string>Nieuwe leden toevoegen</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>

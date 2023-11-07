@@ -25,7 +25,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         if let value = identityKeys[serviceId] {
             return value
         }
-        let data = Curve25519.generateKeyPair().publicKey
+        let data = ECKeyPair.generateKeyPair().publicKey
         identityKeys[serviceId] = data
         return data
     }

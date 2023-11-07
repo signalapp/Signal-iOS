@@ -19,7 +19,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: InteractionStore
     private let markAsReadShims: Shims.MarkAsRead
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadStore: ThreadStore
 
     private var logger: CallRecordLogger { .shared }
@@ -30,7 +30,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
         markAsReadShims: Shims.MarkAsRead,
-        recipientStore: RecipientDataStore,
+        recipientDatabaseTable: RecipientDatabaseTable,
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
@@ -38,7 +38,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.markAsReadShims = markAsReadShims
-        self.recipientStore = recipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.threadStore = threadStore
     }
 
@@ -202,7 +202,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         tx: DBReadTransaction
     ) -> TSContactThread? {
         guard
-            let contactRecipient = recipientStore.fetchRecipient(
+            let contactRecipient = recipientDatabaseTable.fetchRecipient(
                 serviceId: contactServiceId, transaction: tx
             ),
             let contactThread = threadStore.fetchContactThread(

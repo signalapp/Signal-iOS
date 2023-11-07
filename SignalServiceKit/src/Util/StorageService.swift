@@ -22,11 +22,6 @@ public protocol StorageServiceManagerObjc {
     /// Called during app launch, registration, and change number.
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC)
 
-    func backupPendingChanges(authedAccount: AuthedAccount)
-
-    @discardableResult
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise
-
     /// Waits for pending restores to finish.
     ///
     /// When this is resolved, it means the current device has the latest state
@@ -48,6 +43,10 @@ public protocol StorageServiceManagerObjc {
 }
 
 public protocol StorageServiceManager: StorageServiceManagerObjc {
+    func backupPendingChanges(authedDevice: AuthedDevice)
+
+    @discardableResult
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
 
     func resetLocalData(transaction: DBWriteTransaction)
 }

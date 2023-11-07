@@ -36,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (SignedPreKeyRecord *)generateSignedPreKeySignedWithIdentityKey:(ECKeyPair *)identityKeyPair
-    NS_SWIFT_NAME(generateSignedPreKey(signedBy:));
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
 
 - (nullable SignedPreKeyRecord *)currentSignedPreKey;

@@ -109,7 +109,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         if let masterKey = syncMessage.master {
             DependenciesBridge.shared.svr.storeSyncedMasterKey(
                 data: masterKey,
-                authedAccount: .implicit(),
+                authedDevice: .implicit,
                 transaction: transaction.asV2Write
             )
         } else {
@@ -127,6 +127,24 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
         sendSyncRequestMessage(.keys, transaction: transaction)
+    }
+
+    public func processIncomingFetchLatestSyncMessage(
+        _ syncMessage: SSKProtoSyncMessageFetchLatest,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        switch syncMessage.unwrappedType {
+        case .unknown:
+            owsFailDebug("Unknown fetch latest type")
+        case .localProfile:
+            DispatchQueue.global().async {
+                self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
+            }
+        case .storageManifest:
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
+        case .subscriptionStatus:
+            SubscriptionManagerImpl.performDeviceSubscriptionExpiryUpdate()
+        }
     }
 
     @objc

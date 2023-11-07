@@ -12,7 +12,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
 
     func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
-        let identityKeyPair = Curve25519.generateKeyPair()
+        let identityKeyPair = ECKeyPair.generateKeyPair()
         return .value(.init(
             aci: .init(
                 identity: .aci,
@@ -33,7 +33,7 @@ internal class MockPreKeyManager: PreKeyManager {
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
     ) -> Promise<RegistrationPreKeyUploadBundles> {
-        let identityKeyPair = Curve25519.generateKeyPair()
+        let identityKeyPair = ECKeyPair.generateKeyPair()
         return .value(.init(
             aci: .init(
                 identity: .aci,
@@ -69,7 +69,7 @@ internal class MockPreKeyManager: PreKeyManager {
     func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {
 
         let keyPair = KEMKeyPair.generate()
-        let signature = try! Ed25519.sign(Data(keyPair.publicKey.serialize()), with: signingKeyPair)
+        let signature = Data(signingKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
         let record = SignalServiceKit.KyberPreKeyRecord(
             0,

@@ -487,8 +487,8 @@ private struct KeyRecipient: Codable, Dependencies {
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
     static func currentState(for serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) throws -> KeyRecipient {
-        let recipientStore = DependenciesBridge.shared.recipientStore
-        guard let recipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
             throw OWSAssertionError("Invalid device array")
         }
         let deviceIds = recipient.deviceIds

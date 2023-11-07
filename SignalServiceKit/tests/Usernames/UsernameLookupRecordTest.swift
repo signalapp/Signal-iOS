@@ -10,22 +10,20 @@ import XCTest
 @testable import SignalServiceKit
 
 final class UsernameLookupRecordTest: XCTestCase {
-    private var inMemoryDatabase: InMemoryDatabase!
+    private var inMemoryDB: InMemoryDB!
 
     override func setUp() {
-        inMemoryDatabase = InMemoryDatabase()
+        inMemoryDB = InMemoryDB()
     }
 
     func testRoundTrip() throws {
         for (idx, (constant, _)) in UsernameLookupRecord.constants.enumerated() {
-            inMemoryDatabase.write { db in
-                try constant.insert(db)
-            }
+            inMemoryDB.insert(record: constant)
 
-            let deserialized = inMemoryDatabase.read { db in
+            let deserialized = inMemoryDB.read { tx in
                 return UsernameLookupRecord.fetchOne(
                     forAci: Aci(fromUUID: constant.aci),
-                    database: db
+                    database: InMemoryDB.shimOnlyBridge(tx).db
                 )
             }
 
@@ -42,12 +40,12 @@ final class UsernameLookupRecordTest: XCTestCase {
                 XCTFail("Unexpected error while validating constant \(idx)!")
             }
 
-            inMemoryDatabase.write { db in
-                UsernameLookupRecord.deleteOne(forAci: Aci(fromUUID: constant.aci), database: db)
+            inMemoryDB.write { tx in
+                UsernameLookupRecord.deleteOne(forAci: Aci(fromUUID: constant.aci), database: InMemoryDB.shimOnlyBridge(tx).db)
             }
 
-            XCTAssertNil(inMemoryDatabase.read { db in
-                return UsernameLookupRecord.fetchOne(forAci: Aci(fromUUID: constant.aci), database: db)
+            XCTAssertNil(inMemoryDB.read { tx in
+                return UsernameLookupRecord.fetchOne(forAci: Aci(fromUUID: constant.aci), database: InMemoryDB.shimOnlyBridge(tx).db)
             })
         }
     }
@@ -58,7 +56,7 @@ final class UsernameLookupRecordTest: XCTestCase {
         let username1 = "jango_fett.42"
         let username2 = "boba_fett.42"
 
-        inMemoryDatabase.write { db in
+        inMemoryDB.write { tx in
             let recordsToUpsert: [UsernameLookupRecord] = [
                 .init(aci: aci1, username: username1),
                 .init(aci: aci2, username: username2),
@@ -66,14 +64,14 @@ final class UsernameLookupRecordTest: XCTestCase {
             ]
 
             for record in recordsToUpsert {
-                record.upsert(database: db)
+                record.upsert(database: InMemoryDB.shimOnlyBridge(tx).db)
             }
         }
 
-        let (record1, record2) = inMemoryDatabase.read { db in
+        let (record1, record2) = inMemoryDB.read { tx in
             (
-                UsernameLookupRecord.fetchOne(forAci: aci1, database: db),
-                UsernameLookupRecord.fetchOne(forAci: aci2, database: db)
+                UsernameLookupRecord.fetchOne(forAci: aci1, database: InMemoryDB.shimOnlyBridge(tx).db),
+                UsernameLookupRecord.fetchOne(forAci: aci2, database: InMemoryDB.shimOnlyBridge(tx).db)
             )
         }
 

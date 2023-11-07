@@ -151,10 +151,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         let contactsManager = self.contactsManager as! OWSContactsManager
         read { transaction in
             let actual = contactsManager.phoneNumber(
-                for: SignalServiceAddress(
-                    serviceIdString: pni.serviceIdUppercaseString,
-                    allowPni: true
-                ),
+                for: SignalServiceAddress(serviceIdString: pni.serviceIdUppercaseString),
                 transaction: transaction
             )
             XCTAssertEqual(actual, "+17035559901")

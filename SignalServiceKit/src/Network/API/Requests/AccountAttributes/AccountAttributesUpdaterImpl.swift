@@ -115,10 +115,9 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         enum ShouldUpdate {
             case no
             case yes(
-                currentDeviceCapabilities: [String: NSNumber],
+                currentDeviceCapabilities: AccountAttributes.Capabilities,
                 lastAttributeRequestDate: Date?,
-                registrationState: TSRegistrationState,
-                hasBackedUpMasterKey: Bool
+                registrationState: TSRegistrationState
             )
         }
 
@@ -132,13 +131,8 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             }
 
             // has non-nil value if isRegistered is true.
-            let isPrimaryDevice = registrationState.isPrimaryDevice ?? true
             let hasBackedUpMasterKey = self.svrLocalStorage.getIsMasterKeyBackedUp(tx)
-            let currentDeviceCapabilities = OWSRequestFactory.deviceCapabilitiesForLocalDevice(
-                withHasBackedUpMasterKey: hasBackedUpMasterKey,
-                isRegistered: isRegistered,
-                isPrimaryDevice: isPrimaryDevice
-            )
+            let currentDeviceCapabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
 
             // Check if there's been a request for an attributes update.
             let lastAttributeRequestDate = self.kvStore.getDate(Keys.latestUpdateRequestDate, transaction: tx)
@@ -146,8 +140,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState,
-                    hasBackedUpMasterKey: hasBackedUpMasterKey
+                    registrationState: registrationState
                 )
             }
 
@@ -156,12 +149,11 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 forKey: Keys.lastUpdateDeviceCapabilities,
                 transaction: tx
             ) as? [String: NSNumber]
-            if lastUpdateDeviceCapabilities != currentDeviceCapabilities {
+            if lastUpdateDeviceCapabilities != currentDeviceCapabilities.requestParameters {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState,
-                    hasBackedUpMasterKey: hasBackedUpMasterKey
+                    registrationState: registrationState
                 )
             }
             // Check if the app version has changed.
@@ -170,8 +162,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,
                     lastAttributeRequestDate: lastAttributeRequestDate,
-                    registrationState: registrationState,
-                    hasBackedUpMasterKey: hasBackedUpMasterKey
+                    registrationState: registrationState
                 )
             }
             Logger.info("Skipping; lastAppVersion: \(String(describing: lastUpdateAppVersion)), currentAppVersion4: \(currentAppVersion4).")
@@ -180,15 +171,15 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         switch shouldUpdate {
         case .no:
             return
-        case let .yes(currentDeviceCapabilities, lastAttributeRequestDate, registrationState, hasBackedUpMasterKey):
+        case let .yes(currentDeviceCapabilities, lastAttributeRequestDate, registrationState):
             Logger.info("Updating account attributes.")
+            let reportedDeviceCapabilities: AccountAttributes.Capabilities
             if registrationState.isPrimaryDevice == true {
-                try await serviceClient.updatePrimaryDeviceAccountAttributes(authedAccount: authedAccount).awaitable()
+                let attributes = try await serviceClient.updatePrimaryDeviceAccountAttributes(authedAccount: authedAccount)
+                reportedDeviceCapabilities = attributes.capabilities
             } else {
-                try await serviceClient.updateSecondaryDeviceCapabilities(
-                    authedAccount: authedAccount,
-                    hasBackedUpMasterKey: hasBackedUpMasterKey
-                ).awaitable()
+                try await serviceClient.updateSecondaryDeviceCapabilities(currentDeviceCapabilities, authedAccount: authedAccount)
+                reportedDeviceCapabilities = currentDeviceCapabilities
             }
 
             // Kick off an async profile fetch (not awaited, returns void)
@@ -196,7 +187,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
             await db.awaitableWrite { tx in
                 self.kvStore.setString(currentAppVersion4, key: Keys.lastUpdateAppVersion, transaction: tx)
-                self.kvStore.setObject(currentDeviceCapabilities, key: Keys.lastUpdateDeviceCapabilities, transaction: tx)
+                self.kvStore.setObject(reportedDeviceCapabilities.requestParameters, key: Keys.lastUpdateDeviceCapabilities, transaction: tx)
                 // Clear the update request unless a new update has been requested
                 // while this update was in flight.
                 if

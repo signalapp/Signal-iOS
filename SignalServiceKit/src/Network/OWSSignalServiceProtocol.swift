@@ -32,7 +32,7 @@ public enum SignalServiceType {
     case storageService
     case cdn0
     case cdn2
-    case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
+    case cdn3
     case kbs
     case updates
     case updates2
@@ -45,6 +45,8 @@ public enum SignalServiceType {
             return cdn0
         case 2:
             return cdn2
+        case 3:
+            return cdn3
         default:
             owsFailDebug("Unrecognized CDN number configuration requested: \(cdnNumber)")
             return cdn2
@@ -75,18 +77,6 @@ public extension OWSSignalServiceProtocol {
 
     func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSessionProtocol {
         buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
-    }
-
-    func urlSessionForRemoteAttestation(
-        host: String,
-        censorshipCircumventionPrefix: String
-    ) -> OWSURLSessionProtocol {
-        buildUrlSession(
-            for: .remoteAttestation(
-                host: host,
-                censorshipCircumventionPrefix: censorshipCircumventionPrefix
-            )
-        )
     }
 
     func urlSessionForKBS() -> OWSURLSessionProtocol {
@@ -150,10 +140,10 @@ extension SignalServiceType {
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: false
             )
-        case .remoteAttestation(let host, let censorshipCircumventionPrefix):
+        case .cdn3:
             return SignalServiceInfo(
-                baseUrl: URL(string: host)!,
-                censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
+                baseUrl: URL(string: TSConstants.textSecureCDN3ServerURL)!,
+                censorshipCircumventionPathPrefix: TSConstants.cdn3CensorshipPrefix,
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: false
             )

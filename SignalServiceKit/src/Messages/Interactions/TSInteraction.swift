@@ -73,6 +73,7 @@ extension TSInteraction {
             case .phoneNumberChange: return false
             case .recipientHidden: return false
             case .threadMerge: return false
+            case .sessionSwitchover: return false
             case .typeGroupUpdate:
                 guard let updates = infoMessage.groupUpdateItems(transaction: transaction) else {
                     return true

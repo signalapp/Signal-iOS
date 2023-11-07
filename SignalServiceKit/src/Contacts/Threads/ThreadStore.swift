@@ -84,7 +84,18 @@ class ThreadStoreImpl: ThreadStore {
 #if TESTABLE_BUILD
 
 class MockThreadStore: ThreadStore {
-    var threads = [TSThread]()
+    private(set) var threads = [TSThread]()
+    var nextRowId: Int64 = 1
+
+    func insertThreads(_ threads: [TSThread]) {
+        threads.forEach { insertThread($0) }
+    }
+
+    func insertThread(_ thread: TSThread) {
+        thread.updateRowId(nextRowId)
+        threads.append(thread)
+        nextRowId += 1
+    }
 
     func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
         threads.first(where: { $0.sqliteRowId == threadRowId })

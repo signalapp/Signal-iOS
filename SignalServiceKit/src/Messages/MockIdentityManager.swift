@@ -10,7 +10,6 @@ import SignalCoreKit
 #if TESTABLE_BUILD
 
 final class MockIdentityManager: OWSIdentityManager {
-
     private let recipientIdFinder: RecipientIdFinder
 
     init(recipientIdFinder: RecipientIdFinder) {
@@ -23,15 +22,24 @@ final class MockIdentityManager: OWSIdentityManager {
         return recipientIdentities[recipientId]
     }
 
+    func removeRecipientIdentity(for recipientId: AccountId, tx: DBWriteTransaction) {
+        recipientIdentities[recipientId] = nil
+    }
+
     func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
         guard let recipientId = try recipientIdFinder.recipientId(for: serviceId, tx: tx)?.get() else { return nil }
         guard let recipientIdentity = recipientIdentities[recipientId] else { return nil}
-        return try IdentityKey(publicKey: ECPublicKey(keyData: recipientIdentity.identityKey).key)
+        return try IdentityKey(publicKey: PublicKey(keyData: recipientIdentity.identityKey))
     }
 
     var identityChangeInfoMessages: [ServiceId]!
     func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction) {
         identityChangeInfoMessages.append(serviceId)
+    }
+
+    var sessionSwitchoverMessages: [(SignalRecipient, phoneNumber: String?)]!
+    func insertSessionSwitchoverEvent(for recipient: SignalRecipient, phoneNumber: String?, tx: DBWriteTransaction) {
+        sessionSwitchoverMessages.append((recipient, phoneNumber))
     }
 
     func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {

@@ -381,10 +381,9 @@ public class ProvisioningController: NSObject {
     // MARK: -
 
     private func buildProvisioningUrl(deviceId: String) throws -> URL {
-        let base64PubKey: String = provisioningCipher
-            .secondaryDevicePublicKey
-            .serialized
-            .base64EncodedString()
+        let base64PubKey: String = Data(
+            provisioningCipher.secondaryDevicePublicKey.serialize()
+        ).base64EncodedString()
         guard let encodedPubKey = base64PubKey.encodeURIComponent else {
             throw OWSAssertionError("Failed to url encode query params")
         }

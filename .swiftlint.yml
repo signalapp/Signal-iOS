@@ -7,6 +7,7 @@ excluded:
 - Signal/src/util/Emoji/EmojiWithSkinTones+String.swift
 disabled_rules:
 - block_based_kvo
+- control_statement
 - cyclomatic_complexity
 - empty_enum_arguments
 - file_length

@@ -41,6 +41,7 @@ public class DependenciesBridge {
     public var accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
+    public let authorMergeHelper: AuthorMergeHelper
 
     public let callRecordStatusTransitionManager: CallRecordStatusTransitionManager
     public let callRecordStore: CallRecordStore
@@ -50,6 +51,8 @@ public class DependenciesBridge {
 
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
+
+    public let cloudBackupManager: CloudBackupManager
 
     public let deviceManager: OWSDeviceManager
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
@@ -79,11 +82,11 @@ public class DependenciesBridge {
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
 
+    public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
     public let recipientIdFinder: RecipientIdFinder
     public let recipientMerger: RecipientMerger
-    public let recipientStore: RecipientDataStore
     public let registrationSessionManager: RegistrationSessionManager
 
     public var registrationStateChangeManager: RegistrationStateChangeManager
@@ -111,6 +114,7 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
@@ -125,9 +129,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
-        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -142,6 +146,7 @@ public class DependenciesBridge {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
@@ -156,9 +161,9 @@ public class DependenciesBridge {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
-            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -178,6 +183,7 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
@@ -192,9 +198,9 @@ public class DependenciesBridge {
         paymentsEvents: PaymentsEvents,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
-        recipientStore: RecipientDataStore,
         senderKeyStore: SenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
@@ -238,9 +244,9 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
 
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
-        self.recipientStore = recipientStore
 
         self.identityManager = OWSIdentityManagerImpl(
             aciProtocolStore: aciProtocolStore,
@@ -363,7 +369,7 @@ public class DependenciesBridge {
             let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
                 databaseStorage: databaseStorage,
                 messageSenderJobQueue: jobQueues.messageSenderJobQueue,
-                recipientStore: self.recipientStore
+                recipientDatabaseTable: self.recipientDatabaseTable
             )
 
             self.callRecordStatusTransitionManager = CallRecordStatusTransitionManagerImpl()
@@ -389,15 +395,17 @@ public class DependenciesBridge {
                 markAsReadShims: CallRecordIncomingSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
                     notificationPresenter: notificationsManager
                 ),
-                recipientStore: self.recipientStore,
+                recipientDatabaseTable: self.recipientDatabaseTable,
                 threadStore: threadStore
             )
         }
 
+        self.authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: keyValueStoreFactory)
         self.recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
             identityManager: self.identityManager,
             observers: RecipientMergerImpl.buildObservers(
+                authorMergeHelper: self.authorMergeHelper,
                 callRecordStore: self.callRecordStore,
                 chatColorSettingStore: self.chatColorSettingStore,
                 disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
@@ -414,8 +422,8 @@ public class DependenciesBridge {
                 userProfileStore: userProfileStore,
                 wallpaperStore: self.wallpaperStore
             ),
+            recipientDatabaseTable: self.recipientDatabaseTable,
             recipientFetcher: self.recipientFetcher,
-            recipientStore: self.recipientStore,
             storageServiceManager: storageServiceManager
         )
 
@@ -565,6 +573,22 @@ public class DependenciesBridge {
             svr: svr,
             syncManager: MasterKeySyncManagerImpl.Wrappers.SyncManager(syncManager),
             tsAccountManager: tsAccountManager
+        )
+
+        self.cloudBackupManager = CloudBackupManagerImpl(
+            blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
+            dateProvider: dateProvider,
+            db: db,
+            dmConfigurationStore: disappearingMessagesConfigurationStore,
+            groupsV2: groupsV2,
+            profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
+            recipientHidingManager: recipientHidingManager,
+            signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
+            storyFinder: CloudBackup.Wrappers.StoryFinder(),
+            streamProvider: CloudBackupOutputStreamProviderImpl(),
+            tsAccountManager: tsAccountManager,
+            tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
+            tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
         )
     }
 }

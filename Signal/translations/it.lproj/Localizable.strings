@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Modifica messaggio";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Puoi modificare questo messaggio entro 3 ore dall'invio.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Puoi modificare questo messaggio entro 24 ore dall'invio.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2379,6 +2379,9 @@
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Questa versione di Signal scadrà oggi. Aggiorna l'app per continuare a inviare e ricevere messaggi.";
+
+/* action sheet header when re-sending message which failed because of an invalid key signature */
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Impossibile inviare il messaggio perché %1$@ deve aggiornare e aprire Signal.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Troppi tentativi non riusciti con questo contatto. Riprova più tardi.";
@@ -5752,6 +5755,9 @@
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sessione di chat aggiornata";
 
+/* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
+"SESSION_SWITCHOVER_EVENT" = "%1$@ appartiene a %2$@";
+
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Scegli dalle foto";
 
@@ -6728,7 +6734,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Mostra chat";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Ti sto invitando a installare Signal! Ecco il lnk:";
+"SMS_INVITE_BODY" = "Ti sto invitando a installare Signal! Ecco il link:";
 
 /* An error message generically indicating that something went wrong. */
 "SOMETHING_WENT_WRONG_ERROR" = "Qualcosa è andato storto.";

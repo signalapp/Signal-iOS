@@ -8,7 +8,6 @@
 #import "OWS2FAManager.h"
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"
-#import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -254,73 +253,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest())
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
-}
-
-+ (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
-{
-    // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
-    OWSAssertDebug(![TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction]);
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
-                              method:@"PUT"
-                          parameters:[self deviceCapabilitiesWithIsSecondaryDevice:YES
-                                                              hasBackedUpMasterKey:hasBackedUpMasterKey]];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-    (BOOL)hasBackedUpMasterKey
-{
-    // tsAccountManager.isPrimaryDevice only has a valid value for registered
-    // devices.
-    BOOL isRegisteredAndReady = [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction];
-    OWSAssertDebug(isRegisteredAndReady);
-
-    BOOL isPrimaryDevice = [TSAccountManagerObjcBridge isPrimaryDeviceWithMaybeTransaction];
-    return [self deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:hasBackedUpMasterKey
-                                                             isRegistered:isRegisteredAndReady
-                                                          isPrimaryDevice:isPrimaryDevice];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
-                                              (BOOL)hasBackedUpMasterKey
-                                                                                      isRegistered:(BOOL)isRegistered
-                                                                                   isPrimaryDevice:(BOOL)isPrimaryDevice
-{
-    OWSAssertDebug(isRegistered);
-    BOOL isSecondaryDevice = !isPrimaryDevice;
-    return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice hasBackedUpMasterKey:hasBackedUpMasterKey];
-}
-
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesWithIsSecondaryDevice:(BOOL)isSecondaryDevice
-                                                             hasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
-{
-    NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
-    capabilities[@"gv2"] = @(YES);
-    capabilities[@"gv2-2"] = @(YES);
-    capabilities[@"gv2-3"] = @(YES);
-    capabilities[@"transfer"] = @(YES);
-    capabilities[@"announcementGroup"] = @(YES);
-    capabilities[@"senderKey"] = @(YES);
-    capabilities[@"giftBadges"] = @(YES);
-    capabilities[@"paymentActivation"] = @(YES);
-
-    if (RemoteConfig.stories || isSecondaryDevice) {
-        capabilities[@"stories"] = @(YES);
-    }
-
-    // If the storage service requires (or will require) secondary devices
-    // to have a capability in order to be linked, we might need to always
-    // set that capability here if isSecondaryDevice is true.
-
-
-    if (hasBackedUpMasterKey) {
-        capabilities[@"storage"] = @(YES);
-    }
-
-    capabilities[@"changeNumber"] = @(YES);
-
-    OWSLogInfo(@"local device capabilities: %@", capabilities);
-    return [capabilities copy];
 }
 
 + (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId

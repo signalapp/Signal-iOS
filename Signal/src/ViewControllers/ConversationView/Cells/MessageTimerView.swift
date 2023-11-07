@@ -6,38 +6,25 @@
 import SignalCoreKit
 import SignalUI
 
-public class MessageTimerView: ManualLayoutView {
+final class MessageTimerView: ManualLayoutView {
 
-    private static let layoutSize: CGFloat = 12
-
-    private struct Configuration {
-        let initialDurationSeconds: UInt32
-        let expirationTimestamp: UInt64
-        let tintColor: UIColor
+    private enum Constants {
+        static let layoutSize: CGFloat = 12
+        // 0 == about to expire, 12 == just started countdown.
+        static let quantizationLevelCount: UInt64 = 12
     }
-    private var configuration: Configuration?
 
     private let imageView = CVImageView()
     private var animationTimer: Timer?
 
-    // 0 == about to expire, 12 == just started countdown.
-    private static let progress12_start: Int = 12
-    private var progress12: Int = MessageTimerView.progress12_start {
-        didSet {
-            if oldValue != progress12 {
-                updateIcon()
-            }
-        }
-    }
-
-    public required init() {
+    required init() {
         super.init(name: "OWSMessageTimerView")
 
         addSubviewToFillSuperviewEdges(imageView)
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    public required init(name: String) {
+    required init(name: String) {
         fatalError("init(name:) has not been implemented")
     }
 
@@ -45,84 +32,114 @@ public class MessageTimerView: ManualLayoutView {
         clearAnimation()
     }
 
-    public func configure(expirationTimestamp: UInt64,
-                          initialDurationSeconds: UInt32,
-                          tintColor: UIColor) {
-        self.configuration = Configuration(initialDurationSeconds: initialDurationSeconds,
-                                           expirationTimestamp: expirationTimestamp,
-                                           tintColor: tintColor)
-
-        updateProgress12()
-        updateIcon()
-        startAnimation()
+    func configure(
+        expirationTimestampMs: UInt64,
+        disappearingMessageInterval: UInt32,
+        tintColor: UIColor
+    ) {
+        let expirationProgress = self.expirationProgress(
+            expirationTimestampMs: expirationTimestampMs,
+            disappearingMessageInterval: disappearingMessageInterval,
+            nowMs: Date.ows_millisecondTimestamp()
+        )
+        updateIcon(quantizedValue: expirationProgress.quantizedValue, tintColor: tintColor)
+        startAnimation(expirationProgress: expirationProgress, tintColor: tintColor)
     }
 
-    @objc
-    private func updateProgress12() {
-        guard let configuration = self.configuration else {
-            return
-        }
-        let initialDurationSeconds = configuration.initialDurationSeconds
-        let expirationTimestamp = configuration.expirationTimestamp
-
-        let hasStartedCountdown = expirationTimestamp > 0
-        if !hasStartedCountdown {
-            self.progress12 = Self.progress12_start
-            return
-        }
-
-        let nowTimestamp = NSDate.ows_millisecondTimeStamp()
-        let msRemaining = (expirationTimestamp > nowTimestamp
-                            ? expirationTimestamp - nowTimestamp
-                            : 0)
-        let secondsRemaining = max(0, Double(msRemaining) / 1000)
-        var progress: Double = 0
-        if initialDurationSeconds > 0 {
-            progress = secondsRemaining / Double(initialDurationSeconds)
-        }
-        self.progress12 = Int(round(progress.clamp01() * 12))
-        owsAssertDebug(progress12 >= 0)
-        owsAssertDebug(progress12 <= 12)
+    private struct ExpirationProgress {
+        var quantizedValue: UInt64
+        var timerConfiguration: TimerConfiguration?
     }
 
-    private func updateIcon() {
-        guard let configuration = self.configuration else {
-            imageView.image = nil
-            return
-        }
-        guard let progressIcon = self.progressIcon else {
-            owsFailDebug("Missing icon.")
-            imageView.image = nil
-            return
-        }
-        imageView.image = progressIcon.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = configuration.tintColor
+    private struct TimerConfiguration {
+        let nextRefreshMs: UInt64
+        let refreshIntervalMs: UInt64
     }
 
-    private var progressIcon: UIImage? {
-        owsAssertDebug(progress12 >= 0)
-        owsAssertDebug(progress12 <= 12)
+    private func expirationProgress(
+        expirationTimestampMs: UInt64,
+        disappearingMessageInterval: UInt32,
+        nowMs: UInt64
+    ) -> ExpirationProgress {
+        // Every N milliseconds we move to the next progress level.
+        let refreshIntervalMs = UInt64(disappearingMessageInterval) * 1000 / Constants.quantizationLevelCount
 
-        let imageName = String(format: "messagetimer-%02ld", progress12 * 5)
+        // It will never expire because the timer hasn't started yet.
+        guard expirationTimestampMs > 0, refreshIntervalMs > 0 else {
+            return ExpirationProgress(quantizedValue: Constants.quantizationLevelCount)
+        }
+
+        let remainingMs = expirationTimestampMs.subtractingReportingOverflow(nowMs)
+        // It already expired because the expiration date is in the past.
+        guard !remainingMs.overflow else {
+            return ExpirationProgress(quantizedValue: 0)
+        }
+
+        let intermediateValue = remainingMs.partialValue.addingReportingOverflow(refreshIntervalMs/2)
+        // The disappearing interval is way too large -- something is wrong.
+        guard !intermediateValue.overflow else {
+            return ExpirationProgress(quantizedValue: Constants.quantizationLevelCount)
+        }
+
+        let quantizedValue = intermediateValue.partialValue / refreshIntervalMs
+        return ExpirationProgress(
+            quantizedValue: quantizedValue,
+            timerConfiguration: {
+                guard quantizedValue > 0 else {
+                    return nil
+                }
+                return TimerConfiguration(
+                    nextRefreshMs: expirationTimestampMs - (quantizedValue - 1) * refreshIntervalMs - refreshIntervalMs/2,
+                    refreshIntervalMs: refreshIntervalMs
+                )
+            }()
+        )
+    }
+
+    private func updateIcon(quantizedValue: UInt64, tintColor: UIColor) {
+        let progressIcon = self.progressIcon(quantizedValue: quantizedValue, tintColor: tintColor)
+        imageView.image = progressIcon?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = tintColor
+    }
+
+    private func progressIcon(quantizedValue: UInt64, tintColor: UIColor) -> UIImage? {
+        owsAssertDebug(quantizedValue <= Constants.quantizationLevelCount)
+        let imageName = String(format: "messagetimer-%02ld", quantizedValue * 5)
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Missing icon.")
             return nil
         }
-        owsAssertDebug(image.size.width == Self.layoutSize)
-        owsAssertDebug(image.size.height == Self.layoutSize)
+        owsAssertDebug(image.size.width == Constants.layoutSize)
+        owsAssertDebug(image.size.height == Constants.layoutSize)
         return image
     }
 
-    private func startAnimation() {
+    private func startAnimation(expirationProgress: ExpirationProgress, tintColor: UIColor) {
         AssertIsOnMainThread()
 
         clearAnimation()
+        guard let timerConfiguration = expirationProgress.timerConfiguration else {
+            return
+        }
 
-        let animationTimer = Timer.weakTimer(withTimeInterval: 0.1,
-                                              target: self,
-                                              selector: #selector(updateProgress12),
-                                              userInfo: nil,
-                                              repeats: true)
+        var quantizedValue = expirationProgress.quantizedValue
+        let animationTimer = Timer(
+            fire: Date(millisecondsSince1970: timerConfiguration.nextRefreshMs),
+            interval: TimeInterval(timerConfiguration.refreshIntervalMs)/1000,
+            repeats: true,
+            block: { [weak self] timer in
+                guard let self else {
+                    timer.invalidate()
+                    return
+                }
+                quantizedValue -= 1
+                self.updateIcon(quantizedValue: quantizedValue, tintColor: tintColor)
+                guard quantizedValue > 0 else {
+                    timer.invalidate()
+                    return
+                }
+            }
+        )
         self.animationTimer = animationTimer
         RunLoop.main.add(animationTimer, forMode: .common)
     }
@@ -134,13 +151,12 @@ public class MessageTimerView: ManualLayoutView {
         animationTimer = nil
     }
 
-    public func prepareForReuse() {
+    func prepareForReuse() {
         clearAnimation()
         imageView.image = nil
-        configuration = nil
     }
 
-    public static var measureSize: CGSize {
-        .square(Self.layoutSize)
+    static var measureSize: CGSize {
+        .square(Constants.layoutSize)
     }
 }

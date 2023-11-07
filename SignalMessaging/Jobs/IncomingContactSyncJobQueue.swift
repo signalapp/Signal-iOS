@@ -231,7 +231,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         let recipient: SignalRecipient
         if let aci = contactDetails.aci {
-            recipient = recipientMerger.applyMergeFromLinkedDevice(
+            recipient = recipientMerger.applyMergeFromContactSync(
                 localIdentifiers: localIdentifiers,
                 aci: aci,
                 phoneNumber: contactDetails.phoneNumber,

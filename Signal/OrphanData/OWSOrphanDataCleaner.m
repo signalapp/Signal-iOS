@@ -371,8 +371,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSUInteger fileCount = allOnDiskFilePaths.count;
-
     // Attachments
     __block int attachmentStreamCount = 0;
     NSMutableSet<NSString *> *allAttachmentFilePaths = [NSMutableSet new];
@@ -531,7 +529,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    OWSLogDebug(@"fileCount: %zu", fileCount);
+    OWSLogDebug(@"fileCount: %zu", allOnDiskFilePaths.count);
     OWSLogDebug(@"totalFileSize: %lld", totalFileSize.longLongValue);
     OWSLogDebug(@"attachmentStreams: %d", attachmentStreamCount);
     OWSLogDebug(@"attachmentStreams with file paths: %zu", allAttachmentFilePaths.count);

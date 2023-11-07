@@ -130,6 +130,8 @@ public struct AccountAttributes: Codable {
         public let canReceiveGiftBadges = true
         public let hasSVRBackups: Bool
         public let changeNumber = true
+        public let pni = true
+        public let paymentActivation = true
 
         public enum CodingKeys: String, CodingKey {
             case gv2
@@ -142,6 +144,17 @@ public struct AccountAttributes: Codable {
             case canReceiveGiftBadges = "giftBadges"
             case hasSVRBackups = "storage"
             case changeNumber
+            case pni
+            case paymentActivation
+        }
+
+        public init(hasSVRBackups: Bool) {
+            self.hasSVRBackups = hasSVRBackups
+        }
+
+        var requestParameters: [String: NSNumber] {
+            let jsonData = try! JSONEncoder().encode(self)
+            return try! JSONSerialization.jsonObject(with: jsonData) as! [String: NSNumber]
         }
     }
 }

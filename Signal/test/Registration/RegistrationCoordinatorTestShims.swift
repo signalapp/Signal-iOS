@@ -33,10 +33,10 @@ public class _RegistrationCoordinator_AccountManagerMock: _RegistrationCoordinat
 
     public init() {}
 
-    public var performInitialStorageServiceRestoreMock: ((AuthedAccount) -> Promise<Void>)?
+    public var performInitialStorageServiceRestoreMock: ((AuthedDevice) -> Promise<Void>)?
 
-    public func performInitialStorageServiceRestore(authedAccount: AuthedAccount) -> Promise<Void> {
-        return performInitialStorageServiceRestoreMock!(authedAccount)
+    public func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void> {
+        return performInitialStorageServiceRestoreMock!(authedDevice)
     }
 }
 

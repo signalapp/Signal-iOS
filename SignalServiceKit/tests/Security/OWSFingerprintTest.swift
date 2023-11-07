@@ -13,8 +13,8 @@ final class OWSFingerprintTest: XCTestCase {
         let aliceE164 = E164("+19995550101")!
         let bobE164 = E164("+18885550102")!
 
-        let aliceIdentityKey = Curve25519.generateKeyPair().publicKey
-        let bobIdentityKey = Curve25519.generateKeyPair().publicKey
+        let aliceIdentityKey = ECKeyPair.generateKeyPair().publicKey
+        let bobIdentityKey = ECKeyPair.generateKeyPair().publicKey
 
         let aliceToBobFingerprint = OWSFingerprint(
             source: .e164(myE164: aliceE164, theirE164: bobE164),
@@ -70,9 +70,9 @@ final class OWSFingerprintTest: XCTestCase {
             }()
         ]
 
-        let aliceIdentityKey = Curve25519.generateKeyPair().publicKey
-        let bobIdentityKey = Curve25519.generateKeyPair().publicKey
-        let charlieIdentityKey = Curve25519.generateKeyPair().publicKey
+        let aliceIdentityKey = ECKeyPair.generateKeyPair().publicKey
+        let bobIdentityKey = ECKeyPair.generateKeyPair().publicKey
+        let charlieIdentityKey = ECKeyPair.generateKeyPair().publicKey
 
         for (aliceToBob, bobToAlice, charlieToAlice) in sourceSets {
             let aliceToBobFingerprint = OWSFingerprint(

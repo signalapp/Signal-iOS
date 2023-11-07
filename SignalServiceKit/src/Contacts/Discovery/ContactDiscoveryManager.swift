@@ -101,9 +101,9 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
 
     public convenience init(
         db: DB,
+        recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
-        recipientStore: RecipientDataStore,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
@@ -111,9 +111,9 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         self.init(
             contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
                 db: db,
+                recipientDatabaseTable: recipientDatabaseTable,
                 recipientFetcher: recipientFetcher,
                 recipientMerger: recipientMerger,
-                recipientStore: recipientStore,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,
                 websocketFactory: websocketFactory

@@ -4,7 +4,6 @@
 //
 
 import CommonCrypto
-import Curve25519Kit
 import Foundation
 import LibSignalClient
 
@@ -27,8 +26,8 @@ public enum ProvisioningError: Error {
 
 public class ProvisioningCipher {
 
-    public var secondaryDevicePublicKey: ECPublicKey {
-        return ECPublicKey(secondaryDeviceKeyPair.publicKey)
+    public var secondaryDevicePublicKey: PublicKey {
+        return secondaryDeviceKeyPair.publicKey
     }
 
     let secondaryDeviceKeyPair: IdentityKeyPair

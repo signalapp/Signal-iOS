@@ -23,7 +23,6 @@ public protocol SyncManagerProtocolObjc {
 
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
-    func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: SDSAnyWriteTransaction)
 
     func sendFetchLatestProfileSyncMessage()
     func sendFetchLatestStorageManifestSyncMessage()
@@ -42,6 +41,7 @@ public protocol SyncManagerProtocolSwift {
     func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction)
     func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction)
 
+    func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: SDSAnyWriteTransaction)
     func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
         transaction: SDSAnyWriteTransaction

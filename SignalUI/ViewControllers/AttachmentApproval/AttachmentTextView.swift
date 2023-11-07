@@ -20,10 +20,6 @@ class AttachmentTextView: BodyRangesTextView {
         textIsChanging = false
     }
 
-    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
-        super.setContentOffset(contentOffset, animated: animated)
-    }
-
     override func isEditableMessageBodyDarkThemeEnabled() -> Bool {
         return true
     }

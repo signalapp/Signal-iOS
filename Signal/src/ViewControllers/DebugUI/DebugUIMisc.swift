@@ -10,7 +10,7 @@ import SignalUI
 
 #if USE_DEBUG_UI
 
-class DebugUIMisc: DebugUIPage, Dependencies {
+class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
 
     let name = "Misc."
 
@@ -38,7 +38,7 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",
                     message: "If you proceed, you will not lose any of your current messages, " +
-                        "but your account will be deactivated until you complete re-registration.",
+                    "but your account will be deactivated until you complete re-registration.",
                     proceedTitle: "Proceed",
                     proceedAction: { _ in
                         DebugUIMisc.reregister()

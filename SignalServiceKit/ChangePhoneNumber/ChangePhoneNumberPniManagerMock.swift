@@ -22,7 +22,7 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
-        let keyPair = Curve25519.generateKeyPair()
+        let keyPair = ECKeyPair.generateKeyPair()
         let registrationId = UInt32.random(in: 1...0x3fff)
 
         let localPqKey1 = try! self.mockKyberStore.generateEphemeralLastResortKyberPreKey(signedBy: keyPair)

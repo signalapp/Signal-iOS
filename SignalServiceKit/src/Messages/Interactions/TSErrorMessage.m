@@ -179,21 +179,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_KEY_EXCEPTION", @"");
         case TSErrorMessageWrongTrustedIdentityKey:
             return OWSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
-        case TSErrorMessageNonBlockingIdentityChange: {
-            if (self.recipientAddress) {
-                NSString *messageFormat = OWSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
-                    @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
-
-                NSString *recipientDisplayName =
-                    [SSKEnvironment.shared.contactsManager displayNameForAddress:self.recipientAddress
-                                                                     transaction:transaction];
-                return [NSString stringWithFormat:messageFormat, recipientDisplayName];
-            } else {
-                // address will be nil for legacy errors
-                return OWSLocalizedString(
-                    @"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"Shown when signal users safety numbers changed");
-            }
-        }
+        case TSErrorMessageNonBlockingIdentityChange:
+            return [TSErrorMessage safetyNumberChangeDescriptionFor:self.recipientAddress tx:transaction];
         case TSErrorMessageUnknownContactBlockOffer:
             return OWSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
                 @"Message shown in conversation view that offers to block an unknown user.");

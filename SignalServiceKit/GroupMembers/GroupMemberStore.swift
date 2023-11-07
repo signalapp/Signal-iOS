@@ -73,7 +73,7 @@ class GroupMemberStoreImpl: GroupMemberStore {
 #if TESTABLE_BUILD
 
 class MockGroupMemberStore: GroupMemberStore {
-    private let db = InMemoryDatabase()
+    private let db = InMemoryDB()
 
     func insert(fullGroupMember groupMember: TSGroupMember, tx: DBWriteTransaction) {
         db.insert(record: groupMember)
@@ -88,15 +88,21 @@ class MockGroupMemberStore: GroupMemberStore {
     }
 
     func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
-        db.read { GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, db: $0) }
+        db.read { tx in
+            GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, db: InMemoryDB.shimOnlyBridge(tx).db)
+        }
     }
 
     func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
-        db.read { GroupMemberStoreImpl.groupThreadIds(withFullMember: phoneNumber, db: $0) }
+        db.read { tx in
+            GroupMemberStoreImpl.groupThreadIds(withFullMember: phoneNumber, db: InMemoryDB.shimOnlyBridge(tx).db)
+        }
     }
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
-        db.read { GroupMemberStoreImpl.sortedFullGroupMembers(in: groupThreadId, db: $0) }
+        db.read { tx in
+            GroupMemberStoreImpl.sortedFullGroupMembers(in: groupThreadId, db: InMemoryDB.shimOnlyBridge(tx).db)
+        }
     }
 }
 

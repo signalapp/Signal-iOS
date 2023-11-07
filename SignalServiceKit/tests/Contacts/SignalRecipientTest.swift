@@ -644,7 +644,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     @discardableResult
     private func mergeHighTrust(aci: Aci, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
-        return recipientMerger.applyMergeFromLinkedDevice(
+        return recipientMerger.applyMergeFromContactSync(
             localIdentifiers: localIdentifiers,
             aci: aci,
             phoneNumber: phoneNumber,
@@ -667,9 +667,9 @@ final class SignalRecipient2Test: XCTestCase {
     }
 
     func testDecodeStableRow() throws {
-        let inMemoryDb = InMemoryDatabase()
-        inMemoryDb.write { db in
-            try db.execute(sql: """
+        let inMemoryDB = InMemoryDB()
+        try inMemoryDB.write { tx in
+            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "unregisteredAtTimestamp"
                 ) VALUES (
@@ -692,8 +692,8 @@ final class SignalRecipient2Test: XCTestCase {
                 );
             """)
         }
-        inMemoryDb.read { db in
-            let signalRecipients = try! SignalRecipient.fetchAll(db)
+        inMemoryDB.read { tx in
+            let signalRecipients = try! SignalRecipient.fetchAll(InMemoryDB.shimOnlyBridge(tx).db)
             XCTAssertEqual(signalRecipients.count, 2)
 
             XCTAssertEqual(signalRecipients[0].id, 18)
@@ -713,9 +713,9 @@ final class SignalRecipient2Test: XCTestCase {
     }
 
     func testDecodePni() throws {
-        let inMemoryDb = InMemoryDatabase()
-        inMemoryDb.write { db in
-            try db.execute(sql: """
+        let inMemoryDB = InMemoryDB()
+        try inMemoryDB.write { tx in
+            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "pni"
                 ) VALUES (
@@ -727,8 +727,8 @@ final class SignalRecipient2Test: XCTestCase {
                 );
             """)
         }
-        inMemoryDb.read { db in
-            let signalRecipients = try! SignalRecipient.fetchAll(db)
+        inMemoryDB.read { tx in
+            let signalRecipients = try! SignalRecipient.fetchAll(InMemoryDB.shimOnlyBridge(tx).db)
             XCTAssertEqual(signalRecipients.count, 1)
 
             XCTAssertEqual(signalRecipients[0].id, 1)
@@ -739,10 +739,11 @@ final class SignalRecipient2Test: XCTestCase {
     }
 
     func testEncodePni() throws {
-        let inMemoryDb = InMemoryDatabase()
+        let inMemoryDB = InMemoryDB()
         let pni = Pni.constantForTesting("PNI:30000000-5000-4000-8000-3000000000A9")
-        inMemoryDb.write { db in try! SignalRecipient(aci: nil, pni: pni, phoneNumber: nil).insert(db) }
-        inMemoryDb.read { db in
+        inMemoryDB.insert(record: SignalRecipient(aci: nil, pni: pni, phoneNumber: nil))
+        inMemoryDB.read { tx in
+            let db = InMemoryDB.shimOnlyBridge(tx).db
             let rawPniValue = try! String.fetchOne(db, sql: #"SELECT "pni" FROM "model_SignalRecipient""#)!
             XCTAssertEqual(rawPniValue, pni.serviceIdUppercaseString)
         }

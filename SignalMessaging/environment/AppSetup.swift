@@ -48,9 +48,9 @@ public class AppSetup {
 
         // MARK: DependenciesBridge
 
-        let recipientStore = RecipientDataStoreImpl()
-        let recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
-        let recipientIdFinder = RecipientIdFinder(recipientFetcher: recipientFetcher, recipientStore: recipientStore)
+        let recipientDatabaseTable = RecipientDatabaseTableImpl()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
+        let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
         let accountServiceClient = AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
@@ -58,6 +58,7 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
+        let blockingManager = BlockingManager()
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
         let messageProcessor = MessageProcessor()
@@ -89,6 +90,7 @@ public class AppSetup {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
@@ -103,9 +105,9 @@ public class AppSetup {
             paymentsEvents: paymentsEvents,
             profileManager: profileManager,
             receiptManager: receiptManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
-            recipientStore: recipientStore,
             senderKeyStore: senderKeyStore,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
@@ -131,7 +133,6 @@ public class AppSetup {
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
         let messageManager = OWSMessageManager()
-        let blockingManager = BlockingManager()
         let remoteConfigManager = ServiceRemoteConfigManager(
             appExpiry: appExpiry,
             db: DependenciesBridge.shared.db,
@@ -168,9 +169,9 @@ public class AppSetup {
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: dependenciesBridge.db,
+            recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable,
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
-            recipientStore: dependenciesBridge.recipientStore,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             udManager: udManager,
             websocketFactory: webSocketFactory

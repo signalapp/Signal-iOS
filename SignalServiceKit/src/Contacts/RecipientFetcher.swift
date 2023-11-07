@@ -12,27 +12,27 @@ public protocol RecipientFetcher {
 }
 
 public class RecipientFetcherImpl: RecipientFetcher {
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
 
-    public init(recipientStore: RecipientDataStore) {
-        self.recipientStore = recipientStore
+    public init(recipientDatabaseTable: RecipientDatabaseTable) {
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
-        if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
+        if let serviceIdRecipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }
         let newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
-        recipientStore.insertRecipient(newInstance, transaction: tx)
+        recipientDatabaseTable.insertRecipient(newInstance, transaction: tx)
         return newInstance
     }
 
     public func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient {
-        if let result = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
+        if let result = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }
         let result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
-        recipientStore.insertRecipient(result, transaction: tx)
+        recipientDatabaseTable.insertRecipient(result, transaction: tx)
         return result
     }
 }

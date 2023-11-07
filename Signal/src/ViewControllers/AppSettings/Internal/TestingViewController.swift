@@ -71,6 +71,88 @@ class TestingViewController: OWSTableViewController2 {
             }
         }
 
+        if FeatureFlags.cloudBackupFileAlpha {
+            let section = OWSTableSection()
+            section.footerTitle = "Backup File (pre-pre-pre-alpha)"
+            section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Create backup file")) {
+                Self.createCloudBackupProto()
+            })
+            section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Import backup file")) { [weak self] in
+                self?.importCloudBackupProto()
+            })
+            contents.add(section)
+        }
+
         self.contents = contents
+    }
+}
+
+extension TestingViewController {
+
+    private static func createCloudBackupProto() {
+        let vc = UIApplication.shared.frontmostViewController!
+        ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
+            Task {
+                do {
+                    let fileUrl = try await DependenciesBridge.shared.cloudBackupManager.createBackup()
+                    await MainActor.run {
+                        let activityVC = UIActivityViewController(
+                            activityItems: [fileUrl],
+                            applicationActivities: nil
+                        )
+                        let vc = UIApplication.shared.frontmostViewController!
+                        activityVC.popoverPresentationController?.sourceView = vc.view
+                        activityVC.completionWithItemsHandler = { _, _, _, _ in
+                            modal.dismiss()
+                        }
+                        vc.present(activityVC, animated: true)
+                    }
+                } catch {
+                    // Do nothing
+                    modal.dismiss()
+                }
+            }
+        })
+    }
+
+    private func importCloudBackupProto() {
+        let vc = UIApplication.shared.frontmostViewController!
+        guard #available(iOS 14.0, *) else {
+            return
+        }
+        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
+        documentPicker.delegate = self
+        documentPicker.allowsMultipleSelection = false
+        vc.present(documentPicker, animated: true)
+    }
+}
+
+extension TestingViewController: UIDocumentPickerDelegate {
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let fileUrl = urls.first else {
+            return
+        }
+        let vc = UIApplication.shared.frontmostViewController!
+        ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
+            Task {
+                do {
+                    try await DependenciesBridge.shared.cloudBackupManager.importBackup(fileUrl: fileUrl)
+                    await MainActor.run {
+                        modal.dismiss {
+                            let vc = UIApplication.shared.frontmostViewController!
+                            vc.presentToast(text: "Done!")
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        modal.dismiss {
+                            let vc = UIApplication.shared.frontmostViewController!
+                            vc.presentToast(text: "Failed!")
+                        }
+                    }
+                }
+            }
+        })
     }
 }

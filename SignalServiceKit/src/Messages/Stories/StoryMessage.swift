@@ -273,10 +273,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 throw OWSAssertionError("Invalid ServiceId on story recipient \(String(describing: recipient.destinationServiceID))")
             }
 
-            if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
-                throw OWSAssertionError("Unsupported PNI on story recipient")
-            }
-
             return (
                 key: serviceId,
                 value: StoryRecipientState(
@@ -538,11 +534,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                     let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString)
                 else {
                     owsFailDebug("Missing UUID for story recipient")
-                    continue
-                }
-
-                if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
-                    owsFailDebug("Unsupported PNI for story recipient")
                     continue
                 }
 

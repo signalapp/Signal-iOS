@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Curve25519Kit/Curve25519.h>
 #import <Foundation/Foundation.h>
 
+@class ECKeyPair;
 @class LegacyChainKey;
 
 @interface LegacySendingChain : NSObject <NSSecureCoding>

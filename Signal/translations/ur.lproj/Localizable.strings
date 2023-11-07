@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "میسج میں ترمیم کریں";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "آپ کی طرف سے اس میسج کو بھیجنے کے بعد ترامیم کا اطلاق محض 3 گھنٹوں کے اندر کیا جا سکتا ہے۔";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "آپ کی طرف سے اس میسج کو بھیجنے کے بعد ترامیم کا اطلاق محض 24 گھنٹوں کے اندر کیا جا سکتا ہے۔";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2379,6 +2379,9 @@
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Signal یہ ورژن آج زائد المیعاد ہو جائے گا۔ میسجنگ جاری رکھنے کے لیے اپ ڈیٹ کریں۔";
+
+/* action sheet header when re-sending message which failed because of an invalid key signature */
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "میسج نہیں بھیجا جا سکا کیونکہ %1$@ کو Signal کو اپ ڈیٹ کرنے اور کھولنے کی ضرورت ہے۔";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "اس رابطے کیساتھ بہت سے فیچرز ہیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔";
@@ -5751,6 +5754,9 @@
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "چیٹ سیشن ری فریش ہو گیا";
+
+/* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
+"SESSION_SWITCHOVER_EVENT" = "%1$@ کا تعلق %2$@ سے ہے";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "فوٹو میں سے انتخاب کریں";

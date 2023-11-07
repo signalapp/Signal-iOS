@@ -23,6 +23,9 @@ public class ToastController: NSObject, ToastViewDelegate {
         super.init()
 
         toastView.delegate = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidAppear), name: UIResponder.keyboardDidShowNotification, object: nil)
     }
 
     // MARK: Public
@@ -45,7 +48,21 @@ public class ToastController: NSObject, ToastViewDelegate {
         toastView.alpha = 0
         parentView.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
-        toastView.autoPinEdge(edge, to: edge, of: view, withOffset: offset)
+
+        self.viewToPinTo = view
+        self.offset = offset
+        if
+            #available(iOS 15, *),
+            edge == .bottom,
+            // If keyboard is closed, its layout guide height is equivalent to the bottom safe area inset.
+            view.keyboardLayoutGuide.layoutFrame.height > view.safeAreaInsets.totalHeight
+        {
+            let constraint = keyboardConstraint(toastView: toastView, viewOwningKeyboard: view)
+            NSLayoutConstraint.activate([constraint])
+            self.toastBottomConstraint = constraint
+        } else {
+            self.toastBottomConstraint = toastView.autoPinEdge(edge, to: edge, of: view, withOffset: offset)
+        }
         toastView.autoPinWidthToSuperview(withMargin: 8)
 
         if let currentToastController = type(of: self).currentToastController {
@@ -63,6 +80,54 @@ public class ToastController: NSObject, ToastViewDelegate {
             // As with an AlertController, the caller likely expects toast to
             // be presented and dismissed without maintaining a strong reference to ToastController
             self.dismissToastView()
+        }
+    }
+
+    // MARK: - Keyboard
+
+    private var toastBottomConstraint: NSLayoutConstraint?
+    private var viewToPinTo: UIView?
+    private var offset: CGFloat?
+
+    @available(iOS 15, *)
+    private func keyboardConstraint(toastView: ToastView, viewOwningKeyboard: UIView) -> NSLayoutConstraint {
+        return NSLayoutConstraint(
+            item: toastView,
+            attribute: .bottom,
+            relatedBy: .equal,
+            toItem: viewOwningKeyboard.keyboardLayoutGuide,
+            attribute: .top,
+            multiplier: 1.0,
+            constant: -8
+        )
+    }
+
+    @objc
+    private func keyboardDidAppear() {
+        keyboardPresenceDidChange(isPresent: true)
+    }
+
+    @objc
+    private func keyboardDidHide() {
+        keyboardPresenceDidChange(isPresent: false)
+    }
+
+    private func keyboardPresenceDidChange(isPresent: Bool) {
+        if
+            #available(iOS 15, *),
+            let constraint = self.toastBottomConstraint,
+            let view = self.viewToPinTo,
+            let offset = offset
+        {
+            NSLayoutConstraint.deactivate([constraint])
+            let newConstraint: NSLayoutConstraint
+            if isPresent {
+                newConstraint = keyboardConstraint(toastView: toastView, viewOwningKeyboard: view)
+            } else {
+                newConstraint = toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: offset)
+            }
+            NSLayoutConstraint.activate([newConstraint])
+            self.toastBottomConstraint = newConstraint
         }
     }
 
@@ -197,7 +262,6 @@ public extension UIViewController {
     func presentToast(text: String, extraVInset: CGFloat = 0) {
         let toastController = ToastController(text: text)
         // TODO: There should be a better way to do this.
-        // TODO: Take into account the keyboard height.
         let bottomInset = view.safeAreaInsets.bottom + 8 + extraVInset
         toastController.presentToastView(from: .bottom, of: view, inset: bottomInset)
     }

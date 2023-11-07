@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
     OWSErrorCodeUntrustedIdentity = 777427,
+    OWSErrorCodeInvalidKeySignature = 777428,
     OWSErrorCodeObsolete30 = 30,
     OWSErrorCodeAssertionFailure = 31,
     OWSErrorCodeGenericFailure = 32,

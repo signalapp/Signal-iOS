@@ -32,8 +32,6 @@ public enum OneTimeBadgeLevel: Hashable {
     }
 }
 
-private let SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE = "__signal_charge_failure_fallback_code__"
-
 public enum SubscriptionBadgeIds: String, CaseIterable {
     case low = "R_LOW"
     case med = "R_MED"
@@ -258,7 +256,7 @@ public class SubscriptionManagerImpl: NSObject {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    public static var subscriptionJobQueue: SubscriptionReceiptCredentialJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
+    public static var subscriptionJobQueue: SubscriptionReceiptCredentialRedemptionJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
     public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
     public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
@@ -276,7 +274,6 @@ public class SubscriptionManagerImpl: NSObject {
     fileprivate static let mostRecentlyExpiredBadgeIDKey = "mostRecentlyExpiredBadgeIDKey"
     fileprivate static let mostRecentlyExpiredGiftBadgeIDKey = "mostRecentlyExpiredGiftBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
-    fileprivate static let mostRecentSubscriptionBadgeChargeFailureCodeKey = "mostRecentSubscriptionBadgeChargeFailureCode"
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
@@ -370,7 +367,6 @@ public class SubscriptionManagerImpl: NSObject {
 
             databaseStorage.write { transaction in
                 Self.setMostRecentSubscriptionPaymentMethod(paymentMethod: paymentMethod, transaction: transaction)
-                Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: transaction)
             }
 
             return setSubscription(
@@ -541,7 +537,6 @@ public class SubscriptionManagerImpl: NSObject {
                 subscriberID: subscriberID,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
-                boostPaymentIntentID: String(),
                 transaction: transaction
             )
         }
@@ -760,21 +755,6 @@ public class SubscriptionManagerImpl: NSObject {
                 Logger.info("[Donations] No current subscription for this subscriberID")
                 self.updateSubscriptionHeartbeatDate()
                 return
-            }
-
-            databaseStorage.write { transaction in
-                if let chargeFailure = subscription.chargeFailure {
-                    Logger.info("[Donations] There was a charge failure. Saving the error code")
-
-                    let code: String = chargeFailure.code ?? {
-                        Logger.warn("[Donations] There was a charge failure with no code. Did the server return bad data? Continuing with fallback...")
-                        return SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE
-                    }()
-                    self.setMostRecentSubscriptionBadgeChargeFailureCode(code: code, transaction: transaction)
-                } else {
-                    Logger.info("[Donations] There no charge failure. Clearing error code, if it existed")
-                    self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: transaction)
-                }
             }
 
             if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
@@ -1024,13 +1004,6 @@ extension SubscriptionManagerImpl {
         return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction) ?? false
     }
 
-    public static func getMostRecentSubscriptionBadgeChargeFailure(transaction: SDSAnyReadTransaction) -> Subscription.ChargeFailure? {
-        guard let code = subscriptionKVS.getString(mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction) else {
-            return nil
-        }
-        return code == SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE ? Subscription.ChargeFailure() : Subscription.ChargeFailure(code: code)
-    }
-
     public static func setMostRecentSubscriptionPaymentMethod(
         paymentMethod: DonationPaymentMethod?,
         transaction: SDSAnyWriteTransaction
@@ -1049,14 +1022,6 @@ extension SubscriptionManagerImpl {
         }
 
         return paymentMethod
-    }
-
-    private static func setMostRecentSubscriptionBadgeChargeFailureCode(code: String, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setString(code, key: mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction)
-    }
-
-    private static func clearMostRecentSubscriptionBadgeChargeFailure(transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.removeValue(forKey: mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction)
     }
 }
 

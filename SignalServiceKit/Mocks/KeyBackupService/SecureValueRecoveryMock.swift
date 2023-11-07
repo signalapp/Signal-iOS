@@ -103,7 +103,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func storeSyncedMasterKey(
         data: Data,
-        authedAccount: AuthedAccount,
+        authedDevice: AuthedDevice,
         transaction: DBWriteTransaction
     ) {
         // Do nothing

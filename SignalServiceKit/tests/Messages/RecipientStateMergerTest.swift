@@ -11,17 +11,17 @@ import XCTest
 final class RecipientStateMergerTest: XCTestCase {
     private var mockDB: MockDB!
     private var _signalServiceAddressCache: SignalServiceAddressCache!
+    private var recipientDatabaseTable: MockRecipientDatabaseTable!
     private var recipientStateMerger: RecipientStateMerger!
-    private var recipientStore: MockRecipientDataStore!
 
     override func setUp() {
         super.setUp()
 
         mockDB = MockDB()
         _signalServiceAddressCache = SignalServiceAddressCache()
-        recipientStore = MockRecipientDataStore()
+        recipientDatabaseTable = MockRecipientDatabaseTable()
         recipientStateMerger = RecipientStateMerger(
-            recipientStore: recipientStore,
+            recipientDatabaseTable: recipientDatabaseTable,
             signalServiceAddressCache: _signalServiceAddressCache
         )
     }
@@ -35,8 +35,8 @@ final class RecipientStateMergerTest: XCTestCase {
         let pni4 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b4")
 
         mockDB.write { tx in
-            recipientStore.insertRecipient(SignalRecipient(aci: aci1, pni: pni1, phoneNumber: nil), transaction: tx)
-            recipientStore.insertRecipient(SignalRecipient(aci: aci4, pni: pni4, phoneNumber: nil), transaction: tx)
+            recipientDatabaseTable.insertRecipient(SignalRecipient(aci: aci1, pni: pni1, phoneNumber: nil), transaction: tx)
+            recipientDatabaseTable.insertRecipient(SignalRecipient(aci: aci4, pni: pni4, phoneNumber: nil), transaction: tx)
         }
 
         var recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = [

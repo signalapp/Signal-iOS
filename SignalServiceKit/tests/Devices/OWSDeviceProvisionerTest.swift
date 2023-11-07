@@ -49,7 +49,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let provisioner = OWSDeviceProvisioner(
             myAciIdentityKeyPair: myAciIdentityKeyPair,
             myPniIdentityKeyPair: myPniIdentityKeyPair,
-            theirPublicKey: Data(linkedDeviceCipher.secondaryDevicePublicKey.keyData),
+            theirPublicKey: Data(linkedDeviceCipher.secondaryDevicePublicKey.keyBytes),
             theirEphemeralDeviceId: "",
             myAci: myAci,
             myPhoneNumber: myPhoneNumber,

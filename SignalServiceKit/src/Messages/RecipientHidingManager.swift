@@ -83,6 +83,9 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     private let tsAccountManager: TSAccountManager
     private let jobQueues: SSKJobQueues
 
+    @objc
+    public static let hideListDidChange = Notification.Name("hideListDidChange")
+
     public init(
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
@@ -192,6 +195,9 @@ private extension RecipientHidingManagerImpl {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
+        // Triggers UI updates of recipient lists.
+        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
         if let thread = TSContactThread.getWithContactAddress(
             recipient.address,
@@ -206,8 +212,6 @@ private extension RecipientHidingManagerImpl {
             INInteraction.delete(with: thread.uniqueId, completion: nil)
         }
 
-        /// TODO recipientHiding:
-        /// - Throw out other user's profile key if not in group with user.
         if wasLocallyInitiated {
             Logger.info("[Recipient hiding][side effects] Remove from whitelist.")
             profileManager.removeUser(
@@ -245,6 +249,10 @@ private extension RecipientHidingManagerImpl {
             self.profileManager.rotateProfileKeyUponRecipientHide(
                 withTx: SDSDB.shimOnlyBridge(tx)
             )
+            // A nice-to-have was to throw out the other user's profile key if we're
+            // not in a group with them. Product said this was not strictly necessary.
+            // Note that this _is_ something that is done on Android, so there is a
+            // slight lack of parity here.
         }
     }
 
@@ -261,6 +269,9 @@ private extension RecipientHidingManagerImpl {
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
     func didSetAsUnhidden(recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
+        // Triggers UI updates of recipient lists.
+        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as unhidden.")
         if wasLocallyInitiated {
             Logger.info("[Recipient hiding][side effects] Add to whitelist.")
@@ -330,5 +341,10 @@ public class RecipientHidingManagerObjcBridge: NSObject {
     @objc
     public static func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
+    }
+
+    @objc
+    public static var hideListDidChange: Notification.Name {
+        return RecipientHidingManagerImpl.hideListDidChange
     }
 }

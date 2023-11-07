@@ -124,7 +124,7 @@ extension TSGroupThread {
     ) -> TSGroupThread {
         let groupId = Data(repeating: groupId, count: 32)
         let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
-        return TSGroupThread(
+        let groupThread = TSGroupThread(
             grdbId: 1,
             uniqueId: groupThreadId,
             conversationColorNameObsolete: "",
@@ -163,6 +163,8 @@ extension TSGroupThread {
                 droppedMembers: []
             )
         )
+        groupThread.clearRowId()
+        return groupThread
     }
 }
 

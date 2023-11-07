@@ -165,10 +165,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 

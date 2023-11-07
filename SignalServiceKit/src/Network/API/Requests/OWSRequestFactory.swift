@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public extension OWSRequestFactory {
@@ -53,6 +54,16 @@ public extension OWSRequestFactory {
     static func batchIdentityCheckRequest(elements: [[String: String]]) -> TSRequest {
         precondition(elements.count <= batchIdentityCheckElementsLimit)
         return .init(url: .init(string: "v1/profile/identity_check/batch")!, method: HTTPMethod.post.methodName, parameters: ["elements": elements])
+    }
+
+    // MARK: - Capabilities
+
+    @nonobjc
+    static func updateLinkedDeviceCapabilitiesRequest(for capabilities: AccountAttributes.Capabilities) -> TSRequest {
+        // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
+        return TSRequest(url: URL(string: "v1/devices/capabilities")!, method: "PUT", parameters: capabilities.requestParameters)
     }
 
     // MARK: - Devices

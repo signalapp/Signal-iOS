@@ -7,9 +7,6 @@ import SignalMessaging
 import SignalUI
 
 class CustomActionSheet: ActionSheetController {
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
 }
 
 public class GroupLinkPromotionActionSheet: UIView {

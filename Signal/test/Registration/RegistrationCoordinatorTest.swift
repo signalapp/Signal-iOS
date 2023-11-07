@@ -361,7 +361,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         // Once we sync push tokens, we should restore from storage service.
         accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount())
+            XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
             return .value(())
         }
 
@@ -494,7 +494,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Once we sync push tokens, we should restore from storage service.
             accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-                XCTAssertEqual(auth, expectedAuthedAccount())
+                XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return .value(())
             }
 
@@ -978,7 +978,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Succeed at t=8.
             accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 7)
-                XCTAssertEqual(auth, expectedAuthedAccount())
+                XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 8)
             }
 
@@ -1177,7 +1177,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // At t=5 once we back up to svr, we should restore from storage service.
             accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 5)
-                XCTAssertEqual(auth, expectedAuthedAccount())
+                XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 6)
             }
 
@@ -1538,7 +1538,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // At t=1 once we sync push tokens, we should restore from storage service.
             accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 1)
-                XCTAssertEqual(auth, expectedAuthedAccount())
+                XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 2)
             }
 
@@ -3436,14 +3436,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         static func preKeyBundle(identity: OWSIdentity) -> RegistrationPreKeyUploadBundle {
-            let identityKeyPair = Curve25519.generateKeyPair()
+            let identityKeyPair = ECKeyPair.generateKeyPair()
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
                 signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
                 lastResortPreKey: {
                     let keyPair = KEMKeyPair.generate()
-                    let signature = try! Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+                    let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
                     let record = SignalServiceKit.KyberPreKeyRecord(
                         0,

@@ -5,7 +5,6 @@
 
 #import "LegacyRootKey.h"
 #import "LegacyChainKey.h"
-#import <Curve25519Kit/Curve25519.h>
 
 static NSString* const kCoderData      = @"kCoderData";
 

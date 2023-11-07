@@ -291,9 +291,6 @@ public class ProfileFetcherJob: NSObject {
                     )
                 }
             },
-            udAuthFailureBlock: {
-                // Do nothing
-            },
             serviceId: serviceId,
             udAccess: udAccess,
             authedAccount: self.options.authedAccount,
@@ -505,7 +502,6 @@ public class ProfileFetcherJob: NSObject {
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetch: Date(),
-                isStoriesCapable: profile.isStoriesCapable,
                 canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,

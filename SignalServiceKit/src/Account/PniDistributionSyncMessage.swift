@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import Curve25519Kit
 
 /// Represents a message sent to linked devices during a PNI distribution event
 /// informing those devices of the new PNI identity.

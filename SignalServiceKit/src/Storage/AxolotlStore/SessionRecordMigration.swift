@@ -17,7 +17,7 @@ private func validate(_ condition: @autoclosure () -> Bool,
 
 private func prependKeyType(to data: Data) -> Data {
     validate(data.count == 32)
-    return [ECPublicKey.keyTypeDJB] + data
+    return [PublicKey.Constants.keyTypeDJB] + data
 }
 
 private func removeKeyType(from data: Data) -> Data {

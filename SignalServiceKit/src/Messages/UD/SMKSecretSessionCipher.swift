@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Curve25519Kit
 import Foundation
 import LibSignalClient
 import SignalCoreKit

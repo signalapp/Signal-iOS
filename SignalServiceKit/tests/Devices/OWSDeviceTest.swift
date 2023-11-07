@@ -7,15 +7,15 @@
 import XCTest
 
 class OWSDeviceTest: XCTestCase {
-    private let inMemoryDatabase = InMemoryDatabase()
+    private let inMemoryDB = InMemoryDB()
 
     // MARK: - Round trip
 
     func testRoundTrip() {
         for (idx, (constant, _)) in OWSDevice.constants.enumerated() {
-            inMemoryDatabase.insert(record: constant)
+            inMemoryDB.insert(record: constant)
 
-            let deserialized = inMemoryDatabase.fetchExactlyOne(modelType: OWSDevice.self)
+            let deserialized = inMemoryDB.fetchExactlyOne(modelType: OWSDevice.self)
 
             guard let deserialized else {
                 XCTFail("Failed to fetch constant \(idx)!")
@@ -30,7 +30,7 @@ class OWSDeviceTest: XCTestCase {
                 XCTFail("Unexpected error while validating constant \(idx)!")
             }
 
-            inMemoryDatabase.remove(model: deserialized)
+            inMemoryDB.remove(model: deserialized)
         }
     }
 

@@ -1146,17 +1146,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self profileKeyForAddress:address transaction:transaction].keyData;
 }
 
-- (BOOL)recipientAddressIsStoriesCapable:(nonnull SignalServiceAddress *)address
-                             transaction:(nonnull SDSAnyReadTransaction *)transaction
-{
-    OWSUserProfile *_Nullable userProfile = [OWSUserProfile getUserProfileForAddress:address transaction:transaction];
-    if (userProfile == nil) {
-        return NO;
-    } else {
-        return userProfile.isStoriesCapable;
-    }
-}
-
 - (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
                                     transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1488,7 +1477,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
-               isStoriesCapable:(BOOL)isStoriesCapable
            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                    isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -1519,7 +1507,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                                       transaction:writeTx];
     if (!userProfile.profileKey) {
         [userProfile updateWithLastFetchDate:lastFetchDate
-                            isStoriesCapable:isStoriesCapable
                         canReceiveGiftBadges:canReceiveGiftBadges
                                 isPniCapable:isPniCapable
                            userProfileWriter:userProfileWriter
@@ -1534,7 +1521,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
                            lastFetchDate:lastFetchDate
-                        isStoriesCapable:isStoriesCapable
                     canReceiveGiftBadges:canReceiveGiftBadges
                             isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
@@ -1549,7 +1535,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                   badges:profileBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate
-                        isStoriesCapable:isStoriesCapable
                     canReceiveGiftBadges:canReceiveGiftBadges
                             isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter

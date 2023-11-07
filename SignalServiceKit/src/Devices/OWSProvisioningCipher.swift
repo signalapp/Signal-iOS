@@ -53,7 +53,7 @@ public class OWSProvisioningCipher: NSObject {
     @objc
     public func encrypt(_ data: Data) -> Data? {
         do {
-            let theirPublicKey = try! ECPublicKey(keyData: theirPublicKeyData).key
+            let theirPublicKey = try! PublicKey(keyData: theirPublicKeyData)
             let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
             let infoData = ProvisioningCipher.messageInfo

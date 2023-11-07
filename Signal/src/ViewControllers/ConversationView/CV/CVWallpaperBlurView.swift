@@ -38,10 +38,12 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     }
 
     public func applyLayout() {
-        imageView.frame = imageViewFrame
-        maskLayer.frame = imageView.bounds
-        let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: maskCornerRadius)
-        maskLayer.path = maskPath.cgPath
+        UIView.performWithoutAnimation {
+            imageView.frame = imageViewFrame
+            maskLayer.frame = imageView.bounds
+            let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: maskCornerRadius)
+            maskLayer.path = maskPath.cgPath
+        }
     }
 
     @available(swift, obsoleted: 1.0)
@@ -108,10 +110,8 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
             return
         }
         let referenceView = state.referenceView
-        let referenceLayer = referenceView.layer.presentation() ?? referenceView.layer
-        let selfLayer = self.layer.presentation() ?? self.layer
-        self.imageViewFrame = selfLayer.convert(referenceLayer.bounds, from: referenceLayer)
-        self.maskFrame = referenceLayer.convert(selfLayer.bounds, from: selfLayer)
+        self.imageViewFrame = self.convert(referenceView.bounds, from: referenceView)
+        self.maskFrame = referenceView.convert(self.bounds, from: self)
 
         applyLayout()
     }

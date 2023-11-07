@@ -33,6 +33,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessagePaymentsActivationRequest,
     TSInfoMessagePaymentsActivated,
     TSInfoMessageThreadMerge,
+    TSInfoMessageSessionSwitchover,
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
@@ -51,6 +52,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyChangePhoneNumberNew;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPaymentActivationRequestSenderAci;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPaymentActivatedAci;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyThreadMergePhoneNumber;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhoneNumber;
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 

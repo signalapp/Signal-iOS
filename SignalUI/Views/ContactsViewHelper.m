@@ -77,6 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(blockListDidChange:)
                                                  name:BlockingManager.blockListDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hideListDidChange:)
+                                                 name:RecipientHidingManagerObjcBridge.hideListDidChange
+                                               object:nil];
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -105,6 +109,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
+    [self updateContacts];
+}
+
+- (void)hideListDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
+    /// Hiding a recipient who is a system contact or is someone you've
+    /// chatted with 1:1 updates the profile whitelist, which already
+    /// triggers a call to `updateContacts`. However, recipients who
+    /// do not fit into these categories need this other mechanism to
+    /// trigger `updateContacts`.
     [self updateContacts];
 }
 

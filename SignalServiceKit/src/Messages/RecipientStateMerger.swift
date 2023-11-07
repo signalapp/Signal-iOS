@@ -7,14 +7,14 @@ import Foundation
 import LibSignalClient
 
 final class RecipientStateMerger {
-    private let recipientStore: RecipientDataStore
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let signalServiceAddressCache: SignalServiceAddressCache
 
     init(
-        recipientStore: RecipientDataStore,
+        recipientDatabaseTable: RecipientDatabaseTable,
         signalServiceAddressCache: SignalServiceAddressCache
     ) {
-        self.recipientStore = recipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.signalServiceAddressCache = signalServiceAddressCache
     }
 
@@ -42,7 +42,7 @@ final class RecipientStateMerger {
         case .none, .aci:
             return nil
         case .pni(let pni):
-            guard let aci = recipientStore.fetchRecipient(serviceId: pni, transaction: tx)?.aci else {
+            guard let aci = recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)?.aci else {
                 return nil
             }
             return SignalServiceAddress(

@@ -6,6 +6,25 @@
 import LibSignalClient
 
 extension SSKSignedPreKeyStore {
+    @objc
+    public class func generateSignedPreKey(
+        signedBy identityKeyPair: ECKeyPair
+    ) -> SignalServiceKit.SignedPreKeyRecord {
+        let keyPair = ECKeyPair.generateKeyPair()
+
+        // Signed prekey ids must be > 0.
+        let preKeyId = Int32.random(in: 1..<Int32.max)
+
+        return SignedPreKeyRecord(
+            id: preKeyId,
+            keyPair: keyPair,
+            signature: Data(identityKeyPair.keyPair.privateKey.generateSignature(
+                message: Data(keyPair.keyPair.publicKey.serialize())
+            )),
+            generatedAt: Date()
+        )
+    }
+
     func storeSignedPreKeyAsAcceptedAndCurrent(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,

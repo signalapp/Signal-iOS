@@ -340,7 +340,7 @@ extension TSOutgoingMessage {
         clearMessageSendLogEntry(forRecipient: recipientAddress, deviceId: deviceId, tx: tx)
 
         let recipientStateMerger = RecipientStateMerger(
-            recipientStore: DependenciesBridge.shared.recipientStore,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
             signalServiceAddressCache: signalServiceAddressCache
         )
         anyUpdateOutgoingMessage(transaction: tx) { message in
@@ -473,11 +473,9 @@ public extension TSOutgoingMessage {
                 plaintextPayloadId: serializedMessage.payloadId,
                 thread: localThread,
                 serviceId: localIdentifiers.aci,
-                udSendingAccess: nil,
-                localIdentifiers: localIdentifiers,
-                sendErrorBlock: nil
+                localIdentifiers: localIdentifiers
             )
         }
-        return try await messageSender.performMessageSendAttempt(messageSend).awaitable()
+        try await messageSender.performMessageSend(messageSend, sealedSenderParameters: nil)
     }
 }

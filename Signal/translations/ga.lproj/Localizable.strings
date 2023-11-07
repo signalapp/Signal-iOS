@@ -2186,7 +2186,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Cuir Teachtaireacht in Eagar";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Ní féidir eagarthóireacht a chur i bhfeidhm ach amháin laistigh de 3 uair an chloig ón uair a sheol tú an teachtaireacht seo.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Ní féidir eagarthóireacht a chur i bhfeidhm ach amháin laistigh de 24 uair an chloig ón uair a sheol tú an teachtaireacht seo.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2379,6 +2379,9 @@
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Rachaidh an leagan seo de Signal as feidhm inniu. Nuashonraigh chun seoladh teachtaireachtaí a choinneáil.";
+
+/* action sheet header when re-sending message which failed because of an invalid key signature */
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Níorbh fhéidir an teachtaireacht a sheoladh toisc go mbeidh ar %1$@ Signal a nuashonrú agus a oscailt.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "An iomarca teachtaireachtaí teipthe leis an teagmhálaí seo. Bain triail eile as ar ball.";
@@ -5751,6 +5754,9 @@
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Seisiún an chomhrá athnuaite";
+
+/* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
+"SESSION_SWITCHOVER_EVENT" = "Is le %2$@ %1$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";

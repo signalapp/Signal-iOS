@@ -321,7 +321,7 @@ extension MessageSender {
     ) -> Guarantee<[ServiceId]> {
 
         var recipientsNotNeedingSKDM: Set<ServiceId> = Set()
-        return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
+        return databaseStorage.write(.promise) { writeTx -> [(OWSMessageSend, SealedSenderParameters?)] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: writeTx.asV2Read) else {
@@ -351,7 +351,7 @@ extension MessageSender {
                 throw OWSAssertionError("Couldn't build SKDM")
             }
 
-            return recipientsNeedingSKDM.compactMap { (serviceId) -> OWSMessageSend? in
+            return recipientsNeedingSKDM.compactMap { (serviceId) -> (OWSMessageSend, SealedSenderParameters?)? in
                 if let groupThread = thread as? TSGroupThread {
                     Logger.info("Sending SKDM to \(serviceId) for group thread \(groupThread.groupId)")
                 } else {
@@ -374,16 +374,20 @@ extension MessageSender {
                     return nil
                 }
 
-                return OWSMessageSend(
+                let messageSend = OWSMessageSend(
                     message: skdmMessage,
                     plaintextContent: serializedMessage.plaintextData,
                     plaintextPayloadId: serializedMessage.payloadId,
                     thread: contactThread,
                     serviceId: serviceId,
-                    udSendingAccess: udAccessMap[serviceId],
-                    localIdentifiers: localIdentifiers,
-                    sendErrorBlock: nil
+                    localIdentifiers: localIdentifiers
                 )
+
+                let sealedSenderParameters = udAccessMap[serviceId].map {
+                    SealedSenderParameters(message: skdmMessage, udSendingAccess: $0)
+                }
+
+                return (messageSend, sealedSenderParameters)
             }
         }.then(on: senderKeyQueue) { (skdmSends) -> Guarantee<[Result<OWSMessageSend, Error>]> in
             // For each SKDM request we kick off a sendMessage promise.
@@ -391,11 +395,10 @@ extension MessageSender {
             // - Otherwise, invoke the sendErrorBlock and rethrow so it gets packaged into the Guarantee.
             // We use when(resolved:) because we want the promise to wait for
             // all sub-promises to finish, even if some failed.
-            Guarantee.when(resolved: skdmSends.map { messageSend in
-                return firstly { () -> Promise<Void> in
-                    self.performMessageSendAttempt(messageSend)
-                }.map(on: self.senderKeyQueue) { () -> OWSMessageSend in
-                    messageSend
+            Guarantee.when(resolved: skdmSends.map { (messageSend, sealedSenderParameters) in
+                return Promise.wrapAsync {
+                    try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
+                    return messageSend
                 }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
                     if error is MessageSenderNoSuchSignalRecipientError {
                         self.databaseStorage.write { transaction in
@@ -583,8 +586,10 @@ extension MessageSender {
                 case 410:
                     // Server reports stale devices. We should reset our session and try again.
                     let responseBody = try Self.decode410Response(data: responseData)
-                    for account in responseBody {
-                        self.handleStaleDevices(account.devices.staleDevices, for: account.serviceId)
+                    self.databaseStorage.write { tx in
+                        for account in responseBody {
+                            self.handleStaleDevices(account.devices.staleDevices, for: account.serviceId, tx: tx.asV2Write)
+                        }
                     }
                     throw SenderKeyError.staleDevices
                 case 428:
