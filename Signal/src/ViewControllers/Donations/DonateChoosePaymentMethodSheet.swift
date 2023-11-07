@@ -282,5 +282,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         footerStack.isLayoutMarginsRelativeArrangement = true
 
         paymentButtonContainerView.autoPinWidthToSuperviewMargins()
+
+        footerStack.layoutIfNeeded()
     }
 }
