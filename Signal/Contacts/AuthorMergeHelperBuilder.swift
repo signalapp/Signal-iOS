@@ -68,17 +68,8 @@ final class AuthorMergeHelperBuilder {
         }
     }
 
-    @MainActor
-    private func waitForPreconditions() async {
-        guard appContext.isAppForegroundAndActive() else {
-            await NotificationCenter.default.observe(once: UIApplication.didBecomeActiveNotification).asVoid().awaitable()
-            await waitForPreconditions()
-            return
-        }
-    }
-
     private func processBatch(table: AuthorDatabaseTable, nextVersion: Int) async throws -> Bool {
-        await waitForPreconditions()
+        try await Preconditions([AppActivePrecondition(appContext: appContext)]).waitUntilSatisfied()
         let backgroundTask = OWSBackgroundTask(label: #function)
         defer { backgroundTask.end() }
         return try await db.awaitableWrite { tx in
