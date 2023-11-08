@@ -37,11 +37,11 @@ public class ContactFieldViewHelper {
 
     public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber) -> UIView {
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
-        return simpleFieldView(name: phoneNumber.localizedLabel(), value: formattedPhoneNumber)
+        return simpleFieldView(name: phoneNumber.localizedLabel, value: formattedPhoneNumber)
     }
 
     public class func contactFieldView(forEmail email: OWSContactEmail) -> UIView {
-        return simpleFieldView(name: email.localizedLabel(), value: email.email)
+        return simpleFieldView(name: email.localizedLabel, value: email.email)
     }
 
     private class func simpleFieldView(name: String?, value: String?) -> UIView {
@@ -70,7 +70,7 @@ public class ContactFieldViewHelper {
     }
 
     public class func contactFieldView(forAddress address: OWSContactAddress) -> UIView {
-        owsAssertDebug(address.ows_isValid())
+        owsAssertDebug(address.isValid)
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -78,13 +78,13 @@ public class ContactFieldViewHelper {
         stackView.spacing = 3
 
         let nameLabel = UILabel()
-        nameLabel.text = address.localizedLabel()
+        nameLabel.text = address.localizedLabel
         nameLabel.font = UIFont.dynamicTypeSubheadline
         nameLabel.textColor = Theme.secondaryTextAndIconColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
-        if let postalAddress = address.cnPostalAddress() {
+        if let postalAddress = address.cnLabeledValue()?.value {
             let formatter = CNPostalAddressFormatter()
             formatter.style = .mailingAddress
             let formattedAddress = formatter.string(from: postalAddress)
@@ -99,30 +99,5 @@ public class ContactFieldViewHelper {
         }
 
         return stackView
-    }
-}
-
-private extension OWSContactAddress {
-
-    func cnPostalAddress() -> CNPostalAddress? {
-        guard ows_isValid() else { return nil }
-
-        // Copied from OWSContact.
-        let postalAddress = CNMutablePostalAddress()
-        postalAddress.street = street ?? ""
-        // TODO: Is this the correct mapping?
-        //        systemAddress.subLocality = address.neighborhood;
-        postalAddress.city = city ?? ""
-        // TODO: Is this the correct mapping?
-        //        systemAddress.subAdministrativeArea = address.region;
-        postalAddress.state = region ?? ""
-        postalAddress.postalCode = postcode ?? ""
-        // TODO: Should we be using 2-letter codes, 3-letter codes or names?
-        if let country {
-            postalAddress.isoCountryCode = country
-            postalAddress.country = PhoneNumberUtil.countryName(fromCountryCode: country)
-        }
-
-        return postalAddress
     }
 }

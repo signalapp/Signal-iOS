@@ -167,16 +167,14 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
             return
         }
 
-        guard let newName = OWSContactName() else {
-            owsFailDebug("could not create a new name.")
-            return
-        }
-        newName.namePrefix = namePrefixView.value()
-        newName.givenName = givenNameView.value()
-        newName.middleName = middleNameView.value()
-        newName.familyName = familyNameView.value()
-        newName.nameSuffix = nameSuffixView.value()
-        newName.organizationName = organizationNameView.value()
+        let newName = OWSContactName(
+            givenName: givenNameView.value(),
+            familyName: familyNameView.value(),
+            namePrefix: namePrefixView.value(),
+            nameSuffix: nameSuffixView.value(),
+            middleName: middleNameView.value(),
+            organizationName: organizationNameView.value()
+        )
         editingDelegate.editContactShareNameView(self, didFinishWith: newName)
 
         navigationController?.popViewController(animated: true)

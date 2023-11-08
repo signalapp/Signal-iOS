@@ -94,11 +94,7 @@ extension ConversationViewController: ContactPickerDelegate {
 
         Logger.verbose("Contact: \(contact)")
 
-        guard let contactShareRecord = OWSContacts.contact(forSystemContact: cnContact) else {
-            owsFailDebug("Could not convert system contact.")
-            return
-        }
-
+        let contactShareRecord = OWSContact(cnContact: cnContact)
         var isProfileAvatar = false
         var avatarImageData: Data? = contactsManager.avatarData(forCNContactId: cnContact.identifier)
         for address in contact.registeredAddresses() {

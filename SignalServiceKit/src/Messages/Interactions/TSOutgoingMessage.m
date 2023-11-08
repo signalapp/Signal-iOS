@@ -6,7 +6,6 @@
 #import "TSOutgoingMessage.h"
 #import "AppReadiness.h"
 #import "MessageSender.h"
-#import "OWSContact.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
 #import "TSAttachmentStream.h"
@@ -996,8 +995,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Contact Share
     if (self.contactShare) {
-        SSKProtoDataMessageContact *_Nullable contactProto = [OWSContacts protoForContact:self.contactShare
-                                                                              transaction:transaction];
+        SSKProtoDataMessageContact *_Nullable contactProto = [self.contactShare protoWithTransaction:transaction];
         if (contactProto) {
             [builder addContact:contactProto];
         } else {

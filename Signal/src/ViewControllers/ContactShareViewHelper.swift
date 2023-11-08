@@ -146,7 +146,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         contactsViewHelper.checkEditingAuthorization(
             authorizedBehavior: .runAction({
-                guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
+                guard let systemContact = contactShare.dbRecord.buildSystemContact(withImageData: contactShare.avatarImageData) else {
                     owsFailDebug("Could not derive system contact.")
                     return
                 }

@@ -9,7 +9,6 @@
 #import "FunctionalUtil.h"
 #import "HTTPUtils.h"
 #import "OWSBackgroundTask.h"
-#import "OWSContact.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
 #import "OWSOperation.h"

@@ -13,7 +13,6 @@
 #import "NSData+Image.h"
 #import "NotificationsProtocol.h"
 #import "OWSCallMessageHandler.h"
-#import "OWSContact.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -972,7 +971,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
 
-    contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
+    contact = [OWSContact contactForDataMessage:dataMessage transaction:transaction];
 
     NSError *linkPreviewError;
     linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage

@@ -123,7 +123,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     public var ows_isValid: Bool {
-        return dbRecord.ows_isValid()
+        return dbRecord.isValid
     }
 
     public var isProfileAvatar: Bool {
@@ -139,12 +139,8 @@ public class ContactShareViewModel: NSObject {
     }
 
     public func newContact(withName name: OWSContactName) -> ContactShareViewModel {
-
-        // TODO move the `newContact` logic into the view model?
-        let newDbRecord = dbRecord.newContact(with: name)
-
         // If we want to keep the avatar image, the caller will need to re-apply it.
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
+        return ContactShareViewModel(contactShareRecord: OWSContact(name: name), avatarImageData: nil)
     }
 
     public func copyForResending() -> ContactShareViewModel {

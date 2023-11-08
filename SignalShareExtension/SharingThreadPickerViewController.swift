@@ -158,11 +158,11 @@ extension SharingThreadPickerViewController {
             approvalView.delegate = self
 
         } else if isContactShare {
-            guard let cnContact = Contact.cnContact(withVCardData: firstAttachment.data),
-                  let contactShareRecord = OWSContacts.contact(forSystemContact: cnContact) else {
+            guard let cnContact = Contact.cnContact(withVCardData: firstAttachment.data) else {
                 throw OWSAssertionError("Missing or invalid contact data for contact share attachment")
             }
 
+            let contactShareRecord = OWSContact(cnContact: cnContact)
             var avatarImageData = contactsManager.avatarData(forCNContactId: cnContact.identifier)
 
             if avatarImageData == nil {

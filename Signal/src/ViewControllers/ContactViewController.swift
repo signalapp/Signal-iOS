@@ -298,7 +298,7 @@ class ContactViewController: OWSTableViewController2 {
 
         // Organization Name
         if let organizationName = contactShare.name.organizationName?.ows_stripped().nilIfEmpty,
-           contactShare.name.hasAnyNamePart() {
+           contactShare.name.hasAnyNamePart {
             let label = UILabel()
             label.text = organizationName
             label.font = .dynamicTypeSubheadline
@@ -377,7 +377,7 @@ extension ContactViewController {
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        if let e164 = phoneNumber.tryToConvertToE164() {
+        if let e164 = phoneNumber.e164 {
             let address = SignalServiceAddress(phoneNumber: e164)
             if contactShare.systemContactsWithSignalAccountPhoneNumbers().contains(e164) {
                 actionSheet.addAction(ActionSheetAction(

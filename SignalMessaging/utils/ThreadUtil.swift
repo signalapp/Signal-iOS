@@ -90,7 +90,7 @@ public extension ThreadUtil {
     @discardableResult
     class func enqueueMessage(withContactShare contactShare: OWSContact, thread: TSThread) -> TSOutgoingMessage {
         AssertIsOnMainThread()
-        assert(contactShare.ows_isValid())
+        assert(contactShare.isValid)
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.contactShare = contactShare

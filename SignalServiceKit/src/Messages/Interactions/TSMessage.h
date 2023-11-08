@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
@@ -17,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class GRDBReadTransaction;
 @class MessageBodyRanges;
 @class MessageSticker;
+@class OWSContact;
 @class OWSGiftBadge;
 @class OWSLinkPreview;
 @class SDSAnyReadTransaction;

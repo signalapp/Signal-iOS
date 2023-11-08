@@ -27,7 +27,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
     }
 
     var localizedLabel: String {
-        return value.localizedLabel()
+        return value.localizedLabel
     }
 
     func applyToContact(contact: ContactShareViewModel) {
@@ -84,17 +84,9 @@ class OWSContactAvatar: NSObject, OWSContactField {
         super.init()
     }
 
-    func ows_isValid() -> Bool {
-        return true
-    }
+    var isValid: Bool { true }
 
-    func localizedLabel() -> String {
-        return ""
-    }
-
-    override public var debugDescription: String {
-        return "Avatar"
-    }
+    var localizedLabel: String { "" }
 }
 
 class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
