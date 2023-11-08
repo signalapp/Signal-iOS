@@ -1,2 +1,3 @@
-• In the halcyon world of user interface design, a "toast" is a tiny status message that briefly appears on the screen. After removing a contact in Signal, sometimes the confirmation message would get partially covered up by the keyboard (like a piece of toast stuck in the toaster). If you're on iOS 15+, please raise a glass and toast to never seeing that bug again. Cheers!
-• We also fixed a couple of broken animations in chats with a custom background.
+• यूज़र इंटरफ़ेस डिज़ाइन की शांत दुनिया में, "टोस्ट" एक छोटा स्टेटस संदेश है जो स्क्रीन पर
+संक्षेप में दिखाई देता है। Signal से किसी संपर्क को हटाने के बाद, कभी-कभी पुष्टिकरण संदेश कीबोर्ड द्वारा आंशिक रूप से ढंक लिया जाता है (जैसे कि टोस्टर में फंसा टोस्ट का टुकड़ा)। यदि आप iOS 15+ पर हैं, तो कृपया उस बग को दोबारा न देखने के लिए गिलास उठाकर टोस्ट करें। चीयर्स!
+• हमने कस्टम बैकग्राउंड के साथ चैट में कुछ टूटे हुए एनिमेशन को भी ठीक कर दिया है।

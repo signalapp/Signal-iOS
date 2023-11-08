@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@-krotne";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ten użytkownik nie może zostać zweryfikowany dopóki nie napiszecie do siebie.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Błąd";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Numer bezpieczeństwa zostanie stworzony dla tej osoby po tym, jak wymienicie wiadomości.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Nasz numer bezpieczeństwa Signal:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Numery bezpieczeństwa otrzymują aktualizację.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Potrzebujesz pomocy?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Numery bezpieczeństwa będą aktualizowane przez pewien czas, by umożliwić wprowadzenie nadchodzących funkcji prywatności do Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Aby zweryfikować numery bezpieczeństwa, dopasuj kolor karty kolorem na urządzeniu Twojego kontaktu. Jeśli do siebie nie pasują, przesuń i spróbuj z innymi numerami bezpieczeństwa. Wystarczy, że pasuje jedna para.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Zmiany w numerach bezpieczeństwa";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Twój numer bezpieczeństwa dla %1$@ zmienił się. Najlepiej go zweryfikować.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Sprawdź numery bezpieczeństwa";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Aby uzyskać szyfrowanie metodą end-to-end z użytkownikiem %1$@, dopasuj kolor karty powyżej i porównaj numery. Jeśli do siebie nie pasują, przesuń i spróbuj z innymi numerami bezpieczeństwa. Wystarczy, że pasuje jedna para.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Tego filmu nie da się odtworzyć";

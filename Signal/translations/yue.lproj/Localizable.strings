@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@ 倍";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "等您同佢交流過訊息，至驗證到呢個使用者。";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "錯誤";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "你同對方互相傳送訊息之後，系統就會幫你建立一個同佢嘅安全碼。";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "我哋嘅 Signal 安全碼：\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "安全碼更新緊。";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "需要幫手？";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "安全碼喺過渡期間更新緊，以便啟用 Signal 即將推出嘅私隱功能。";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "要驗證安全碼，請將色卡同聯絡人部機嘅色卡比對一下。如果兩邊唔吻合，可以掃一下試用另一對安全碼。只有一對安全碼吻合就得㗎喇。";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "安全碼變更";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "你同 %1$@ 嘅安全碼已經變更。你可以選擇重新驗證。";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "批閱安全碼";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "如果想驗證你同 %1$@ 之間嘅端對端加密設定，請將畫面上方嘅色卡同對方部機嘅色卡比對一下，然後比較埋兩組數字。如果兩邊唔吻合，可以掃一下試用另一對安全碼。只有一對安全碼吻合就得㗎喇。";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "播唔到呢條影片";

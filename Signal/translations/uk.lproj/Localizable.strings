@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "Збільшення: %1$@";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Цього користувача неможливо верифікувати, допоки ви не обміняєтесь повідомленнями.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Помилка";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Код безпеки з'явиться після обміну повідомленнями із цим користувачем.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безпеки Signal:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Коди безпеки оновлюються.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Потрібна допомога?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Номери безпеки оновлюються протягом перехідного періоду, щоби нові функції конфіденційності Signal могли запрацювати.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Щоб перевірити коди безпеки, порівняйте кольорову картку з карткою на пристрої вашого контакту. Якщо вони не збігатимуться, прогорніть і спробуйте іншу пару кодів безпеки. Для успішної перевірки достатньо збігу в одній парі.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Зміни номерів безпеки";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш код безпеки із %1$@ змінився. Можливо, його слід підтвердити.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Переглянути код безпеки";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Щоб перевірити наявність наскрізного шифрування з користувачем %1$@, порівняйте кольорову картку вище з карткою на пристрої користувача і перевірте, чи збігаються цифри. Якщо вони не збігатимуться, прогорніть і спробуйте іншу пару кодів безпеки. Для успішної перевірки достатньо збігу в одній парі.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Це відео неможливо відтворити";

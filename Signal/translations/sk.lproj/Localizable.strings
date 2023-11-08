@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@krát";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tento používateľ nemôže byť overený kým neodošlete prvú správu.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Chyba";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Po výmene správ s touto osobou sa vytvorí bezpečnostné číslo.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Naše Signal bezpečnostné číslo:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Bezpečnostné čísla sa aktualizujú.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Potrebujete pomôcť?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Aktualizácia bezpečnostných čísel bude prebiehať v prechodnej fáze, čo umožní zavedenie nových funkcií súkromia pre Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Ak chcete overiť bezpečnostné čísla, porovnajte farebnú kartu so zariadením vášho kontaktu. Ak sa nezhodujú, swajpnite a skúste ďalší pár bezpečnostných čísel. Musí sa zhodovať iba jeden pár.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Zmeny v bezpečnostných číslach";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaše bezpečnostné číslo s %1$@ sa zmenilo. Mohli by ste si to chcieť overiť.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Prezrieť bezpečnostné čísla";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Ak chcete overiť bezpečnosť end-to-end šifrovania s používateľom %1$@, vyberte na obrazovke vyššie farebnú kartu zhodujúcu sa s ich zariadením a porovnajte zobrazené čísla. Ak sa tieto čísla nezhodujú, swajpnite a skúste ďalší pár bezpečnostných čísel. Musí sa zhodovať iba jeden pár.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Video nie je možné prehrať";

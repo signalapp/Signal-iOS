@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@ alkalommal";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ezt a felhasználót nem teheted Ellenőrzötté, amíg nem kezdesz el vele beszélgetni.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Hiba";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A rendszer létrehoz egy biztonsági számot ezzel a személlyel, miután üzenetet váltott vele.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Signal biztonsági azonosítónk:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "A biztonsági számok frissítése folyamatban van.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Segítségre van szükséged?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "A biztonsági számok egy átmeneti időszak alatt frissülnek, hogy lehetővé tegyék a Signal közelgő adatvédelmi funkcióit.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "A biztonsági számok ellenőrzéséhez illeszd a színkártyát a névjegyed eszközéhez. Ha ezek nem egyeznek, húzd el az ujjad, és próbáld ki a másik biztonsági számpárt. Csak egy párnak kell egyeznie.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Változások a biztonsági számokban";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Biztonsági azonosítód megváltozott a következő ismerősöddel: %1$@. Érdemes lenne leellenőrizni.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Biztonsági azonosítók áttekintése";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "A végpontok közötti titkosítás ellenőrzéséhez %1$@ segítségével egyeztesd a fenti színkártyát az eszközöddel, és hasonlítsd össze a számokat. Ha ezek nem egyeznek, húzd el az ujjad, és próbáld ki a másik biztonsági számpárt. Csak egy párnak kell egyeznie.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "A videó nem játszható le";

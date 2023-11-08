@@ -1,2 +1,2 @@
-• In the halcyon world of user interface design, a "toast" is a tiny status message that briefly appears on the screen. After removing a contact in Signal, sometimes the confirmation message would get partially covered up by the keyboard (like a piece of toast stuck in the toaster). If you're on iOS 15+, please raise a glass and toast to never seeing that bug again. Cheers!
-• We also fixed a couple of broken animations in chats with a custom background.
+• 当我们在 Signal 中删除联系人后，确认消息有时候会被键盘部分遮盖，此漏洞现已修复。
+• 我们还修复了自定义背景聊天中的动画受损问题。

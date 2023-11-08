@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@kali";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Pengguna ini tidak boleh disahkan sehingga anda telah menukar mesej dengan mereka.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Ralat";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Nombor keselamatan akan dicipta dengan orang ini selepas anda mesej dengan mereka.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Nombor Keselamatan Signal Kami:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Nombor keselamatan sedang dikemas kini.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Perlukan bantuan?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Nombor keselamatan sedang dikemas kini dalam tempoh peralihan untuk mendayakan ciri privasi yang akan datang dalam Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Untuk mengesahkan nombor keselamatan, padankan kad warna dengan peranti kenalan anda. Jika ini tidak sepadan, leret dan cuba pasangan nombor keselamatan yang lain. Hanya satu pasangan yang perlu dipadankan.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Perubahan kepada Nombor Keselamatan";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nombor keselamatan anda dengan %1$@ telah ditukar. Anda mungkin ingin mengesahkannya.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Semak Semula Nombor Keselamatan";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Untuk mengesahkan penyulitan hujung ke hujung dengan %1$@, padankan kad warna di atas dengan peranti mereka dan bandingkan nombornya. Jika ini tidak sepadan, leret dan cuba pasangan nombor keselamatan yang lain. Hanya satu pasangan yang perlu dipadankan.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Video  ini tidak boleh dimainkan";

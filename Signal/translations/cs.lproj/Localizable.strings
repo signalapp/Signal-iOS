@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@krát";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tento uživatel nemůže být ověřen, dokud neodešlete zprávu.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Chyba";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Jakmile si s někým vyměníte zprávy, bude pro daného člověka vytvořeno bezpečnostní číslo.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Naše bezpečnostní číslo v Signalu:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Bezpečnostní čísla se aktualizují.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Potřebujete pomoc?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Bezpečnostní čísla se po přechodném období aktualizují, aby bylo možné v aplikaci Signal využívat připravované funkce ochrany osobních údajů.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Pro ověření bezpečnostních čísel porovnejte barevnou kartu s daným kontaktem ve vašem zařízení. Pokud se neshodují, přejeďte prstem dál a vyzkoušejte druhou dvojici bezpečnostních čísel. Musí se shodovat pouze jedna dvojice.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Změny u bezpečnostních čísel";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaše bezpečnostní číslo s %1$@ se změnilo. Možná ho chcete ověřit.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Ověření bezpečnostních čísel";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Chcete-li ověřit bezpečnost koncového šifrování s %1$@, porovnejte čísla a výše uvedenou barevnou kartu se zařízením tohoto kontaktu. Pokud se neshodují, přejeďte prstem dál a vyzkoušejte druhou dvojici bezpečnostních čísel. Musí se shodovat pouze jedna dvojice.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Tohle video nejde přehrát";

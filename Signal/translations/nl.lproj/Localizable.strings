@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "%1$@keer";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Deze persoon kan niet geverifieerd worden zolang je nog geen berichten met hem of haar hebt uitgewisseld.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fout";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Er wordt een veiligheidsnummer aangemaakt met deze persoon nadat je berichten hebt uitgewisseld.";
 
@@ -2186,7 +2180,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Bericht bewerken";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Berichten kunnen slechts binnen 24 uur na verzenden bewerkt worden.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Berichten kunnen alleen binnen 24 uur na verzenden bewerkt worden.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ons Signal-veiligheidsnummer:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Veiligheidsnummers worden bijgewerkt.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Hulp nodig?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Veiligheidsnummers worden gedurende een overgangsperiode bijgewerkt als voorbereiding op toekomstige privacyfuncties in Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Om veiligheidsnummers te verifiëren, vergelijk de kleurkaart met die op het apparaat van je contactpersoon. Als deze niet overeenkomen, swipe je en probeer je het andere paar veiligheidsnummers. Er hoeft maar één paar te matchen.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Veranderingen in veiligheidsnummers";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %1$@ is veranderd. Het wordt aanbevolen het nieuwe veiligheidsnummer te verifiëren.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Veiligheidsnummers nakijken";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Om end-to-end-versleuteling met %1$@ te verifiëren, moet je bovenstaande kleurenkaart vergelijken met de nummers op de kaart van je contact. Als deze niet overeenkomen, swipe je en probeer je het andere paar veiligheidsnummers. Er hoeft maar één paar te matchen.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Deze video kan niet worden afgespeeld";

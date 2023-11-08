@@ -1,2 +1,2 @@
-• In the halcyon world of user interface design, a "toast" is a tiny status message that briefly appears on the screen. After removing a contact in Signal, sometimes the confirmation message would get partially covered up by the keyboard (like a piece of toast stuck in the toaster). If you're on iOS 15+, please raise a glass and toast to never seeing that bug again. Cheers!
-• We also fixed a couple of broken animations in chats with a custom background.
+• في العالم الذهبي لتصميم واجهة المُستخدم، يُعد "الخبز المُحمص" عبارة عن رسالة حالة صغيرة تظهر لفترة وجيزة على الشاشة. بعد إزالة جهة اتصال في سيجنال، في بعض الأحيان يتم تغطية رسالة التأكيد جزئيًا بواسطة لوحة المفاتيح (مثل قطعة من الخبز المُحمص عالقة في مُحمصة الخبز). إذا كنت تستخدم نظام التشغيل iOS 15+، يُرجى رفع كأس وشرب نخب لأنك لن ترى هذا الخطأ مرة أخرى أبدًا. في خدمتكم!
+• كما أننا أصلحنا أيضًا بعض الصور المتحركة المُعطلة في الدردشات مع خلفية مخصصة.

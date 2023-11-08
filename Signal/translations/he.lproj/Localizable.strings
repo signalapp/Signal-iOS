@@ -850,12 +850,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "פי %1$@";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "משתמש זה לא יכול להיות מוודא עד שלא תחליף איתו הודעות.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "שגיאה";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "מספר בטיחות ייווצר עם אדם זה אחרי שתחליפו ביניכם הודעות.";
 
@@ -5572,21 +5566,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "מספר ביטחון Signal שלנו:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "מספרי בטיחות מתעדכנים.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "רוצה עזרה?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "אנחנו מעדכנים את מספרי הבטיחות במהלך תקופת מעבר כדי לאפשר פיצ׳רים עתידיים של פרטיות ב–Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "כדי לאמת מספרי בטיחות, יש להתאים את כרטיסיית הצבע שלמעלה עם המכשיר של איש הקשר. אם הם לא תואמים, אפשר להחליק ולנסות זוג אחר של מספרי בטיחות. רק זוג אחד צריך להתאים.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "שינויים במספרי בטיחות";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "מספר הביטחון שלך עם %1$@ השתנה. מומלץ לוודא אותו.";
 
@@ -7589,7 +7568,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "סקירת מספרי בטיחות";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "כדי לאמת את האבטחה מקצה לקצה שלך עם %1$@, יש להתאים את כרטיסיית הצבע שלמעלה עם המכשיר שלו או שלה ולהשוות את המספרים. אם הם לא תואמים, אפשר להחליק ולנסות זוג אחר של מספרי בטיחות. רק זוג אחד צריך להתאים.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "לא ניתן לנגן את הסרטון הזה";
