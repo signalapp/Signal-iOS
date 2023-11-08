@@ -12,7 +12,7 @@ class ApplePayButton: PKPaymentButton {
     init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
 
-        super.init(paymentButtonType: .donate,
+        super.init(paymentButtonType: .plain,
                    paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black)
         cornerRadius = 12
         addTarget(self, action: #selector(self.didTouchUpInside), for: .touchUpInside)

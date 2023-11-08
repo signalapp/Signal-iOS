@@ -29,15 +29,9 @@ class PaypalButton: UIButton {
         adjustsImageWhenDisabled = false
         adjustsImageWhenHighlighted = false
         layer.cornerRadius = 12
+        layer.borderWidth = 0
 
-        if Theme.isDarkThemeEnabled {
-            backgroundColor = UIColor(rgbHex: 0xEEEEEE)
-            layer.borderWidth = 0
-        } else {
-            backgroundColor = .white
-            layer.borderWidth = 1.5
-            layer.borderColor = UIColor.ows_gray25.cgColor
-        }
+        backgroundColor = UIColor(rgbHex: 0xF6C757)
     }
 
     // MARK: Actions
