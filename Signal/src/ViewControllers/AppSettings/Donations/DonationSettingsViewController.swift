@@ -395,12 +395,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
             section.add(.disclosureItem(
                 icon: .settingsHelp,
                 name: OWSLocalizedString(
-                    "DONATION_VIEW_SUBSCRIPTION_FAQ",
-                    comment: "Title for the 'Subscription FAQ' button on the donation screen"
+                    "DONATION_VIEW_DONOR_FAQ",
+                    comment: "Title for the 'Donor FAQ' button on the donation screen"
                 ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionFAQ"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donorFAQ"),
                 actionBlock: { [weak self] in
-                    let vc = SFSafariViewController(url: SupportConstants.subscriptionFAQURL)
+                    let vc = SFSafariViewController(url: SupportConstants.donorFAQURL)
                     self?.present(vc, animated: true, completion: nil)
                 }
             ))
