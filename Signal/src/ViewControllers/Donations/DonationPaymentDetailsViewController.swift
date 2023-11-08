@@ -44,6 +44,17 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
         super.init()
 
+        switch paymentMethod {
+        case .card:
+            title = OWSLocalizedString(
+                "PAYMENT_DETAILS_CARD_TITLE",
+                comment: "Header title for card payment details screen")
+        case .sepa:
+            title = OWSLocalizedString(
+                "PAYMENT_DETAILS_BANK_TITLE",
+                comment: "Header title for bank payment details screen")
+        }
+
         self.defaultSpacingBetweenSections = 0
     }
 
@@ -117,19 +128,30 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         // needs one.
         let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
 
-        subheaderTextView.attributedText = .composed(of: [
-            OWSLocalizedString(
+        let subheaderText: String
+        switch self.paymentMethod {
+        case .card:
+            subheaderText = OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_TEXT",
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information."
-            ),
+            )
+        case .sepa:
+            subheaderText = OWSLocalizedString(
+                "BANK_DONATION_SUBHEADER_TEXT",
+                comment: "On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information."
+            )
+        }
+
+        subheaderTextView.attributedText = .composed(of: [
+            subheaderText,
             " ",
             OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_LEARN_MORE",
                 comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
             ).styled(with: linkPart)
-        ]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
+        ]).styled(with: .color(Theme.secondaryTextAndIconColor), .font(.dynamicTypeFootnoteClamped))
         subheaderTextView.linkTextAttributes = [
-            .foregroundColor: Theme.accentBlueColor,
+            .foregroundColor: Theme.primaryTextColor,
             .underlineColor: UIColor.clear,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
@@ -245,41 +267,9 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 customCellBlock: { [weak self] in
                     let cell = OWSTableItem.newCell()
                     cell.selectionStyle = .none
-
                     guard let self else { return cell }
-
-                    let headerLabel = UILabel()
-                    headerLabel.text = {
-                        let amountString = DonationUtilities.format(money: self.donationAmount)
-                        let format: String
-                        switch self.donationMode {
-                        case .oneTime, .gift:
-                            format = OWSLocalizedString(
-                                "CARD_DONATION_HEADER",
-                                comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
-                            )
-                        case .monthly:
-                            format = OWSLocalizedString(
-                                "CARD_DONATION_HEADER_MONTHLY",
-                                comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\"."
-                            )
-                        }
-                        return String(format: format, amountString)
-                    }()
-                    headerLabel.font = .dynamicTypeTitle3.semibold()
-                    headerLabel.textAlignment = .center
-                    headerLabel.numberOfLines = 0
-                    headerLabel.lineBreakMode = .byWordWrapping
-
-                    let stackView = UIStackView(arrangedSubviews: [
-                        headerLabel,
-                        self.subheaderTextView
-                    ])
-                    cell.contentView.addSubview(stackView)
-                    stackView.axis = .vertical
-                    stackView.spacing = 4
-                    stackView.autoPinEdgesToSuperviewMargins()
-
+                    cell.contentView.addSubview(self.subheaderTextView)
+                    self.subheaderTextView.autoPinEdgesToSuperviewMargins()
                     return cell
                 }
             )]
@@ -584,10 +574,24 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     // MARK: - Submit button, footer
 
     private lazy var submitButton: OWSButton = {
-        let title = OWSLocalizedString(
-            "CARD_DONATION_DONATE_BUTTON",
-            comment: "Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button."
-        )
+        let title = {
+            let amountString = DonationUtilities.format(money: self.donationAmount)
+            let format: String
+            switch self.donationMode {
+            case .oneTime, .gift:
+                format = OWSLocalizedString(
+                    "DONATE_BUTTON",
+                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
+                )
+            case .monthly:
+                format = OWSLocalizedString(
+                    "DONATE_BUTTON_MONTHLY",
+                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\"."
+                )
+            }
+            return String(format: format, amountString)
+        }()
+
         let result = OWSButton(title: title) { [weak self] in
             self?.didSubmit()
         }
