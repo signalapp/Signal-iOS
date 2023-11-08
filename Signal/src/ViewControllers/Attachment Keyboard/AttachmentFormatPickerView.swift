@@ -165,9 +165,9 @@ class AttachmentFormatPickerView: UIView {
         case photo
         case gif
         case file
-        case payment
         case contact
         case location
+        case payment
 
         private static var contactCases: [AttachmentType] {
             if payments.shouldShowPaymentsUI {
