@@ -713,12 +713,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
     
     private func removeQueryParamsFromURL(url: URL) -> URL? {
-        let paramsToRemove = ["igshid", "si", "fbclid", "t", "ttclid", "utm_campaign", "utm_source", "utm_medium", "gclid"]
+        let paramsToRemove = ["igshid", "si", "fbclid", "ttclid", "utm_campaign", "utm_source", "utm_medium", "gclid"]
+        let twitterHosts = ["twitter.com", "www.twitter.com", "x.com", "www.x.com"]
+        let twitterParamsToRemove = ["t"]
+        
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
         let items = components?.queryItems
         components?.queryItems = items?.filter { item in
             !paramsToRemove.contains(item.name)
         }
+        
+        // Remove "t=" parameter only for twitter/x
+        if let host = components?.host, twitterHosts.contains(where: { $0 == host }) {
+            components?.queryItems = items?.filter { item in
+                !twitterParamsToRemove.contains(item.name)
+            }
+        }
+        
+        // Remove "/?" or "?" at the end of URL
         if let noQueryItemsLeft = components?.queryItems?.isEmpty, noQueryItemsLeft { components?.query = nil }
         return components?.url
     }
