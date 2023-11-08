@@ -532,6 +532,9 @@
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
 
+/* On the bank donation screen, show a link below the input form to show help about finding account info. */
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Find Account Info";
+
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
 "BANK_DONATION_SUBHEADER_TEXT" = "Enter your bank details. Signal does not collect or store your personal information.";
 
@@ -2454,6 +2457,12 @@
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+
+/* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "Look for your IBAN at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.";
+
+/* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
+"FIND_ACCOUNT_INFO_SHEET_TITLE" = "Find Your Account Information";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";

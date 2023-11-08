@@ -1314,6 +1314,7 @@
 		B9F215612A94071F002DCAE0 /* ImageEditorTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
+		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
@@ -3988,6 +3989,7 @@
 		B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransformable.swift; sourceTree = "<group>"; };
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
+		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -8566,6 +8568,7 @@
 				F96B66A22912B88A004FFFAA /* DonateViewController+State.swift */,
 				F96B66A02912B88A004FFFAA /* DonateViewController.swift */,
 				F9349CE52901866800F9A93A /* DonationHeroView.swift */,
+				C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */,
 				F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */,
 				F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */,
 				F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */,
@@ -11971,6 +11974,7 @@
 				F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */,
 				F9349CE62901866800F9A93A /* DonationHeroView.swift in Sources */,
 				F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */,
+				C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */,
 				F9C8CFCC2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift in Sources */,
 				F9B3A9292935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift in Sources */,
 				F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */,

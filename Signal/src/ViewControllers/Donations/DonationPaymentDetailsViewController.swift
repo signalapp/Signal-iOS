@@ -508,11 +508,33 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: - SEPA form
 
-    private lazy var sepaFormSection = OWSTableSection(items: [
-        Self.cell(for: self.ibanView),
-        Self.cell(for: self.nameView),
-        Self.cell(for: self.emailView),
-    ])
+    private lazy var sepaFormSection = {
+        let section = OWSTableSection(items: [
+                Self.cell(for: self.ibanView),
+                Self.cell(for: self.nameView),
+                Self.cell(for: self.emailView),
+            ])
+
+        let label = LinkingTextView()
+        let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
+        label.attributedText = OWSLocalizedString(
+            "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO",
+            comment: "On the bank donation screen, show a link below the input form to show help about finding account info."
+        )
+        .styled(with: linkPart)
+        .styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
+        label.linkTextAttributes = [
+            .foregroundColor: Theme.accentBlueColor,
+            .underlineColor: UIColor.clear,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        label.textAlignment = .center
+        label.delegate = self
+        label.textContainerInset = .init(margin: 20)
+        section.customFooterView = label
+
+        return section
+    }()
 
     // MARK: IBAN
 
@@ -634,6 +656,8 @@ extension DonationPaymentDetailsViewController: UITextViewDelegate {
     ) -> Bool {
         if textView == subheaderTextView {
             present(DonationPaymentDetailsReadMoreSheetViewController(), animated: true)
+        } else {
+            present(DonationPaymentDetailsFindAccountInfoSheetViewController(), animated: true)
         }
         return false
     }
