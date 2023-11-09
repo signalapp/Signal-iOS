@@ -3,13 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 /// Represents an error encountered while making a receipt credential request.
 ///
 /// These are persisted in the ``SubscriptionReceiptCredentialRequestResultStore``
 /// by the ``SubscriptionReceiptCredentialRedemptionJobQueue``'s
 /// ``SubscriptionReceiptCredentailRedemptionOperation``.
 public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
-    public enum ErrorCode: Int, Error {
+    public enum ErrorCode: Int {
         case paymentStillProcessing = 204
         case paymentFailed = 402
 
@@ -20,6 +22,13 @@ public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
     }
 
     public let errorCode: ErrorCode
+
+    /// If our error code is `.paymentFailed`, this holds the associated charge
+    /// failure.
+    ///
+    /// We may have legacy or exceptional `.paymentFailed` errors persisted with
+    /// this `nil`.
+    public let chargeFailureCodeIfPaymentFailed: String?
 
     /// We may have legacy errors persisted with this `nil`.
     public let badge: ProfileBadge?
@@ -35,22 +44,30 @@ public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
 
     public init(
         errorCode: ErrorCode,
+        chargeFailureCodeIfPaymentFailed: String?,
         badge: ProfileBadge,
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) {
+        owsAssert(
+            chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
+            "Charge failure must only be populated if the error code is payment failed!"
+        )
+
         self.errorCode = errorCode
+        self.chargeFailureCodeIfPaymentFailed = chargeFailureCodeIfPaymentFailed
         self.badge = badge
         self.amount = amount
         self.paymentMethod = paymentMethod
         self.timestampMs = Date().ows_millisecondsSince1970
     }
 
-    /// When dealing with legacy persisted data, we may only have the error code
-    /// available. This should only be used if a full error cannot be
+    /// When dealing with legacy persisted data, we may only have the raw error
+    /// code available. This should only be used if a full error cannot be
     /// constructed!
     public init(legacyErrorCode: ErrorCode) {
         self.errorCode = legacyErrorCode
+        self.chargeFailureCodeIfPaymentFailed = nil
         self.badge = nil
         self.amount = nil
         self.paymentMethod = nil
@@ -61,6 +78,7 @@ public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case errorCode
+        case chargeFailureCodeIfPaymentFailed
         case badge
         case amount
         case paymentMethod
@@ -70,6 +88,7 @@ public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
+        chargeFailureCodeIfPaymentFailed = try container.decodeIfPresent(String.self, forKey: .chargeFailureCodeIfPaymentFailed)
         badge = try container.decodeIfPresent(ProfileBadge.self, forKey: .badge)
         amount = try container.decodeIfPresent(FiatMoney.self, forKey: .amount)
         timestampMs = try container.decode(UInt64.self, forKey: .timestampMs)
@@ -102,6 +121,7 @@ public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
+        try container.encodeIfPresent(chargeFailureCodeIfPaymentFailed, forKey: .chargeFailureCodeIfPaymentFailed)
         try container.encodeIfPresent(badge, forKey: .badge)
         try container.encodeIfPresent(amount, forKey: .amount)
         try container.encode(timestampMs, forKey: .timestampMs)

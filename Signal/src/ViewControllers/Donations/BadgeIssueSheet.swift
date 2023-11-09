@@ -19,14 +19,17 @@ public enum BadgeIssueSheetAction {
 
 public class BadgeIssueSheetState {
     public enum Mode {
-        case subscriptionExpiredBecauseOfChargeFailure
+        case subscriptionExpiredBecauseOfChargeFailure(
+            chargeFailureCode: String?,
+            paymentMethod: DonationPaymentMethod?
+        )
         case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
         case giftBadgeExpired(hasCurrentSubscription: Bool)
 
         case giftNotRedeemed(fullName: String)
 
-        case bankPaymentFailed
+        case bankPaymentFailed(chargeFailureCode: String?)
         case boostBankPaymentProcessing
         case subscriptionBankPaymentProcessing
     }
@@ -100,13 +103,22 @@ public class BadgeIssueSheetState {
 
     public lazy var body: Body = {
         switch mode {
-        case .subscriptionExpiredBecauseOfChargeFailure:
+        case let .subscriptionExpiredBecauseOfChargeFailure(
+            chargeFailureCode,
+            paymentMethod
+        ):
             let formatText = OWSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
+                comment: "String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered."
             )
+
+            let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
+                chargeErrorCode: chargeFailureCode,
+                paymentMethod: paymentMethod
+            )
+
             return Body(
-                String(format: formatText, badge.localizedName),
+                String(format: formatText, chargeFailureString),
                 learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
             )
         case .subscriptionExpiredBecauseNotRenewed:
@@ -144,12 +156,18 @@ public class BadgeIssueSheetState {
                 comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}."
             )
             return Body(String(format: formatText, fullName))
-        case .bankPaymentFailed:
-            let bodyText = OWSLocalizedString(
+        case let .bankPaymentFailed(chargeFailureCode):
+            let formatText = OWSLocalizedString(
                 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE",
-                comment: "Message for a sheet explaining that a donation via bank payment has failed."
+                comment: "Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}."
             )
-            return Body(bodyText)
+
+            let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
+                chargeErrorCode: chargeFailureCode,
+                paymentMethod: .sepa
+            )
+
+            return Body(String(format: formatText, chargeFailureString))
         case .boostBankPaymentProcessing:
             let bodyFormat = OWSLocalizedString(
                 "DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE",

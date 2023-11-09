@@ -110,13 +110,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Data loading
 
-    func loadAndUpdateState() {
+    func loadAndUpdateState() -> Guarantee<Void> {
         switch state {
         case .loading:
-            return
+            owsFailDebug("Already loading!")
+            return .value(())
         case .initializing, .loadFinished:
             self.state = .loading
-            loadState().done { self.state = $0 }
+            return loadState().done { self.state = $0 }
         }
     }
 

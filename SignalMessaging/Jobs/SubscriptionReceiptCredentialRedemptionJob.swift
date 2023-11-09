@@ -483,21 +483,25 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             }
 
             return newReceiptCredentialPresentation
-        }.recover(on: DispatchQueue.global()) { error -> Promise<ReceiptCredentialPresentation> in
-            guard let receiptCredentialRequestErrorCode = error as? SubscriptionReceiptCredentialRequestError.ErrorCode else {
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
+            guard let knownReceiptCredentialRequestError = error as? SubscriptionManagerImpl.KnownReceiptCredentialRequestError else {
                 throw error
             }
 
+            let errorCode = knownReceiptCredentialRequestError.errorCode
+            let chargeFailureCodeIfPaymentFailed = knownReceiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
+
             self.databaseStorage.write { tx in
                 self.persistErrorCode(
-                    receiptCredentialRequestErrorCode: receiptCredentialRequestErrorCode,
+                    receiptCredentialRequestErrorCode: errorCode,
+                    chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
                     badge: badge,
                     amount: amount,
                     tx: tx.asV2Write
                 )
             }
 
-            switch receiptCredentialRequestErrorCode {
+            switch errorCode {
             case .paymentStillProcessing where self.paymentMethod == .sepa:
                 throw ReceiptCredentialOperationError.sepaPaymentStillProcessing(
                     source: .remoteService
@@ -511,7 +515,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                     .paymentNotFound,
                     .paymentIntentRedeemed:
                 throw ReceiptCredentialOperationError.other(
-                    errorCode: receiptCredentialRequestErrorCode
+                    errorCode: errorCode
                 )
             }
         }
@@ -519,6 +523,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
 
     private func persistErrorCode(
         receiptCredentialRequestErrorCode: SubscriptionReceiptCredentialRequestError.ErrorCode,
+        chargeFailureCodeIfPaymentFailed: String?,
         badge: ProfileBadge,
         amount: FiatMoney,
         tx: DBWriteTransaction
@@ -527,6 +532,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             if let paymentMethod = self.paymentMethod {
                 return SubscriptionReceiptCredentialRequestError(
                     errorCode: receiptCredentialRequestErrorCode,
+                    chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
                     badge: badge,
                     amount: amount,
                     paymentMethod: paymentMethod
@@ -687,8 +693,10 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             }
 
             if persistArtificialPaymentFailure {
+                // No charge failure, because this is an artificial failure.
                 self.persistErrorCode(
                     receiptCredentialRequestErrorCode: .paymentFailed,
+                    chargeFailureCodeIfPaymentFailed: nil,
                     badge: badge,
                     amount: amount,
                     tx: tx.asV2Write

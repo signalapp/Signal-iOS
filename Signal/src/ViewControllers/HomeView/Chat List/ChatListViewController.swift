@@ -803,6 +803,8 @@ public class ChatListViewController: OWSViewController {
             return
         }
 
+        let chargeFailureCode = receiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
+
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(errorMode)")
 
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
@@ -815,7 +817,7 @@ public class ChatListViewController: OWSViewController {
 
             let badgeIssueSheet = BadgeIssueSheet(
                 badge: badge,
-                mode: .bankPaymentFailed
+                mode: .bankPaymentFailed(chargeFailureCode: chargeFailureCode)
             )
             badgeIssueSheet.delegate = self
 
@@ -909,8 +911,14 @@ public class ChatListViewController: OWSViewController {
                     }
 
                     let mode: BadgeIssueSheetState.Mode = {
-                        if currentSubscription?.chargeFailure != nil {
-                            return .subscriptionExpiredBecauseOfChargeFailure
+                        if
+                            let currentSubscription,
+                            let chargeFailure = currentSubscription.chargeFailure
+                        {
+                            return .subscriptionExpiredBecauseOfChargeFailure(
+                                chargeFailureCode: chargeFailure.code,
+                                paymentMethod: currentSubscription.paymentMethod
+                            )
                         } else {
                             return .subscriptionExpiredBecauseNotRenewed
                         }

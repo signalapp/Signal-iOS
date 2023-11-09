@@ -577,6 +577,31 @@ public class SubscriptionManagerImpl: NSObject {
         }
     }
 
+    /// Represents a known error received during a receipt credential request.
+    ///
+    /// Not to be confused with ``SubscriptionReceiptCredentialRequestError``.
+    public struct KnownReceiptCredentialRequestError: Error {
+        /// A code describing this error.
+        public let errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode
+
+        /// If this error represents a payment failure, contains a string from
+        /// the payment processor describing the payment failure.
+        public let chargeFailureCodeIfPaymentFailed: String?
+
+        fileprivate init(
+            errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode,
+            chargeFailureCodeIfPaymentFailed: String? = nil
+        ) {
+            owsAssert(
+                chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
+                "Must only provide a charge failure if payment failed!"
+            )
+
+            self.errorCode = errorCode
+            self.chargeFailureCodeIfPaymentFailed = chargeFailureCodeIfPaymentFailed
+        }
+    }
+
     public class func requestReceiptCredentialPresentation(
         subscriberId: Data,
         targetSubscriptionLevel: UInt,
@@ -653,21 +678,16 @@ public class SubscriptionManagerImpl: NSObject {
             Logger.info("[Donations] Got valid receipt response.")
         case 204:
             Logger.info("[Donations] No receipt yet, payment processing.")
-            throw SubscriptionReceiptCredentialRequestError.ErrorCode.paymentStillProcessing
+            throw KnownReceiptCredentialRequestError(
+                errorCode: .paymentStillProcessing
+            )
         default:
-            guard let requestError = SubscriptionReceiptCredentialRequestError.ErrorCode(
-                rawValue: httpStatusCode
-            ) else {
-                throw OWSAssertionError("[Donations] Unexpected success status code: \(httpStatusCode)")
-            }
-
-            Logger.error("[Donations] Receipt credential request failed! \(httpStatusCode)")
-            throw requestError
+            throw OWSAssertionError("[Donations] Unexpected success status code: \(httpStatusCode)")
         }
 
         func failValidation(_ message: String) -> Error {
             owsFailDebug(message)
-            return SubscriptionReceiptCredentialRequestError.ErrorCode.localValidationFailed
+            return KnownReceiptCredentialRequestError(errorCode: .localValidationFailed)
         }
 
         guard
@@ -710,15 +730,27 @@ public class SubscriptionManagerImpl: NSObject {
         )
     }
 
-    private class func parseReceiptCredentialPresentationError(error: Error) -> Error {
+    private class func parseReceiptCredentialPresentationError(
+        error: Error
+    ) -> Error {
         guard
             let httpStatusCode = error.httpStatusCode,
-            let errorCode = SubscriptionReceiptCredentialRequestError.ErrorCode(
-                rawValue: httpStatusCode
-            )
+            let errorCode = SubscriptionReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
         else { return error }
 
-        return errorCode
+        if
+            case .paymentFailed = errorCode,
+            let parser = ParamParser(responseObject: error.httpResponseJson),
+            let chargeFailureDict: [String: Any] = try? parser.optional(key: "chargeFailure"),
+            let chargeFailureCode = chargeFailureDict["code"] as? String
+        {
+            return KnownReceiptCredentialRequestError(
+                errorCode: errorCode,
+                chargeFailureCodeIfPaymentFailed: chargeFailureCode
+            )
+        }
+
+        return KnownReceiptCredentialRequestError(errorCode: errorCode)
     }
 
     public class func redeemReceiptCredentialPresentation(

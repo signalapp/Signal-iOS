@@ -3,35 +3,45 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SafariServices
+
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
-private enum MySupportErrorState: UserErrorDescriptionProvider {
-    case previouslyActiveSubscriptionLapsed(Subscription.ChargeFailure)
+private enum MySupportErrorState {
     case paymentProcessing(paymentMethod: DonationPaymentMethod?)
-    case paymentFailed
 
-    var localizedDescription: String {
+    case previouslyActiveSubscriptionLapsed(
+        chargeFailureCode: String?,
+        paymentMethod: DonationPaymentMethod?
+    )
+
+    case paymentFailed(
+        chargeFailureCode: String?,
+        paymentMethod: DonationPaymentMethod?
+    )
+
+    var tableCellSubtitle: String {
         switch self {
-        case .previouslyActiveSubscriptionLapsed:
-            return OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_MONTHLY_DONATION_CANCELED",
-                comment: "A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew."
-            )
         case .paymentProcessing(paymentMethod: .sepa):
             return OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_DONATION_PENDING",
+                "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING",
                 comment: "A label describing a donation payment that was made via bank transfer, which is still processing and has not completed."
             )
         case .paymentProcessing:
             return OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_PROCESSING_PAYMENT",
+                "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING",
                 comment: "A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed."
+            )
+        case .previouslyActiveSubscriptionLapsed:
+            return OWSLocalizedString(
+                "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED",
+                comment: "A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew."
             )
         case .paymentFailed:
             return OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_ERROR_PROCESSING_PAYMENT",
+                "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED",
                 comment: "A label describing a donation payment that has failed to process."
             )
         }
@@ -73,12 +83,14 @@ extension DonationSettingsViewController {
             previouslyHadActiveSubscription,
             receiptCredentialRequestError
         ):
-            section.add(mySupportRecurringSubscriptionTableItem(
+            if let recurringSubscriptionTableItem = mySupportRecurringSubscriptionTableItem(
                 subscription: subscription,
                 subscriptionBadge: subscriptionLevel?.badge,
                 previouslyHadActiveSubscription: previouslyHadActiveSubscription,
                 receiptCredentialRequestError: receiptCredentialRequestError
-            ))
+            ) {
+                section.add(recurringSubscriptionTableItem)
+            }
         }
 
         if let oneTimeBoostItem = mySupportOneTimeBoostTableItem(
@@ -113,45 +125,30 @@ extension DonationSettingsViewController {
         subscriptionBadge: ProfileBadge?,
         previouslyHadActiveSubscription: Bool,
         receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
-    ) -> OWSTableItem {
-        let errorState: MySupportErrorState? = {
-            if let errorState = subscription.errorStateIfIsPaymentProcessing {
-                if previouslyHadActiveSubscription {
-                    logger.info("Renewal of recurring subscription has payment processing.")
-                } else {
-                    logger.info("First-time recurring subscription has payment processing.")
-                }
+    ) -> OWSTableItem? {
+        let errorState: MySupportErrorState?
 
-                return errorState
-            } else if let chargeFailure = subscription.chargeFailure {
-                if previouslyHadActiveSubscription {
-                    logger.warn("Renewal of recurring subscription had payment failure!")
-                    return .previouslyActiveSubscriptionLapsed(chargeFailure)
-                } else {
-                    logger.warn("First-time recurring subscription had payment failure!")
-                    return .paymentFailed
-                }
-            } else if let receiptCredentialRequestError {
-                // Errors pertaining to payment processing or failed should have
-                // been caught above, so ending up here probably indicates the
-                // subscription isn't in a bad state but we still had an error
-                // with the receipt credential request. That would in turn mean
-                // that we charged the user, but failed to get them a badge.
-                //
-                // It's also possible the payment was processing the last time
-                // we ran the receipt credential request job, and we haven't run
-                // the job again since the payment finished processing.
-                owsAssertDebug(receiptCredentialRequestError.errorCode == .paymentStillProcessing)
+        if let receiptCredentialRequestError {
+            logger.warn("Recurring subscription with receipt credential request error! \(receiptCredentialRequestError)")
 
-                logger.warn("Recurring subscription with receipt credential request error! \(receiptCredentialRequestError)")
-                return receiptCredentialRequestError.mySupportErrorState
+            errorState = receiptCredentialRequestError.mySupportErrorState(
+                previouslyHadActiveSubscription: previouslyHadActiveSubscription
+            )
+        } else {
+            if subscription.isPaymentProcessing {
+                logger.warn("Subscription is processing, but we don't have a receipt credential request error about it yet!")
+            } else if subscription.chargeFailure != nil {
+                logger.warn("Subscription has charge failure, but we don't have a receipt credential request error about it yet!")
+            }
+
+            if subscription.active {
+                errorState = nil
             } else {
-                owsAssertDebug(subscription.active)
-
-                logger.info("Recurring subscription in good state.")
+                // Show nothing for an inactive subscription with no associated
+                // receipt credential request errors.
                 return nil
             }
-        }()
+        }
 
         let pricingTitle: String = {
             let pricingFormat = OWSLocalizedString(
@@ -165,7 +162,7 @@ extension DonationSettingsViewController {
 
         let statusSubtitle: String = {
             if let errorState {
-                return errorState.localizedDescription
+                return errorState.tableCellSubtitle
             }
 
             let renewalFormat = OWSLocalizedString(
@@ -209,12 +206,21 @@ extension DonationSettingsViewController {
                 }
 
                 switch errorState {
-                case let .previouslyActiveSubscriptionLapsed(chargeFailure):
-                    self.presentRecurringSubscriptionLapsedActionSheet()
+                case let .previouslyActiveSubscriptionLapsed(chargeFailureCode, paymentMethod):
+                    self.presentRecurringSubscriptionLapsedActionSheet(
+                        chargeFailureCode: chargeFailureCode,
+                        paymentMethod: paymentMethod
+                    )
                 case let .paymentProcessing(paymentMethod):
-                    self.presentPaymentProcessingActionSheet(paymentMethod: paymentMethod)
-                case .paymentFailed:
-                    self.presentPaymentFailedActionSheet(errorMode: .recurringSubscription)
+                    self.presentPaymentProcessingActionSheet(
+                        paymentMethod: paymentMethod
+                    )
+                case let .paymentFailed(chargeFailureCode, paymentMethod):
+                    self.presentDonationFailedActionSheet(
+                        chargeFailureCode: chargeFailureCode,
+                        paymentMethod: paymentMethod,
+                        errorMode: .recurringSubscription
+                    )
                 }
             }
         )
@@ -237,7 +243,10 @@ extension DonationSettingsViewController {
 
         logger.info("Showing boost error. \(receiptCredentialRequestError)")
 
-        let errorState = receiptCredentialRequestError.mySupportErrorState
+        // Previous active subscription is irrelevant for one-time boosts.
+        let errorState = receiptCredentialRequestError.mySupportErrorState(
+            previouslyHadActiveSubscription: false
+        )
 
         return OWSTableItem(
             customCellBlock: { [weak self] () -> UITableViewCell in
@@ -258,7 +267,7 @@ extension DonationSettingsViewController {
                 return OWSTableItem.buildImageCell(
                     image: boostBadge?.assets?.universal160,
                     itemName: pricingTitle,
-                    subtitle: errorState.localizedDescription,
+                    subtitle: errorState.tableCellSubtitle,
                     accessoryType: .disclosureIndicator,
                     accessoryContentView: errorState.shouldShowErrorIcon ? self.mySupportErrorIconView() : nil
                 )
@@ -270,9 +279,15 @@ extension DonationSettingsViewController {
                 case .previouslyActiveSubscriptionLapsed:
                     owsFail("Impossible for one-time boost!")
                 case let .paymentProcessing(paymentMethod):
-                    self.presentPaymentProcessingActionSheet(paymentMethod: paymentMethod)
-                case .paymentFailed:
-                    self.presentPaymentFailedActionSheet(errorMode: .oneTimeBoost)
+                    self.presentPaymentProcessingActionSheet(
+                        paymentMethod: paymentMethod
+                    )
+                case let .paymentFailed(chargeFailureCode, paymentMethod):
+                    self.presentDonationFailedActionSheet(
+                        chargeFailureCode: chargeFailureCode,
+                        paymentMethod: paymentMethod,
+                        errorMode: .oneTimeBoost
+                    )
                 }
             }
         )
@@ -298,66 +313,129 @@ extension DonationSettingsViewController {
                 )
             )
 
-            actionSheet.addAction(OWSActionSheets.okayAction)
-            actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
-                url: SupportConstants.donationPendingLearnMoreURL
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.learnMore,
+                handler: { [weak self] _ in
+                    guard let self else { return }
+
+                    self.present(
+                        SFSafariViewController(url: SupportConstants.donationPendingLearnMoreURL),
+                        animated: true
+                    )
+                }
             ))
+            actionSheet.addAction(OWSActionSheets.okayAction)
         }
 
         self.presentActionSheet(actionSheet, animated: true)
     }
 
-    private func presentPaymentFailedActionSheet(
+    private func presentDonationFailedActionSheet(
+        chargeFailureCode: String?,
+        paymentMethod: DonationPaymentMethod?,
         errorMode: SubscriptionReceiptCredentialResultStore.Mode
     ) {
+        let actionSheetMessage: String = {
+            let messageFormat: String = OWSLocalizedString(
+                "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT",
+                comment: "Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}."
+            )
+
+            let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
+                chargeErrorCode: chargeFailureCode,
+                paymentMethod: paymentMethod
+            )
+
+            return String(format: messageFormat, chargeFailureString)
+        }()
+
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_PAYMENT_FAILED_ALERT_TITLE",
+                "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
                 comment: "Title for a sheet explaining that a payment failed."
             ),
-            message: OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_PAYMENT_FAILED_ALERT_MESSAGE",
-                comment: "Message shown in a sheet explaining that a payment failed."
-            )
+            message: actionSheetMessage
         )
 
-        actionSheet.addAction(okayAndClearErrorActionSheetAction(
-            errorMode: errorMode
+        let preferredDonateMode: DonateViewController.DonateMode = {
+            switch errorMode {
+            case .oneTimeBoost: return .oneTime
+            case .recurringSubscription: return .monthly
+            }
+        }()
+
+        actionSheet.addAction(showDonateAndClearErrorAction(
+            title: .tryAgain,
+            errorMode: errorMode,
+            preferredDonateMode: preferredDonateMode
         ))
-        actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
-            url: SupportConstants.badgeExpirationLearnMoreURL
-        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
         self.presentActionSheet(actionSheet, animated: true)
     }
 
-    private func presentRecurringSubscriptionLapsedActionSheet() {
+    private func presentRecurringSubscriptionLapsedActionSheet(
+        chargeFailureCode: String?,
+        paymentMethod: DonationPaymentMethod?
+    ) {
+        let actionSheetMessage: String = {
+            let messageFormat = OWSLocalizedString(
+                "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT",
+                comment: "Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}."
+            )
+
+            let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
+                chargeErrorCode: chargeFailureCode,
+                paymentMethod: paymentMethod
+            )
+
+            return String(format: messageFormat, chargeFailureString)
+        }()
+
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE",
                 comment: "Title for a sheet explaining that the user's recurring subscription has ended because payment failed."
             ),
-            message: OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_ALERT_MESSAGE",
-                comment: "Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed."
-            )
+            message: actionSheetMessage
         )
 
-        actionSheet.addAction(okayAndClearErrorActionSheetAction(
-            errorMode: .recurringSubscription
+        actionSheet.addAction(showDonateAndClearErrorAction(
+            title: .renewSubscription,
+            errorMode: .recurringSubscription,
+            preferredDonateMode: .monthly
         ))
-        actionSheet.addAction(OWSActionSheets.learnMoreUrlAction(
-            url: SupportConstants.badgeExpirationLearnMoreURL
-        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
         self.presentActionSheet(actionSheet, animated: true)
     }
 
-    private func okayAndClearErrorActionSheetAction(
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+    private enum ShowDonateActionTitle {
+        case renewSubscription
+        case tryAgain
+
+        var localizedTitle: String {
+            switch self {
+            case .renewSubscription:
+                return OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION",
+                    comment: "Title for an action in an action sheet asking the user to renew a subscription that has failed to renew."
+                )
+            case .tryAgain:
+                return OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN",
+                    comment: "Title for an action in an action sheet asking the user to try again, in reference to a donation that failed."
+                )
+            }
+        }
+    }
+
+    private func showDonateAndClearErrorAction(
+        title: ShowDonateActionTitle,
+        errorMode: SubscriptionReceiptCredentialResultStore.Mode,
+        preferredDonateMode: DonateViewController.DonateMode
     ) -> ActionSheetAction {
-        return ActionSheetAction(
-            title: CommonStrings.okButton,
-            style: .default
-        ) { _ in
+        return ActionSheetAction(title: title.localizedTitle) { _ in
             self.databaseStorage.write { tx in
                 DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
                     .clearRequestError(errorMode: errorMode, tx: tx.asV2Write)
@@ -366,7 +444,10 @@ extension DonationSettingsViewController {
             // Not ideal, because this makes network requests. However, this
             // should be rare, and doing it this way avoids us needing to add
             // methods for updating the state outside the normal loading flow.
-            self.loadAndUpdateState()
+            self.loadAndUpdateState().done(on: DispatchQueue.main) { [weak self] in
+                guard let self else { return }
+                self.showDonateViewController(preferredDonateMode: preferredDonateMode)
+            }
         }
     }
 
@@ -394,26 +475,37 @@ private extension Subscription {
 }
 
 private extension SubscriptionReceiptCredentialRequestError {
-    var mySupportErrorState: MySupportErrorState {
-        guard case .paymentStillProcessing = errorCode else {
+    func mySupportErrorState(
+        previouslyHadActiveSubscription: Bool
+    ) -> MySupportErrorState {
+        switch errorCode {
+        case .paymentFailed:
+            if previouslyHadActiveSubscription {
+                return .previouslyActiveSubscriptionLapsed(
+                    chargeFailureCode: chargeFailureCodeIfPaymentFailed,
+                    paymentMethod: paymentMethod
+                )
+            }
+
+            return .paymentFailed(
+                chargeFailureCode: chargeFailureCodeIfPaymentFailed,
+                paymentMethod: paymentMethod
+            )
+        case .paymentStillProcessing:
+            return .paymentProcessing(paymentMethod: paymentMethod)
+        case
+                .localValidationFailed,
+                .serverValidationFailed,
+                .paymentNotFound,
+                .paymentIntentRedeemed:
             // This isn't quite the right thing to do, since the payment isn't
             // the thing that failed. However, it should be super rare for us to
             // get into this state – we could alternatively add a "generic
             // error" case for us to fall back on.
-            return .paymentFailed
+            return .paymentFailed(
+                chargeFailureCode: nil,
+                paymentMethod: paymentMethod
+            )
         }
-
-        return .paymentProcessing(paymentMethod: paymentMethod)
-    }
-}
-
-private extension OWSActionSheets {
-    static func learnMoreUrlAction(url: URL) -> ActionSheetAction {
-        return ActionSheetAction(
-            title: CommonStrings.learnMore,
-            handler: { _ in
-                UIApplication.shared.open(url)
-            }
-        )
     }
 }

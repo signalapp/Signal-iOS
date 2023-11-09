@@ -43,7 +43,7 @@ extension DonationPaymentDetailsViewController {
                 )
 
                 return DonationViewsUtil.waitForSubscriptionJob(
-                    paymentMethod: .creditOrDebitCard
+                    paymentMethod: validForm.donationPaymentMethod
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

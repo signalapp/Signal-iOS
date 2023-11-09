@@ -103,7 +103,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
         let donateButtonStates: [State] = [
             .init(
                 badge: getSubscriptionBadge(),
-                mode: .subscriptionExpiredBecauseOfChargeFailure,
+                mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailureCode: nil, paymentMethod: nil),
                 canDonate: true
             ),
             .init(
@@ -128,7 +128,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
             ),
             .init(
                 badge: getSubscriptionBadge(),
-                mode: .bankPaymentFailed,
+                mode: .bankPaymentFailed(chargeFailureCode: nil),
                 canDonate: true
             )
         ]
