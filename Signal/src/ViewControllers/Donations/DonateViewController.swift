@@ -254,7 +254,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 currentSubscription: monthly.currentSubscription,
                 currentSubscriptionLevel: monthly.currentSubscriptionLevel
             )
-            receiptCredentialSuccessMode = .recurringSubscription
+            receiptCredentialSuccessMode = .recurringSubscriptionInitiation
         }
 
         let vc = DonationPaymentDetailsViewController(
@@ -461,7 +461,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         subscriptionLevel: selectedSubscriptionLevel.level,
                         priorSubscriptionLevel: currentSubscription.level,
                         paymentProcessor: currentSubscription.paymentProcessor,
-                        paymentMethod: currentSubscription.paymentMethod
+                        paymentMethod: currentSubscription.paymentMethod,
+                        isNewSubscription: true // Update treated like new subscription
                     )
 
                     return DonationViewsUtil.waitForSubscriptionJob(
@@ -470,7 +471,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 }
             ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
-                    receiptCredentialSuccessMode: .recurringSubscription
+                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(
@@ -693,7 +694,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
                     .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
                 DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-                    .getRequestError(errorMode: .recurringSubscription, tx: $0.asV2Read)
+                    .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read)
             )
         }
 

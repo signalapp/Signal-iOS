@@ -219,7 +219,7 @@ extension DonationSettingsViewController {
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        errorMode: .recurringSubscription
+                        preferredDonateMode: .monthly
                     )
                 }
             }
@@ -286,7 +286,7 @@ extension DonationSettingsViewController {
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        errorMode: .oneTimeBoost
+                        preferredDonateMode: .oneTime
                     )
                 }
             }
@@ -333,7 +333,7 @@ extension DonationSettingsViewController {
     private func presentDonationFailedActionSheet(
         chargeFailureCode: String?,
         paymentMethod: DonationPaymentMethod?,
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+        preferredDonateMode: DonateViewController.DonateMode
     ) {
         let actionSheetMessage: String = {
             let messageFormat: String = OWSLocalizedString(
@@ -357,16 +357,8 @@ extension DonationSettingsViewController {
             message: actionSheetMessage
         )
 
-        let preferredDonateMode: DonateViewController.DonateMode = {
-            switch errorMode {
-            case .oneTimeBoost: return .oneTime
-            case .recurringSubscription: return .monthly
-            }
-        }()
-
         actionSheet.addAction(showDonateAndClearErrorAction(
             title: .tryAgain,
-            errorMode: errorMode,
             preferredDonateMode: preferredDonateMode
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -402,7 +394,6 @@ extension DonationSettingsViewController {
 
         actionSheet.addAction(showDonateAndClearErrorAction(
             title: .renewSubscription,
-            errorMode: .recurringSubscription,
             preferredDonateMode: .monthly
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -432,13 +423,18 @@ extension DonationSettingsViewController {
 
     private func showDonateAndClearErrorAction(
         title: ShowDonateActionTitle,
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode,
         preferredDonateMode: DonateViewController.DonateMode
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             self.databaseStorage.write { tx in
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-                    .clearRequestError(errorMode: errorMode, tx: tx.asV2Write)
+                switch preferredDonateMode {
+                case .oneTime:
+                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                        .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
+                case .monthly:
+                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                        .clearRequestErrorForAnyRecurringSubscription(tx: tx.asV2Write)
+                }
             }
 
             // Not ideal, because this makes network requests. However, this

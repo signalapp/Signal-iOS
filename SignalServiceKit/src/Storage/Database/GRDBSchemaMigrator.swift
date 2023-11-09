@@ -239,6 +239,7 @@ public class GRDBSchemaMigrator: NSObject {
         case fixUniqueConstraintOnCallRecord
         case addTimestampToCallRecord
         case addPaymentMethodToJobRecords
+        case addIsNewSubscriptionToJobRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2442,6 +2443,14 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addPaymentMethodToJobRecords) { tx in
             try tx.database.alter(table: "model_SSKJobRecord") { table in
                 table.add(column: "paymentMethod", .text)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsNewSubscriptionToJobRecords) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "isNewSubscription", .boolean)
             }
 
             return .success(())

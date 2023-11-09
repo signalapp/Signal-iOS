@@ -280,7 +280,6 @@ public class SubscriptionManagerImpl: NSObject {
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
-    fileprivate static let hasEverRedeemedRecurringSubscriptionBadgeKey = "hadEverRedeemedRecurringSubscriptionBadgeKey"
 
     // MARK: Current subscription status
 
@@ -420,9 +419,10 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
-                self.clearHasEverRedeemedRecurringSubscriptionBadge(tx: transaction)
                 DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-                    .clearRequestError(errorMode: .recurringSubscription, tx: transaction.asV2Write)
+                    .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction.asV2Write)
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
             }
 
             self.storageServiceManager.recordPendingLocalAccountUpdates()
@@ -523,7 +523,8 @@ public class SubscriptionManagerImpl: NSObject {
         subscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
         paymentProcessor: DonationPaymentProcessor,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
+        isNewSubscription: Bool
     ) {
         let request = generateReceiptRequest()
 
@@ -536,6 +537,7 @@ public class SubscriptionManagerImpl: NSObject {
                 subscriberID: subscriberId,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
+                isNewSubscription: isNewSubscription,
                 transaction: transaction
             )
         }
@@ -867,7 +869,8 @@ public class SubscriptionManagerImpl: NSObject {
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil,
                     paymentProcessor: subscription.paymentProcessor,
-                    paymentMethod: subscription.paymentMethod
+                    paymentMethod: subscription.paymentMethod,
+                    isNewSubscription: false
                 )
 
                 // Save last expiration
@@ -1109,26 +1112,6 @@ extension SubscriptionManagerImpl {
         }
 
         return paymentMethod
-    }
-
-    // MARK: HasRedeemedRecurringSubscriptionBadge
-
-    public static func setHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
-        subscriptionKVS.setBool(true, key: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
-    }
-
-    public static func clearHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
-        subscriptionKVS.removeValue(forKey: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
-    }
-
-    /// Whether or not the local user has ever successfully redeemed a badge for
-    /// their current recurring subscription.
-    ///
-    /// This will be false if the user does not currently have a recurring
-    /// subscription. It may be true even if the subscription is no longer
-    /// active.
-    public static func getHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(hasEverRedeemedRecurringSubscriptionBadgeKey, defaultValue: false, transaction: tx)
     }
 }
 

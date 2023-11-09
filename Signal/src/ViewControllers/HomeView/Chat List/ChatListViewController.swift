@@ -698,13 +698,16 @@ public class ChatListViewController: OWSViewController {
 
         let (
             oneTimeBoostReceiptCredentialRedemptionSuccess,
-            recurringSubscriptionReceiptCredentialRedemptionSuccess,
+            recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+
+            oneTimeBoostSuccessHasBeenPresented,
+            recurringSubscriptionInitiationSuccessHasBeenPresented,
 
             oneTimeBoostReceiptCredentialRequestError,
-            recurringSubscriptionReceiptCredentialRequestError,
+            recurringSubscriptionInitiationReceiptCredentialRequestError,
 
             oneTimeBoostErrorHasBeenPresented,
-            recurringSubscriptionErrorHasBeenPresented,
+            recurringSubscriptionInitiationErrorHasBeenPresented,
 
             subscriberID,
             expiredBadgeID,
@@ -713,13 +716,16 @@ public class ChatListViewController: OWSViewController {
             hasCurrentSubscription
         ) = databaseStorage.read { transaction in (
             receiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscription, tx: transaction.asV2Read),
+            receiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+
+            receiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
+            receiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
             receiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscription, tx: transaction.asV2Read),
+            receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
             receiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscription, tx: transaction.asV2Read),
+            receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
 
             SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
             SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
@@ -728,15 +734,21 @@ public class ChatListViewController: OWSViewController {
             subscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
 
-        if let oneTimeBoostReceiptCredentialRedemptionSuccess {
+        if
+            let oneTimeBoostReceiptCredentialRedemptionSuccess,
+            !oneTimeBoostSuccessHasBeenPresented
+        {
             BadgeThanksSheetPresenter.load(
                 redemptionSuccess: oneTimeBoostReceiptCredentialRedemptionSuccess,
                 successMode: .oneTimeBoost
             ).presentBadgeThanksAndClearSuccess(fromViewController: self)
-        } else if let recurringSubscriptionReceiptCredentialRedemptionSuccess {
+        } else if
+            let recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+            !recurringSubscriptionInitiationSuccessHasBeenPresented
+        {
             BadgeThanksSheetPresenter.load(
-                redemptionSuccess: recurringSubscriptionReceiptCredentialRedemptionSuccess,
-                successMode: .recurringSubscription
+                redemptionSuccess: recurringSubscriptionInitiationReceiptCredentialRedemptionSuccess,
+                successMode: .recurringSubscriptionInitiation
             ).presentBadgeThanksAndClearSuccess(fromViewController: self)
         } else if
             let oneTimeBoostReceiptCredentialRequestError,
@@ -747,12 +759,12 @@ public class ChatListViewController: OWSViewController {
                 errorMode: .oneTimeBoost
             )
         } else if
-            let recurringSubscriptionReceiptCredentialRequestError,
-            !recurringSubscriptionErrorHasBeenPresented
+            let recurringSubscriptionInitiationReceiptCredentialRequestError,
+            !recurringSubscriptionInitiationErrorHasBeenPresented
         {
             showBadgeIssueSheetIfNeeded(
-                receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
-                errorMode: .recurringSubscription
+                receiptCredentialRequestError: recurringSubscriptionInitiationReceiptCredentialRequestError,
+                errorMode: .recurringSubscriptionInitiation
             )
         } else {
             showBadgeExpirationSheetIfNeeded(

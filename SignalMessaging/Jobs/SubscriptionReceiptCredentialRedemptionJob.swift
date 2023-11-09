@@ -64,6 +64,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             subscriberID: Data(), // Unused
             targetSubscriptionLevel: 0, // Unused
             priorSubscriptionLevel: 0, // Unused
+            isNewSubscription: true, // Unused
             isBoost: true,
             amount: amount.value,
             currencyCode: amount.currencyCode,
@@ -80,6 +81,9 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
     /// `nil`! However, we fetch this from the service, which cannot guarantee a
     /// recognized value (as it is in turn fetched from an external service,
     /// such as Stripe).
+    /// - Parameter isNewSubscription
+    /// `true` if this job represents a new or updated subscription. `false` if
+    /// this job is associated with the renewal of an existing subscription.
     public func addSubscriptionJob(
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod?,
@@ -88,6 +92,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
+        isNewSubscription: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
@@ -100,6 +105,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             subscriberID: subscriberID,
             targetSubscriptionLevel: targetSubscriptionLevel,
             priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
+            isNewSubscription: isNewSubscription,
             isBoost: false,
             amount: nil,
             currencyCode: nil,
@@ -158,17 +164,20 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
     fileprivate enum PaymentType: CustomStringConvertible {
         /// A one-time payment, or "boost".
         case oneTimeBoost(paymentIntentId: String)
+
         /// A recurring payment, or (an overloaded term) "subscription".
         case recurringSubscription(
             subscriberId: Data,
             targetSubscriptionLevel: UInt,
-            priorSubscriptionLevel: UInt
+            priorSubscriptionLevel: UInt,
+            isNewSubscription: Bool
         )
 
         var receiptCredentialResultMode: SubscriptionReceiptCredentialResultStore.Mode {
             switch self {
             case .oneTimeBoost: return .oneTimeBoost
-            case .recurringSubscription: return .recurringSubscription
+            case .recurringSubscription(_, _, _, isNewSubscription: true): return .recurringSubscriptionInitiation
+            case .recurringSubscription(_, _, _, isNewSubscription: false): return .recurringSubscriptionRenewal
             }
         }
 
@@ -176,7 +185,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             switch self {
             case .oneTimeBoost:
                 return .boost
-            case let .recurringSubscription(_, targetSubscriptionLevel, _):
+            case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
                 return .subscription(subscriptionLevel: targetSubscriptionLevel)
             }
         }
@@ -184,7 +193,8 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         var description: String {
             switch self {
             case .oneTimeBoost: return "one-time"
-            case .recurringSubscription: return "recurring"
+            case .recurringSubscription(_, _, _, isNewSubscription: true): return "recurring-initiation"
+            case .recurringSubscription(_, _, _, isNewSubscription: false): return "recurring-renewal"
             }
         }
     }
@@ -314,7 +324,8 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             self.paymentType = .recurringSubscription(
                 subscriberId: jobRecord.subscriberID,
                 targetSubscriptionLevel: jobRecord.targetSubscriptionLevel,
-                priorSubscriptionLevel: jobRecord.priorSubscriptionLevel
+                priorSubscriptionLevel: jobRecord.priorSubscriptionLevel,
+                isNewSubscription: jobRecord.isNewSubscription
             )
         }
 
@@ -400,7 +411,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             switch self.paymentType {
             case .oneTimeBoost:
                 return SubscriptionManagerImpl.getBoostBadge()
-            case let .recurringSubscription(_, targetSubscriptionLevel, _):
+            case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
                 return SubscriptionManagerImpl.getSubscriptionBadge(
                     subscriptionLevel: targetSubscriptionLevel
                 )
@@ -422,7 +433,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             guard let amount else { owsFail("How did we construct a boost job without an amount?") }
 
             return .value(amount)
-        case let .recurringSubscription(subscriberId, _, _):
+        case let .recurringSubscription(subscriberId, _, _, _):
             return SubscriptionManagerImpl
                 .getCurrentSubscriptionStatus(for: subscriberId)
                 .map(on: DispatchQueue.global()) { subscription -> FiatMoney in
@@ -462,7 +473,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                     context: self.receiptCredentialRequestContext,
                     request: self.receiptCredentialRequest
                 )
-            case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel):
+            case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _):
                 Logger.info("[Donations] Durable job requesting receipt for subscription")
                 return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
                     subscriberId: subscriberId,
@@ -570,12 +581,6 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                 let badge = self.badge
             else {
                 owsFail("[Donations] How did we succeed a job without learning the amount and badge?")
-            }
-
-            switch paymentType {
-            case .oneTimeBoost: break
-            case .recurringSubscription:
-                SubscriptionManagerImpl.setHasEverRedeemedRecurringSubscriptionBadge(tx: tx)
             }
 
             self.receiptCredentialResultStore.clearRequestError(
