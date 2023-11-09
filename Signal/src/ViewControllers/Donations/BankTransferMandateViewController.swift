@@ -247,10 +247,12 @@ class BankTransferMandateViewController: OWSTableViewController2 {
             self.didAgree(.accept())
         } else {
             let pageHeight = tableView.bounds.height - tableView.safeAreaInsets.top - tableView.safeAreaInsets.bottom
-            tableView.contentOffset.y = min(
+            let yOffset = min(
                 tableView.contentOffset.y + pageHeight,
-                tableView.contentSize.height
+                tableView.contentSize.height - tableView.bounds.height
             )
+            let newOffset = CGPoint(x: tableView.contentOffset.x, y: yOffset)
+            tableView.setContentOffset(newOffset, animated: true)
         }
     }
 
