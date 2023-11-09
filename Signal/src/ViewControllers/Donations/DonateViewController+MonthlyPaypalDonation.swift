@@ -50,7 +50,7 @@ extension DonateViewController {
             Logger.info("[Donations] Monthly PayPal donation finished")
 
             self.didCompleteDonation(
-                receiptCredentialSuccessMode: .recurringSubscription
+                receiptCredentialSuccessMode: .recurringSubscriptionInitiation
             )
         }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
@@ -153,7 +153,8 @@ extension DonateViewController {
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
                 paymentProcessor: .braintree,
-                paymentMethod: .paypal
+                paymentMethod: .paypal,
+                isNewSubscription: true
             )
 
             return DonationViewsUtil.waitForSubscriptionJob(

@@ -354,7 +354,8 @@ extension DonateViewController {
             case .oneTime:
                 return resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read)
             case .monthly:
-                return resultStore.getRequestError(errorMode: .recurringSubscription, tx: tx.asV2Read)
+                // All subscriptions from this controller are being initiated.
+                return resultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: tx.asV2Read)
             }
         }
 
