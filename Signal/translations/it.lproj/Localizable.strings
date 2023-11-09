@@ -73,9 +73,6 @@
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Invia messaggio";
 
-/* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Condividi contatto";
-
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Clicca per scaricare";
 
@@ -502,20 +499,26 @@
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "Dona";
 
-/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+/* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Scopri di più.";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donazione mensile annullata";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Canceled";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "La tua donazione mensile ricorrente è stata annullata. Il tuo badge %1$@ per la donazione non è più visibile sul tuo profilo.\n\nPer continuare a supportare Signal e riattivare il badge, aggiorna il tuo metodo di pagamento ed effettua una nuova donazione.";
+/* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation has ended. %1$@\n\nWithout an active subscription your badge will no longer be visible on your profile.";
 
-/* Body of the sheet shown when your subscription is canceled due to inactivity */
+/* Body of the sheet shown when your subscription is canceled due to inactivity. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "La tua donazione mensile ricorrente è stata automaticamente annullata per la tua inattività su Signal. Il Badge Signal - %1$@ non è più visibile sul tuo profilo.\n\nPuoi continuare a usare Signal ma, se vuoi, puoi rinnovare la tua donazione per sostenere l'app e riattivare il tuo badge.";
 
+/* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Your bank transfer was received. You can choose to display this badge on your profile to show off your support.";
+
+/* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
+"BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Donation Complete";
+
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Scegli un badge da mostrare sul tuo profilo per far sapere a tutti che sostieni Signal.";
+"BADGE_THANKS_BODY" = "You can choose to display this badge on your profile to show off your support.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostra sul profilo";
@@ -528,6 +531,24 @@
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Quando hai più di un badge, puoi sceglierne uno da mostrare agli altri sul tuo profilo.";
+
+/* On the bank donation screen, show a link below the input form to show help about finding account info. */
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Find Account Info";
+
+/* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
+"BANK_DONATION_SUBHEADER_TEXT" = "Enter your bank details. Signal does not collect or store your personal information.";
+
+/* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate. */
+"BANK_MANDATE_AGREE" = "Agree";
+
+/* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible. */
+"BANK_MANDATE_READ_MORE" = "Read More";
+
+/* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
+"BANK_MANDATE_SUBTITLE" = "Stripe processes donations made to Signal. Signal does not collect or store your personal information.";
+
+/* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate. */
+"BANK_MANDATE_TITLE" = "Bank Transfer";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Chiudi banner";
@@ -850,12 +871,6 @@
 /* VoiceOver description of current camera zoom level. */
 "CAMERA_VO_ZOOM_LEVEL" = "Zoom %1$@x";
 
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Questo utente non può essere verificato finché non verranno scambiati dei messaggi con lui.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Errore";
-
 /* Alert shown when the user needs to exchange messages to see the safety number. */
 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Verrà creato un codice di sicurezza per questa persona dopo che avrai inviato dei messaggi in chat.";
 
@@ -874,9 +889,6 @@
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CVV_TOO_LONG_ERROR" = "Codice troppo lungo";
 
-/* Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button. */
-"CARD_DONATION_DONATE_BUTTON" = "Dona";
-
 /* Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Data di scadenza non valida";
 
@@ -885,12 +897,6 @@
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen. */
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/AA";
-
-/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER" = "Importo della donazione: %1$@";
-
-/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"CARD_DONATION_HEADER_MONTHLY" = "Importo della donazione: %1$@ al mese";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal non archivia né salva le tue informazioni personali quando fai una donazione.\n\nUsiamo Stripe per elaborare i pagamenti e ricevere le tue donazioni. Non abbiamo accesso, né archiviamo o salviamo le informazioni che fornisci a Stripe per le transazioni.\n\nSignal non assocerà mai (né è in grado di farlo) le informazioni legate alla donazione al tuo account.\n\nGrazie per il tuo supporto!";
@@ -1021,32 +1027,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Utente non registrato";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Modifica";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Città";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Stato";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Quartiere";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "Casella postale";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Codice postale";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Regione";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Via";
 
 /* Label for the 'family name' field of a contact. */
 "CONTACT_FIELD_FAMILY_NAME" = "Cognome";
@@ -1891,6 +1873,15 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Raggiro censura del luogo";
 
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
+"DONATE_BUTTON" = "Donate %1$@";
+
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
+"DONATE_BUTTON_MONTHLY" = "Donate %1$@/month";
+
+/* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
+"DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "Bank Transfer";
+
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "Carta di credito o di debito";
 
@@ -1901,7 +1892,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Ricevi il Badge Signal %1$@";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Ottieni il Badge Signal %1$@ per un mese";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Get the %1$@ badge for 30 days";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donazione di %1$@ a Signal";
@@ -1921,11 +1912,29 @@
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Scaduto";
 
+/* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Bank transfers usually take 1 business day to process. Please wait until this donation completes before making another donation.";
+
+/* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Bank transfers usually take 1 business day to process. Please wait until this donation completes before updating your subscription.";
+
+/* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Your donation is still being processed. This can take a few minutes depending on your connection. Please wait until this donation completes before making another donation.";
+
+/* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Your donation is still being processed. This can take a few minutes depending on your connection. Please wait until this donation completes before updating your subscription.";
+
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Seleziona un importo da donare.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "L'importo minimo che puoi donare è %1$@.";
+
+/* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "You have a donation pending";
+
+/* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "You have a donation processing";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Mensile";
@@ -1947,6 +1956,27 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Aggiorna la tua donazione";
+
+/* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "We’re having trouble processing your bank transfer. %1$@";
+
+/* Title for a sheet explaining that a donation via bank payment has failed. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Donation Couldn’t Be Processed";
+
+/* Title for a sheet explaining that a donation via bank payment is pending. */
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+
+/* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your one-time donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+
+/* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your monthly donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+
+/* Title for a button asking the user to renew their subscription, because it has expired. */
+"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renew Subscription";
+
+/* Title for a button asking the user to try their donation again, because something went wrong. */
+"DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Try Again";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Dura %1$@";
@@ -2010,12 +2040,6 @@
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ha fatto una donazione a Signal per conto tuo";
-
-/* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "Questa persona non può ricevere una donazione finché non aggiorna Signal.";
-
-/* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Impossibile inviare la donazione";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Non puoi inviare una donazione per conto di questa persona perché l'hai bloccata.";
@@ -2110,20 +2134,59 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "La privacy prima di tutto";
 
+/* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renew Subscription";
+
+/* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Try Again";
+
+/* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your bank transfer is pending. Bank transfers usually take 1 business day to process.";
+
+/* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+
+/* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "We’re having trouble processing your donation. %1$@";
+
+/* Title for a sheet explaining that a payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Error Processing Donation";
+
+/* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Your recurring monthly donation has ended. %1$@";
+
+/* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Monthly Donation Canceled";
+
+/* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Donation Pending";
+
+/* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Processing Donation...";
+
+/* A label describing a donation payment that has failed to process. */
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Error Processing Donation";
+
+/* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Monthly Donation Canceled";
+
+/* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ one-time";
+
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Fai una donazione per un'altra persona";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donazione a Signal";
 
+/* Title for the 'Donor FAQ' button on the donation screen */
+"DONATION_VIEW_DONOR_FAQ" = "Donor FAQ";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Errore di rete. Controlla la tua connessione e riprova.";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Badge";
-
-/* Title for the 'Manage Subscription' button on the donation screen */
-"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Gestisci contributo";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
 "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Donazione mensile a Signal";
@@ -2136,9 +2199,6 @@
 
 /* Title for the \"other ways to donate\" section on the donation view. */
 "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Altri modi per donare";
-
-/* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Domande frequenti sul contributo";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Dona a Signal";
@@ -2403,6 +2463,12 @@
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Badge in evidenza";
+
+/* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "Look for your IBAN at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.";
+
+/* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
+"FIND_ACCOUNT_INFO_SHEET_TITLE" = "Find Your Account Information";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Segna come verificato";
@@ -4447,6 +4513,12 @@
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Videochiamata in uscita";
 
+/* Header title for bank payment details screen */
+"PAYMENT_DETAILS_BANK_TITLE" = "Bank Transfer";
+
+/* Header title for card payment details screen */
+"PAYMENT_DETAILS_CARD_TITLE" = "Credit or Debit Card";
+
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ alle %2$@";
 
@@ -5572,21 +5644,6 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "I nostri codici di sicurezza Signal:\n%1$@";
 
-/* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Stiamo aggiornando i codici di sicurezza.";
-
-/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Hai bisogno di aiuto?";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Stiamo aggiornando il sistema dei codici di sicurezza in vista di un periodo di transizione che ci porterà a introdurre nuove funzioni per la privacy su Signal.";
-
-/* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Per verificare i codici di sicurezza, fai combaciare il colore della scheda con quello della scheda del dispositivo del tuo contatto. Se i codici non combaciano, continua a scorrere e prova un'altra coppia di codici di sicurezza. Ricorda che deve combaciare una sola coppia.";
-
-/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Cambiamenti nei codici di sicurezza";
-
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Il tuo codice di sicurezza con %1$@ è cambiato. Dovresti verificarlo.";
 
@@ -5748,6 +5805,51 @@
 
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "Normale";
+
+/* Users can donate to Signal with a bank account. This is the label for email field on that screen. */
+"SEPA_DONATION_EMAIL_LABEL" = "Email";
+
+/* Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing. */
+"SEPA_DONATION_EMAIL_PLACEHOLDER" = "Email Address";
+
+/* SEPA bank account donation error for insufficient funds. */
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.";
+
+/* SEPA bank account donation error for missing or incorrect mandate information. */
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "An error occurred while processing this payment, please try again.";
+
+/* SEPA bank account donation error for the account details not being able to be processed. */
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "The bank details provided could not be processed, contact your bank for more information.";
+
+/* SEPA bank account donation error for unspecified decline failures. */
+"SEPA_DONATION_ERROR_OTHER" = "Verify your bank details are correct and try again. If the problem continues, contact your bank.";
+
+/* SEPA bank account donation error for the payment not being authorizing by the account holder. */
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "This payment was revoked by the account holder and could not be processed. You haven’t been charged.";
+
+/* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
+"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN can only contain A-Z and 0-9";
+
+/* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
+"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "Invalid IBAN number";
+
+/* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "IBAN country code is not supported";
+
+/* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
+"SEPA_DONATION_IBAN_LABEL" = "IBAN";
+
+/* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
+"SEPA_DONATION_IBAN_TOO_LONG_ERROR" = "IBAN is too long";
+
+/* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
+"SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "IBAN is too short";
+
+/* Users can donate to Signal with a bank account. This is the label for name field on that screen. */
+"SEPA_DONATION_NAME_LABEL" = "Name";
+
+/* Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing. */
+"SEPA_DONATION_NAME_PLACEHOLDER" = "Name on Bank Account";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal utilizza la crittografia end-to-end e potrebbe essere necessario aggiornare la tua sessione di chat a volte. Ciò non influisce sulla sicurezza della tua chat, ma potresti aver perso un messaggio da questo contatto e puoi chiedere loro di inviarlo di nuovo.";
@@ -7165,38 +7267,26 @@
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confermare l'annullamento?";
 
-/* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Non è stato possibile aggiungere il badge. %1$@";
-
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Il tuo badge non può essere aggiunto al tuo account. Contatta l'assistenza.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Non è stato possibile aggiungere il badge";
 
-/* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Contatta l'assistenza.";
-
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Errore nell'elaborazione del pagamento";
-
-/* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Errore nell'elaborazione del pagamento. %1$@";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Donation";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/al mese";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Pagamento in elaborazione…";
-
-/* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Elaborazione della transazione…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing donation...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Si rinnova il giorno: %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Il tuo pagamento è ancora in fase di elaborazione. Questo può richiedere alcuni minuti a seconda della tua connessione.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your donation is still being processed. This can take a few minutes depending on your connection.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Il tuo contributo è stato cancellato";
@@ -7589,7 +7679,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Esamina codici di sicurezza";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Per verificare la sicurezza della tua crittografia end-to-end con %1$@, fai combaciare il colore della scheda qui sopra con la scheda del dispositivo della persona in questione e confronta i codici. Se i codici non combaciano, continua a scorrere e prova un'altra coppia di codici di sicurezza. Ricorda che deve combaciare una sola coppia.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Impossibile riprodurre questo video";
