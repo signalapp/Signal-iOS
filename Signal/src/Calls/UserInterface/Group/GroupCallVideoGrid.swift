@@ -117,10 +117,6 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     }
 
     var maxItems: Int { maxColumns * maxRows }
-
-    func deviceState(for index: Int) -> RemoteDeviceState? {
-        return gridRemoteDeviceStates[safe: index]
-    }
 }
 
 class GroupCallVideoGridCell: UICollectionViewCell {

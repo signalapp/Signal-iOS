@@ -883,9 +883,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         // Audio Source Handling (bluetooth)
         if self.hasAlternateAudioSources, let audioSource = callService.audioService.currentAudioSource {
-            audioModeSourceButton.isHidden = false
-            videoModeAudioSourceButton.isHidden = false
-
             videoModeAudioSourceButton.isHidden = !call.individualCall.hasLocalVideo
             videoModeAudioSourceButton.showDropdownArrow = true
             audioModeSourceButton.isHidden = call.individualCall.hasLocalVideo
@@ -912,7 +909,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
             videoModeAudioSourceButton.isHidden = true
         } else {
             audioModeSourceButton.isHidden = false
-            videoModeAudioSourceButton.isHidden = false
 
             // No bluetooth audio detected
             audioModeSourceButton.iconName = "speaker-fill-28"
@@ -1113,12 +1109,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         callService.audioService.requestSpeakerphone(call: call.individualCall, isEnabled: button.isSelected)
     }
 
-    private func didPressTextMessage(sender button: UIButton) {
-        Logger.info("")
-
-        dismissIfPossible(shouldDelay: false)
-    }
-
     @objc
     private func didPressAnswerCall(sender: UIButton) {
         Logger.info("")
@@ -1150,11 +1140,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         }
 
         callService.callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
-    }
-
-    @objc
-    private func didPressRing(sender: UIButton) {
-        owsFailDebug("1:1 calls always ring")
     }
 
     @objc
