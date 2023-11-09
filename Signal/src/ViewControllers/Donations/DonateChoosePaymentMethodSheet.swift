@@ -111,8 +111,8 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             stackView.spacing = 6
 
             if let assets = badge.assets {
-                let badgeImageView = UIImageView(image: assets.universal112)
-                badgeImageView.autoSetDimensions(to: CGSize(square: 112))
+                let badgeImageView = UIImageView(image: assets.universal160)
+                badgeImageView.autoSetDimensions(to: CGSize(square: 80))
                 stackView.addArrangedSubview(badgeImageView)
                 stackView.setCustomSpacing(12, after: badgeImageView)
             }

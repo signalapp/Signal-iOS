@@ -316,6 +316,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewMargins()
 
+            let badgeImageView = UIImageView()
+            badgeImageView.image = self.badge.assets?.universal160
+            badgeImageView.autoSetDimensions(to: CGSize(square: 80))
+            stackView.addArrangedSubview(badgeImageView)
+            stackView.setCustomSpacing(24, after: badgeImageView)
+
             let titleLabel = UILabel()
             titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
@@ -326,42 +332,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let bodyLabel = UILabel()
-            bodyLabel.font = .dynamicTypeBody
-            bodyLabel.textColor = Theme.primaryTextColor
+            bodyLabel.font = .dynamicTypeSubheadlineClamped
+            bodyLabel.textColor = Theme.secondaryTextAndIconColor
             bodyLabel.textAlignment = .center
             bodyLabel.numberOfLines = 0
             bodyLabel.text = self.bodyText
             stackView.addArrangedSubview(bodyLabel)
-            stackView.setCustomSpacing(30, after: bodyLabel)
-
-            let badgeImageView = UIImageView()
-            let shouldShowBadgeLabel: Bool
-            switch self.thanksType {
-            case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
-                badgeImageView.image = self.badge.assets?.universal160
-                badgeImageView.autoSetDimensions(to: CGSize(square: 160))
-                shouldShowBadgeLabel = true
-            case .giftReceived:
-                // Use a smaller image for gifts since they have an extra button.
-                badgeImageView.image = self.badge.assets?.universal112
-                badgeImageView.autoSetDimensions(to: CGSize(square: 112))
-                shouldShowBadgeLabel = false
-            }
-            stackView.addArrangedSubview(badgeImageView)
-
-            if shouldShowBadgeLabel {
-                let badgeLabel = UILabel()
-                badgeLabel.font = .dynamicTypeTitle3.semibold()
-                badgeLabel.textColor = Theme.primaryTextColor
-                badgeLabel.textAlignment = .center
-                badgeLabel.numberOfLines = 0
-                badgeLabel.text = self.badge.localizedName
-                stackView.addArrangedSubview(badgeLabel)
-                stackView.setCustomSpacing(14, after: badgeImageView)
-                stackView.setCustomSpacing(36, after: badgeLabel)
-            } else {
-                stackView.setCustomSpacing(36, after: badgeImageView)
-            }
+            stackView.setCustomSpacing(36, after: bodyLabel)
 
             return cell
         }, actionBlock: nil))

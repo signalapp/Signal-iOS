@@ -240,6 +240,23 @@ public class BadgeIssueSheetState {
             )
         }
     }()
+
+    var showIconAlert: Bool {
+        switch mode {
+        case
+                .boostExpired,
+                .giftBadgeExpired,
+                .bankPaymentFailed,
+                .subscriptionExpiredBecauseOfChargeFailure,
+                .subscriptionExpiredBecauseNotRenewed:
+            return true
+        case
+                .giftNotRedeemed,
+                .boostBankPaymentProcessing,
+                .subscriptionBankPaymentProcessing:
+            return false
+        }
+    }
 }
 
 class BadgeIssueSheet: OWSTableSheetViewController {
@@ -283,17 +300,30 @@ class BadgeIssueSheet: OWSTableSheetViewController {
             let stackView = UIStackView()
             stackView.axis = .vertical
             stackView.alignment = .center
-            stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 0)
+            stackView.layoutMargins = .init(top: 24, left: 24, bottom: 0, right: 24)
             stackView.isLayoutMarginsRelativeArrangement = true
 
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewEdges()
 
+            let containerView = UIView()
+            stackView.addArrangedSubview(containerView)
+            stackView.setCustomSpacing(24, after: containerView)
+
             let badgeImageView = UIImageView()
-            badgeImageView.image = self.state.badge.assets?.universal112
-            badgeImageView.autoSetDimensions(to: CGSize(square: 112))
-            stackView.addArrangedSubview(badgeImageView)
-            stackView.setCustomSpacing(16, after: badgeImageView)
+            badgeImageView.image = self.state.badge.assets?.universal160
+            badgeImageView.autoSetDimensions(to: CGSize(square: 80))
+            containerView.addSubview(badgeImageView)
+            badgeImageView.autoPinEdgesToSuperviewEdges()
+
+            if self.state.showIconAlert {
+                let alertImageView = UIImageView()
+                alertImageView.image = UIImage(named: "alert")
+                alertImageView.autoSetDimensions(to: CGSize(square: 24))
+                containerView.addSubview(alertImageView)
+                alertImageView.autoPinEdge(.right, to: .right, of: badgeImageView)
+                alertImageView.autoPinEdge(.top, to: .top, of: badgeImageView)
+            }
 
             let titleLabel = UILabel()
             titleLabel.font = .dynamicTypeTitle2.semibold()
@@ -311,7 +341,7 @@ class BadgeIssueSheet: OWSTableSheetViewController {
                     comment: "Text for the 'learn more' link in a sheet explaining there's been an issue with your badge."
                 ).styled(with: .link(learnMoreLink))
                 let label = LinkingTextView()
-                label.attributedText = .composed(of: [self.state.body.text, " ", learnMore]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
+                label.attributedText = .composed(of: [self.state.body.text, " ", learnMore]).styled(with: .color(Theme.secondaryTextAndIconColor), .font(.dynamicTypeSubheadlineClamped))
                 label.textAlignment = .center
                 label.linkTextAttributes = [
                     .foregroundColor: Theme.accentBlueColor,
@@ -321,15 +351,15 @@ class BadgeIssueSheet: OWSTableSheetViewController {
                 bodyLabel = label
             } else {
                 let label = UILabel()
-                label.font = .dynamicTypeBody
-                label.textColor = Theme.primaryTextColor
+                label.font = .dynamicTypeSubheadlineClamped
+                label.textColor = Theme.secondaryTextAndIconColor
                 label.numberOfLines = 0
                 label.text = self.state.body.text
                 label.textAlignment = .center
                 bodyLabel = label
             }
             stackView.addArrangedSubview(bodyLabel)
-            stackView.setCustomSpacing(30, after: bodyLabel)
+            stackView.setCustomSpacing(24, after: bodyLabel)
 
             return cell
         }, actionBlock: nil))
@@ -345,7 +375,7 @@ class BadgeIssueSheet: OWSTableSheetViewController {
             let stackView = UIStackView()
             stackView.axis = .vertical
             stackView.alignment = .center
-            stackView.layoutMargins = UIEdgeInsets(top: 30, left: 24, bottom: 30, right: 24)
+            stackView.layoutMargins = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
             stackView.spacing = 16
             stackView.isLayoutMarginsRelativeArrangement = true
             cell.contentView.addSubview(stackView)
