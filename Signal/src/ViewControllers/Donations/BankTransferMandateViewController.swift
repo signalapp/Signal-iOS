@@ -246,7 +246,11 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         if isScrolledCloseToBottom {
             self.didAgree(.accept())
         } else {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+            let pageHeight = tableView.bounds.height - tableView.safeAreaInsets.top - tableView.safeAreaInsets.bottom
+            tableView.contentOffset.y = min(
+                tableView.contentOffset.y + pageHeight,
+                tableView.contentSize.height
+            )
         }
     }
 

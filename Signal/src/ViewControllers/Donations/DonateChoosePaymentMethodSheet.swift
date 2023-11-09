@@ -203,7 +203,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         creditOrDebitCardButton.layer.cornerRadius = 12
         creditOrDebitCardButton.backgroundColor = .ows_accentBlue
         creditOrDebitCardButton.dimsWhenHighlighted = true
-        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
+        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
 
         return creditOrDebitCardButton
     }
@@ -229,7 +229,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         )
         sepaButton.layer.cornerRadius = 12
         sepaButton.dimsWhenHighlighted = true
-        sepaButton.titleLabel?.font = .dynamicTypeBody.semibold()
+        sepaButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
 
         if Theme.isDarkThemeEnabled {
             sepaButton.imageView?.tintColor = .ows_gray05
