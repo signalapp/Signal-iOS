@@ -45,10 +45,10 @@ PODS:
     - CocoaLumberjack
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
-  - SignalRingRTC (2.34.3):
+  - SignalRingRTC (2.34.4):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.34.3)
-  - SignalRingRTC/WebRTC (2.34.3):
+    - SignalRingRTC/WebRTC (= 2.34.4)
+  - SignalRingRTC/WebRTC (2.34.4):
     - SignalCoreKit
   - SQLCipher (4.5.3):
     - SQLCipher/standard (= 4.5.3)
@@ -84,7 +84,7 @@ DEPENDENCIES:
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.34.3`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.34.4`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, commit `8ea0af7934e0107e4de8e96c8a7d5a95e2611eef`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.34.3
+    :tag: v2.34.4
   SQLCipher:
     :commit: 8ea0af7934e0107e4de8e96c8a7d5a95e2611eef
     :git: https://github.com/signalapp/sqlcipher.git
@@ -167,7 +167,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.34.3
+    :tag: v2.34.4
   SQLCipher:
     :commit: 8ea0af7934e0107e4de8e96c8a7d5a95e2611eef
     :git: https://github.com/signalapp/sqlcipher.git
@@ -193,12 +193,12 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: da9aed6ee558e66fe9380f6745880ae58e610912
-  SignalRingRTC: c1cb54f7803e40fa4567e082807934d0d303f1ba
+  SignalRingRTC: 9afc38f8dd7937a63c9d4f5778e9e7fc58527ccd
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 3c7295780566d82b4d8857a522bdb61822c7d86c
+PODFILE CHECKSUM: 285d1906520174c69365e096a5df1bfe6751b74a
 
 COCOAPODS: 1.12.1
