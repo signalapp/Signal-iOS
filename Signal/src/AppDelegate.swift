@@ -321,6 +321,16 @@ extension AppDelegate {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
+                await FullTextSearchOptimizer(
+                    appContext: appContext,
+                    db: DependenciesBridge.shared.db,
+                    keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory
+                ).run()
+            }
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task.detached(priority: .low) {
                 await AuthorMergeHelperBuilder(
                     appContext: appContext,
                     authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,

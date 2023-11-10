@@ -194,16 +194,16 @@ extension FullTextSearchFinder {
 
 // See: http://groue.github.io/GRDB.swift/docs/4.1/index.html#full-text-search
 // See: https://www.sqlite.org/fts5.html
-enum GRDBFullTextSearchFinder {
+public enum GRDBFullTextSearchFinder {
+    public static let ftsTableName = "indexable_text_fts"
 
     static let contentTableName = "indexable_text"
-    static let ftsTableName = "indexable_text_fts"
     static let uniqueIdColumn = "uniqueId"
     static let collectionColumn = "collection"
     static let ftsContentColumn = "ftsIndexableContent"
     static var matchTag: String { FullTextSearchFinder.matchTag }
 
-    public static let indexableModelTypes: [SDSIndexableModel.Type] = [
+    static let indexableModelTypes: [SDSIndexableModel.Type] = [
         TSThread.self,
         TSInteraction.self,
         TSGroupMember.self,
@@ -268,7 +268,7 @@ enum GRDBFullTextSearchFinder {
         return true
     }
 
-    public static func modelWasInserted(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
+    static func modelWasInserted(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
             Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
@@ -294,7 +294,7 @@ enum GRDBFullTextSearchFinder {
             transaction: transaction)
     }
 
-    public static func modelWasUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
+    static func modelWasUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
             Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
@@ -334,7 +334,7 @@ enum GRDBFullTextSearchFinder {
             transaction: transaction)
     }
 
-    public static func modelWasInsertedOrUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
+    static func modelWasInsertedOrUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
             Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
@@ -381,7 +381,7 @@ enum GRDBFullTextSearchFinder {
             transaction: transaction)
     }
 
-    public static func modelWasRemoved(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
+    static func modelWasRemoved(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         removeModelFromIndex(model, transaction: transaction)
     }
 
@@ -404,7 +404,7 @@ enum GRDBFullTextSearchFinder {
             transaction: transaction)
     }
 
-    public static func allModelsWereRemoved(collection: String, transaction: GRDBWriteTransaction) {
+    static func allModelsWereRemoved(collection: String, transaction: GRDBWriteTransaction) {
 
         serialQueue.sync {
             ftsCache.removeAllObjects()
@@ -484,7 +484,7 @@ enum GRDBFullTextSearchFinder {
 
     // MARK: - Querying
 
-    public static func enumerateObjects<T: SDSIndexableModel>(
+    static func enumerateObjects<T: SDSIndexableModel>(
         searchText: String,
         maxResults: UInt,
         transaction: GRDBReadTransaction,
@@ -506,7 +506,7 @@ enum GRDBFullTextSearchFinder {
         }
     }
 
-    public static func enumerateObjects(
+    static func enumerateObjects(
         searchText: String,
         collections: [String],
         maxResults: UInt,

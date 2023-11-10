@@ -240,6 +240,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addTimestampToCallRecord
         case addPaymentMethodToJobRecords
         case addIsNewSubscriptionToJobRecords
+        case enableFts5SecureDelete
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -299,7 +300,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 60
+    public static let grdbSchemaVersionLatest: UInt = 61
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -320,6 +321,10 @@ public class GRDBSchemaMigrator: NSObject {
             }
             let sql = try String(contentsOf: sqlFile)
             try db.execute(sql: sql)
+
+            // This isn't enabled by schema.sql, so we need to explicitly turn it on
+            // for new databases.
+            try enableFts5SecureDelete(db: db)
 
             // After importing the initial schema, we want to skip the remaining
             // incremental migrations, so we manually mark them as complete.
@@ -2456,6 +2461,11 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.enableFts5SecureDelete) { tx in
+            try enableFts5SecureDelete(db: tx.database)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3128,6 +3138,12 @@ public class GRDBSchemaMigrator: NSObject {
             on: "\(finalTableName)",
             columns: ["pastRevisionId"]
         )
+    }
+
+    private static func enableFts5SecureDelete(db: Database) throws {
+        try db.execute(sql: """
+            INSERT INTO "indexable_text_fts" ("indexable_text_fts", "rank") VALUES ('secure-delete', 1)
+        """)
     }
 }
 

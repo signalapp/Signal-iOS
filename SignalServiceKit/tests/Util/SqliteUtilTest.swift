@@ -151,4 +151,42 @@ final class SqliteUtilTest: XCTestCase {
             )
         }
     }
+
+    /// Tests that a "merge" command is sent to the FTS table, and that running it on an empty FTS
+    /// table is a no-op.
+    ///
+    /// It'd be nice to make this test more robust somehow, but that's difficult.
+    func testFtsMerge() throws {
+        let expectedSql = "INSERT INTO fts (fts, rank) VALUES ('merge', -123)"
+        var hasRunExpectedStatement = false
+
+        let databaseQueue = DatabaseQueue(configuration: {
+            var configuration = Configuration()
+            configuration.prepareDatabase { db in
+                db.trace { traceEvent in
+                    if
+                        case let .statement(statement) = traceEvent,
+                        statement.expandedSQL == expectedSql {
+                        hasRunExpectedStatement = true
+                    }
+                }
+            }
+            return configuration
+        }())
+
+        try databaseQueue.write { db in
+            try db.execute(sql: "CREATE VIRTUAL TABLE fts USING fts5 (content)")
+        }
+
+        let mergeResult = try databaseQueue.write { db in
+            try SqliteUtil.Fts5.merge(db: db, ftsTableName: "fts", numberOfPages: 123, isFirstBatch: true)
+        }
+
+        XCTAssertEqual(
+            mergeResult,
+            .noop,
+            "Expected no pages in an empty FTS table, so merge should be a no-op"
+        )
+        XCTAssert(hasRunExpectedStatement, "Expected a merge statement to be run")
+    }
 }
