@@ -177,7 +177,8 @@ public class AudioSession: NSObject {
                 mode: .default,
                 options: [
                     .defaultToSpeaker,
-                    .allowBluetooth
+                    .allowBluetooth,
+                    .allowBluetoothA2DP
                 ]
             )
             try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
