@@ -224,6 +224,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
             levelsJson: JSON = LevelFixtures.withDefaults()
         ) -> JSON {
             [
+                "sepaMaximumEuros": 10000,
                 "currencies": [
                     "usd": currenciesJson
                 ],
@@ -243,7 +244,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
 
         XCTAssertEqual(config.boost.level, LevelFixtures.boostLevel)
         XCTAssertEqual(config.boost.badge, LevelFixtures.badge)
-        XCTAssertEqual(config.boost.minimumAmounts.usd, CurrencyFixtures.minimumAmount.asUsd)
+        XCTAssertEqual(config.boost.minimumAmountsByCurrency.usd, CurrencyFixtures.minimumAmount.asUsd)
         XCTAssertEqual(config.boost.presetAmounts.usd.amounts, CurrencyFixtures.boostPresetAmounts.map { $0.asUsd })
 
         XCTAssertEqual(config.gift.level, LevelFixtures.giftLevel)

@@ -303,6 +303,18 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         badge: ProfileBadge?,
         donateMode: DonateMode
     ) {
+        if
+            case .oneTime = donateMode,
+            let maximumAmount = state.oneTime?.maximumAmountViaSepa,
+            DonationUtilities.isBoostAmountTooLarge(amount, maximumAmount: maximumAmount)
+        {
+            // SEPA has a maximum amount above which we know payment will fail.
+            // Rather than putting the user through the UI only to fail, we'll
+            // show an error and give up early.
+            presentAmountTooLargeForSepaSheet(maximumAmount: maximumAmount)
+            return
+        }
+
         let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
             guard let self else { return }
             self.dismiss(animated: true) {
@@ -317,6 +329,27 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
         let navigationController = OWSNavigationController(rootViewController: mandateViewController)
         self.presentFormSheet(navigationController, animated: true)
+    }
+
+    private func presentAmountTooLargeForSepaSheet(maximumAmount: FiatMoney) {
+        let messageFormat = OWSLocalizedString(
+            "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE",
+            comment: "Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}."
+        )
+
+        let actionSheetController = ActionSheetController(
+            title: OWSLocalizedString(
+                "DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE",
+                comment: "Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large."
+            ),
+            message: String(
+                format: messageFormat,
+                DonationUtilities.format(money: maximumAmount)
+            )
+        )
+        actionSheetController.addAction(OWSActionSheets.okayAction)
+
+        presentActionSheet(actionSheetController)
     }
 
     private func presentChoosePaymentMethodSheet(

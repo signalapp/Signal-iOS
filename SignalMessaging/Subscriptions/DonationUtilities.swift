@@ -336,6 +336,10 @@ public extension DonationUtilities {
         (amount.value <= 0) || (integralAmount(for: amount) < integralAmount(for: minimumAmount))
     }
 
+    static func isBoostAmountTooLarge(_ amount: FiatMoney, maximumAmount: FiatMoney) -> Bool {
+        return integralAmount(for: amount) > integralAmount(for: maximumAmount)
+    }
+
     /// Convert the given money amount to an integer that can be passed to
     /// service APIs. Applies rounding and scaling as appropriate for the
     /// currency.
