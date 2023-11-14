@@ -415,13 +415,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         line: Int = #line,
         block: (SDSAnyReadTransaction) throws -> T
     ) throws -> T {
-        try InstrumentsMonitor.measure(
-            category: "db",
-            parent: "readThrows",
-            name: Self.owsFormatLogMessage(file: file, function: function, line: line)
-        ) {
-            try grdbStorage.read { try block($0.asAnyRead) }
-        }
+        try grdbStorage.read { try block($0.asAnyRead) }
     }
 
     public override func read(
@@ -475,17 +469,16 @@ public class SDSDatabaseStorage: SDSTransactable {
         let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
         let timeoutThreshold = DebugFlags.internalLogging ? 0.1 : 0.5
 
-        InstrumentsMonitor.measure(category: "db", parent: "write", name: Self.owsFormatLogMessage(file: file, function: function, line: line)) {
-            do {
-                try grdbStorage.write { transaction in
-                    Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
-                        block(transaction.asAnyWrite)
-                    }
+        do {
+            try grdbStorage.write { transaction in
+                Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
+                    block(transaction.asAnyWrite)
                 }
-            } catch {
-                owsFail("error: \(error.grdbErrorForLogging)")
             }
+        } catch {
+            owsFail("error: \(error.grdbErrorForLogging)")
         }
+
         crossProcess.notifyChangedAsync()
     }
 

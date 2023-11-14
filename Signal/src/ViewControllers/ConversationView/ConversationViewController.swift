@@ -366,8 +366,6 @@ public final class ConversationViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         self.viewDidAppearDidBegin()
 
-        InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidAppear")
-
         super.viewDidAppear(animated)
 
         // We don't present incoming message notifications for the presented
@@ -454,8 +452,6 @@ public final class ConversationViewController: OWSViewController {
 
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidDisappear")
 
         self.userHasScrolled = false
         self.isViewVisible = false

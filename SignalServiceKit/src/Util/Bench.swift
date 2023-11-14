@@ -21,18 +21,16 @@ import Foundation
 ///         }
 ///     }
 private func BenchAsync(title: String, logInProduction: Bool = false, block: (@escaping () -> Void) -> Void) {
-    InstrumentsMonitor.measure(category: "runtime", parent: "BenchAsync", name: title) {
-        let startTime = CACurrentMediaTime()
-        block {
-            if !DebugFlags.reduceLogChatter {
-                let timeElapsed = CACurrentMediaTime() - startTime
-                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-                let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
-                if logInProduction {
-                    Logger.info(logMessage)
-                } else {
-                    Logger.debug(logMessage)
-                }
+    let startTime = CACurrentMediaTime()
+    block {
+        if !DebugFlags.reduceLogChatter {
+            let timeElapsed = CACurrentMediaTime() - startTime
+            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+            if logInProduction {
+                Logger.info(logMessage)
+            } else {
+                Logger.debug(logMessage)
             }
         }
     }
@@ -53,24 +51,22 @@ private func BenchAsync(title: String, logInProduction: Bool = false, block: (@e
 ///    }
 ///
 public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, logInProduction: Bool = false, block: () throws -> T) rethrows -> T {
-    try InstrumentsMonitor.measure(category: "runtime", parent: "Bench", name: title) {
-        let startTime = CACurrentMediaTime()
-        let value = try block()
-        let timeElapsed = CACurrentMediaTime() - startTime
+    let startTime = CACurrentMediaTime()
+    let value = try block()
+    let timeElapsed = CACurrentMediaTime() - startTime
 
-        if timeElapsed > intervalLimit {
-            if !DebugFlags.reduceLogChatter {
-                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-                let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
-                if logInProduction {
-                    Logger.info(logMessage)
-                } else {
-                    Logger.debug(logMessage)
-                }
+    if timeElapsed > intervalLimit {
+        if !DebugFlags.reduceLogChatter {
+            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+            if logInProduction {
+                Logger.info(logMessage)
+            } else {
+                Logger.debug(logMessage)
             }
         }
-        return value
     }
+    return value
 }
 
 public protocol MemorySampler {

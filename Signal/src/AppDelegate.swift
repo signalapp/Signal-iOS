@@ -66,10 +66,6 @@ extension AppDelegate {
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
 
-        InstrumentsMonitor.enable()
-        let monitorId = InstrumentsMonitor.startSpan(category: "appstart", parent: "application", name: "didFinishLaunchingWithOptions")
-        defer { InstrumentsMonitor.stopSpan(category: "appstart", hash: monitorId) }
-
         #if DEBUG
         FeatureFlags.logFlags()
         DebugFlags.logFlags()
@@ -92,8 +88,6 @@ extension AppDelegate {
 
         // XXX - careful when moving this. It must happen before we load GRDB.
         verifyDBKeysAvailableBeforeBackgroundLaunch()
-
-        InstrumentsMonitor.trackEvent(name: "AppStart")
 
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications. Setting the delegate also seems to prevent us from

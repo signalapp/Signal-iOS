@@ -1203,21 +1203,19 @@ extension OWSContactsManager {
         let systemContactsCache = SystemContactsCache()
         swiftValues.systemContactsCache = systemContactsCache
 
-        InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmSystemContactsCache") {
-            databaseStorage.read {
-                var phoneNumberCount = 0
-                if let dataProvider = swiftValues.systemContactsDataProvider.get() {
-                    let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
-                    systemContactsCache.contactsMaps.set(contactsMaps)
-                    phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
-                }
-
-                let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
-                systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
-                let signalAccountCount = unsortedSignalAccounts.count
-
-                Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
+        databaseStorage.read {
+            var phoneNumberCount = 0
+            if let dataProvider = swiftValues.systemContactsDataProvider.get() {
+                let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
+                systemContactsCache.contactsMaps.set(contactsMaps)
+                phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
             }
+
+            let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
+            systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
+            let signalAccountCount = unsortedSignalAccounts.count
+
+            Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
         }
     }
 

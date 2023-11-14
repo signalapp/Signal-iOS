@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
-		1422CB3E27AD4AA400090BB6 /* Signalyzer.instrpkg in Sources */ = {isa = PBXBuildFile; fileRef = 1422CB3D27AD456900090BB6 /* Signalyzer.instrpkg */; };
 		1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */; };
 		1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */; };
 		1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */; };
@@ -2313,7 +2312,6 @@
 		F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB72289453B200548EEE /* OrderedDictionary.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB74289453B200548EEE /* OWSUserProfile.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE46289453B400548EEE /* InstrumentsMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE47289453B400548EEE /* OWSAnalyticsEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE49289453B400548EEE /* OWSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB78289453B200548EEE /* OWSError.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB79289453B200548EEE /* DecodableDefaults.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2569,7 +2567,6 @@
 		1466AB382817F87D003B3D9F /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = uk; path = translations/uk.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		1466AB392817F88A003B3D9F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_TW; path = translations/zh_TW.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		1466AB3B2817F89D003B3D9F /* zh_HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_HK; path = translations/zh_HK.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
-		146FFAA027A7FE87004A2A64 /* Signalyzer.instrdst */ = {isa = PBXFileReference; explicitFileType = com.apple.instruments.instrdst; includeInIndex = 0; path = Signalyzer.instrdst; sourceTree = BUILT_PRODUCTS_DIR; };
 		1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSwipeHandler.swift; sourceTree = "<group>"; };
 		1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedConversationsCell.swift; sourceTree = "<group>"; };
 		14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredToolbarContainer.swift; sourceTree = "<group>"; };
@@ -5010,7 +5007,6 @@
 		F9C5CB72289453B200548EEE /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+IsRetryable.swift"; sourceTree = "<group>"; };
 		F9C5CB74289453B200548EEE /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
-		F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentsMonitor.swift; sourceTree = "<group>"; };
 		F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnalyticsEvents.h; sourceTree = "<group>"; };
 		F9C5CB78289453B200548EEE /* OWSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSError.swift; sourceTree = "<group>"; };
 		F9C5CB79289453B200548EEE /* DecodableDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableDefaults.swift; sourceTree = "<group>"; };
@@ -5205,13 +5201,6 @@
 				D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */,
 				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
 				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE945995BAAF3AE7B0131A8A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8081,7 +8070,6 @@
 				D221A0AA169C9E5F00537ABF /* SignalTests.xctest */,
 				34A954A8271A471200B05242 /* SignalUI.framework */,
 				34A954B1271A471300B05242 /* SignalUITests.xctest */,
-				146FFAA027A7FE87004A2A64 /* Signalyzer.instrdst */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -9914,7 +9902,6 @@
 				F9C5CB6E289453B200548EEE /* FunctionalUtil.h */,
 				F9C5CB1A289453B200548EEE /* FunctionalUtil.m */,
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
-				F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */,
 				F9C5CB3D289453B200548EEE /* Int+SSK.swift */,
 				50D5E2402980AD6F00899660 /* LinkValidator.swift */,
 				F9C5CB61289453B200548EEE /* LocalDevice.swift */,
@@ -10310,22 +10297,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		146FFA9F27A7FE87004A2A64 /* Signalyzer */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 146FFAA827A7FE87004A2A64 /* Build configuration list for PBXNativeTarget "Signalyzer" */;
-			buildPhases = (
-				146FFA9E27A7FE87004A2A64 /* Sources */,
-				EE945995BAAF3AE7B0131A8A /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Signalyzer;
-			productName = "Instruments Package";
-			productReference = 146FFAA027A7FE87004A2A64 /* Signalyzer.instrdst */;
-			productType = "com.apple.product-type.instruments-package";
-		};
 		342FFE8727245850000AC89F /* SignalNSE */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 342FFE9027245852000AC89F /* Build configuration list for PBXNativeTarget "SignalNSE" */;
@@ -10546,9 +10517,6 @@
 				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
-					146FFA9F27A7FE87004A2A64 = {
-						CreatedOnToolsVersion = 13.2.1;
-					};
 					342FFE8727245850000AC89F = {
 						CreatedOnToolsVersion = 13.0;
 					};
@@ -10698,7 +10666,6 @@
 				342FFE8727245850000AC89F /* SignalNSE */,
 				34A954A7271A471200B05242 /* SignalUI */,
 				34A954B0271A471300B05242 /* SignalUITests */,
-				146FFA9F27A7FE87004A2A64 /* Signalyzer */,
 				F9C5C896289451B900548EEE /* SignalServiceKit */,
 				F9C5C89D289451B900548EEE /* SignalServiceKitTests */,
 			);
@@ -11313,14 +11280,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		146FFA9E27A7FE87004A2A64 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1422CB3E27AD4AA400090BB6 /* Signalyzer.instrpkg in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		342FFE8427245850000AC89F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -12624,7 +12583,6 @@
 				6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */,
 				F9C5CC12289453B300548EEE /* InstalledSticker+SDS.swift in Sources */,
 				F9C5CC15289453B300548EEE /* InstalledSticker.m in Sources */,
-				F9C5CE46289453B400548EEE /* InstrumentsMonitor.swift in Sources */,
 				F9C5CE0F289453B400548EEE /* Int+SSK.swift in Sources */,
 				F9C5CD18289453B300548EEE /* InteractionFinder.swift in Sources */,
 				D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */,
@@ -13646,58 +13604,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		146FFAA427A7FE87004A2A64 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U68MSDN6DR;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VERSIONING_SYSTEM = "";
-			};
-			name = Debug;
-		};
-		146FFAA527A7FE87004A2A64 /* App Store Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U68MSDN6DR;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VERSIONING_SYSTEM = "";
-			};
-			name = "App Store Release";
-		};
-		146FFAA627A7FE87004A2A64 /* Profiling */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U68MSDN6DR;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VERSIONING_SYSTEM = "";
-			};
-			name = Profiling;
-		};
-		146FFAA727A7FE87004A2A64 /* Testable Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U68MSDN6DR;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VERSIONING_SYSTEM = "";
-			};
-			name = "Testable Release";
-		};
 		342FFE9127245852000AC89F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 399EE58741F19F50B7B43C0F /* Pods-SignalNSE.debug.xcconfig */;
@@ -16533,17 +16439,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		146FFAA827A7FE87004A2A64 /* Build configuration list for PBXNativeTarget "Signalyzer" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				146FFAA427A7FE87004A2A64 /* Debug */,
-				146FFAA527A7FE87004A2A64 /* App Store Release */,
-				146FFAA627A7FE87004A2A64 /* Profiling */,
-				146FFAA727A7FE87004A2A64 /* Testable Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "App Store Release";
-		};
 		342FFE9027245852000AC89F /* Build configuration list for PBXNativeTarget "SignalNSE" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
