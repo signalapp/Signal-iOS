@@ -95,20 +95,22 @@ enum ContactSyncAttachmentBuilder {
             }
         }
 
-        for (rowId, inboxPosition) in threadPositions {
-            try autoreleasepool {
-                guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
-                    return
+        if isFullSync {
+            for (rowId, inboxPosition) in threadPositions {
+                try autoreleasepool {
+                    guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
+                        return
+                    }
+                    try writeContact(
+                        to: contactOutputStream,
+                        address: contactThread.contactAddress,
+                        contactThread: contactThread,
+                        signalAccount: nil,
+                        inboxPosition: inboxPosition,
+                        blockingManager: blockingManager,
+                        tx: tx
+                    )
                 }
-                try writeContact(
-                    to: contactOutputStream,
-                    address: contactThread.contactAddress,
-                    contactThread: contactThread,
-                    signalAccount: nil,
-                    inboxPosition: inboxPosition,
-                    blockingManager: blockingManager,
-                    tx: tx
-                )
             }
         }
     }
