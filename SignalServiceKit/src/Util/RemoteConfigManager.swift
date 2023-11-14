@@ -149,6 +149,10 @@ public class RemoteConfig: BaseFlags {
         !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
+    public static var canDonateWithSepa: Bool {
+        isEnabled(.canDonateWithSepa)
+    }
+
     public static var paypalDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paypalDisabledRegions
@@ -528,6 +532,7 @@ private struct Flags {
         case enableAutoAPNSRotation
         case ringrtcNwPathMonitorTrialKillSwitch
         case cdsDisableCompatibilityMode
+        case canDonateWithSepa
     }
 
     // Values defined in this array remain set once they are
