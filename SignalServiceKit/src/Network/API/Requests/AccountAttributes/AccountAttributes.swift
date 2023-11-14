@@ -120,30 +120,14 @@ public struct AccountAttributes: Codable {
     }
 
     public struct Capabilities: Codable {
-        public let gv2 = true
-        public let gv2_2 = true
-        public let gv2_3 = true
         public let transfer = true
-        public let announcementGroup = true
-        public let senderKey = true
-        public let stories = true
-        public let canReceiveGiftBadges = true
         public let hasSVRBackups: Bool
-        public let changeNumber = true
         public let pni = true
         public let paymentActivation = true
 
         public enum CodingKeys: String, CodingKey {
-            case gv2
-            case gv2_2 = "gv2-2"
-            case gv2_3 = "gv2-3"
             case transfer
-            case announcementGroup
-            case senderKey
-            case stories
-            case canReceiveGiftBadges = "giftBadges"
             case hasSVRBackups = "storage"
-            case changeNumber
             case pni
             case paymentActivation
         }

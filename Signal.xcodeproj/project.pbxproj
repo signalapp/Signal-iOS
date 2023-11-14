@@ -55,7 +55,7 @@
 		3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */; };
 		3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95507271B510400B05242 /* GroupViewUtils.swift */; };
 		3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95506271B510400B05242 /* ConversationStyle.swift */; };
-		3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldView.swift */; };
+		3402AA30271D9DCD0084CBAE /* ContactFieldViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */; };
 		3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557F271B510500B05242 /* TextApprovalViewController.swift */; };
 		3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557B271B510500B05242 /* ConversationPicker.swift */; };
 		3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95598271B510500B05242 /* AttachmentItemCollection.swift */; };
@@ -67,7 +67,6 @@
 		3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95571271B510500B05242 /* StickerPackDataSource.swift */; };
 		3402AA3F271D9DCD0084CBAE /* ApprovalRailCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559B271B510500B05242 /* ApprovalRailCellView.swift */; };
 		3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */; };
-		3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */; };
 		3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */; };
 		3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95572271B510500B05242 /* StickerHorizontalListView.swift */; };
 		3402AA48271D9DCD0084CBAE /* StickerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95573271B510500B05242 /* StickerPicker.swift */; };
@@ -694,7 +693,6 @@
 		504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */; };
 		5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */; };
 		505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */; };
-		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
@@ -716,6 +714,8 @@
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508347062AABBF9900DD2EC0 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
+		5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */; };
+		5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE682AF37A9900668F9F /* ContactOutputStream.swift */; };
 		509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		50A1CE382A00894C00730C40 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE372A00894C00730C40 /* DebugLogger.swift */; };
@@ -723,6 +723,8 @@
 		50A5AA992A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */; };
 		50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */; };
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
+		50A76F532AF565AC00FCF02D /* Preconditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F522AF565AC00FCF02D /* Preconditions.swift */; };
+		50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
 		50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */; };
 		50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */; };
@@ -807,7 +809,6 @@
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
 		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
-		663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = 663BA31B2A4C9997004B9A43 /* safety-numbers.json */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -979,6 +980,7 @@
 		762EBBD22A2FE370002FD28F /* BlockListUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */; };
 		7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
+		763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763A15FF2AEC3A490081D7E5 /* OWSContact.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
@@ -1033,6 +1035,8 @@
 		76E02C1E2A0A1ADD008BC372 /* DebugUIPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */; };
 		76E02C202A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C1F2A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift */; };
 		76E02C222A0B1370008BC372 /* DebugUIMessagesAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E02C212A0B1370008BC372 /* DebugUIMessagesAction.swift */; };
+		76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F3D2AE8763900032BC9 /* ContactShareField.swift */; };
+		76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
 		76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */; };
 		76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */; };
@@ -1303,12 +1307,14 @@
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
+		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
 		B9F215612A94071F002DCAE0 /* ImageEditorTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
+		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
@@ -1356,6 +1362,8 @@
 		D9170EEA290C57BF00CD813A /* CVViewState+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */; };
 		D9170EEF2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */; };
 		D91A39E32AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */; };
+		D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */; };
+		D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */; };
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
@@ -1386,10 +1394,13 @@
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
+		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
 		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
+		D958305A2AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */; };
+		D95830602AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
 		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
@@ -1426,6 +1437,10 @@
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
+		D995546E2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */; };
+		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
+		D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
+		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
@@ -1517,7 +1532,7 @@
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
 		F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
 		F0038601273F6388000B5ABD /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
-		F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */; };
+		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F090C8202762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
@@ -1535,7 +1550,6 @@
 		F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */; };
 		F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */; };
 		F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */; };
-		F90B731F2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
 		F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */; };
@@ -1556,10 +1570,10 @@
 		F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
 		F92E4C74299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */; };
 		F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */; };
-		F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */; };
-		F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */; };
-		F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B8291ED28900366682 /* CreditAndDebitCards.swift */; };
-		F93461BB291ED2B000366682 /* CreditAndDebitCardsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */; };
+		F93461B0291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461AF291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift */; };
+		F93461B3291EB8C700366682 /* DonationPaymentDetailsViewController+OneTimeDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B2291EB8C700366682 /* DonationPaymentDetailsViewController+OneTimeDonation.swift */; };
+		F93461B9291ED28A00366682 /* PaymentDetailsValidity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B8291ED28900366682 /* PaymentDetailsValidity.swift */; };
+		F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461BA291ED2B000366682 /* PaymentDetailsValidityTest.swift */; };
 		F9349CE62901866800F9A93A /* DonationHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9349CE52901866800F9A93A /* DonationHeroView.swift */; };
 		F937EDA429746DA20003AF3F /* OWSFail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F937EDA329746DA20003AF3F /* OWSFail.swift */; };
 		F93999EC28C80A6C00E34899 /* DeviceProvisioningURLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */; };
@@ -1638,7 +1652,7 @@
 		F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */; };
 		F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */; };
 		F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */; };
-		F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */; };
+		F94360F12910154C007EE6A7 /* DonationPaymentDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94360F02910154C007EE6A7 /* DonationPaymentDetailsViewController.swift */; };
 		F9440E7229C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */; };
 		F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */; };
 		F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */; };
@@ -1689,21 +1703,20 @@
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
-		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
+		F97A2EEA282578C000610669 /* BadgeIssueSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeIssueSheetStateTest.swift */; };
 		F97D02112970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */; };
 		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
 		F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
-		F98ED2CE2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CD2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift */; };
-		F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */; };
+		F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */; };
+		F98ED2D02922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */; };
 		F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */; };
-		F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */; };
 		F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */; };
 		F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		F9952B2F29F1E59F00EA989E /* OsExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B2E29F1E59F00EA989E /* OsExpiry.swift */; };
 		F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */; };
-		F99D2C8B2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99D2C8A2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift */; };
+		F99D2C8B2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */; };
 		F9A042C6289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */; };
 		F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */; };
 		F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */; };
@@ -1726,7 +1739,7 @@
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */; };
-		F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */; };
+		F9B3A9292935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */; };
 		F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */; };
 		F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */; };
@@ -1746,7 +1759,6 @@
 		F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BA289453B100548EEE /* OWSSyncMessageRequestResponseMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB0289453B300548EEE /* OWSSyncFetchLatestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBB2289453B300548EEE /* OWSSyncContactsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB5289453B300548EEE /* OWSOutgoingSentMessageTranscript.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBB7289453B300548EEE /* OWSOutgoingSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1759,7 +1771,6 @@
 		F9C5CBC0289453B300548EEE /* OWSSyncFetchLatestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBC1289453B300548EEE /* OWSSyncMessageRequestResponseMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8CC289453B100548EEE /* OWSSyncMessageRequestResponseMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBC2289453B300548EEE /* OWSOutgoingSentMessageTranscript.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8CD289453B100548EEE /* OWSOutgoingSentMessageTranscript.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBC3289453B300548EEE /* OWSSyncContactsMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8CE289453B100548EEE /* OWSSyncContactsMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBC4289453B300548EEE /* OWSSyncKeysMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8CF289453B100548EEE /* OWSSyncKeysMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBC5289453B300548EEE /* OWSIncomingSentMessageTranscript.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8D0289453B100548EEE /* OWSIncomingSentMessageTranscript.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8D1289453B100548EEE /* OutgoingPaymentSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1798,7 +1809,6 @@
 		F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateCopy.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBE9289453B300548EEE /* OWSStaticOutgoingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CBEA289453B300548EEE /* OWSContact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F6289453B100548EEE /* OWSContact.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBEB289453B300548EEE /* TSOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBEC289453B300548EEE /* TSOutgoingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F8289453B100548EEE /* TSOutgoingMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBED289453B300548EEE /* TSInfoMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F9289453B100548EEE /* TSInfoMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1809,7 +1819,6 @@
 		F9C5CBF2289453B300548EEE /* TSInteraction.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8FE289453B100548EEE /* TSInteraction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBF3289453B300548EEE /* TSOutgoingDeleteMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8FF289453B100548EEE /* TSOutgoingDeleteMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBF4289453B300548EEE /* TSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C900289453B100548EEE /* TSMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBF5289453B300548EEE /* OWSContact+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C901289453B100548EEE /* OWSContact+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBF6289453B300548EEE /* TSOutgoingMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C902289453B100548EEE /* TSOutgoingMessage+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBF7289453B300548EEE /* TSMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C903289453B100548EEE /* TSMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBF8289453B300548EEE /* TSInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C904289453B100548EEE /* TSInteraction.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1817,7 +1826,6 @@
 		F9C5CBFA289453B300548EEE /* OWSVerificationStateChangeMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C906289453B100548EEE /* OWSVerificationStateChangeMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBFB289453B300548EEE /* TSErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C907289453B100548EEE /* TSErrorMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBFC289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBFD289453B300548EEE /* OWSContact.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C909289453B100548EEE /* OWSContact.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBFE289453B300548EEE /* OWSStaticOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C90A289453B100548EEE /* OWSStaticOutgoingMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBFF289453B300548EEE /* OWSEndSessionMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C90B289453B100548EEE /* OWSEndSessionMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC00289453B300548EEE /* TSMention.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C90C289453B100548EEE /* TSMention.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2029,10 +2037,8 @@
 		F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF3289453B300548EEE /* OWSChunkedOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCF5289453B300548EEE /* OWSContactsOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF7289453B300548EEE /* OWSChunkedOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA15289453B100548EEE /* ContactsInputStream.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCFA289453B300548EEE /* OWSContactsOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCFC289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA19289453B100548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA1A289453B100548EEE /* OWSDevice.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2080,7 +2086,6 @@
 		F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4F289453B100548EEE /* SDSSerializable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA51289453B100548EEE /* StorageCoordinator.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA54289453B100548EEE /* CallKitIdStore.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2090,7 +2095,6 @@
 		F9C5CD38289453B300548EEE /* SSKPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3A289453B300548EEE /* CallKitIdStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5C289453B100548EEE /* CallKitIdStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA61289453B100548EEE /* LegacyRootKey.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2349,9 +2353,9 @@
 		F9C5CE79289453B400548EEE /* TSGroupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAB289453B200548EEE /* TSGroupModel.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
-		F9C8CFCC2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */; };
+		F9C8CFCC2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */; };
 		F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCF293580D00094469C /* OWSTextField.swift */; };
-		F9C8CFD22936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFD12936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift */; };
+		F9C8CFD22936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFD12936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift */; };
 		F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C9610A29A91026001E4A09 /* ChatServiceAuthTest.swift */; };
 		F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */; };
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
@@ -2373,7 +2377,7 @@
 		F9EC3FEA299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */; };
 		F9EECB01299EC9D8005FDD52 /* RegistrationProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */; };
 		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
-		F9F797DF296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */; };
+		F9F797DF296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797DE296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift */; };
 		F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */; };
 		F9FA363629F335E500C13830 /* OWSProvisioningCipherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FA363529F335E500C13830 /* OWSProvisioningCipherTest.swift */; };
 		F9FAABD829DB55940004B383 /* Progress+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FAABD729DB55940004B383 /* Progress+Signal.swift */; };
@@ -2949,12 +2953,11 @@
 		34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		34A9557F271B510500B05242 /* TextApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
-		34A9558A271B510500B05242 /* ContactFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldView.swift; sourceTree = "<group>"; };
+		34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldViewHelper.swift; sourceTree = "<group>"; };
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34A9558E271B510500B05242 /* ApprovalFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalFooterView.swift; sourceTree = "<group>"; };
 		34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalActivityIndicatorViewController.swift; sourceTree = "<group>"; };
-		34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95595271B510500B05242 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		34A95597271B510500B05242 /* AttachmentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		34A95598271B510500B05242 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
@@ -3286,7 +3289,6 @@
 		504F397B29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		5052AF5D2ACB0E9700D7EE9F /* MergePair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergePair.swift; sourceTree = "<group>"; };
 		505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponse.swift; sourceTree = "<group>"; };
-		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
 		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
@@ -3306,6 +3308,8 @@
 		507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSKeyedUnarchiver+SSK.swift"; sourceTree = "<group>"; };
 		508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerTest.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
+		5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncAttachmentBuilder.swift; sourceTree = "<group>"; };
+		5096BE682AF37A9900668F9F /* ContactOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactOutputStream.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberFinderTests.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
@@ -3313,6 +3317,8 @@
 		50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerReceiptEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
+		50A76F522AF565AC00FCF02D /* Preconditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preconditions.swift; sourceTree = "<group>"; };
+		50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivePrecondition.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
 		50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMerger.swift; sourceTree = "<group>"; };
 		50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMergerTest.swift; sourceTree = "<group>"; };
@@ -3398,7 +3404,6 @@
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
-		663BA31B2A4C9997004B9A43 /* safety-numbers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "safety-numbers.json"; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -3575,6 +3580,7 @@
 		762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListUIUtils.swift; sourceTree = "<group>"; };
 		7634F08C2A21963600BB93D5 /* Sounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sounds.swift; sourceTree = "<group>"; };
 		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
+		763A15FF2AEC3A490081D7E5 /* OWSContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContact.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
@@ -3628,6 +3634,8 @@
 		76E02C1D2A0A1ADD008BC372 /* DebugUIPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPage.swift; sourceTree = "<group>"; };
 		76E02C1F2A0AC690008BC372 /* DebugUIMessagesAssetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIMessagesAssetLoader.swift; sourceTree = "<group>"; };
 		76E02C212A0B1370008BC372 /* DebugUIMessagesAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIMessagesAction.swift; sourceTree = "<group>"; };
+		76E08F3D2AE8763900032BC9 /* ContactShareField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareField.swift; sourceTree = "<group>"; };
+		76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewController.swift; sourceTree = "<group>"; };
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
 		76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUITableViewController.swift; sourceTree = "<group>"; };
@@ -3974,12 +3982,14 @@
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
+		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
 		B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransformable.swift; sourceTree = "<group>"; };
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
+		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -4031,6 +4041,7 @@
 		D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVViewState+Banners.swift"; sourceTree = "<group>"; };
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
 		D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSYapDatabaseObject+SQLiteRowId.swift"; sourceTree = "<group>"; };
+		D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentProcessor.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -4059,10 +4070,13 @@
 		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
+		D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSettingsViewController+MySupport.swift"; sourceTree = "<group>"; };
 		D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordLogger.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
+		D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
+		D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
 		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
@@ -4098,6 +4112,10 @@
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
+		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
+		D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
+		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
+		D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheetPresenter.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
 		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
@@ -4206,7 +4224,7 @@
 		E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+OWS.swift"; sourceTree = "<group>"; };
 		F00385FD273F6388000B5ABD /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
 		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
-		F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheet.swift; sourceTree = "<group>"; };
+		F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeIssueSheet.swift; sourceTree = "<group>"; };
 		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
 		F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactionPickerConfigViewController.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
@@ -4229,7 +4247,6 @@
 		F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Lifecycle.swift"; sourceTree = "<group>"; };
 		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
 		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
-		F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+MonthlyReceiptRedemption.swift"; sourceTree = "<group>"; };
 		F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppExpiry.swift; sourceTree = "<group>"; };
 		F915A76B29CB669800EB6F68 /* AccountDataReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReport.swift; sourceTree = "<group>"; };
 		F915A76D29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataReportRequestFactory.swift; sourceTree = "<group>"; };
@@ -4247,10 +4264,10 @@
 		F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedGiftPayment.swift; sourceTree = "<group>"; };
 		F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationLoadingViewController.swift; sourceTree = "<group>"; };
 		F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSplashViewController.swift; sourceTree = "<group>"; };
-		F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+FormState.swift"; sourceTree = "<group>"; };
-		F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+OneTimeDonation.swift"; sourceTree = "<group>"; };
-		F93461B8291ED28900366682 /* CreditAndDebitCards.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCards.swift; sourceTree = "<group>"; };
-		F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCardsTest.swift; sourceTree = "<group>"; };
+		F93461AF291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+FormState.swift"; sourceTree = "<group>"; };
+		F93461B2291EB8C700366682 /* DonationPaymentDetailsViewController+OneTimeDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+OneTimeDonation.swift"; sourceTree = "<group>"; };
+		F93461B8291ED28900366682 /* PaymentDetailsValidity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsValidity.swift; sourceTree = "<group>"; };
+		F93461BA291ED2B000366682 /* PaymentDetailsValidityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentDetailsValidityTest.swift; sourceTree = "<group>"; };
 		F9349CE52901866800F9A93A /* DonationHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationHeroView.swift; sourceTree = "<group>"; };
 		F937EDA329746DA20003AF3F /* OWSFail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFail.swift; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* DeviceProvisioningURLTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURLTest.swift; sourceTree = "<group>"; };
@@ -4330,7 +4347,7 @@
 		F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingToken.swift; sourceTree = "<group>"; };
 		F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenTest.swift; sourceTree = "<group>"; };
 		F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecord.swift; sourceTree = "<group>"; };
-		F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewController.swift; sourceTree = "<group>"; };
+		F94360F02910154C007EE6A7 /* DonationPaymentDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsViewController.swift; sourceTree = "<group>"; };
 		F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationReglockTimeoutViewController.swift; sourceTree = "<group>"; };
 		F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcFieldTrials.swift; sourceTree = "<group>"; };
 		F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcFieldTrialsTest.swift; sourceTree = "<group>"; };
@@ -4381,21 +4398,21 @@
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
-		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
+		F97A2EE828247C1300610669 /* BadgeIssueSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeIssueSheetStateTest.swift; sourceTree = "<group>"; };
 		F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift"; sourceTree = "<group>"; };
 		F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCallMessageHandler.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
 		F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobQueue.swift; sourceTree = "<group>"; };
-		F98ED2CD2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+DonationMode.swift"; sourceTree = "<group>"; };
-		F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+MonthlyDonation.swift"; sourceTree = "<group>"; };
+		F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+DonationMode.swift"; sourceTree = "<group>"; };
+		F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+MonthlyDonation.swift"; sourceTree = "<group>"; };
 		F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+PaymentMethod.swift"; sourceTree = "<group>"; };
 		F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentMethod.swift; sourceTree = "<group>"; };
 		F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Orientation.swift"; sourceTree = "<group>"; };
 		F992ACC328F8C9D900906038 /* StripeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeTest.swift; sourceTree = "<group>"; };
 		F9952B2E29F1E59F00EA989E /* OsExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OsExpiry.swift; sourceTree = "<group>"; };
 		F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagViewTest.swift; sourceTree = "<group>"; };
-		F99D2C8A2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewControllerTest.swift; sourceTree = "<group>"; };
+		F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsViewControllerTest.swift; sourceTree = "<group>"; };
 		F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessages.swift"; sourceTree = "<group>"; };
 		F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupUpdateInfoMessages.swift"; sourceTree = "<group>"; };
 		F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewControllerStateTest.swift; sourceTree = "<group>"; };
@@ -4418,7 +4435,7 @@
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Paypal.swift"; sourceTree = "<group>"; };
-		F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+3DSecure.swift"; sourceTree = "<group>"; };
+		F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ASWebAuthenticationSession+Util.swift"; sourceTree = "<group>"; };
 		F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASWebAuthenticationSessionUtilTest.swift; sourceTree = "<group>"; };
@@ -4438,7 +4455,6 @@
 		F9C5C8BA289453B100548EEE /* OWSSyncMessageRequestResponseMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncMessageRequestResponseMessage.m; sourceTree = "<group>"; };
 		F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncFetchLatestMessage.h; sourceTree = "<group>"; };
 		F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncRequestMessage.m; sourceTree = "<group>"; };
-		F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncContactsMessage.m; sourceTree = "<group>"; };
 		F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingPaymentSyncMessage.swift; sourceTree = "<group>"; };
 		F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingSentMessageTranscript.h; sourceTree = "<group>"; };
 		F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingSyncMessage.m; sourceTree = "<group>"; };
@@ -4451,7 +4467,6 @@
 		F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncFetchLatestMessage.m; sourceTree = "<group>"; };
 		F9C5C8CC289453B100548EEE /* OWSSyncMessageRequestResponseMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncMessageRequestResponseMessage.h; sourceTree = "<group>"; };
 		F9C5C8CD289453B100548EEE /* OWSOutgoingSentMessageTranscript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingSentMessageTranscript.m; sourceTree = "<group>"; };
-		F9C5C8CE289453B100548EEE /* OWSSyncContactsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncContactsMessage.h; sourceTree = "<group>"; };
 		F9C5C8CF289453B100548EEE /* OWSSyncKeysMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncKeysMessage.h; sourceTree = "<group>"; };
 		F9C5C8D0289453B100548EEE /* OWSIncomingSentMessageTranscript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingSentMessageTranscript.m; sourceTree = "<group>"; };
 		F9C5C8D1289453B100548EEE /* OutgoingPaymentSyncMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutgoingPaymentSyncMessage.h; sourceTree = "<group>"; };
@@ -4490,7 +4505,6 @@
 		F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy.swift"; sourceTree = "<group>"; };
 		F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSEndSessionMessage.m; sourceTree = "<group>"; };
 		F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSStaticOutgoingMessage.h; sourceTree = "<group>"; };
-		F9C5C8F6289453B100548EEE /* OWSContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContact.m; sourceTree = "<group>"; };
 		F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingMessage.m; sourceTree = "<group>"; };
 		F9C5C8F8289453B100548EEE /* TSOutgoingMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessage.swift; sourceTree = "<group>"; };
 		F9C5C8F9289453B100548EEE /* TSInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInfoMessage.h; sourceTree = "<group>"; };
@@ -4501,7 +4515,6 @@
 		F9C5C8FE289453B100548EEE /* TSInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInteraction.h; sourceTree = "<group>"; };
 		F9C5C8FF289453B100548EEE /* TSOutgoingDeleteMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingDeleteMessage.m; sourceTree = "<group>"; };
 		F9C5C900289453B100548EEE /* TSMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMessage.swift; sourceTree = "<group>"; };
-		F9C5C901289453B100548EEE /* OWSContact+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSContact+Private.h"; sourceTree = "<group>"; };
 		F9C5C902289453B100548EEE /* TSOutgoingMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C903289453B100548EEE /* TSMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessage.m; sourceTree = "<group>"; };
 		F9C5C904289453B100548EEE /* TSInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSInteraction.swift; sourceTree = "<group>"; };
@@ -4509,7 +4522,6 @@
 		F9C5C906289453B100548EEE /* OWSVerificationStateChangeMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSVerificationStateChangeMessage.h; sourceTree = "<group>"; };
 		F9C5C907289453B100548EEE /* TSErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSErrorMessage.m; sourceTree = "<group>"; };
 		F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C909289453B100548EEE /* OWSContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContact.h; sourceTree = "<group>"; };
 		F9C5C90A289453B100548EEE /* OWSStaticOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStaticOutgoingMessage.m; sourceTree = "<group>"; };
 		F9C5C90B289453B100548EEE /* OWSEndSessionMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSEndSessionMessage.h; sourceTree = "<group>"; };
 		F9C5C90C289453B100548EEE /* TSMention.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMention.swift; sourceTree = "<group>"; };
@@ -4721,10 +4733,8 @@
 		F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipher.swift; sourceTree = "<group>"; };
 		F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkedInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSChunkedOutputStream.m; sourceTree = "<group>"; };
-		F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsOutputStream.m; sourceTree = "<group>"; };
 		F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSChunkedOutputStream.h; sourceTree = "<group>"; };
 		F9C5CA15289453B100548EEE /* ContactsInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsInputStream.swift; sourceTree = "<group>"; };
-		F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsOutputStream.h; sourceTree = "<group>"; };
 		F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningSocket.swift; sourceTree = "<group>"; };
 		F9C5CA19289453B100548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewedReceiptsForLinkedDevicesMessage.m; sourceTree = "<group>"; };
 		F9C5CA1A289453B100548EEE /* OWSDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevice.swift; sourceTree = "<group>"; };
@@ -4772,7 +4782,6 @@
 		F9C5CA4F289453B100548EEE /* SDSSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSSerializable.swift; sourceTree = "<group>"; };
 		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
 		F9C5CA51289453B100548EEE /* StorageCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StorageCoordinator.m; sourceTree = "<group>"; };
-		F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+keyVersionByte.h"; sourceTree = "<group>"; };
 		F9C5CA54289453B100548EEE /* CallKitIdStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallKitIdStore.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
@@ -4782,7 +4791,6 @@
 		F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKPreKeyStore.h; sourceTree = "<group>"; };
 		F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxolotlExceptions.h; sourceTree = "<group>"; };
 		F9C5CA5C289453B100548EEE /* CallKitIdStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallKitIdStore.h; sourceTree = "<group>"; };
-		F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+keyVersionByte.m"; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
 		F9C5CA61289453B100548EEE /* LegacyRootKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyRootKey.m; sourceTree = "<group>"; };
@@ -5041,9 +5049,9 @@
 		F9C5CBAB289453B200548EEE /* TSGroupModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupModel.swift; sourceTree = "<group>"; };
 		F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupSeed.swift; sourceTree = "<group>"; };
 		F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtensionsTest.swift; sourceTree = "<group>"; };
-		F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardReadMoreSheetViewController.swift; sourceTree = "<group>"; };
+		F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F9C8CFCF293580D00094469C /* OWSTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTextField.swift; sourceTree = "<group>"; };
-		F9C8CFD12936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+FormFieldView.swift"; sourceTree = "<group>"; };
+		F9C8CFD12936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+FormFieldView.swift"; sourceTree = "<group>"; };
 		F9C9610A29A91026001E4A09 /* ChatServiceAuthTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuthTest.swift; sourceTree = "<group>"; };
 		F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalServiceKit-Prefix.pch"; sourceTree = "<group>"; };
 		F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeDonationCustomAmountTextField.swift; sourceTree = "<group>"; };
@@ -5066,7 +5074,7 @@
 		F9EC3FE9299DA4BB00177BF7 /* RegistrationVerificationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationVerificationCodeView.swift; sourceTree = "<group>"; };
 		F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationProfileViewController.swift; sourceTree = "<group>"; };
 		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
-		F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+GiftDonation.swift"; sourceTree = "<group>"; };
+		F9F797DE296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+GiftDonation.swift"; sourceTree = "<group>"; };
 		F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Gifting.swift"; sourceTree = "<group>"; };
 		F9FA363529F335E500C13830 /* OWSProvisioningCipherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipherTest.swift; sourceTree = "<group>"; };
 		F9FAABD729DB55940004B383 /* Progress+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Progress+Signal.swift"; sourceTree = "<group>"; };
@@ -5594,7 +5602,9 @@
 		346129A11FD1F09100532771 /* contacts */ = {
 			isa = PBXGroup;
 			children = (
+				5096BE682AF37A9900668F9F /* ContactOutputStream.swift */,
 				342FFE822721D4B6000AC89F /* ContactsMaps.swift */,
+				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
 				50086B9B29DF5CB100F9C072 /* NameResolver.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				346129A21FD1F09100532771 /* OWSContactsManager.h */,
@@ -6055,6 +6065,7 @@
 			isa = PBXGroup;
 			children = (
 				34A95596271B510500B05242 /* AttachmentApproval */,
+				76E08F3C2AE8761D00032BC9 /* Contact Sharing */,
 				34A9557A271B510500B05242 /* ConversationPicker */,
 				88A47174286666AF001A3065 /* Member Picker */,
 				765283AC2A00D893004583A9 /* OWSTableView */,
@@ -6064,12 +6075,9 @@
 				8868A087287F44F3000E74A5 /* Stories */,
 				34A95569271B510500B05242 /* ActionSheetController.swift */,
 				34A9558E271B510500B05242 /* ApprovalFooterView.swift */,
-				34A9558A271B510500B05242 /* ContactFieldView.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */,
-				34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */,
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
-				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
 				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
@@ -6230,13 +6238,13 @@
 		34B3F8951E8DF1B90035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */,
 				F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */,
+				F97A2EE828247C1300610669 /* BadgeIssueSheetStateTest.swift */,
 				4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */,
 				3463532E256EA525003C5428 /* ConversationViewTest.swift */,
-				F99D2C8A2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift */,
 				88D6E94125535482003142D9 /* CVTextTest.swift */,
 				F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */,
+				F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */,
 				45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */,
 				4585B4A4291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift */,
 				1700E33A28B5684C0073D949 /* MediaGallerySectionsTest.swift */,
@@ -6683,6 +6691,22 @@
 				5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */,
 			);
 			path = GroupMembers;
+			sourceTree = "<group>";
+		};
+		50A76F512AF565A300FCF02D /* Preconditions */ = {
+			isa = PBXGroup;
+			children = (
+				50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */,
+			);
+			path = Preconditions;
+			sourceTree = "<group>";
+		};
+		50A76F542AF573C000FCF02D /* Preconditions */ = {
+			isa = PBXGroup;
+			children = (
+				50A76F522AF565AC00FCF02D /* Preconditions.swift */,
+			);
+			path = Preconditions;
 			sourceTree = "<group>";
 		};
 		50B6BCAF2AEC4F3B0010FB3B /* Contacts */ = {
@@ -7167,6 +7191,17 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		76E08F3C2AE8761D00032BC9 /* Contact Sharing */ = {
+			isa = PBXGroup;
+			children = (
+				34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */,
+				76E08F3D2AE8763900032BC9 /* ContactShareField.swift */,
+				76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */,
+				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
+			);
+			path = "Contact Sharing";
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -7211,7 +7246,6 @@
 				F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */,
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
-				F93461B8291ED28900366682 /* CreditAndDebitCards.swift */,
 				50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
 				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
@@ -7221,6 +7255,7 @@
 				88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */,
 				F9952B2E29F1E59F00EA989E /* OsExpiry.swift */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
+				F93461B8291ED28900366682 /* PaymentDetailsValidity.swift */,
 				F9FAABD729DB55940004B383 /* Progress+Signal.swift */,
 				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
 				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
@@ -7720,7 +7755,6 @@
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
 				346EFC3825FFDC6900F493C7 /* restore-dark.json */,
 				346EFC3725FFDC6900F493C7 /* restore.json */,
-				663BA31B2A4C9997004B9A43 /* safety-numbers.json */,
 				66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */,
 				66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */,
 				66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */,
@@ -7936,7 +7970,6 @@
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				4C9D347923679C13006A4307 /* ContactStreamTest.swift */,
-				F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */,
 				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
@@ -7944,6 +7977,7 @@
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
 				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */,
+				F93461BA291ED2B000366682 /* PaymentDetailsValidityTest.swift */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
 				F9844C482867936400B16DD4 /* SignalMeTest.swift */,
 				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
@@ -8094,6 +8128,7 @@
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
+				50A76F512AF565A300FCF02D /* Preconditions */,
 				6600F38C29918A5100B1EDB7 /* Registration */,
 				34074F54203D0722004596AE /* Sounds */,
 				76EB03C118170B33006006FC /* src */,
@@ -8122,6 +8157,19 @@
 				4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D91A39E62AE2F42000F57A61 /* Subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
+				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
+				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
+				D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */,
+				D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */,
+				D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */,
+			);
+			path = Subscriptions;
 			sourceTree = "<group>";
 		};
 		D920487D28EB8201003F5371 /* Experience Upgrades */ = {
@@ -8458,12 +8506,12 @@
 			children = (
 				500FE48E2886148800FA090C /* CachedBadge.swift */,
 				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
-				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
 				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
 				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
 				D938CD5F29283402006FB16A /* Paypal.swift */,
 				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
+				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
 				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
 				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
 				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
@@ -8503,19 +8551,12 @@
 			isa = PBXGroup;
 			children = (
 				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
-				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
 				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
 				F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */,
+				F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */,
 				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
-				F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */,
-				F98ED2CD2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift */,
-				F9C8CFD12936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift */,
-				F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */,
-				F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */,
-				F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */,
-				F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */,
-				F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */,
-				F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */,
+				D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */,
+				B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */,
 				F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */,
 				F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */,
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
@@ -8527,10 +8568,19 @@
 				F96B66A22912B88A004FFFAA /* DonateViewController+State.swift */,
 				F96B66A02912B88A004FFFAA /* DonateViewController.swift */,
 				F9349CE52901866800F9A93A /* DonationHeroView.swift */,
+				C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */,
+				F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */,
+				F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */,
+				F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */,
+				F9C8CFD12936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift */,
+				F93461AF291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift */,
+				F9F797DE296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift */,
+				F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */,
+				F93461B2291EB8C700366682 /* DonationPaymentDetailsViewController+OneTimeDonation.swift */,
+				F94360F02910154C007EE6A7 /* DonationPaymentDetailsViewController.swift */,
 				F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */,
 				F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */,
 				F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */,
-				F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */,
 				F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */,
 				F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */,
 				F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */,
@@ -8876,6 +8926,7 @@
 				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
+				D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */,
 				F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */,
 				D96BE42D292EF04200E4FE1A /* PaypalButton.swift */,
 			);
@@ -8902,6 +8953,7 @@
 				D9E335A52993269E00825677 /* Mocks */,
 				F9C5CAB2289453B200548EEE /* Network */,
 				F9C5CA9F289453B200548EEE /* Payments */,
+				50A76F542AF573C000FCF02D /* Preconditions */,
 				F9C5CA00289453B100548EEE /* Protocols */,
 				F9C5C9A1289453B100548EEE /* Protos */,
 				6600F352298C8FBB00B1EDB7 /* Registration */,
@@ -8911,6 +8963,7 @@
 				6673FF6A2978B5B900F96CFD /* SecureValueRecovery */,
 				F9C5CB98289453B200548EEE /* Security */,
 				F9C5CA2F289453B100548EEE /* Storage */,
+				D91A39E62AE2F42000F57A61 /* Subscriptions */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
 				500AEE032A4B68D200371F05 /* UISupport */,
 				D925F55C298C6A6000158EE4 /* Usernames */,
@@ -9070,8 +9123,6 @@
 				F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */,
 				F9C5C8C9289453B100548EEE /* OWSSyncConfigurationMessage.h */,
 				F9C5C8B8289453B100548EEE /* OWSSyncConfigurationMessage.m */,
-				F9C5C8CE289453B100548EEE /* OWSSyncContactsMessage.h */,
-				F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */,
 				F9C5C8C3289453B100548EEE /* OWSSyncContactsMessage.swift */,
 				F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */,
 				F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */,
@@ -9091,9 +9142,7 @@
 			children = (
 				50468F2829EE130A00948E02 /* InteractionStore.swift */,
 				F9C5C8EB289453B100548EEE /* MentionFinder.swift */,
-				F9C5C901289453B100548EEE /* OWSContact+Private.h */,
-				F9C5C909289453B100548EEE /* OWSContact.h */,
-				F9C5C8F6289453B100548EEE /* OWSContact.m */,
+				763A15FF2AEC3A490081D7E5 /* OWSContact.swift */,
 				F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */,
 				F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */,
 				F9C5C90E289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m */,
@@ -9496,8 +9545,6 @@
 				F9C5CA15289453B100548EEE /* ContactsInputStream.swift */,
 				F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */,
 				F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */,
-				F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */,
-				F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */,
 			);
 			path = ConversationSync;
 			sourceTree = "<group>";
@@ -9586,9 +9633,6 @@
 				F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */,
 				F9C5CA5C289453B100548EEE /* CallKitIdStore.h */,
 				F9C5CA54289453B100548EEE /* CallKitIdStore.m */,
-				505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */,
-				F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */,
-				F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
 				C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */,
@@ -10120,7 +10164,6 @@
 				F9C5CDFE289453B400548EEE /* MIMETypeUtil.h in Headers */,
 				F9C5CCEB289453B300548EEE /* NotificationsProtocol.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
-				F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */,
 				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
 				F9C5CE15289453B400548EEE /* NSTimer+OWS.h in Headers */,
 				F9C5CDE9289453B400548EEE /* NSUserDefaults+OWS.h in Headers */,
@@ -10135,8 +10178,6 @@
 				F9C5CCE9289453B300548EEE /* OWSCallMessageHandler.h in Headers */,
 				F9C5CD93289453B300548EEE /* OWSCensorshipConfiguration.h in Headers */,
 				F9C5CCF7289453B300548EEE /* OWSChunkedOutputStream.h in Headers */,
-				F9C5CBF5289453B300548EEE /* OWSContact+Private.h in Headers */,
-				F9C5CBFD289453B300548EEE /* OWSContact.h in Headers */,
 				F9C5CCFA289453B300548EEE /* OWSContactsOutputStream.h in Headers */,
 				F9C5CDC7289453B400548EEE /* OWSCountryMetadata.h in Headers */,
 				F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
@@ -10186,7 +10227,6 @@
 				F9C5CBE9289453B300548EEE /* OWSStaticOutgoingMessage.h in Headers */,
 				F9C5CD09289453B300548EEE /* OWSStickerPackSyncMessage.h in Headers */,
 				F9C5CBBE289453B300548EEE /* OWSSyncConfigurationMessage.h in Headers */,
-				F9C5CBC3289453B300548EEE /* OWSSyncContactsMessage.h in Headers */,
 				F9C5CBB0289453B300548EEE /* OWSSyncFetchLatestMessage.h in Headers */,
 				F9C5CBC4289453B300548EEE /* OWSSyncKeysMessage.h in Headers */,
 				F9C5CBC1289453B300548EEE /* OWSSyncMessageRequestResponseMessage.h in Headers */,
@@ -10802,7 +10842,6 @@
 				346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */,
 				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
-				663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
@@ -11315,10 +11354,11 @@
 				88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */,
 				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
-				3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */,
+				3402AA30271D9DCD0084CBAE /* ContactFieldViewHelper.swift in Sources */,
 				88B986FC28807F4100F8C74D /* ContactPickerViewController.swift in Sources */,
 				503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */,
-				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
+				76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */,
+				76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
 				3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
@@ -11562,14 +11602,15 @@
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
 				34A955AC271B521500B05242 /* CommonStrings.swift in Sources */,
+				5096BE692AF37A9900668F9F /* ContactOutputStream.swift in Sources */,
 				342FFE832721D4B6000AC89F /* ContactsMaps.swift in Sources */,
+				5096BE652AF3514800668F9F /* ContactSyncAttachmentBuilder.swift in Sources */,
 				3452851B26DE890400824983 /* DateUtil.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				50A1CE382A00894C00730C40 /* DebugLogger.swift in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
-				F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
@@ -11608,6 +11649,7 @@
 				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
 				768F720D2A22CEAC002C4E7D /* Preferences.swift in Sources */,
 				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
+				D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */,
@@ -11677,6 +11719,7 @@
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */,
 				32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */,
+				50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */,
 				F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */,
 				F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
@@ -11711,7 +11754,6 @@
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
 				881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */,
-				F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */,
 				500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */,
 				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
 				F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */,
@@ -11720,8 +11762,11 @@
 				F964D2A529770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift in Sources */,
 				F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */,
 				F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */,
+				F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */,
 				50EF8DCF2A1E871400A00935 /* BadgeManager.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
+				D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */,
+				B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
 				D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */,
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
@@ -11820,16 +11865,6 @@
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */,
 				D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */,
-				F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */,
-				F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */,
-				F98ED2CE2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift in Sources */,
-				F9C8CFD22936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift in Sources */,
-				F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */,
-				F9F797DF296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift in Sources */,
-				F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */,
-				F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */,
-				F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */,
-				F9C8CFCC2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
@@ -11939,13 +11974,23 @@
 				F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */,
 				F9349CE62901866800F9A93A /* DonationHeroView.swift in Sources */,
 				F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */,
+				C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */,
+				F9C8CFCC2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift in Sources */,
+				F9B3A9292935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift in Sources */,
+				F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */,
+				F9C8CFD22936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift in Sources */,
+				F93461B0291EB5E300366682 /* DonationPaymentDetailsViewController+FormState.swift in Sources */,
+				F9F797DF296CC54A0025C103 /* DonationPaymentDetailsViewController+GiftDonation.swift in Sources */,
+				F98ED2D02922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift in Sources */,
+				F93461B3291EB8C700366682 /* DonationPaymentDetailsViewController+OneTimeDonation.swift in Sources */,
+				F94360F12910154C007EE6A7 /* DonationPaymentDetailsViewController.swift in Sources */,
 				F924A68228F8706200E368C8 /* DonationReadMoreSheetViewController.swift in Sources */,
 				F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */,
 				F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */,
+				D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */,
 				F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */,
 				F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */,
 				F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */,
-				F90B731F2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift in Sources */,
 				F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */,
 				F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */,
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
@@ -12094,6 +12139,7 @@
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
+				F93461B9291ED28A00366682 /* PaymentDetailsValidity.swift in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
@@ -12122,6 +12168,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
+				50A76F532AF565AC00FCF02D /* Preconditions.swift in Sources */,
 				886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */,
 				887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */,
 				880B969D2880D90600718C6D /* PrivateStoryAddRecipientsSettingsViewController.swift in Sources */,
@@ -12302,8 +12349,8 @@
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
 				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
 				50B6BCB42AEC58250010FB3B /* AuthorMergeHelperBuilderTest.swift in Sources */,
-				F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */,
 				F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */,
+				F97A2EEA282578C000610669 /* BadgeIssueSheetStateTest.swift in Sources */,
 				50EF8DD12A1E9B3800A00935 /* BadgeManagerTest.swift in Sources */,
 				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,
 				D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */,
@@ -12316,14 +12363,13 @@
 				4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
-				F93461BB291ED2B000366682 /* CreditAndDebitCardsTest.swift in Sources */,
-				F99D2C8B2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				F93999EC28C80A6C00E34899 /* DeviceProvisioningURLTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */,
+				F99D2C8B2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift in Sources */,
 				F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */,
 				3485434526BC598800FB9C38 /* EmojiTests.swift in Sources */,
 				F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */,
@@ -12342,6 +12388,7 @@
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */,
+				F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
@@ -12449,7 +12496,6 @@
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
-				505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
@@ -12482,6 +12528,8 @@
 				F925A3AB29493D0D009024D0 /* DisappearingMessagesFinder.swift in Sources */,
 				F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */,
 				6600F380298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift in Sources */,
+				D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */,
+				D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */,
 				F9C5CD7F289453B300548EEE /* DonationReceipt.swift in Sources */,
 				F9C5CD87289453B300548EEE /* DonationReceiptFinder.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
@@ -12642,7 +12690,6 @@
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
-				F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
@@ -12679,7 +12726,7 @@
 				F9C5CD0C289453B300548EEE /* OWSBlockedPhoneNumbersMessage.m in Sources */,
 				F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */,
 				F9C5CCF3289453B300548EEE /* OWSChunkedOutputStream.m in Sources */,
-				F9C5CBEA289453B300548EEE /* OWSContact.m in Sources */,
+				763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */,
 				F9C5CCF5289453B300548EEE /* OWSContactsOutputStream.m in Sources */,
 				F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */,
 				F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */,
@@ -12773,7 +12820,6 @@
 				F9C5CBFE289453B300548EEE /* OWSStaticOutgoingMessage.m in Sources */,
 				F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */,
 				F9C5CBAD289453B300548EEE /* OWSSyncConfigurationMessage.m in Sources */,
-				F9C5CBB2289453B300548EEE /* OWSSyncContactsMessage.m in Sources */,
 				F9C5CBB8289453B300548EEE /* OWSSyncContactsMessage.swift in Sources */,
 				F9C5CBC0289453B300548EEE /* OWSSyncFetchLatestMessage.m in Sources */,
 				F9C5CBBB289453B300548EEE /* OWSSyncKeysMessage.m in Sources */,
@@ -12839,6 +12885,7 @@
 				F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */,
 				C1ED5CA12A72E3D5009AD3FC /* PreKeyTasks.swift in Sources */,
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
+				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
 				50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */,
 				F9C5CE1D289453B400548EEE /* Promise+OWS.swift in Sources */,
@@ -12989,6 +13036,9 @@
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
 				D9AE0AD32918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift in Sources */,
+				D995546E2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift in Sources */,
+				D95830602AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift in Sources */,
+				D958305A2AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,

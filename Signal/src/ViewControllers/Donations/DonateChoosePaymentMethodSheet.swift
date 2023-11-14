@@ -111,8 +111,8 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             stackView.spacing = 6
 
             if let assets = badge.assets {
-                let badgeImageView = UIImageView(image: assets.universal112)
-                badgeImageView.autoSetDimensions(to: CGSize(square: 112))
+                let badgeImageView = UIImageView(image: assets.universal160)
+                badgeImageView.autoSetDimensions(to: CGSize(square: 80))
                 stackView.addArrangedSubview(badgeImageView)
                 stackView.setCustomSpacing(12, after: badgeImageView)
             }
@@ -161,6 +161,8 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             return createCreditOrDebitCardButton()
         case .paypal:
             return createPaypalButton()
+        case .sepa:
+            return createSEPAButton()
         }
     }
 
@@ -188,10 +190,12 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             guard let self else { return }
             self.didChoosePaymentMethod(self, .creditOrDebitCard)
         }
-        guard let image = UIImage(named: "credit-or-debit-card") else {
+        guard let image = UIImage(named: "payment")?.withRenderingMode(.alwaysTemplate) else {
             owsFail("Card asset not found")
         }
         creditOrDebitCardButton.setImage(image, for: .normal)
+        creditOrDebitCardButton.imageView?.tintColor = .ows_white
+        creditOrDebitCardButton.setTitleColor(.ows_white, for: .normal)
         creditOrDebitCardButton.setPaddingBetweenImageAndText(
             to: 8,
             isRightToLeft: CurrentAppContext().isRTL
@@ -199,9 +203,45 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         creditOrDebitCardButton.layer.cornerRadius = 12
         creditOrDebitCardButton.backgroundColor = .ows_accentBlue
         creditOrDebitCardButton.dimsWhenHighlighted = true
-        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBody.semibold()
+        creditOrDebitCardButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
 
         return creditOrDebitCardButton
+    }
+
+    private func createSEPAButton() -> OWSButton {
+        let title = OWSLocalizedString(
+            "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
+            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer."
+        )
+
+        let sepaButton = OWSButton(title: title) { [weak self] in
+            guard let self else { return }
+            self.didChoosePaymentMethod(self, .sepa)
+        }
+
+        guard let image = UIImage(named: "building")?.withRenderingMode(.alwaysTemplate) else {
+            owsFail("Bank asset not found")
+        }
+        sepaButton.setImage(image, for: .normal)
+        sepaButton.setPaddingBetweenImageAndText(
+            to: 8,
+            isRightToLeft: CurrentAppContext().isRTL
+        )
+        sepaButton.layer.cornerRadius = 12
+        sepaButton.dimsWhenHighlighted = true
+        sepaButton.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
+
+        if Theme.isDarkThemeEnabled {
+            sepaButton.imageView?.tintColor = .ows_gray05
+            sepaButton.setTitleColor(.ows_gray05, for: .normal)
+            sepaButton.backgroundColor = .ows_gray80
+        } else {
+            sepaButton.imageView?.tintColor = .ows_gray90
+            sepaButton.setTitleColor(.ows_gray90, for: .normal)
+            sepaButton.backgroundColor = .ows_white
+        }
+
+        return sepaButton
     }
 
     private func updateBottom() {
@@ -215,12 +255,14 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                     .applePay,
                     .creditOrDebitCard,
                     .paypal,
+                    .sepa,
                 ]
             } else {
                 paymentMethods = [
                     .creditOrDebitCard,
                     .paypal,
                     .applePay,
+                    .sepa,
                 ]
             }
 
@@ -245,9 +287,11 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         footerStack.removeAllSubviews()
         footerStack.addArrangedSubview(paymentButtonContainerView)
         footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(top: 28, left: 20, bottom: 8, right: 20)
+        footerStack.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 20, right: 20)
         footerStack.isLayoutMarginsRelativeArrangement = true
 
         paymentButtonContainerView.autoPinWidthToSuperviewMargins()
+
+        footerStack.layoutIfNeeded()
     }
 }

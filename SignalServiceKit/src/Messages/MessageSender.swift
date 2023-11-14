@@ -293,7 +293,7 @@ private extension MessageSender {
     ) {
         do {
             let identityManager = DependenciesBridge.shared.identityManager
-            let newIdentityKey = try preKeyBundle.identityKey.removeKeyType()
+            let newIdentityKey = try IdentityKey(bytes: preKeyBundle.identityKey)
             identityManager.saveIdentityKey(newIdentityKey, for: serviceId, tx: tx.asV2Write)
             hadUntrustedIdentityKeyError(for: recipientId)
         } catch {
@@ -1135,7 +1135,7 @@ extension MessageSender {
         orThrow error: Error,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
-        guard remainingAttempts > 0 else {
+        guard remainingAttempts > 1 else {
             throw error
         }
         try await performMessageSendAttempt(

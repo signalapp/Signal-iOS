@@ -1477,7 +1477,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
-           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                    isPniCapable:(BOOL)isPniCapable
               userProfileWriter:(UserProfileWriter)userProfileWriter
                   authedAccount:(AuthedAccount *)authedAccount
@@ -1507,7 +1506,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                                       transaction:writeTx];
     if (!userProfile.profileKey) {
         [userProfile updateWithLastFetchDate:lastFetchDate
-                        canReceiveGiftBadges:canReceiveGiftBadges
                                 isPniCapable:isPniCapable
                            userProfileWriter:userProfileWriter
                                authedAccount:authedAccount
@@ -1521,7 +1519,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
                            lastFetchDate:lastFetchDate
-                    canReceiveGiftBadges:canReceiveGiftBadges
                             isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount
@@ -1535,7 +1532,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                   badges:profileBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate
-                    canReceiveGiftBadges:canReceiveGiftBadges
                             isPniCapable:isPniCapable
                        userProfileWriter:userProfileWriter
                            authedAccount:authedAccount

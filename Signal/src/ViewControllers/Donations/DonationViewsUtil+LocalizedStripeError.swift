@@ -7,21 +7,35 @@ import Foundation
 import SignalMessaging
 
 extension DonationViewsUtil {
+    typealias ErrorSheetDetails = (message: String, actions: ErrorSheetActions)
+
+    enum ErrorSheetActions {
+        /// Show a simple "OK" to dismiss the error.
+        case dismiss
+        /// Show a "learn more" button with the given URL along with an "OK" to dismiss the error.
+        case learnMore(link: URL)
+    }
+
     static func localizedDonationFailure(
         chargeErrorCode: String?,
         paymentMethod: DonationPaymentMethod?
-    ) -> String {
+    ) -> ErrorSheetDetails {
         switch paymentMethod {
         case .applePay:
-            return localizedDonationFailureForApplePay(chargeErrorCode: chargeErrorCode)
+            let errorMessage = localizedDonationFailureForApplePay(chargeErrorCode: chargeErrorCode)
+            return (errorMessage, .dismiss)
         case .creditOrDebitCard:
-            return localizedDonationFailureForCreditOrDebitCard(chargeErrorCode: chargeErrorCode)
+            let errorMessage =  localizedDonationFailureForCreditOrDebitCard(chargeErrorCode: chargeErrorCode)
+            return (errorMessage, .dismiss)
         case .paypal, nil:
             // TODO: [PayPal] Use the charge error code to put together a non-generic error.
-            return OWSLocalizedString(
+            let errorMessage = OWSLocalizedString(
                 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE",
                 comment: "Action sheet message for Couldn't Add Badge sheet"
             )
+            return (errorMessage, .dismiss)
+        case .sepa:
+            return localizedDonationFailureForSEPA(chargeErrorCode: chargeErrorCode)
         }
     }
 
@@ -133,5 +147,48 @@ extension DonationViewsUtil {
                 comment: "Credit/debit card donation error for unspecified decline failures."
             )
         }
+    }
+
+    private static func localizedDonationFailureForSEPA(chargeErrorCode: String?) -> ErrorSheetDetails {
+        let message: String
+        let actions: ErrorSheetActions
+        switch chargeErrorCode {
+        case "insufficient_funds":
+            message = OWSLocalizedString(
+                "SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS",
+                comment: "SEPA bank account donation error for insufficient funds."
+            )
+            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+        case "debit_not_authorized":
+            message = OWSLocalizedString(
+                "SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED",
+                comment: "SEPA bank account donation error for the payment not being authorizing by the account holder."
+            )
+            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+        case "account_closed", "bank_account_restricted", "recipient_deceased":
+            message = OWSLocalizedString(
+                "SEPA_DONATION_ERROR_NOT_PROCESSED",
+                comment: "SEPA bank account donation error for the account details not being able to be processed."
+            )
+            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+        case "debit_authorization_not_match":
+            message = OWSLocalizedString(
+                "SEPA_DONATION_ERROR_NOT_AUTHORIZED",
+                comment: "SEPA bank account donation error for missing or incorrect mandate information."
+            )
+            actions = .learnMore(link: SupportConstants.badgeExpirationLearnMoreURL)
+        case "debit_disputed":
+            fallthrough
+        case "branch_does_not_exist", "incorrect_account_holder_name", "invalid_account_number", "generic_could_not_process", "refer_to_customer":
+            fallthrough
+        default:
+            message = OWSLocalizedString(
+                "SEPA_DONATION_ERROR_OTHER",
+                comment: "SEPA bank account donation error for unspecified decline failures."
+            )
+            actions = .dismiss
+        }
+
+        return (message, actions)
     }
 }

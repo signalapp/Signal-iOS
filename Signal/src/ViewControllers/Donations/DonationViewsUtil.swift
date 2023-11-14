@@ -9,6 +9,7 @@ import Lottie
 import SignalMessaging
 import SignalUI
 import UIKit
+import SafariServices
 
 // MARK: - Profile badge lookup
 
@@ -232,205 +233,139 @@ public final class DonationViewsUtil {
         subscriptionLevels.first { $0.level == subscription.level }
     }
 
-    public static func getMySupportCurrentSubscriptionTableItem(subscriptionLevel: SubscriptionLevel?,
-                                                                currentSubscription: Subscription,
-                                                                isSubscriptionRedemptionPending isPending: Bool,
-                                                                subscriptionRedemptionFailureReason: SubscriptionRedemptionFailureReason,
-                                                                statusLabelToModify: LinkingTextView) -> OWSTableItem {
-        OWSTableItem.init(customCellBlock: {
-            let didFail = subscriptionRedemptionFailureReason != .none
-            if subscriptionLevel == nil {
-                owsFailDebug("A subscription level should be provided. We'll do our best without one")
-            }
-
-            let cell = OWSTableItem.newCell()
-
-            let hStackView = UIStackView()
-            cell.contentView.addSubview(hStackView)
-            hStackView.axis = .horizontal
-            hStackView.spacing = 12
-            hStackView.alignment = .center
-            hStackView.autoPinEdgesToSuperviewMargins()
-
-            let badgeImage = subscriptionLevel?.badge.assets?.universal160
-            let badgeImageView: UIImageView = UIImageView(image: badgeImage)
-            hStackView.addArrangedSubview(badgeImageView)
-            badgeImageView.autoSetDimensions(to: CGSize(square: 64))
-            badgeImageView.alpha = isPending || didFail ? 0.5 : 1
-
-            if isPending {
-                let redemptionLoadingSpinner = AnimationView(name: "indeterminate_spinner_blue")
-                hStackView.addSubview(redemptionLoadingSpinner)
-                redemptionLoadingSpinner.loopMode = .loop
-                redemptionLoadingSpinner.contentMode = .scaleAspectFit
-                redemptionLoadingSpinner.autoPinEdges(toEdgesOf: badgeImageView, with: UIEdgeInsets(margin: 14))
-                redemptionLoadingSpinner.play()
-            }
-
-            let vStackView: UIView = {
-                let titleLabel: UILabel = {
-                    let titleLabel = UILabel()
-                    titleLabel.text = subscriptionLevel?.name
-                    titleLabel.textColor = Theme.primaryTextColor
-                    titleLabel.font = .dynamicTypeBody.semibold()
-                    titleLabel.numberOfLines = 0
-                    return titleLabel
-                }()
-
-                let pricingLabel: UILabel = {
-                    let pricingLabel = UILabel()
-                    let pricingFormat = OWSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
-                    let currencyString = DonationUtilities.format(money: currentSubscription.amount)
-                    pricingLabel.text = String(format: pricingFormat, currencyString)
-                    pricingLabel.textColor = Theme.primaryTextColor
-                    pricingLabel.font = .dynamicTypeBody2
-                    pricingLabel.numberOfLines = 0
-                    return pricingLabel
-                }()
-
-                let statusText: NSMutableAttributedString
-                if isPending {
-                    let text = OWSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
-                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
-                } else if didFail {
-                    let helpFormat = subscriptionRedemptionFailureReason == .paymentFailed ? OWSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occurred text, embeds {{link to contact support}}")
-                    : OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
-                    let contactSupport = OWSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
-                    let text = String(format: helpFormat, contactSupport)
-                    let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
-                    attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
-                    statusText = attributedText
-                } else {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateStyle = .medium
-                    let renewalFormat = OWSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
-                    let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
-                    let renewalString = dateFormatter.string(from: renewalDate)
-                    let text = String(format: renewalFormat, renewalString)
-                    statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.dynamicTypeBody2])
-                }
-
-                statusLabelToModify.attributedText = statusText
-                statusLabelToModify.linkTextAttributes = [
-                    .foregroundColor: Theme.accentBlueColor,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
-
-                let view = UIStackView(arrangedSubviews: [titleLabel,
-                                                          pricingLabel,
-                                                          statusLabelToModify])
-                view.axis = .vertical
-                view.distribution = .equalCentering
-                view.spacing = 4
-
-                return view
-            }()
-            hStackView.addArrangedSubview(vStackView)
-
-            return cell
-        })
-    }
-
-    public static func getSubscriptionRedemptionFailureReason(subscription: Subscription?) -> SubscriptionRedemptionFailureReason {
-        if let subscription = subscription {
-            switch subscription.status {
-            case .incomplete, .incompleteExpired, .pastDue, .unpaid:
-                return .paymentFailed
-            case .active, .trialing, .canceled, .unknown:
-                break
-            }
-        }
-
-        return SDSDatabaseStorage.shared.read { transaction in
-            SubscriptionManagerImpl.lastReceiptRedemptionFailed(transaction: transaction)
-        }
-    }
-
     public static func openDonateWebsite() {
         UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
     }
 
-    public static func presentDonationErrorSheet(
-        from viewController: UIViewController,
-        error rawError: Error,
-        paymentMethod: DonationPaymentMethod?,
-        currentSubscription: Subscription? = nil
+    public static func nonBankPaymentStillProcessingActionSheet() -> ActionSheetController {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SUSTAINER_STILL_PROCESSING_BADGE_TITLE",
+                comment: "Action sheet title for Still Processing Badge sheet"
+            ),
+            message: OWSLocalizedString(
+                "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE",
+                comment: "Action sheet message for Still Processing Badge sheet"
+            )
+        )
+        actionSheet.addAction(OWSActionSheets.okayAction)
+
+        return actionSheet
+    }
+}
+
+/// Not the best place for this to live, but at the time of writing I wanted to
+/// minimize the diff (these methods lived here before) while restricting these
+/// methods to ``DonateViewController``.
+extension DonateViewController {
+   func presentErrorSheet(
+        error: Error,
+        mode donateMode: DonateMode,
+        badge: ProfileBadge,
+        paymentMethod: DonationPaymentMethod?
     ) {
-        if let stripeError = rawError as? Stripe.StripeError {
+        if let donationJobError = error as? DonationJobError {
+            switch donationJobError {
+            case .timeout:
+                presentStillProcessingSheet(
+                    badge: badge,
+                    paymentMethod: paymentMethod,
+                    donateMode: donateMode
+                )
+            case .assertion:
+                presentBadgeCantBeAddedSheet(donateMode: donateMode)
+            }
+        } else if let stripeError = error as? Stripe.StripeError {
             presentDonationErrorSheet(
                 forDonationChargeErrorCode: stripeError.code,
-                from: viewController,
                 using: paymentMethod
             )
-            return
-        }
-
-        if let sendGiftError = rawError as? Gifts.SendGiftError {
-            Gifts.presentErrorSheetIfApplicable(for: sendGiftError)
-            return
-        }
-
-        let error: DonationJobError
-        if let jobError = rawError as? DonationJobError {
-            error = jobError
         } else {
-            owsFailDebug("[Donations] Unexpected error \(rawError)")
-            error = .assertion
-        }
-
-        switch error {
-        case .timeout:
-            presentStillProcessingSheet(from: viewController)
-        case .assertion:
-            presentBadgeCantBeAddedSheet(
-                from: viewController,
-                currentSubscription: currentSubscription
-            )
+            presentBadgeCantBeAddedSheet(donateMode: donateMode)
         }
     }
 
-    private static func presentDonationErrorSheet(
+    private func presentDonationErrorSheet(
         forDonationChargeErrorCode chargeErrorCode: String,
-        from viewController: UIViewController,
         using paymentMethod: DonationPaymentMethod?
     ) {
+        let errorSheetDetails = DonationViewsUtil.localizedDonationFailure(
+            chargeErrorCode: chargeErrorCode,
+            paymentMethod: paymentMethod
+        )
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE",
                 comment: "Action sheet title for Error Processing Payment sheet"
             ),
-            message: localizedDonationFailure(chargeErrorCode: chargeErrorCode, paymentMethod: paymentMethod)
+            message: errorSheetDetails.message
         )
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton, style: .cancel, handler: nil))
+        actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel, handler: nil))
 
-        viewController.navigationController?.topViewController?.presentActionSheet(actionSheet)
-    }
-
-    private static func presentStillProcessingSheet(from viewController: UIViewController) {
-        guard
-            let topViewController = viewController.navigationController?.topViewController,
-            topViewController == viewController
-        else {
-            Logger.info("Not showing the \"still processing\" sheet because we're no longer the top view controller")
-            return
+        switch errorSheetDetails.actions {
+        case .dismiss:
+            break // No other actions needed
+        case .learnMore(let learnMoreUrl):
+            actionSheet.addAction(.init(title: CommonStrings.learnMore, style: .default) { _ in
+                let vc = SFSafariViewController(url: learnMoreUrl)
+                self.present(vc, animated: true, completion: nil)
+            })
         }
 
-        let title = OWSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
-        let message = OWSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
-        let actionSheet = ActionSheetController(title: title, message: message)
-        actionSheet.addAction(OWSActionSheets.okayAction)
-        topViewController.presentActionSheet(actionSheet)
+        self.presentActionSheet(actionSheet)
     }
 
-    public static func presentBadgeCantBeAddedSheet(
-        from viewController: UIViewController,
-        currentSubscription: Subscription? = nil
+    private func presentStillProcessingSheet(
+        badge: ProfileBadge,
+        paymentMethod: DonationPaymentMethod?,
+        donateMode: DonateMode
     ) {
-        let failureReason = getSubscriptionRedemptionFailureReason(subscription: currentSubscription)
+        switch paymentMethod {
+        case nil, .applePay, .creditOrDebitCard, .paypal:
+            self.presentActionSheet(
+                DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
+            )
+        case .sepa:
+            let badgeIssueSheetMode: BadgeIssueSheetState.Mode = {
+                switch donateMode {
+                case .oneTime:
+                    return .boostBankPaymentProcessing
+                case .monthly:
+                    return .subscriptionBankPaymentProcessing
+                }
+            }()
 
-        let title = failureReason == .paymentFailed ? OWSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet") : OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+            self.present(
+                BadgeIssueSheet(
+                    badge: badge,
+                    mode: badgeIssueSheetMode
+                ),
+                animated: true
+            )
+        }
+    }
+
+    private func presentBadgeCantBeAddedSheet(donateMode: DonateMode) {
+        let receiptCredentialRequestError = SDSDatabaseStorage.shared.read { tx -> SubscriptionReceiptCredentialRequestError? in
+            let resultStore = DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+
+            switch donateMode {
+            case .oneTime:
+                return resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read)
+            case .monthly:
+                return resultStore.getRequestError(errorMode: .recurringSubscription, tx: tx.asV2Read)
+            }
+        }
+
+        let title: String = {
+            switch receiptCredentialRequestError?.errorCode {
+            case .paymentFailed:
+                return OWSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet")
+            default:
+                return OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+            }
+        }()
         let message = OWSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
 
         let actionSheet = ActionSheetController(title: title, message: message)
@@ -447,13 +382,13 @@ public final class DonationViewsUtil {
                                                               message: localizedSheetMessage)
                     let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
                     fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
-                    viewController.presentActionSheet(fallbackSheet)
+                    self.presentActionSheet(fallbackSheet)
                     return
                 }
                 let supportVC = ContactSupportViewController()
                 supportVC.selectedFilter = .donationsAndBadges
                 let navVC = OWSNavigationController(rootViewController: supportVC)
-                viewController.presentFormSheet(navVC, animated: true)
+                self.presentFormSheet(navVC, animated: true)
             }
         ))
 
@@ -462,6 +397,6 @@ public final class DonationViewsUtil {
             style: .cancel,
             handler: nil
         ))
-        viewController.navigationController?.topViewController?.presentActionSheet(actionSheet)
+        self.presentActionSheet(actionSheet)
     }
 }

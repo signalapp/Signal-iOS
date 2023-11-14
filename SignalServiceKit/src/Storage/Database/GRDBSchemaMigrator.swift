@@ -238,6 +238,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dropOldAndCreateNewCallRecordTable
         case fixUniqueConstraintOnCallRecord
         case addTimestampToCallRecord
+        case addPaymentMethodToJobRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2431,6 +2432,16 @@ public class GRDBSchemaMigrator: NSObject {
 
             try tx.database.alter(table: "CallRecord") { table in
                 table.add(column: "timestamp", .integer).notNull()
+            }
+
+            return .success(())
+        }
+
+        /// During subscription receipt credential redemption, we now need to
+        /// know the payment method used, if possible.
+        migrator.registerMigration(.addPaymentMethodToJobRecords) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "paymentMethod", .text)
             }
 
             return .success(())

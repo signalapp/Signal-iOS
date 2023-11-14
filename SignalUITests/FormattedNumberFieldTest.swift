@@ -73,6 +73,7 @@ final class FormattedNumberFieldTest: XCTestCase {
         for (inputState, deletionDirection) in noopCases {
             let result = FormattedNumberField.singleDelete(
                 formattedString: inputState.formattedString,
+                allowedCharacters: .numbers,
                 cursorPosition: inputState.selectionStart,
                 direction: deletionDirection,
                 format: testFormat
@@ -97,6 +98,7 @@ final class FormattedNumberFieldTest: XCTestCase {
         for (inputState, deletionDirection, expectedOutputState) in deletionCases {
             let result = FormattedNumberField.singleDelete(
                 formattedString: inputState.formattedString,
+                allowedCharacters: .numbers,
                 cursorPosition: inputState.selectionStart,
                 direction: deletionDirection,
                 format: testFormat
@@ -105,7 +107,7 @@ final class FormattedNumberFieldTest: XCTestCase {
         }
     }
 
-    func testInsert() {
+    func testNumericInsert() {
         let noopCases: [(TestState, String)] = [
           ("|", ""),
           ("|", "x"),
@@ -117,10 +119,11 @@ final class FormattedNumberFieldTest: XCTestCase {
         for (inputState, insertion) in noopCases {
             let result = FormattedNumberField.insertOrReplace(
                 formattedString: inputState.formattedString,
+                allowedCharacters: .numbers,
                 selectionStart: inputState.selectionStart,
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
-                maxDigits: 10,
+                maxCharacters: 10,
                 format: testFormat
             )
             XCTAssertNil(result, "\(inputState) \(insertion)")
@@ -148,6 +151,7 @@ final class FormattedNumberFieldTest: XCTestCase {
           ("12[34 56]78 ", "0000", "1200 00|78 "),
           ("12[34 56]78 ", "", "12|78 "),
           ("12[34 56]78 ", "x", "12|78 "),
+          ("12[34 56]78 ", "0x9", "1209 |78"),
 
           ("[1234 5678 9012 34]", "", "|"),
           ("[1234 5678 9012 34]", "987", "987|"),
@@ -157,10 +161,75 @@ final class FormattedNumberFieldTest: XCTestCase {
         for (inputState, insertion, expectedOutputState) in testCases {
             let result = FormattedNumberField.insertOrReplace(
                 formattedString: inputState.formattedString,
+                allowedCharacters: .numbers,
                 selectionStart: inputState.selectionStart,
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
-                maxDigits: 10,
+                maxCharacters: 10,
+                format: testFormat
+            )
+            XCTAssertEqual(result?.asTestState, expectedOutputState, "\(inputState) \(insertion)")
+        }
+    }
+
+    func testAlphanumericInsert() {
+        let noopCases: [(TestState, String)] = [
+            ("|", ""),
+            ("|", "."),
+            ("AT123|", "."),
+            ("BE1234567890|", "1"),
+            ("HR1234|567890", "1"),
+            ("EE123456789|", "123")
+        ]
+        for (inputState, insertion) in noopCases {
+            let result = FormattedNumberField.insertOrReplace(
+                formattedString: inputState.formattedString,
+                allowedCharacters: .alphanumeric,
+                selectionStart: inputState.selectionStart,
+                selectionEnd: inputState.selectionEnd,
+                rawInsertion: insertion,
+                maxCharacters: 12,
+                format: testFormat
+            )
+            XCTAssertNil(result, "\(inputState) \(insertion)")
+        }
+
+        let testCases: [(TestState, String, TestState)] = [
+          ("|", "A", "A|"),
+          ("|", "ABC", "ABC|"),
+          ("|", "ABC.", "ABC|"),
+
+          ("|", "ABCD", "ABCD |"),
+          ("FI2|", "1", "FI21 |"),
+
+          ("AB|3", "9", "AB9|3 "),
+          ("AB|34 ", "9", "AB9|3 4"),
+          ("AB34| ", "E", "AB34 E|"),
+          ("AB34 |", "E", "AB34 E|"),
+
+          ("[AB3]", "9", "9|"),
+          ("[AB34] ", "9", "9|"),
+          ("[AB34] E678 ", "9", "9|E67 8"),
+          ("[AB34] E678 ", "9", "9|E67 8"),
+          ("AB[34 E6]78 ", "9", "AB9|7 8"),
+          ("AB[34 E6]78 ", "000", "AB00 0|78"),
+          ("AB[34 E6]78 ", "0000", "AB00 00|78 "),
+          ("AB[34 E6]78 ", "", "AB|78 "),
+          ("AB[34 E6]78 ", ".", "AB|78 "),
+
+          ("[AB34 E678 90AB 34]", "", "|"),
+          ("[AB34 E678 90AB 34]", "987", "987|"),
+          ("AB34 E678 90AB 3[4]", "", "AB34 E678 90AB 3|")
+        ]
+
+        for (inputState, insertion, expectedOutputState) in testCases {
+            let result = FormattedNumberField.insertOrReplace(
+                formattedString: inputState.formattedString,
+                allowedCharacters: .alphanumeric,
+                selectionStart: inputState.selectionStart,
+                selectionEnd: inputState.selectionEnd,
+                rawInsertion: insertion,
+                maxCharacters: 10,
                 format: testFormat
             )
             XCTAssertEqual(result?.asTestState, expectedOutputState, "\(inputState) \(insertion)")

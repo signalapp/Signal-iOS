@@ -15,7 +15,6 @@ public class SendGiftBadgeJobQueue: JobQueue {
     public static let jobRecordLabel: String = "SendGiftBadge"
     public var jobRecordLabel: String { Self.jobRecordLabel }
 
-    public static let maxRetries: UInt = 110
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SendGiftBadgeOperation>()
@@ -64,7 +63,7 @@ public class SendGiftBadgeJobQueue: JobQueue {
         thread: TSContactThread,
         messageText: String
     ) -> SendGiftBadgeJobRecord {
-        let paymentProcessor: PaymentProcessor
+        let paymentProcessor: DonationPaymentProcessor
         var stripePaymentIntent: Stripe.PaymentIntent?
         var stripePaymentMethodId: String?
         var paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams?
@@ -153,7 +152,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         )
         case forBraintree(paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams)
 
-        var processor: PaymentProcessor {
+        var processor: DonationPaymentProcessor {
             switch self {
             case .forStripe: return .stripe
             case .forBraintree: return .braintree
@@ -161,15 +160,17 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         }
     }
 
-    public var jobRecord: SendGiftBadgeJobRecord
-
     public typealias JobRecordType = SendGiftBadgeJobRecord
-
     public typealias DurableOperationDelegateType = SendGiftBadgeJobQueue
 
+    public var jobRecord: SendGiftBadgeJobRecord
     weak public var durableOperationDelegate: SendGiftBadgeJobQueue?
 
     public var operation: OWSOperation { self }
+
+    /// 110 retries corresponds to approximately ~24hr of retry when using
+    /// ``OWSOperation/retryIntervalForExponentialBackoff(failureCount:maxBackoff:)``.
+    public let maxRetries: UInt = 110
 
     private let payment: Payment
     private let receiptCredentialRequestContext: ReceiptCredentialRequestContext
@@ -182,7 +183,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         self.jobRecord = jobRecord
 
         payment = try {
-            switch PaymentProcessor(rawValue: jobRecord.paymentProcessor) {
+            switch DonationPaymentProcessor(rawValue: jobRecord.paymentProcessor) {
             case nil:
                 owsFailDebug("Failed to deserialize payment processor from record with value: \(jobRecord.paymentProcessor)")
                 fallthrough
@@ -252,6 +253,9 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         switch payment {
         case let .forStripe(paymentIntentClientSecret, paymentIntentId, paymentMethodId):
             return Stripe.confirmPaymentIntent(
+                // Bank transfers not supported on gift badges,
+                // so the bank mandate can be left nil.
+                mandate: nil,
                 paymentIntentClientSecret: paymentIntentClientSecret,
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId,
@@ -269,12 +273,12 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     private func getReceiptCredentialPresentation(
         paymentIntentId: String
     ) throws -> Promise<ReceiptCredentialPresentation> {
-        try SubscriptionManagerImpl.requestBoostReceiptCredentialPresentation(
-            for: paymentIntentId,
-            context: receiptCredentialRequestContext,
-            request: receiptCredentialRequest,
+        try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+            boostPaymentIntentId: paymentIntentId,
             expectedBadgeLevel: .giftBadge(.signalGift),
-            paymentProcessor: payment.processor
+            paymentProcessor: payment.processor,
+            context: receiptCredentialRequestContext,
+            request: receiptCredentialRequest
         )
     }
 

@@ -2489,16 +2489,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             thread: thread,
             label: "Name & Number",
             contact: { _ in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Alice"
-                    return name
-                }()
-                let phoneNumber = OWSContactPhoneNumber()!
-                phoneNumber.phoneType = .home
-                phoneNumber.phoneNumber = "+13213214321"
-                contact.phoneNumbers = [ phoneNumber ]
+                let contact = OWSContact(name: OWSContactName(givenName: "Alice"))
+                contact.phoneNumbers = [ OWSContactPhoneNumber(type: .home, phoneNumber: "+13213214321") ]
                 return contact
             }
         ))
@@ -2507,95 +2499,73 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             thread: thread,
             label: "Name & Email",
             contact: { _ in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Bob"
-                    return name
-                }()
-                let email = OWSContactEmail()!
-                email.emailType = .home
-                email.email = "a@b.com"
-                contact.emails = [ email ]
+                let contact = OWSContact(name: OWSContactName(givenName: "Bob"))
+                contact.emails = [ OWSContactEmail(type: .home, email: "a@b.com") ]
                 return contact
             }
         ))
 
-        actions.append(fakeContactShareMessageAction(
-            thread: thread,
-            label: "Complicated",
-            contact: { transaction in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Alice"
-                    name.familyName = "Carol"
-                    name.middleName = "Bob"
-                    name.namePrefix = "Ms."
-                    name.nameSuffix = "Esq."
-                    name.organizationName = "Falafel Hut"
-                    return name
-                }()
+        actions.append(
+            fakeContactShareMessageAction(
+                thread: thread,
+                label: "Complicated",
+                contact: { transaction in
+                    let contact = OWSContact(name: OWSContactName(
+                        givenName: "Alice",
+                        familyName: "Carol",
+                        namePrefix: "Ms.",
+                        nameSuffix: "Esq.",
+                        middleName: "Bob",
+                        organizationName: "Falafel Hut"
+                    ))
 
-                let phoneNumber1 = OWSContactPhoneNumber()!
-                phoneNumber1.phoneType = .home
-                phoneNumber1.phoneNumber = "+13213215555"
-                let phoneNumber2 = OWSContactPhoneNumber()!
-                phoneNumber2.phoneType = .custom
-                phoneNumber2.label = "Carphone"
-                phoneNumber2.phoneNumber = "+13332226666"
-                contact.phoneNumbers = [ phoneNumber1, phoneNumber2 ]
+                    contact.phoneNumbers = [
+                        OWSContactPhoneNumber(type: .home, phoneNumber: "+13213215555"),
+                        OWSContactPhoneNumber(type: .custom, label: "Carphone", phoneNumber: "+13332226666")
+                    ]
 
-                let emails = (0..<16).map { i in
-                    let email = OWSContactEmail()!
-                    email.emailType = .home
-                    email.email = String(format: "a%zd@b.com", i)
-                    return email
+                    contact.emails = (0..<16).map { OWSContactEmail(type: .home, email: String(format: "a%zd@b.com", $0)) }
+
+                    let address1 = OWSContactAddress(
+                        type: .home,
+                        street: "123 home st.",
+                        pobox: nil,
+                        neighborhood: "round the bend.",
+                        city: "homeville",
+                        region: "HO",
+                        postcode: "12345",
+                        country: "USA"
+                    )
+                    let address2 = OWSContactAddress(
+                        type: .custom,
+                        label: "Otra casa",
+                        street: "123 casa calle",
+                        pobox: "caja 123",
+                        neighborhood: nil,
+                        city: "barrio norte",
+                        region: "AB",
+                        postcode: "53421",
+                        country: "MX"
+                    )
+                    contact.addresses = [ address1, address2 ]
+
+                    let avatarImage = AvatarBuilder.buildRandomAvatar(diameterPoints: 200)!
+                    contact.saveAvatarImage(avatarImage, transaction: transaction)
+
+                    return contact
                 }
-                contact.emails = emails
-
-                let address1 = OWSContactAddress()!
-                address1.addressType = .home
-                address1.street = "123 home st."
-                address1.neighborhood = "round the bend."
-                address1.city = "homeville"
-                address1.region = "HO"
-                address1.postcode = "12345"
-                address1.country = "USA"
-                let address2 = OWSContactAddress()!
-                address2.addressType = .custom
-                address2.label = "Otra casa"
-                address2.pobox = "caja 123"
-                address2.street = "123 casa calle"
-                address2.city = "barrio norte"
-                address2.region = "AB"
-                address2.postcode = "53421"
-                address2.country = "MX"
-                contact.addresses = [ address1, address2 ]
-
-                let avatarImage = AvatarBuilder.buildRandomAvatar(diameterPoints: 200)!
-                contact.saveAvatarImage(avatarImage, transaction: transaction)
-
-                return contact
-            }
-        ))
+            )
+        )
 
         actions.append(fakeContactShareMessageAction(
             thread: thread,
             label: "Long values",
             contact: { _ in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Bobasdjasdlkjasldkjas"
-                    name.familyName = "Bobasdjasdlkjasldkjas"
-                    return name
-                }()
-
-                let email = OWSContactEmail()!
-                email.emailType = .mobile
-                email.email = "asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com"
-                contact.emails = [ email ]
+                let contact = OWSContact(name: OWSContactName(
+                    givenName: "Bobasdjasdlkjasldkjas",
+                    familyName: "Bobasdjasdlkjasldkjas"
+                ))
+                contact.emails = [ OWSContactEmail(type: .mobile, email: "asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com") ]
                 return contact
             }
         ))
@@ -2604,17 +2574,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             thread: thread,
             label: "System Contact w/o Signal",
             contact: { _ in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Add Me To Your Contacts"
-                    return name
-                }()
-
-                let phoneNumber = OWSContactPhoneNumber()!
-                phoneNumber.phoneType = .work
-                phoneNumber.phoneNumber = "+32460205391"
-                contact.phoneNumbers = [ phoneNumber ]
+                let contact = OWSContact(name: OWSContactName(givenName: "Add Me To Your Contacts"))
+                contact.phoneNumbers = [ OWSContactPhoneNumber(type: .work, phoneNumber: "+32460205391") ]
                 return contact
             }
         ))
@@ -2623,16 +2584,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             thread: thread,
             label: "System Contact w. Signal",
             contact: { _ in
-                let contact = OWSContact()!
-                contact.name = {
-                    let name = OWSContactName()!
-                    name.givenName = "Add Me To Your Contacts"
-                    return name
-                }()
-                let phoneNumber = OWSContactPhoneNumber()!
-                phoneNumber.phoneType = .work
-                phoneNumber.phoneNumber = "+32460205392"
-                contact.phoneNumbers = [ phoneNumber ]
+                let contact = OWSContact(name: OWSContactName(givenName: "Add Me To Your Contacts"))
+                contact.phoneNumbers = [ OWSContactPhoneNumber(type: .work, phoneNumber: "+32460205392") ]
                 return contact
             }
         ))

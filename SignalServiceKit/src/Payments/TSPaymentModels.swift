@@ -106,8 +106,8 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
         return try builder.build()
     }
 
-    public class func fromProto(_ proto: SSKProtoPaymentAddress,
-                                publicIdentityKey: Data) throws -> TSPaymentAddress {
+    @nonobjc
+    public class func fromProto(_ proto: SSKProtoPaymentAddress, identityKey: IdentityKey) throws -> TSPaymentAddress {
         guard let mobileCoin = proto.mobileCoin else {
             throw PaymentsError.invalidModel
         }
@@ -117,7 +117,7 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
               !signatureData.isEmpty else {
             throw PaymentsError.invalidModel
         }
-        guard Self.verifySignature(publicIdentityKeyData: publicIdentityKey,
+        guard Self.verifySignature(identityKey: identityKey,
                                    publicAddressData: mobileCoinPublicAddressData,
                                    signatureData: signatureData) else {
             owsFailDebug("Signature verification failed.")
@@ -136,12 +136,10 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
         return Data(privateKey.generateSignature(message: publicAddressData))
     }
 
-    static func verifySignature(publicIdentityKeyData: Data,
-                                publicAddressData: Data,
-                                signatureData: Data) -> Bool {
+    @nonobjc
+    static func verifySignature(identityKey: IdentityKey, publicAddressData: Data, signatureData: Data) -> Bool {
         do {
-            let publicKey = try PublicKey(keyData: publicIdentityKeyData)
-            return try publicKey.verifySignature(message: publicAddressData, signature: signatureData)
+            return try identityKey.publicKey.verifySignature(message: publicAddressData, signature: signatureData)
         } catch {
             owsFailDebug("Error: \(error)")
             return false

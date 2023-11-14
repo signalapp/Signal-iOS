@@ -278,6 +278,7 @@ CREATE
             ,"paypalPayerId" TEXT
             ,"paypalPaymentId" TEXT
             ,"paypalPaymentToken" TEXT
+            ,"paymentMethod" TEXT
         )
 ;
 

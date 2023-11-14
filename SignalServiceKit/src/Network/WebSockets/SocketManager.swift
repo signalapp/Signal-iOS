@@ -5,8 +5,20 @@
 
 import Foundation
 
-@objc
-public class SocketManager: NSObject {
+public protocol SocketManager {
+    var isAnySocketOpen: Bool { get }
+    var hasEmptiedInitialQueue: Bool { get }
+
+    func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState
+    func cycleSocket()
+
+    func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool
+    func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse>
+
+    func didReceivePush()
+}
+
+public class SocketManagerImpl: SocketManager {
     private let websocketIdentified: OWSWebSocket
     private let websocketUnidentified: OWSWebSocket
     private var websockets: [OWSWebSocket] { [ websocketIdentified, websocketUnidentified ]}
@@ -24,8 +36,6 @@ public class SocketManager: NSObject {
             appExpiry: appExpiry,
             db: db
         )
-
-        super.init()
 
         SwiftSingletons.register(self)
     }
@@ -89,7 +99,7 @@ public class SocketManager: NSObject {
     }
 
     // This method can be called from any thread.
-    func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+    public func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
         let webSocketType: OWSWebSocketType = {
             if request.isUDRequest {
                 return .unidentified
@@ -143,14 +153,12 @@ public class SocketManager: NSObject {
     }
 
     // This method can be called from any thread.
-    @objc
     public func didReceivePush() {
         for websocket in websockets {
             websocket.didReceivePush()
         }
     }
 
-    @objc
     public func cycleSocket() {
         AssertIsOnMainThread()
 
@@ -159,12 +167,10 @@ public class SocketManager: NSObject {
         }
     }
 
-    @objc
     public var isAnySocketOpen: Bool {
         OWSWebSocketType.allCases.contains { socketState(forType: $0) == .open }
     }
 
-    @objc
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
         webSocket(ofType: webSocketType).currentState
     }

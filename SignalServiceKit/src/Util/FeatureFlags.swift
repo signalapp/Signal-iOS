@@ -86,6 +86,8 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
+    public static let allowSEPADonations = build.includes(.internal)
+
     @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
@@ -113,10 +115,6 @@ public class FeatureFlags: BaseFlags {
             logFlag("FeatureFlag", key, value)
         }
     }
-
-    /// If true, _only_ aci safety numbers will be displayed, and e164 safety numbers will not
-    /// be displayed.
-    public static let onlyAciSafetyNumbers = false
 
     public static let editMessageSend = true
 

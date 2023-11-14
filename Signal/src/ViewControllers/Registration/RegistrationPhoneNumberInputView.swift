@@ -215,7 +215,8 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             textField,
             shouldChangeCharactersIn: range,
             replacementString: replacementString,
-            maxDigits: maxNationalNumberDigits,
+            allowedCharacters: .numbers,
+            maxCharacters: maxNationalNumberDigits,
             format: formatNationalNumber
         )
 

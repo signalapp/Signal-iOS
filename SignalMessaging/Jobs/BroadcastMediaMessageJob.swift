@@ -9,7 +9,6 @@ public class BroadcastMediaMessageJobQueue: JobQueue {
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { !CurrentAppContext().isNSE }
-    public static let maxRetries: UInt = 4
     public static let jobRecordLabel: String = BroadcastMediaMessageJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -63,10 +62,9 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = BroadcastMediaMessageJobRecord
     public typealias DurableOperationDelegateType = BroadcastMediaMessageJobQueue
     public weak var durableOperationDelegate: BroadcastMediaMessageJobQueue?
-    public var jobRecord: BroadcastMediaMessageJobRecord
-    public var operation: OWSOperation {
-        return self
-    }
+    public let jobRecord: BroadcastMediaMessageJobRecord
+    public var operation: OWSOperation { return self }
+    public let maxRetries: UInt = 4
 
     // MARK: -
 

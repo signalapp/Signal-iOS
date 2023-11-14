@@ -22,6 +22,7 @@ disabled_rules:
 - nesting
 - no_fallthrough_only
 - notification_center_detachment
+- opening_brace
 - todo
 - trailing_comma
 - type_body_length

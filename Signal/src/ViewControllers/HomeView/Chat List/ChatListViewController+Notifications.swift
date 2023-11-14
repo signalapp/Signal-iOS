@@ -95,6 +95,19 @@ extension ChatListViewController {
             object: nil
         )
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showBadgeSheetIfNecessary),
+            name: SubscriptionReceiptCredentialRedemptionOperation.DidSucceedNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showBadgeSheetIfNecessary),
+            name: SubscriptionReceiptCredentialRedemptionOperation.DidFailNotification,
+            object: nil
+        )
+
         contactsViewHelper.addObserver(self)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -136,7 +149,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         updateBarButtonItems()
-        showBadgeExpirationSheetIfNeeded()
+        showBadgeSheetIfNecessary()
     }
 
     @objc

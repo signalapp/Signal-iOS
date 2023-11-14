@@ -248,9 +248,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func changeNumberState() -> ChangeNumberState {
         return databaseStorage.read { transaction -> ChangeNumberState in
-            guard self.legacyChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction) else {
-                return .disallowed
-            }
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let tsRegistrationState = tsAccountManager.registrationState(tx: transaction.asV2Read)
             guard tsRegistrationState.isRegistered else {

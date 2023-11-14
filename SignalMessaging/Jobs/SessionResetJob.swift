@@ -19,7 +19,6 @@ public class SessionResetJobQueue: JobQueue {
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
-    public static let maxRetries: UInt = 10
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SessionResetOperation>()
@@ -65,12 +64,11 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     // MARK: DurableOperation
 
     public let jobRecord: SessionResetJobRecord
-
     weak public var durableOperationDelegate: SessionResetJobQueue?
 
-    public var operation: OWSOperation {
-        return self
-    }
+    public var operation: OWSOperation { return self }
+
+    public let maxRetries: UInt = 10
 
     // MARK: 
 

@@ -80,7 +80,7 @@ extension ConversationViewController {
         isRedeemed: Bool
     ) -> UIViewController {
         if isExpired {
-            let mode: BadgeExpirationSheetState.Mode
+            let mode: BadgeIssueSheetState.Mode
             if isRedeemed {
                 let hasCurrentSubscription = self.databaseStorage.read { transaction -> Bool in
                     self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
@@ -93,7 +93,7 @@ extension ConversationViewController {
                 }
                 mode = .giftNotRedeemed(fullName: fullName)
             }
-            let sheet = BadgeExpirationSheet(badge: profileBadge, mode: mode)
+            let sheet = BadgeIssueSheet(badge: profileBadge, mode: mode)
             sheet.delegate = self
             return sheet
         }
@@ -114,12 +114,12 @@ extension ConversationViewController {
         }
         return BadgeThanksSheet(
             newBadge: profileBadge,
-            newBadgeType: .gift(
+            thanksType: .giftReceived(
                 shortName: shortName,
                 notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
                 incomingMessage: incomingMessage
             ),
-            oldBadgesSnapshot: BadgeThanksSheet.currentProfileBadgesSnapshot()
+            oldBadgesSnapshot: .current()
         )
     }
 
@@ -133,8 +133,8 @@ extension ConversationViewController {
 
 }
 
-extension ConversationViewController: BadgeExpirationSheetDelegate {
-    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
+extension ConversationViewController: BadgeIssueSheetDelegate {
+    func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction) {
         switch action {
         case .dismiss:
             break
@@ -142,9 +142,18 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
             let appSettings = AppSettingsViewController.inModalNavigationController()
             let donateViewController = DonateViewController(preferredDonateMode: .oneTime) { [weak self] finishResult in
                 switch finishResult {
-                case let .completedDonation(donateSheet, thanksSheet):
+                case let .completedDonation(donateSheet, receiptCredentialSuccessMode):
                     donateSheet.dismiss(animated: true) { [weak self] in
-                        self?.present(thanksSheet, animated: true)
+                        guard
+                            let self,
+                            let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                                successMode: receiptCredentialSuccessMode
+                            )
+                        else { return }
+
+                        badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
+                            fromViewController: self
+                        )
                     }
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) { [weak self] in

@@ -10,14 +10,7 @@ import SignalCoreKit
 @objc
 public class LegacyChangePhoneNumber: NSObject {
 
-    private enum Constants {
-        static let localUserSupportsChangePhoneNumberKey = "localUserSupportsChangePhoneNumber"
-    }
-
     private let changePhoneNumberPniManager: ChangePhoneNumberPniManager
-
-    /// Stores metadata about change-number operations for this user.
-    private let keyValueStore = SDSKeyValueStore(collection: "ChangePhoneNumber")
 
     /// Records change-number operations that were started (by this, or
     /// potentially a prior launch of the app) but not yet known to have
@@ -268,23 +261,5 @@ public class LegacyChangePhoneNumber: NSObject {
         } else {
             return localE164
         }
-    }
-
-    // MARK: - Supports change-number
-
-    public func localUserSupportsChangePhoneNumber(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(
-            Constants.localUserSupportsChangePhoneNumberKey,
-            defaultValue: false,
-            transaction: transaction
-        )
-    }
-
-    public func setLocalUserSupportsChangePhoneNumber(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(
-            value,
-            key: Constants.localUserSupportsChangePhoneNumberKey,
-            transaction: transaction
-        )
     }
 }

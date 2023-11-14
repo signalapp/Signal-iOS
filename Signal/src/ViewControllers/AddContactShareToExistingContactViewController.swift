@@ -76,7 +76,7 @@ extension AddContactShareToExistingContactViewController: ContactPickerDelegate 
             owsFailDebug("could not load old CNContact.")
             return
         }
-        guard let newCNContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
+        guard let newCNContact = contactShare.dbRecord.buildSystemContact(withImageData: contactShare.avatarImageData) else {
             owsFailDebug("could not load new CNContact.")
             return
         }

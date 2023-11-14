@@ -139,15 +139,15 @@ internal class CloudBackupOutputStreamImpl: OWSChunkedOutputStream, CloudBackupO
     internal func writeHeader(_ header: BackupProtoBackupInfo) throws {
         let bytes = try header.serializedData()
         let byteLength = UInt32(bytes.count)
-        writeVariableLengthUInt32(byteLength)
-        write(bytes)
+        try writeVariableLengthUInt32(byteLength)
+        try writeData(bytes)
     }
 
     internal func writeFrame(_ frame: BackupProtoFrame) throws {
         let bytes = try frame.serializedData()
         let byteLength = UInt32(bytes.count)
-        writeVariableLengthUInt32(byteLength)
-        write(bytes)
+        try writeVariableLengthUInt32(byteLength)
+        try writeData(bytes)
     }
 
     public func closeFileStream() -> URL {

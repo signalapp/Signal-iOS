@@ -53,7 +53,7 @@ extension Stripe {
             createPaymentMethod(with: paymentMethod)
         }.then(on: DispatchQueue.sharedUserInitiated) { paymentId -> Promise<String> in
             firstly { () -> Promise<ConfirmedIntent> in
-                confirmSetupIntent(for: paymentId, clientSecret: clientSecret)
+                confirmSetupIntent(mandate: paymentMethod.mandate, for: paymentId, clientSecret: clientSecret)
             }.then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Void> in
                 if let redirectToUrl = confirmedIntent.redirectToUrl {
                     return show3DS(redirectToUrl)

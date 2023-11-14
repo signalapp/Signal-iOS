@@ -69,71 +69,15 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         }
     }
 
-    /// Queries the database to see if the recipient can receive gift badges.
-    private func canReceiveGiftBadgesViaDatabase() -> Bool {
-        databaseStorage.read { transaction -> Bool in
-            self.profileManager.getUserProfile(for: self.thread.contactAddress, transaction: transaction)?.canReceiveGiftBadges ?? false
-        }
-    }
-
-    enum ProfileFetchError: Error { case timeout }
-
-    /// Fetches the recipient's profile, then queries the database to see if they can receive gift badges.
-    /// Times out after 30 seconds.
-    private func canReceiveGiftBadgesViaProfileFetch() -> Promise<Bool> {
-        firstly {
-            ProfileFetcherJob.fetchProfilePromise(address: self.thread.contactAddress, ignoreThrottling: true)
-        }.timeout(seconds: 30) {
-            ProfileFetchError.timeout
-        }.map { [weak self] _ in
-            self?.canReceiveGiftBadgesViaDatabase() ?? false
-        }
-    }
-
-    /// Look up whether the recipient can receive gift badges.
-    /// If the operation takes more half a second, we show a spinner.
-    /// We first consult the database.
-    /// If they are capable there, we don't need to fetch their profile.
-    /// If they aren't (or we have no profile saved), we fetch the profile because we might have stale data.
-    private func canReceiveGiftBadgesWithUi() -> Promise<Bool> {
-        if canReceiveGiftBadgesViaDatabase() {
-            return Promise.value(true)
-        }
-
-        let (resultPromise, resultFuture) = Promise<Bool>.pending()
-
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
-                                                     presentationDelay: 0.5) { modal in
-            firstly {
-                self.canReceiveGiftBadgesViaProfileFetch()
-            }.done(on: DispatchQueue.main) { canReceiveGiftBadges in
-                modal.dismiss { resultFuture.resolve(canReceiveGiftBadges) }
-            }.catch(on: DispatchQueue.main) { error in
-                modal.dismiss { resultFuture.reject(error) }
-            }
-        }
-
-        return resultPromise
-    }
-
     private func checkRecipientAndPresentChoosePaymentMethodSheet() {
         // We want to resign this SOMETIME before this VC dismisses and switches to the chat.
         // In addition to offering slightly better UX, resigning first responder status prevents it
         // from eating events after the VC is dismissed.
         messageTextView.resignFirstResponder()
 
-        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<Bool> in
+        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
             guard let self = self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
-            return self.canReceiveGiftBadgesWithUi()
-        }.then(on: DispatchQueue.main) { [weak self] canReceiveGiftBadges -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
-            guard let self = self else {
-                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-            }
-            guard canReceiveGiftBadges else {
-                throw DonationViewsUtil.Gifts.SendGiftError.cannotReceiveGiftBadges
             }
             return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise
         }.done(on: DispatchQueue.main) { [weak self] safetyNumberConfirmationResult in
@@ -172,6 +116,8 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                         self.startCreditOrDebitCard()
                     case .paypal:
                         self.startPaypal()
+                    case .sepa:
+                        owsFail("Bank transfer not supported for gift badges")
                     }
                 }
             }
@@ -182,18 +128,6 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 Logger.warn("[Gifting] Error \(error)")
                 switch error {
                 case .userCanceledBeforeChargeCompleted:
-                    return
-                case .cannotReceiveGiftBadges:
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString(
-                            "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE",
-                            comment: "Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog."
-                        ),
-                        message: OWSLocalizedString(
-                            "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY",
-                            comment: "Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown."
-                        )
-                    )
                     return
                 default:
                     break

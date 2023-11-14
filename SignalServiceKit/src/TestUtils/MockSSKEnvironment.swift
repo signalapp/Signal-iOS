@@ -127,8 +127,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         )
 
         // Set up ourselves
-
-        let appExpiry = DependenciesBridge.shared.appExpiry
+        let appExpiry = dependenciesBridge.appExpiry
         let contactsManager = FakeContactsManager()
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
@@ -136,7 +135,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let remoteConfigManager = StubbableRemoteConfigManager()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
-        let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = MockSSKReachabilityManager()
@@ -188,7 +186,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             udManager: udManager,
             messageDecrypter: messageDecrypter,
             groupsV2MessageProcessor: groupsV2MessageProcessor,
-            socketManager: socketManager,
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,

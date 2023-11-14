@@ -16,8 +16,6 @@ extension DonateViewController {
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
 
-        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
-
         firstly(on: DispatchQueue.main) { [weak self] () -> Promise<URL> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
@@ -50,7 +48,9 @@ extension DonateViewController {
             guard let self else { return }
 
             Logger.info("[Donations] One-time PayPal donation finished")
-            self.didCompleteDonation(badge: badge, thanksSheetType: .boost, oldBadgesSnapshot: badgesSnapshot)
+            self.didCompleteDonation(
+                receiptCredentialSuccessMode: .oneTimeBoost
+            )
         }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
 
@@ -62,7 +62,12 @@ extension DonateViewController {
                 }
             } else {
                 Logger.info("[Donations] One-time PayPal donation failed")
-                self.didFailDonation(error: error, mode: .oneTime, paymentMethod: .paypal)
+                self.didFailDonation(
+                    error: error,
+                    mode: .oneTime,
+                    badge: badge,
+                    paymentMethod: .paypal
+                )
             }
         }
     }
@@ -78,12 +83,16 @@ extension DonateViewController {
                 approvalParams: approvalParams
             )
         }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in
-            SubscriptionManagerImpl.createAndRedeemBoostReceipt(
-                for: paymentIntentId,
-                withPaymentProcessor: .braintree,
-                amount: amount
+            SubscriptionManagerImpl.requestAndRedeemReceipt(
+                boostPaymentIntentId: paymentIntentId,
+                amount: amount,
+                paymentProcessor: .braintree,
+                paymentMethod: .paypal
             )
-            return DonationViewsUtil.waitForSubscriptionJob()
+
+            return DonationViewsUtil.waitForSubscriptionJob(
+                paymentMethod: .paypal
+            )
         }
     }
 }

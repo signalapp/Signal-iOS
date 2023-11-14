@@ -38,25 +38,22 @@ class PniIdentityKeyCheckerImpl: PniIdentityKeyChecker {
     ) -> Promise<Bool> {
         let logger = Self.logger
 
-        if identityManager.pniIdentityPublicKeyData(tx: syncTx) == nil {
+        if identityManager.pniIdentityKey(tx: syncTx) == nil {
             // If we have no PNI identity key, we can say it doesn't match.
             return .value(false)
         }
 
-        return firstly(on: self.schedulers.sync) { () -> Promise<Data?> in
+        return firstly(on: self.schedulers.sync) { () -> Promise<IdentityKey?> in
             return self.profileFetcher.fetchPniIdentityPublicKey(localPni: localPni)
-        }.map(on: self.schedulers.global()) { remotePniIdentityPublicKeyData -> Bool in
-            guard let localPniIdentityPublicKeyData = self.db.read(block: { tx -> Data? in
-                return self.identityManager.pniIdentityPublicKeyData(tx: tx)
+        }.map(on: self.schedulers.global()) { remotePniIdentityKey -> Bool in
+            guard let localPniIdentityKey = self.db.read(block: { tx -> IdentityKey? in
+                return self.identityManager.pniIdentityKey(tx: tx)
             }) else {
                 logger.warn("Missing local PNI identity key!")
                 return false
             }
 
-            if
-                let remotePniIdentityPublicKeyData,
-                remotePniIdentityPublicKeyData == localPniIdentityPublicKeyData
-            {
+            if let remotePniIdentityKey, remotePniIdentityKey == localPniIdentityKey {
                 logger.info("Local PNI identity key matches server.")
                 return true
             }
@@ -87,7 +84,7 @@ extension PniIdentityKeyCheckerImpl {
 // MARK: IdentityManager
 
 protocol _PniIdentityKeyCheckerImpl_IdentityManager_Shim {
-    func pniIdentityPublicKeyData(tx: DBReadTransaction) -> Data?
+    func pniIdentityKey(tx: DBReadTransaction) -> IdentityKey?
 }
 
 class _PniIdentityKeyCheckerImpl_IdentityManager_Wrapper: _PniIdentityKeyCheckerImpl_IdentityManager_Shim {
@@ -97,15 +94,15 @@ class _PniIdentityKeyCheckerImpl_IdentityManager_Wrapper: _PniIdentityKeyChecker
         self.identityManager = identityManager
     }
 
-    func pniIdentityPublicKeyData(tx: DBReadTransaction) -> Data? {
-        return identityManager.identityKeyPair(for: .pni, tx: tx)?.publicKey
+    func pniIdentityKey(tx: DBReadTransaction) -> IdentityKey? {
+        return identityManager.identityKeyPair(for: .pni, tx: tx)?.keyPair.identityKey
     }
 }
 
 // MARK: ProfileFetcher
 
 protocol _PniIdentityKeyCheckerImpl_ProfileFetcher_Shim {
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?>
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?>
 }
 
 class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerImpl_ProfileFetcher_Shim {
@@ -115,7 +112,7 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
         self.schedulers = schedulers
     }
 
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?> {
         let logger = PniIdentityKeyCheckerImpl.logger
 
         return ProfileFetcherJob.fetchProfilePromise(
@@ -123,9 +120,9 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
             mainAppOnly: true,
             ignoreThrottling: true,
             shouldUpdateStore: false
-        ).map(on: schedulers.sync) { fetchedProfile -> Data in
+        ).map(on: schedulers.sync) { fetchedProfile -> IdentityKey in
             return fetchedProfile.profile.identityKey
-        }.recover(on: schedulers.sync) { error throws -> Promise<Data?> in
+        }.recover(on: schedulers.sync) { error throws -> Promise<IdentityKey?> in
             switch error {
             case ProfileFetchError.missing:
                 logger.warn("Server does not have a profile for the given PNI.")

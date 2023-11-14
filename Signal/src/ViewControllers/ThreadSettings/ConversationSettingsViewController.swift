@@ -405,8 +405,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             return
         }
         let contactAddress = contactThread.contactAddress
-        assert(contactAddress.isValid)
-        FingerprintViewController.present(from: self, address: contactAddress)
+        FingerprintViewController.present(for: contactAddress.aci, from: self)
     }
 
     func showColorAndWallpaperSettingsView() {

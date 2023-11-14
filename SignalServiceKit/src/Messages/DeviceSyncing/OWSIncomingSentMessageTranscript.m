@@ -4,7 +4,6 @@
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSContact.h"
 #import "OWSMessageManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
@@ -166,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
         _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
                                                                thread:_thread
                                                           transaction:transaction];
-        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
+        _contact = [OWSContact contactForDataMessage:_dataMessage transaction:transaction];
 
         NSError *linkPreviewError;
         _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage

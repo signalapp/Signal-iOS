@@ -14,7 +14,6 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = IncomingContactSyncOperation
     public let requiresInternet: Bool = true
     public let isEnabled: Bool = true
-    public static let maxRetries: UInt = 4
     public static let jobRecordLabel: String = IncomingContactSyncJobRecord.defaultLabel
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -73,9 +72,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
     public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
     public let jobRecord: IncomingContactSyncJobRecord
-    public var operation: OWSOperation {
-        return self
-    }
+    public var operation: OWSOperation { return self }
+    public let maxRetries: UInt = 4
 
     public var newThreads: [(threadId: String, sortOrder: UInt32)] = []
 
@@ -265,10 +263,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             contactThread.anyInsert(transaction: transaction)
             let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
             newThreads.append((threadId: contactThread.uniqueId, sortOrder: inboxSortOrder))
-            if let isArchived = contactDetails.isArchived, isArchived == true {
-                let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, transaction: transaction)
-                associatedData.updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
-            }
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
@@ -279,31 +273,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
             transaction: transaction
         )
-
-        if let verifiedProto = contactDetails.verifiedProto {
-            let identityManager = DependenciesBridge.shared.identityManager
-            try identityManager.processIncomingVerifiedProto(verifiedProto, tx: transaction.asV2Write)
-        }
-
-        if let profileKey = contactDetails.profileKey {
-            self.profileManager.setProfileKeyData(
-                profileKey,
-                for: address,
-                userProfileWriter: .syncMessage,
-                authedAccount: .implicit(),
-                transaction: transaction
-            )
-        }
-
-        if contactDetails.isBlocked {
-            if !self.blockingManager.isAddressBlocked(address, transaction: transaction) {
-                self.blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
-            }
-        } else {
-            if self.blockingManager.isAddressBlocked(address, transaction: transaction) {
-                self.blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
-            }
-        }
 
         return address
     }

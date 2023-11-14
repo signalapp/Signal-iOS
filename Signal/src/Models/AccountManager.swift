@@ -88,7 +88,7 @@ public class AccountManager: NSObject, Dependencies {
 
         // Cycle socket and censorship circumvention state as e164 could be changing.
         signalService.updateHasCensoredPhoneNumberDuringProvisioning(phoneNumber)
-        socketManager.cycleSocket()
+        DependenciesBridge.shared.socketManager.cycleSocket()
 
         let serverAuthToken = generateServerAuthToken()
 
@@ -161,6 +161,13 @@ public class AccountManager: NSObject, Dependencies {
                     authedAccount: .implicit(),
                     transaction: transaction
                 )
+                if let masterKey = provisionMessage.masterKey {
+                    DependenciesBridge.shared.svr.storeSyncedMasterKey(
+                        data: masterKey,
+                        authedDevice: .implicit,
+                        transaction: transaction.asV2Write
+                    )
+                }
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                     self.receiptManager.setAreReadReceiptsEnabled(

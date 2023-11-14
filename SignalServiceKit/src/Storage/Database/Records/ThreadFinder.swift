@@ -116,31 +116,18 @@ public class ThreadFinder: Dependencies {
         return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
     }
 
-    public func sortIndex(
-        thread: TSThread,
-        transaction: SDSAnyReadTransaction
-    ) throws -> UInt? {
+    public func fetchContactSyncThreadRowIds(tx: SDSAnyReadTransaction) throws -> [Int64] {
         let sql = """
-            SELECT sortIndex
-            FROM (
-                SELECT
-                    (ROW_NUMBER() OVER (ORDER BY \(threadColumn: .lastInteractionRowId) DESC) - 1) as sortIndex,
-                    \(threadColumn: .id)
-                FROM \(ThreadRecord.databaseTableName)
-                WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            )
-            WHERE \(threadColumn: .id) = ?
+            SELECT \(threadColumn: .id)
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
-
-        guard let grdbId = thread.grdbId, grdbId.intValue > 0 else {
-            throw OWSAssertionError("grdbId was unexpectedly nil")
+        do {
+            return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
+        } catch {
+            throw error.grdbErrorForLogging
         }
-
-        return try UInt.fetchOne(
-            transaction.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: [grdbId.intValue]
-        )
     }
 
     public func hasPendingMessageRequest(

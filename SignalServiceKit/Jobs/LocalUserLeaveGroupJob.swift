@@ -16,6 +16,10 @@ public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation 
 
     public var operation: OWSOperation { self }
 
+    /// 110 retries corresponds to approximately ~24hr of retry when using
+    /// ``OWSOperation/retryIntervalForExponentialBackoff(failureCount:maxBackoff:)``.
+    public let maxRetries: UInt = 110
+
     private var groupThreadAfterSuccessfulUpdate: TSGroupThread?
     private let future: Future<TSGroupThread>?
 
@@ -128,10 +132,6 @@ public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation 
 @objc
 public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = LocalUserLeaveGroupOperation
-
-    /// 110 retries corresponds to approximately ~24hr of retry when using
-    /// `OWSOperation.retryIntervalForExponentialBackoff(failureCount:)`.
-    public static var maxRetries: UInt { 110 }
 
     public var runningOperations = AtomicArray<LocalUserLeaveGroupOperation>()
     public var isSetup = AtomicBool(false)

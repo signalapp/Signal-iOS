@@ -6,6 +6,7 @@
 import XCTest
 
 @testable import Signal
+import SignalMessaging
 
 class VisibleBadgeResolverTest: XCTestCase {
 

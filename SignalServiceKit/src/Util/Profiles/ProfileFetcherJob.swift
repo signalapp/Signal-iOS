@@ -231,9 +231,6 @@ public class ProfileFetcherJob: NSObject {
                 // These errors should only be thrown at a higher level.
                 owsFailDebug("Unexpected error: \(error)")
                 throw error
-            case SignalServiceProfile.ValidationError.invalidIdentityKey:
-                owsFailDebug("skipping updateProfile retry. Invalid profile for: \(serviceId) error: \(error)")
-                throw error
             case let error as SignalServiceProfile.ValidationError:
                 // This should not be retried.
                 owsFailDebug("skipping updateProfile retry. Invalid profile for: \(serviceId) error: \(error)")
@@ -502,7 +499,6 @@ public class ProfileFetcherJob: NSObject {
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetch: Date(),
-                canReceiveGiftBadges: profile.canReceiveGiftBadges,
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
                 authedAccount: authedAccount,
@@ -517,13 +513,6 @@ public class ProfileFetcherJob: NSObject {
                 hasPaymentsEnabled: paymentAddress != nil,
                 transaction: transaction
             )
-
-            if self.isFetchForLocalAccount(authedAccount: authedAccount) {
-                self.legacyChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
-                    profile.supportsChangeNumber,
-                    transaction: transaction
-                )
-            }
         }
     }
 
@@ -595,7 +584,7 @@ public struct DecryptedProfile: Dependencies {
     public let bio: String?
     public let bioEmoji: String?
     public let paymentAddressData: Data?
-    public let publicIdentityKey: Data
+    public let identityKey: IdentityKey
 }
 
 // MARK: -
@@ -636,13 +625,14 @@ public struct FetchedProfile {
         if let paymentAddressEncrypted = profile.paymentAddressEncrypted {
             paymentAddressData = OWSUserProfile.decrypt(profileData: paymentAddressEncrypted, profileKey: profileKey)
         }
-        let publicIdentityKey = profile.identityKey
-        return DecryptedProfile(givenName: givenName,
-                                familyName: familyName,
-                                bio: bio,
-                                bioEmoji: bioEmoji,
-                                paymentAddressData: paymentAddressData,
-                                publicIdentityKey: publicIdentityKey)
+        return DecryptedProfile(
+            givenName: givenName,
+            familyName: familyName,
+            bio: bio,
+            bioEmoji: bioEmoji,
+            paymentAddressData: paymentAddressData,
+            identityKey: profile.identityKey
+        )
     }
 }
 
@@ -669,7 +659,7 @@ public extension DecryptedProfile {
                 return nil
             }
             let proto = try SSKProtoPaymentAddress(serializedData: paymentAddressDataWithoutLength)
-            let paymentAddress = try TSPaymentAddress.fromProto(proto, publicIdentityKey: publicIdentityKey)
+            let paymentAddress = try TSPaymentAddress.fromProto(proto, identityKey: identityKey)
             return paymentAddress
         } catch {
             owsFailDebug("Error: \(error)")

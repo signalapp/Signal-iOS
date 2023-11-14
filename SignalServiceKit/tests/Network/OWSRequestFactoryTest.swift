@@ -113,19 +113,28 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     }
 
     func testBoostStripeCreatePaymentIntentWithAmount() {
-        let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
-            integerMoneyValue: 123,
-            inCurrencyCode: "CHF",
-            level: 456
-        )
+        let testCases: [(paymentMethod: OWSRequestFactory.StripePaymentMethod, expectedValue: String)] = [
+            (.card, "CARD"),
+            (.bankTransfer(.sepa), "SEPA_DEBIT"),
+        ]
 
-        XCTAssertEqual(request.url?.path, "v1/subscription/boost/create")
-        XCTAssertEqual(request.httpMethod, "POST")
-        XCTAssertEqual(Set(request.parameters.keys), Set(["currency", "amount", "level"]))
-        XCTAssertEqual(request.parameters["currency"] as? String, "chf")
-        XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
-        XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+        for (paymentMethod, expectedPaymentMethodValue) in testCases {
+            let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
+                integerMoneyValue: 123,
+                inCurrencyCode: "CHF",
+                level: 456,
+                paymentMethod: paymentMethod
+            )
+
+            XCTAssertEqual(request.url?.path, "v1/subscription/boost/create")
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(Set(request.parameters.keys), Set(["currency", "amount", "level", "paymentMethod"]))
+            XCTAssertEqual(request.parameters["currency"] as? String, "chf")
+            XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
+            XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
+            XCTAssertEqual(request.parameters["paymentMethod"] as? String, expectedPaymentMethodValue)
+            XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+        }
     }
 
     func testBoostPaypalCreatePaymentIntentWithAmount() {

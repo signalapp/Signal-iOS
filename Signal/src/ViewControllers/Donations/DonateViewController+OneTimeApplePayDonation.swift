@@ -31,7 +31,6 @@ extension DonateViewController {
         }
 
         let boostBadge = oneTime.profileBadge
-        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
 
         firstly(on: DispatchQueue.global()) {
             Stripe.boost(
@@ -47,19 +46,29 @@ extension DonateViewController {
 
             wrappedCompletion(.init(status: .success, errors: nil))
 
-            SubscriptionManagerImpl.createAndRedeemBoostReceipt(
-                for: confirmedIntent.intentId,
-                withPaymentProcessor: .stripe,
-                amount: amount
+            SubscriptionManagerImpl.requestAndRedeemReceipt(
+                boostPaymentIntentId: confirmedIntent.intentId,
+                amount: amount,
+                paymentProcessor: .stripe,
+                paymentMethod: .applePay
             )
 
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
-                promise: DonationViewsUtil.waitForSubscriptionJob()
+                promise: DonationViewsUtil.waitForSubscriptionJob(
+                    paymentMethod: .applePay
+                )
             ).done(on: DispatchQueue.main) {
-                self.didCompleteDonation(badge: boostBadge, thanksSheetType: .boost, oldBadgesSnapshot: badgesSnapshot)
+                self.didCompleteDonation(
+                    receiptCredentialSuccessMode: .oneTimeBoost
+                )
             }.catch(on: DispatchQueue.main) { [weak self] error in
-                self?.didFailDonation(error: error, mode: .oneTime, paymentMethod: .applePay)
+                self?.didFailDonation(
+                    error: error,
+                    mode: .oneTime,
+                    badge: boostBadge,
+                    paymentMethod: .applePay
+                )
             }
         }.catch(on: DispatchQueue.main) { error in
             wrappedCompletion(.init(status: .failure, errors: [error]))

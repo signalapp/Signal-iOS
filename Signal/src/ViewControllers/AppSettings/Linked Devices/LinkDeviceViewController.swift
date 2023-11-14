@@ -140,12 +140,14 @@ class LinkDeviceViewController: OWSViewController {
         var aciIdentityKeyPair: ECKeyPair?
         var pniIdentityKeyPair: ECKeyPair?
         var areReadReceiptsEnabled: Bool = true
+        var masterKey: Data?
         databaseStorage.read { tx in
             localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             let identityManager = DependenciesBridge.shared.identityManager
             aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
             pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
             areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: tx)
+            masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         }
         let myProfileKeyData = profileManager.localProfileKey().keyData
 
@@ -161,6 +163,11 @@ class LinkDeviceViewController: OWSViewController {
         guard let pniIdentityKeyPair else {
             owsFail("Can't provision without an pni identity.")
         }
+        guard let masterKey else {
+            // This should be impossible; the only times you don't have
+            // a master key are during registration, and on a linked device.
+            owsFail("Can't provision without a master key.")
+        }
 
         let deviceProvisioner = OWSDeviceProvisioner(
             myAciIdentityKeyPair: aciIdentityKeyPair.identityKeyPair,
@@ -171,6 +178,7 @@ class LinkDeviceViewController: OWSViewController {
             myPhoneNumber: myPhoneNumber,
             myPni: myPni,
             profileKey: myProfileKeyData,
+            masterKey: masterKey,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(
                 networkManager: self.networkManager,
@@ -188,7 +196,7 @@ class LinkDeviceViewController: OWSViewController {
             // The service implementation of the socket connection caches the linked
             // device state, so all sync message sends will fail on the socket until it
             // is cycled.
-            self.socketManager.cycleSocket()
+            DependenciesBridge.shared.socketManager.cycleSocket()
 
             // Fetch the local profile to determine if all linked devices support UD.
             self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())

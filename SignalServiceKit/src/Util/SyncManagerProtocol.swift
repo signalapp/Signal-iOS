@@ -16,11 +16,6 @@ public protocol SyncManagerProtocolObjc {
 
     typealias Completion = () -> Void
 
-    func syncLocalContact() -> AnyPromise
-    func syncAllContacts() -> AnyPromise
-    @discardableResult
-    func syncAllContactsIfFullSyncRequested() -> AnyPromise
-
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
 
@@ -35,6 +30,10 @@ public protocol SyncManagerProtocolObjc {
 public protocol SyncManagerProtocolSwift {
     func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
+
+    func syncLocalContact() -> AnyPromise
+    func syncAllContacts() -> AnyPromise
+    func syncAllContactsIfFullSyncRequested() -> AnyPromise
 
     func sendKeysSyncMessage()
     func sendKeysSyncMessage(tx: SDSAnyWriteTransaction)

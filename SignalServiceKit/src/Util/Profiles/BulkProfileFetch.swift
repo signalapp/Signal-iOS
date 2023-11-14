@@ -21,7 +21,6 @@ public actor BulkProfileFetch {
             case serviceError
             case success
             case throttled
-            case invalid
         }
         let date: Date
 
@@ -209,10 +208,6 @@ public actor BulkProfileFetch {
             Logger.error("Rate limit error")
             lastOutcomeMap[serviceId] = UpdateOutcome(.retryLimit)
             lastRateLimitErrorDate = Date()
-        } catch SignalServiceProfile.ValidationError.invalidIdentityKey {
-            // There will be invalid identity keys on staging that can be safely ignored.
-            owsFailDebug("Invalid identity key")
-            lastOutcomeMap[serviceId] = UpdateOutcome(.invalid)
         } catch {
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
@@ -260,8 +255,6 @@ public actor BulkProfileFetch {
                 minElapsedSeconds = 30 * kMinuteInterval
             case .success:
                 minElapsedSeconds = 2 * kMinuteInterval
-            case .invalid:
-                minElapsedSeconds = 6 * kHourInterval
             }
         }
 

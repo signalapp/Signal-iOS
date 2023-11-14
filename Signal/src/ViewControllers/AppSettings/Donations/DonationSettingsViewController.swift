@@ -11,16 +11,28 @@ import SignalUI
 import UIKit
 
 class DonationSettingsViewController: OWSTableViewController2 {
-    private enum State {
+    enum State {
         enum SubscriptionStatus {
             case loadFailed
+
             case noSubscription
+
+            /// The user has a subscription, which may be active or inactive.
+            ///
+            /// Both active and inactive subscriptions may be in a "processing"
+            /// state. Inactive subscriptions may also have a charge failure
+            /// if payment failed.
+            ///
+            /// The receipt credential request error may be present for either
+            /// active or inactive subscriptions. In most cases, it will reflect
+            /// either a processing or failed payment – state that is available
+            /// from the subscription itself – but if something rare went wrong
+            /// it may also reflect an error external to the subscription.
             case hasSubscription(
                 subscription: Subscription,
-                // If this is nil, the server has sent us bad data.
                 subscriptionLevel: SubscriptionLevel?,
-                isSubscriptionRedemptionPending: Bool,
-                subscriptionRedemptionFailureReason: SubscriptionRedemptionFailureReason
+                previouslyHadActiveSubscription: Bool,
+                receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
             )
         }
 
@@ -28,24 +40,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
         case loading
         case loadFinished(
             subscriptionStatus: SubscriptionStatus,
+            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
             profileBadgeLookup: ProfileBadgeLookup,
             hasAnyBadges: Bool,
             hasAnyDonationReceipts: Bool
         )
-
-        public var currentSubscription: Subscription? {
-            switch self {
-            case let .loadFinished(subscriptionStatus, _, _, _):
-                switch subscriptionStatus {
-                case let .hasSubscription(subscription, _, _, _):
-                    return subscription
-                default:
-                    return nil
-                }
-            default:
-                return nil
-            }
-        }
 
         public var debugDescription: String {
             switch self {
@@ -67,8 +66,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private var avatarView: ConversationAvatarView = DonationViewsUtil.avatarView()
-
-    private lazy var statusLabel = LinkingTextView()
 
     private static var canDonateInAnyWay: Bool {
         DonationUtilities.canDonateInAnyWay(
@@ -113,38 +110,37 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Data loading
 
-    private func loadAndUpdateState() {
+    func loadAndUpdateState() -> Guarantee<Void> {
         switch state {
         case .loading:
-            return
+            owsFailDebug("Already loading!")
+            return .value(())
         case .initializing, .loadFinished:
             self.state = .loading
-            loadState().done { self.state = $0 }
+            return loadState().done { self.state = $0 }
         }
     }
 
     private func loadState() -> Guarantee<State> {
-        typealias ValuesFromDatabase = (
-            subscriberID: Data?,
-            isSubscriptionRedemptionPendingInDatabase: Bool,
-            hasAnyDonationReceipts: Bool
-        )
-
         let (
             subscriberID,
-            isSubscriptionRedemptionPendingInDatabase,
+            hasEverRedeemedRecurringSubscriptionBadge,
+            recurringSubscriptionReceiptCredentialRequestError,
+            oneTimeBoostReceiptCredentialRequestError,
             hasAnyDonationReceipts
-        ) = databaseStorage.read { transaction -> ValuesFromDatabase in
-            let subscriberID = SubscriptionManagerImpl.getSubscriberID(transaction: transaction)
+        ) = databaseStorage.read { tx in
+            let resultStore = DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+
             return (
-                subscriberID: subscriberID,
-                isSubscriptionRedemptionPendingInDatabase: (
-                    subscriberID != nil && (
-                        SubscriptionManagerImpl.subscriptionJobQueue.hasPendingJobs(transaction: transaction) ||
-                        SubscriptionManagerImpl.subscriptionJobQueue.runningOperations.get().count != 0
-                    )
+                subscriberID: SubscriptionManagerImpl.getSubscriberID(transaction: tx),
+                hasEverRedeemedRecurringSubscriptionBadge: SubscriptionManagerImpl.getHasEverRedeemedRecurringSubscriptionBadge(tx: tx),
+                recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestError(
+                    errorMode: .recurringSubscription, tx: tx.asV2Read
                 ),
-                hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: transaction)
+                oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(
+                    errorMode: .oneTimeBoost, tx: tx.asV2Read
+                ),
+                hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx)
             )
         }
 
@@ -159,24 +155,21 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 currentSubscriptionPromise.then { currentSubscription -> Guarantee<State> in
                     let result: State = .loadFinished(
                         subscriptionStatus: {
-                            guard
-                                let currentSubscription = currentSubscription,
-                                currentSubscription.active
-                            else {
+                            guard let currentSubscription else {
                                 return .noSubscription
                             }
+
                             return .hasSubscription(
                                 subscription: currentSubscription,
                                 subscriptionLevel: DonationViewsUtil.subscriptionLevelForSubscription(
                                     subscriptionLevels: subscriptionLevels,
                                     subscription: currentSubscription
                                 ),
-                                isSubscriptionRedemptionPending: isSubscriptionRedemptionPendingInDatabase,
-                                subscriptionRedemptionFailureReason: DonationViewsUtil.getSubscriptionRedemptionFailureReason(
-                                    subscription: currentSubscription
-                                )
+                                previouslyHadActiveSubscription: hasEverRedeemedRecurringSubscriptionBadge,
+                                receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError
                             )
                         }(),
+                        oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                         profileBadgeLookup: profileBadgeLookup,
                         hasAnyBadges: hasAnyBadges,
                         hasAnyDonationReceipts: hasAnyDonationReceipts
@@ -188,6 +181,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 owsFailDebugUnlessNetworkFailure(error)
                 let result: State = .loadFinished(
                     subscriptionStatus: .loadFailed,
+                    oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                     profileBadgeLookup: profileBadgeLookup,
                     hasAnyBadges: hasAnyBadges,
                     hasAnyDonationReceipts: hasAnyDonationReceipts
@@ -250,10 +244,17 @@ class DonationSettingsViewController: OWSTableViewController2 {
         switch state {
         case .initializing, .loading:
             contents.add(loadingSection())
-        case let .loadFinished(subscriptionStatus, profileBadgeLookup, hasAnyBadges, hasAnyDonationReceipts):
+        case let .loadFinished(
+            subscriptionStatus,
+            oneTimeBoostReceiptCredentialRequestError,
+            profileBadgeLookup,
+            hasAnyBadges,
+            hasAnyDonationReceipts
+        ):
             let sections = loadFinishedSections(
                 subscriptionStatus: subscriptionStatus,
                 profileBadgeLookup: profileBadgeLookup,
+                oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                 hasAnyBadges: hasAnyBadges,
                 hasAnyDonationReceipts: hasAnyDonationReceipts
             )
@@ -308,11 +309,17 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func loadFinishedSections(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
+        oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
         hasAnyBadges: Bool,
         hasAnyDonationReceipts: Bool
     ) -> [OWSTableSection] {
         [
-            mySupportSection(subscriptionStatus: subscriptionStatus, hasAnyBadges: hasAnyBadges),
+            mySupportSection(
+                subscriptionStatus: subscriptionStatus,
+                profileBadgeLookup: profileBadgeLookup,
+                oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                hasAnyBadges: hasAnyBadges
+            ),
             otherWaysToDonateSection(),
             moreSection(
                 subscriptionStatus: subscriptionStatus,
@@ -320,59 +327,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 hasAnyDonationReceipts: hasAnyDonationReceipts
             )
         ].compacted()
-    }
-
-    private func mySupportSection(
-        subscriptionStatus: State.SubscriptionStatus,
-        hasAnyBadges: Bool
-    ) -> OWSTableSection? {
-        let title = OWSLocalizedString("DONATION_VIEW_MY_SUPPORT_TITLE",
-                                      comment: "Title for the 'my support' section in the donation view")
-        let section = OWSTableSection(title: title)
-
-        switch subscriptionStatus {
-        case .loadFailed:
-            section.add(.label(withText: OWSLocalizedString(
-                "DONATION_VIEW_LOAD_FAILED",
-                comment: "Text that's shown when the donation view fails to load data, probably due to network failure"
-            )))
-        case .noSubscription:
-            break
-        case let .hasSubscription(subscription, subscriptionLevel, isSubscriptionRedemptionPending, subscriptionRedemptionFailureReason):
-            section.add(DonationViewsUtil.getMySupportCurrentSubscriptionTableItem(subscriptionLevel: subscriptionLevel,
-                                                                                   currentSubscription: subscription,
-                                                                                   isSubscriptionRedemptionPending: isSubscriptionRedemptionPending,
-                                                                                   subscriptionRedemptionFailureReason: subscriptionRedemptionFailureReason,
-                                                                                   statusLabelToModify: statusLabel))
-            statusLabel.delegate = self
-
-            section.add(.disclosureItem(
-                icon: .donateManageSubscription,
-                name: OWSLocalizedString("DONATION_VIEW_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button on the donation screen"),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
-                actionBlock: { [weak self] in
-                    self?.showDonateViewController(preferredDonateMode: .monthly)
-                }
-            ))
-        }
-
-        if hasAnyBadges {
-            section.add(.disclosureItem(
-                icon: .donateBadges,
-                name: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    let vc = BadgeConfigurationViewController(fetchingDataFromLocalProfileWithDelegate: self)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        }
-
-        guard section.itemCount > 0 else {
-            return nil
-        }
-        return section
     }
 
     private func otherWaysToDonateSection() -> OWSTableSection? {
@@ -442,12 +396,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
             section.add(.disclosureItem(
                 icon: .settingsHelp,
                 name: OWSLocalizedString(
-                    "DONATION_VIEW_SUBSCRIPTION_FAQ",
-                    comment: "Title for the 'Subscription FAQ' button on the donation screen"
+                    "DONATION_VIEW_DONOR_FAQ",
+                    comment: "Title for the 'Donor FAQ' button on the donation screen"
                 ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionFAQ"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donorFAQ"),
                 actionBlock: { [weak self] in
-                    let vc = SFSafariViewController(url: SupportConstants.subscriptionFAQURL)
+                    let vc = SFSafariViewController(url: SupportConstants.donorFAQURL)
                     self?.present(vc, animated: true, completion: nil)
                 }
             ))
@@ -474,13 +428,22 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Showing subscription view controller
 
-    private func showDonateViewController(preferredDonateMode: DonateViewController.DonateMode) {
+    func showDonateViewController(preferredDonateMode: DonateViewController.DonateMode) {
         let donateVc = DonateViewController(preferredDonateMode: preferredDonateMode) { [weak self] finishResult in
             guard let self = self else { return }
             switch finishResult {
-            case let .completedDonation(_, thanksSheet):
+            case let .completedDonation(_, receiptCredentialSuccessMode):
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in
-                    self?.present(thanksSheet, animated: true)
+                    guard
+                        let self,
+                        let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
+                            successMode: receiptCredentialSuccessMode
+                        )
+                    else { return }
+
+                    badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
+                        fromViewController: self
+                    )
                 }
             case let .monthlySubscriptionCancelled(_, toastText):
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in
@@ -528,7 +491,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
             }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
-            let sheet = BadgeExpirationSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
+            let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
             sheet.delegate = self
             self.present(sheet, animated: true)
 
@@ -538,10 +501,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 }
 
-// MARK: - Badge Expiration Delegate
+// MARK: - Badge Issue Delegate
 
-extension DonationSettingsViewController: BadgeExpirationSheetDelegate {
-    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
+extension DonationSettingsViewController: BadgeIssueSheetDelegate {
+    func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction) {
         switch action {
         case .dismiss:
             break
@@ -629,19 +592,5 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
 extension DonationSettingsViewController: DonationHeroViewDelegate {
     func present(readMoreSheet: DonationReadMoreSheetViewController) {
         present(readMoreSheet, animated: true)
-    }
-}
-
-// MARK: - Badge can't be added
-
-extension DonationSettingsViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        if textView == statusLabel {
-            DonationViewsUtil.presentBadgeCantBeAddedSheet(
-                from: self,
-                currentSubscription: state.currentSubscription
-            )
-        }
-        return false
     }
 }

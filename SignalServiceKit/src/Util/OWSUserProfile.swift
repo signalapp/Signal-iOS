@@ -473,9 +473,6 @@ public class UserProfileChanges: NSObject {
     public var profileKey: OptionalProfileKeyValue?
     @objc
     public var badges: [OWSUserProfileBadgeInfo]?
-
-    @objc
-    public var canReceiveGiftBadges: BoolValue?
     @objc
     public var isPniCapable: BoolValue?
 
@@ -540,7 +537,7 @@ public extension OWSUserProfile {
         )
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:lastFetchDate:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:lastFetchDate:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
     func update(
         givenName: String?,
         familyName: String?,
@@ -549,7 +546,6 @@ public extension OWSUserProfile {
         badges: [OWSUserProfileBadgeInfo],
         avatarUrlPath: String?,
         lastFetchDate: Date,
-        canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
@@ -564,8 +560,6 @@ public extension OWSUserProfile {
         changes.badges = badges
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.lastFetchDate = .init(lastFetchDate)
-
-        changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 
         apply(
@@ -577,7 +571,7 @@ public extension OWSUserProfile {
         )
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:avatarFileName:lastFetchDate:canReceiveGiftBadges:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:avatarFileName:lastFetchDate:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
     func update(
         givenName: String?,
         familyName: String?,
@@ -587,7 +581,6 @@ public extension OWSUserProfile {
         avatarUrlPath: String?,
         avatarFileName: String?,
         lastFetchDate: Date,
-        canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
@@ -603,8 +596,6 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
-
-        changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 
         apply(
@@ -703,14 +694,12 @@ public extension OWSUserProfile {
     }
 
     func update(
-        canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
         let changes = UserProfileChanges()
-        changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
         apply(
             changes,
@@ -723,7 +712,6 @@ public extension OWSUserProfile {
 
     func update(
         lastFetchDate: Date,
-        canReceiveGiftBadges: Bool,
         isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
@@ -731,8 +719,6 @@ public extension OWSUserProfile {
     ) {
         let changes = UserProfileChanges()
         changes.lastFetchDate = .init(lastFetchDate)
-
-        changes.canReceiveGiftBadges = .init(canReceiveGiftBadges)
         changes.isPniCapable = .init(isPniCapable)
 
         apply(

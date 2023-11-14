@@ -93,6 +93,16 @@ public class DonationUtilities: Dependencies {
             return false
         }()
 
+        let isSEPAAvailable = {
+            guard FeatureFlags.allowSEPADonations else { return false }
+            switch donationMode {
+            case .oneTime, .monthly:
+                return true
+            case .gift:
+                return false
+            }
+        }()
+
         var result = Set<DonationPaymentMethod>()
 
         if isApplePayAvailable {
@@ -105,6 +115,10 @@ public class DonationUtilities: Dependencies {
 
         if isCardAvailable {
             result.insert(.creditOrDebitCard)
+        }
+
+        if isSEPAAvailable {
+            result.insert(.sepa)
         }
 
         return result

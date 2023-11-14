@@ -260,8 +260,8 @@ public enum RegistrationRequestFactory {
         var parameters: [String: Any] = [
             "accountAttributes": accountAttributesDict,
             "skipDeviceTransfer": skipDeviceTransfer,
-            "aciIdentityKey": prekeyBundles.aci.identityKeyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
-            "pniIdentityKey": prekeyBundles.pni.identityKeyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
+            "aciIdentityKey": prekeyBundles.aci.identityKeyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
+            "pniIdentityKey": prekeyBundles.pni.identityKeyPair.keyPair.publicKey.serialize().asData.base64EncodedStringWithoutPadding(),
             "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),
             "pniSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.pni.signedPreKey),
             "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),

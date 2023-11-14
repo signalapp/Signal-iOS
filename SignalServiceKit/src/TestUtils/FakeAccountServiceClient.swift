@@ -21,7 +21,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
 
     public override func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: Data,
+        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,

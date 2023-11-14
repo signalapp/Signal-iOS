@@ -28,7 +28,6 @@ extension DonationViewsUtil {
             case recipientIsBlocked
             case failedAndUserNotCharged
             case failedAndUserMaybeCharged
-            case cannotReceiveGiftBadges
             case userCanceledBeforeChargeCompleted
         }
 
@@ -91,7 +90,7 @@ extension DonationViewsUtil {
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
         ) -> Promise<PreparedGiftPayment> {
             firstly(on: DispatchQueue.sharedUserInitiated) {
-                Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift))
+                Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift), paymentMethod: paymentMethod.stripePaymentMethod)
             }.then(on: DispatchQueue.sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
                 Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in
                     .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
@@ -260,7 +259,7 @@ extension DonationViewsUtil {
                     "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY",
                     comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked."
                 )
-            case .failedAndUserNotCharged, .cannotReceiveGiftBadges:
+            case .failedAndUserNotCharged:
                 title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE",
                     comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog."

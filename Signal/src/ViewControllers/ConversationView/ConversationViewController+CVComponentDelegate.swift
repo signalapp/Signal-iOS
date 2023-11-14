@@ -488,7 +488,7 @@ extension ConversationViewController: CVComponentDelegate {
             }
         }
 
-        FingerprintViewController.present(from: self, address: address)
+        FingerprintViewController.present(for: address.aci, from: self)
     }
 
     public func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {

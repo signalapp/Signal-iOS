@@ -127,7 +127,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(1, jobRecord.failureCount)
         XCTAssertEqual(.running, jobRecord.status)
 
-        let retryCount: UInt = MessageSenderJobQueue.maxRetries
+        let retryCount: UInt = 110 // Matches MessageSenderOperation
         (1..<retryCount).forEach { _ in
             let expectedResend = sentExpectation(message: message)
             // Manually kick queue restart.

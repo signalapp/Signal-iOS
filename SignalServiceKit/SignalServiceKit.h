@@ -36,7 +36,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
@@ -51,9 +50,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
 #import <SignalServiceKit/OWSChunkedOutputStream.h>
-#import <SignalServiceKit/OWSContact+Private.h>
-#import <SignalServiceKit/OWSContact.h>
-#import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -102,7 +98,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>
 #import <SignalServiceKit/OWSStickerPackSyncMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
-#import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncMessageRequestResponseMessage.h>

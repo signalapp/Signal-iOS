@@ -6,6 +6,24 @@
 import Foundation
 
 public extension OWSRequestFactory {
+    enum StripePaymentMethod {
+        public enum BankTransfer: String {
+            case sepa = "SEPA_DEBIT"
+        }
+
+        case card
+        case bankTransfer(BankTransfer)
+
+        fileprivate var rawValue: String {
+            switch self {
+            case .card:
+                return "CARD"
+            case .bankTransfer(let bankTransfer):
+                return bankTransfer.rawValue
+            }
+        }
+    }
+
     private enum BoostApiPaths {
         private static let basePath = "v1/subscription/boost"
 
@@ -18,13 +36,19 @@ public extension OWSRequestFactory {
     static func boostStripeCreatePaymentIntent(
         integerMoneyValue: UInt,
         inCurrencyCode currencyCode: Currency.Code,
-        level: UInt64
+        level: UInt64,
+        paymentMethod: StripePaymentMethod
     ) -> TSRequest {
-        let request = TSRequest(url: URL(string: BoostApiPaths.stripeCreatePaymentIntent)!,
-                                method: HTTPMethod.post.methodName,
-                                parameters: ["currency": currencyCode.lowercased(),
-                                             "amount": integerMoneyValue,
-                                             "level": level])
+        let request = TSRequest(
+            url: URL(string: BoostApiPaths.stripeCreatePaymentIntent)!,
+            method: HTTPMethod.post.methodName,
+            parameters: [
+                "currency": currencyCode.lowercased(),
+                "amount": integerMoneyValue,
+                "level": level,
+                "paymentMethod": paymentMethod.rawValue
+            ]
+        )
         request.shouldHaveAuthorizationHeaders = false
         return request
     }

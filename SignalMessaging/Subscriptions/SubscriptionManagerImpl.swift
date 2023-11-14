@@ -8,16 +8,6 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
-public enum PaymentProcessor: String {
-    /// Represents the payment processor Stripe, which we use for Apple Pay and
-    /// credit/debit card payments.
-    case stripe = "STRIPE"
-
-    /// Represents the payment processor Braintree, which we use for PayPal
-    /// payments.
-    case braintree = "BRAINTREE"
-}
-
 public enum OneTimeBadgeLevel: Hashable {
     case boostBadge
     case giftBadge(OWSGiftBadge.Level)
@@ -58,15 +48,6 @@ public enum GiftBadgeIds: String {
     }
 }
 
-public enum SubscriptionRedemptionFailureReason: Int {
-    case none = 0
-    case localValidationFailed = 1
-    case serverValidationFailed = 400
-    case paymentFailed = 402
-    case paymentNotFound = 404
-    case paymentIntentRedeemed = 409
-}
-
 public class SubscriptionLevel: Comparable, Equatable {
     public let level: UInt
     public let name: String
@@ -96,6 +77,8 @@ public class SubscriptionLevel: Comparable, Equatable {
     }
 }
 
+/// Represents a *recurring* subscription, associated with a subscriber ID and
+/// fetched from the service using that ID.
 public struct Subscription: Equatable {
     public struct ChargeFailure: Equatable {
         /// The error code reported by the server.
@@ -144,7 +127,17 @@ public struct Subscription: Equatable {
     public let active: Bool
     public let cancelAtEndOfPeriod: Bool
     public let status: SubscriptionStatus
-    public let paymentProcessor: PaymentProcessor
+    public let paymentProcessor: DonationPaymentProcessor
+    /// - Note
+    /// This will never be `.applePay`, since the server treats Apple Pay
+    /// payments like credit card payments.
+    public let paymentMethod: DonationPaymentMethod?
+
+    /// Whether the payment for this subscription is actively processing, and
+    /// has not yet succeeded nor failed.
+    public let isPaymentProcessing: Bool
+
+    /// Indicates that payment for this subscription failed.
     public let chargeFailure: ChargeFailure?
 
     public var debugDescription: String {
@@ -184,11 +177,21 @@ public struct Subscription: Equatable {
         status = SubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
 
         let processorString: String = try params.required(key: "processor")
-        if let paymentProcessor = PaymentProcessor(rawValue: processorString) {
+        if let paymentProcessor = DonationPaymentProcessor(rawValue: processorString) {
             self.paymentProcessor = paymentProcessor
         } else {
             throw OWSAssertionError("Unexpected payment processor: \(processorString)")
         }
+
+        let paymentMethodString: String = try params.required(key: "paymentMethod")
+        if let paymentMethod = DonationPaymentMethod(serverRawValue: paymentMethodString) {
+            self.paymentMethod = paymentMethod
+        } else {
+            owsFailDebug("[Donations] Unrecognized payment method while parsing subscription: \(paymentMethodString)")
+            self.paymentMethod = nil
+        }
+
+        isPaymentProcessing = try params.required(key: "paymentProcessing")
 
         if let chargeFailureDict = chargeFailureDict {
             chargeFailure = ChargeFailure(jsonDictionary: chargeFailureDict)
@@ -257,15 +260,16 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     public static var subscriptionJobQueue: SubscriptionReceiptCredentialRedemptionJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
-    public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
-    public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
+
+    /// - Note
+    /// This collection name is reused by other subscription-related stores. For
+    /// example, see ``SubscriptionReceiptCredentialResultStore``.
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
 
     fileprivate static let subscriberIDKey = "subscriberID"
     fileprivate static let subscriberCurrencyCodeKey = "subscriberCurrencyCode"
     fileprivate static let lastSubscriptionExpirationKey = "subscriptionExpiration"
     fileprivate static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
-    fileprivate static let lastSubscriptionReceiptRedemptionFailedKey = "lastSubscriptionReceiptRedemptionFailedKey"
     fileprivate static let userManuallyCancelledSubscriptionKey = "userManuallyCancelledSubscriptionKey"
     fileprivate static let displayBadgesOnProfileKey = "displayBadgesOnProfileKey"
     fileprivate static let knownUserSubscriptionBadgeIDsKey = "knownUserSubscriptionBadgeIDsKey"
@@ -276,6 +280,7 @@ public class SubscriptionManagerImpl: NSObject {
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
+    fileprivate static let hasEverRedeemedRecurringSubscriptionBadgeKey = "hadEverRedeemedRecurringSubscriptionBadgeKey"
 
     // MARK: Current subscription status
 
@@ -350,6 +355,7 @@ public class SubscriptionManagerImpl: NSObject {
     public class func finalizeNewSubscription(
         forSubscriberId subscriberId: Data,
         withPaymentId paymentId: String,
+        usingPaymentProcessor paymentProcessor: DonationPaymentProcessor,
         usingPaymentMethod paymentMethod: DonationPaymentMethod,
         subscription: SubscriptionLevel,
         currencyCode: Currency.Code
@@ -359,7 +365,7 @@ public class SubscriptionManagerImpl: NSObject {
 
             return setDefaultPaymentMethod(
                 for: subscriberId,
-                using: paymentMethod.paymentProcessor,
+                using: paymentProcessor,
                 paymentID: paymentId
             )
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Subscription> in
@@ -411,9 +417,12 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setSubscriberID(nil, transaction: transaction)
                 self.setSubscriberCurrencyCode(nil, transaction: transaction)
                 self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
-                self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
+
+                self.clearHasEverRedeemedRecurringSubscriptionBadge(tx: transaction)
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .clearRequestError(errorMode: .recurringSubscription, tx: transaction.asV2Write)
             }
 
             self.storageServiceManager.recordPendingLocalAccountUpdates()
@@ -449,7 +458,7 @@ public class SubscriptionManagerImpl: NSObject {
 
     private class func setDefaultPaymentMethod(
         for subscriberID: Data,
-        using processor: PaymentProcessor,
+        using processor: DonationPaymentProcessor,
         paymentID: String
     ) -> Promise<Void> {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
@@ -509,34 +518,45 @@ public class SubscriptionManagerImpl: NSObject {
         }
     }
 
-    public class func requestAndRedeemReceiptsIfNecessary(
-        for subscriberID: Data,
-        usingPaymentProcessor paymentProcessor: PaymentProcessor,
+    public class func requestAndRedeemReceipt(
+        subscriberId: Data,
         subscriptionLevel: UInt,
-        priorSubscriptionLevel: UInt?
+        priorSubscriptionLevel: UInt?,
+        paymentProcessor: DonationPaymentProcessor,
+        paymentMethod: DonationPaymentMethod?
     ) {
         let request = generateReceiptRequest()
-
-        // Remove prior operations if one exists (allow prior job to complete)
-        for redemptionJob in subscriptionJobQueue.runningOperations.get() {
-            if !redemptionJob.isBoost {
-                redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
-            }
-        }
-
-        // Reset failure state
-        databaseStorage.write { transaction in
-            self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
-        }
 
         databaseStorage.asyncWrite { transaction in
             self.subscriptionJobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
+                paymentMethod: paymentMethod,
                 receiptCredentialRequestContext: request.context.serialize().asData,
                 receiptCredentialRequest: request.request.serialize().asData,
-                subscriberID: subscriberID,
+                subscriberID: subscriberId,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
+                transaction: transaction
+            )
+        }
+    }
+
+    public class func requestAndRedeemReceipt(
+        boostPaymentIntentId: String,
+        amount: FiatMoney,
+        paymentProcessor: DonationPaymentProcessor,
+        paymentMethod: DonationPaymentMethod
+    ) {
+        let request = generateReceiptRequest()
+
+        databaseStorage.asyncWrite { transaction in
+            self.subscriptionJobQueue.addBoostJob(
+                amount: amount,
+                paymentProcessor: paymentProcessor,
+                paymentMethod: paymentMethod,
+                receiptCredentialRequestContext: request.context.serialize().asData,
+                receiptCredentialRequest: request.request.serialize().asData,
+                boostPaymentIntentID: boostPaymentIntentId,
                 transaction: transaction
             )
         }
@@ -557,102 +577,180 @@ public class SubscriptionManagerImpl: NSObject {
         }
     }
 
-    public class func requestReceiptCredentialPresentation(for subscriberID: Data,
-                                                           context: ReceiptCredentialRequestContext,
-                                                           request: ReceiptCredentialRequest,
-                                                           targetSubscriptionLevel: UInt,
-                                                           priorSubscriptionLevel: UInt = 0) throws -> Promise<ReceiptCredentialPresentation> {
-        let clientOperations = try clientZKReceiptOperations()
-        let request = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
-            subscriberID: subscriberID,
-            request: request.serialize().asData
-        )
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
+    /// Represents a known error received during a receipt credential request.
+    ///
+    /// Not to be confused with ``SubscriptionReceiptCredentialRequestError``.
+    public struct KnownReceiptCredentialRequestError: Error {
+        /// A code describing this error.
+        public let errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode
 
-            if statusCode == 200 {
-                Logger.info("Got valid receipt response")
-            } else if statusCode == 204 {
-                Logger.info("User has no active subscriptions when getting receipt presentation, retrying!")
-                throw OWSRetryableSubscriptionError()
-            } else {
-                Logger.info("Got undefined non-4xx error fetching receipt presentation, retrying!")
-                throw OWSRetryableSubscriptionError()
-            }
+        /// If this error represents a payment failure, contains a string from
+        /// the payment processor describing the payment failure.
+        public let chargeFailureCodeIfPaymentFailed: String?
 
-            let failValidation = {
-                databaseStorage.write { transaction in
-                    self.setLastReceiptRedemptionFailed(failureReason: .localValidationFailed, transaction: transaction)
-                }
-            }
+        fileprivate init(
+            errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode,
+            chargeFailureCodeIfPaymentFailed: String? = nil
+        ) {
+            owsAssert(
+                chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
+                "Must only provide a charge failure if payment failed!"
+            )
 
-            guard let json = response.responseBodyJson as? [String: Any] else {
-                failValidation()
-                throw OWSAssertionError("Unable to parse receipt presentation response body.")
-            }
-
-            guard let parser = ParamParser(responseObject: json) else {
-                failValidation()
-                throw OWSAssertionError("Missing or invalid receipt presentation response.")
-            }
-
-            let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
-            guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
-                failValidation()
-                throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
-            }
-
-            let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
-            let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: context, receiptCredentialResponse: receiptCredentialResponse)
-
-            // Validate that receipt credential level matches requested level, or prior subscription level
-            let level = try receiptCredential.getReceiptLevel()
-            var receiptCredentialHasValidLevel = (level == targetSubscriptionLevel)
-
-            if !receiptCredentialHasValidLevel && priorSubscriptionLevel != 0 {
-                receiptCredentialHasValidLevel = (level == priorSubscriptionLevel)
-            }
-
-            guard receiptCredentialHasValidLevel else {
-                failValidation()
-                throw OWSAssertionError("Unexpected receipt credential level, validation failed. Got \(level), expected \(targetSubscriptionLevel) or \(priorSubscriptionLevel)")
-            }
-
-            // Validate receipt credential expiration % 86400 == 0, per server spec
-            let expiration = try receiptCredential.getReceiptExpirationTime()
-            guard expiration % 86400 == 0 else {
-                failValidation()
-                throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0, validation failed")
-            }
-
-            // Validate expiration is less than 90 days from now
-            let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
-            guard TimeInterval(expiration) < maximumValidExpirationDate else {
-                failValidation()
-                throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 90 days from now")
-            }
-
-            let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
-
-            return receiptCredentialPresentation
-        }.recover { error -> Promise<ReceiptCredentialPresentation> in
-            if let error = error as? OWSHTTPError {
-                let statusCode = error.responseStatusCode
-                if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
-                    let failureReason = SubscriptionRedemptionFailureReason(rawValue: statusCode) ?? .none
-                    databaseStorage.write { transaction in
-                        self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
-                    }
-                    throw OWSAssertionError("Receipt redemption failed with unrecoverable HTTP code \(statusCode)")
-                } else {
-                    Logger.info("Receipt redemption failed with retryable HTTP code \(statusCode)")
-                    throw OWSRetryableSubscriptionError()
-                }
-            }
-            throw error
+            self.errorCode = errorCode
+            self.chargeFailureCodeIfPaymentFailed = chargeFailureCodeIfPaymentFailed
         }
+    }
+
+    public class func requestReceiptCredentialPresentation(
+        subscriberId: Data,
+        targetSubscriptionLevel: UInt,
+        priorSubscriptionLevel: UInt,
+        context: ReceiptCredentialRequestContext,
+        request: ReceiptCredentialRequest
+    ) throws -> Promise<ReceiptCredentialPresentation> {
+        return firstly {
+            let networkRequest = OWSRequestFactory.subscriptionReceiptCredentialsRequest(
+                subscriberID: subscriberId,
+                request: request.serialize().asData
+            )
+
+            return networkManager.makePromise(request: networkRequest)
+        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
+            return try self.parseReceiptCredentialPresentationResponse(
+                httpResponse: response,
+                receiptCredentialRequestContext: context,
+                isValidReceiptLevelPredicate: { receiptLevel in
+                    // Validate that receipt credential level matches requested
+                    // level, or prior subscription level.
+                    if receiptLevel == targetSubscriptionLevel {
+                        return true
+                    } else if priorSubscriptionLevel != 0 {
+                        return receiptLevel == priorSubscriptionLevel
+                    }
+
+                    return false
+                }
+            )
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
+            throw parseReceiptCredentialPresentationError(error: error)
+        }
+    }
+
+    public static func requestReceiptCredentialPresentation(
+        boostPaymentIntentId: String,
+        expectedBadgeLevel: OneTimeBadgeLevel,
+        paymentProcessor: DonationPaymentProcessor,
+        context: ReceiptCredentialRequestContext,
+        request: ReceiptCredentialRequest
+    ) throws -> Promise<ReceiptCredentialPresentation> {
+        return firstly {
+            let networkRequest = OWSRequestFactory.boostReceiptCredentials(
+                with: boostPaymentIntentId,
+                for: paymentProcessor.rawValue,
+                request: request.serialize().asData
+            )
+
+            return networkManager.makePromise(request: networkRequest)
+        }.map(on: DispatchQueue.global()) { response throws -> ReceiptCredentialPresentation in
+            return try self.parseReceiptCredentialPresentationResponse(
+                httpResponse: response,
+                receiptCredentialRequestContext: context,
+                isValidReceiptLevelPredicate: { receiptLevel in
+                    return receiptLevel == expectedBadgeLevel.rawValue
+                }
+            )
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
+            throw parseReceiptCredentialPresentationError(error: error)
+        }
+    }
+
+    private class func parseReceiptCredentialPresentationResponse(
+        httpResponse: HTTPResponse,
+        receiptCredentialRequestContext: ReceiptCredentialRequestContext,
+        isValidReceiptLevelPredicate: (UInt64) -> Bool
+    ) throws -> ReceiptCredentialPresentation {
+        let clientOperations = try clientZKReceiptOperations()
+
+        let httpStatusCode = httpResponse.responseStatusCode
+        switch httpStatusCode {
+        case 200:
+            Logger.info("[Donations] Got valid receipt response.")
+        case 204:
+            Logger.info("[Donations] No receipt yet, payment processing.")
+            throw KnownReceiptCredentialRequestError(
+                errorCode: .paymentStillProcessing
+            )
+        default:
+            throw OWSAssertionError("[Donations] Unexpected success status code: \(httpStatusCode)")
+        }
+
+        func failValidation(_ message: String) -> Error {
+            owsFailDebug(message)
+            return KnownReceiptCredentialRequestError(errorCode: .localValidationFailed)
+        }
+
+        guard
+            let json = httpResponse.responseBodyJson,
+            let parser = ParamParser(responseObject: json),
+            let receiptCredentialResponseData = Data(
+                base64Encoded: (try parser.required(key: "receiptCredentialResponse") as String)
+            )
+        else {
+            throw failValidation("Failed to parse receipt credential response into data!")
+        }
+
+        let receiptCredentialResponse = try ReceiptCredentialResponse(
+            contents: [UInt8](receiptCredentialResponseData)
+        )
+        let receiptCredential = try clientOperations.receiveReceiptCredential(
+            receiptCredentialRequestContext: receiptCredentialRequestContext,
+            receiptCredentialResponse: receiptCredentialResponse
+        )
+
+        let receiptLevel = try receiptCredential.getReceiptLevel()
+        guard isValidReceiptLevelPredicate(receiptLevel) else {
+            throw failValidation("Unexpected receipt credential level! \(receiptLevel)")
+        }
+
+        // Validate receipt credential expiration % 86400 == 0, per server spec
+        let expiration = try receiptCredential.getReceiptExpirationTime()
+        guard expiration % 86400 == 0 else {
+            throw failValidation("Invalid receipt credential expiration! \(expiration)")
+        }
+
+        // Validate expiration is less than 90 days from now
+        let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
+        guard TimeInterval(expiration) < maximumValidExpirationDate else {
+            throw failValidation("Invalid receipt credential expiration!")
+        }
+
+        return try clientOperations.createReceiptCredentialPresentation(
+            receiptCredential: receiptCredential
+        )
+    }
+
+    private class func parseReceiptCredentialPresentationError(
+        error: Error
+    ) -> Error {
+        guard
+            let httpStatusCode = error.httpStatusCode,
+            let errorCode = SubscriptionReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
+        else { return error }
+
+        if
+            case .paymentFailed = errorCode,
+            let parser = ParamParser(responseObject: error.httpResponseJson),
+            let chargeFailureDict: [String: Any] = try? parser.optional(key: "chargeFailure"),
+            let chargeFailureCode = chargeFailureDict["code"] as? String
+        {
+            return KnownReceiptCredentialRequestError(
+                errorCode: errorCode,
+                chargeFailureCodeIfPaymentFailed: chargeFailureCode
+            )
+        }
+
+        return KnownReceiptCredentialRequestError(errorCode: errorCode)
     }
 
     public class func redeemReceiptCredentialPresentation(
@@ -712,7 +810,7 @@ public class SubscriptionManagerImpl: NSObject {
         var currencyCode: Currency.Code?
         databaseStorage.read { transaction in
             lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
-            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
+            lastSubscriptionExpiration = self.lastSubscriptionExpirationDate(transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
             currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
         }
@@ -757,15 +855,19 @@ public class SubscriptionManagerImpl: NSObject {
                 return
             }
 
-            if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
-                // Re-kick
+            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
+                // When a subscription renews, the "end of period" changes to
+                // reflect a later date. When that happens, we need to re-redeem
+                // the badge for the subscription.
+
                 let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
                 Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
-                self.requestAndRedeemReceiptsIfNecessary(
-                    for: subscriberID,
-                    usingPaymentProcessor: subscription.paymentProcessor,
+                requestAndRedeemReceipt(
+                    subscriberId: subscriberID,
                     subscriptionLevel: subscription.level,
-                    priorSubscriptionLevel: nil
+                    priorSubscriptionLevel: nil,
+                    paymentProcessor: subscription.paymentProcessor,
+                    paymentMethod: subscription.paymentMethod
                 )
 
                 // Save last expiration
@@ -832,6 +934,8 @@ public class SubscriptionManagerImpl: NSObject {
     }
 }
 
+// MARK: - State management
+
 extension SubscriptionManagerImpl {
 
     public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
@@ -867,23 +971,6 @@ extension SubscriptionManagerImpl {
         subscriptionKVS.setObject(currencyCode,
                                   key: subscriberCurrencyCodeKey,
                                   transaction: transaction)
-    }
-
-    public static func setLastReceiptRedemptionFailed(failureReason: SubscriptionRedemptionFailureReason, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setInt(failureReason.rawValue, key: lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
-    }
-
-    public static func lastReceiptRedemptionFailed(transaction: SDSAnyReadTransaction) -> SubscriptionRedemptionFailureReason {
-        let intValue = subscriptionKVS.getInt(lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
-        guard let intValue = intValue else {
-            return .none
-        }
-
-        if let reason = SubscriptionRedemptionFailureReason(rawValue: intValue) {
-            return reason
-        } else {
-            return .none
-        }
     }
 
     public static func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
@@ -1023,7 +1110,29 @@ extension SubscriptionManagerImpl {
 
         return paymentMethod
     }
+
+    // MARK: HasRedeemedRecurringSubscriptionBadge
+
+    public static func setHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
+        subscriptionKVS.setBool(true, key: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
+    }
+
+    public static func clearHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
+        subscriptionKVS.removeValue(forKey: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
+    }
+
+    /// Whether or not the local user has ever successfully redeemed a badge for
+    /// their current recurring subscription.
+    ///
+    /// This will be false if the user does not currently have a recurring
+    /// subscription. It may be true even if the subscription is no longer
+    /// active.
+    public static func getHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(hasEverRedeemedRecurringSubscriptionBadgeKey, defaultValue: false, transaction: tx)
+    }
 }
+
+// MARK: -
 
 public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryableProvider {
     @objc
@@ -1037,117 +1146,6 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 }
 
 extension SubscriptionManagerImpl {
-    public class func createAndRedeemBoostReceipt(
-        for intentId: String,
-        withPaymentProcessor paymentProcessor: PaymentProcessor,
-        amount: FiatMoney
-    ) {
-        let request = generateReceiptRequest()
-
-        // Remove prior operations if one exists (allow prior job to complete)
-        for redemptionJob in subscriptionJobQueue.runningOperations.get() {
-            if redemptionJob.isBoost {
-                redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
-            }
-        }
-
-        databaseStorage.asyncWrite { transaction in
-            self.subscriptionJobQueue.addBoostJob(
-                amount: amount,
-                paymentProcessor: paymentProcessor,
-                receiptCredentialRequestContext: request.context.serialize().asData,
-                receiptCredentialRequest: request.request.serialize().asData,
-                boostPaymentIntentID: intentId,
-                transaction: transaction
-            )
-        }
-    }
-
-    public static func requestBoostReceiptCredentialPresentation(
-        for intentId: String,
-        context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest,
-        expectedBadgeLevel: OneTimeBadgeLevel,
-        paymentProcessor: PaymentProcessor
-    ) throws -> Promise<ReceiptCredentialPresentation> {
-
-        let clientOperations = try clientZKReceiptOperations()
-
-        let request = OWSRequestFactory.boostReceiptCredentials(
-            with: intentId,
-            for: paymentProcessor.rawValue,
-            request: request.serialize().asData
-        )
-
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-
-            if statusCode == 200 {
-                Logger.debug("Got valid receipt response")
-            } else if statusCode == 204 {
-                Logger.debug("No receipt could be found for this boost payment intent")
-                throw OWSRetryableSubscriptionError()
-            } else {
-                Logger.info("Got undefined non-4xx error fetching boost receipt presentation, retrying!")
-                throw OWSRetryableSubscriptionError()
-            }
-
-            guard let json = response.responseBodyJson as? [String: Any] else {
-                throw OWSAssertionError("Unable to parse response body.")
-            }
-
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
-
-            do {
-                let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
-                guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
-                    throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
-                }
-
-                let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
-                let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: context, receiptCredentialResponse: receiptCredentialResponse)
-
-                // Validate that receipt credential level matches boost level
-                let level = try receiptCredential.getReceiptLevel()
-                guard level == expectedBadgeLevel.rawValue else {
-                    throw OWSAssertionError("Unexpected receipt credential level")
-                }
-
-                // Validate receipt credential expiration % 86400 == 0, per server spec
-                let expiration = try receiptCredential.getReceiptExpirationTime()
-                guard expiration % 86400 == 0 else {
-                    throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
-                }
-
-                // Validate expiration is less than 90 days from now
-                let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
-                guard TimeInterval(expiration) < maximumValidExpirationDate else {
-                    throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 90 days from now")
-                }
-
-                let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
-
-                return receiptCredentialPresentation
-            } catch {
-                throw OWSAssertionError("Missing clientID key")
-            }
-        }.recover { error -> Promise<ReceiptCredentialPresentation> in
-            if let error = error as? OWSHTTPError {
-                let statusCode = error.responseStatusCode
-                if [400, 402, 409].contains(statusCode) {
-                    throw OWSAssertionError("Boost receipt redemption failed with unrecoverable HTTP code \(statusCode)")
-                } else {
-                    Logger.info("Boost receipt redemption failed with retryable HTTP code \(statusCode)")
-                    throw OWSRetryableSubscriptionError()
-                }
-            }
-            throw error
-        }
-    }
 
     private static var cachedBadges = [OneTimeBadgeLevel: CachedBadge]()
 
@@ -1162,7 +1160,7 @@ extension SubscriptionManagerImpl {
 
     public class func getBoostBadge() -> Promise<ProfileBadge> {
         firstly {
-            getBadge(level: .boostBadge)
+            getOneTimeBadge(level: .boostBadge)
         }.map { profileBadge in
             guard let profileBadge = profileBadge else {
                 owsFail("No badge for this level was found")
@@ -1171,7 +1169,7 @@ extension SubscriptionManagerImpl {
         }
     }
 
-    public class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
+    public class func getOneTimeBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
         firstly { () -> Promise<DonationConfiguration> in
             fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadge? in
@@ -1186,6 +1184,20 @@ extension SubscriptionManagerImpl {
 
                 return donationConfiguration.gift.badge
             }
+        }
+    }
+
+    public class func getSubscriptionBadge(subscriptionLevel levelRawValue: UInt) -> Promise<ProfileBadge> {
+        firstly { () -> Promise<DonationConfiguration> in
+            fetchDonationConfiguration()
+        }.map { donationConfiguration throws -> ProfileBadge in
+            guard let matchingLevel = donationConfiguration.subscription.levels.first(where: {
+                $0.level == levelRawValue
+            }) else {
+                throw OWSAssertionError("Missing requested subscription level!")
+            }
+
+            return matchingLevel.badge
         }
     }
 }

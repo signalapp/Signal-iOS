@@ -153,14 +153,6 @@ public extension NSObject {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    final var socketManager: SocketManager {
-        SSKEnvironment.shared.socketManagerRef
-    }
-
-    static var socketManager: SocketManager {
-        SSKEnvironment.shared.socketManagerRef
-    }
-
     final var storageCoordinator: StorageCoordinator {
         SSKEnvironment.shared.storageCoordinatorRef
     }
@@ -603,14 +595,6 @@ public extension Dependencies {
 
     static var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManagerRef
-    }
-
-    var socketManager: SocketManager {
-        SSKEnvironment.shared.socketManagerRef
-    }
-
-    static var socketManager: SocketManager {
-        SSKEnvironment.shared.socketManagerRef
     }
 
     var storageCoordinator: StorageCoordinator {
@@ -1079,15 +1063,6 @@ public extension SSKPreferences {
 public extension MessageProcessor {
     static var shared: MessageProcessor {
         SSKEnvironment.shared.messageProcessorRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension SocketManager {
-    static var shared: SocketManager {
-        SSKEnvironment.shared.socketManagerRef
     }
 }
 

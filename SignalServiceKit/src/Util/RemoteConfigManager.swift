@@ -28,6 +28,7 @@ public class RemoteConfig: BaseFlags {
     private let applePayDisabledRegions: PhoneNumberRegions
     private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
     private let paypalDisabledRegions: PhoneNumberRegions
+    private let sepaEnabledRegions: PhoneNumberRegions
 
     init(
         clockSkew: TimeInterval,
@@ -45,6 +46,7 @@ public class RemoteConfig: BaseFlags {
         self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
         self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
         self.paypalDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paypalDisabledRegions)
+        self.sepaEnabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .sepaEnabledRegions)
     }
 
     @objc
@@ -104,6 +106,11 @@ public class RemoteConfig: BaseFlags {
     public static var creditAndDebitCardDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.creditAndDebitCardDisabledRegions
+    }
+
+    public static var sepaEnabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.sepaEnabledRegions
     }
 
     public static var canDonateOneTimeWithApplePay: Bool {
@@ -219,10 +226,6 @@ public class RemoteConfig: BaseFlags {
 
     public static var enableAutoAPNSRotation: Bool {
         return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
-    }
-
-    public static var defaultToAciSafetyNumber: Bool {
-        return isEnabled(.safetyNumberAci)
     }
 
     /// The minimum length for a valid nickname, in Unicode codepoints.
@@ -494,7 +497,8 @@ private struct Flags {
     // as soon as we fetch an update to the remote config. They will not
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
-        case barrierFsyncKillSwitch
+        // This can't be empty, so we define a bogus case. Remove this if you add a flag here.
+        case __noHotSwappableIsEnabledFlags
     }
 
     // We filter the received config down to just the supported flags.
@@ -503,7 +507,6 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
-        case barrierFsyncKillSwitch
         case deprecated_uuidSafetyNumbers = "uuidSafetyNumbers"
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
@@ -546,6 +549,7 @@ private struct Flags {
         case applePayDisabledRegions
         case creditAndDebitCardDisabledRegions
         case paypalDisabledRegions
+        case sepaEnabledRegions
         case maxGroupCallRingSize
     }
 
@@ -567,6 +571,7 @@ private struct Flags {
         case applePayDisabledRegions
         case creditAndDebitCardDisabledRegions
         case paypalDisabledRegions
+        case sepaEnabledRegions
         case maxGroupCallRingSize
         case minNicknameLength
         case maxNicknameLength
@@ -582,9 +587,16 @@ private struct Flags {
     // Even if we don't fetch a fresh remote config, we may cross the time threshold
     // while the app is in memory, updating the value from false to true.
     // As such we also take fresh remote config values and swap them in at runtime.
+#if false
+    // If there are time-gated flags, use this definition.
     enum SupportedTimeGatedFlags: String, FlagType {
-        case safetyNumberAci
     }
+#else
+    // If there aren't any time-gated flags, use this definition.
+    enum SupportedTimeGatedFlags: FlagType {
+        var rawValue: String { fatalError() }
+    }
+#endif
 }
 
 // MARK: -
@@ -607,10 +619,10 @@ private extension FlagType {
         case "applePayDisabledRegions": return "global.donations.apayDisabledRegions"
         case "creditAndDebitCardDisabledRegions": return "global.donations.ccDisabledRegions"
         case "paypalDisabledRegions": return "global.donations.paypalDisabledRegions"
+        case "sepaEnabledRegions": return "global.donations.sepaEnabledRegions"
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         case "minNicknameLength": return "global.nicknames.min"
         case "maxNicknameLength": return "global.nicknames.max"
-        case "safetyNumberAci": return "global.safetyNumberAci"
         case "cdsDisableCompatibilityMode": return "cds.disableCompatibilityMode"
         case "maxAttachmentDownloadSizeBytes": return "global.attachments.maxBytes"
         default: return Flags.prefix + rawValue
@@ -726,25 +738,19 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        // swiftlint:disable large_tuple
         let (
             lastKnownClockSkew,
             isEnabledFlags,
             valueFlags,
-            timeGatedFlags,
-            isUsingBarrierFsync
-        ): (TimeInterval, [String: Bool], [String: String], [String: Date], Bool) = db.read { transaction in
+            timeGatedFlags
+        ): (TimeInterval, [String: Bool], [String: String], [String: Date]) = db.read { transaction in
             return (
                 self.keyValueStore.getLastKnownClockSkew(transaction: transaction),
                 self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:],
                 self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:],
-                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) ?? [:],
-                SqliteUtil.isUsingBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbRead.database
-                )
+                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) ?? [:]
             )
         }
-        // swiftlint:enable large_tuple
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
             _ = cacheCurrent(
                 clockSkew: lastKnownClockSkew,
@@ -754,7 +760,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                 account: .implicit()
             )
         }
-        warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
+        warmSecondaryCaches(valueFlags: valueFlags)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             RemoteConfig.logFlags()
@@ -784,29 +790,8 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         return remoteConfig
     }
 
-    fileprivate func warmSecondaryCaches(
-        isEnabledFlags: [String: Bool],
-        valueFlags: [String: String],
-        isUsingBarrierFsync: Bool
-    ) {
-        // This will be tripped in the unlikely event that the kill switch is enabled,
-        // but typically won't result in a write.
-        let shouldUseBarrierFsync: Bool = {
-            let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
-            let isKilled = isEnabledFlags[rawFlag] ?? false
-            return !isKilled
-        }()
-        if shouldUseBarrierFsync != isUsingBarrierFsync {
-            self.db.write { tx in
-                try? SqliteUtil.setBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
-                    enabled: shouldUseBarrierFsync
-                )
-            }
-        }
-
+    fileprivate func warmSecondaryCaches(valueFlags: [String: String]) {
         checkClientExpiration(valueFlags: valueFlags)
-
         hasWarmedCache.set(true)
     }
 
@@ -913,14 +898,12 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
 
             // Persist all flags in the database to be applied on next launch.
 
-            var isUsingBarrierFsync: Bool = false
             self.db.write { transaction in
                 // Preserve any sticky flags.
                 if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
                     existingConfig.forEach { (key: String, value: Bool) in
                         // Preserve "is enabled" flags if they are sticky and already set.
-                        if Flags.StickyIsEnabledFlags.allRawFlags.contains(key),
-                            value == true {
+                        if Flags.StickyIsEnabledFlags.allRawFlags.contains(key), value == true {
                             isEnabledFlags[key] = value
                         }
                     }
@@ -933,17 +916,6 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                         }
                     }
                 }
-
-                isUsingBarrierFsync = {
-                    let rawFlag = Flags.HotSwappableIsEnabledFlags.barrierFsyncKillSwitch.rawValue
-                    let isKilled = isEnabledFlags[rawFlag] ?? false
-                    return !isKilled
-                }()
-
-                try? SqliteUtil.setBarrierFsync(
-                    db: SDSDB.shimOnlyBridge(transaction).unwrapGrdbWrite.database,
-                    enabled: isUsingBarrierFsync
-                )
 
                 self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
                 self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
@@ -979,7 +951,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                     timeGatedFlags: timeGatedFlags,
                     account: account
                 )
-                self.warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
+                self.warmSecondaryCaches(valueFlags: valueFlags)
             } else {
                 remoteConfig = RemoteConfig(
                     clockSkew: clockSkew,

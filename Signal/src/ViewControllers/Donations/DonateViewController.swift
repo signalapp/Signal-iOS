@@ -47,8 +47,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     enum FinishResult {
-        case completedDonation(donateSheet: DonateViewController, badgeThanksSheet: BadgeThanksSheet)
-        case monthlySubscriptionCancelled(donateSheet: DonateViewController, toastText: String)
+        case completedDonation(
+            donateSheet: DonateViewController,
+            receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
+        )
+
+        case monthlySubscriptionCancelled(
+            donateSheet: DonateViewController,
+            toastText: String
+        )
     }
     internal let onFinished: (FinishResult) -> Void
 
@@ -213,10 +220,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
-    private func startCreditOrDebitCard(
+    private func startManualPaymentDetails(
         with amount: FiatMoney,
         badge: ProfileBadge?,
-        donateMode: DonateMode
+        donateMode: DonateMode,
+        donationPaymentMethod: DonationPaymentMethod,
+        viewControllerPaymentMethod: DonationPaymentDetailsViewController.PaymentMethod
     ) {
         guard let navigationController else {
             owsFail("[Donations] Cannot open credit/debit card screen if we're not in a navigation controller")
@@ -226,10 +235,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] Missing badge")
         }
 
-        let cardDonationMode: CreditOrDebitCardDonationViewController.DonationMode
+        let cardDonationMode: DonationPaymentDetailsViewController.DonationMode
+        let receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
         switch donateMode {
         case .oneTime:
             cardDonationMode = .oneTime
+            receiptCredentialSuccessMode = .oneTimeBoost
         case .monthly:
             guard
                 let monthly = state.monthly,
@@ -243,20 +254,30 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 currentSubscription: monthly.currentSubscription,
                 currentSubscriptionLevel: monthly.currentSubscriptionLevel
             )
+            receiptCredentialSuccessMode = .recurringSubscription
         }
 
-        let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
-
-        let vc = CreditOrDebitCardDonationViewController(
+        let vc = DonationPaymentDetailsViewController(
             donationAmount: amount,
-            donationMode: cardDonationMode
-        ) { [weak self] in
-            self?.didCompleteDonation(
-                badge: badge,
-                thanksSheetType: donateMode.forBadgeThanksSheet,
-                oldBadgesSnapshot: badgesSnapshot
-            )
+            donationMode: cardDonationMode,
+            paymentMethod: viewControllerPaymentMethod
+        ) { [weak self] error in
+            guard let self else { return }
+
+            if let error {
+                self.didFailDonation(
+                    error: error,
+                    mode: donateMode,
+                    badge: badge,
+                    paymentMethod: donationPaymentMethod
+                )
+            } else {
+                self.didCompleteDonation(
+                    receiptCredentialSuccessMode: receiptCredentialSuccessMode
+                )
+            }
         }
+
         navigationController.pushViewController(vc, animated: true)
     }
 
@@ -275,6 +296,27 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         case .monthly:
             startPaypalSubscription(with: amount, badge: badge)
         }
+    }
+
+    private func startSEPA(
+        with amount: FiatMoney,
+        badge: ProfileBadge?,
+        donateMode: DonateMode
+    ) {
+        let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.startManualPaymentDetails(
+                    with: amount,
+                    badge: badge,
+                    donateMode: donateMode,
+                    donationPaymentMethod: .sepa,
+                    viewControllerPaymentMethod: .sepa(mandate: mandate)
+                )
+            }
+        }
+        let navigationController = OWSNavigationController(rootViewController: mandateViewController)
+        self.presentFormSheet(navigationController, animated: true)
     }
 
     private func presentChoosePaymentMethodSheet(
@@ -298,13 +340,21 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 case .applePay:
                     self.startApplePay(with: amount, donateMode: donateMode)
                 case .creditOrDebitCard:
-                    self.startCreditOrDebitCard(
+                    self.startManualPaymentDetails(
+                        with: amount,
+                        badge: badge,
+                        donateMode: donateMode,
+                        donationPaymentMethod: paymentMethod,
+                        viewControllerPaymentMethod: .card
+                    )
+                case .paypal:
+                    self.startPaypal(
                         with: amount,
                         badge: badge,
                         donateMode: donateMode
                     )
-                case .paypal:
-                    self.startPaypal(
+                case .sepa:
+                    self.startSEPA(
                         with: amount,
                         badge: badge,
                         donateMode: donateMode
@@ -321,17 +371,33 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] Expected the one-time state to be loaded. This should be impossible in the UI")
         }
 
-        func showError(_ text: String) {
-            let actionSheet = ActionSheetController(message: text)
-            actionSheet.addAction(.init(
-                title: CommonStrings.okayButton,
-                style: .cancel,
-                handler: nil
-            ))
-            presentActionSheet(actionSheet)
-        }
-
         switch oneTime.paymentRequest {
+        case let .alreadyHasPaymentProcessing(paymentMethod):
+            let title: String
+            let message: String
+
+            switch paymentMethod {
+            case .applePay, .creditOrDebitCard, .paypal:
+                title = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING",
+                    comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment."
+                )
+                message = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION",
+                    comment: "Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment."
+                )
+            case .sepa:
+                title = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING",
+                    comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment."
+                )
+                message = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION",
+                    comment: "Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment."
+                )
+            }
+
+            showError(title: title, message)
         case .noAmountSelected:
             showError(OWSLocalizedString(
                 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED",
@@ -377,9 +443,10 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             owsFail("[Donations] Cannot update monthly donation. This should be prevented in the UI")
         }
 
-        switch monthly.lastReceiptRedemptionFailure {
-        case .none:
-            let badgesSnapshot = BadgeThanksSheet.currentProfileBadgesSnapshot()
+        if
+            let currentSubscription = monthly.currentSubscription,
+            currentSubscription.chargeFailure == nil
+        {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: firstly(on: DispatchQueue.sharedUserInitiated) {
@@ -389,29 +456,32 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         currencyCode: monthly.selectedCurrencyCode
                     )
                 }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
-                    DonationViewsUtil.redeemMonthlyReceipts(
-                        usingPaymentProcessor: subscription.paymentProcessor,
-                        subscriberID: subscriberID,
-                        newSubscriptionLevel: selectedSubscriptionLevel,
-                        priorSubscriptionLevel: monthly.currentSubscriptionLevel
+                    SubscriptionManagerImpl.requestAndRedeemReceipt(
+                        subscriberId: subscriberID,
+                        subscriptionLevel: selectedSubscriptionLevel.level,
+                        priorSubscriptionLevel: currentSubscription.level,
+                        paymentProcessor: currentSubscription.paymentProcessor,
+                        paymentMethod: currentSubscription.paymentMethod
                     )
-                    return DonationViewsUtil.waitForSubscriptionJob()
+
+                    return DonationViewsUtil.waitForSubscriptionJob(
+                        paymentMethod: subscription.paymentMethod
+                    )
                 }
             ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
-                    badge: selectedSubscriptionLevel.badge,
-                    thanksSheetType: .subscription,
-                    oldBadgesSnapshot: badgesSnapshot
+                    receiptCredentialSuccessMode: .recurringSubscription
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(
                     error: error,
                     mode: .monthly,
+                    badge: selectedSubscriptionLevel.badge,
                     paymentMethod: monthly.previousMonthlySubscriptionPaymentMethod
                 )
             }
-        default:
-            Logger.warn("[Donations] Updating a subscription with a prior known error state. Treating this like a new subscription")
+        } else {
+            Logger.warn("[Donations] Updating a subscription that is missing, or in a known error state. Treating this like a new subscription.")
             presentChoosePaymentMethodSheet(
                 amount: monthlyPaymentRequest.amount,
                 badge: monthlyPaymentRequest.profileBadge,
@@ -519,18 +589,27 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
+    private func showError(title: String? = nil, _ message: String) {
+        let actionSheet = ActionSheetController(
+            title: title,
+            message: message
+        )
+
+        actionSheet.addAction(.init(
+            title: CommonStrings.okayButton,
+            style: .cancel,
+            handler: nil
+        ))
+
+        presentActionSheet(actionSheet)
+    }
+
     internal func didCompleteDonation(
-        badge: ProfileBadge,
-        thanksSheetType: BadgeThanksSheet.BadgeType,
-        oldBadgesSnapshot: ProfileBadgesSnapshot
+        receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
     ) {
         onFinished(.completedDonation(
             donateSheet: self,
-            badgeThanksSheet: BadgeThanksSheet(
-                newBadge: badge,
-                newBadgeType: thanksSheetType,
-                oldBadgesSnapshot: oldBadgesSnapshot
-            )
+            receiptCredentialSuccessMode: receiptCredentialSuccessMode
         ))
     }
 
@@ -543,32 +622,52 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     internal func didFailDonation(
         error: Error,
         mode: DonateMode,
+        badge: ProfileBadge,
         paymentMethod: DonationPaymentMethod?
     ) {
-        DonationViewsUtil.presentDonationErrorSheet(
-            from: self,
-            error: error,
-            paymentMethod: paymentMethod,
-            currentSubscription: {
-                switch mode {
-                case .oneTime: return nil
-                case .monthly: return state.monthly?.currentSubscription
+        if
+            let donationJobError = error as? DonationJobError,
+            case .timeout = donationJobError
+        {
+            // If this was a timeout error, we know a payment is in progress.
+            // Consequently, we want to reload our own state so we reflect that
+            // in-progress payment; for example, while a donation is pending we
+            // won't allow the user to start another of the same type.
+            //
+            // Then, we'll show the error.
+
+            navigationController?.popToViewController(self, animated: true) {
+                self.loadAndUpdateState().done { [weak self] in
+                    self?.presentErrorSheet(
+                        error: error,
+                        mode: mode,
+                        badge: badge,
+                        paymentMethod: paymentMethod
+                    )
                 }
-            }()
-        )
+            }
+        } else {
+            presentErrorSheet(
+                error: error,
+                mode: mode,
+                badge: badge,
+                paymentMethod: paymentMethod
+            )
+        }
     }
 
     // MARK: - Loading data
 
-    private func loadAndUpdateState() {
+    @discardableResult
+    private func loadAndUpdateState() -> Guarantee<Void> {
         switch state.loadState {
-        case .loading: return
+        case .loading: return .value(())
         default: break
         }
 
         state = state.loading()
 
-        loadStateWithSneakyTransaction(currentState: state).done { [weak self] newState in
+        return loadStateWithSneakyTransaction(currentState: state).done { [weak self] newState in
             self?.state = newState
         }
     }
@@ -584,13 +683,17 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             subscriberID,
             previousSubscriberCurrencyCode,
             previousSubscriberPaymentMethod,
-            lastReceiptRedemptionFailure
+            oneTimeBoostReceiptCredentialRequestError,
+            recurringSubscriptionReceiptCredentialRequestError
         ) = databaseStorage.read {
             (
                 SubscriptionManagerImpl.getSubscriberID(transaction: $0),
                 SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: $0),
                 SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: $0),
-                SubscriptionManagerImpl.lastReceiptRedemptionFailed(transaction: $0)
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .getRequestError(errorMode: .recurringSubscription, tx: $0.asV2Read)
             )
         }
 
@@ -627,9 +730,10 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 paymentMethodsConfig: configuration.paymentMethods,
                 currentMonthlySubscription: currentSubscription,
                 subscriberID: subscriberID,
-                lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
                 previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
                 previousMonthlySubscriptionPaymentMethod: previousSubscriberPaymentMethod,
+                oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                recurringSubscriptionReceiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
                 locale: Locale.current,
                 localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             )
@@ -926,9 +1030,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
         button.dimsWhenHighlighted = true
         button.dimsWhenDisabled = true
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 12
         button.backgroundColor = .ows_accentBlue
-        button.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+        button.titleLabel?.font = .dynamicTypeHeadline
         button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return button
     }()
@@ -1132,9 +1236,59 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     private func renderMonthlyButtonsView(monthly: State.MonthlyState) {
+        func isDifferentSubscriptionLevelSelected(_ currentSubscription: Subscription?) -> Bool {
+            guard let currentSubscription else { return false }
+
+            if currentSubscription.amount.currencyCode != monthly.selectedCurrencyCode {
+                return true
+            }
+
+            if
+                let selectedSubscriptionLevel = monthly.selectedSubscriptionLevel,
+                currentSubscription.level != selectedSubscriptionLevel.level {
+                return true
+            }
+
+            return false
+        }
+
         var buttons = [OWSButton]()
 
-        if
+        if let paymentProcessingMethod = monthly.paymentProcessingWithPaymentMethod {
+            let title: String
+            let message: String
+
+            switch paymentProcessingMethod {
+            case .applePay, .creditOrDebitCard, .paypal:
+                title = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING",
+                    comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment."
+                )
+                message = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION",
+                    comment: "Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment."
+                )
+            case .sepa:
+                title = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING",
+                    comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment."
+                )
+                message = OWSLocalizedString(
+                    "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION",
+                    comment: "Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment."
+                )
+            }
+
+            let doomedContinueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
+                self?.showError(title: title, message)
+            }
+
+            doomedContinueButton.backgroundColor = .ows_accentBlue
+            doomedContinueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+            doomedContinueButton.isEnabled = isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
+
+            buttons.append(doomedContinueButton)
+        } else if
             let currentSubscription = monthly.currentSubscription,
             currentSubscription.active
         {
@@ -1148,17 +1302,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 }
                 updateButton.backgroundColor = .ows_accentBlue
                 updateButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-                updateButton.isEnabled = {
-                    if currentSubscription.amount.currencyCode != monthly.selectedCurrencyCode {
-                        return true
-                    }
-                    if
-                        let selectedSubscriptionLevel = monthly.selectedSubscriptionLevel,
-                        currentSubscription.level != selectedSubscriptionLevel.level {
-                        return true
-                    }
-                    return false
-                }()
+                updateButton.isEnabled = isDifferentSubscriptionLevelSelected(currentSubscription)
                 buttons.append(updateButton)
             }
 
@@ -1170,13 +1314,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 self?.didTapToCancelSubscription()
             }
             cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
-            cancelButton.dimsWhenHighlighted = true
             buttons.append(cancelButton)
         } else {
             let continueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
                 self?.didTapToStartNewMonthlyDonation()
             }
-            continueButton.layer.cornerRadius = 8
             continueButton.backgroundColor = .ows_accentBlue
             continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
 

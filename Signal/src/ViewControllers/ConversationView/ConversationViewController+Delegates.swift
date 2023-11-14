@@ -94,11 +94,7 @@ extension ConversationViewController: ContactPickerDelegate {
 
         Logger.verbose("Contact: \(contact)")
 
-        guard let contactShareRecord = OWSContacts.contact(forSystemContact: cnContact) else {
-            owsFailDebug("Could not convert system contact.")
-            return
-        }
-
+        let contactShareRecord = OWSContact(cnContact: cnContact)
         var isProfileAvatar = false
         var avatarImageData: Data? = contactsManager.avatarData(forCNContactId: cnContact.identifier)
         for address in contact.registeredAddresses() {
@@ -115,8 +111,8 @@ extension ConversationViewController: ContactPickerDelegate {
         let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord,
                                                  avatarImageData: avatarImageData)
 
-        let approveContactShare = ContactShareApprovalViewController(contactShare: contactShare)
-        approveContactShare.delegate = self
+        let approveContactShare = ContactShareViewController(contactShare: contactShare)
+        approveContactShare.shareDelegate = self
         guard let navigationController = contactPicker.navigationController else {
             owsFailDebug("Missing contactsPicker.navigationController.")
             return
@@ -137,22 +133,34 @@ extension ConversationViewController: ContactPickerDelegate {
 
 // MARK: -
 
-extension ConversationViewController: ContactShareApprovalViewControllerDelegate {
+extension ConversationViewController: ContactShareViewControllerDelegate {
 
-    public func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                                    didApproveContactShare contactShare: ContactShareViewModel) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
+    public func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare:
+        ContactShareViewModel) {
         dismiss(animated: true) {
             self.send(contactShare: contactShare)
         }
     }
 
-    private func send(contactShare: ContactShareViewModel) {
-        AssertIsOnMainThread()
+    public func contactShareViewControllerDidCancel(_ viewController: ContactShareViewController) {
+        dismiss(animated: true, completion: nil)
+    }
 
+    public func titleForContactShareViewController(_ viewController: ContactShareViewController) -> String? {
+        return nil
+    }
+
+    public func recipientsDescriptionForContactShareViewController(_ viewController: ContactShareViewController) -> String? {
+        return databaseStorage.read { transaction in
+            Self.contactsManager.displayName(for: self.thread, transaction: transaction)
+        }
+    }
+
+    public func approvalModeForContactShareViewController(_ viewController: ContactShareViewController) -> ApprovalMode {
+        return .send
+    }
+
+    private func send(contactShare: ContactShareViewModel) {
         Logger.verbose("Sending contact share.")
 
         let thread = self.thread
@@ -178,37 +186,6 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
                 }
             }
         }
-    }
-
-    public func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                                    didCancelContactShare contactShare: ContactShareViewModel) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        dismiss(animated: true, completion: nil)
-    }
-
-    public func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        AssertIsOnMainThread()
-
-        return nil
-    }
-
-    public func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        return databaseStorage.read { transaction in
-            Self.contactsManager.displayName(for: self.thread, transaction: transaction)
-        }
-    }
-
-    public func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
-        AssertIsOnMainThread()
-
-        return .send
     }
 }
 

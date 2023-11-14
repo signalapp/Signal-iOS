@@ -10,12 +10,10 @@ public class SignalServiceProfile {
 
     public enum ValidationError: Error {
         case invalid(description: String)
-        case invalidIdentityKey(description: String)
-        case invalidProfileName(description: String)
     }
 
     public let serviceId: ServiceId
-    public let identityKey: Data
+    public let identityKey: IdentityKey
     public let profileNameEncrypted: Data?
     public let bioEncrypted: Data?
     public let bioEmojiEncrypted: Data?
@@ -23,13 +21,8 @@ public class SignalServiceProfile {
     public let paymentAddressEncrypted: Data?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
-    public let supportsAnnouncementOnlyGroups: Bool
-    public let supportsSenderKey: Bool
-    public let supportsChangeNumber: Bool
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
-
-    public let canReceiveGiftBadges: Bool
     public let isPniCapable: Bool
 
     public init(serviceId: ServiceId, responseObject: Any?) throws {
@@ -39,16 +32,7 @@ public class SignalServiceProfile {
 
         self.serviceId = serviceId
 
-        let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        guard identityKeyWithType.count == OWSIdentityManagerImpl.Constants.identityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
-        }
-        do {
-            self.identityKey = try identityKeyWithType.removeKeyType()
-        } catch {
-            owsFailDebug("identify key had unexpected format")
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString)")
-        }
+        self.identityKey = try IdentityKey(bytes: try params.requiredBase64EncodedData(key: "identityKey"))
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
 
@@ -65,19 +49,7 @@ public class SignalServiceProfile {
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
-        self.supportsAnnouncementOnlyGroups = Self.parseCapabilityFlag(capabilityKey: "announcementGroup",
-                                                                       params: params,
-                                                                       requireCapability: true)
-        self.supportsSenderKey = Self.parseCapabilityFlag(capabilityKey: "senderKey",
-                                                          params: params,
-                                                          requireCapability: true)
-        self.supportsChangeNumber = Self.parseCapabilityFlag(capabilityKey: "changeNumber",
-                                                             params: params,
-                                                             requireCapability: true)
-
         self.credential = try params.optionalBase64EncodedData(key: "credential")
-
-        self.canReceiveGiftBadges = Self.parseCapabilityFlag(capabilityKey: "giftBadges", params: params, requireCapability: true)
 
         self.isPniCapable = Self.parseCapabilityFlag(capabilityKey: "pni", params: params, requireCapability: true)
 

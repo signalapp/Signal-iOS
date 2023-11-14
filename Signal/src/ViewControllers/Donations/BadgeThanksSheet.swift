@@ -8,20 +8,6 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-struct ProfileBadgesSnapshot {
-    /// The IDs and visibility status of badges added to the account. Even
-    /// though each badge's visibility status can be independently edited, the
-    /// expected steady state is that they're all either visible or invisible.
-    /// When adding a new badge, it starts out invisible, and dismissing this
-    /// sheet will make it visible, if needed.
-    let existingBadges: [Badge]
-
-    struct Badge {
-        var id: String
-        var isVisible: Bool
-    }
-}
-
 struct VisibleBadgeResolver {
     let badgesSnapshot: ProfileBadgesSnapshot
 
@@ -117,45 +103,64 @@ struct VisibleBadgeResolver {
 
 class BadgeThanksSheet: OWSTableSheetViewController {
 
-    enum BadgeType {
-        case boost
-        case subscription
-        case gift(shortName: String, notNowAction: () -> Void, incomingMessage: TSIncomingMessage)
+    enum ThanksType {
+        /// We redeemed a badge that was paid for via bank transfer.
+        case badgeRedeemedViaBankPayment
+        /// We redeemed a badge that was paid for via a method other than bank
+        /// transfer.
+        case badgeRedeemedViaNonBankPayment
+        /// We received a gift badge.
+        case giftReceived(shortName: String, notNowAction: () -> Void, incomingMessage: TSIncomingMessage)
     }
 
     private let badge: ProfileBadge
-    private let badgeType: BadgeType
+    private let thanksType: ThanksType
 
     private let initialVisibleBadgeResolver: VisibleBadgeResolver
     private lazy var shouldMakeVisibleAndPrimary = self.initialVisibleBadgeResolver.switchDefault(for: self.badge.id)
+
+    convenience init(
+        receiptCredentialRedemptionSuccess: SubscriptionReceiptCredentialRedemptionSuccess
+    ) {
+        let thanksType: ThanksType = {
+            switch receiptCredentialRedemptionSuccess.paymentMethod {
+            case nil, .applePay, .creditOrDebitCard, .paypal:
+                return .badgeRedeemedViaNonBankPayment
+            case .sepa:
+                return .badgeRedeemedViaBankPayment
+            }
+        }()
+
+        self.init(
+            newBadge: receiptCredentialRedemptionSuccess.badge,
+            thanksType: thanksType,
+            oldBadgesSnapshot: receiptCredentialRedemptionSuccess.badgesSnapshotBeforeJob
+        )
+    }
 
     /// Displays a message after a badge has been redeemed.
     ///
     /// - Parameter newBadge: The badge that was just redeemed.
     ///
-    /// - Parameter newBadgeType: The semantic type of badge that was redeemed.
-    /// For example, was the badge redeemed through the subscription flow? The
-    /// one-time flow? The "Donate for a Friend" flow?
+    /// - Parameter thanksType: The type of thanks we want to show.
     ///
     /// - Parameter oldBadgesSnapshot: A snapshot of the user's badges before
     /// `newBadge` was redeemed. You can capture this value by calling
-    /// `currentProfileBadgesSnapshot()`.
+    /// ``ProfileBadgesSnapshot/current()``.
     required init(
         newBadge badge: ProfileBadge,
-        newBadgeType badgeType: BadgeType,
+        thanksType: ThanksType,
         oldBadgesSnapshot: ProfileBadgesSnapshot
     ) {
         owsAssertDebug(badge.assets != nil)
         self.badge = badge
-        self.badgeType = badgeType
+        self.thanksType = thanksType
         self.initialVisibleBadgeResolver = VisibleBadgeResolver(badgesSnapshot: oldBadgesSnapshot)
 
-        switch badgeType {
-        case .boost:
-            owsAssertDebug(BoostBadgeIds.contains(badge.id))
-        case .subscription:
-            owsAssertDebug(SubscriptionBadgeIds.contains(badge.id))
-        case .gift:
+        switch thanksType {
+        case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
+            owsAssertDebug(BoostBadgeIds.contains(badge.id) || SubscriptionBadgeIds.contains(badge.id))
+        case .giftReceived:
             owsAssertDebug(GiftBadgeIds.contains(badge.id))
         }
 
@@ -168,26 +173,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         fatalError("init() has not been implemented")
     }
 
-    static func currentProfileBadgesSnapshot() -> ProfileBadgesSnapshot {
-        let profileSnapshot = self.profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-        return profileBadgesSnapshot(for: profileSnapshot)
-    }
-
-    private static func profileBadgesSnapshot(for profileSnapshot: OWSProfileSnapshot) -> ProfileBadgesSnapshot {
-        ProfileBadgesSnapshot(
-            existingBadges: (profileSnapshot.profileBadgeInfo ?? []).map {
-                ProfileBadgesSnapshot.Badge(id: $0.badgeId, isVisible: $0.isVisible ?? false)
-            }
-        )
-    }
-
     override func willDismissInteractively() {
         super.willDismissInteractively()
 
-        switch self.badgeType {
-        case .boost, .subscription:
+        switch self.thanksType {
+        case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
             self.saveVisibilityChanges()
-        case let .gift(_, notNowAction, _):
+        case let .giftReceived(_, notNowAction, _):
             notNowAction()
         }
     }
@@ -210,7 +202,9 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     @discardableResult
     private func saveVisibilityChanges() -> Promise<Void> {
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
-        let visibleBadgeResolver = VisibleBadgeResolver(badgesSnapshot: Self.profileBadgesSnapshot(for: snapshot))
+        let visibleBadgeResolver = VisibleBadgeResolver(
+            badgesSnapshot: .forSnapshot(profileSnapshot: snapshot)
+        )
         let visibleBadgeIds = visibleBadgeResolver.visibleBadgeIds(
             adding: self.badge.id,
             isVisibleAndFeatured: self.shouldMakeVisibleAndPrimary
@@ -257,13 +251,18 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     private var titleText: String {
-        switch self.badgeType {
-        case .boost, .subscription:
+        switch thanksType {
+        case .badgeRedeemedViaBankPayment:
+            return OWSLocalizedString(
+                "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE",
+                comment: "Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge."
+            )
+        case .badgeRedeemedViaNonBankPayment:
             return OWSLocalizedString(
                 "BADGE_THANKS_TITLE",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
             )
-        case let .gift(shortName, _, _):
+        case let .giftReceived(shortName, _, _):
             let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
                 comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
@@ -273,14 +272,19 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     private var bodyText: String {
-        switch self.badgeType {
-        case .boost, .subscription:
+        switch thanksType {
+        case .badgeRedeemedViaBankPayment:
+            return OWSLocalizedString(
+                "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY",
+                comment: "Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge."
+            )
+        case .badgeRedeemedViaNonBankPayment:
             let formatText = OWSLocalizedString(
                 "BADGE_THANKS_BODY",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
             )
             return String(format: formatText, self.badge.localizedName)
-        case let .gift(shortName, _, _):
+        case let .giftReceived(shortName, _, _):
             let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
                 comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
@@ -312,6 +316,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewMargins()
 
+            let badgeImageView = UIImageView()
+            badgeImageView.image = self.badge.assets?.universal160
+            badgeImageView.autoSetDimensions(to: CGSize(square: 80))
+            stackView.addArrangedSubview(badgeImageView)
+            stackView.setCustomSpacing(24, after: badgeImageView)
+
             let titleLabel = UILabel()
             titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = Theme.primaryTextColor
@@ -322,42 +332,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let bodyLabel = UILabel()
-            bodyLabel.font = .dynamicTypeBody
-            bodyLabel.textColor = Theme.primaryTextColor
+            bodyLabel.font = .dynamicTypeSubheadlineClamped
+            bodyLabel.textColor = Theme.secondaryTextAndIconColor
             bodyLabel.textAlignment = .center
             bodyLabel.numberOfLines = 0
             bodyLabel.text = self.bodyText
             stackView.addArrangedSubview(bodyLabel)
-            stackView.setCustomSpacing(30, after: bodyLabel)
-
-            let badgeImageView = UIImageView()
-            let shouldShowBadgeLabel: Bool
-            switch self.badgeType {
-            case .boost, .subscription:
-                badgeImageView.image = self.badge.assets?.universal160
-                badgeImageView.autoSetDimensions(to: CGSize(square: 160))
-                shouldShowBadgeLabel = true
-            case .gift:
-                // Use a smaller image for gifts since they have an extra button.
-                badgeImageView.image = self.badge.assets?.universal112
-                badgeImageView.autoSetDimensions(to: CGSize(square: 112))
-                shouldShowBadgeLabel = false
-            }
-            stackView.addArrangedSubview(badgeImageView)
-
-            if shouldShowBadgeLabel {
-                let badgeLabel = UILabel()
-                badgeLabel.font = .dynamicTypeTitle3.semibold()
-                badgeLabel.textColor = Theme.primaryTextColor
-                badgeLabel.textAlignment = .center
-                badgeLabel.numberOfLines = 0
-                badgeLabel.text = self.badge.localizedName
-                stackView.addArrangedSubview(badgeLabel)
-                stackView.setCustomSpacing(14, after: badgeImageView)
-                stackView.setCustomSpacing(36, after: badgeLabel)
-            } else {
-                stackView.setCustomSpacing(36, after: badgeImageView)
-            }
+            stackView.setCustomSpacing(36, after: bodyLabel)
 
             return cell
         }, actionBlock: nil))
@@ -366,10 +347,10 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             contents.add(displayBadgeSection)
         }
 
-        switch self.badgeType {
-        case let .gift(_, notNowAction, incomingMessage):
+        switch self.thanksType {
+        case let .giftReceived(_, notNowAction, incomingMessage):
             contents.add(self.buildRedeemButtonSection(notNowAction: notNowAction, incomingMessage: incomingMessage))
-        case .boost, .subscription:
+        case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
             contents.add(self.buildDoneButtonSection())
         }
     }

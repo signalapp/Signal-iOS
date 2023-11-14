@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import LibSignalClient
+
 @testable import SignalServiceKit
 
 //
@@ -80,11 +82,11 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     var setPreKeysResult: ConsumableMockPromise<Void> = .unset
     var identity: OWSIdentity?
-    var identityKey: Data?
-    var signedPreKeyRecord: SignedPreKeyRecord?
-    var preKeyRecords: [PreKeyRecord]?
-    var pqLastResortPreKeyRecord: KyberPreKeyRecord?
-    var pqPreKeyRecords: [KyberPreKeyRecord]?
+    var identityKey: IdentityKey?
+    var signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
+    var preKeyRecords: [SignalServiceKit.PreKeyRecord]?
+    var pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?
+    var pqPreKeyRecords: [SignalServiceKit.KyberPreKeyRecord]?
     var auth: ChatServiceAuth?
 
     private let schedulers: Schedulers
@@ -99,11 +101,11 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     override func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: Data,
-        signedPreKeyRecord: SignedPreKeyRecord?,
-        preKeyRecords: [PreKeyRecord]?,
-        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
-        pqPreKeyRecords: [KyberPreKeyRecord]?,
+        identityKey: IdentityKey,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
+        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?,
+        pqPreKeyRecords: [SignalServiceKit.KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         return setPreKeysResult.consumeIntoPromise().map(on: schedulers.sync) {

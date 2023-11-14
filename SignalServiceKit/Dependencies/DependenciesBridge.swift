@@ -92,6 +92,10 @@ public class DependenciesBridge {
     public var registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
+    public let socketManager: SocketManager
+
+    public let subscriptionReceiptCredentialResultStore: SubscriptionReceiptCredentialResultStore
+
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
 
@@ -522,6 +526,10 @@ public class DependenciesBridge {
 
         self.signalProtocolStoreManager = signalProtocolStoreManager
 
+        self.subscriptionReceiptCredentialResultStore = SubscriptionReceiptCredentialResultStoreImpl(
+            kvStoreFactory: keyValueStoreFactory
+        )
+
         self.usernameApiClient = UsernameApiClientImpl(
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
             schedulers: schedulers
@@ -590,5 +598,7 @@ public class DependenciesBridge {
             tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
             tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
         )
+
+        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
     }
 }

@@ -341,7 +341,29 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
     static let constants: [(SubscriptionReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
         (
             SubscriptionReceiptCredentialRedemptionJobRecord(
+                paymentProcessor: "STRIPE",
+                paymentMethod: "SEPA_DEBIT",
+                receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
+                receiptCredentialRequest: Data(base64Encoded: "dead")!,
+                receiptCredentialPresentation: Data(base64Encoded: "bade")!,
+                subscriberID: Data(base64Encoded: "feed")!,
+                targetSubscriptionLevel: 12,
+                priorSubscriptionLevel: 4,
+                isBoost: true,
+                amount: 12.5,
+                currencyCode: "USD",
+                boostPaymentIntentID: "beep",
+                label: "boop",
+                exclusiveProcessIdentifier: "bing",
+                failureCount: 0,
+                status: .permanentlyFailed
+            ),
+            Data(base64Encoded: "eyJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3QiOiJkZWFkIiwidGFyZ2V0U3Vic2NyaXB0aW9uTGV2ZWwiOjEyLCJpc0Jvb3N0Ijp0cnVlLCJzdWJzY3JpYmVySUQiOiJmZWVkIiwicGF5bWVudE1ldGhvZCI6IlNFUEFfREVCSVQiLCJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjAsImxhYmVsIjoiYm9vcCIsInJlY29yZFR5cGUiOjcxLCJzdGF0dXMiOjMsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoiYmluZyIsInVuaXF1ZUlkIjoiMUUyMjA2NDYtM0E4MC00QUFBLUFDMkEtQjE4NjY2Q0ZBNDEzIn0sImJvb3N0UGF5bWVudEludGVudElEIjoiYmVlcCIsImN1cnJlbmN5Q29kZSI6IlVTRCIsInJlY2VpcHRDcmVkZW50YWlsUmVxdWVzdENvbnRleHQiOiJiZWVmIiwicGF5bWVudFByb2Nlc3NvciI6IlNUUklQRSIsInJlY2VpcHRDcmVkZW50aWFsUHJlc2VudGF0aW9uIjoiYmFkZSIsImFtb3VudCI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpHRnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJjbU5vYVhabGN0RUlDVlJ5YjI5MGdBR2pDd3dhVlNSdWRXeHMxdzBPRHhBUkVoTVVGUllYR0JnWlZpUmpiR0Z6YzF0T1V5NXRZVzUwYVhOellWdE9VeTV1WldkaGRHbDJaVnRPVXk1bGVIQnZibVZ1ZEY1T1V5NXRZVzUwYVhOellTNWliMWxPVXk1c1pXNW5kR2hhVGxNdVkyOXRjR0ZqZElBQ1R4QVFmUUFBQUFBQUFBQUFBQUFBQUFBQUFBZ1RcL1wvXC9cL1wvXC9cL1wvXC9cLzhRQVFuU0d4d2RIbG9rWTJ4aGMzTnVZVzFsV0NSamJHRnpjMlZ6WHhBYVRsTkVaV05wYldGc1RuVnRZbVZ5VUd4aFkyVm9iMnhrWlhLbEh5QWhJaU5mRUJwT1UwUmxZMmx0WVd4T2RXMWlaWEpRYkdGalpXaHZiR1JsY2w4UUQwNVRSR1ZqYVcxaGJFNTFiV0psY2xoT1UwNTFiV0psY2xkT1UxWmhiSFZsV0U1VFQySnFaV04wQUFnQUVRQWFBQ1FBS1FBeUFEY0FTUUJNQUZFQVV3QlhBRjBBYkFCekFIOEFpd0NYQUtZQXNBQzdBTDBBMEFEUkFOb0EzQURkQU9JQTdRRDJBUk1CR1FFMkFVZ0JVUUZaQUFBQUFBQUFBZ0VBQUFBQUFBQUFKQUFBQUFBQUFBQUFBQUFBQUFBQUFXST0iLCJwcmlvclN1YnNjcmlwdGlvbkxldmVsIjo0fQ==")!
+        ),
+        (
+            SubscriptionReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "bank",
+                paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
                 receiptCredentialRequest: Data(base64Encoded: "dead")!,
                 receiptCredentialPresentation: Data(base64Encoded: "bade")!,
@@ -362,6 +384,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
         (
             SubscriptionReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "not svb",
+                paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "feeb")!,
                 receiptCredentialRequest: Data(base64Encoded: "aded")!,
                 receiptCredentialPresentation: nil,
