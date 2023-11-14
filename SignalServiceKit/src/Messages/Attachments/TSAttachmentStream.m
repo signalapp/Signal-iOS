@@ -746,38 +746,25 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
 {
-    [self applyChangeAsyncToLatestCopyWithChangeBlock:changeBlock completion:nil];
-}
-
-- (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
-                                         completion:(nullable dispatch_block_t)completion
-{
     OWSAssertDebug(changeBlock);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            // We load a new instance before using anyUpdateWithTransaction()
-            // since it isn't thread-safe to mutate the current instance async.
-            TSAttachmentStream *_Nullable latestInstance =
-                [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:self.uniqueId transaction:transaction];
-            if (latestInstance == nil) {
-                // This attachment has either not yet been saved or has been deleted; do nothing.
-                // This isn't an error per se, but these race conditions should be
-                // _very_ rare.
-                //
-                // An exception is incoming group avatar updates which we don't ever save.
-                OWSLogWarn(@"Could not load attachment.");
-                return;
-            }
-            [latestInstance anyUpdateAttachmentStreamWithTransaction:transaction
-                                                               block:^(TSAttachmentStream *attachmentStream) {
-                                                                   changeBlock(attachmentStream);
-                                                               }];
-        });
-
-        if (completion != nil) {
-            completion();
+    NSString *uniqueId = self.uniqueId;
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
+        // We load a new instance before using anyUpdateWithTransaction() since it
+        // isn't thread-safe to mutate the current instance async.
+        TSAttachmentStream *_Nullable latestInstance = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:uniqueId
+                                                                                                    transaction:tx];
+        if (latestInstance == nil) {
+            // This attachment has either not yet been saved or has been deleted; do
+            // nothing. This isn't an error per se, but these race conditions should be
+            // _very_ rare.
+            //
+            // An exception is incoming group avatar updates which we don't ever save.
+            OWSLogWarn(@"Could not load attachment.");
+            return;
         }
+        changeBlock(latestInstance);
+        [latestInstance anyOverwritingUpdateWithTransaction:tx];
     });
 }
 
