@@ -503,22 +503,22 @@
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "আরও জানুন।";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Canceled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল করা হয়েছে";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation has ended. %1$@\n\nWithout an active subscription your badge will no longer be visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন শেষ হয়েছে। %1$@\n\nসক্রিয় সাবস্ক্রিপশন ছাড়া আপনার ব্যাজটি আপনার প্রোফাইলে আর দৃশ্যমান হবে না।";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "অনেক দিন ধরে নিষ্ক্রিয় থাকার কারণে আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। আপনার %1$@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।\n\nআপনি Signal ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটিকে সহায়তা করতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, এখনই ডোনেট করুন।";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
-"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Your bank transfer was received. You can choose to display this badge on your profile to show off your support.";
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "আপনার ব্যাংক ট্রান্সফার গৃহীত হয়েছে। আপনি আপনার সমর্থন প্রদর্শন করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করতে পারবেন।";
 
 /* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
-"BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Donation Complete";
+"BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "অনুদান সম্পন্ন হয়েছে";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You can choose to display this badge on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "আপনি আপনার সমর্থন প্রদর্শন করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করতে পারবেন।";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "প্রোফাইলে প্রদর্শন করুন";
@@ -533,22 +533,22 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "যখন আপনার একাধিক ব্যাজ থাকে, আপনি অন্যদের আপনার প্রোফাইলে দেখার জন্য বৈশিষ্ট্যের একটি বেছে নিতে পারেন।";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
-"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Find Account Info";
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "অ্যাকাউন্টের তথ্য দেখুন";
 
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
-"BANK_DONATION_SUBHEADER_TEXT" = "Enter your bank details. Signal does not collect or store your personal information.";
+"BANK_DONATION_SUBHEADER_TEXT" = "আপনার ব্যাংকের তথ্য লিখুন। Signal আপনার ব্যক্তিগত তথ্য সংগ্রহ কিংবা সংরক্ষণ করে না।";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate. */
-"BANK_MANDATE_AGREE" = "Agree";
+"BANK_MANDATE_AGREE" = "একমত";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible. */
-"BANK_MANDATE_READ_MORE" = "Read More";
+"BANK_MANDATE_READ_MORE" = "আরও পড়ুন";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
-"BANK_MANDATE_SUBTITLE" = "Stripe processes donations made to Signal. Signal does not collect or store your personal information.";
+"BANK_MANDATE_SUBTITLE" = "Stripe Signal-এ পাঠানো ডোনেশন প্রক্রিয়া করে। Signal আপনার ব্যক্তিগত তথ্য সংগ্রহ কিংবা সংরক্ষণ করে না।";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate. */
-"BANK_MANDATE_TITLE" = "Bank Transfer";
+"BANK_MANDATE_TITLE" = "ব্যাংক ট্রান্সফার";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ব্যানার বন্ধ করুন";
@@ -1874,13 +1874,13 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "সেন্সরশিপ এড়ানো স্থান";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON" = "Donate %1$@";
+"DONATE_BUTTON" = "%1$@-কে ডোনেট করুন";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON_MONTHLY" = "Donate %1$@/month";
+"DONATE_BUTTON_MONTHLY" = "ডোনেট করুন %1$@/প্রতি মাসে";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
-"DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "Bank Transfer";
+"DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "ব্যাংক ট্রান্সফার";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "ক্রেডিট বা ডেবিট কার্ড";
@@ -1892,7 +1892,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ ব্যাজ নিন";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Get the %1$@ badge for 30 days";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "30 দিনের জন্য %1$@ ব্যাজ নিন";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Signal-এ %1$@ ডোনেশন";
@@ -1913,16 +1913,16 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "বাতিল";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Bank transfers usually take 1 business day to process. Please wait until this donation completes before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "ব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়। অনুগ্রহ করে আরেকটি ডোনেশন পাঠানোর আগে এই পেমেন্টটি সম্পন্ন হওয়ার আগ পর্যন্ত অপেক্ষা করুন।";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Bank transfers usually take 1 business day to process. Please wait until this donation completes before updating your subscription.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "ব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়। অনুগ্রহ করে আপনার সাবস্ক্রিপশন আপডেট করার আগে এই ডোনেশনটি সম্পন্ন হওয়ার আগ পর্যন্ত অপেক্ষা করুন।";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Your donation is still being processed. This can take a few minutes depending on your connection. Please wait until this donation completes before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "আপনার ডোনেশন এখনো প্রক্রিয়া করা হচ্ছে। আপনার সংযোগের উপর ভিত্তি করে এতে কয়েক মিনিট সময় লাগতে পারে। অনুগ্রহ করে আরেকটি ডোনেশন পাঠানোর আগে এই পেমেন্টটি সম্পন্ন হওয়ার আগ পর্যন্ত অপেক্ষা করুন।";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Your donation is still being processed. This can take a few minutes depending on your connection. Please wait until this donation completes before updating your subscription.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "আপনার ডোনেশন এখনো প্রক্রিয়া করা হচ্ছে। আপনার সংযোগের উপর ভিত্তি করে এতে কয়েক মিনিট সময় লাগতে পারে। অনুগ্রহ করে আপনার সাবস্ক্রিপশন আপডেট করার আগে এই ডোনেশনটি সম্পন্ন হওয়ার আগ পর্যন্ত অপেক্ষা করুন।";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "ডোনেট করার জন্য অর্থের পরিমাণ বেছে নিন।";
@@ -1931,10 +1931,10 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "আপনি সর্বনিম্ন যে পরিমাণ অর্থ ডোনেট করতে পারবেন তা হলো %1$@।";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "You have a donation pending";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "আপনার একটি জমা না হওয়া ডোনেশন রয়েছে";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "You have a donation processing";
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "আপনার একটি ডোনেশন প্রক্রিয়াধীন অবস্থায় আছে";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "মাসিক";
@@ -1958,25 +1958,25 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "সাবস্ক্রিপশন আপডেট করুন";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "We’re having trouble processing your bank transfer. %1$@";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "আপনার ব্যাংক ট্রান্সফার প্রক্রিয়া করতে আমাদের সমস্যা হচ্ছে। %1$@";
 
 /* Title for a sheet explaining that a donation via bank payment has failed. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Donation Couldn’t Be Processed";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "ডোনেশন প্রক্রিয়া করা যায়নি";
 
 /* Title for a sheet explaining that a donation via bank payment is pending. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "ডোনেশন অনিষ্পন্ন অবস্থায় আছে";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your one-time donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "আপনার এককালীন ডোনেশন অনিষ্পন্ন অবস্থায় আছে। আপনার ডোনেশন পাওয়া গেলে আপনি আপনার প্রোফাইলে %1$@ ব্যাজ প্রদর্শন করতে সক্ষম হবেন।\n\nব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়।";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your monthly donation is pending. You’ll be able to display the %1$@ badge on your profile when your donation is received.\n\nBank transfers usually take 1 business day to process.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "আপনার মাসিক ডোনেশন অনিষ্পন্ন অবস্থায় আছে। আপনার ডোনেশন পাওয়া গেলে আপনি আপনার প্রোফাইলে %1$@ ব্যাজ প্রদর্শন করতে সক্ষম হবেন।\n\nব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়।";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
-"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renew Subscription";
+"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "নতুন করে সাবস্ক্রিপশন নিন";
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
-"DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Try Again";
+"DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "আবার চেষ্টা করুন";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "স্থায়িত্ব %1$@";
@@ -2135,43 +2135,43 @@
 "DONATION_SCREENS_HEADER_TITLE" = "ব্যবসায়িক লাভের চেয়ে গোপনীয়তার প্রাধান্য বেশি";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renew Subscription";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "নতুন করে সাবস্ক্রিপশন নিন";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Try Again";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "আবার চেষ্টা করুন";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Your bank transfer is pending. Bank transfers usually take 1 business day to process.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "আপনার ব্যাংক ট্রান্সফারটি অনিষ্পন্ন অবস্থায় আছে। ব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়।";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Donation Pending";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "ডোনেশন অনিষ্পন্ন অবস্থায় আছে";
 
 /* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "We’re having trouble processing your donation. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "আপনার ডোনেশন প্রক্রিয়া করতে আমাদের সমস্যা হচ্ছে। %1$@";
 
 /* Title for a sheet explaining that a payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Error Processing Donation";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "ডোনেশন প্রক্রিয়াকরণে ত্রুটি দেখা দিয়েছে";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Your recurring monthly donation has ended. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন শেষ হয়েছে। %1$@";
 
 /* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Monthly Donation Canceled";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "মাসিক ডোনেশন বাতিল করা হয়েছে";
 
 /* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Donation Pending";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "ডোনেশন অনিষ্পন্ন অবস্থায় আছে";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Processing Donation...";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "ডোনেশন প্রক্রিয়া করা হচ্ছে...";
 
 /* A label describing a donation payment that has failed to process. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Error Processing Donation";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "ডোনেশন প্রক্রিয়াকরণে ত্রুটি দেখা দিয়েছে";
 
 /* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Monthly Donation Canceled";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "মাসিক ডোনেশন বাতিল করা হয়েছে";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
-"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ one-time";
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ এককালীন";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "বন্ধুর জন্য ডোনেট করুন";
@@ -2180,7 +2180,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal-এ অনুদান";
 
 /* Title for the 'Donor FAQ' button on the donation screen */
-"DONATION_VIEW_DONOR_FAQ" = "Donor FAQ";
+"DONATION_VIEW_DONOR_FAQ" = "ডোনার সম্পর্কিত প্রশ্নাবলী";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "নেটওয়ার্ক ত্রুটি। আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।";
@@ -2465,10 +2465,10 @@
 "FEATURED_BADGE_SETTINGS_TITLE" = "ফিচারকৃত ব্যাজ";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_BODY" = "Look for your IBAN at the top of your bank statement. IBAN numbers contain up to 34 characters. The name you enter should match your full name on your bank account. Contact your bank for more information.";
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "আপনার ব্যাংক স্টেটমেন্টের উপরে আপনার IBAN নম্বরটি দেখুন। IBAN নম্বরে 34টি পর্যন্ত অক্ষর থাকে। আপনি যে নামটি লিখছেন তা আপনার ব্যাংক অ্যাকাউন্টে থাকা আপনার পুরো নামের সাথে মিলতে হবে। আরো তথ্য জানতে আপনার ব্যাংকের সাথে যোগাযোগ করুন।";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_TITLE" = "Find Your Account Information";
+"FIND_ACCOUNT_INFO_SHEET_TITLE" = "আপনার অ্যাকাউন্টের তথ্য দেখুন";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "যাচাইকৃত হিসাবে চিহ্নিত করুন";
@@ -4514,10 +4514,10 @@
 "OUTGOING_VIDEO_CALL" = "ভিডিও কল যাচ্ছে";
 
 /* Header title for bank payment details screen */
-"PAYMENT_DETAILS_BANK_TITLE" = "Bank Transfer";
+"PAYMENT_DETAILS_BANK_TITLE" = "ব্যাংক ট্রান্সফার";
 
 /* Header title for card payment details screen */
-"PAYMENT_DETAILS_CARD_TITLE" = "Credit or Debit Card";
+"PAYMENT_DETAILS_CARD_TITLE" = "ক্রেডিট বা ডেবিট কার্ড";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@-এ %1$@";
@@ -5807,49 +5807,49 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "স্ট্যান্ডার্ড";
 
 /* Users can donate to Signal with a bank account. This is the label for email field on that screen. */
-"SEPA_DONATION_EMAIL_LABEL" = "Email";
+"SEPA_DONATION_EMAIL_LABEL" = "ইমেইল";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing. */
-"SEPA_DONATION_EMAIL_PLACEHOLDER" = "Email Address";
+"SEPA_DONATION_EMAIL_PLACEHOLDER" = "ইমেইল ঠিকানা";
 
 /* SEPA bank account donation error for insufficient funds. */
-"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "The bank account provided has insufficient funds to complete this purchase, try again or contact your bank for more information.";
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "প্রদত্ত ব্যাংক অ্যাকাউন্টে এই ক্রয়টি সম্পন্ন করার জন্য পর্যাপ্ত অর্থ নেই, আবার চেষ্টা করুন বা আরো তথ্যের জন্য আপনার ব্যাংকের সাথে যোগাযোগ করুন।";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
-"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "An error occurred while processing this payment, please try again.";
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "এই পেমেন্টটি প্রক্রিয়া করার সময় একটি ত্রুটি ঘটেছে, অনুগ্রহ করে আবার চেষ্টা করুন।";
 
 /* SEPA bank account donation error for the account details not being able to be processed. */
-"SEPA_DONATION_ERROR_NOT_PROCESSED" = "The bank details provided could not be processed, contact your bank for more information.";
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "প্রদত্ত ব্যাংক বিবরণ প্রক্রিয়া করা যায়নি, আরো তথ্যের জন্য আপনার ব্যাংকের সাথে যোগাযোগ করুন।";
 
 /* SEPA bank account donation error for unspecified decline failures. */
-"SEPA_DONATION_ERROR_OTHER" = "Verify your bank details are correct and try again. If the problem continues, contact your bank.";
+"SEPA_DONATION_ERROR_OTHER" = "আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন। সমস্যা চলতে থাকলে, আপনার ব্যাংকের সাথে যোগাযোগ করুন।";
 
 /* SEPA bank account donation error for the payment not being authorizing by the account holder. */
-"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "This payment was revoked by the account holder and could not be processed. You haven’t been charged.";
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "এই পেমেন্টটি অ্যাকাউন্ট হোল্ডার কর্তৃক বাতিল করা হয়েছে এবং প্রক্রিয়া করা যায়নি। আপনার কাছ থেকে অর্থ কেটে নেওয়া হয়নি।";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN can only contain A-Z and 0-9";
+"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN-এ শুধুমাত্র A-Z এবং 0-9 থাকতে পারে";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "Invalid IBAN number";
+"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "অকার্যকর IBAN নাম্বার";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "IBAN country code is not supported";
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "IBAN কান্ট্রি কোডটি সমর্থিত নয়";
 
 /* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_TOO_LONG_ERROR" = "IBAN is too long";
+"SEPA_DONATION_IBAN_TOO_LONG_ERROR" = "IBAN অনেক বড়";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "IBAN is too short";
+"SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "IBAN অনেক ছোট";
 
 /* Users can donate to Signal with a bank account. This is the label for name field on that screen. */
-"SEPA_DONATION_NAME_LABEL" = "Name";
+"SEPA_DONATION_NAME_LABEL" = "নাম";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing. */
-"SEPA_DONATION_NAME_PLACEHOLDER" = "Name on Bank Account";
+"SEPA_DONATION_NAME_PLACEHOLDER" = "ব্যাংক অ্যাকাউন্টের নাম";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal এন্ড-টু-এন্ড এনক্রিপশন ব্যবহার করে এবং এটিকে মাঝেমাঝে আপনার চ্যাট সেশন রিফ্রেশ করতে হতে পারে। এটি আপনার চ্যাটের সুরক্ষাকে ব্যহত করবে না কিন্তু আপনি এই কন্টাক্ট থেকে কোন ম্যাসেজ নাও পেতে পারেন, সুতরাং আপনি সংশ্লিষ্ট কন্টাক্টকে ম্যাসেজটি পুনরায় পাঠাতে বলতে পারেন।";
@@ -7274,19 +7274,19 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "ব্যাজ যোগ করা যায় নি";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Donation";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "ডোনেশন প্রক্রিয়াকরণে ত্রুটি দেখা দিয়েছে";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/মাস";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing donation...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "ডোনেশন প্রক্রিয়া করা হচ্ছে...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ তারিখে নবায়ন হবে";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your donation is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "আপনার ডোনেশন এখনো প্রক্রিয়া করা হচ্ছে। আপনার সংযোগের উপর ভিত্তি করে এতে কয়েক মিনিট সময় লাগতে পারে।";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "আপনার সদস্যতা বাতিল করা হয়েছে";
@@ -7679,7 +7679,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "সুরক্ষা নাম্বার পর্যালোচনা করুন";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, compare the numbers above with their device. You can also scan the code on their device.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@-এর সাথে এন্ড-টু-এন্ড এনক্রিপশন যাচাই করতে, তাদের ডিভাইসের সাথে উপরের নম্বরগুলো তুলনা করুন। আপনি তাদের ডিভাইস থেকেও কোডটি স্ক্যান করতে পারবেন।";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "এই ভিডিওটি চালানো যায়নি";
