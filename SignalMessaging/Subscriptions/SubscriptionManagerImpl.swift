@@ -524,7 +524,8 @@ public class SubscriptionManagerImpl: NSObject {
         priorSubscriptionLevel: UInt?,
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod?,
-        isNewSubscription: Bool
+        isNewSubscription: Bool,
+        shouldSuppressPaymentAlreadyRedeemed: Bool
     ) {
         let request = generateReceiptRequest()
 
@@ -538,6 +539,7 @@ public class SubscriptionManagerImpl: NSObject {
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
                 isNewSubscription: isNewSubscription,
+                shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
                 transaction: transaction
             )
         }
@@ -794,7 +796,7 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     // 3 day heartbeat interval
-    private static let heartbeatInterval: TimeInterval = 3 * 24 * 60 * 60
+    private static let heartbeatInterval: TimeInterval = 3 * kDayInterval
 
     // MARK: Heartbeat
     @objc
@@ -857,28 +859,54 @@ public class SubscriptionManagerImpl: NSObject {
                 return
             }
 
-            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
-                // When a subscription renews, the "end of period" changes to
-                // reflect a later date. When that happens, we need to re-redeem
-                // the badge for the subscription.
+            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
+                Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
+            } else {
+                /// When a subscription renews, the "end of period" changes to
+                /// reflect a later date. When that happens, we need to redeem a
+                /// badge for the new period.
+                ///
+                /// We may also get here if we're missing our last subscription
+                /// expiration entirely, potentially due to a reinstall. In that
+                /// case, we don't know whether or not we've already redeemed a
+                /// badge for the period we're in. Either way, we can kick off
+                /// a receipt credential job:
+                ///
+                /// - If we haven't redeemed the badge yet, maybe because the
+                /// subscription renewed just before we reinstalled, everything
+                /// is fortuitously working as expected.
+                ///
+                /// - If we *have* redeemed the badge, we can expect the job to
+                /// fail with a "payment already redeemed" error. We'll
+                /// configure the job to swallow that error and be back to our
+                /// regular rhythm.
 
-                let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
-                Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
+                let shouldSuppressPaymentAlreadyRedeemed: Bool = {
+                    let newExpiration = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
+
+                    if let lastSubscriptionExpiration {
+                        Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newExpiration)")
+                        return false
+                    } else {
+                        Logger.warn("[Donations] Attempting receipt credential redemption during heartbeat, missing last subscription expiration. New expiration: \(newExpiration)")
+                        return true
+                    }
+                }()
+
                 requestAndRedeemReceipt(
                     subscriberId: subscriberID,
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil,
                     paymentProcessor: subscription.paymentProcessor,
                     paymentMethod: subscription.paymentMethod,
-                    isNewSubscription: false
+                    isNewSubscription: false,
+                    shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
                 )
 
                 // Save last expiration
                 databaseStorage.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
-            } else {
-                Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
             }
 
             // Save heartbeat

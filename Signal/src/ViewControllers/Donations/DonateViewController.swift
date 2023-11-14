@@ -489,13 +489,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         currencyCode: monthly.selectedCurrencyCode
                     )
                 }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
+                    // Treat updates like new subscriptions
                     SubscriptionManagerImpl.requestAndRedeemReceipt(
                         subscriberId: subscriberID,
                         subscriptionLevel: selectedSubscriptionLevel.level,
                         priorSubscriptionLevel: currentSubscription.level,
                         paymentProcessor: currentSubscription.paymentProcessor,
                         paymentMethod: currentSubscription.paymentMethod,
-                        isNewSubscription: true // Update treated like new subscription
+                        isNewSubscription: true,
+                        shouldSuppressPaymentAlreadyRedeemed: false
                     )
 
                     return DonationViewsUtil.waitForSubscriptionJob(
