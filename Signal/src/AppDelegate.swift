@@ -77,6 +77,8 @@ extension AppDelegate {
 
         Cryptography.seedRandom()
 
+        MessageFetchBGRefreshTask.register()
+
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially
         // restored from transfer (e.g. the key was replaced, but the database
@@ -377,7 +379,7 @@ extension AppDelegate {
         DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
         Self.updateApplicationShortcutItems(isRegistered: tsRegistrationState.isRegistered)
 
         let notificationCenter = NotificationCenter.default
@@ -412,18 +414,8 @@ extension AppDelegate {
         SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
     }
 
-    private func enableBackgroundRefreshIfNecessary() {
-        let interval: TimeInterval
-        if
-            OWS2FAManager.shared.isRegistrationLockEnabled,
-            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        {
-            // Ping server once a day to keep-alive reglock clients.
-            interval = 24 * 60 * 60
-        } else {
-            interval = UIApplication.backgroundFetchIntervalNever
-        }
-        UIApplication.shared.setMinimumBackgroundFetchInterval(interval)
+    private func scheduleBgAppRefresh() {
+        MessageFetchBGRefreshTask.shared?.scheduleTask()
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
@@ -861,7 +853,7 @@ extension AppDelegate {
 
         Logger.info("registrationStateDidChange")
 
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
@@ -885,7 +877,7 @@ extension AppDelegate {
 
     @objc
     private func registrationLockDidChange() {
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
     }
 
     // MARK: - Utilities

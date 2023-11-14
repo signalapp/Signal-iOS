@@ -937,6 +937,7 @@
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
+		66CDB7522AF9D117009A36EC /* MessageFetchBGRefreshTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */; };
 		66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */; };
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D13F0A2A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */; };
@@ -3535,6 +3536,7 @@
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
+		66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFetchBGRefreshTask.swift; sourceTree = "<group>"; };
 		66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableTextViewAnimator.swift; sourceTree = "<group>"; };
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D13F092A731E590092D47B /* RecipientHidingManager+SignalServiceAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipientHidingManager+SignalServiceAddress.swift"; sourceTree = "<group>"; };
@@ -7232,6 +7234,7 @@
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				F92074752888648A00B7F087 /* AppDelegate.swift */,
+				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
 				45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */,
 			);
 			path = src;
@@ -12116,6 +12119,7 @@
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsToolbar.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
+				66CDB7522AF9D117009A36EC /* MessageFetchBGRefreshTask.swift in Sources */,
 				34DE9C02256575300080E4AF /* MessageLoader.swift in Sources */,
 				881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */,
 				88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */,
