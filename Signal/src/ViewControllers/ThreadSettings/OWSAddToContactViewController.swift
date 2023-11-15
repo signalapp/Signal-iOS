@@ -77,8 +77,7 @@ public class OWSAddToContactViewController: OWSViewController {
                 let result = self.contactsViewHelper.contactViewController(
                     for: self.address,
                     editImmediately: true,
-                    addToExisting: cnContact,
-                    updatedNameComponents: nil
+                    addToExisting: cnContact
                 )
                 result.delegate = self
                 return result

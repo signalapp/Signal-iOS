@@ -342,9 +342,4 @@ public class RecipientHidingManagerObjcBridge: NSObject {
     public static func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
     }
-
-    @objc
-    public static var hideListDidChange: Notification.Name {
-        return RecipientHidingManagerImpl.hideListDidChange
-    }
 }

@@ -12,5 +12,4 @@ FOUNDATION_EXPORT double SignalUIVersionNumber;
 FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 
 // The public headers of the framework
-#import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSNavigationControllerBase.h>

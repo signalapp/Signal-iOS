@@ -17,11 +17,8 @@ public extension NSObject {
         SUIEnvironment.shared.audioSessionRef
     }
 
+    @nonobjc
     final var contactsViewHelper: ContactsViewHelper {
-        SUIEnvironment.shared.contactsViewHelperRef
-    }
-
-    static var contactsViewHelper: ContactsViewHelper {
         SUIEnvironment.shared.contactsViewHelperRef
     }
 

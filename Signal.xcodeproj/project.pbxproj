@@ -122,7 +122,6 @@
 		3402AA92271D9E180084CBAE /* CVText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95525271B510400B05242 /* CVText.swift */; };
 		3402AA93271D9E180084CBAE /* GroupLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* GroupLinkPreview.swift */; };
 		3402AA94271D9E180084CBAE /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555B271B510400B05242 /* ImageEditorBlurRegionsItem.swift */; };
-		3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95527271B510400B05242 /* ContactsViewHelper.m */; };
 		3402AA96271D9E180084CBAE /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95564271B510400B05242 /* Toast.swift */; };
 		3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551B271B510400B05242 /* VideoEditorModel.swift */; };
 		3402AA98271D9E180084CBAE /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */; };
@@ -130,7 +129,6 @@
 		3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554D271B510400B05242 /* TooltipView.swift */; };
 		3402AA9C271D9E180084CBAE /* ManualLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551D271B510400B05242 /* ManualLayoutView.swift */; };
 		3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553F271B510400B05242 /* CircleView.swift */; };
-		3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95565271B510400B05242 /* ContactsViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554C271B510400B05242 /* ViewOnceTooltip.swift */; };
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
 		3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552C271B510400B05242 /* MentionPicker.swift */; };
@@ -2896,7 +2894,6 @@
 		34A95524271B510400B05242 /* CVUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVUtils.swift; sourceTree = "<group>"; };
 		34A95525271B510400B05242 /* CVText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVText.swift; sourceTree = "<group>"; };
 		34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPanGestureRecognizer.swift; sourceTree = "<group>"; };
-		34A95527271B510400B05242 /* ContactsViewHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsViewHelper.m; sourceTree = "<group>"; };
 		34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithPlaceholder.swift; sourceTree = "<group>"; };
 		34A95529271B510400B05242 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
 		34A9552C271B510400B05242 /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
@@ -2935,7 +2932,6 @@
 		34A95562271B510400B05242 /* ImageEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34A95563271B510400B05242 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransform.swift; sourceTree = "<group>"; };
 		34A95564271B510400B05242 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
-		34A95565271B510400B05242 /* ContactsViewHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
 		34A95567271B510500B05242 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		34A95569271B510500B05242 /* ActionSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetController.swift; sourceTree = "<group>"; };
 		34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationControllerBase.m; sourceTree = "<group>"; };
@@ -5923,8 +5919,6 @@
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				34A9550B271B510400B05242 /* ContactCellView.swift */,
 				503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */,
-				34A95565271B510400B05242 /* ContactsViewHelper.h */,
-				34A95527271B510400B05242 /* ContactsViewHelper.m */,
 				34A9551E271B510400B05242 /* ContactsViewHelper.swift */,
 				34A95536271B510400B05242 /* ContactTableViewCell.swift */,
 				34A95543271B510400B05242 /* ConversationAvatarView.swift */,
@@ -10114,7 +10108,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
@@ -10179,7 +10172,6 @@
 				F9C5CCE9289453B300548EEE /* OWSCallMessageHandler.h in Headers */,
 				F9C5CD93289453B300548EEE /* OWSCensorshipConfiguration.h in Headers */,
 				F9C5CCF7289453B300548EEE /* OWSChunkedOutputStream.h in Headers */,
-				F9C5CCFA289453B300548EEE /* OWSContactsOutputStream.h in Headers */,
 				F9C5CDC7289453B400548EEE /* OWSCountryMetadata.h in Headers */,
 				F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
 				F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */,
@@ -11333,7 +11325,6 @@
 				76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */,
 				76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
-				3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
@@ -12701,7 +12692,6 @@
 				F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */,
 				F9C5CCF3289453B300548EEE /* OWSChunkedOutputStream.m in Sources */,
 				763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */,
-				F9C5CCF5289453B300548EEE /* OWSContactsOutputStream.m in Sources */,
 				F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */,
 				F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */,
 				D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */,

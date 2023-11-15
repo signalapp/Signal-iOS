@@ -73,8 +73,9 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
         }
 
         let collisionCandidates = contactsViewHelper.signalAccounts(
-            matchingSearch: contactThread.contactAddress.displayName(transaction: transaction),
-            transaction: transaction)
+            matching: contactThread.contactAddress.displayName(transaction: transaction),
+            transaction: transaction
+        )
 
         // ContactsViewHelper uses substring matching, so it might return false positives
         // Filter to just the matches that are valid collisions

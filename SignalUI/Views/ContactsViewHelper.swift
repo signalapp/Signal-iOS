@@ -4,13 +4,157 @@
 //
 
 import Contacts
-import Foundation
+import ContactsUI
+import LibSignalClient
 import SafariServices
 import SignalMessaging
+import SignalServiceKit
 
-public extension ContactsViewHelper {
+@objc
+public protocol ContactsViewHelperObserver: AnyObject {
+    func contactsViewHelperDidUpdateContacts()
+}
 
-    func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
+public class ContactsViewHelper: Dependencies {
+
+    public init() {
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+            // setup() - especially updateContacts() - can
+            // be expensive, so we don't want to run that
+            // directly in runNowOrWhenAppDidBecomeReadySync().
+            // That could cause 0x8badf00d crashes.
+            //
+            // On the other hand, the user might quickly
+            // open a view (like the compose view) that uses
+            // this helper. If the helper hasn't completed
+            // setup, that view won't be able to display a
+            // list of users to pick from. Therefore, we
+            // can't use runNowOrWhenAppDidBecomeReadyAsync()
+            // which might not run for many seconds after
+            // the app becomes ready.
+            //
+            // Therefore we dispatch async to the main queue.
+            // We'll run very soon after app UI becomes ready,
+            // without introducing the risk of a 0x8badf00d
+            // crash.
+            DispatchQueue.main.async {
+                self.setup()
+            }
+        }
+    }
+
+    deinit {
+        notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+
+    private func setup() {
+        guard !CurrentAppContext().isNSE else { return }
+
+        updateContacts()
+        setupNotificationObservations()
+    }
+
+    // MARK: Notifications
+
+    private var notificationObservers = [Any]()
+
+    private func setupNotificationObservations() {
+        notificationObservers.append(contentsOf: [
+            NotificationCenter.default.addObserver(
+                forName: .OWSContactsManagerSignalAccountsDidChange,
+                object: nil,
+                queue: nil,
+                using: { [weak self] _ in
+                    self?.updateContacts()
+                }
+            ),
+            NotificationCenter.default.addObserver(
+                forName: .profileWhitelistDidChange,
+                object: nil,
+                queue: nil,
+                using: { [weak self] _ in
+                    self?.updateContacts()
+                }
+            ),
+            NotificationCenter.default.addObserver(
+                forName: BlockingManager.blockListDidChange,
+                object: nil,
+                queue: nil,
+                using: { [weak self] _ in
+                    self?.updateContacts()
+                }
+            ),
+            NotificationCenter.default.addObserver(
+                forName: RecipientHidingManagerImpl.hideListDidChange,
+                object: nil,
+                queue: nil,
+                using: { [weak self] _ in
+                    // Hiding a recipient who is a system contact or is someone you've
+                    // chatted with 1:1 updates the profile whitelist, which already
+                    // triggers a call to `updateContacts`. However, recipients who
+                    // do not fit into these categories need this other mechanism to
+                    // trigger `updateContacts`.
+                    self?.updateContacts()
+                }
+            )
+        ])
+    }
+
+    // MARK: Observation
+
+    private let observers = NSHashTable<ContactsViewHelperObserver>.weakObjects()
+
+    public func addObserver(_ observer: ContactsViewHelperObserver) {
+        AssertIsOnMainThread()
+        observers.add(observer)
+    }
+
+    // MARK: Contacts Data
+
+    public private(set) var allSignalAccounts: [SignalAccount] = []
+    private var phoneNumberSignalAccountMap: [String: SignalAccount] = [:]
+    private var serviceIdSignalAccountMap: [ServiceId: SignalAccount] = [:]
+
+    public var hasUpdatedContactsAtLeastOnce: Bool {
+        contactsManagerImpl.hasLoadedSystemContacts
+    }
+
+    public func localAddress() -> SignalServiceAddress? {
+        owsAssertBeta(!CurrentAppContext().isNSE)
+        return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress
+    }
+
+    public func fetchSignalAccount(for address: SignalServiceAddress) -> SignalAccount? {
+        AssertIsOnMainThread()
+        owsAssertBeta(!CurrentAppContext().isNSE)
+
+        if let serviceId = address.serviceId, let signalAccount = serviceIdSignalAccountMap[serviceId] {
+            return signalAccount
+        }
+
+        if let phoneNumber = address.phoneNumber, let signalAccount = phoneNumberSignalAccountMap[phoneNumber] {
+            return signalAccount
+        }
+
+        return nil
+    }
+
+    public func signalAccounts(matching searchText: String, transaction tx: SDSAnyReadTransaction) -> [SignalAccount] {
+        owsAssertBeta(!CurrentAppContext().isNSE)
+
+        // Check for matches against "Note to Self".
+        var signalAccountsToSearch = allSignalAccounts
+        if let localAddress = localAddress() {
+            signalAccountsToSearch.append(SignalAccount(address: localAddress))
+        }
+        return fullTextSearcher.filterSignalAccounts(
+            signalAccountsToSearch,
+            searchText: searchText,
+            transaction: tx
+        )
+    }
+
+    public func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
         switch includingLocalUser {
         case true:
             return allSignalAccounts
@@ -21,13 +165,8 @@ public extension ContactsViewHelper {
                 .filter { !($0.recipientAddress.isLocalAddress || $0.contact?.hasPhoneNumber(localNumber) == true) }
         }
     }
-}
 
-// MARK: - Updating Contacts
-
-extension ContactsViewHelper {
-    @objc
-    func updateContacts() {
+    private func updateContacts() {
         AssertIsOnMainThread()
         owsAssertDebug(!CurrentAppContext().isNSE)
 
@@ -53,21 +192,22 @@ extension ContactsViewHelper {
         }
 
         var phoneNumberMap = [String: SignalAccount]()
-        var serviceIdMap = [ServiceIdObjC: SignalAccount]()
+        var serviceIdMap = [ServiceId: SignalAccount]()
 
         for signalAccount in signalAccounts {
             if let phoneNumber = signalAccount.recipientPhoneNumber {
                 phoneNumberMap[phoneNumber] = signalAccount
             }
-            if let serviceId = signalAccount.recipientServiceIdObjc {
+            if let serviceId = signalAccount.recipientServiceId {
                 serviceIdMap[serviceId] = signalAccount
             }
         }
 
-        self.phoneNumberSignalAccountMap = phoneNumberMap
-        self.serviceIdSignalAccountMap = serviceIdMap
-        self.signalAccounts = self.contactsManagerImpl.sortSignalAccountsWithSneakyTransaction(signalAccounts)
-        self.fireDidUpdateContacts()
+        phoneNumberSignalAccountMap = phoneNumberMap
+        serviceIdSignalAccountMap = serviceIdMap
+        allSignalAccounts = contactsManagerImpl.sortSignalAccountsWithSneakyTransaction(signalAccounts)
+
+        fireDidUpdateContacts()
     }
 
     private func fireDidUpdateContacts() {
@@ -77,7 +217,123 @@ extension ContactsViewHelper {
     }
 }
 
-// MARK: - Presenting Permission-Gated Views
+// MARK: UI
+
+extension ContactsViewHelper {
+
+    public func contactViewController(
+        for address: SignalServiceAddress,
+        editImmediately: Bool,
+        addToExisting existingContact: CNContact? = nil,
+        updatedNameComponents: PersonNameComponents? = nil
+    ) -> CNContactViewController {
+
+        AssertIsOnMainThread()
+        owsAssertDebug(!CurrentAppContext().isNSE)
+        owsAssertDebug(contactsManagerImpl.editingAuthorization == .authorized)
+
+        let signalAccount = fetchSignalAccount(for: address)
+        var shouldEditImmediately = editImmediately
+
+        var contactViewController: CNContactViewController?
+        var cnContact: CNContact?
+
+        if let existingContact {
+            cnContact = existingContact
+
+            // Only add recipientId as a phone number for the existing contact if its not already present.
+            if let phoneNumber = address.phoneNumber {
+                let phoneNumberExists = existingContact.phoneNumbers.contains {
+                    phoneNumber == $0.value.stringValue
+                }
+
+                owsAssertBeta(!phoneNumberExists, "We currently only should the 'add to existing contact' UI for phone numbers that don't correspond to an existing user.")
+
+                if !phoneNumberExists {
+                    var phoneNumbers = existingContact.phoneNumbers
+                    phoneNumbers.append(CNLabeledValue(
+                        label: CNLabelPhoneNumberMain,
+                        value: CNPhoneNumber(stringValue: phoneNumber)
+                    ))
+                    let updatedContact = existingContact.mutableCopy() as! CNMutableContact
+                    updatedContact.phoneNumbers = phoneNumbers
+                    cnContact = updatedContact
+
+                    // When adding a phone number to an existing contact, immediately enter "edit" mode.
+                    shouldEditImmediately = true
+                }
+
+            }
+        }
+
+        if cnContact == nil, let cnContactId = signalAccount?.contact?.cnContactId {
+            cnContact = contactsManager.cnContact(withId: cnContactId)
+        }
+
+        if let updatedContact = cnContact?.mutableCopy() as? CNMutableContact {
+            if let givenName = updatedNameComponents?.givenName {
+                updatedContact.givenName = givenName
+            }
+            if let familyName = updatedNameComponents?.familyName {
+                updatedContact.familyName = familyName
+            }
+
+            if shouldEditImmediately {
+                // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
+                // saving our users a tap in some cases when we already know they want to edit.
+                contactViewController = CNContactViewController(forNewContact: updatedContact)
+
+                // Default title is "New Contact". We could give a more descriptive title, but anything
+                // seems redundant - the context is sufficiently clear.
+                contactViewController?.title = ""
+            } else {
+                contactViewController = CNContactViewController(for: updatedContact)
+            }
+        }
+
+        if contactViewController == nil {
+            let newContact = CNMutableContact()
+            if let phoneNumber = address.phoneNumber {
+                newContact.phoneNumbers = [ CNLabeledValue(
+                    label: CNLabelPhoneNumberMain,
+                    value: CNPhoneNumber(stringValue: phoneNumber)
+                )]
+            }
+
+            databaseStorage.read { tx in
+                if let givenName = profileManagerImpl.givenName(for: address, transaction: tx) {
+                    newContact.givenName = givenName
+                }
+                if let familyName = profileManagerImpl.familyName(for: address, transaction: tx) {
+                    newContact.familyName = familyName
+                }
+                if let profileAvatar = profileManagerImpl.profileAvatar(
+                    for: address,
+                    downloadIfMissing: true,
+                    authedAccount: .implicit(),
+                    transaction: tx
+                ) {
+                    newContact.imageData = profileAvatar.pngData()
+                }
+            }
+
+            if let givenName = updatedNameComponents?.givenName {
+                newContact.givenName = givenName
+            }
+            if let familyName = updatedNameComponents?.familyName {
+                newContact.familyName = familyName
+            }
+            contactViewController = CNContactViewController(forNewContact: newContact)
+        }
+
+        contactViewController?.allowsActions = false
+        contactViewController?.allowsEditing = true
+
+        return contactViewController!
+    }
+}
+
+// MARK: Presenting Permission-Gated Views
 
 public extension ContactsViewHelper {
 
