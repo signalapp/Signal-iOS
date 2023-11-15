@@ -102,22 +102,41 @@ public struct Subscription: Equatable {
 
     /// The state of the subscription as understood by the backend
     ///
-    /// A subscription will be in the `active` state as long as the current subscription payment has been
-    /// successfully processed by the payment processor.
+    /// A subscription will be in the `active` state as long as the current
+    /// subscription payment has been successfully processed by the payment
+    /// processor.
     ///
-    /// One note regarding `active` state: If the user hasn't communicated with the backend in
-    /// 30-45 days, the backend will consider the user 'inactive' and set `cancelAtEndOfPeriod`
-    /// to `true`.  Once the `endOfCurrentPeriod` time has passed, the subscription status will
-    /// transition from `active` to `canceled`
+    /// - Note
+    /// Signal servers get a callback when a subscription is going to renew. If
+    /// the user hasn't performed a "subscription keep-alive in ~30-45 days, the
+    /// server will, upon getting that callback, cancel the subscription.
     public enum SubscriptionStatus: String {
         case unknown
         case trialing = "trialing"
-        case active = "active"
         case incomplete = "incomplete"
         case incompleteExpired = "incomplete_expired"
-        case pastDue = "past_due"
-        case canceled = "canceled"
         case unpaid = "unpaid"
+
+        /// Indicates the subscription has been paid successfully for the
+        /// current period, and all is well.
+        case active = "active"
+
+        /// Indicates the subscription has been unrecoverably canceled. This may
+        /// be due to terminal failures while renewing (in which case the charge
+        /// failure should be populated), or due to inactivity (in which case
+        /// there will be no charge failure, as Signal servers canceled the
+        /// subscription artificially).
+        case canceled = "canceled"
+
+        /// Indicates the subscription failed to renew, but the payment
+        /// processor is planning to retry the renewal. If the future renewal
+        /// succeeds, the subscription will go back to being "active". Continued
+        /// renewal failures will result in the subscription being canceled.
+        ///
+        /// - Note
+        /// Retries are not predictable, but are expected to happen on the scale
+        /// of days, for up to circa two weeks.
+        case pastDue = "past_due"
     }
 
     public let level: UInt
@@ -849,14 +868,30 @@ public class SubscriptionManagerImpl: NSObject {
         }.then(on: DispatchQueue.global()) {
             self.getCurrentSubscriptionStatus(for: subscriberID)
         }.done(on: DispatchQueue.global()) { subscription in
-            guard let subscription = subscription else {
-                Logger.info("[Donations] No current subscription for this subscriberID")
+            defer {
+                // We did a heartbeat, so regardless of the outcomes below we
+                // should save the fact that we did so.
                 self.updateSubscriptionHeartbeatDate()
+            }
+
+            guard let subscription else {
+                Logger.info("[Donations] No current subscription for this subscriber ID.")
                 return
             }
 
             if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
                 Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
+            } else if subscription.status == .pastDue {
+                /// For some payment methods (e.g., cards), the payment
+                /// processors will automatically retry a subscription-renewal
+                /// payment failure. While that's happening, the subscription
+                /// will be "past due".
+                ///
+                /// Retries will occur on the scale of days, for a period of
+                /// weeks. We don't want to attempt badge redemption during this
+                /// time since we don't expect to succeed now, but failure
+                /// doesn't yet mean much as we may succeed in the future.
+                Logger.warn("[Donations] Subscription failed to renew, but payment processor is retrying. Not yet attempting receipt credential redemption for this period.")
             } else {
                 /// When a subscription renews, the "end of period" changes to
                 /// reflect a later date. When that happens, we need to redeem a
@@ -904,10 +939,6 @@ public class SubscriptionManagerImpl: NSObject {
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
             }
-
-            // Save heartbeat
-            self.updateSubscriptionHeartbeatDate()
-
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Failed subscription heartbeat with error \(error)")
         }

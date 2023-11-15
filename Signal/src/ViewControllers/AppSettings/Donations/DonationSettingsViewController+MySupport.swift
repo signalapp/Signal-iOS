@@ -136,16 +136,30 @@ extension DonationSettingsViewController {
             )
         } else {
             if subscription.isPaymentProcessing {
-                logger.warn("Subscription is processing, but we don't have a receipt credential request error about it yet!")
+                logger.warn("Subscription is processing, but we don't have a receipt credential request error about it!")
             } else if subscription.chargeFailure != nil {
-                logger.warn("Subscription has charge failure, but we don't have a receipt credential request error about it yet!")
+                logger.warn("Subscription has charge failure, but we don't have a receipt credential request error about it!")
             }
 
-            if subscription.active {
+            switch subscription.status {
+            case .active:
                 errorState = nil
-            } else {
-                // Show nothing for an inactive subscription with no associated
-                // receipt credential request errors.
+            case .pastDue:
+                // Don't treat a subscription with a failed renewal as failed
+                // for the purposes of this view – it may yet succeed!
+                errorState = nil
+            case .canceled:
+                logger.warn("Subscription is canceled, but we don't have a receipt credential request error about it!")
+                return nil
+            case
+                    .incomplete,
+                    .incompleteExpired,
+                    .trialing,
+                    .unpaid,
+                    .unknown:
+                // Not sure what's going on here, but we don't want to show a
+                // subscription with an unexpected status.
+                logger.error("Unexpected subscription status: \(subscription.status)")
                 return nil
             }
         }
