@@ -1096,6 +1096,12 @@
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
 
+/* Alert body when contacts disabled while trying to share a contact. */
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+
+/* Alert title when contacts disabled while trying to share a contact. */
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "Allow Contact Access";
+
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Contact Support";
 

@@ -196,8 +196,17 @@ public extension ContactsViewHelper {
                 comment: "Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions"
             )
 
-        case .share, .invite:
-            // TODO: Use separate copy for .share.
+        case .share:
+            title = OWSLocalizedString(
+                "CONTACT_SHARING_NO_ACCESS_TITLE",
+                comment: "Alert title when contacts disabled while trying to share a contact."
+            )
+            message = OWSLocalizedString(
+                "CONTACT_SHARING_NO_ACCESS_BODY",
+                comment: "Alert body when contacts disabled while trying to share a contact."
+            )
+
+        case .invite:
             title = OWSLocalizedString(
                 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE",
                 comment: "Alert title when contacts disabled while trying to invite contacts to signal"
