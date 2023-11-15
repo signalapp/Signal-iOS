@@ -19,6 +19,7 @@ protocol CallControlsDelegate: AnyObject {
 }
 
 class CallControls: UIView {
+    private lazy var topStackView = createTopStackView()
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
             iconName: "phone-down-fill-28",
@@ -90,19 +91,21 @@ class CallControls: UIView {
         return view
     }()
 
-    private lazy var topStackView = createTopStackView()
-
     private weak var delegate: CallControlsDelegate!
-    private let call: SignalCall
+    private let viewModel: CallControlsViewModel
 
-    init(call: SignalCall, delegate: CallControlsDelegate) {
-        self.call = call
+    init(
+        call: SignalCall,
+        callService: CallService,
+        delegate: CallControlsDelegate
+    ) {
+        self.viewModel = CallControlsViewModel(call: call, callService: callService)
         self.delegate = delegate
         super.init(frame: .zero)
 
-        call.addObserverAndSyncState(observer: self)
-
-        callService.audioService.delegate = self
+        viewModel.refreshView = { [weak self] in
+            self?.updateControls()
+        }
 
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
@@ -113,7 +116,10 @@ class CallControls: UIView {
         joinButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
         joinButton.autoPinHeightToSuperview()
 
-        let controlsStack = UIStackView(arrangedSubviews: [topStackView, joinButtonContainer])
+        let controlsStack = UIStackView(arrangedSubviews: [
+            topStackView,
+            joinButtonContainer
+        ])
         controlsStack.axis = .vertical
         controlsStack.spacing = 40
         controlsStack.alignment = .center
@@ -127,11 +133,6 @@ class CallControls: UIView {
         controlsStack.autoPinEdge(toSuperviewEdge: .top)
 
         updateControls()
-    }
-
-    deinit {
-        call.removeObserver(self)
-        callService.audioService.delegate = nil
     }
 
     func createTopStackView() -> UIStackView {
@@ -150,99 +151,59 @@ class CallControls: UIView {
     }
 
     private func updateControls() {
-        let hasExternalAudioInputs = callService.audioService.hasExternalInputs
-        let isLocalVideoMuted = call.groupCall.isOutgoingVideoMuted
-        let joinState = call.groupCall.localDeviceState.joinState
+        // Top row
+        audioSourceButton.isHidden = viewModel.audioSourceButtonIsHidden
+        hangUpButton.isHidden = viewModel.hangUpButtonIsHidden
+        muteButton.isHidden = viewModel.muteButtonIsHidden
+        videoButton.isHidden = viewModel.videoButtonIsHidden
+        flipCameraButton.isHidden = viewModel.flipCameraButtonIsHidden
+        ringButton.isHidden = viewModel.ringButtonIsHidden
 
-        flipCameraButton.isHidden = isLocalVideoMuted
-        videoButton.isSelected = !isLocalVideoMuted
-        muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
+        // Bottom row
+        joinButton.superview?.isHidden = viewModel.joinButtonIsHidden
 
-        ringButton.isHidden = joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
-        // Leave the button visible but locked if joining, like the "join call" button.
-        ringButton.isUserInteractionEnabled = joinState == .notJoined
-        if call.ringRestrictions.isEmpty, case .shouldRing = call.groupCallRingState {
-            ringButton.isSelected = true
-        } else {
-            ringButton.isSelected = false
-        }
-        // Leave the button enabled so we can present an explanatory toast, but show it disabled.
-        ringButton.shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
-
-        hangUpButton.isHidden = joinState != .joined
-
-        if !UIDevice.current.isIPad {
-            // Use small controls if video is enabled and we have external
-            // audio inputs, because we have five buttons now.
-            [audioSourceButton, flipCameraButton, videoButton, muteButton, ringButton, hangUpButton].forEach {
-                let isSmall = hasExternalAudioInputs && !isLocalVideoMuted
-                $0.isSmall = isSmall
-                if UIDevice.current.isNarrowerThanIPhone6 {
-                    topStackView.spacing = isSmall ? 12 : 16
-                }
+        // Sizing and spacing
+        let controlCount = topStackView.arrangedSubviews.filter({!$0.isHidden}).count
+        topStackView.spacing = viewModel.controlSpacing(controlCount: controlCount)
+        let shouldControlButtonsBeSmall = viewModel.shouldControlButtonsBeSmall(controlCount: controlCount)
+        for view in topStackView.arrangedSubviews {
+            if let button = view as? CallButton {
+                button.isSmall = shouldControlButtonsBeSmall
             }
-        }
-
-        // Audio Source Handling
-        if hasExternalAudioInputs, let audioSource = callService.audioService.currentAudioSource {
-            audioSourceButton.showDropdownArrow = true
-            audioSourceButton.isHidden = false
-
-            if audioSource.isBuiltInEarPiece {
-                audioSourceButton.iconName = "phone-fill-28"
-            } else if audioSource.isBuiltInSpeaker {
-                audioSourceButton.iconName = "speaker-fill-28"
-            } else {
-                audioSourceButton.iconName = "speaker-bt-fill-28"
-            }
-        } else if UIDevice.current.isIPad {
-            // iPad *only* supports speaker mode, if there are no external
-            // devices connected, so we don't need to show the button unless
-            // we have alternate audio sources.
-            audioSourceButton.isHidden = true
-        } else {
-            // If there are no external audio sources, and video is enabled,
-            // speaker mode is always enabled so we don't need to show the button.
-            audioSourceButton.isHidden = !isLocalVideoMuted
-
-            // No bluetooth audio detected
-            audioSourceButton.iconName = "speaker-fill-28"
-            audioSourceButton.showDropdownArrow = false
         }
 
         // Show/hide the superview to adjust the containing stack.
-        joinButton.superview?.isHidden = joinState == .joined
-        gradientView.isHidden = joinState != .joined
+        gradientView.isHidden = viewModel.gradientViewIsHidden
 
-        if call.groupCall.isFull {
-            // Make the button look disabled, but don't actually disable it.
-            // We want to show a toast if the user taps anyway.
-            joinButton.setTitleColor(.ows_whiteAlpha40, for: .normal)
-            joinButton.adjustsImageWhenHighlighted = false
+        videoButton.isSelected = viewModel.videoButtonIsSelected
+        muteButton.isSelected = viewModel.muteButtonIsSelected
 
-            joinButton.setTitle(
-                OWSLocalizedString(
-                    "GROUP_CALL_IS_FULL",
-                    comment: "Text explaining the group call is full"),
-                for: .normal)
+        if !viewModel.audioSourceButtonIsHidden {
+            let config = viewModel.audioSourceButtonConfiguration
+            audioSourceButton.showDropdownArrow = config.showDropdownArrow
+            audioSourceButton.iconName = config.iconName
+        }
 
-        } else if joinState == .joining || joinState == .pending {
-            joinButton.isUserInteractionEnabled = false
-            joinButtonActivityIndicator.startAnimating()
+        if
+            !viewModel.ringButtonIsHidden,
+            let ringButtonConfig = viewModel.ringButtonConfiguration
+        {
+            ringButton.isUserInteractionEnabled = ringButtonConfig.isUserInteractionEnabled
+            ringButton.isSelected = ringButtonConfig.isSelected
+            ringButton.shouldDrawAsDisabled = ringButtonConfig.shouldDrawAsDisabled
+        }
 
-            joinButton.setTitle("", for: .normal)
-
-        } else {
-            joinButton.setTitleColor(.white, for: .normal)
-            joinButton.adjustsImageWhenHighlighted = true
-            joinButton.isUserInteractionEnabled = true
-            joinButtonActivityIndicator.stopAnimating()
-
-            let startCallText = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
-            let joinCallText = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-
-            joinButton.setTitle(call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText,
-                                for: .normal)
+        if !viewModel.joinButtonIsHidden {
+            let joinButtonConfig = viewModel.joinButtonConfig
+            joinButton.setTitle(joinButtonConfig.label, for: .normal)
+            joinButton.setTitleColor(joinButtonConfig.color, for: .normal)
+            joinButton.adjustsImageWhenHighlighted = joinButtonConfig.adjustsImageWhenHighlighted
+            joinButton.isUserInteractionEnabled = joinButtonConfig.isUserInteractionEnabled
+            if viewModel.shouldJoinButtonActivityIndicatorBeAnimating {
+                joinButtonActivityIndicator.startAnimating()
+            } else {
+                joinButtonActivityIndicator.stopAnimating()
+            }
         }
     }
 
@@ -260,31 +221,270 @@ class CallControls: UIView {
     }
 }
 
-extension CallControls: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
-        updateControls()
+private class CallControlsViewModel {
+    private let call: SignalCall
+    private let callService: CallService
+    fileprivate var refreshView: (() -> Void)?
+    init(call: SignalCall, callService: CallService) {
+        self.call = call
+        self.callService = callService
+        call.addObserverAndSyncState(observer: self)
+        callService.audioService.delegate = self
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
-        updateControls()
+    deinit {
+        call.removeObserver(self)
+        callService.audioService.delegate = nil
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        updateControls()
+    private var hasExternalAudioInputsAndAudioSource: Bool {
+        let audioService = callService.audioService
+        return audioService.hasExternalInputs && audioService.currentAudioSource != nil
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
-        updateControls()
+    var audioSourceButtonIsHidden: Bool {
+        if hasExternalAudioInputsAndAudioSource {
+            return false
+        } else if UIDevice.current.isIPad {
+            // iPad *only* supports speaker mode, if there are no external
+            // devices connected, so we don't need to show the button unless
+            // we have alternate audio sources.
+            return true
+        } else {
+            return !call.isOutgoingVideoMuted
+        }
+    }
+
+    struct AudioSourceButtonConfiguration {
+        let showDropdownArrow: Bool
+        let iconName: String
+    }
+
+    var audioSourceButtonConfiguration: AudioSourceButtonConfiguration {
+        let showDropdownArrow: Bool
+        let iconName: String
+        if
+            callService.audioService.hasExternalInputs,
+            let audioSource = callService.audioService.currentAudioSource
+        {
+            showDropdownArrow = true
+            if audioSource.isBuiltInEarPiece {
+                iconName = "phone-fill-28"
+            } else if audioSource.isBuiltInSpeaker {
+                iconName = "speaker-fill-28"
+            } else {
+                iconName = "speaker-bt-fill-28"
+            }
+        } else {
+            // No bluetooth audio detected
+            showDropdownArrow = false
+            iconName = "speaker-fill-28"
+        }
+        return AudioSourceButtonConfiguration(showDropdownArrow: showDropdownArrow, iconName: iconName)
+    }
+
+    var hangUpButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            return false
+        case .group(_):
+            return call.joinState != .joined
+        }
+    }
+
+    var muteButtonIsHidden: Bool {
+        return false
+    }
+
+    var videoButtonIsHidden: Bool {
+        return false
+    }
+
+    var flipCameraButtonIsHidden: Bool {
+        return call.isOutgoingVideoMuted
+    }
+
+    var joinButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            // TODO: Introduce lobby for starting 1:1 video calls.
+            return true
+        case .group(let call):
+            return call.localDeviceState.joinState == .joined
+        }
+    }
+
+    struct JoinButtonConfiguration {
+        let label: String
+        let color: UIColor
+        let adjustsImageWhenHighlighted: Bool
+        let isUserInteractionEnabled: Bool
+    }
+
+    var joinButtonConfig: JoinButtonConfiguration {
+        if !call.canJoin {
+            // Make the button look disabled, but don't actually disable it.
+            // We want to show a toast if the user taps anyway.
+            return JoinButtonConfiguration(
+                label: OWSLocalizedString(
+                    "GROUP_CALL_IS_FULL",
+                    comment: "Text explaining the group call is full"
+                ),
+                color: .ows_whiteAlpha40,
+                adjustsImageWhenHighlighted: false,
+                isUserInteractionEnabled: true
+            )
+        } else if call.joinState == .joining || call.joinState == .pending {
+            return JoinButtonConfiguration(
+                label: "",
+                color: .ows_whiteAlpha40,
+                adjustsImageWhenHighlighted: false,
+                isUserInteractionEnabled: false
+            )
+        } else {
+            let startCallText = OWSLocalizedString(
+                "CALL_START_BUTTON",
+                comment: "Button to start a call"
+            )
+            let label: String
+            switch call.mode {
+            case .individual(_):
+                // We only show a lobby for 1:1 calls when the call is being initiated.
+                // TODO: The work of adding the lobby for 1:1 calls in the unified call view
+                // controller (currently GroupCallViewController) is not yet complete.
+                label = startCallText
+            case .group(_):
+                let joinCallText = OWSLocalizedString(
+                    "GROUP_CALL_JOIN_BUTTON",
+                    comment: "Button to join an ongoing group call"
+                )
+                label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
+            }
+            return JoinButtonConfiguration(
+                label: label,
+                color: .white,
+                adjustsImageWhenHighlighted: true,
+                isUserInteractionEnabled: true
+            )
+        }
+    }
+
+    var shouldJoinButtonActivityIndicatorBeAnimating: Bool {
+        return (call.joinState == .joining || call.joinState == .pending) && !joinButtonIsHidden
+    }
+
+    var ringButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            return true
+        case .group(_):
+            return call.joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
+        }
+    }
+
+    struct RingButtonConfiguration {
+        let isUserInteractionEnabled: Bool
+        let isSelected: Bool
+        let shouldDrawAsDisabled: Bool
+    }
+
+    var ringButtonConfiguration: RingButtonConfiguration? {
+        switch call.mode {
+        case .individual(_):
+            // We never show the ring button for 1:1 calls.
+            return nil
+        case .group(_):
+            // Leave the button visible but locked if joining, like the "join call" button.
+            let isUserInteractionEnabled = call.joinState == .notJoined
+            let isSelected: Bool
+            if
+                call.ringRestrictions.isEmpty,
+                case .shouldRing = call.groupCallRingState
+            {
+                isSelected = true
+            } else {
+                isSelected = false
+            }
+            // Leave the button enabled so we can present an explanatory toast, but show it disabled.
+            let shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
+            return RingButtonConfiguration(
+                isUserInteractionEnabled: isUserInteractionEnabled,
+                isSelected: isSelected,
+                shouldDrawAsDisabled: shouldDrawAsDisabled
+            )
+        }
+    }
+
+    var gradientViewIsHidden: Bool {
+        return call.joinState != .joined
+    }
+
+    var videoButtonIsSelected: Bool {
+        return !call.isOutgoingVideoMuted
+    }
+
+    var muteButtonIsSelected: Bool {
+        return call.isOutgoingAudioMuted
+    }
+
+    func controlSpacing(controlCount: Int) -> CGFloat {
+        return (UIDevice.current.isNarrowerThanIPhone6 && controlCount > 4) ? 12 : 16
+    }
+
+    func shouldControlButtonsBeSmall(controlCount: Int) -> Bool {
+        return UIDevice.current.isIPad ? false : controlCount > 4
     }
 }
 
-extension CallControls: CallAudioServiceDelegate {
+extension CallControlsViewModel: CallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+        owsAssertDebug(call.isGroupCall)
+        refreshView?()
+    }
+
+    func groupCallPeekChanged(_ call: SignalCall) {
+        refreshView?()
+    }
+
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        refreshView?()
+    }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        refreshView?()
+    }
+
+    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
+        refreshView?()
+    }
+
+    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
+        refreshView?()
+    }
+
+    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
+        refreshView?()
+    }
+}
+
+extension CallControlsViewModel: CallAudioServiceDelegate {
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
-        updateControls()
+        refreshView?()
     }
 
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?) {
-        updateControls()
+        refreshView?()
     }
 }

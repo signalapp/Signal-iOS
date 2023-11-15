@@ -14,7 +14,7 @@ import SignalUI
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
     private var groupCall: GroupCall { call.groupCall }
-    private lazy var callControls = CallControls(call: call, delegate: self)
+    private lazy var callControls = CallControls(call: call, callService: callService, delegate: self)
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
     private var incomingCallControlsConstraint: NSLayoutConstraint?
     private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
@@ -740,7 +740,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             existingSheet.dismiss(animated: false)
         }
 
-        let startCallString = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+        let startCallString = OWSLocalizedString("CALL_START_BUTTON", comment: "Button to start a call")
         let joinCallString = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
         let continueCallString = OWSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
         let leaveCallString = OWSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")

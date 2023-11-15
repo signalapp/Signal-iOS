@@ -736,6 +736,9 @@
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
 
+/* Button to start a call */
+"CALL_START_BUTTON" = "Start Call";
+
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
@@ -2700,9 +2703,6 @@
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
-
-/* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
