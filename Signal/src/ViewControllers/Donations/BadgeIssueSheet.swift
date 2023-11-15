@@ -23,7 +23,6 @@ public class BadgeIssueSheetState {
             chargeFailureCode: String?,
             paymentMethod: DonationPaymentMethod?
         )
-        case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
         case giftBadgeExpired(hasCurrentSubscription: Bool)
 
@@ -68,7 +67,7 @@ public class BadgeIssueSheetState {
 
     public lazy var titleText: String = {
         switch mode {
-        case .subscriptionExpiredBecauseOfChargeFailure, .subscriptionExpiredBecauseNotRenewed:
+        case .subscriptionExpiredBecauseOfChargeFailure:
             return OWSLocalizedString(
                 "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
                 comment: "Title for subscription on the badge expiration sheet."
@@ -119,15 +118,6 @@ public class BadgeIssueSheetState {
 
             return Body(
                 String(format: formatText, chargeFailureString),
-                learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
-            )
-        case .subscriptionExpiredBecauseNotRenewed:
-            let formatText = OWSLocalizedString(
-                "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
-                comment: "Body of the sheet shown when your subscription is canceled due to inactivity. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered."
-            )
-            return Body(
-                String(format: formatText, badge.localizedName),
                 learnMoreLink: SupportConstants.badgeExpirationLearnMoreURL
             )
         case let .boostExpired(hasCurrentSubscription):
@@ -209,9 +199,7 @@ public class BadgeIssueSheetState {
                 return .askToDonate
             case .bankPaymentFailed:
                 return .askToTryAgain
-            case
-                    .subscriptionExpiredBecauseOfChargeFailure,
-                    .subscriptionExpiredBecauseNotRenewed:
+            case .subscriptionExpiredBecauseOfChargeFailure:
                 return .askToRenewSubscription
             case
                     .giftBadgeExpired(hasCurrentSubscription: true),
@@ -265,8 +253,7 @@ public class BadgeIssueSheetState {
                 .boostExpired,
                 .giftBadgeExpired,
                 .bankPaymentFailed,
-                .subscriptionExpiredBecauseOfChargeFailure,
-                .subscriptionExpiredBecauseNotRenewed:
+                .subscriptionExpiredBecauseOfChargeFailure:
             return true
         case
                 .giftNotRedeemed,

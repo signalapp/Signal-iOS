@@ -56,7 +56,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
         let badge = getSubscriptionBadge()
         let state = State(
             badge: badge,
-            mode: .subscriptionExpiredBecauseNotRenewed,
+            mode: .subscriptionBankPaymentProcessing,
             canDonate: true
         )
         XCTAssertIdentical(state.badge, badge)
@@ -104,11 +104,6 @@ class BadgeIssueSheetStateTest: XCTestCase {
             .init(
                 badge: getSubscriptionBadge(),
                 mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailureCode: nil, paymentMethod: nil),
-                canDonate: true
-            ),
-            .init(
-                badge: getSubscriptionBadge(),
-                mode: .subscriptionExpiredBecauseNotRenewed,
                 canDonate: true
             ),
             .init(

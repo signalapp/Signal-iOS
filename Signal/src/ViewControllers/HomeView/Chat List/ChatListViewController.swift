@@ -701,9 +701,11 @@ public class ChatListViewController: OWSViewController {
 
             oneTimeBoostReceiptCredentialRequestError,
             recurringSubscriptionInitiationReceiptCredentialRequestError,
+            recurringSubscriptionRenewalReceiptCredentialRequestError,
 
             oneTimeBoostErrorHasBeenPresented,
             recurringSubscriptionInitiationErrorHasBeenPresented,
+            recurringSubscriptionRenewalErrorHasBeenPresented,
 
             subscriberID,
             expiredBadgeID,
@@ -719,9 +721,11 @@ public class ChatListViewController: OWSViewController {
 
             receiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
             receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            receiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
 
             receiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
             receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            receiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
 
             SubscriptionManagerImpl.getSubscriberID(transaction: transaction),
             SubscriptionManagerImpl.mostRecentlyExpiredBadgeID(transaction: transaction),
@@ -762,6 +766,14 @@ public class ChatListViewController: OWSViewController {
                 receiptCredentialRequestError: recurringSubscriptionInitiationReceiptCredentialRequestError,
                 errorMode: .recurringSubscriptionInitiation
             )
+        } else if
+            let recurringSubscriptionRenewalReceiptCredentialRequestError,
+            !recurringSubscriptionRenewalErrorHasBeenPresented
+        {
+            showBadgeIssueSheetIfNeeded(
+                receiptCredentialRequestError: recurringSubscriptionRenewalReceiptCredentialRequestError,
+                errorMode: .recurringSubscriptionRenewal
+            )
         } else {
             showBadgeExpirationSheetIfNeeded(
                 subscriberID: subscriberID,
@@ -786,10 +798,33 @@ public class ChatListViewController: OWSViewController {
         receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError,
         errorMode: SubscriptionReceiptCredentialResultStore.Mode
     ) {
-        switch receiptCredentialRequestError.errorCode {
+        /// Record that we've presented this error. Important to do even for
+        /// errors that don't merit presentation – otherwise, as long as this
+        /// error is persisted and not-presented, we'll keep attempting and
+        /// declining to present it. That'd be bad if it prevented us from
+        /// presenting a different error.
+        func hasPresentedError() {
+            self.databaseStorage.write { tx in
+                self.receiptCredentialResultStore.setHasPresentedError(
+                    errorMode: errorMode,
+                    tx: tx.asV2Write
+                )
+            }
+        }
+
+        guard let badge = receiptCredentialRequestError.badge else {
+            owsFailDebug("Missing badge for failed donation! Is this an old error?")
+            return hasPresentedError()
+        }
+
+        let errorCode = receiptCredentialRequestError.errorCode
+        let paymentMethod = receiptCredentialRequestError.paymentMethod
+        let chargeFailureCodeIfPaymentFailed = receiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
+
+        switch errorCode {
         case .paymentStillProcessing:
             // Not a terminal error – no reason to show a sheet.
-            return
+            return hasPresentedError()
         case
                 .paymentFailed,
                 .localValidationFailed,
@@ -799,19 +834,24 @@ public class ChatListViewController: OWSViewController {
             break
         }
 
-        switch receiptCredentialRequestError.paymentMethod {
+        switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
-            return
+            // Non-SEPA payment methods generally get their errors immediately,
+            // and so errors from initiating a donation should have been
+            // presented when the user was in the donate view. Consequently, we
+            // only want to present renewal errors here.
+            switch errorMode {
+            case .oneTimeBoost, .recurringSubscriptionInitiation:
+                return hasPresentedError()
+            case .recurringSubscriptionRenewal:
+                break
+            }
         case .sepa:
+            // SEPA donations won't error out immediately upon initiation
+            // (they'll spend time processing first), so we should show errors
+            // for any variety of donation here.
             break
         }
-
-        guard let badge = receiptCredentialRequestError.badge else {
-            owsFailBeta("Missing badge for failed SEPA donation! This should be impossible.")
-            return
-        }
-
-        let chargeFailureCode = receiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
 
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(errorMode)")
 
@@ -823,19 +863,28 @@ public class ChatListViewController: OWSViewController {
                 return
             }
 
+            let badgeIssueSheetMode: BadgeIssueSheetState.Mode = {
+                switch errorMode {
+                case .oneTimeBoost, .recurringSubscriptionInitiation:
+                    return .bankPaymentFailed(
+                        chargeFailureCode: chargeFailureCodeIfPaymentFailed
+                    )
+                case .recurringSubscriptionRenewal:
+                    return .subscriptionExpiredBecauseOfChargeFailure(
+                        chargeFailureCode: chargeFailureCodeIfPaymentFailed,
+                        paymentMethod: paymentMethod
+                    )
+                }
+            }()
+
             let badgeIssueSheet = BadgeIssueSheet(
                 badge: badge,
-                mode: .bankPaymentFailed(chargeFailureCode: chargeFailureCode)
+                mode: badgeIssueSheetMode
             )
             badgeIssueSheet.delegate = self
 
             self.present(badgeIssueSheet, animated: true) {
-                self.databaseStorage.write { tx in
-                    self.receiptCredentialResultStore.setHasPresentedError(
-                        errorMode: errorMode,
-                        tx: tx.asV2Write
-                    )
-                }
+                hasPresentedError()
             }
         }.catch(on: SyncScheduler()) { _ in
             logger.error("Failed to populate badge assets!")
@@ -888,61 +937,56 @@ public class ChatListViewController: OWSViewController {
                 owsFailDebug("Failed to fetch boost badge for expiry \(error)")
             }
         } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
-            // Fetch current subscriptions, required to populate badge assets
-            firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
-                SubscriptionManagerImpl.fetchDonationConfiguration()
-            }.map(on: DispatchQueue.global()) { donationConfiguration -> [SubscriptionLevel] in
-                donationConfiguration.subscription.levels
-            }.then(on: DispatchQueue.global()) { subscriptionLevels -> Promise<([SubscriptionLevel], Subscription?)> in
+            /// We expect to show an error sheet when the subscription fails to
+            /// renew and we learn about it from the receipt credential
+            /// redemption job kicked off by the keep-alive.
+            ///
+            /// Consequently, we don't need/want to show a sheet for the badge
+            /// expiration itself, since we should've already shown a sheet.
+            ///
+            /// It's possible that the subscription simply "expired" due to
+            /// inactivity (the subscription was not kept-alive), in which case
+            /// we won't have shown a sheet because there won't have been a
+            /// renewal failure. That's ok – we'll let the badge expire
+            /// silently.
+            ///
+            /// We'll still fetch the subscription, but just for logging
+            /// purposes.
+
+            firstly(on: DispatchQueue.global()) { () -> Promise<Subscription?> in
                 guard let subscriberID else {
-                    return .value((subscriptionLevels, nil))
+                    return .value(nil)
                 }
 
-                return SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberID)
-                    .map(on: DispatchQueue.global()) { currentSubscription in
-                        (subscriptionLevels, currentSubscription)
-                    }
-            }.done(on: DispatchQueue.global()) { (subscriptionLevels, currentSubscription) in
-                let subscriptionLevel = subscriptionLevels.first { $0.badge.id == expiredBadgeID }
-                guard let subscriptionLevel = subscriptionLevel else {
-                    owsFailDebug("Unable to find matching subscription level for expired badge")
-                    return
-                }
-
-                firstly {
-                    self.profileManager.badgeStore.populateAssetsOnBadge(subscriptionLevel.badge)
-                }.done(on: DispatchQueue.main) {
-                    // Make sure we're still the active VC
-                    guard self.isChatListTopmostViewController() else {
-                        Logger.info("[Donations] No longer topmost view controller, not presenting badge expiration sheet.")
-                        return
-                    }
-
-                    let mode: BadgeIssueSheetState.Mode = {
-                        if
-                            let currentSubscription,
-                            let chargeFailure = currentSubscription.chargeFailure
-                        {
-                            return .subscriptionExpiredBecauseOfChargeFailure(
-                                chargeFailureCode: chargeFailure.code,
-                                paymentMethod: currentSubscription.paymentMethod
-                            )
-                        } else {
-                            return .subscriptionExpiredBecauseNotRenewed
-                        }
-                    }()
-                    let badgeSheet = BadgeIssueSheet(badge: subscriptionLevel.badge, mode: mode)
-                    badgeSheet.delegate = self
-                    self.present(badgeSheet, animated: true)
+                return SubscriptionManagerImpl.getCurrentSubscriptionStatus(
+                    for: subscriberID
+                )
+            }.done(on: DispatchQueue.global()) { currentSubscription in
+                defer {
                     self.databaseStorage.write { transaction in
                         SubscriptionManagerImpl.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                     }
-                }.catch { error in
-                    owsFailDebug("Failed to fetch subscription badge assets for expiry \(error)")
                 }
 
-            }.catch { error in
-                owsFailDebug("Failed to fetch subscriptions for expiry \(error)")
+                guard let currentSubscription else {
+                    // If the subscription is missing entirely, it presumably
+                    // expired due to inactivity.
+                    Logger.warn("[Donations] Missing subscription for expired badge. It probably expired due to inactivity and was deleted.")
+                    return
+                }
+
+                owsAssertDebug(
+                    currentSubscription.status == .canceled,
+                    "[Donations] Current subscription is not canceled, but the badge expired!"
+                )
+
+                if let chargeFailure = currentSubscription.chargeFailure {
+                    Logger.warn("[Donations] Badge expired for subscription with charge failure: \(chargeFailure.code ?? "nil")")
+                } else {
+                    Logger.warn("[Donations] Badge expired for subscription without charge failure. It probably expired due to inactivity, but hasn't yet been deleted.")
+                }
+            }.catch(on: SyncScheduler()) { _ in
+                owsFailDebug("[Donations] Failed to get subscription during badge expiration!")
             }
         }
     }

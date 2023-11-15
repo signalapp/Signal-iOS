@@ -799,12 +799,8 @@ public class SubscriptionManagerImpl: NSObject {
     private static let heartbeatInterval: TimeInterval = 3 * kDayInterval
 
     // MARK: Heartbeat
-    @objc
+
     public class func performSubscriptionKeepAliveIfNecessary() {
-
-        // Kick job queue
-        _ = subscriptionJobQueue.runAnyQueuedRetry()
-
         Logger.info("[Donations] Checking for subscription heartbeat")
 
         // Fetch subscriberID / subscriber currencyCode
