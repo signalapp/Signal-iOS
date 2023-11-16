@@ -783,7 +783,7 @@ public class SignalAttachment: NSObject {
             // context. The user can choose during sending whether they want the final send to be in
             // standard or high quality. We will do the final convert and compress before uploading.
 
-            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .max) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .maximumForCurrentAppContext) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try attachment.removingImageMetadata()
@@ -798,7 +798,7 @@ public class SignalAttachment: NSObject {
             return convertAndCompressImage(
                 dataSource: dataSource,
                 attachment: attachment,
-                imageQuality: .max
+                imageQuality: .maximumForCurrentAppContext
             )
         }
     }

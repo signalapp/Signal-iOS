@@ -23,7 +23,6 @@ public class RemoteConfig: BaseFlags {
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: String]
     fileprivate let timeGatedFlags: [String: Date]
-    private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: PhoneNumberRegions
     private let applePayDisabledRegions: PhoneNumberRegions
     private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
@@ -34,14 +33,12 @@ public class RemoteConfig: BaseFlags {
         clockSkew: TimeInterval,
         isEnabledFlags: [String: Bool],
         valueFlags: [String: String],
-        timeGatedFlags: [String: Date],
-        account: AuthedAccount
+        timeGatedFlags: [String: Date]
     ) {
         self.lastKnownClockSkew = clockSkew
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
         self.timeGatedFlags = timeGatedFlags
-        self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags, account: account)
         self.paymentsDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paymentsDisabledRegions)
         self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
         self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
@@ -88,9 +85,9 @@ public class RemoteConfig: BaseFlags {
         isEnabled(.paymentsResetKillSwitch)
     }
 
-    public static var standardMediaQualityLevel: ImageQualityLevel? {
+    public static func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return nil }
-        return remoteConfig.standardMediaQualityLevel
+        return remoteConfig.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber)
     }
 
     public static var paymentsDisabledRegions: PhoneNumberRegions {
@@ -158,12 +155,11 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.paypalDisabledRegions
     }
 
-    private static func determineStandardMediaQualityLevel(valueFlags: [String: String], account: AuthedAccount) -> ImageQualityLevel? {
+    private func standardMediaQualityLevel(localPhoneNumber: String?) -> ImageQualityLevel? {
         let rawFlag: String = Flags.SupportedValuesFlags.standardMediaQualityLevel.rawFlag
-
         guard
             let csvString = valueFlags[rawFlag],
-            let stringValue = Self.countryCodeValue(csvString: csvString, csvDescription: rawFlag, account: account),
+            let stringValue = Self.countryCodeValue(csvString: csvString, csvDescription: rawFlag, localPhoneNumber: localPhoneNumber),
             let uintValue = UInt(stringValue),
             let defaultMediaQuality = ImageQualityLevel(rawValue: uintValue)
         else {
@@ -300,27 +296,27 @@ public class RemoteConfig: BaseFlags {
     ///
     /// - Parameter csvString: a CSV containing `<country-code>:<parts-per-million>` pairs
     /// - Parameter key: a key to use as part of bucketing
-    static func isCountryCodeBucketEnabled(csvString: String, key: String, csvDescription: String, account: AuthedAccount) -> Bool {
+    static func isCountryCodeBucketEnabled(csvString: String, key: String, csvDescription: String, localIdentifiers: LocalIdentifiers) -> Bool {
         guard
-            let countryCodeValue = countryCodeValue(csvString: csvString, csvDescription: csvDescription, account: account),
+            let countryCodeValue = countryCodeValue(csvString: csvString, csvDescription: csvDescription, localPhoneNumber: localIdentifiers.phoneNumber),
             let countEnabled = UInt64(countryCodeValue)
         else {
             return false
         }
 
-        return isBucketEnabled(key: key, countEnabled: countEnabled, bucketSize: 1_000_000, account: account)
+        return isBucketEnabled(key: key, countEnabled: countEnabled, bucketSize: 1_000_000, localAci: localIdentifiers.aci)
     }
 
-    private static func isCountryCodeBucketEnabled(flag: Flags.SupportedValuesFlags, valueFlags: [String: String], account: AuthedAccount) -> Bool {
+    private static func isCountryCodeBucketEnabled(flag: Flags.SupportedValuesFlags, valueFlags: [String: String], localIdentifiers: LocalIdentifiers) -> Bool {
         let rawFlag = flag.rawFlag
         guard let csvString = valueFlags[rawFlag] else { return false }
 
-        return isCountryCodeBucketEnabled(csvString: csvString, key: rawFlag, csvDescription: rawFlag, account: account)
+        return isCountryCodeBucketEnabled(csvString: csvString, key: rawFlag, csvDescription: rawFlag, localIdentifiers: localIdentifiers)
     }
 
     /// Given a CSV of `<country-code>:<value>` pairs, extract the `<value>`
     /// corresponding to the current user's country.
-    private static func countryCodeValue(csvString: String, csvDescription: String, account: AuthedAccount) -> String? {
+    private static func countryCodeValue(csvString: String, csvDescription: String, localPhoneNumber: String?) -> String? {
         guard !csvString.isEmpty else { return nil }
 
         // The value should always be a comma-separated list of country codes colon-separated
@@ -339,19 +335,10 @@ public class RemoteConfig: BaseFlags {
 
         guard !countryCodeToValueMap.isEmpty else { return nil }
 
-        let localE164: String
-        switch account.info {
-        case .explicit(let explicitAccount):
-            localE164 = explicitAccount.e164.stringValue
-        case .implicit:
-            guard let e164 = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-                owsFailDebug("Missing local number")
-                return nil
-            }
-            localE164 = e164
-        }
-
-        guard let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
+        guard
+            let localPhoneNumber,
+            let localCountryCode = PhoneNumber(fromE164: localPhoneNumber)?.getCountryCode()?.stringValue
+        else {
             owsFailDebug("Invalid local number")
             return nil
         }
@@ -359,20 +346,8 @@ public class RemoteConfig: BaseFlags {
         return countryCodeToValueMap[localCountryCode] ?? countryCodeToValueMap["*"]
     }
 
-    private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, account: AuthedAccount) -> Bool {
-        let aci: Aci
-        switch account.info {
-        case .explicit(let explicitAccount):
-            aci = explicitAccount.aci
-        case .implicit:
-            guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-                owsFailDebug("Missing localAci.")
-                return false
-            }
-            aci = localAci
-        }
-
-        return countEnabled > bucket(key: key, aci: aci, bucketSize: bucketSize)
+    private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, localAci: Aci) -> Bool {
+        return countEnabled > bucket(key: key, aci: localAci, bucketSize: bucketSize)
     }
 
     static func bucket(key: String, aci: Aci, bucketSize: UInt64) -> UInt64 {
@@ -761,8 +736,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                 clockSkew: lastKnownClockSkew,
                 isEnabledFlags: isEnabledFlags,
                 valueFlags: valueFlags,
-                timeGatedFlags: timeGatedFlags,
-                account: .implicit()
+                timeGatedFlags: timeGatedFlags
             )
         }
         warmSecondaryCaches(valueFlags: valueFlags)
@@ -776,15 +750,13 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
         clockSkew: TimeInterval,
         isEnabledFlags: [String: Bool],
         valueFlags: [String: String],
-        timeGatedFlags: [String: Date],
-        account: AuthedAccount
+        timeGatedFlags: [String: Date]
     ) -> RemoteConfig {
         let remoteConfig = RemoteConfig(
             clockSkew: clockSkew,
             isEnabledFlags: isEnabledFlags,
             valueFlags: valueFlags,
-            timeGatedFlags: timeGatedFlags,
-            account: account
+            timeGatedFlags: timeGatedFlags
         )
         if !isEnabledFlags.isEmpty || !valueFlags.isEmpty {
             Logger.info("Loaded stored config. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags), timeGatedFlags: \(timeGatedFlags)")
@@ -895,8 +867,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                 clockSkew: clockSkew,
                 isEnabledFlags: cachedIsEnabledFlags,
                 valueFlags: cachedValueFlags,
-                timeGatedFlags: cachedTimeGatedFlags,
-                account: account
+                timeGatedFlags: cachedTimeGatedFlags
             )
 
             Logger.info("Hotswapped new remoteConfig. isEnabledFlags: \(cachedIsEnabledFlags), valueFlags: \(cachedValueFlags), timeGatedFlags: \(timeGatedFlags)")
@@ -953,8 +924,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                     clockSkew: clockSkew,
                     isEnabledFlags: isEnabledFlags,
                     valueFlags: valueFlags,
-                    timeGatedFlags: timeGatedFlags,
-                    account: account
+                    timeGatedFlags: timeGatedFlags
                 )
                 self.warmSecondaryCaches(valueFlags: valueFlags)
             } else {
@@ -962,8 +932,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
                     clockSkew: clockSkew,
                     isEnabledFlags: isEnabledFlags,
                     valueFlags: valueFlags,
-                    timeGatedFlags: timeGatedFlags,
-                    account: account
+                    timeGatedFlags: timeGatedFlags
                 )
             }
             return remoteConfig

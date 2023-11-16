@@ -22,7 +22,7 @@ public class AttachmentMultisend: Dependencies {
         approvedAttachments: [SignalAttachment]
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
-            self.prepareForSending(
+            self.prepareForSendingWithSneakyTransaction(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
@@ -40,7 +40,7 @@ public class AttachmentMultisend: Dependencies {
         messagesReadyToSend: @escaping ([TSOutgoingMessage]) -> Void
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) { () -> Promise<PreparedMultisend> in
-            self.prepareForSending(
+            self.prepareForSendingWithSneakyTransaction(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
@@ -64,15 +64,16 @@ public class AttachmentMultisend: Dependencies {
         }
     }
 
-    private class func prepareForSending(
+    private class func prepareForSendingWithSneakyTransaction(
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment],
         on queue: DispatchQueue
     ) -> Promise<PreparedMultisend> {
         if let segmentDuration = conversations.lazy.compactMap(\.videoAttachmentDurationLimit).min() {
+            let qualityLevel = databaseStorage.read { tx in ImageQualityLevel.resolvedQuality(tx: tx) }
             let attachmentPromises = approvedAttachments.map {
-                $0.preparedForOutput(qualityLevel: .standard)
+                $0.preparedForOutput(qualityLevel: qualityLevel)
                     .segmentedIfNecessary(on: queue, segmentDuration: segmentDuration)
             }
             return Promise.when(fulfilled: attachmentPromises).map(on: queue) { segmentedResults in

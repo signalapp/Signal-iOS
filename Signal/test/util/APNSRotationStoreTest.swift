@@ -19,8 +19,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
             clockSkew: 0,
             isEnabledFlags: ["ios.enableAutoAPNSRotation": true],
             valueFlags: [:],
-            timeGatedFlags: [:],
-            account: .implicit()
+            timeGatedFlags: [:]
         )
     }
 

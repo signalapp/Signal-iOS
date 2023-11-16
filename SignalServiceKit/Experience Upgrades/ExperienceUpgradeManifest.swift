@@ -467,7 +467,7 @@ extension ExperienceUpgradeManifest {
         case .createUsernameReminder:
             return checkPreconditionsForCreateUsernameReminder(transaction: transaction)
         case .remoteMegaphone(let megaphone):
-            return checkPreconditionsForRemoteMegaphone(megaphone)
+            return checkPreconditionsForRemoteMegaphone(megaphone, tx: transaction)
         case .pinReminder:
             return checkPreconditionsForPinReminder(transaction: transaction)
         case .contactPermissionReminder:
@@ -559,7 +559,7 @@ extension ExperienceUpgradeManifest {
 
     // MARK: Remote megaphone preconditions
 
-    private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel) -> Bool {
+    private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel, tx: SDSAnyReadTransaction) -> Bool {
         guard
             AppVersionImpl.shared.compare(
                 megaphone.manifest.minAppVersion,
@@ -575,11 +575,16 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            return false
+        }
+
         guard RemoteConfig.isCountryCodeBucketEnabled(
             csvString: megaphone.manifest.countries,
             key: megaphone.manifest.id,
             csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)",
-            account: .implicit()
+            localIdentifiers: localIdentifiers
         ) else {
             Logger.debug("Remote megaphone not enabled for this user, by country code!")
             return false

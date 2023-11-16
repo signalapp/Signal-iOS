@@ -81,7 +81,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         if
-            ImageQualityLevel.max == .high,
+            ImageQualityLevel.maximumForCurrentAppContext == .high,
             attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isValidImage }) {
             options.insert(.canChangeQualityLevel)
         }
@@ -99,7 +99,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .default(transaction: $0) }
+    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .resolvedQuality(tx: $0) }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -1051,7 +1051,14 @@ extension AttachmentApprovalViewController {
         let actionSheet = ActionSheetController(theme: .translucentDark)
         actionSheet.isCancelable = true
 
-        let selectionControl = MediaQualitySelectionControl(currentQualityLevel: outputQualityLevel)
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localPhoneNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        let standardQualityLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)
+
+        let selectionControl = MediaQualitySelectionControl(
+            standardQualityLevel: standardQualityLevel,
+            currentQualityLevel: outputQualityLevel
+        )
         selectionControl.callback = { [weak self, weak actionSheet] qualityLevel in
             self?.outputQualityLevel = qualityLevel
             self?.updateBottomToolView(animated: false)
@@ -1092,13 +1099,7 @@ extension AttachmentApprovalViewController {
 
     private class MediaQualitySelectionControl: UIView {
 
-        private let buttonQualityStandard = MediaQualityButton(
-            title: ImageQualityLevel.standard.localizedString,
-            subtitle: OWSLocalizedString(
-                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
-                comment: "Subtitle for the 'standard' option for media quality."
-            )
-        )
+        private let buttonQualityStandard: MediaQualityButton
 
         private let buttonQualityHigh = MediaQualityButton(
             title: ImageQualityLevel.high.localizedString,
@@ -1108,16 +1109,27 @@ extension AttachmentApprovalViewController {
             )
         )
 
+        private let standardQualityLevel: ImageQualityLevel
         private(set) var qualityLevel: ImageQualityLevel
 
         var callback: ((ImageQualityLevel) -> Void)?
 
-        init(currentQualityLevel: ImageQualityLevel) {
-            qualityLevel = currentQualityLevel
+        init(standardQualityLevel: ImageQualityLevel, currentQualityLevel: ImageQualityLevel) {
+            self.standardQualityLevel = standardQualityLevel
+            self.qualityLevel = currentQualityLevel
+
+            self.buttonQualityStandard = MediaQualityButton(
+                title: standardQualityLevel.localizedString,
+                subtitle: OWSLocalizedString(
+                    "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
+                    comment: "Subtitle for the 'standard' option for media quality."
+                )
+            )
+
             super.init(frame: .zero)
 
             buttonQualityStandard.block = { [weak self] in
-                self?.didSelectQualityLevel(.standard)
+                self?.didSelectQualityLevel(standardQualityLevel)
             }
             addSubview(buttonQualityStandard)
             buttonQualityStandard.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .trailing)
@@ -1145,7 +1157,7 @@ extension AttachmentApprovalViewController {
         }
 
         private func updateButtonAppearance() {
-            buttonQualityStandard.isSelected = qualityLevel == .standard
+            buttonQualityStandard.isSelected = qualityLevel == standardQualityLevel
             buttonQualityHigh.isSelected = qualityLevel == .high
         }
 
@@ -1227,7 +1239,7 @@ extension AttachmentApprovalViewController {
 
         override var accessibilityValue: String? {
             get {
-                let selectedButton = qualityLevel == .standard ? buttonQualityStandard : buttonQualityHigh
+                let selectedButton = qualityLevel == .high ? buttonQualityHigh : buttonQualityStandard
                 return [ selectedButton.topLabel, selectedButton.bottomLabel ].compactMap { $0.text }.joined(separator: ",")
             }
             set { super.accessibilityValue = newValue }
@@ -1244,7 +1256,7 @@ extension AttachmentApprovalViewController {
         }
 
         override func accessibilityIncrement() {
-            if qualityLevel == .standard {
+            if qualityLevel == standardQualityLevel {
                 qualityLevel = .high
                 updateButtonAppearance()
             }
@@ -1252,7 +1264,7 @@ extension AttachmentApprovalViewController {
 
         override func accessibilityDecrement() {
             if qualityLevel == .high {
-                qualityLevel = .standard
+                qualityLevel = standardQualityLevel
                 updateButtonAppearance()
             }
         }
