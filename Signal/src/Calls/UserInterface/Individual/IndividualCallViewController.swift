@@ -1106,7 +1106,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("")
 
         button.isSelected = !button.isSelected
-        callService.audioService.requestSpeakerphone(call: call.individualCall, isEnabled: button.isSelected)
+        callService.audioService.requestSpeakerphone(call: call, isEnabled: button.isSelected)
     }
 
     @objc

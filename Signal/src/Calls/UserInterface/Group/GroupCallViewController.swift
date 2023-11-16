@@ -872,7 +872,7 @@ extension GroupCallViewController: CallControlsDelegate {
             callService.audioService.presentRoutePicker()
         } else {
             sender.isSelected = !sender.isSelected
-            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: sender.isSelected)
+            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: sender.isSelected)
         }
     }
 
@@ -889,7 +889,7 @@ extension GroupCallViewController: CallControlsDelegate {
         // When turning off video, default speakerphone to on.
         if !sender.isSelected && !callService.audioService.hasExternalInputs {
             callControls.audioSourceButton.isSelected = true
-            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: true)
+            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: true)
         }
     }
 
@@ -965,7 +965,7 @@ extension GroupCallViewController: IncomingCallControlsDelegate {
         callService.updateIsLocalVideoMuted(isLocalVideoMuted: videoMute)
         // When turning off video, default speakerphone to on.
         if videoMute && !callService.audioService.hasExternalInputs {
-            callService.audioService.requestSpeakerphone(call: call.groupCall, isEnabled: true)
+            callService.audioService.requestSpeakerphone(call: call, isEnabled: true)
         }
 
         callService.callUIAdapter.answerCall(call)
