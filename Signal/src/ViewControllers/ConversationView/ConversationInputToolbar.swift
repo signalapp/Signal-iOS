@@ -359,10 +359,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         textViewHeightConstraint = inputTextView.autoSetDimension(.height, toSize: LayoutMetrics.minTextViewHeight)
 
-        if DebugFlags.internalLogging {
-            OWSLogger.info("")
-        }
-
         editMessageLabelWrapper.isHidden = !shouldShowEditUI
 
         quotedReplyWrapper.isHidden = quotedReply == nil
@@ -1071,9 +1067,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {
-        if DebugFlags.internalLogging {
-            OWSLogger.info("")
-        }
         quotedReply = nil
     }
 

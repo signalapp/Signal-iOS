@@ -1075,11 +1075,11 @@ internal extension OWSProfileManager {
     func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {
-            OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
+            Logger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
             return
         }
         guard tsRegistrationState.isPrimaryDevice ?? false else {
-            OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
+            Logger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
             return
         }
         // We schedule in the NSE by writing state; the actual rotation
@@ -1092,11 +1092,11 @@ internal extension OWSProfileManager {
     func forceRotateLocalProfileKeyForGroupDepartureObjc(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {
-            OWSLogger.verbose("Not rotating profile key on unregistered device.")
+            Logger.verbose("Not rotating profile key on unregistered device.")
             return
         }
         guard tsRegistrationState.isPrimaryDevice ?? false else {
-            OWSLogger.verbose("Not rotating profile key on non-primary device.")
+            Logger.verbose("Not rotating profile key on non-primary device.")
             return
         }
         // We schedule in the NSE by writing state; the actual rotation

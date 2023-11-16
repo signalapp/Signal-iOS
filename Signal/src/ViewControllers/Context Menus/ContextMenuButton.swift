@@ -105,7 +105,7 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
                 self.contextMenuInteraction(_contextMenuInteraction, didEndForConfiguration: contextMenuConfiguration)
                 self.contextMenuConfiguration = nil
             } else {
-                OWSLogger.info("Dismissing context menu with no configuration present")
+                Logger.info("Dismissing context menu with no configuration present")
             }
         }
 
