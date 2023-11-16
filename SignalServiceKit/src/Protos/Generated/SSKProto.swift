@@ -14636,9 +14636,6 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     public let avatar: SSKProtoContactDetailsAvatar?
 
     @objc
-    public let verified: SSKProtoVerified?
-
-    @objc
     public var contactE164: String? {
         guard hasContactE164 else {
             return nil
@@ -14675,30 +14672,6 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var color: String? {
-        guard hasColor else {
-            return nil
-        }
-        return proto.color
-    }
-    @objc
-    public var hasColor: Bool {
-        return proto.hasColor
-    }
-
-    @objc
-    public var profileKey: Data? {
-        guard hasProfileKey else {
-            return nil
-        }
-        return proto.profileKey
-    }
-    @objc
-    public var hasProfileKey: Bool {
-        return proto.hasProfileKey
-    }
-
-    @objc
     public var blocked: Bool {
         return proto.blocked
     }
@@ -14725,15 +14698,6 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
         return proto.hasInboxPosition
     }
 
-    @objc
-    public var archived: Bool {
-        return proto.archived
-    }
-    @objc
-    public var hasArchived: Bool {
-        return proto.hasArchived
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -14743,11 +14707,9 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: SignalServiceProtos_ContactDetails,
-                 avatar: SSKProtoContactDetailsAvatar?,
-                 verified: SSKProtoVerified?) {
+                 avatar: SSKProtoContactDetailsAvatar?) {
         self.proto = proto
         self.avatar = avatar
-        self.verified = verified
     }
 
     @objc
@@ -14767,14 +14729,8 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
             avatar = SSKProtoContactDetailsAvatar(proto.avatar)
         }
 
-        var verified: SSKProtoVerified?
-        if proto.hasVerified {
-            verified = SSKProtoVerified(proto.verified)
-        }
-
         self.init(proto: proto,
-                  avatar: avatar,
-                  verified: verified)
+                  avatar: avatar)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -14835,15 +14791,6 @@ extension SSKProtoContactDetails {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
-        if let _value = color {
-            builder.setColor(_value)
-        }
-        if let _value = verified {
-            builder.setVerified(_value)
-        }
-        if let _value = profileKey {
-            builder.setProfileKey(_value)
-        }
         if hasBlocked {
             builder.setBlocked(blocked)
         }
@@ -14852,9 +14799,6 @@ extension SSKProtoContactDetails {
         }
         if hasInboxPosition {
             builder.setInboxPosition(inboxPosition)
-        }
-        if hasArchived {
-            builder.setArchived(archived)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -14924,39 +14868,6 @@ public class SSKProtoContactDetailsBuilder: NSObject {
     }
 
     @objc
-    @available(swift, obsoleted: 1.0)
-    public func setColor(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.color = valueParam
-    }
-
-    public func setColor(_ valueParam: String) {
-        proto.color = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setVerified(_ valueParam: SSKProtoVerified?) {
-        guard let valueParam = valueParam else { return }
-        proto.verified = valueParam.proto
-    }
-
-    public func setVerified(_ valueParam: SSKProtoVerified) {
-        proto.verified = valueParam.proto
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setProfileKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.profileKey = valueParam
-    }
-
-    public func setProfileKey(_ valueParam: Data) {
-        proto.profileKey = valueParam
-    }
-
-    @objc
     public func setBlocked(_ valueParam: Bool) {
         proto.blocked = valueParam
     }
@@ -14969,11 +14880,6 @@ public class SSKProtoContactDetailsBuilder: NSObject {
     @objc
     public func setInboxPosition(_ valueParam: UInt32) {
         proto.inboxPosition = valueParam
-    }
-
-    @objc
-    public func setArchived(_ valueParam: Bool) {
-        proto.archived = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

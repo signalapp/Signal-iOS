@@ -4032,33 +4032,6 @@ struct SignalServiceProtos_ContactDetails {
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {self._avatar = nil}
 
-  var color: String {
-    get {return _color ?? String()}
-    set {_color = newValue}
-  }
-  /// Returns true if `color` has been explicitly set.
-  var hasColor: Bool {return self._color != nil}
-  /// Clears the value of `color`. Subsequent reads from it will return its default value.
-  mutating func clearColor() {self._color = nil}
-
-  var verified: SignalServiceProtos_Verified {
-    get {return _verified ?? SignalServiceProtos_Verified()}
-    set {_verified = newValue}
-  }
-  /// Returns true if `verified` has been explicitly set.
-  var hasVerified: Bool {return self._verified != nil}
-  /// Clears the value of `verified`. Subsequent reads from it will return its default value.
-  mutating func clearVerified() {self._verified = nil}
-
-  var profileKey: Data {
-    get {return _profileKey ?? Data()}
-    set {_profileKey = newValue}
-  }
-  /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return self._profileKey != nil}
-  /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {self._profileKey = nil}
-
   var blocked: Bool {
     get {return _blocked ?? false}
     set {_blocked = newValue}
@@ -4085,15 +4058,6 @@ struct SignalServiceProtos_ContactDetails {
   var hasInboxPosition: Bool {return self._inboxPosition != nil}
   /// Clears the value of `inboxPosition`. Subsequent reads from it will return its default value.
   mutating func clearInboxPosition() {self._inboxPosition = nil}
-
-  var archived: Bool {
-    get {return _archived ?? false}
-    set {_archived = newValue}
-  }
-  /// Returns true if `archived` has been explicitly set.
-  var hasArchived: Bool {return self._archived != nil}
-  /// Clears the value of `archived`. Subsequent reads from it will return its default value.
-  mutating func clearArchived() {self._archived = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4134,13 +4098,9 @@ struct SignalServiceProtos_ContactDetails {
   fileprivate var _aci: String? = nil
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
-  fileprivate var _color: String? = nil
-  fileprivate var _verified: SignalServiceProtos_Verified? = nil
-  fileprivate var _profileKey: Data? = nil
   fileprivate var _blocked: Bool? = nil
   fileprivate var _expireTimer: UInt32? = nil
   fileprivate var _inboxPosition: UInt32? = nil
-  fileprivate var _archived: Bool? = nil
 }
 
 struct SignalServiceProtos_Pack {
@@ -8515,13 +8475,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     9: .same(proto: "aci"),
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
-    4: .same(proto: "color"),
-    5: .same(proto: "verified"),
-    6: .same(proto: "profileKey"),
     7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
     10: .same(proto: "inboxPosition"),
-    11: .same(proto: "archived"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8533,14 +8489,10 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 1: try { try decoder.decodeSingularStringField(value: &self._contactE164) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._color) }()
-      case 5: try { try decoder.decodeSingularMessageField(value: &self._verified) }()
-      case 6: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self._blocked) }()
       case 8: try { try decoder.decodeSingularUInt32Field(value: &self._expireTimer) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 10: try { try decoder.decodeSingularUInt32Field(value: &self._inboxPosition) }()
-      case 11: try { try decoder.decodeSingularBoolField(value: &self._archived) }()
       default: break
       }
     }
@@ -8560,15 +8512,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._avatar {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._color {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._verified {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    } }()
     try { if let v = self._blocked {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
     } }()
@@ -8581,9 +8524,6 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._inboxPosition {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
     } }()
-    try { if let v = self._archived {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 11)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8592,13 +8532,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     if lhs._aci != rhs._aci {return false}
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
-    if lhs._color != rhs._color {return false}
-    if lhs._verified != rhs._verified {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
     if lhs._blocked != rhs._blocked {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}
     if lhs._inboxPosition != rhs._inboxPosition {return false}
-    if lhs._archived != rhs._archived {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
