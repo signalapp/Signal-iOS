@@ -1347,10 +1347,6 @@ extension CallService: CallManagerDelegate {
         sender: UUID,
         update: RingUpdate
     ) {
-        guard RemoteConfig.inboundGroupRings else {
-            return
-        }
-
         let senderAci = Aci(fromUUID: sender)
 
         guard update == .requested else {

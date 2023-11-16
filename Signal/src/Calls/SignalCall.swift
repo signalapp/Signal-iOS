@@ -263,13 +263,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = groupThread
-        if !RemoteConfig.outboundGroupRings {
-            ringRestrictions = .notApplicable
-        } else {
-            ringRestrictions = []
-            if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-                ringRestrictions.insert(.groupTooLarge)
-            }
+        ringRestrictions = []
+
+        if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+            ringRestrictions.insert(.groupTooLarge)
         }
 
         // Track the callInProgress restriction regardless; we use that for purposes other than rings.

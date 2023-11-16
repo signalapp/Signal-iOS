@@ -50,13 +50,6 @@ class HomeTabBarController: UITabBarController {
 
         delegate = self
 
-        // Don't render the tab bar at all if stories isn't enabled.
-        guard RemoteConfig.stories else {
-            viewControllers = [chatListNavController]
-            self.setTabBarHidden(true, animated: false)
-            return
-        }
-
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)

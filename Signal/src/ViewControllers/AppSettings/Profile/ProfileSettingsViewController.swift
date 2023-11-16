@@ -158,7 +158,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        if RemoteConfig.donorBadgeDisplay, !allBadges.isEmpty {
+        if !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
                 icon: .profileBadges,
                 name: OWSLocalizedString(

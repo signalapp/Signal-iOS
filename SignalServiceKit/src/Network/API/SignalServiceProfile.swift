@@ -53,8 +53,7 @@ public class SignalServiceProfile {
 
         self.isPniCapable = Self.parseCapabilityFlag(capabilityKey: "pni", params: params, requireCapability: true)
 
-        if RemoteConfig.donorBadgeDisplay,
-           let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
+        if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             self.badges = badgeArray.compactMap {
                 do {
                     let badgeParams = ParamParser(dictionary: $0)

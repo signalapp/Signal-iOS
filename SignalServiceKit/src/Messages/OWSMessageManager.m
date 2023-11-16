@@ -289,15 +289,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (!RemoteConfig.stories && dataMessage.storyContext != nil) {
-        OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
-            decryptedEnvelope.sourceAciObjC,
-            dataMessage.timestamp,
-            dataMessage.storyContext.authorAci,
-            dataMessage.storyContext.sentTimestamp);
-        return;
-    }
-
     // Pre-process the data message. For v1 and v2 group messages this involves
     // checking group state, possibly creating the group thread, possibly
     // responding to group info requests, etc.

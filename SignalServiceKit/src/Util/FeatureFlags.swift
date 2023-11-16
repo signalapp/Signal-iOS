@@ -283,9 +283,6 @@ public class DebugFlags: BaseFlags {
     public static let fastPerfTests = false
 
     @objc
-    public static let forceDonorBadgeDisplay = build.includes(.internal)
-
-    @objc
     public static let forceSubscriptionMegaphone = build.includes(.internal)
 
     @objc

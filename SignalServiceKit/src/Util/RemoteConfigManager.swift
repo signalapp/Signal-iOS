@@ -201,11 +201,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var senderKeyKillSwitch: Bool {
-        isEnabled(.senderKeyKillSwitch)
-    }
-
-    @objc
     public static var messageResendKillSwitch: Bool {
         isEnabled(.messageResendKillSwitch)
     }
@@ -218,30 +213,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var messageSendLogEntryLifetime: TimeInterval {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
-    }
-
-    @objc
-    public static var donorBadgeDisplay: Bool {
-        DebugFlags.forceDonorBadgeDisplay || !isEnabled(.donorBadgeDisplayKillSwitch)
-    }
-
-    @objc
-    public static var stories: Bool {
-        if DebugFlags.forceStories {
-            return true
-        }
-        if isEnabled(.storiesKillSwitch) {
-            return false
-        }
-        return true
-    }
-
-    public static var inboundGroupRings: Bool {
-        DebugFlags.internalSettings || !isEnabled(.inboundGroupRingsKillSwitch)
-    }
-
-    public static var outboundGroupRings: Bool {
-        DebugFlags.internalSettings || isEnabled(.groupRings2)
     }
 
     public static var maxGroupCallRingSize: UInt {
@@ -480,15 +451,9 @@ public class RemoteConfig: BaseFlags {
 // MARK: - IsEnabledFlag
 
 private enum IsEnabledFlag: String, FlagType {
-    case deprecated_uuidSafetyNumbers = "ios.uuidSafetyNumbers"
     case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
-    case senderKeyKillSwitch = "ios.senderKeyKillSwitch"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case donorBadgeDisplayKillSwitch = "ios.donorBadgeDisplayKillSwitch"
-    case groupRings2 = "ios.groupRings2"
-    case inboundGroupRingsKillSwitch = "ios.inboundGroupRingsKillSwitch"
-    case storiesKillSwitch = "ios.storiesKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case applePayGiftDonationKillSwitch = "ios.applePayGiftDonationKillSwitch"
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
@@ -505,17 +470,9 @@ private enum IsEnabledFlag: String, FlagType {
 
     var isSticky: Bool {
         switch self {
-        case .deprecated_uuidSafetyNumbers:
-            return true
-
         case .automaticSessionResetKillSwitch: fallthrough
         case .paymentsResetKillSwitch: fallthrough
-        case .senderKeyKillSwitch: fallthrough
         case .messageResendKillSwitch: fallthrough
-        case .donorBadgeDisplayKillSwitch: fallthrough
-        case .groupRings2: fallthrough
-        case .inboundGroupRingsKillSwitch: fallthrough
-        case .storiesKillSwitch: fallthrough
         case .applePayOneTimeDonationKillSwitch: fallthrough
         case .applePayGiftDonationKillSwitch: fallthrough
         case .applePayMonthlyDonationKillSwitch: fallthrough
@@ -534,15 +491,9 @@ private enum IsEnabledFlag: String, FlagType {
     }
     var isHotSwappable: Bool {
         switch self {
-        case .deprecated_uuidSafetyNumbers: fallthrough
         case .automaticSessionResetKillSwitch: fallthrough
         case .paymentsResetKillSwitch: fallthrough
-        case .senderKeyKillSwitch: fallthrough
         case .messageResendKillSwitch: fallthrough
-        case .donorBadgeDisplayKillSwitch: fallthrough
-        case .groupRings2: fallthrough
-        case .inboundGroupRingsKillSwitch: fallthrough
-        case .storiesKillSwitch: fallthrough
         case .applePayOneTimeDonationKillSwitch: fallthrough
         case .applePayGiftDonationKillSwitch: fallthrough
         case .applePayMonthlyDonationKillSwitch: fallthrough

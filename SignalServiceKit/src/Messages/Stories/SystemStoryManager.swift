@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 // TODO: Support stubbing out OWSFileSystem more generally. This is a temporary
 // SystemStoryManager-scoped wrapper to avoid refactoring all usages of OWSFileSystem.
@@ -80,11 +81,6 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     @discardableResult
     public func enqueueOnboardingStoryDownload() -> Promise<Void> {
-        guard RemoteConfig.stories else {
-            owsFailDebug("Onboarding story feature flag disabled")
-            return .init(error: OWSAssertionError("Onboarding story unavailable"))
-        }
-
         return chainedPromise.enqueue { [weak self] in
             return self?.downloadOnboardingStoryIfNeeded() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))
         }
@@ -92,11 +88,6 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     @discardableResult
     public func cleanUpOnboardingStoryIfNeeded() -> Promise<Void> {
-        guard RemoteConfig.stories else {
-            owsFailDebug("Onboarding story feature flag disabled")
-            return .init(error: OWSAssertionError("Onboarding story unavailable"))
-        }
-
         return chainedPromise.enqueue { [weak self] () -> Promise<OnboardingStoryDownloadStatus> in
             return self?.checkOnboardingStoryDownloadStatus() ?? .init(error: OWSAssertionError("SystemStoryManager unretained"))
         }.asVoid()

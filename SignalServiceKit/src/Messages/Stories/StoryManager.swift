@@ -34,9 +34,6 @@ public class StoryManager: NSObject {
         author: Aci,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        // Drop all story messages until the feature is enabled.
-        guard RemoteConfig.stories else { return }
-
         guard StoryFinder.story(
             timestamp: timestamp,
             author: author,
@@ -125,9 +122,6 @@ public class StoryManager: NSObject {
         _ proto: SSKProtoSyncMessageSent,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        // Drop all story messages until the feature is enabled.
-        guard RemoteConfig.stories else { return }
-
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
             author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
@@ -328,7 +322,7 @@ extension StoryManager {
 
     /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     @objc
-    public static var areStoriesEnabled: Bool { RemoteConfig.stories && areStoriesEnabledCache.get() }
+    public static var areStoriesEnabled: Bool { areStoriesEnabledCache.get() }
 
     public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
         keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction)

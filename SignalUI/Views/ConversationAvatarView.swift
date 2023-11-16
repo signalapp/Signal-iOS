@@ -822,10 +822,6 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
     // TODO: Badges — Should this be async?
     fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         guard configuration.addBadgeIfApplicable else { return nil }
-        guard RemoteConfig.donorBadgeDisplay else {
-            Logger.warn("Ignoring badge request. Badge flag currently disabled")
-            return nil
-        }
         guard configuration.sizeClass.badgeDiameter >= 16 else {
             // We never want to show a badge <= 16pts
             Logger.warn("Skipping badge request for badge with diameter of \(configuration.sizeClass.badgeDiameter)")
