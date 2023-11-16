@@ -21,8 +21,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     OWSAssertDebug(envelope != nil);
 
     if (!envelope.hasType) {
-        NSString *name = [OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown];
-        OWSFailDebug(@"%@", name);
+        OWSFailDebug(@"No type.");
         return;
     }
     switch (envelope.unwrappedType) {
@@ -35,23 +34,19 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             break;
 
         case SSKProtoEnvelopeTypeUnknown: {
-            // Shouldn't happen
-            NSString *name = [OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown];
-            OWSFailDebug(@"%@", name);
+            OWSFailDebug(@"Type unknown.");
             return;
         }
 
         case SSKProtoEnvelopeTypeKeyExchange: {
             // Unsupported
-            NSString *name = [OWSAnalyticsEvents messageManagerErrorEnvelopeTypeKeyExchange];
-            OWSFailDebug(@"%@", name);
+            OWSFailDebug(@"Key exchange.");
             return;
         }
 
         default: {
             // Shouldn't happen
-            NSString *name = [OWSAnalyticsEvents messageManagerErrorEnvelopeTypeOther];
-            OWSFailDebug(@"%@", name);
+            OWSFailDebug(@"Other type.");
             return;
         }
     }
@@ -62,7 +57,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     OWSAssertDebug(envelope != nil);
 
     if (!envelope.hasType) {
-        OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
         return @"Missing Type.";
     }
     switch (envelope.unwrappedType) {

@@ -156,8 +156,6 @@ class NSEEnvironment: Dependencies {
 
         logger.info("completed.")
 
-        OWSAnalytics.appLaunchDidBegin()
-
         listenForMainAppLaunch(logger: logger)
     }
 

@@ -64,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
         }
         OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
-        OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }
 
@@ -82,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
         }
         OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
-        OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }
     return YES;

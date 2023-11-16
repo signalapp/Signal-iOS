@@ -704,7 +704,6 @@ private struct ProcessingRequestBuilder {
             case .discard:
                 return .completed(error: nil)
             case .noContent:
-                messageManager.logUnactionablePayload(decryptedEnvelope.envelope)
                 return .clearPlaceholdersOnly(decryptedEnvelope)
             case .request(let messageManagerRequest):
                 return .messageManagerRequest(messageManagerRequest)

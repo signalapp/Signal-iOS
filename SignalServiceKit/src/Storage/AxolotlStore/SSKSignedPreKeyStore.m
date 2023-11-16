@@ -230,11 +230,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
         }
 
         // TODO: (PreKey Cleanup)
-        if (signedPrekey.wasAcceptedByService) {
-            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
-        } else {
-            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldUnacceptedSignedPrekey]);
-        }
 
         oldSignedPreKeyCount--;
         [self removeSignedPreKey:signedPrekey.Id transaction:transaction];

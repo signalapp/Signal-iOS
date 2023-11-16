@@ -99,11 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
                        transaction:transaction];
 }
 
-- (void)logUnactionablePayload:(SSKProtoEnvelope *)envelope
-{
-    OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
-}
-
 - (void)handleRequest:(MessageManagerRequest *)request
               context:(id<DeliveryReceiptContext>)context
           transaction:(SDSAnyWriteTransaction *)transaction
@@ -688,7 +683,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             transaction:sdsWriteBlockTransaction];
             }];
         } else {
-            OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
+            OWSLogWarn(@"Call message with no actionable payload.");
         }
     });
 }

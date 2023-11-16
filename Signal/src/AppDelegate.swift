@@ -187,7 +187,6 @@ extension AppDelegate {
         SUIEnvironment.shared.setup()
         AppEnvironment.shared.setup()
         let result = databaseContinuation.prepareDatabase()
-        OWSAnalytics.appLaunchDidBegin()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
 

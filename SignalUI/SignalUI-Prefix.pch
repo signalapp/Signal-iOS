@@ -11,7 +11,6 @@
 
     #import <SignalCoreKit/OWSAsserts.h>
     #import <SignalCoreKit/NSObject+OWS.h>
-    #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/SSKAsserts.h>
     #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
     #import <SignalCoreKit/SignalCoreKit-Swift.h>

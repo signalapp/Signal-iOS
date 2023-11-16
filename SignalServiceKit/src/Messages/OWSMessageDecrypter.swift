@@ -46,26 +46,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         senderIdsResetDuringCurrentBatch.removeAllObjects()
     }
 
-    // The debug logs can be more verbose than the analytics events.
-    //
-    // In this case `descriptionForEnvelope` is valuable enough to
-    // log but too dangerous to include in the analytics event.
-    // See OWSProdErrorWEnvelope.
-    private func owsProdErrorWithEnvelope(
-        _ eventName: String,
-        _ envelope: SSKProtoEnvelope,
-        file: String = #file,
-        line: Int32 = #line,
-        function: String = #function
-    ) {
-        Logger.error("\(function):\(line) \(eventName): \(self.description(for: envelope))")
-        OWSAnalytics.logEvent(eventName,
-                              severity: .error,
-                              parameters: nil,
-                              location: "\((file as NSString).lastPathComponent):\(function)",
-                              line: line)
-    }
-
     private func trySendNullMessage(
         in contactThread: TSContactThread,
         senderId: String,
@@ -289,22 +269,13 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         switch error as? SignalError {
-        case .sessionNotFound:
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorNoSession(), validatedEnvelope.envelope)
-        case .invalidKey:
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorInvalidKey(), validatedEnvelope.envelope)
-        case .invalidKeyIdentifier:
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorInvalidKeyId(), validatedEnvelope.envelope)
-        case .unrecognizedMessageVersion:
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorInvalidMessageVersion(), validatedEnvelope.envelope)
         case .untrustedIdentity:
             // Should no longer get here, since we now record the new identity for incoming messages.
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorUntrustedIdentityKeyException(), validatedEnvelope.envelope)
             owsFailDebug("Failed to trust identity on incoming message from \(sourceAci)")
         case .duplicatedMessage:
             preconditionFailure("checked above")
         default: // another SignalError, or another kind of Error altogether
-            owsProdErrorWithEnvelope(OWSAnalyticsEvents.messageManagerErrorCorruptMessage(), validatedEnvelope.envelope)
+            break
         }
 
         if let errorMessage = errorMessage {
@@ -410,11 +381,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let localIdentity = validatedEnvelope.localIdentity
         do {
             guard let encryptedData = validatedEnvelope.envelope.content else {
-                OWSAnalytics.logEvent(OWSAnalyticsEvents.messageManagerErrorMessageEnvelopeHasNoContent(),
-                                      severity: .critical,
-                                      parameters: nil,
-                                      location: "\((#file as NSString).lastPathComponent):\(#function)",
-                                      line: #line)
                 throw OWSError(error: .failedToDecryptMessage,
                                description: "Envelope has no content",
                                isRetryable: false)
