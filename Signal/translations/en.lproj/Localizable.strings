@@ -778,6 +778,9 @@
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "End call";
 
+/* Accessibility label for leaving a call */
+"CALL_VIEW_LEAVE_CALL_LABEL" = "Leave call";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Mute";
 
@@ -792,6 +795,15 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+
+/* Accessibility label for turning off the camera */
+"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Turn off camera";
+
+/* Accessibility label for turning on the camera */
+"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Turn on camera";
+
+/* Accessibility label for unmuting the microphone */
+"CALL_VIEW_UNMUTE_LABEL" = "Unmute";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";

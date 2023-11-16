@@ -23,6 +23,7 @@ class CallControls: UIView {
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
             iconName: "phone-down-fill-28",
+            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
             action: #selector(CallControlsDelegate.didPressHangup)
         )
         button.unselectedBackgroundColor = .ows_accentRed
@@ -30,23 +31,28 @@ class CallControls: UIView {
     }()
     private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-fill-28",
+        accessibilityLabel: viewModel.audioSourceAccessibilityLabel,
         action: #selector(CallControlsDelegate.didPressAudioSource)
     )
     private lazy var muteButton = createButton(
         iconName: "mic-slash-fill-28",
+        accessibilityLabel: viewModel.muteButtonAccessibilityLabel,
         action: #selector(CallControlsDelegate.didPressMute)
     )
     private lazy var videoButton = createButton(
         iconName: "video-fill-28",
+        accessibilityLabel: viewModel.videoButtonAccessibilityLabel,
         action: #selector(CallControlsDelegate.didPressVideo)
     )
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
+        // TODO: Accessibility label
         action: #selector(CallControlsDelegate.didPressRing)
     )
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
             iconName: "switch-camera-28",
+            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel,
             action: #selector(CallControlsDelegate.didPressFlipCamera)
         )
         button.selectedIconColor = button.iconColor
@@ -211,8 +217,9 @@ class CallControls: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createButton(iconName: String, action: Selector) -> CallButton {
+    private func createButton(iconName: String, accessibilityLabel: String? = nil, action: Selector) -> CallButton {
         let button = CallButton(iconName: iconName)
+        button.accessibilityLabel = accessibilityLabel
         button.addTarget(delegate, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
@@ -486,5 +493,67 @@ extension CallControlsViewModel: CallAudioServiceDelegate {
 
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?) {
         refreshView?()
+    }
+}
+
+// MARK: - Accessibility
+
+extension CallControlsViewModel {
+    public var hangUpButtonAccessibilityLabel: String {
+        switch call.mode {
+        case .individual(_):
+            return OWSLocalizedString(
+                "CALL_VIEW_HANGUP_LABEL",
+                comment: "Accessibility label for hang up call"
+            )
+        case .group(_):
+            return OWSLocalizedString(
+                "CALL_VIEW_LEAVE_CALL_LABEL",
+                comment: "Accessibility label for leaving a call"
+            )
+        }
+    }
+
+    public var audioSourceAccessibilityLabel: String {
+        // TODO: This is not the most helpful descriptor.
+        return OWSLocalizedString(
+            "CALL_VIEW_AUDIO_SOURCE_LABEL",
+            comment: "Accessibility label for selection the audio source"
+        )
+    }
+
+    public var muteButtonAccessibilityLabel: String {
+        if call.isOutgoingAudioMuted {
+            return OWSLocalizedString(
+                "CALL_VIEW_UNMUTE_LABEL",
+                comment: "Accessibility label for unmuting the microphone"
+            )
+        } else {
+            return OWSLocalizedString(
+                "CALL_VIEW_MUTE_LABEL",
+                comment: "Accessibility label for muting the microphone"
+            )
+        }
+    }
+
+    public var videoButtonAccessibilityLabel: String {
+        if call.isOutgoingVideoMuted {
+            return OWSLocalizedString(
+                "CALL_VIEW_TURN_VIDEO_ON_LABEL",
+                comment: "Accessibility label for turning on the camera"
+            )
+        } else {
+            return OWSLocalizedString(
+                "CALL_VIEW_TURN_VIDEO_OFF_LABEL",
+                comment: "Accessibility label for turning off the camera"
+            )
+        }
+    }
+
+    public var flipCameraButtonAccessibilityLabel: String {
+        return OWSLocalizedString(
+            "CALL_VIEW_SWITCH_CAMERA_DIRECTION",
+            comment: "Accessibility label to toggle front- vs. rear-facing camera"
+        )
     }
 }
