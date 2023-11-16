@@ -20,7 +20,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     }
 
     public var runningOperations = AtomicArray<IncomingContactSyncOperation>()
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public override init() {
         super.init()

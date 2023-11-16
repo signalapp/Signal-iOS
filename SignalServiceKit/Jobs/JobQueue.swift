@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 /// JobQueue - A durable work queue
 ///
@@ -57,7 +58,7 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     var runningOperations: AtomicArray<DurableOperationType> { get set }
     var jobRecordLabel: String { get }
 
-    var isSetup: AtomicBool { get set }
+    var isSetup: AtomicBool { get }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
 

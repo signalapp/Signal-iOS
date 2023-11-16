@@ -191,7 +191,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyWriteTransaction) {

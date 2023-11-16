@@ -15,7 +15,7 @@ public class BroadcastMediaMessageJobQueue: JobQueue {
     }
 
     public var runningOperations = AtomicArray<BroadcastMediaMessageOperation>()
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {

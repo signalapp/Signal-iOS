@@ -19,7 +19,7 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public let jobRecordLabel: String = IncomingGroupSyncJobRecord.defaultLabel
 
     public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     private let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
