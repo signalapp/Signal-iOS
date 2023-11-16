@@ -151,11 +151,16 @@ open class ActionSheetController: OWSViewController {
         // Depending on the number of actions, the sheet may need
         // to scroll to allow access to all options.
         view.addSubview(scrollView)
+        
+        // Set the top margin for the scrollview to avoid hugging the top of the view
+        let topMargin: CGFloat = 59
         scrollView.clipsToBounds = false
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.autoPinEdge(toSuperviewEdge: .bottom)
+        
+        // Adjust ScrollView to fit within the safeArea
+        scrollView.autoPinEdge(toSuperviewSafeArea: .bottom)
         scrollView.autoHCenterInSuperview()
-        scrollView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
+        scrollView.autoMatch(.height, to: .height, of: view, withOffset: -topMargin, relation: .lessThanOrEqual)
 
         // Prefer to be full width, but don't exceed the maximum width
         scrollView.autoSetDimension(.width, toSize: 414, relation: .lessThanOrEqual)
@@ -164,19 +169,17 @@ open class ActionSheetController: OWSViewController {
             scrollView.autoPinWidthToSuperview()
         }
 
-        let topMargin: CGFloat = 18
-
         scrollView.addSubview(contentView)
         contentView.autoPinWidthToSuperview()
-        contentView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        contentView.autoPinEdge(toSuperviewEdge: .top)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         contentView.autoMatch(.width, to: .width, of: scrollView)
 
         // If possible, the scrollview should be as tall as the content (no scrolling)
         // but if it doesn't fit on screen, it's okay to be greater than the scroll view.
-        contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: -topMargin, relation: .greaterThanOrEqual)
+        contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: 0, relation: .greaterThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: -topMargin)
+            contentView.autoMatch(.height, to: .height, of: scrollView)
         }
 
         // The backdrop view needs to extend from the top of the scroll view content to the bottom of the scroll view
@@ -192,13 +195,14 @@ open class ActionSheetController: OWSViewController {
         contentView.addSubview(backgroundView)
         backgroundView.autoPinWidthToSuperview()
         backgroundView.autoPinEdge(.top, to: .top, of: contentView)
-        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor).isActive = true
+        //Make sure the background is pinned to the bottom of the view as the scrollview avoids the safeArea
+        backgroundView.autoPinEdge(.bottom, to: .bottom, of: view)
 
         // Stack views don't support corner masking pre-iOS 14
         // Instead we add our stack view to a wrapper view with masksToBounds: true
         let stackViewContainer = UIView()
         contentView.addSubview(stackViewContainer)
-        stackViewContainer.autoPinEdgesToSuperviewSafeArea()
+        stackViewContainer.autoPinEdgesToSuperviewEdges()
 
         stackViewContainer.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
