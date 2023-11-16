@@ -133,7 +133,7 @@ public class AppSetup {
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
         let messageManager = OWSMessageManager()
-        let remoteConfigManager = ServiceRemoteConfigManager(
+        let remoteConfigManager = RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             db: DependenciesBridge.shared.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,

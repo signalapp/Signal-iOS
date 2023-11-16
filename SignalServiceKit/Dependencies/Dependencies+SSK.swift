@@ -219,14 +219,6 @@ public extension NSObject {
         SSKEnvironment.shared.messageProcessorRef
     }
 
-    final var remoteConfigManagerObjc: RemoteConfigManagerObjc {
-        SSKEnvironment.shared.remoteConfigManagerRef
-    }
-
-    static var remoteConfigManagerObjc: RemoteConfigManagerObjc {
-        SSKEnvironment.shared.remoteConfigManagerRef
-    }
-
     final var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
