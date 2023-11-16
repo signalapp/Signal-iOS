@@ -202,11 +202,11 @@ public struct Subscription: Equatable {
             throw OWSAssertionError("Unexpected payment processor: \(processorString)")
         }
 
-        let paymentMethodString: String = try params.required(key: "paymentMethod")
-        if let paymentMethod = DonationPaymentMethod(serverRawValue: paymentMethodString) {
+        let paymentMethodString: String? = try params.optional(key: "paymentMethod")
+        if let paymentMethod = paymentMethodString.map({ DonationPaymentMethod(serverRawValue: $0) }) {
             self.paymentMethod = paymentMethod
         } else {
-            owsFailDebug("[Donations] Unrecognized payment method while parsing subscription: \(paymentMethodString)")
+            owsFailDebug("[Donations] Unrecognized payment method while parsing subscription: \(paymentMethodString ?? "nil")")
             self.paymentMethod = nil
         }
 
