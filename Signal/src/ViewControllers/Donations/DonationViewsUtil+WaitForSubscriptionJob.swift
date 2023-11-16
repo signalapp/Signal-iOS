@@ -22,10 +22,10 @@ private extension DonationPaymentMethod {
             // decent amount of time before timing out in the hopes that we can
             // learn the status of the completed payment synchronously.
             return 30
-        case .sepa:
-            // We expect SEPA payments will not process in a realistically-
-            // waitable time, so use a shortened window before timing out for
-            // them.
+        case .sepa, .ideal:
+            // We expect SEPA payments (including those fronted by iDEAL)
+            // will not process in a realistically-waitable time, so use
+            // a shortened window before timing out for them.
             return 10
         }
     }

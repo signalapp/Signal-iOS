@@ -257,12 +257,12 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             // We'll retry operations for these payment types fairly
             // aggressively, so we need a large retry buffer.
             return 110
-        case .sepa:
-            // We'll only retry operations for SEPA 1x/day, so we limit the
-            // retry buffer. They should always complete within 14 business
-            // days, so this is generous compared to what we should need, but
-            // prevents us from having an indefinite job if for whatever reason
-            // a payment never processes.
+        case .sepa, .ideal:
+            // We'll only retry operations for SEPA 1x/day (including those
+            // fronted by iDEAL), so we limit the retry buffer. They should
+            // always complete within 14 business days, so this is generous
+            // compared to what we should need, but prevents us from having an
+            // indefinite job if for whatever reason a payment never processes.
             return 30
         }
     }

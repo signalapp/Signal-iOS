@@ -846,7 +846,7 @@ public class ChatListViewController: OWSViewController {
             case .recurringSubscriptionRenewal:
                 break
             }
-        case .sepa:
+        case .sepa, .ideal:
             // SEPA donations won't error out immediately upon initiation
             // (they'll spend time processing first), so we should show errors
             // for any variety of donation here.

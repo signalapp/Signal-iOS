@@ -496,7 +496,7 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
             case "SEPA_DEBIT":
                 result.formUnion([.sepa])
             case "IDEAL":
-                break // TODO: Implement iDEAL payments
+                result.formUnion([.ideal])
             default:
                 Logger.warn("Unrecognized payment string: \(methodString)")
             }

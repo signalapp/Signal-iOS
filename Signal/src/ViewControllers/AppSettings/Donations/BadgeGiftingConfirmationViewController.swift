@@ -116,7 +116,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                         self.startCreditOrDebitCard()
                     case .paypal:
                         self.startPaypal()
-                    case .sepa:
+                    case .sepa, .ideal:
                         owsFail("Bank transfer not supported for gift badges")
                     }
                 }

@@ -34,7 +34,7 @@ extension DonationViewsUtil {
                 comment: "Action sheet message for Couldn't Add Badge sheet"
             )
             return (errorMessage, .dismiss)
-        case .sepa:
+        case .sepa, .ideal:
             return localizedDonationFailureForSEPA(chargeErrorCode: chargeErrorCode)
         }
     }

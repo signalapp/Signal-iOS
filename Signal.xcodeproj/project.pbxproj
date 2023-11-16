@@ -1311,6 +1311,7 @@
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */; };
+		C13769422AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */; };
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
@@ -1332,6 +1333,7 @@
 		C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */; };
 		C1CD0E3E2A6B141D00307F1A /* OWSRecordTranscriptJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3D2A6B141D00307F1A /* OWSRecordTranscriptJob.swift */; };
 		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
+		C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
@@ -3978,6 +3980,7 @@
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsFindAccountInfoSheetViewController.swift; sourceTree = "<group>"; };
+		C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsSelectIdealBankViewController.swift; sourceTree = "<group>"; };
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -3999,6 +4002,7 @@
 		C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSessionStore.swift; sourceTree = "<group>"; };
 		C1CD0E3D2A6B141D00307F1A /* OWSRecordTranscriptJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSRecordTranscriptJob.swift; sourceTree = "<group>"; };
 		C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStoreTests.swift; sourceTree = "<group>"; };
+		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTests.swift; sourceTree = "<group>"; };
@@ -8496,6 +8500,7 @@
 				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
 				D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */,
 				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
+				C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */,
 				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
 				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
 				D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */,
@@ -8553,6 +8558,7 @@
 				F9349CE52901866800F9A93A /* DonationHeroView.swift */,
 				C137693F2AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift */,
 				F9C8CFCB2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift */,
+				C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */,
 				F9B3A9282935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift */,
 				F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */,
 				F9C8CFD12936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift */,
@@ -11610,6 +11616,7 @@
 				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
 				F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */,
+				C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */,
 				F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */,
 				F9189ABE2947D7C300CD8EF6 /* Stripe+StripeError.swift in Sources */,
 				D96A94A92955270D004EA434 /* Stripe+Subscriptions.swift in Sources */,
@@ -11920,6 +11927,7 @@
 				F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */,
 				C13769402AFBDEFD00B4952D /* DonationPaymentDetailsFindAccountInfoSheetViewController.swift in Sources */,
 				F9C8CFCC2935700B0094469C /* DonationPaymentDetailsReadMoreSheetViewController.swift in Sources */,
+				C13769422AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift in Sources */,
 				F9B3A9292935452B0071EB95 /* DonationPaymentDetailsViewController+3DSecure.swift in Sources */,
 				F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */,
 				F9C8CFD22936656E0094469C /* DonationPaymentDetailsViewController+FormFieldView.swift in Sources */,

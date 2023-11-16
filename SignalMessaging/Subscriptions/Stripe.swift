@@ -118,6 +118,17 @@ public struct Stripe: Dependencies {
                 ]
                 return try API.postForm(endpoint: "payment_methods", parameters: parameters)
             }
+        case let .bankTransferIDEAL(mandate: _, account: idealAccount):
+            return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
+                // Step 4: Payment method creation
+                let parameters: [String: String] = [
+                    "billing_details[name]": idealAccount.name,
+                    "billing_details[email]": idealAccount.email,
+                    "ideal[bank]": idealAccount.iDEALBank.rawValue,
+                    "type": "ideal",
+                ]
+                return try API.postForm(endpoint: "payment_methods", parameters: parameters)
+            }
         }
     }
 

@@ -326,7 +326,7 @@ extension DonateViewController {
             self.presentActionSheet(
                 DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
             )
-        case .sepa:
+        case .sepa, .ideal:
             let badgeIssueSheetMode: BadgeIssueSheetState.Mode = {
                 switch donateMode {
                 case .oneTime:

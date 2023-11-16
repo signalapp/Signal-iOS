@@ -126,7 +126,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             switch receiptCredentialRedemptionSuccess.paymentMethod {
             case nil, .applePay, .creditOrDebitCard, .paypal:
                 return .badgeRedeemedViaNonBankPayment
-            case .sepa:
+            case .sepa, .ideal:
                 return .badgeRedeemedViaBankPayment
             }
         }()

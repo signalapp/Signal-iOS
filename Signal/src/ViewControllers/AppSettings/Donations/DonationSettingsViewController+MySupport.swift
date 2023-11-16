@@ -315,7 +315,7 @@ extension DonationSettingsViewController {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
             actionSheet = DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
-        case .sepa:
+        case .sepa, .ideal:
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE",

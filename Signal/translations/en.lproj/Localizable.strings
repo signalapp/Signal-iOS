@@ -3406,6 +3406,9 @@
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
 
+/* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Choose Your Bank";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
 

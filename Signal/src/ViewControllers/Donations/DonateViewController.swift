@@ -352,6 +352,27 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         presentActionSheet(actionSheetController)
     }
 
+    private func startIDEAL(
+        with amount: FiatMoney,
+        badge: ProfileBadge?,
+        donateMode: DonateMode
+    ) {
+        let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.startManualPaymentDetails(
+                    with: amount,
+                    badge: badge,
+                    donateMode: donateMode,
+                    donationPaymentMethod: .ideal,
+                    viewControllerPaymentMethod: .ideal(mandate: mandate)
+                )
+            }
+        }
+        let navigationController = OWSNavigationController(rootViewController: mandateViewController)
+        self.presentFormSheet(navigationController, animated: true)
+    }
+
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge,
@@ -392,6 +413,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         badge: badge,
                         donateMode: donateMode
                     )
+                case .ideal:
+                    self.startIDEAL(
+                        with: amount,
+                        badge: badge,
+                        donateMode: donateMode
+                    )
                 }
             }
         }
@@ -419,7 +446,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION",
                     comment: "Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment."
                 )
-            case .sepa:
+            case .sepa, .ideal:
                 title = OWSLocalizedString(
                     "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING",
                     comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment."
@@ -1304,7 +1331,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION",
                     comment: "Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment."
                 )
-            case .sepa:
+            case .sepa, .ideal:
                 title = OWSLocalizedString(
                     "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING",
                     comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment."

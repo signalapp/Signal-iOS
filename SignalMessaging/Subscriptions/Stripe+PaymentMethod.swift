@@ -83,6 +83,7 @@ public extension Stripe {
         case applePay(payment: PKPayment)
         case creditOrDebitCard(creditOrDebitCard: CreditOrDebitCard)
         case bankTransferSEPA(mandate: Mandate, account: SEPA)
+        case bankTransferIDEAL(mandate: Mandate, account: IDEAL)
 
         public var stripePaymentMethod: OWSRequestFactory.StripePaymentMethod {
             switch self {
@@ -90,6 +91,8 @@ public extension Stripe {
                 return .card
             case .bankTransferSEPA:
                 return .bankTransfer(.sepa)
+            case .bankTransferIDEAL:
+                return .bankTransfer(.ideal)
             }
         }
 
@@ -99,6 +102,8 @@ public extension Stripe {
                 return nil
             case let .bankTransferSEPA(mandate: sepaMandate, account: _):
                 return sepaMandate
+            case let .bankTransferIDEAL(mandate: idealMandate, account: _):
+                return idealMandate
             }
         }
     }

@@ -112,6 +112,16 @@ public class DonationUtilities: Dependencies {
             }
         }()
 
+        let isIDEALAvailable = {
+            guard FeatureFlags.allowIDEALDonations else { return false }
+            switch donationMode {
+            case .oneTime:
+                return true
+            case .monthly, .gift:
+                return false
+            }
+        }()
+
         var result = Set<DonationPaymentMethod>()
 
         if isApplePayAvailable {
@@ -128,6 +138,10 @@ public class DonationUtilities: Dependencies {
 
         if isSEPAAvailable {
             result.insert(.sepa)
+        }
+
+        if isIDEALAvailable {
+            result.insert(.ideal)
         }
 
         return result

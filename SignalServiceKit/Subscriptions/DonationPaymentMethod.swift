@@ -17,6 +17,7 @@ public enum DonationPaymentMethod: String {
     case creditOrDebitCard
     case paypal
     case sepa
+    case ideal
 
     /// Parse a payment method from a string provided by the service.
     ///
@@ -31,6 +32,8 @@ public enum DonationPaymentMethod: String {
             self = .paypal
         case "SEPA_DEBIT":
             self = .sepa
+        case "IDEAL":
+            self = .ideal
         default:
             return nil
         }
