@@ -46,6 +46,10 @@ public class RemoteConfig: BaseFlags {
         self.sepaEnabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .sepaEnabledRegions)
     }
 
+    fileprivate static var emptyConfig: RemoteConfig {
+        RemoteConfig(clockSkew: 0, isEnabledFlags: [:], valueFlags: [:], timeGatedFlags: [:])
+    }
+
     fileprivate func mergingHotSwappableFlags(from newConfig: RemoteConfig) -> RemoteConfig {
         var isEnabledFlags = self.isEnabledFlags
         for flag in IsEnabledFlag.allCases {
@@ -715,26 +719,30 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             lastKnownClockSkew,
             isEnabledFlags,
             valueFlags,
-            timeGatedFlags
-        ): (TimeInterval, [String: Bool]?, [String: String]?, [String: Date]?) = db.read { tx in
+            timeGatedFlags,
+            registrationState
+        ): (TimeInterval, [String: Bool]?, [String: String]?, [String: Date]?, TSRegistrationState) = db.read { tx in
             return (
                 self.keyValueStore.getLastKnownClockSkew(transaction: tx),
                 self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: tx),
                 self.keyValueStore.getRemoteConfigValueFlags(transaction: tx),
-                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: tx)
+                self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: tx),
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
             )
         }
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            if isEnabledFlags != nil || valueFlags != nil || timeGatedFlags != nil {
-                let remoteConfig = RemoteConfig(
-                    clockSkew: lastKnownClockSkew,
-                    isEnabledFlags: isEnabledFlags ?? [:],
-                    valueFlags: valueFlags ?? [:],
-                    timeGatedFlags: timeGatedFlags ?? [:]
-                )
-                updateCachedConfig { _ in remoteConfig }
-            }
+        let remoteConfig: RemoteConfig
+        if registrationState.isRegistered, (isEnabledFlags != nil || valueFlags != nil || timeGatedFlags != nil) {
+            remoteConfig = RemoteConfig(
+                clockSkew: lastKnownClockSkew,
+                isEnabledFlags: isEnabledFlags ?? [:],
+                valueFlags: valueFlags ?? [:],
+                timeGatedFlags: timeGatedFlags ?? [:]
+            )
+        } else {
+            // If we're not registered or haven't saved one, use an empty one.
+            remoteConfig = .emptyConfig
         }
+        updateCachedConfig { _ in remoteConfig }
         warmSecondaryCaches(valueFlags: valueFlags ?? [:])
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
@@ -887,17 +895,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 timeGatedFlags: timeGatedFlags
             )
 
-            let mergedConfig = self.updateCachedConfig { cachedConfig in
-                switch cachedConfig {
-                case .none:
-                    // This is the first config we've ever fetched. Set it even though
-                    // non-hot-swappable flags will change.
-                    return newConfig
-                case .some(let oldConfig):
-                    return oldConfig.mergingHotSwappableFlags(from: newConfig)
-                }
+            // This has hot-swappable new values and non-hot-swappable old values.
+            let mergedConfig = self.updateCachedConfig { oldConfig in
+                return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
             }
             self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
+
             // We always return `newConfig` because callers may want to see the
             // newly-fetched, non-hot-swappable values for themselves.
             return newConfig
