@@ -128,7 +128,32 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public var joinState: JoinState {
         switch mode {
-        case .individual(let call): return call.joinState
+        case .individual(let call):
+            /// `JoinState` is a group call concept, but we want to bridge
+            /// between the two call types.
+            /// TODO: Continue to tweak this as we unify the individual and
+            /// group call UIs.
+            switch call.state {
+            case .idle,
+                 .remoteHangup,
+                 .remoteHangupNeedPermission,
+                 .localHangup,
+                 .remoteRinging,
+                 .localRinging_Anticipatory,
+                 .localRinging_ReadyToAnswer,
+                 .remoteBusy,
+                 .localFailure,
+                 .busyElsewhere,
+                 .answeredElsewhere,
+                 .declinedElsewhere:
+                return .notJoined
+            case .connected,
+                 .accepting,
+                 .answering,
+                 .reconnecting,
+                 .dialing:
+                return .joined
+            }
         case .group(let call): return call.localDeviceState.joinState
         }
     }

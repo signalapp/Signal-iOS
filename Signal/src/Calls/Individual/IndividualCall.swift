@@ -194,34 +194,6 @@ public class IndividualCall: NSObject {
         }
     }
 
-    /// `JoinState` is a group call concept, but we want to bridge
-    /// between the two call types.
-    /// TODO: Continue to tweak this as we unify the individual and
-    /// group call UIs.
-    var joinState: JoinState {
-        switch self.state {
-        case .idle,
-             .remoteHangup,
-             .remoteHangupNeedPermission,
-             .localHangup,
-             .remoteRinging,
-             .localRinging_Anticipatory,
-             .localRinging_ReadyToAnswer,
-             .remoteBusy,
-             .localFailure,
-             .busyElsewhere,
-             .answeredElsewhere,
-             .declinedElsewhere:
-            return .notJoined
-        case .connected,
-             .accepting,
-             .answering,
-             .reconnecting,
-             .dialing:
-            return .joined
-        }
-    }
-
     public var offerMediaType: TSRecentCallOfferType = .audio
 
     // We start out muted if the record permission isn't granted. This should generally
