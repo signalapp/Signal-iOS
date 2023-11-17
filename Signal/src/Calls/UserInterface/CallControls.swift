@@ -211,6 +211,12 @@ class CallControls: UIView {
                 joinButtonActivityIndicator.stopAnimating()
             }
         }
+
+        hangUpButton.accessibilityLabel = viewModel.hangUpButtonAccessibilityLabel
+        audioSourceButton.accessibilityLabel = viewModel.audioSourceAccessibilityLabel
+        muteButton.accessibilityLabel = viewModel.muteButtonAccessibilityLabel
+        videoButton.accessibilityLabel = viewModel.videoButtonAccessibilityLabel
+        flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
     }
 
     required init(coder: NSCoder) {
