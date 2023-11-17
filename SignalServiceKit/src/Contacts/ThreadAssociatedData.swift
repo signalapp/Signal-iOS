@@ -147,12 +147,10 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
         var isMarkedUnread = isMarkedUnread
 
-        // If we're archiving and we have an existing thread record,
-        // also mark that thread record as read.
-        if isArchived == true {
-            // Also clear marked unread if we're not explicitly setting it.
-            if isMarkedUnread == nil { isMarkedUnread = false }
-            markThreadAsReadIfExists(transaction: transaction)
+        // If we're archiving, we do not want to change the read status of the thread.
+        // The thread's read status should only be changed if explicitly set.
+        if isArchived == true, isMarkedUnread != nil {
+            isMarkedUnread = false
         }
 
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
