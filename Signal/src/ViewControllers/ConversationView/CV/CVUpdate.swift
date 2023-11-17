@@ -213,8 +213,4 @@ extension CVRenderItem: BatchUpdateValue {
     public var batchUpdateId: String {
         interactionUniqueId
     }
-
-    public var logSafeDescription: String {
-        componentState.messageCellType.description
-    }
 }

@@ -66,11 +66,6 @@ extension AppDelegate {
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
 
-        #if DEBUG
-        FeatureFlags.logFlags()
-        DebugFlags.logFlags()
-        #endif
-
         Cryptography.seedRandom()
 
         MessageFetchBGRefreshTask.register()

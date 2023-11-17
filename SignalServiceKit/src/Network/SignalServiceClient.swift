@@ -81,13 +81,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     // MARK: - Public
 
     public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
-            Logger.debug("got response")
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -111,8 +108,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.registerPrekeysRequest(
             identity: identity,
             identityKey: identityKey,
@@ -126,8 +121,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     public func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.registerSignedPrekeyRequest(for: identity, signedPreKey: signedPreKey)
         return networkManager.makePromise(request: request).asVoid()
     }

@@ -23,7 +23,6 @@ public extension UIApplication {
     }
 
     func findFrontmostViewController(ignoringAlerts: Bool, window: UIWindow) -> UIViewController? {
-        Logger.verbose("findFrontmostViewController: \(window)")
         guard let viewController = window.rootViewController else {
             owsFailDebug("Missing root view controller.")
             return nil

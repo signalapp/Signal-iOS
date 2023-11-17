@@ -45,11 +45,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     return self;
 }
 
-- (void)dealloc
-{
-    OWSLogDebug(@"[%@]", self);
-}
-
 #pragma mark - Subclass Overrides
 
 // Called one time only
@@ -129,7 +124,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    OWSLogDebug(@"[%@] started: %@", self, self.eventId);
     [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self, self] eventId:self.eventId];
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
@@ -153,11 +147,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         [retryTimer invalidate];
 
         if (retryTimer != nil) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self run];
-            });
-        } else {
-            OWSLogVerbose(@"not re-running since operation is already running.");
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ [self run]; });
         }
     });
 }
@@ -167,7 +157,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportSuccess
 {
-    OWSLogDebug(@"[%@] succeeded", self);
     [self didSucceed];
     [self markAsComplete];
 }
@@ -175,19 +164,12 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportCancelled
 {
-    OWSLogDebug(@"[%@] cancelled", self);
     [self didCancel];
     [self markAsComplete];
 }
 
 - (void)reportError:(NSError *)error
 {
-    OWSLogDebug(@"reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
-        error,
-        error.isFatalError,
-        error.isRetryable,
-        (unsigned long)self.remainingRetries);
-
     self.errorCount += 1;
 
     [self didReportError:error];
@@ -238,7 +220,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    OWSLogDebug(@"[%@] failed terminally with error: %@", self, error);
     self.failingError = error;
 
     [self didFailWithError:error];

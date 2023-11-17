@@ -290,7 +290,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         AssertIsOnMainThread()
 
         guard nextModelGeneration.get() > currentModelGeneration else { return }
-        Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
             updateViewContent(avatarImage: nil, primaryBadgeImage: nil)
             return

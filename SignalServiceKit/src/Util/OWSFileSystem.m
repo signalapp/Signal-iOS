@@ -45,9 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
 {
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogVerbose(@"protecting file at path: %@", path);
-    }
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return NO;
     }
@@ -366,10 +363,11 @@ static void ClearOldTemporaryDirectoriesSync(void)
         OWSCFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
         return;
     }
+    NSUInteger fileCount = 0;
     for (NSString *fileName in fileNames) {
         if (!CurrentAppContext().isAppForegroundAndActive) {
             // Abort if app not active.
-            return;
+            break;
         }
         if ([fileName isEqualToString:currentTempDirName]) {
             continue;
@@ -391,18 +389,18 @@ static void ClearOldTemporaryDirectoriesSync(void)
             // Don't delete files which were created in the last N minutes.
             NSDate *creationDate = attributes.fileModificationDate;
             if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogVerbose(@"Skipping file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
                 continue;
             }
         }
 
-        OWSLogVerbose(@"Removing temp file or directory: %@", filePath);
+        fileCount++;
         if (![OWSFileSystem deleteFileIfExists:filePath]) {
             // This can happen if the app launches before the phone is unlocked.
             // Clean up will occur when app becomes active.
             OWSLogWarn(@"Could not delete old temp directory: %@", filePath);
         }
     }
+    OWSLogDebug(@"Removed %lu temporary directories", (unsigned long)fileCount);
 }
 
 // NOTE: We need to call this method on launch _and_ every time the app becomes active,

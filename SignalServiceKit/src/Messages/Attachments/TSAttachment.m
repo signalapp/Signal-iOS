@@ -136,9 +136,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     if (!self) {
         return self;
     }
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogVerbose(@"init attachment with uniqueId: %@", self.uniqueId);
-    }
 
     _contentType = contentType;
     _byteCount = byteCount;

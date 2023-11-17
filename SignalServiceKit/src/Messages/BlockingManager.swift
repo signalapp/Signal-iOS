@@ -356,11 +356,9 @@ extension BlockingManager {
                 // and we're not in the NSE. We'll leaving syncing to the main app.
                 if !force {
                     guard state.needsSync(transaction: transaction) else {
-                        Logger.verbose("Skipping send for unchanged block state")
                         return
                     }
                     guard !CurrentAppContext().isNSE else {
-                        Logger.verbose("Needs sync but running from NSE, deferring...")
                         return
                     }
                 }

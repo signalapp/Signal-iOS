@@ -196,7 +196,6 @@ extension OWSMessageManager {
             let rawSpamReportingToken = decryptedEnvelope.envelope.spamReportingToken,
             let spamReportingToken = SpamReportingToken(data: rawSpamReportingToken)
         else {
-            Logger.debug("Received an envelope without a spam reporting token. Doing nothing")
             return
         }
 

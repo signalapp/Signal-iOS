@@ -233,7 +233,6 @@ public class CLVLoader: Dependencies {
             let threadUniqueId: String
 
             var batchUpdateId: String { threadUniqueId }
-            var logSafeDescription: String { threadUniqueId }
         }
 
         let oldPinnedValues = oldPinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }

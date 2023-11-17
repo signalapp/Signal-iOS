@@ -7,7 +7,6 @@ import SignalServiceKit
 
 public protocol BatchUpdateValue: Equatable {
     var batchUpdateId: String { get }
-    var logSafeDescription: String { get }
 }
 
 // MARK: -
@@ -75,21 +74,6 @@ extension BatchUpdateType {
             return nil
         }
     }
-
-    // MARK: -
-
-    public var logSafeDescription: String {
-        switch self {
-        case .delete(let oldIndex):
-            return "delete(oldIndex: \(oldIndex))"
-        case .insert(let newIndex):
-            return "insert(newIndex: \(newIndex))"
-        case .move(let oldIndex, let newIndex):
-            return "move(oldIndex: \(oldIndex), newIndex: \(newIndex))"
-        case .update(let oldIndex, let newIndex):
-            return "update(oldIndex: \(oldIndex), newIndex: \(newIndex))"
-        }
-    }
 }
 
 // MARK: -
@@ -102,10 +86,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
     public struct Item: Equatable {
         public let value: T
         public let updateType: BatchUpdateType
-
-        public var logSafeDescription: String {
-            "[value: \(value.logSafeDescription), updateType: \(updateType.logSafeDescription)]"
-        }
     }
 
     fileprivate typealias ValueId = String
@@ -247,9 +227,7 @@ public class BatchUpdate<T: BatchUpdateValue> {
             // Perform in descending order so that each remove doesn't
             // affect indices of subsequent items.
             for index in oldRemovedIndices.reversed() {
-                guard index >= 0,
-                      index < updatedValueIdList.count else {
-                    try logState()
+                guard index >= 0, index < updatedValueIdList.count else {
                     throw OWSAssertionError("Invalid index: \(index)")
                 }
                 updatedValueIdList.remove(at: index)
@@ -268,34 +246,13 @@ public class BatchUpdate<T: BatchUpdateValue> {
             // Perform in ascending order so that each add doesn't
             // affect indices of subsequent items.
             for addItem in addItems {
-                guard addItem.newIndex >= 0,
-                      addItem.newIndex <= updatedValueIdList.count else {
-                    try logState()
+                guard addItem.newIndex >= 0, addItem.newIndex <= updatedValueIdList.count else {
                     throw OWSAssertionError("Invalid index: \(addItem.newIndex)")
                 }
                 updatedValueIdList.insert(addItem.valueId, at: addItem.newIndex)
             }
 
             return updatedValueIdList
-        }
-
-        func logState() throws {
-            guard verboseLogging else {
-                return
-            }
-            for (index, value) in oldValues.enumerated() {
-                Logger.verbose("oldValues[\(index)]: \(value.logSafeDescription)")
-            }
-            for (index, value) in newValues.enumerated() {
-                Logger.verbose("newValues[\(index)]: \(value.logSafeDescription)")
-            }
-            Logger.verbose("oldValueIdList: \(oldValueIdList.joined(separator: "\n"))")
-            Logger.verbose("newValueIdList: \(newValueIdList.joined(separator: "\n"))")
-            for (index, batchUpdateItem) in batchUpdateItems.enumerated() {
-                Logger.verbose("batchUpdateItems[\(index)]: \(batchUpdateItem.logSafeDescription)")
-            }
-            let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
-            Logger.verbose("Simulated updated list: \(updatedValueIdList.joined(separator: "\n"))")
         }
 
         // Identify values that we need to move.  This is non-trival.
@@ -345,28 +302,17 @@ public class BatchUpdate<T: BatchUpdateValue> {
         for valueId in valueIdsToDelete {
             guard oldValueIdSet.contains(valueId),
                   !newValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId) else {
-                try logState()
                 throw OWSAssertionError("Invalid delete.")
             }
             // .delete items use the old index.
             guard let oldIndex = oldValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
             guard let value = oldValueMap[valueId] else {
-                try logState()
                 throw OWSAssertionError("Can't find value.")
             }
             let item = Item(value: value, updateType: .delete(oldIndex: oldIndex))
             batchUpdateItems.append(item)
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("\(item.logSafeDescription), \(value.logSafeDescription)")
-            }
-        }
-
-        if verboseLogging {
-            let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
-            Logger.verbose("Simulated updated list after deletes: \(updatedValueIdList.joined(separator: "\n"))")
         }
 
         // 2. Inserts
@@ -381,28 +327,17 @@ public class BatchUpdate<T: BatchUpdateValue> {
         for valueId in valueIdsToInsert {
             guard !oldValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId),
                   newValueIdSet.contains(valueId) else {
-                try logState()
                 throw OWSAssertionError("Invalid insert.")
             }
             // .insert items use the new index.
             guard let newIndex = newValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
             guard let value = newValueMap[valueId] else {
-                try logState()
                 throw OWSAssertionError("Can't find value.")
             }
             let item = Item(value: value, updateType: .insert(newIndex: newIndex))
             batchUpdateItems.append(item)
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("\(item.logSafeDescription), \(value.logSafeDescription)")
-            }
-        }
-
-        if verboseLogging {
-            let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
-            Logger.verbose("Simulated updated list after inserts: \(updatedValueIdList.joined(separator: "\n"))")
         }
 
         // By now, the "transformed" list (which is the old list, updated with just
@@ -410,7 +345,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
         // but might not yet have the same ordering.
         let valueIdValueAfterDeletesAndInserts = try simulateUpdate(items: batchUpdateItems)
         guard Set(newValueIdList) == Set(valueIdValueAfterDeletesAndInserts) else {
-            try logState()
             throw OWSAssertionError("New and updated unordered contents don't match.")
         }
 
@@ -421,40 +355,26 @@ public class BatchUpdate<T: BatchUpdateValue> {
         let valueIdsToMove = newValueIdList.filter { valueIdsToMoveWithMove.contains($0) }
         guard valueIdsToMove.count == valueIdsToMoveWithMove.count,
               Set(valueIdsToMove) == valueIdsToMoveWithMove else {
-            try logState()
             throw OWSAssertionError("Couldn't build list of value ids to move.")
         }
         for valueId in valueIdsToMove {
-            guard oldValueIdSet.contains(valueId),
-                  newValueIdSet.contains(valueId) else {
-                try logState()
+            guard oldValueIdSet.contains(valueId), newValueIdSet.contains(valueId) else {
                 throw OWSAssertionError("Invalid move.")
             }
             // .move "from" indices use "old indices."
             guard let oldIndex = oldValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
             // .move "to" indices use "new indices."
             guard let newIndex = newValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
             // Take care to capture the new value.
             guard let newValue = newValueMap[valueId] else {
-                try logState()
                 throw OWSAssertionError("Can't find value.")
             }
             let item = Item(value: newValue, updateType: .move(oldIndex: oldIndex, newIndex: newIndex))
             batchUpdateItems.append(item)
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("\(item.logSafeDescription), \(newValue.logSafeDescription)")
-            }
-        }
-
-        if verboseLogging {
-            let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
-            Logger.verbose("Simulated updated list after moves: \(updatedValueIdList.joined(separator: "\n"))")
         }
 
         // By now, the "transformed" list (which is the old list, updated with just the
@@ -462,7 +382,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
         // in the same order.
         let valueIdValueAfterDeletesInsertsAndMoves = try simulateUpdate(items: batchUpdateItems)
         guard newValueIdList == valueIdValueAfterDeletesInsertsAndMoves else {
-            try logState()
             throw OWSAssertionError("New and updated ordered contents don't match.")
         }
 
@@ -484,32 +403,23 @@ public class BatchUpdate<T: BatchUpdateValue> {
         for valueId in valueIdsToUpdate {
             // Take care to capture the new value.
             guard let newValue = newValueMap[valueId] else {
-                try logState()
                 throw OWSAssertionError("Can't find value.")
             }
             guard let oldIndex = oldValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
             guard let newIndex = newValueIdList.firstIndex(of: valueId) else {
-                try logState()
                 throw OWSAssertionError("Can't find index of value.")
             }
 
             let item = Item(value: newValue, updateType: .update(oldIndex: oldIndex, newIndex: newIndex))
             batchUpdateItems.append(item)
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("\(item.logSafeDescription), \(newValue.logSafeDescription)")
-            }
         }
 
         let valueIdValueAfterAllItems = try simulateUpdate(items: batchUpdateItems)
         guard newValueIdList == valueIdValueAfterAllItems else {
-            try logState()
             throw OWSAssertionError("New and updated ordered contents don't match.")
         }
-
-        try logState()
 
         return batchUpdateItems
     }
@@ -602,8 +512,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
                                                             finalValueIds: newFinalValueIds))
         return valueIdsToMove
     }
-
-    private static var verboseLogging: Bool { false }
 
     public static var canUseMoveInCollectionView: Bool { false }
 }

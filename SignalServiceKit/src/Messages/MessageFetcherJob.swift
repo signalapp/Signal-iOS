@@ -582,8 +582,6 @@ private class MessageAckOperation: OWSOperation {
     }
 
     public override func run() {
-        Logger.debug("")
-
         let request: TSRequest
         if let serverGuid = envelopeInfo.serverGuid, !serverGuid.isEmpty {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)

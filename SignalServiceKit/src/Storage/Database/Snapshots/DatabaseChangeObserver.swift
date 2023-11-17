@@ -556,8 +556,6 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         lastPublishUpdatesDate = Date()
 
-        Logger.verbose("databaseChangesDidUpdate")
-
         if let lastError = committedChanges.lastError {
             switch lastError {
             case DatabaseObserverError.changeTooLarge:

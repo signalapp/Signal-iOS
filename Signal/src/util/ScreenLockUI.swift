@@ -192,7 +192,6 @@ class ScreenLockUI: Dependencies {
         }
 
         let desiredUIState = desiredUIState()
-        Logger.verbose("Ensure UI: \(desiredUIState)")
 
         updateScreenBlockingWindowWithUIState(desiredUIState, animated: true)
 
@@ -216,25 +215,20 @@ class ScreenLockUI: Dependencies {
     private func desiredUIState() -> ScreenLockViewController.UIState {
         if isScreenLockLocked {
             if appIsInactiveOrBackground {
-                Logger.verbose("desiredUIState: screen protection 1.")
                 return .screenProtection
             } else {
-                Logger.verbose("desiredUIState: screen lock 2.")
                 return .screenLock
             }
         }
 
         guard appIsInactiveOrBackground else {
-            Logger.verbose("desiredUIState: none 3.")
             return .none
         }
 
         guard preferences.isScreenSecurityEnabled else {
-            Logger.verbose("desiredUIState: none 5.")
             return .none
         }
 
-        Logger.verbose("desiredUIState: screen protection 4.")
         return .screenProtection
     }
 
@@ -322,25 +316,21 @@ class ScreenLockUI: Dependencies {
             //
             // We don't need to try to lock the screen lock;
             // It will be initialized by `setupWithRootWindow`.
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive NO 0")
             return
         }
 
         guard ScreenLock.shared.isScreenLockEnabled() else {
             // Screen lock is not enabled.
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive NO 1")
             return
         }
 
         guard !isScreenLockLocked else {
             // Screen lock is already activated.
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive NO 2")
             return
         }
 
         guard let screenLockCountdownTimestamp else {
             // We became inactive, but never started a countdown.
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive NO 3")
             return
         }
 
@@ -351,7 +341,6 @@ class ScreenLockUI: Dependencies {
             // initial/current time couldn't be fetched (shouldn't happen), err on the
             // side of caution and lock the screen.
             owsFailDebug("monotonic time isn't behaving properly")
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive YES 4 (\(countdownTimestamp), \(currentTimestamp))")
             isScreenLockLocked = true
             return
         }
@@ -361,10 +350,6 @@ class ScreenLockUI: Dependencies {
         owsAssertDebug(screenLockTimeout >= 0)
         if countdownInterval >= screenLockTimeout {
             isScreenLockLocked = true
-
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive YES 5 (\(countdownInterval) >= \(screenLockTimeout))")
-        } else {
-            Logger.verbose("tryToActivateScreenLockUponBecomingActive NO 6 (\(countdownInterval) < \(screenLockTimeout))")
         }
     }
 
@@ -377,8 +362,6 @@ class ScreenLockUI: Dependencies {
     }
 
     private func startScreenLockCountdownIfNecessary() {
-        Logger.verbose("startScreenLockCountdownIfNecessary: \(screenLockCountdownTimestamp != nil)")
-
         if screenLockCountdownTimestamp == nil {
             Logger.info("startScreenLockCountdown.")
             screenLockCountdownTimestamp = monotonicTimestamp()

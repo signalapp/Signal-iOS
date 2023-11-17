@@ -196,22 +196,16 @@ public class StickerPickerPageView: UIView {
     func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         reloadStickers()
     }
 
     @objc
     func keyboardFrameDidChange() {
-        Logger.verbose("")
-
         updatePageConstraints(ignoreScrollingState: true)
     }
 
     private func recentsButtonWasTapped() {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         // nil is used for the recents special-case.
         updateSelectedStickerPack(nil)
@@ -486,8 +480,6 @@ extension StickerPickerPageView: UIScrollViewDelegate {
 extension StickerPickerPageView: StickerPackCollectionViewDelegate {
     public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         delegate?.didSelectSticker(stickerInfo: stickerInfo)
     }

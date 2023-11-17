@@ -268,7 +268,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         *error = OWSErrorMakeAssertionError(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -281,7 +280,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
     return [dataSource writeToUrl:originalMediaURL
                             error:error];
 }
@@ -294,9 +292,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if (originalMediaURL == nil) {
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
-    }
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
     }
     return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
@@ -484,9 +479,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidImageCached) {
-            if (!SSKDebugFlags.reduceLogChatter) {
-                OWSLogVerbose(@"Updating isValidImageCached.");
-            }
             self.isValidImageCached = @([NSData imageMetadataWithPath:self.originalFilePath
                                                              mimeType:self.contentType
                                                        ignoreFileSize:ignoreSize]
@@ -526,7 +518,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidVideoCached) {
-            OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath
                                                                  ignoreSize:ignoreSize]);
             if (!self.isValidVideoCached) {
@@ -557,9 +548,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isAnimatedCached) {
-            if (!SSKDebugFlags.reduceLogChatter) {
-                OWSLogVerbose(@"Updating isAnimatedCached.");
-            }
             self.isAnimatedCached = @(generator());
             didUpdateCache = YES;
         }
@@ -1102,7 +1090,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);
     if (self.sourceFilename.length > 0) {
         builder.fileName = self.sourceFilename;
     }
