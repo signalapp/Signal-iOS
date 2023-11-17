@@ -42,9 +42,9 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
-    - CocoaLumberjack
+    - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
-    - CocoaLumberjack
+    - CocoaLumberjack (~> 3.7.4)
   - SignalRingRTC (2.34.4):
     - SignalCoreKit
     - SignalRingRTC/WebRTC (= 2.34.4)
@@ -163,7 +163,7 @@ CHECKOUT OPTIONS:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
   SignalCoreKit:
-    :commit: ea99e9002fc516004c339a2767e4023933df75f7
+    :commit: dae815d149fb42cfb0b227f71e35849d774ef8b9
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
@@ -192,7 +192,7 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: da9aed6ee558e66fe9380f6745880ae58e610912
+  SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
   SignalRingRTC: 9afc38f8dd7937a63c9d4f5778e9e7fc58527ccd
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5

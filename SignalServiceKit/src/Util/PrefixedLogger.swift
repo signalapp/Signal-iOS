@@ -24,7 +24,7 @@ open class PrefixedLogger {
     open func verbose(
         _ logString: @autoclosure () -> String,
         flushImmediately: Bool = false,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {
@@ -41,7 +41,7 @@ open class PrefixedLogger {
     open func debug(
         _ logString: @autoclosure () -> String,
         flushImmediately: Bool = false,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {
@@ -58,7 +58,7 @@ open class PrefixedLogger {
     open func info(
         _ logString: @autoclosure () -> String,
         flushImmediately: Bool = false,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {
@@ -75,7 +75,7 @@ open class PrefixedLogger {
     open func warn(
         _ logString: @autoclosure () -> String,
         flushImmediately: Bool = false,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {
@@ -92,7 +92,7 @@ open class PrefixedLogger {
     open func error(
         _ logString: @autoclosure () -> String,
         flushImmediately: Bool = false,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {

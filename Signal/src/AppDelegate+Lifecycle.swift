@@ -39,6 +39,8 @@ extension AppDelegate {
         Logger.info("applicationDidBecomeActive completed.")
     }
 
+    private static let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)
+
     @objc
     func applicationWillResignActiveSwift(_ application: UIApplication) {
         AssertIsOnMainThread()
@@ -52,16 +54,19 @@ extension AppDelegate {
 
         clearAllNotificationsAndRestoreBadgeCount()
 
-        Logger.flush()
+        let backgroundTask = OWSBackgroundTask(label: #function)
+        Self.flushQueue.async {
+            defer { backgroundTask.end() }
+            Logger.flush()
+        }
     }
 
     @objc
     func applicationDidEnterBackgroundSwift(_ application: UIApplication) {
         Logger.info("applicationDidEnterBackground.")
 
-        Logger.flush()
-
         if shouldKillAppWhenBackgrounded {
+            Logger.flush()
             exit(0)
         }
     }

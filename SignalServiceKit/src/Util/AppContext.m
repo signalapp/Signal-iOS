@@ -40,11 +40,4 @@ void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests)
     currentAppContext = appContext;
 }
 
-void ExitShareExtension(void)
-{
-    OWSLogInfo(@"ExitShareExtension");
-    OWSLogFlush();
-    exit(0);
-}
-
 NS_ASSUME_NONNULL_END

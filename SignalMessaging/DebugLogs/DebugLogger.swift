@@ -39,7 +39,7 @@ extension DebugLogger {
         let fileLogger = DDFileLogger(logFileManager: logFileManager)
         fileLogger.rollingFrequency = kDayInterval
         fileLogger.maximumFileSize = 3 * 1024 * 1024
-        fileLogger.logFormatter = OWSScrubbingLogFormatter()
+        fileLogger.logFormatter = ScrubbingLogFormatter()
 
         self.fileLogger = fileLogger
         DDLog.add(fileLogger)
@@ -54,6 +54,7 @@ extension DebugLogger {
     public func enableTTYLoggingIfNeeded() {
         #if DEBUG
         guard let ttyLogger = DDTTYLogger.sharedInstance else { return }
+        ttyLogger.logFormatter = LogFormatter()
         DDLog.add(ttyLogger)
         #endif
     }

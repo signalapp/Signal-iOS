@@ -4,12 +4,13 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// Log an error message. Additionally, crashes in prerelease builds.
 @inlinable
 public func owsFailBeta(
     _ logMessage: String,
-    file: String = #file,
+    file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
@@ -26,7 +27,7 @@ public func owsFailBeta(
 public func owsAssertBeta(
     _ condition: Bool,
     _ message: @autoclosure () -> String = String(),
-    file: String = #file,
+    file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {

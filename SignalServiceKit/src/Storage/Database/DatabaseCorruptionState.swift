@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertible {
     public enum DatabaseCorruptionStatus: Int, Codable, CustomStringConvertible {
@@ -77,25 +78,19 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
     public static func flagDatabaseCorruptionIfNecessary(
         userDefaults: UserDefaults,
         error: Error,
-        file: String = #file,
+        file: String = #fileID,
         function: String = #function,
         line: Int = #line
     ) {
         if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
             flagDatabaseAsCorrupted(userDefaults: userDefaults)
-            owsFail("Crashing due to database corruption. Source: [\(file):\(line) \(function)]. Extended result code: \(error.extendedResultCode)")
+            owsFail("Crashing due to database corruption. Extended result code: \(error.extendedResultCode)", file: file, function: function, line: line)
         }
     }
 
     /// If the error is a `SQLITE_CORRUPT` error, set the "has database read corruption" flag, log, but don't crash.
     /// We do this so we can attempt to perform diagnostics/recovery if this read error is coupled with a crash..
-    public static func flagDatabaseReadCorruptionIfNecessary(
-        userDefaults: UserDefaults,
-        error: Error,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
+    public static func flagDatabaseReadCorruptionIfNecessary(userDefaults: UserDefaults, error: Error) {
         if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
             flagDatabaseAsReadCorrupted(userDefaults: userDefaults)
         }

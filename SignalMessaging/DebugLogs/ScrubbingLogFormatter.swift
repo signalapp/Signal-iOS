@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CocoaLumberjack
+import Foundation
 import SignalServiceKit
 
-class OWSScrubbingLogFormatter: DDLogFileFormatterDefault {
+class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {
         let regex: NSRegularExpression
         let replacementTemplate: String
@@ -154,10 +154,12 @@ class OWSScrubbingLogFormatter: DDLogFileFormatterDefault {
         .base64Uuid
     ]
 
-    public override func format(message: DDLogMessage) -> String? {
-        guard var logString = super.format(message: message) else {
-            return nil
-        }
+    func format(message logMessage: DDLogMessage) -> String? {
+        return LogFormatter.formatLogMessage(logMessage, modifiedMessage: redactMessage(logMessage.message))
+    }
+
+    private func redactMessage(_ logString: String) -> String {
+        var logString = logString
 
         if logString.contains("/Attachments/") {
             return "[ REDACTED_CONTAINS_USER_PATH ]"

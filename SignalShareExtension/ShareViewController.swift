@@ -401,7 +401,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Share extensions reside in a process that may be reused between usages.
             // That isn't safe; the codebase is full of statics (e.g. singletons) which
             // we can't easily clean up.
-            ExitShareExtension()
+            Logger.info("ExitShareExtension")
+            Logger.flush()
+            exit(0)
         }
     }
 

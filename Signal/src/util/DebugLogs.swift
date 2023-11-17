@@ -215,6 +215,10 @@ class DebugLogs: NSObject {
             DispatchMainThreadSafe { failure(localizedErrorMessage, logArchiveOrDirectoryPath) }
         }
 
+        // Phase 0. Flush any pending logs to disk.
+        Logger.info("About to zip debug logs")
+        Logger.flush()
+
         // Phase 1. Make a local copy of all of the log files.
         let zipDirPath: String
         switch collectLogs() {

@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import CocoaLumberjack
 import SignalCoreKit
 import SignalServiceKit
+import XCTest
+
 @testable import SignalMessaging
 
-final class OWSScrubbingLogFormatterTest: XCTestCase {
-    private var formatter: OWSScrubbingLogFormatter { OWSScrubbingLogFormatter() }
+final class ScrubbingLogFormatterTest: XCTestCase {
+    private let formatter = ScrubbingLogFormatter()
 
     private func message(with string: String) -> DDLogMessage {
         DDLogMessage(
@@ -48,7 +49,7 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
         ]
 
         for testCase in testCases {
-            XCTAssertEqual(format(testCase), "[ REDACTED_CONTAINS_USER_PATH ]")
+            XCTAssertEqual(stripDate(fromRawMessage: format(testCase)), "[ REDACTED_CONTAINS_USER_PATH ]")
         }
     }
 

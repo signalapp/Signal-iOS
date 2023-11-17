@@ -53,7 +53,6 @@ final class ShareAppExtensionContext: NSObject {
             object: nil,
             queue: mainQueue) { [weak self] notification in
                 Logger.info("")
-                Logger.flush()
                 self?.internalReportedApplicationState = .inactive
                 BenchManager.bench(
                     title: "Slow post WillResignActive",
@@ -68,7 +67,6 @@ final class ShareAppExtensionContext: NSObject {
             object: nil,
             queue: mainQueue) { [weak self] notification in
                 Logger.info("")
-                Logger.flush()
                 self?.internalReportedApplicationState = .background
                 BenchManager.bench(
                     title: "Slow post DidEnterBackground",

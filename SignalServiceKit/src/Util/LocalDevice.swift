@@ -61,22 +61,6 @@ public class LocalDevice: NSObject {
                 mallocAllocations: Int64(statistics.size_allocated)
             )
 
-#if !DEBUG
-            if CurrentAppContext().isNSE {
-                if result.bytesRemaining > 0 {
-                    // If we're running out of free memory, let's start aggressively flushing
-                    // our log messages. This way, we don't lose any logs when we're suddenly terminated.
-                    // There's a perf cost here, but we're going to be killed soon anyway so it's not a big deal.
-                    OWSLogger.aggressiveFlushing = result.bytesRemaining < (4 * 1024 * 1024)
-                } else {
-                    // The source of the remaining bits is fairly under documented. In my testing, things
-                    // seem to be working as expected. Just to be safe, let's interpret 0 free bytes as invalid
-                    // and fall back to a different heuristic.
-                    OWSLogger.aggressiveFlushing = result.footprint > (20 * 1024 * 1024)
-                }
-            }
-#endif
-
             return result
         }
     }
