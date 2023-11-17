@@ -44,10 +44,10 @@ class AppUpdateNag: NSObject {
         }.catch { error in
             // Only failDebug if we're looking up the true org.whispersystems.signal app store record
             // If someone is building Signal with their own bundleID, it's less important that this succeeds.
-            if bundleIdentifier.hasPrefix("org.whispersystems") {
-                owsFailDebug("Failed to find Signal app store record")
-            } else {
+            if error.isNetworkFailureOrTimeout || !bundleIdentifier.hasPrefix("org.whispersystems") {
                 Logger.warn("failed with error: \(error)")
+            } else {
+                owsFailDebug("Failed to find Signal app store record")
             }
         }
     }
