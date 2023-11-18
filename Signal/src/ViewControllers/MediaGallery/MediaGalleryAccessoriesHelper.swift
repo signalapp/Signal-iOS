@@ -586,7 +586,11 @@ public class MediaGalleryAccessoriesHelper {
     @objc
     private func didPressSelectAll(_ sender: Any) {
       Logger.debug("")
-      if viewController?.hasSelection == false {
+      if viewController?.hasSelection {
+          viewController?.selectNone()
+      } else {
+          viewController?.selectAll()
+      }
         viewController?.selectAll()
       } else {
         viewController?.selectNone()
