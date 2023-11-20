@@ -92,7 +92,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         // TODO: Dismiss keyboard?
         switch formState {
         case .invalid, .potentiallyValid:
-            owsFail("[Donations] It should be impossible to submit the form without a fully-valid card. Is the submit button properly disabled?")
+            owsFailDebug("[Donations] It should be impossible to submit the form without a fully-valid card. Is the submit button properly disabled?")
         case let .fullyValid(validForm):
             switch donationMode {
             case .oneTime:
