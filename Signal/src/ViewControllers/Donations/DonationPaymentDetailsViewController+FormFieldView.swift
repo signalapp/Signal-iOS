@@ -63,6 +63,7 @@ extension DonationPaymentDetailsViewController {
             result.keyboardType = style.keyboardType
 
             result.delegate = self
+            result.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
             return result
         }()
@@ -161,6 +162,13 @@ extension DonationPaymentDetailsViewController {
         }
 
         // MARK: - UITextFieldDelegate
+
+        // Not technically part of UITextFieldDelegate, but added as as a
+        // target to handle the 'editingChanged' control event.
+        @objc
+        func textFieldDidChange() {
+            delegate?.didSomethingChange()
+        }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
             delegate?.didSomethingChange()
