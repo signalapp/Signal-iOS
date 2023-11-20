@@ -100,6 +100,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func warmCaches() {
         Logger.info("")
+
+        setLocalMasterKeyIfMissing()
+
         // Require migrations to succeed before we check for old stuff
         // to wipe, because migrations add old stuff to be wiped.
         // If a migration isn't needed, this returns a success immediately.
@@ -195,7 +198,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             pinType: .alphanumeric,
             encodedPINVerificationString: nil,
             mrEnclaveStringValue: nil,
-            authedAccount: authedAccount,
+            mode: .syncStorageService(authedAccount),
             transaction: transaction
         )
         // Disable the PIN locally.
@@ -855,7 +858,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 pinType: backup.pinType,
                                 encodedPINVerificationString: backup.encodedPINVerificationString,
                                 mrEnclaveStringValue: backup.mrEnclaveStringValue,
-                                authedAccount: authedAccount,
+                                mode: .syncStorageService(authedAccount),
                                 transaction: tx
                             )
                         }
@@ -1047,7 +1050,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 pinType: .init(forPin: pin),
                                 encodedPINVerificationString: encodedPINVerificationString,
                                 mrEnclaveStringValue: mrEnclave.stringValue,
-                                authedAccount: authedAccount,
+                                mode: .syncStorageService(authedAccount),
                                 transaction: tx
                             )
                         }
@@ -1218,7 +1221,38 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         _ = doNextDelete()
     }
 
-    // MARK: - Migrating enclaves
+    // MARK: - Migrations
+
+    /// There was a bug with registration that would allow the user to register without having set a master key,
+    /// if they skipped the PIN code entry. What we actually wanted was to not _sync_ that master key with
+    /// SVR server, but we still want one locally.
+    /// Clean up this state by setting a local-only master key if we are a registered primary without one.
+    private func setLocalMasterKeyIfMissing() {
+        let (
+            hasMasterKey,
+            pinCode,
+            isRegisteredPrimary
+        ) = db.read { tx in
+            return (
+                self.hasMasterKey(transaction: tx),
+                self.twoFAManager.pinCode(transaction: tx),
+                self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+            )
+        }
+        if !hasMasterKey, pinCode == nil, isRegisteredPrimary {
+            db.write { tx in
+                setLocalDataAndSyncStorageServiceIfNeeded(
+                    masterKey: Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes),
+                    isMasterKeyBackedUp: false,
+                    pinType: .alphanumeric,
+                    encodedPINVerificationString: nil,
+                    mrEnclaveStringValue: nil,
+                    mode: .dontSyncStorageService,
+                    transaction: tx
+                )
+            }
+        }
+    }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
     /// master key data to it instead, marking the old enclave for deletion.
@@ -1591,13 +1625,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Local key storage helpers
 
+    private enum LocalDataUpdateMode {
+        case dontSyncStorageService
+        case syncStorageService(AuthedAccount)
+    }
+
     private func setLocalDataAndSyncStorageServiceIfNeeded(
         masterKey: Data,
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
         encodedPINVerificationString: String?,
         mrEnclaveStringValue: String?,
-        authedAccount: AuthedAccount,
+        mode: LocalDataUpdateMode,
         transaction: DBWriteTransaction
     ) {
         let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)
@@ -1632,18 +1671,23 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // If the app is ready start that restoration.
         guard AppReadiness.isAppReady else { return }
 
-        storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: true))
+        switch mode {
+        case .syncStorageService(let authedAccount):
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: true))
 
-        let syncManager = self.syncManager
-        storageServiceManager.waitForPendingRestores().observe { _ in
-            // Sync our new keys with linked devices, but wait until the storage
-            // service restore is done. That way we avoid the linked device getting
-            // the new keys first, failing to decrypt old storage service data,
-            // and asking for new keys even though thats not the problem.
-            // We don't wanna miss sending one of these, though, so go ahead and send it
-            // even if it fails. In any scenario it should eventually recover once
-            // both storage service and the linked device have the latest stuff.
-            syncManager.sendKeysSyncMessage()
+            let syncManager = self.syncManager
+            storageServiceManager.waitForPendingRestores().observe { _ in
+                // Sync our new keys with linked devices, but wait until the storage
+                // service restore is done. That way we avoid the linked device getting
+                // the new keys first, failing to decrypt old storage service data,
+                // and asking for new keys even though thats not the problem.
+                // We don't wanna miss sending one of these, though, so go ahead and send it
+                // even if it fails. In any scenario it should eventually recover once
+                // both storage service and the linked device have the latest stuff.
+                syncManager.sendKeysSyncMessage()
+            }
+        case .dontSyncStorageService:
+            break
         }
     }
 }
