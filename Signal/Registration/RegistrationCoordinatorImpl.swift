@@ -910,6 +910,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
+            if !deps.svr.hasMasterKey(transaction: tx) {
+                // If we don't have a master key at this point, use a local master key.
+                deps.svr.useDeviceLocalMasterKey(
+                    authedAccount: accountIdentity.authedAccount,
+                    transaction: tx
+                )
+            }
+
             deps.registrationStateChangeManager.didRegisterPrimary(
                 e164: accountIdentity.e164,
                 aci: accountIdentity.aci,
