@@ -22,7 +22,6 @@ public class AccountManager: NSObject, Dependencies {
     }
 
     func performInitialStorageServiceRestore(authedDevice: AuthedDevice = .implicit) -> Promise<Void> {
-        BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
         return firstly {
             self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
         }.done {
@@ -46,8 +45,6 @@ public class AccountManager: NSObject, Dependencies {
             } else {
                 Logger.debug("no local profile name restored.")
             }
-
-            BenchEventComplete(eventId: "initial-storage-service-restore")
         }.timeout(seconds: 60)
     }
 
@@ -214,8 +211,6 @@ public class AccountManager: NSObject, Dependencies {
                 DependenciesBridge.shared.registrationStateChangeManager.didFinishProvisioningSecondary(tx: tx)
             }
         }.then { _ -> Promise<Void> in
-            BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
-
             self.databaseStorage.asyncWrite { transaction in
                 OWSSyncManager.shared.sendKeysSyncRequestMessage(transaction: transaction)
             }
@@ -224,8 +219,6 @@ public class AccountManager: NSObject, Dependencies {
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
             }.then {
                 StorageServiceManagerImpl.shared.restoreOrCreateManifestIfNecessary(authedDevice: .implicit).asVoid()
-            }.ensure {
-                BenchEventComplete(eventId: "initial-storage-service-restore")
             }.timeout(seconds: 60)
 
             // we wait a bit for the initial syncs to come in before proceeding to the inbox
@@ -234,7 +227,6 @@ public class AccountManager: NSObject, Dependencies {
             // TODO: Eventually, we can rely entirely on the storage service and will no longer
             // need to do any initial sync beyond the "keys" sync. For now, we try and do both
             // operations in parallel.
-            BenchEventStart(title: "waiting for initial contact and group sync", eventId: "initial-contact-sync")
 
             let initialSyncMessagePromise = firstly {
                 OWSSyncManager.shared.sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60)
@@ -253,8 +245,6 @@ public class AccountManager: NSObject, Dependencies {
                         message.anyInsert(transaction: transaction)
                     }
                 }
-            }.ensure {
-                BenchEventComplete(eventId: "initial-contact-sync")
             }
 
             return Promise.when(fulfilled: [storageServiceRestorePromise, initialSyncMessagePromise])

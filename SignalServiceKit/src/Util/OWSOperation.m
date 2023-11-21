@@ -116,15 +116,9 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 #pragma mark - NSOperation overrides
 
-- (NSString *)eventId
-{
-    return [NSString stringWithFormat:@"operation-%p", self];
-}
-
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self, self] eventId:self.eventId];
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
         [self failOperationWithError:preconditionError];
@@ -261,8 +255,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     [self didChangeValueForKey:OWSOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSOperationKeyIsFinished];
     [self didComplete];
-
-    [BenchManager completeEventWithEventId:self.eventId];
 }
 
 @end

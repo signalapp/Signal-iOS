@@ -36,9 +36,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        BenchManager.startEvent(title: "Send Message Milestone: clearTextMessageAnimated",
-                                eventId: "fromSendUntil_clearTextMessageAnimated")
-
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
     }
 
@@ -180,7 +177,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         BenchManager.bench(title: "clearTextMessageAnimated") {
             inputToolbar.clearTextMessage(animated: true)
         }
-        BenchManager.completeEvent(eventId: "fromSendUntil_clearTextMessageAnimated")
 
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
@@ -648,7 +644,6 @@ fileprivate extension ConversationViewController {
     func takePictureOrVideo() {
         AssertIsOnMainThread()
 
-        BenchManager.startEvent(title: "Show-Camera", eventId: "Show-Camera")
         ows_askForCameraPermissions { [weak self] cameraGranted in
             guard let self = self else { return }
             guard cameraGranted else {
@@ -686,8 +681,6 @@ fileprivate extension ConversationViewController {
 
     func chooseFromLibrary() {
         AssertIsOnMainThread()
-
-        BenchManager.startEvent(title: "Show-Media-Library", eventId: "Show-Media-Library")
 
         ows_askForMediaLibraryPermissions { [weak self] granted in
             guard let self = self else { return }

@@ -44,7 +44,6 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             guard isCameraReady != oldValue else { return }
 
             if isCameraReady {
-                BenchEventComplete(eventId: "Show-Camera")
                 VolumeButtons.shared?.addObserver(observer: cameraCaptureSession)
                 UIApplication.shared.isIdleTimerDisabled = true
             } else {

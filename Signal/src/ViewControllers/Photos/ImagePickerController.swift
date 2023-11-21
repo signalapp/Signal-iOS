@@ -246,8 +246,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         hasEverAppeared = true
 
-        BenchEventComplete(eventId: "Show-Media-Library")
-
         DispatchQueue.main.async {
             // pre-layout collectionPicker for snappier response
             self.collectionPickerController.view.layoutIfNeeded()
@@ -518,8 +516,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 extension ImagePickerGridController: PhotoAlbumPickerDelegate {
 
     func photoAlbumPicker(_ picker: PhotoAlbumPickerViewController, didSelectAlbum album: PhotoAlbum) {
-        BenchEventStart(title: "Picked Collection", eventId: "Picked Collection")
-        defer { BenchEventComplete(eventId: "Picked Collection") }
         guard photoAlbum != album else {
             hideCollectionPicker()
             return

@@ -162,12 +162,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             if let future = future {
                 jobFutures[jobRecord.uniqueId] = future
             }
-            transaction.addSyncCompletion {
-                BenchManager.startEvent(
-                    title: "Send Message Milestone: Pre-Network (\(messageRecord.timestamp))",
-                    eventId: "sendMessagePreNetwork-\(messageRecord.timestamp)"
-                )
-            }
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
         }

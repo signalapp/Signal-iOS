@@ -286,10 +286,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
 
         self.lastSearchedText = resultSet?.searchText
         loadCoordinator.enqueueReload()
-
-        if let resultSet = resultSet {
-            BenchManager.completeEvent(eventId: resultSet.searchText)
-        }
     }
 
     public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
@@ -302,7 +298,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
                                                        onScreenPercentage: 1,
                                                        alignment: .centerIfNotEntirelyOnScreen,
                                                        isAnimated: true)
-        BenchManager.completeEvent(eventId: String(format: "Conversation Search Nav: \(messageId)"))
     }
 }
 

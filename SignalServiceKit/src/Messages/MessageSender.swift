@@ -657,11 +657,6 @@ extension MessageSender {
         if DebugFlags.messageSendsFail.get() {
             throw OWSUnretryableMessageSenderError()
         }
-        BenchManager.completeEvent(eventId: "sendMessagePreNetwork-\(message.timestamp)")
-        BenchManager.startEvent(
-            title: "Send Message Milestone: Network (\(message.timestamp))",
-            eventId: "sendMessageNetwork-\(message.timestamp)"
-        )
         do {
             let senderCertificates = try await Self.prepareToSendMessages()
             try await sendMessageToService(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
@@ -1486,10 +1481,7 @@ extension MessageSender {
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(messageSend.serviceId), wasSentByUD: wasSentByUD, transaction: transaction)
 
             transaction.addSyncCompletion {
-                BenchManager.completeEvent(eventId: "sendMessageNetwork-\(message.timestamp)")
                 BenchManager.completeEvent(eventId: "sendMessageMarkedAsSent-\(message.timestamp)")
-                BenchManager.startEvent(title: "Send Message Milestone: Post-Network (\(message.timestamp))",
-                                        eventId: "sendMessagePostNetwork-\(message.timestamp)")
             }
 
             // If we've just delivered a message to a user, we know they have a valid

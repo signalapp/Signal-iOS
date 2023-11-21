@@ -36,8 +36,6 @@ final public class IndividualCallService: NSObject {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
-        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.localId)")
-
         guard callService.currentCall == nil else {
             owsFailDebug("call already exists: \(String(describing: callService.currentCall))")
             return
@@ -213,8 +211,6 @@ final public class IndividualCallService: NSObject {
             callType: callType
         )
         newCall.individualCall.callId = callId
-
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             Logger.warn("user is not registered, skipping call.")
@@ -1080,10 +1076,8 @@ final public class IndividualCallService: NSObject {
 
         switch call.individualCall.state {
         case .dialing:
-            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = .remoteRinging
         case .answering:
-            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
             callService.callUIAdapter.reportIncomingCall(call)
         case .localRinging_Anticipatory:

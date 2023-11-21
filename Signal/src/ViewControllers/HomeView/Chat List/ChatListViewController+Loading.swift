@@ -195,7 +195,6 @@ extension ChatListViewController {
         if tableUpdatesPerformed {
             tableView.endUpdates()
         }
-        BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
 

@@ -262,8 +262,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
-        BenchManager.startEvent(title: "uiDatabaseUpdate", eventId: "uiDatabaseUpdate")
-
         if databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) {
             if DebugFlags.internalLogging {
                 Logger.info("[Scroll Perf Debug] TSPaymentModel did update")

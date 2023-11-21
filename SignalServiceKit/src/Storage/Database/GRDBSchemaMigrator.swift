@@ -3188,9 +3188,6 @@ public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throw
 }
 
 public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
-    BenchEventStart(title: "Deduping Signal Recipients", eventId: "dedupeSignalRecipients")
-    defer { BenchEventComplete(eventId: "dedupeSignalRecipients") }
-
     var recipients: [SignalServiceAddress: [String]] = [:]
 
     SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in

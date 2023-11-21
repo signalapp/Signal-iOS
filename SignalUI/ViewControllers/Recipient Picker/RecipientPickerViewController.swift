@@ -187,7 +187,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                     return
                 }
                 self.searchResults = searchResults
-                BenchManager.completeEvent(eventId: "Compose Search - \(searchResults?.searchText ?? "")")
             }
         )
     }
@@ -470,7 +469,6 @@ extension RecipientPickerViewController: OWSTableViewControllerDelegate {
 extension RecipientPickerViewController: UISearchBarDelegate {
 
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        BenchManager.startEvent(title: "Compose Search", eventId: "Compose Search - \(searchText)")
         searchTextDidChange()
     }
 

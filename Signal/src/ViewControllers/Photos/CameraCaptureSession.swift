@@ -805,7 +805,6 @@ class CameraCaptureSession: NSObject {
         }
 
         Logger.verbose("")
-        BenchEventStart(title: "Video Processing", eventId: "Video Processing")
 
         videoRecordingState = .stopping
 
@@ -844,7 +843,6 @@ class CameraCaptureSession: NSObject {
         }
 
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-        BenchEventComplete(eventId: "Video Processing")
         delegate.cameraCaptureSession(self, didFinishProcessing: attachment)
     }
 

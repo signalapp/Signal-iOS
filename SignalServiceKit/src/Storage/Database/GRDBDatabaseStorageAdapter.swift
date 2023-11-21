@@ -133,8 +133,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // schema migrations.            
             guard let self = self else { return }
 
-            BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
-            defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
                 try self.setup()
             } catch {

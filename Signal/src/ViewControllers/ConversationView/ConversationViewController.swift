@@ -358,10 +358,6 @@ public final class ConversationViewController: OWSViewController {
         self.updateBarButtonItems()
         self.updateNavigationTitle()
 
-        // One-time work performed the first time we enter the view.
-        if !self.viewHasEverAppeared {
-            BenchManager.completeEvent(eventId: String(format: "presenting-conversation-\(thread.uniqueId)"))
-        }
         self.ensureBottomViewType()
         self.updateInputToolbarLayout()
         self.refreshCallState()
