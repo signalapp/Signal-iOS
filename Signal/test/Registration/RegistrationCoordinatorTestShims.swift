@@ -12,7 +12,6 @@ import SignalCoreKit
 extension RegistrationCoordinatorImpl {
 
     public enum TestMocks {
-        public typealias AccountManager = _RegistrationCoordinator_AccountManagerMock
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
@@ -24,19 +23,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
-    }
-}
-
-// MARK: - AccountManager
-
-public class _RegistrationCoordinator_AccountManagerMock: _RegistrationCoordinator_AccountManagerShim {
-
-    public init() {}
-
-    public var performInitialStorageServiceRestoreMock: ((AuthedDevice) -> Promise<Void>)?
-
-    public func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void> {
-        return performInitialStorageServiceRestoreMock!(authedDevice)
     }
 }
 
@@ -213,7 +199,11 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
         return updateLocalProfileMock!(givenName, familyName, avatarData, authedAccount)
     }
 
-    func setIsOnboarded(_ tx: DBWriteTransaction) {}
+    public var didScheduleReuploadLocalProfile = false
+
+    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount) {
+        didScheduleReuploadLocalProfile = true
+    }
 }
 
 // MARK: - PushRegistrationManager

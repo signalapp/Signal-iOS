@@ -3013,12 +3013,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
         let authedDevice = accountIdentity.authedDevice
-        return deps.accountManager.performInitialStorageServiceRestore(authedDevice: authedDevice)
+        return deps
+            .storageServiceManager.restoreOrCreateManifestIfNecessary(
+                authedDevice: accountIdentity.authedDevice
+            )
+            .timeout(seconds: 120)
             .then(on: schedulers.sync) { [weak self] in
                 guard let self else {
                     return unretainedSelfError()
                 }
                 self.loadProfileState()
+                if self.inMemoryState.hasProfileName {
+                    self.scheduleReuploadProfileStateAsync(accountIdentity: accountIdentity)
+                }
                 self.inMemoryState.hasRestoredFromStorageService = true
                 return self.nextStep()
             }
@@ -3064,6 +3071,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             return self.nextStep()
         }
+    }
+
+    private func scheduleReuploadProfileStateAsync(accountIdentity: AccountIdentity) {
+        Logger.debug("restored local profile name. Uploading...")
+        // if we don't have a `localGivenName`, there's nothing to upload, and trying
+        // to upload would fail.
+
+        // Note we *don't* block on the update. There's no need to block registration on
+        // it completing, and if there are any errors, it's durable.
+        self.deps.profileManager
+            .scheduleReuploadLocalProfile(authedAccount: accountIdentity.authedAccount)
     }
 
     private func loadProfileState() {

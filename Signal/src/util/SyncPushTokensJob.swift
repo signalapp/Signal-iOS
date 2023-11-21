@@ -84,15 +84,7 @@ class SyncPushTokensJob: NSObject {
         }
 
         Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
-        switch auth.credentials {
-        case .implicit:
-            try await accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken).awaitable()
-        case .explicit:
-            let request = OWSRequestFactory.registerForPushRequest(withPushIdentifier: pushToken, voipIdentifier: voipToken)
-            request.shouldHaveAuthorizationHeaders = true
-            request.setAuth(auth)
-            try await accountManager.updatePushTokens(request: request).awaitable()
-        }
+        try await self.updatePushTokens(pushToken: pushToken, voipToken: voipToken, auth: auth)
 
         await recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
 
@@ -126,6 +118,39 @@ class SyncPushTokensJob: NSObject {
             if voipToken != self.preferences.getVoipToken(tx: tx) {
                 Logger.info("Recording new voip token")
                 self.preferences.setVoipToken(voipToken, tx: tx)
+            }
+        }
+    }
+
+    // MARK: - Requests
+
+    func updatePushTokens(pushToken: String, voipToken: String?, auth: ChatServiceAuth) async throws {
+        let request = OWSRequestFactory.registerForPushRequest(
+            withPushIdentifier: pushToken,
+            voipIdentifier: voipToken
+        )
+        request.setAuth(auth)
+        return try await updatePushTokens(request: request, remainingRetries: 3)
+    }
+
+    private func updatePushTokens(
+        request: TSRequest,
+        remainingRetries: Int
+    ) async throws {
+        do {
+            _ = try await networkManager
+                .makePromise(request: request)
+                .awaitable()
+            return
+        } catch let error {
+            if remainingRetries > 0 {
+                return try await updatePushTokens(
+                    request: request,
+                    remainingRetries: remainingRetries - 1
+                )
+            } else {
+                owsFailDebugUnlessNetworkFailure(error)
+                throw error
             }
         }
     }

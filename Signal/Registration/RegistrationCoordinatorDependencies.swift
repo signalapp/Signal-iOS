@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 
 public struct RegistrationCoordinatorDependencies {
-    public let accountManager: RegistrationCoordinatorImpl.Shims.AccountManager
     public let appExpiry: AppExpiry
     public let changeNumberPniManager: ChangePhoneNumberPniManager
     public let contactsManager: RegistrationCoordinatorImpl.Shims.ContactsManager
@@ -36,7 +35,6 @@ public struct RegistrationCoordinatorDependencies {
 
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
-            accountManager: RegistrationCoordinatorImpl.Wrappers.AccountManager(object.accountManager),
             appExpiry: DependenciesBridge.shared.appExpiry,
             changeNumberPniManager: DependenciesBridge.shared.changePhoneNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.Wrappers.ContactsManager(object.contactsManagerImpl),

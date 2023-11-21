@@ -31,7 +31,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     private var coordinator: RegistrationCoordinatorImpl!
 
-    private var accountManagerMock: RegistrationCoordinatorImpl.TestMocks.AccountManager!
     private var appExpiryMock: MockAppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
@@ -60,7 +59,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         let db = MockDB()
 
-        accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
         appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
             mockKyberStore: MockKyberPreKeyStore(dateProvider: Date.provider)
@@ -92,7 +90,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         scheduler = TestScheduler()
 
         let dependencies = RegistrationCoordinatorDependencies(
-            accountManager: accountManagerMock,
             appExpiry: appExpiryMock,
             changeNumberPniManager: changeNumberPniManager,
             contactsManager: RegistrationCoordinatorImpl.TestMocks.ContactsManager(),
@@ -361,7 +358,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
             XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
             return .value(())
         }
@@ -381,6 +378,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         nextStep = coordinator.submitPINCode(Stubs.pinCode).value
         XCTAssertEqual(nextStep, .done)
+
+        // Since we set profile info, we should have scheduled a reupload.
+        XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
     }
 
     func testRegRecoveryPwPath_wrongPIN() throws {
@@ -495,7 +495,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // Once we sync push tokens, we should restore from storage service.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
                 XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return .value(())
             }
@@ -515,6 +515,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             nextStep = coordinator.submitPINCode(Stubs.pinCode).value
             XCTAssertEqual(nextStep, .done)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
         }
     }
 
@@ -979,7 +982,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Once we back up to svr at t=7, we should restore from storage service.
             // Succeed at t=8.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 7)
                 XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 8)
@@ -1007,6 +1010,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 9)
 
             XCTAssertEqual(nextStep.value, .done)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
         }
     }
 
@@ -1179,7 +1185,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // At t=5 once we back up to svr, we should restore from storage service.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 5)
                 XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 6)
@@ -1209,6 +1215,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 6)
 
             XCTAssertEqual(nextStepPromise.value, .done)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
         }
     }
 
@@ -1541,7 +1550,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // At t=1 once we sync push tokens, we should restore from storage service.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 1)
                 XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 2)
@@ -1571,6 +1580,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(scheduler.currentTime, 2)
 
             XCTAssertEqual(nextStep.value, .done)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
         }
     }
 
@@ -3287,7 +3299,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return .value(())
 
             }
-            accountManagerMock.performInitialStorageServiceRestoreMock = { _ in
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _ in
                 return .value(())
             }
 
@@ -3326,6 +3338,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
             XCTAssertEqual(nextStep.value, .done)
 
             XCTAssertTrue(didSetLocalMasterKey)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
         }
     }
 

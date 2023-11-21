@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -483,7 +483,6 @@
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450B0FC829FB301700B9A458 /* AudioMessageView.swift */; };
 		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
-		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
@@ -3059,7 +3058,6 @@
 		45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileDateFormatter.swift; sourceTree = "<group>"; };
 		45069FCD29D64CB300D0DD14 /* SelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionButton.swift; sourceTree = "<group>"; };
 		450B0FC829FB301700B9A458 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
-		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfo.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
@@ -6451,7 +6449,6 @@
 		457F3AC01D14A0F700C51351 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				451166BF1FD86B98000739BA /* AccountManager.swift */,
 				5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
@@ -11725,7 +11722,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */,
 				3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,

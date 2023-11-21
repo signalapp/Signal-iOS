@@ -32,8 +32,6 @@ public class AppEnvironment: NSObject {
 
     public var callServiceRef: CallService
 
-    public var accountManagerRef: AccountManager
-
     // A temporary hack until `.shared` goes away and this can be provided to `init`.
     static let sharedNotificationPresenter = NotificationPresenter()
 
@@ -58,7 +56,6 @@ public class AppEnvironment: NSObject {
     private override init() {
         self.callMessageHandlerRef = Self.sharedCallMessageHandler
         self.callServiceRef = CallService()
-        self.accountManagerRef = AccountManager()
         self.notificationPresenterRef = Self.sharedNotificationPresenter
         self.pushRegistrationManagerRef = PushRegistrationManager()
 
