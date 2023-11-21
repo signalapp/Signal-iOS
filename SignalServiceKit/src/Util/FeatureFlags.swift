@@ -217,9 +217,6 @@ public class DebugFlags: BaseFlags {
     }()
 
     @objc
-    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
-
-    @objc
     public static let aggressiveProfileFetching = TestableFlag(false,
                                                                title: LocalizationNotNeeded("Aggressive profile fetching"),
                                                                details: LocalizationNotNeeded("Client will update profiles aggressively."))

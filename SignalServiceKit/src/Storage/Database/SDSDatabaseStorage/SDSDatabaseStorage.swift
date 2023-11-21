@@ -19,8 +19,6 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     private weak var delegate: SDSDatabaseStorageDelegate?
 
-    static public var shouldLogDBQueries: Bool = DebugFlags.logSQLQueries
-
     private var hasPendingCrossProcessWrite = false
 
     private let crossProcess = SDSCrossProcess()

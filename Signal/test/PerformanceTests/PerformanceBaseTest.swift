@@ -13,13 +13,7 @@ public class PerformanceBaseTest: XCTestCase {
 
     func setUpIteration() {
         SetCurrentAppContext(TestAppContext(), true)
-        SDSDatabaseStorage.shouldLogDBQueries = false
         MockSSKEnvironment.activate()
-    }
-
-    public override func tearDown() {
-        SDSDatabaseStorage.shouldLogDBQueries = DebugFlags.logSQLQueries
-        super.tearDown()
     }
 
     // MARK: Helpers
