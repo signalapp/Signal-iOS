@@ -8,20 +8,11 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
-@objc
 public class MessageProcessor: NSObject {
-    @objc
     public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")
 
-    @objc
-    public var hasPendingEnvelopes: Bool {
+    private var hasPendingEnvelopes: Bool {
         !pendingEnvelopes.isEmpty
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func processingCompletePromise() -> AnyPromise {
-        return AnyPromise(processingCompletePromise())
     }
 
     /// When calling `processingCompletePromise` while message processing is suspended,
@@ -131,12 +122,6 @@ public class MessageProcessor: NSObject {
             self.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: suspension)
             return self.processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
         }.recover(on: SyncScheduler()) { _ in return () }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func fetchingAndProcessingCompletePromise() -> AnyPromise {
-        return AnyPromise(fetchingAndProcessingCompletePromise())
     }
 
     public func fetchingAndProcessingCompletePromise(
@@ -304,12 +289,14 @@ public class MessageProcessor: NSObject {
 
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
-    private let serialQueue = DispatchQueue(label: "org.signal.message-processor",
-                                            autoreleaseFrequency: .workItem)
+    private let serialQueue = DispatchQueue(
+        label: "org.signal.message-processor",
+        autoreleaseFrequency: .workItem
+    )
 
     private var pendingEnvelopes = PendingEnvelopes()
 
-    private var isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
+    private let isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
 
     private func drainPendingEnvelopes() {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
@@ -466,7 +453,7 @@ public class MessageProcessor: NSObject {
     }
 
     @objc
-    func registrationStateDidChange() {
+    private func registrationStateDidChange() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.drainPendingEnvelopes()
         }
@@ -828,8 +815,7 @@ private struct ReceivedEnvelope {
 
 // MARK: -
 
-@objc
-public enum EnvelopeSource: UInt, CustomStringConvertible {
+public enum EnvelopeSource {
     case unknown
     case websocketIdentified
     case websocketUnidentified
@@ -838,27 +824,6 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
     case identityChangeError
     case debugUI
     case tests
-
-    // MARK: - CustomStringConvertible
-
-    public var description: String {
-        switch self {
-        case .unknown:
-            return "unknown"
-        case .websocketIdentified:
-            return "websocketIdentified"
-        case .websocketUnidentified:
-            return "websocketUnidentified"
-        case .rest:
-            return "rest"
-        case .identityChangeError:
-            return "identityChangeError"
-        case .debugUI:
-            return "debugUI"
-        case .tests:
-            return "tests"
-        }
-    }
 }
 
 // MARK: -
