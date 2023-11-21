@@ -174,9 +174,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         // Clearing the text message is a key part of the send animation.
         // It takes 10-15ms, but we do it inline rather than dispatch async
         // since the send can't feel "complete" without it.
-        BenchManager.bench(title: "clearTextMessageAnimated") {
-            inputToolbar.clearTextMessage(animated: true)
-        }
+        inputToolbar.clearTextMessage(animated: true)
 
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in

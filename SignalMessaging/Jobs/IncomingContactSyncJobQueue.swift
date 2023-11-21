@@ -97,9 +97,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             try self.getAttachmentStream()
         }.done(on: DispatchQueue.global()) { attachmentStream in
             self.newThreads = []
-            try Bench(title: "processing incoming contact sync file") {
-                try self.process(attachmentStream: attachmentStream)
-            }
+            try self.process(attachmentStream: attachmentStream)
             self.databaseStorage.write { transaction in
                 guard let attachmentStream = TSAttachmentStream.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction) else {
                     owsFailDebug("attachmentStream was unexpectedly nil")

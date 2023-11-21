@@ -60,9 +60,7 @@ extension ChatListViewController {
                                              transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
-        return Bench(title: "loadNewRenderState") {
-            CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
-        }
+        return CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
     }
 
     fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,

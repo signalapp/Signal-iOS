@@ -71,20 +71,15 @@ public extension ThreadUtil {
             eventId: "sendMessageMarkedAsSent-\(message.timestamp)",
             logInProduction: true
         )
-        BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
-            enqueueSendAsyncWrite { writeTransaction in
-                let outgoingMessagePreparer = insertMessage(writeTransaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: outgoingMessagePreparer,
-                    transaction: writeTransaction
-                )
-                writeTransaction.addSyncCompletion {
-                    benchmarkCompletion()
-                }
-                if let persistenceCompletion = persistenceCompletion {
-                    writeTransaction.addAsyncCompletionOnMain {
-                        persistenceCompletion()
-                    }
+        enqueueSendAsyncWrite { writeTransaction in
+            let outgoingMessagePreparer = insertMessage(writeTransaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(
+                message: outgoingMessagePreparer,
+                transaction: writeTransaction
+            )
+            if let persistenceCompletion = persistenceCompletion {
+                writeTransaction.addAsyncCompletionOnMain {
+                    persistenceCompletion()
                 }
             }
         }

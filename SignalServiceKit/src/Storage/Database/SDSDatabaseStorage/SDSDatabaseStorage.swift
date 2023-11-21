@@ -235,9 +235,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     func createGrdbStorage() throws -> GRDBDatabaseStorageAdapter {
-        return try Bench(title: "Creating GRDB storage") {
-            return try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
-        }
+        return try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
     }
 
     @objc

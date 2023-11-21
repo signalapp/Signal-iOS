@@ -604,91 +604,89 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         /// always be before and/or after the existing sections, never interleaving.
         internal mutating func ensureItemsLoaded(request: LoadItemsRequest,
                                                  transaction: SDSAnyReadTransaction) -> IndexSet {
-            return Bench(title: "ensureItemsLoaded") {
-                guard let naiveRange = resolveLoadItemsRequest(request) else {
-                    return IndexSet()
-                }
-                owsAssert(!naiveRange.range.isEmpty)
-
-                var numNewlyLoadedEarlierSections: Int = 0
-                var numNewlyLoadedLaterSections: Int = 0
-
-                // Figure out the earliest section this request will cross.
-                // Note that this is a bigger batch size than necessary:
-                // -trimmedRange.startIndex would be sufficient,
-                // and resolveNaiveStartIndex(...) could give us the exact offset we need.
-                // However, the media gallery is a scrolling collection view that most commonly starts at the
-                // present and scrolls up into the past; if we are ensuring loaded items in earlier sections, we are
-                // likely actively scrolling. Because of this, we potentially measure some extra sections here so
-                // that we don't have to on the immediate next call to ensureItemsLoaded(...).
-                let (requestStartPath, newlyLoadedCount) = resolveNaiveStartIndex(naiveRange.range.startIndex,
-                                                                                  relativeToSection: naiveRange.sectionIndex,
-                                                                                  batchSize: naiveRange.range.count,
-                                                                                  transaction: transaction)
-                numNewlyLoadedEarlierSections = newlyLoadedCount
-                guard let requestStartPath = requestStartPath else {
-                    owsFail("failed to resolve despite loading \(numNewlyLoadedEarlierSections) earlier sections")
-                }
-
-                var currentSectionIndex = requestStartPath.section
-                let interval = DateInterval(start: itemsBySection.orderedKeys[currentSectionIndex].interval.start,
-                                            end: .distantFutureForMillisecondTimestamp)
-                let requestRange = requestStartPath.item ..< (requestStartPath.item + naiveRange.range.count)
-
-                var offset = 0
-                loader.enumerateItems(in: interval,
-                                      range: requestRange,
-                                      transaction: transaction) { i, uniqueId, buildItem in
-                    owsAssertDebug(i >= offset, "does not support reverse traversal")
-
-                    var (date, slots) = itemsBySection[currentSectionIndex]
-                    var itemIndex = i - offset
-
-                    while itemIndex >= slots.count {
-                        itemIndex -= slots.count
-                        offset += slots.count
-                        currentSectionIndex += 1
-
-                        if currentSectionIndex >= itemsBySection.count {
-                            if hasFetchedMostRecent {
-                                // Ignore later attachments.
-                                owsAssertDebug(itemsBySection.count == 1, "should only be used in single-album page view")
-                                return
-                            }
-                            numNewlyLoadedLaterSections += loadLaterSections(batchSize: naiveRange.range.count,
-                                                                             transaction: transaction)
-                            if currentSectionIndex >= itemsBySection.count {
-                                owsFailDebug("attachment #\(i) \(uniqueId) is beyond the last section")
-                                return
-                            }
-                        }
-
-                        (date, slots) = itemsBySection[currentSectionIndex]
-                    }
-
-                    var slot = slots[itemIndex]
-                    if let loadedItem = slot.item {
-                        owsAssert(loadedItem.uniqueId == uniqueId)
-                        return
-                    }
-
-                    itemsBySection.replace(key: date) {
-                        let item = buildItem()
-                        owsAssertDebug(item.galleryDate == date,
-                                       "item from \(item.galleryDate) put into section for \(date)")
-
-                        slot.item = item
-                        slots[itemIndex] = slot
-                        return (slots, [.updateItem(index: itemIndex)])
-                    }
-                }
-
-                let firstNewLaterSectionIndex = itemsBySection.count - numNewlyLoadedLaterSections
-                var newlyLoadedSections = IndexSet()
-                newlyLoadedSections.insert(integersIn: 0..<numNewlyLoadedEarlierSections)
-                newlyLoadedSections.insert(integersIn: firstNewLaterSectionIndex..<itemsBySection.count)
-                return newlyLoadedSections
+            guard let naiveRange = resolveLoadItemsRequest(request) else {
+                return IndexSet()
             }
+            owsAssert(!naiveRange.range.isEmpty)
+
+            var numNewlyLoadedEarlierSections: Int = 0
+            var numNewlyLoadedLaterSections: Int = 0
+
+            // Figure out the earliest section this request will cross.
+            // Note that this is a bigger batch size than necessary:
+            // -trimmedRange.startIndex would be sufficient,
+            // and resolveNaiveStartIndex(...) could give us the exact offset we need.
+            // However, the media gallery is a scrolling collection view that most commonly starts at the
+            // present and scrolls up into the past; if we are ensuring loaded items in earlier sections, we are
+            // likely actively scrolling. Because of this, we potentially measure some extra sections here so
+            // that we don't have to on the immediate next call to ensureItemsLoaded(...).
+            let (requestStartPath, newlyLoadedCount) = resolveNaiveStartIndex(naiveRange.range.startIndex,
+                                                                              relativeToSection: naiveRange.sectionIndex,
+                                                                              batchSize: naiveRange.range.count,
+                                                                              transaction: transaction)
+            numNewlyLoadedEarlierSections = newlyLoadedCount
+            guard let requestStartPath = requestStartPath else {
+                owsFail("failed to resolve despite loading \(numNewlyLoadedEarlierSections) earlier sections")
+            }
+
+            var currentSectionIndex = requestStartPath.section
+            let interval = DateInterval(start: itemsBySection.orderedKeys[currentSectionIndex].interval.start,
+                                        end: .distantFutureForMillisecondTimestamp)
+            let requestRange = requestStartPath.item ..< (requestStartPath.item + naiveRange.range.count)
+
+            var offset = 0
+            loader.enumerateItems(in: interval,
+                                  range: requestRange,
+                                  transaction: transaction) { i, uniqueId, buildItem in
+                owsAssertDebug(i >= offset, "does not support reverse traversal")
+
+                var (date, slots) = itemsBySection[currentSectionIndex]
+                var itemIndex = i - offset
+
+                while itemIndex >= slots.count {
+                    itemIndex -= slots.count
+                    offset += slots.count
+                    currentSectionIndex += 1
+
+                    if currentSectionIndex >= itemsBySection.count {
+                        if hasFetchedMostRecent {
+                            // Ignore later attachments.
+                            owsAssertDebug(itemsBySection.count == 1, "should only be used in single-album page view")
+                            return
+                        }
+                        numNewlyLoadedLaterSections += loadLaterSections(batchSize: naiveRange.range.count,
+                                                                         transaction: transaction)
+                        if currentSectionIndex >= itemsBySection.count {
+                            owsFailDebug("attachment #\(i) \(uniqueId) is beyond the last section")
+                            return
+                        }
+                    }
+
+                    (date, slots) = itemsBySection[currentSectionIndex]
+                }
+
+                var slot = slots[itemIndex]
+                if let loadedItem = slot.item {
+                    owsAssert(loadedItem.uniqueId == uniqueId)
+                    return
+                }
+
+                itemsBySection.replace(key: date) {
+                    let item = buildItem()
+                    owsAssertDebug(item.galleryDate == date,
+                                   "item from \(item.galleryDate) put into section for \(date)")
+
+                    slot.item = item
+                    slots[itemIndex] = slot
+                    return (slots, [.updateItem(index: itemIndex)])
+                }
+            }
+
+            let firstNewLaterSectionIndex = itemsBySection.count - numNewlyLoadedLaterSections
+            var newlyLoadedSections = IndexSet()
+            newlyLoadedSections.insert(integersIn: 0..<numNewlyLoadedEarlierSections)
+            newlyLoadedSections.insert(integersIn: firstNewLaterSectionIndex..<itemsBySection.count)
+            return newlyLoadedSections
         }
 
         internal mutating func getOrReplaceItem(_ newItem: Item, offsetInSection: Int) -> Item? {
