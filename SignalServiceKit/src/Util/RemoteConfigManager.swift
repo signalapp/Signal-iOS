@@ -424,8 +424,6 @@ public class RemoteConfig: BaseFlags {
         let logFlag = { (prefix: String, key: String, value: Any?) in
             if let value = value {
                 Logger.info("\(prefix): \(key) = \(value)", function: "")
-            } else {
-                Logger.info("\(prefix): \(key) = nil", function: "")
             }
         }
 
@@ -442,12 +440,6 @@ public class RemoteConfig: BaseFlags {
         for flag in TimeGatedFlag.allCases {
             let value = remoteConfig.timeGatedFlags[flag.rawValue]
             logFlag("Config.TimeGated", flag.rawValue, value)
-        }
-
-        let flagMap = allFlags()
-        for key in flagMap.keys.sorted() {
-            let value = flagMap[key]
-            logFlag("Flag", key, value)
         }
     }
 }
@@ -715,6 +707,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
+        // swiftlint:disable large_tuple
         let (
             lastKnownClockSkew,
             isEnabledFlags,
@@ -730,6 +723,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
             )
         }
+        // swiftlint:enable large_tuple
         let remoteConfig: RemoteConfig
         if registrationState.isRegistered, (isEnabledFlags != nil || valueFlags != nil || timeGatedFlags != nil) {
             remoteConfig = RemoteConfig(

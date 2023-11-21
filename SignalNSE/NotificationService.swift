@@ -131,11 +131,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         self.contentHandler.set(contentHandler)
 
-        let nseCount = Self.nseDidStart()
-
-        logger.info(
-            "Received notification in pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount)"
-        )
+        _ = Self.nseDidStart()
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             // Mark down that the APNS token is working since we got a push.

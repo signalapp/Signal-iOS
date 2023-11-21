@@ -103,8 +103,6 @@ public class SDSDatabaseStorage: SDSTransactable {
             return
         }
 
-        Logger.info("")
-
         let didPerformIncrementalMigrations: Bool = {
             do {
                 return try GRDBSchemaMigrator.migrateDatabase(
@@ -119,8 +117,6 @@ public class SDSDatabaseStorage: SDSTransactable {
                 owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
             }
         }()
-
-        Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
         if didPerformIncrementalMigrations {
             do {
@@ -539,15 +535,7 @@ public class SDS: NSObject {
 @objc
 public extension SDSDatabaseStorage {
     func logFileSizes() {
-        Logger.info("Database : \(databaseFileSize)")
-        Logger.info("\t WAL file size: \(databaseWALFileSize)")
-        Logger.info("\t SHM file size: \(databaseSHMFileSize)")
-    }
-
-    func logAllFileSizes() {
-        Logger.info("GDRB Database : \(grdbStorage.databaseFileSize)")
-        Logger.info("\t GDRB WAL file size: \(grdbStorage.databaseWALFileSize)")
-        Logger.info("\t GDRB SHM file size: \(grdbStorage.databaseSHMFileSize)")
+        Logger.info("Database: \(databaseFileSize), WAL: \(databaseWALFileSize), SHM: \(databaseSHMFileSize)")
     }
 
     var databaseFileSize: UInt64 {

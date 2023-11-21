@@ -1133,8 +1133,6 @@ extension GRDBDatabaseStorageAdapter {
 extension GRDBDatabaseStorageAdapter {
     @objc
     public func syncTruncatingCheckpoint() throws {
-        Logger.info("Running truncating checkpoint.")
-
         SDSDatabaseStorage.shared.logFileSizes()
 
         try GRDBDatabaseStorageAdapter.checkpoint(pool: pool)

@@ -200,8 +200,6 @@ extension AppDelegate {
     }
 
     private func setupNSEInteroperation() {
-        Logger.info("")
-
         // We immediately post a notification letting the NSE know the main app has launched.
         // If it's running it should take this as a sign to terminate so we don't unintentionally
         // try and fetch messages from two processes at once.
@@ -304,6 +302,10 @@ extension AppDelegate {
         AssertIsOnMainThread()
         owsAssert(!AppReadiness.isAppReady)
         owsAssert(!CurrentAppContext().isRunningTests)
+
+        if DebugFlags.internalLogging {
+            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()

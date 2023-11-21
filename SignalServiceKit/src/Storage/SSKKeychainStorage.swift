@@ -156,7 +156,6 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         if let error = error {
             // If deletion failed because the specified item could not be found in the keychain, consider it success.
             if error.code == errSecItemNotFound {
-                Logger.info("Keychain delete failed; item not found.")
                 return
             }
             throw KeychainStorageError.failure(description: "\(logTag) error removing data: \(error)")

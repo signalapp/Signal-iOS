@@ -123,7 +123,7 @@ class NSEEnvironment: Dependencies {
     ///
     /// Will be invoked multiple times in the same NSE process.
     func setUpAfterCheckingForFirstDeviceUnlock(logger: NSELogger) {
-        logger.info("", flushImmediately: true)
+        logger.info("pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)", flushImmediately: true)
 
         if didStartAppSetup {
             return

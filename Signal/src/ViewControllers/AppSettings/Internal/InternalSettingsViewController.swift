@@ -147,7 +147,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Database SHM size: \(byteCountFormatter.string(for: databaseStorage.databaseSHMFileSize) ?? "Unknown")"))
 
         infoSection.add(.label(withText: "hasGrdbFile: \(StorageCoordinator.hasGrdbFile)"))
-        infoSection.add(.label(withText: "Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount))"))
         infoSection.add(.label(withText: "isCensorshipCircumventionActive: \(self.signalService.isCensorshipCircumventionActive)"))
 
         infoSection.add(.copyableItem(label: "Push Token", value: preferences.pushToken))

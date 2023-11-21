@@ -38,7 +38,6 @@ public class GRDBSchemaMigrator: NSObject {
 
         if hasCreatedInitialSchema {
             do {
-                Logger.info("Using incrementalMigrator.")
                 didPerformIncrementalMigrations = try runIncrementalMigrations(
                     databaseStorage: databaseStorage,
                     runDataMigrations: runDataMigrations
@@ -57,7 +56,6 @@ public class GRDBSchemaMigrator: NSObject {
                 throw error
             }
         }
-        Logger.info("Migrations complete.")
 
         if isMainDatabase {
             SSKPreferences.markGRDBSchemaAsLatest()
@@ -330,9 +328,6 @@ public class GRDBSchemaMigrator: NSObject {
             // After importing the initial schema, we want to skip the remaining
             // incremental migrations, so we manually mark them as complete.
             for migrationId in (MigrationId.allCases.filter { $0 != .createInitialSchema }) {
-                if !CurrentAppContext().isRunningTests {
-                    Logger.info("skipping migration: \(migrationId) for new user.")
-                }
                 insertMigration(migrationId.rawValue, db: db)
             }
         }

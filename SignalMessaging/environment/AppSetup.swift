@@ -33,7 +33,6 @@ public class AppSetup {
         OWSBackgroundTaskManager.shared().observeNotifications()
 
         let storageCoordinator = StorageCoordinator()
-        Logger.info("hasGrdbFile: \(StorageCoordinator.hasGrdbFile)")
         let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
 
         // AFNetworking (via CFNetworking) spools its attachments in
@@ -343,11 +342,6 @@ extension AppSetup.FinalContinuation {
 
         guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
             return .corruptRegistrationState
-        }
-
-        // Do this after we've finished running database migrations.
-        if DebugFlags.internalLogging {
-            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
         }
 
         return nil

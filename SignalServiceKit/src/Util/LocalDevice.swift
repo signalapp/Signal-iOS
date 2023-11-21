@@ -8,18 +8,6 @@ import SignalCoreKit
 
 @objc
 public class LocalDevice: NSObject {
-    @objc
-    public static var allCoreCount: Int {
-        ProcessInfo.processInfo.processorCount
-    }
-
-    @objc
-    public static var activeCoreCount: Int {
-        // iOS can shut down cores, so we consult activeProcessorCount,
-        // not processorCount.
-        ProcessInfo.processInfo.activeProcessorCount
-    }
-
     public struct MemoryStatus {
         public let fetchDate: Date
         public let footprint: UInt64

@@ -99,8 +99,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func warmCaches() {
-        Logger.info("")
-
         setLocalMasterKeyIfMissing()
 
         // Require migrations to succeed before we check for old stuff
