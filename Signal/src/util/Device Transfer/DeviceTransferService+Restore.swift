@@ -240,7 +240,7 @@ extension DeviceTransferService {
         LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase = hotswapDatabase
         hasBeenRestored = true
 
-        resetTransferDirectory()
+        resetTransferDirectory(createNewTransferDirectory: true)
 
         if hotswapDatabase {
             owsFail("Hotswapping databases is no longer supported")
@@ -260,15 +260,17 @@ extension DeviceTransferService {
         return true
     }
 
-    func resetTransferDirectory() {
+    func resetTransferDirectory(createNewTransferDirectory: Bool) {
         do {
-            if OWSFileSystem.fileOrFolderExists(atPath: DeviceTransferService.pendingTransferDirectory.path) {
-                try FileManager.default.removeItem(atPath: DeviceTransferService.pendingTransferDirectory.path)
-            }
+            try FileManager.default.removeItem(atPath: DeviceTransferService.pendingTransferDirectory.path)
+        } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile, POSIXError.ENOENT {
+            // it doesn't exist -- this is fine
         } catch {
             owsFailDebug("Failed to delete existing transfer directory \(error)")
         }
-        OWSFileSystem.ensureDirectoryExists(DeviceTransferService.pendingTransferDirectory.path)
+        if createNewTransferDirectory {
+            OWSFileSystem.ensureDirectoryExists(DeviceTransferService.pendingTransferDirectory.path)
+        }
 
         // If we had a pending restore, we no longer do.
         switch try? restorationPhase {
@@ -543,7 +545,7 @@ extension DeviceTransferService {
 
     @discardableResult
     func finalizeRestorationIfNecessary() -> Guarantee<Void> {
-        resetTransferDirectory()
+        resetTransferDirectory(createNewTransferDirectory: false)
 
         let (promise, future) = Guarantee<Void>.pending()
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
