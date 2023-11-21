@@ -643,6 +643,8 @@
 		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
+		50101FB22B083C8100C648E4 /* ChatListSettingsButtonCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB12B083C8100C648E4 /* ChatListSettingsButtonCreator.swift */; };
+		50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
@@ -3230,6 +3232,8 @@
 		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
+		50101FB12B083C8100C648E4 /* ChatListSettingsButtonCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListSettingsButtonCreator.swift; sourceTree = "<group>"; };
+		50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListProxyButtonCreator.swift; sourceTree = "<group>"; };
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
@@ -7431,6 +7435,8 @@
 			children = (
 				1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */,
 				346E09002662FBBE0042375E /* ChatListCell.swift */,
+				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
+				50101FB12B083C8100C648E4 /* ChatListSettingsButtonCreator.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
 				76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */,
 				34E95C28269F6109004807EC /* ChatListViewController+Helpers.swift */,
@@ -11754,6 +11760,8 @@
 				D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
+				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
+				50101FB22B083C8100C648E4 /* ChatListSettingsButtonCreator.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
 				76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,

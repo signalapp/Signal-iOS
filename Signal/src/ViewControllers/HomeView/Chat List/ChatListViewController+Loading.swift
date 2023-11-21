@@ -108,7 +108,10 @@ extension ChatListViewController {
         tableDataSource.calcRefreshTimer()
         // We need to perform this regardless of the load result type.
         updateViewState()
-        updateBarButtonItems()
+        viewState.settingsButtonCreator.updateState(
+            hasInboxChats: renderState.inboxCount > 0,
+            hasArchivedChats: renderState.archiveCount > 0
+        )
     }
 
     fileprivate func applyPartialLoadResult(rowChanges: [CLVRowChange],

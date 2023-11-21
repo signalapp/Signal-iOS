@@ -19,6 +19,8 @@ public class ChatListViewController: OWSViewController {
         tableDataSource.viewController = self
         loadCoordinator.viewController = self
         reminderViews.chatListViewController = self
+        viewState.settingsButtonCreator.delegate = self
+        viewState.proxyButtonCreator.delegate = self
         viewState.configure()
     }
 
@@ -95,6 +97,7 @@ public class ChatListViewController: OWSViewController {
         searchResultsController.view.autoPinTopToSuperviewMargin(withInset: 56)
         searchResultsController.view.isHidden = true
 
+        updateBarButtonItems()
         updateReminderViews()
         applyTheme()
         observeNotifications()
@@ -243,7 +246,6 @@ public class ChatListViewController: OWSViewController {
     private func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         tableView.backgroundColor = Theme.backgroundColor
-        updateBarButtonItems()
     }
 
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -358,30 +360,6 @@ public class ChatListViewController: OWSViewController {
         return layerView
     }()
 
-    private func settingsBarButtonItem() -> UIBarButtonItem {
-        let contextButton = ContextMenuButton()
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.contextMenu = settingsContextMenu()
-        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
-
-        let avatarImageView = createAvatarBarButtonViewWithSneakyTransaction()
-        contextButton.addSubview(avatarImageView)
-        avatarImageView.autoPinEdgesToSuperviewEdges()
-
-        let wrapper = UIView.container()
-        wrapper.addSubview(contextButton)
-        contextButton.autoPinEdgesToSuperviewEdges()
-
-        if unreadPaymentNotificationsCount > 0 {
-            PaymentsViewUtils.addUnreadBadge(toView: wrapper)
-        }
-
-        let barButtonItem = UIBarButtonItem(customView: wrapper)
-        barButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
-        barButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
-        return barButtonItem
-    }
-
     // MARK: Table View
 
     func reloadTableDataAndResetCellContentCache() {
@@ -459,12 +437,22 @@ public class ChatListViewController: OWSViewController {
 
     var lastViewedThread: TSThread?
 
-    @objc
     func updateBarButtonItems() {
+        updateLeftBarButtonItem()
+        updateRightBarButtonItems()
+    }
+
+    private func updateLeftBarButtonItem() {
         guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         // Settings button.
-        navigationItem.leftBarButtonItem = settingsBarButtonItem()
+        navigationItem.leftBarButtonItem = viewState.settingsButtonCreator.buildButtonWithSneakyTransaction(
+            db: DependenciesBridge.shared.db
+        )
+    }
+
+    private func updateRightBarButtonItems() {
+        guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         var rightBarButtonItems = [UIBarButtonItem]()
 
@@ -496,31 +484,8 @@ public class ChatListViewController: OWSViewController {
         )
         rightBarButtonItems.append(camera)
 
-        if SignalProxy.isEnabled {
-            let proxyStatusImage: UIImage?
-            let tintColor: UIColor
-            switch DependenciesBridge.shared.socketManager.socketState(forType: .identified) {
-            case .open:
-                proxyStatusImage = UIImage(named: "safety-number")
-                tintColor = UIColor.ows_accentGreen
-
-            case .closed:
-                proxyStatusImage = UIImage(named: "error-shield")
-                tintColor = UIColor.ows_accentRed
-
-            case .connecting:
-                proxyStatusImage = UIImage(named: "error-shield")
-                tintColor = UIColor.ows_middleGray
-            }
-
-            let proxy = UIBarButtonItem(
-                image: proxyStatusImage,
-                style: .plain,
-                target: self,
-                action: #selector(showAppSettingsInProxyMode)
-            )
-            proxy.tintColor = tintColor
-            rightBarButtonItems.append(proxy)
+        if let proxyButton = viewState.proxyButtonCreator.buildButton() {
+            rightBarButtonItems.append(proxyButton)
         }
 
         navigationItem.rightBarButtonItems = rightBarButtonItems
@@ -1172,6 +1137,34 @@ public class ChatListViewController: OWSViewController {
 
 // MARK: Settings Button
 
+extension ChatListViewController: ChatListSettingsButtonDelegate {
+    func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
+        updateLeftBarButtonItem()
+    }
+
+    func didTapMultiSelect(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
+        willEnterMultiselectMode()
+    }
+
+    func didTapAppSettings(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
+        showAppSettings(mode: .none)
+    }
+
+    func didTapArchived(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
+        showArchivedConversations(offerMultiSelectMode: true)
+    }
+}
+
+extension ChatListViewController: ChatListProxyButtonDelegate {
+    func didUpdateButton(_ proxyButtonCreator: ChatListProxyButtonCreator) {
+        updateRightBarButtonItems()
+    }
+
+    func didTapButton(_ proxyButtonCreator: ChatListProxyButtonCreator) {
+        showAppSettings(mode: .proxy)
+    }
+}
+
 extension ChatListViewController {
 
     enum ShowAppSettingsMode {
@@ -1187,66 +1180,12 @@ extension ChatListViewController {
         case proxy
     }
 
-    func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
-        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
-        databaseStorage.read { readTx in
-            avatarView.update(readTx) { config in
-                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: readTx.asV2Read)?.aciAddress {
-                    config.dataSource = .address(address)
-                    config.applyConfigurationSynchronously()
-                }
-            }
-        }
-        return avatarView
-    }
-
-    func settingsContextMenu() -> ContextMenu {
-        var contextMenuActions: [ContextMenuAction] = []
-        if renderState.inboxCount > 0 {
-            contextMenuActions.append(
-                ContextMenuAction(
-                    title: OWSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
-                    image: Theme.iconImage(.contextMenuSelect),
-                    attributes: [],
-                    handler: { [weak self] (_) in
-                        self?.willEnterMultiselectMode()
-                    }
-                ))
-        }
-        contextMenuActions.append(
-            ContextMenuAction(
-                title: CommonStrings.openSettingsButton,
-                image: Theme.iconImage(.contextMenuSettings),
-                attributes: [],
-                handler: { [weak self] (_) in
-                    self?.showAppSettings(mode: .none)
-                }
-            ))
-        if renderState.archiveCount > 0 {
-            contextMenuActions.append(
-                ContextMenuAction(
-                    title: OWSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
-                    image: Theme.iconImage(.contextMenuArchive),
-                    attributes: [],
-                    handler: { [weak self] (_) in
-                        self?.showArchivedConversations(offerMultiSelectMode: true)
-                    }
-                ))
-        }
-        return .init(contextMenuActions)
-    }
-
     func showAppSettings() {
         showAppSettings(mode: .none)
     }
 
     func showAppSettingsInAppearanceMode() {
         showAppSettings(mode: .appearance)
-    }
-
-    @objc
-    func showAppSettingsInProxyMode() {
-        showAppSettings(mode: .proxy)
     }
 
     func showAppSettingsInAvatarBuilderMode() {

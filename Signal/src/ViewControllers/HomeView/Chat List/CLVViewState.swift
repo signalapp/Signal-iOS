@@ -27,6 +27,8 @@ public class CLVViewState {
     let searchBar = OWSSearchBar()
     let searchResultsController = ConversationSearchViewController()
     let reminderViews = CLVReminderViews()
+    let settingsButtonCreator = ChatListSettingsButtonCreator()
+    let proxyButtonCreator = ChatListProxyButtonCreator(socketManager: DependenciesBridge.shared.socketManager)
 
     // MARK: - State
 
@@ -38,7 +40,9 @@ public class CLVViewState {
     var isViewVisible = false
     var hasEverAppeared = false
 
-    var unreadPaymentNotificationsCount: UInt = 0
+    var unreadPaymentNotificationsCount: UInt = 0 {
+        didSet { settingsButtonCreator.updateState(hasUnreadPaymentNotification: unreadPaymentNotificationsCount > 0) }
+    }
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 

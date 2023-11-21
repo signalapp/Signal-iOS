@@ -72,24 +72,6 @@ extension ChatListViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateBarButtonItems),
-            name: .isSignalProxyReadyDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateBarButtonItems),
-            name: OWSWebSocket.webSocketStateDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateBarButtonItems),
-            name: SSKReachability.owsReachabilityDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
             selector: #selector(localUsernameStateDidChange),
             name: Usernames.localUsernameStateChangedNotification,
             object: nil
@@ -148,7 +130,6 @@ extension ChatListViewController {
     private func localProfileDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateBarButtonItems()
         showBadgeSheetIfNecessary()
     }
 
