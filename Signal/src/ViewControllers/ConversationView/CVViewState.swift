@@ -135,6 +135,7 @@ public class CVViewState: NSObject {
 
     public let backgroundContainer = CVBackgroundContainer()
     public var wallpaperViewBuilder: WallpaperViewBuilder?
+    var chatColor: ColorOrGradientSetting
 
     weak var reactionsDetailSheet: ReactionsDetailSheet?
 
@@ -155,11 +156,15 @@ public class CVViewState: NSObject {
     public required init(
         threadUniqueId: String,
         conversationStyle: ConversationStyle,
-        didAlreadyShowGroupCallTooltipEnoughTimes: Bool
+        didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
+        chatColor: ColorOrGradientSetting,
+        wallpaperViewBuilder: WallpaperViewBuilder?
     ) {
         self.threadUniqueId = threadUniqueId
         self.conversationStyle = conversationStyle
         self.didAlreadyShowGroupCallTooltipEnoughTimes = didAlreadyShowGroupCallTooltipEnoughTimes
+        self.chatColor = chatColor
+        self.wallpaperViewBuilder = wallpaperViewBuilder
     }
 }
 

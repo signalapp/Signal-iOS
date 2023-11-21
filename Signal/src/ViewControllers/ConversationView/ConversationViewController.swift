@@ -93,7 +93,12 @@ public final class ConversationViewController: OWSViewController {
             scrollToMessageId = lastVisibleMessageId
         }
 
-        let conversationStyle = ConversationViewController.buildInitialConversationStyle(for: thread, tx: tx)
+        let chatColor = Self.loadChatColor(for: thread, tx: tx)
+        let wallpaperViewBuilder = Self.loadWallpaperViewBuilder(for: thread, tx: tx)
+
+        let conversationStyle = Self.buildInitialConversationStyle(
+            for: thread, chatColor: chatColor, wallpaperViewBuilder: wallpaperViewBuilder
+        )
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
         let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(withTransaction: tx)
 
@@ -105,8 +110,18 @@ public final class ConversationViewController: OWSViewController {
             didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes,
             loadAroundMessageId: loadAroundMessageId,
             scrollToMessageId: scrollToMessageId,
-            oldestUnreadMessage: oldestUnreadMessage
+            oldestUnreadMessage: oldestUnreadMessage,
+            chatColor: chatColor,
+            wallpaperViewBuilder: wallpaperViewBuilder
         )
+    }
+
+    static func loadChatColor(for thread: TSThread, tx: SDSAnyReadTransaction) -> ColorOrGradientSetting {
+        return ChatColors.resolvedChatColor(for: thread, tx: tx)
+    }
+
+    static func loadWallpaperViewBuilder(for thread: TSThread, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {
+        return Wallpaper.viewBuilder(for: thread, tx: tx)
     }
 
     private init(
@@ -117,7 +132,9 @@ public final class ConversationViewController: OWSViewController {
         didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
         loadAroundMessageId: String?,
         scrollToMessageId: String?,
-        oldestUnreadMessage: TSInteraction?
+        oldestUnreadMessage: TSInteraction?,
+        chatColor: ColorOrGradientSetting,
+        wallpaperViewBuilder: WallpaperViewBuilder?
     ) {
         AssertIsOnMainThread()
 
@@ -126,7 +143,9 @@ public final class ConversationViewController: OWSViewController {
         self.viewState = CVViewState(
             threadUniqueId: threadViewModel.threadRecord.uniqueId,
             conversationStyle: conversationStyle,
-            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes
+            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes,
+            chatColor: chatColor,
+            wallpaperViewBuilder: wallpaperViewBuilder
         )
         self.loadCoordinator = CVLoadCoordinator(
             viewState: viewState,

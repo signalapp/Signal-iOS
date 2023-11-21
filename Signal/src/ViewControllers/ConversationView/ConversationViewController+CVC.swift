@@ -67,6 +67,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     func chatColorDidChange() {
+        viewState.chatColor = databaseStorage.read { tx in Self.loadChatColor(for: thread, tx: tx) }
         updateConversationStyle()
     }
 
@@ -584,12 +585,17 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    public static func buildInitialConversationStyle(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationStyle {
+    public static func buildInitialConversationStyle(
+        for thread: TSThread,
+        chatColor: ColorOrGradientSetting,
+        wallpaperViewBuilder: WallpaperViewBuilder?
+    ) -> ConversationStyle {
         buildConversationStyle(
             type: .initial,
             thread: thread,
             viewWidth: 0,
-            tx: tx
+            chatColor: chatColor,
+            wallpaperViewBuilder: wallpaperViewBuilder
         )
     }
 
@@ -597,15 +603,16 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         type: ConversationStyle.`Type`,
         thread: TSThread,
         viewWidth: CGFloat,
-        tx: SDSAnyReadTransaction
+        chatColor: ColorOrGradientSetting,
+        wallpaperViewBuilder: WallpaperViewBuilder?
     ) -> ConversationStyle {
         let hasWallpaper: Bool
         let isWallpaperPhoto: Bool
-        switch Wallpaper.wallpaperForRendering(for: thread, transaction: tx) {
-        case .photo:
+        switch wallpaperViewBuilder {
+        case .customPhoto:
             hasWallpaper = true
             isWallpaperPhoto = true
-        case .some:
+        case .colorOrGradient:
             hasWallpaper = true
             isWallpaperPhoto = false
         case .none:
@@ -618,7 +625,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewWidth: viewWidth,
             hasWallpaper: hasWallpaper,
             isWallpaperPhoto: isWallpaperPhoto,
-            chatColor: ChatColors.resolvedChatColor(for: thread, tx: tx)
+            chatColor: chatColor
         )
     }
 
@@ -626,14 +633,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         AssertIsOnMainThread()
 
         func buildConversationStyle(type: ConversationStyle.`Type`, viewWidth: CGFloat) -> ConversationStyle {
-            databaseStorage.read { tx in
-                Self.buildConversationStyle(
-                    type: type,
-                    thread: thread,
-                    viewWidth: viewWidth,
-                    tx: tx
-                )
-            }
+            Self.buildConversationStyle(
+                type: type,
+                thread: thread,
+                viewWidth: viewWidth,
+                chatColor: viewState.chatColor,
+                wallpaperViewBuilder: viewState.wallpaperViewBuilder
+            )
         }
 
         func buildDefaultConversationStyle(type: ConversationStyle.`Type`) -> ConversationStyle {
