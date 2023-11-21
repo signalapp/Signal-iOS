@@ -179,3 +179,44 @@ public class SocketManagerImpl: SocketManager {
         websocketIdentified.hasEmptiedInitialQueue
     }
 }
+
+#if TESTABLE_BUILD
+
+public class SocketManagerMock: SocketManager {
+
+    public init() {}
+
+    public var isAnySocketOpen: Bool = false
+
+    public var hasEmptiedInitialQueue: Bool = false
+
+    public var socketStatesPerType = [OWSWebSocketType: OWSWebSocketState]()
+
+    public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
+        return  socketStatesPerType[webSocketType] ?? .closed
+    }
+
+    public func cycleSocket() {
+        // Do nothing
+    }
+
+    public var canMakeRequestsPerType = [OWSWebSocketType: Bool]()
+
+    public func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool {
+        return canMakeRequestsPerType[webSocketType] ?? true
+    }
+
+    public var requestFactory: (_ request: TSRequest) -> Promise<HTTPResponse> = { _ in
+        fatalError("must override for tests")
+    }
+
+    public func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+        return requestFactory(request)
+    }
+
+    public func didReceivePush() {
+        // Do nothing
+    }
+}
+
+#endif

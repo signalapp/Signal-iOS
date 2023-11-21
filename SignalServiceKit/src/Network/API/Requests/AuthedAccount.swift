@@ -9,16 +9,26 @@ import LibSignalClient
 @objc
 public class AuthedAccount: NSObject {
 
+    public typealias DeviceId = AuthedDevice.DeviceId
+
     public struct Explicit: Equatable {
         public let aci: Aci
         public let pni: Pni
         public let e164: E164
+        public let deviceId: DeviceId
         public let authPassword: String
 
-        public init(aci: Aci, pni: Pni, e164: E164, authPassword: String) {
+        public init(
+            aci: Aci,
+            pni: Pni,
+            e164: E164,
+            deviceId: DeviceId,
+            authPassword: String
+        ) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164
+            self.deviceId = deviceId
             self.authPassword = authPassword
         }
     }
@@ -46,9 +56,16 @@ public class AuthedAccount: NSObject {
         aci: Aci,
         pni: Pni,
         e164: E164,
+        deviceId: DeviceId,
         authPassword: String
     ) -> AuthedAccount {
-        return AuthedAccount(.explicit(Explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)))
+        return AuthedAccount(.explicit(Explicit(
+            aci: aci,
+            pni: pni,
+            e164: e164,
+            deviceId: deviceId,
+            authPassword: authPassword
+        )))
     }
 
     public override var hash: Int {
@@ -119,7 +136,7 @@ public class AuthedAccount: NSObject {
                 aci: info.aci,
                 phoneNumber: info.e164,
                 pni: info.pni,
-                isPrimaryDevice: isPrimaryDevice,
+                deviceId: info.deviceId,
                 authPassword: info.authPassword
             ))
         }
@@ -141,6 +158,6 @@ extension AuthedAccount.Explicit {
     }
 
     public var chatServiceAuth: ChatServiceAuth {
-        return .explicit(aci: AciObjC(aci), password: authPassword)
+        return .explicit(aci: aci, deviceId: deviceId, password: authPassword)
     }
 }

@@ -101,12 +101,15 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         // Do nothing
     }
 
+    public var syncedMasterKey: Data?
+
     public func storeSyncedMasterKey(
         data: Data,
         authedDevice: AuthedDevice,
+        updateStorageService: Bool,
         transaction: DBWriteTransaction
     ) {
-        // Do nothing
+        syncedMasterKey = data
     }
 
     public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {

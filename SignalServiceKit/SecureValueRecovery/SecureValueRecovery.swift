@@ -219,6 +219,7 @@ public protocol SecureValueRecovery {
     func storeSyncedMasterKey(
         data: Data,
         authedDevice: AuthedDevice,
+        updateStorageService: Bool,
         transaction: DBWriteTransaction
     )
 

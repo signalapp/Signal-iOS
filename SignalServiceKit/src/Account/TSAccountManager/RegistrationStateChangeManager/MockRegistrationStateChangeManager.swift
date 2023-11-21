@@ -39,18 +39,18 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         didRegisterPrimaryMock(e164, aci, pni, authToken)
     }
 
-    public lazy var didLinkSecondaryMock: (
+    public lazy var didProvisionSecondaryMock: (
         _ e164: E164,
         _ aci: Aci,
         _ pni: Pni?,
         _ authToken: String,
         _ deviceId: UInt32
     ) -> Void = { [weak self] _, _, _, _, _ in
-        self?.registrationStateMock = { .linkedButUnprovisioned }
+        self?.registrationStateMock = { .provisioned }
     }
 
-    open func didLinkSecondary(e164: E164, aci: Aci, pni: Pni?, authToken: String, deviceId: UInt32, tx: DBWriteTransaction) {
-        didLinkSecondaryMock(e164, aci, pni, authToken, deviceId)
+    open func didProvisionSecondary(e164: E164, aci: Aci, pni: Pni?, authToken: String, deviceId: UInt32, tx: DBWriteTransaction) {
+        didProvisionSecondaryMock(e164, aci, pni, authToken, deviceId)
     }
 
     public lazy var didFinishProvisioningSecondayMock: () -> Void = { [weak self] in

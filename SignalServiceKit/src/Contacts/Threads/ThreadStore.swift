@@ -6,7 +6,7 @@
 import LibSignalClient
 import SignalCoreKit
 
-protocol ThreadStore {
+public protocol ThreadStore {
     func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
@@ -16,7 +16,7 @@ protocol ThreadStore {
 }
 
 extension ThreadStore {
-    func fetchGroupThread(uniqueId: String, tx: DBReadTransaction) -> TSGroupThread? {
+    public func fetchGroupThread(uniqueId: String, tx: DBReadTransaction) -> TSGroupThread? {
         guard let thread = fetchThread(uniqueId: uniqueId, tx: tx) else {
             return nil
         }
@@ -34,7 +34,7 @@ extension ThreadStore {
     ///
     /// If you simply want a thread, and don't want to think about thread
     /// merges, ACIs, PNIs, etc. – this is the method for you.
-    func fetchContactThread(recipient: SignalRecipient, tx: DBReadTransaction) -> TSContactThread? {
+    public func fetchContactThread(recipient: SignalRecipient, tx: DBReadTransaction) -> TSContactThread? {
         return UniqueRecipientObjectMerger.fetchAndExpunge(
             for: recipient,
             serviceIdField: \.contactUUID,
@@ -47,24 +47,27 @@ extension ThreadStore {
     }
 }
 
-class ThreadStoreImpl: ThreadStore {
-    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
+public class ThreadStoreImpl: ThreadStore {
+
+    public init() {}
+
+    public func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
         return ThreadFinder().fetch(rowId: threadRowId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
+    public func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
         TSThread.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+    public func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
         ContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
+    public func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
         ContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
+    public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
         let tx = SDSDB.shimOnlyBridge(tx)
 
         // TODO: If we ever use transaction finalizations for more than
@@ -76,36 +79,36 @@ class ThreadStoreImpl: ThreadStore {
         tx.unwrapGrdbWrite.executeAndCacheStatement(sql: sql, arguments: [thread.uniqueId])
     }
 
-    func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
+    public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
         thread.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
 #if TESTABLE_BUILD
 
-class MockThreadStore: ThreadStore {
+public class MockThreadStore: ThreadStore {
     private(set) var threads = [TSThread]()
-    var nextRowId: Int64 = 1
+    public var nextRowId: Int64 = 1
 
-    func insertThreads(_ threads: [TSThread]) {
+    public func insertThreads(_ threads: [TSThread]) {
         threads.forEach { insertThread($0) }
     }
 
-    func insertThread(_ thread: TSThread) {
+    public func insertThread(_ thread: TSThread) {
         thread.updateRowId(nextRowId)
         threads.append(thread)
         nextRowId += 1
     }
 
-    func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
+    public func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
         threads.first(where: { $0.sqliteRowId == threadRowId })
     }
 
-    func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
+    public func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {
         threads.first(where: { $0.uniqueId == uniqueId })
     }
 
-    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+    public func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
         threads.lazy.compactMap { $0 as? TSContactThread }
             .filter { contactThread in
                 guard
@@ -119,15 +122,15 @@ class MockThreadStore: ThreadStore {
             }
     }
 
-    func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
+    public func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
         threads.lazy.compactMap { $0 as? TSContactThread }.filter { $0.contactPhoneNumber == phoneNumber }
     }
 
-    func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
+    public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
         threads.removeAll(where: { $0.uniqueId == thread.uniqueId })
     }
 
-    func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
+    public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
         let threadIndex = threads.firstIndex(where: { $0.uniqueId == thread.uniqueId })!
         threads[threadIndex] = thread
     }

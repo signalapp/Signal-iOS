@@ -327,6 +327,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 aci: identityResponse.aci,
                 pni: identityResponse.pni,
                 e164: Stubs.e164,
+                deviceId: .primary,
                 authPassword: authPassword
             )
         }
@@ -472,6 +473,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     aci: identityResponse.aci,
                     pni: identityResponse.pni,
                     e164: Stubs.e164,
+                    deviceId: .primary,
                     authPassword: authPassword
                 )
             }
@@ -952,6 +954,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     aci: identityResponse.aci,
                     pni: identityResponse.pni,
                     e164: Stubs.e164,
+                    deviceId: .primary,
                     authPassword: authPassword
                 )
             }
@@ -1150,6 +1153,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     aci: accountIdentityResponse.aci,
                     pni: accountIdentityResponse.pni,
                     e164: Stubs.e164,
+                    deviceId: .primary,
                     authPassword: authPassword
                 )
             }
@@ -1485,6 +1489,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     aci: accountIdentityResponse.aci,
                     pni: accountIdentityResponse.pni,
                     e164: Stubs.e164,
+                    deviceId: .primary,
                     authPassword: authPassword
                 )
             }
@@ -3242,6 +3247,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     aci: accountIdentityResponse.aci,
                     pni: accountIdentityResponse.pni,
                     e164: Stubs.e164,
+                    deviceId: .primary,
                     authPassword: authPassword
                 )
             }

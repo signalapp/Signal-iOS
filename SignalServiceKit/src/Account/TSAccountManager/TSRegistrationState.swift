@@ -14,15 +14,10 @@ public enum TSRegistrationState: Equatable {
     /// state is not maintained here.
     case unregistered
 
-    /// Linking has completed (the linked device exists on the server)
-    /// but the full provisioning process is incomplete (e.g. initial
-    /// storage service sync is incomplete) and additional steps are
-    /// needed before being marked `provisioned`.
-    /// Should mostly behave like `unregistered`.
-    case linkedButUnprovisioned
-
     /// Re-registering after becoming deregistered.
     case reregistering(phoneNumber: String, aci: Aci?)
+    /// Re-linking after becoming delinked.
+    case relinking(phoneNumber: String, aci: Aci?)
 
     /// Registered as a primary device. "Normal" state.
     case registered
@@ -62,8 +57,7 @@ extension TSRegistrationState {
     public var isRegistered: Bool {
         switch self {
         case
-                .unregistered, .reregistering,
-                .linkedButUnprovisioned,
+                .unregistered, .reregistering, .relinking,
                 .deregistered, .delinked,
                 .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
                 .transferringIncoming,
@@ -74,29 +68,13 @@ extension TSRegistrationState {
         }
     }
 
-    /// Useful for checks that need to happen in the steps that themselves happen
-    /// during provisioning, but after linking.
-    public var isRegisteredOrFinishingProvisioning: Bool {
-        switch self {
-        case
-                .unregistered, .reregistering,
-                .deregistered, .delinked,
-                .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
-                .transferringIncoming,
-                .transferred:
-            return false
-        case .registered, .provisioned, .linkedButUnprovisioned:
-            return true
-        }
-    }
-
     public var wasEverRegistered: Bool {
         switch self {
-        case .unregistered, .transferringIncoming, .linkedButUnprovisioned:
+        case .unregistered, .transferringIncoming:
             return false
         case
                 .registered, .provisioned,
-                .reregistering,
+                .reregistering, .relinking,
                 .deregistered, .delinked,
                 .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
                 .transferred:
@@ -115,7 +93,7 @@ extension TSRegistrationState {
             return nil
         case .registered, .deregistered, .reregistering, .transferringPrimaryOutgoing:
             return true
-        case .linkedButUnprovisioned, .provisioned, .delinked, .transferringLinkedOutgoing:
+        case .provisioned, .delinked, .relinking, .transferringLinkedOutgoing:
             return false
         }
     }
@@ -126,9 +104,9 @@ extension TSRegistrationState {
             return true
         case
                 .unregistered,
-                .linkedButUnprovisioned,
                 .provisioned,
                 .reregistering,
+                .relinking,
                 .deregistered, .delinked,
                 .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
                 .transferringIncoming,
@@ -140,8 +118,7 @@ extension TSRegistrationState {
     public var isDeregistered: Bool {
         switch self {
         case
-                .unregistered, .reregistering,
-                .linkedButUnprovisioned,
+                .unregistered, .reregistering, .relinking,
                 .registered, .provisioned,
                 .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
                 .transferringIncoming,
@@ -156,8 +133,6 @@ extension TSRegistrationState {
         switch self {
         case .unregistered:
             return "unregistered"
-        case .linkedButUnprovisioned:
-            return "linkedButUnprovisioned"
         case .transferringPrimaryOutgoing:
             return "transferringPrimaryOutgoing"
         case .transferringLinkedOutgoing:
@@ -176,6 +151,8 @@ extension TSRegistrationState {
             return "transferred"
         case .reregistering:
             return "reregistering"
+        case .relinking:
+            return "relinking"
         }
     }
 }

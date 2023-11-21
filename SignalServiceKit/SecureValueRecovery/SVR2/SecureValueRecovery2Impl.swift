@@ -451,6 +451,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func storeSyncedMasterKey(
         data: Data,
         authedDevice: AuthedDevice,
+        updateStorageService: Bool,
         transaction: DBWriteTransaction
     ) {
         Logger.info("")
@@ -461,7 +462,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         localStorage.setSyncedStorageServiceKey(nil, transaction)
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
-        if oldMasterKey != data {
+        if oldMasterKey != data, updateStorageService {
             storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
         }
     }

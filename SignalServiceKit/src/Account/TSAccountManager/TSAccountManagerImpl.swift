@@ -240,12 +240,6 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         }
     }
 
-    public func setDidFinishProvisioning(tx: DBWriteTransaction) {
-        mutateWithLock(tx: tx) {
-            kvStore.setBool(true, key: Keys.isFinishedProvisioning, transaction: tx)
-        }
-    }
-
     public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool {
         return mutateWithLock(tx: tx) {
             let oldValue = kvStore.getBool(Keys.isDeregisteredOrDelinked, defaultValue: false, transaction: tx)
@@ -260,6 +254,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     public func resetForReregistration(
         localNumber: E164,
         localAci: Aci,
+        wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) {
         mutateWithLock(tx: tx) {
@@ -267,6 +262,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
 
             kvStore.setString(localNumber.stringValue, key: Keys.reregistrationPhoneNumber, transaction: tx)
             kvStore.setString(localAci.serviceIdUppercaseString, key: Keys.reregistrationAci, transaction: tx)
+            kvStore.setBool(wasPrimaryDevice, key: Keys.reregistrationWasPrimaryDevice, transaction: tx)
         }
     }
 
@@ -493,12 +489,6 @@ extension TSAccountManagerImpl {
                 transaction: tx
             ).map(Aci.init(fromUUID:))
 
-            let isFinishedProvisioning = kvStore.getBool(
-                Keys.isFinishedProvisioning,
-                defaultValue: false,
-                transaction: tx
-            )
-
             let isDeregisteredOrDelinked = kvStore.getBool(
                 Keys.isDeregisteredOrDelinked,
                 transaction: tx
@@ -531,10 +521,18 @@ extension TSAccountManagerImpl {
                 // If a "reregistrationPhoneNumber" is present, we are reregistering.
                 // reregistrationAci is optional (for now, see above TODO).
                 // isDeregistered is probably also true; this takes precedence.
-                return .reregistering(
-                    phoneNumber: reregistrationPhoneNumber,
-                    aci: reregistrationAci
-                )
+
+                if kvStore.getBool(Keys.reregistrationWasPrimaryDevice, defaultValue: true, transaction: tx) {
+                    return .reregistering(
+                        phoneNumber: reregistrationPhoneNumber,
+                        aci: reregistrationAci
+                    )
+                } else {
+                    return .relinking(
+                        phoneNumber: reregistrationPhoneNumber,
+                        aci: reregistrationAci
+                    )
+                }
             } else if isDeregisteredOrDelinked == true {
                 // if isDeregistered is true, we may have been registered
                 // or not. But its being true means we should be deregistered
@@ -551,11 +549,7 @@ extension TSAccountManagerImpl {
                 // that we set them means we linked (but didn't finish yet).
                 return .unregistered
             } else {
-                // We have local identifiers, so we are either done
-                // or in the middle of provisioning.
-                if !isFinishedProvisioning && isPrimaryDevice == false {
-                    return .linkedButUnprovisioned
-                }
+                // We have local identifiers, so we are registered/provisioned.
                 return isPrimaryDevice == true ? .registered : .provisioned
             }
         }
@@ -577,19 +571,7 @@ extension TSAccountManagerImpl {
 
             static let reregistrationPhoneNumber = "TSAccountManager_ReregisteringPhoneNumberKey"
             static let reregistrationAci = "TSAccountManager_ReregisteringUUIDKey"
-
-            // Some historical context: "isOnboarded" used to be used during registration
-            // as well as provisioning, with different meanings for each.
-            // In registration, isRegistered would be true after the account was created,
-            // but isOnboarded would be true only after setting up the profile.
-            // In provisioning, isRegistered would be true after linking completed,
-            // but isOnboarded would be true only after doing an initial storage service
-            // sync, among other syncs.
-            // The concept is now dead in registration, but at time of writing not in
-            // provisioning. So the key remains the same, but the in-code name refers
-            // to its exclusive usage during provisioning to mark the time between
-            // linking and syncing.
-            static let isFinishedProvisioning = "TSAccountManager_IsOnboardedKey"
+            static let reregistrationWasPrimaryDevice = "TSAccountManager_ReregisteringWasPrimaryDeviceKey"
 
             static let isTransferInProgress = "TSAccountManager_IsTransferInProgressKey"
             static let wasTransferred = "TSAccountManager_WasTransferredKey"

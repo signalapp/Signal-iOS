@@ -222,7 +222,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             // Under the new reg flow, we will sync kbs keys before being fully ready with
             // ts account manager auth set up. skip if so.
             let registrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-            guard registrationState.isRegisteredOrFinishingProvisioning else {
+            guard registrationState.isRegistered else {
                 Logger.info("Skipping storage service operation with implicit auth during registration.")
                 return nil
             }

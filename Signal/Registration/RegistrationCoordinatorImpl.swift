@@ -1011,7 +1011,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 // Do any storage service backups we have pending.
                 self.deps.storageServiceManager.backupPendingChanges(
-                    authedDevice: accountIdentity.authedDevice(isPrimaryDevice: true)
+                    authedDevice: accountIdentity.authedDevice
                 )
                 return .value(.done)
             }
@@ -3012,7 +3012,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
-        let authedDevice = accountIdentity.authedDevice(isPrimaryDevice: true)
+        let authedDevice = accountIdentity.authedDevice
         return deps.accountManager.performInitialStorageServiceRestore(authedDevice: authedDevice)
             .then(on: schedulers.sync) { [weak self] in
                 guard let self else {
@@ -3523,7 +3523,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Service
             .makeWhoAmIRequest(
                 auth: ChatServiceAuth.explicit(
-                    aci: AciObjC(changeNumberState.localAci),
+                    aci: changeNumberState.localAci,
+                    deviceId: .primary,
                     password: changeNumberState.oldAuthToken
                 ),
                 signalService: deps.signalService,
@@ -3709,21 +3710,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var authedAccount: AuthedAccount {
-            return AuthedAccount.explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)
+            return AuthedAccount.explicit(
+                aci: aci,
+                pni: pni,
+                e164: e164,
+                deviceId: .primary,
+                authPassword: authPassword
+            )
         }
 
-        func authedDevice(isPrimaryDevice: Bool) -> AuthedDevice {
+        var authedDevice: AuthedDevice {
             return .explicit(AuthedDevice.Explicit(
                 aci: aci,
                 phoneNumber: e164,
                 pni: pni,
-                isPrimaryDevice: isPrimaryDevice,
+                deviceId: .primary,
                 authPassword: authPassword
             ))
         }
 
         var chatServiceAuth: ChatServiceAuth {
-            return ChatServiceAuth.explicit(aci: AciObjC(aci), password: authPassword)
+            return ChatServiceAuth.explicit(
+                aci: aci,
+                deviceId: .primary,
+                password: authPassword
+            )
         }
     }
 

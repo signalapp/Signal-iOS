@@ -119,6 +119,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             DependenciesBridge.shared.svr.storeSyncedMasterKey(
                 data: masterKey,
                 authedDevice: .implicit,
+                updateStorageService: true,
                 transaction: transaction.asV2Write
             )
         } else {

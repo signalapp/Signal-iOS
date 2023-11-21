@@ -50,10 +50,13 @@ internal class MockPreKeyManager: PreKeyManager {
         ))
     }
 
+    public var didFinalizeRegistrationPrekeys = false
+
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
     ) -> Promise<Void> {
+        didFinalizeRegistrationPrekeys = true
         return .value(())
     }
 

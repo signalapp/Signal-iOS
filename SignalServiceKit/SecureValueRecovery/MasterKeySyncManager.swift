@@ -55,8 +55,8 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
             runStartupJobsForLinkedDevice(tx: tx)
         case .delinked, .deregistered, .unregistered, .transferred,
                 .transferringIncoming, .transferringLinkedOutgoing,
-                .transferringPrimaryOutgoing, .linkedButUnprovisioned,
-                .reregistering:
+                .transferringPrimaryOutgoing,
+                .reregistering, .relinking:
             logger.info("Skipping; not registered")
             return
         }

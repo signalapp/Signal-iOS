@@ -7,7 +7,7 @@ import Foundation
 import SignalCoreKit
 
 public struct DeviceLimitExceededError: LocalizedError {
-    init() {}
+    public init() {}
 
     init?(_ error: Error) {
         guard error.httpStatusCode == 411 else { return nil }

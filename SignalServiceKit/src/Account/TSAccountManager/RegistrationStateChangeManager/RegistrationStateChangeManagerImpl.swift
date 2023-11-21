@@ -85,7 +85,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
     }
 
-    public func didLinkSecondary(
+    public func didProvisionSecondary(
         e164: E164,
         aci: Aci,
         pni: Pni?,
@@ -105,14 +105,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         tx.addAsyncCompletion(on: schedulers.main) {
             self.postLocalNumberDidChangeNotification()
-            self.postRegistrationStateDidChangeNotification()
-        }
-    }
-
-    public func didFinishProvisioningSecondary(tx: DBWriteTransaction) {
-        tsAccountManager.setDidFinishProvisioning(tx: tx)
-
-        tx.addAsyncCompletion(on: schedulers.main) {
             self.postRegistrationStateDidChangeNotification()
         }
     }
@@ -151,7 +143,12 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     ) {
-        tsAccountManager.resetForReregistration(localNumber: localPhoneNumber, localAci: localAci, tx: tx)
+        tsAccountManager.resetForReregistration(
+            localNumber: localPhoneNumber,
+            localAci: localAci,
+            wasPrimaryDevice: wasPrimaryDevice,
+            tx: tx
+        )
 
         signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.resetSessionStore(tx: tx)
         signalProtocolStoreManager.signalProtocolStore(for: .pni).sessionStore.resetSessionStore(tx: tx)

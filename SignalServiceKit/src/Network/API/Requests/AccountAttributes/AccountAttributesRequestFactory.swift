@@ -8,8 +8,9 @@ import SignalCoreKit
 
 public enum AccountAttributesRequestFactory {
 
+    /// If you are updating capabilities for a secondary device, use `updateLinkedDeviceCapabilitiesRequest` instead
     public static func updatePrimaryDeviceAttributesRequest(_ attributes: AccountAttributes) -> TSRequest {
-        // If you are updating capabilities for a secondary device, use `updateSecondaryDeviceCapabilities` instead
+
         owsAssert(
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true,
             "Trying to set primary device attributes from secondary/linked device"
@@ -30,5 +31,17 @@ public enum AccountAttributesRequestFactory {
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = true
         return result
+    }
+
+    public static func updateLinkedDeviceCapabilitiesRequest(
+        _ capabilities: AccountAttributes.Capabilities,
+        tsAccountManager: TSAccountManager
+    ) -> TSRequest {
+        owsAssert(
+            (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false).negated,
+            "Trying to set seconday device attributes from primary device"
+        )
+
+        return TSRequest(url: URL(string: "v1/devices/capabilities")!, method: "PUT", parameters: capabilities.requestParameters)
     }
 }
