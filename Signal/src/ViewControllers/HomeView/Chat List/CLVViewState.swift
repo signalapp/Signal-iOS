@@ -32,8 +32,7 @@ public class CLVViewState {
 
     // MARK: - State
 
-    // TODO: We should make this a let.
-    var chatListMode: ChatListMode = .inbox
+    let chatListMode: ChatListMode
 
     var shouldBeUpdatingView = false
 
@@ -47,6 +46,10 @@ public class CLVViewState {
     var lastKnownTableViewContentOffset: CGPoint?
 
     // MARK: - Initializer
+
+    init(chatListMode: ChatListMode) {
+        self.chatListMode = chatListMode
+    }
 
     public func configure() {
         tableDataSource.configure(viewState: self)
@@ -85,10 +88,7 @@ public extension ChatListViewController {
     var numberOfInboxThreads: UInt { renderState.inboxCount }
     var numberOfArchivedThreads: UInt { renderState.archiveCount }
 
-    var chatListMode: ChatListMode {
-        get { viewState.chatListMode }
-        set { viewState.chatListMode = newValue }
-    }
+    var chatListMode: ChatListMode { viewState.chatListMode }
 
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }

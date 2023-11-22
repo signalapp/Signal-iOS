@@ -13,7 +13,9 @@ public class ChatListViewController: OWSViewController {
 
     // MARK: Init
 
-    override init() {
+    init(chatListMode: ChatListMode) {
+        self.viewState = CLVViewState(chatListMode: chatListMode)
+
         super.init()
 
         tableDataSource.viewController = self
@@ -615,7 +617,7 @@ public class ChatListViewController: OWSViewController {
 
     // MARK: View State
 
-    let viewState = CLVViewState()
+    let viewState: CLVViewState
 
     private func shouldShowFirstConversationCue() -> Bool {
         let hasSavedThread = databaseStorage.read { transaction in

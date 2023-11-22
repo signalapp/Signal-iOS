@@ -14,7 +14,7 @@ class HomeTabBarController: UITabBarController {
         case stories = 1
     }
 
-    lazy var chatListViewController = ChatListViewController()
+    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = UITabBarItem(
         title: OWSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode."),
