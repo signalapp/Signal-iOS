@@ -6,17 +6,17 @@
 import SignalMessaging
 import SignalUI
 
-public class CLVTableDataSource: NSObject {
+class CLVTableDataSource: NSObject {
 
     private var viewState: CLVViewState!
 
-    public let tableView = CLVTableView()
+    let tableView = CLVTableView()
 
-    public weak var viewController: ChatListViewController?
+    weak var viewController: ChatListViewController?
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
-    public var renderState: CLVRenderState = .empty
+    var renderState: CLVRenderState = .empty
 
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
@@ -58,12 +58,8 @@ public class CLVTableDataSource: NSObject {
         tableView.register(ArchivedConversationsCell.self, forCellReuseIdentifier: ArchivedConversationsCell.reuseIdentifier)
         tableView.tableFooterView = UIView()
     }
-}
 
-// MARK: -
-
-extension CLVTableDataSource {
-    public func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
+    func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
         let threadViewModelCache = viewState.threadViewModelCache
         if let value = threadViewModelCache.get(key: thread.uniqueId) {
             return value
@@ -85,11 +81,6 @@ extension CLVTableDataSource {
     func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
         renderState.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess)
     }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension CLVTableDataSource: UIScrollViewDelegate {
 
     private func preloadCellsIfNecessary() {
         AssertIsOnMainThread()
@@ -188,7 +179,11 @@ extension CLVTableDataSource: UIScrollViewDelegate {
             preloadCellIfNecessaryAsync(indexPath: indexPath)
         }
     }
+}
 
+// MARK: - UIScrollViewDelegate
+
+extension CLVTableDataSource: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
@@ -288,8 +283,7 @@ extension CLVTableDataSource: UITableViewDelegate {
         return CGFloat.epsilon
     }
 
-    public func tableView(_ tableView: UITableView,
-                          viewForHeaderInSection section: Int) -> UIView? {
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         AssertIsOnMainThread()
 
         guard let section = ChatListSection(rawValue: section) else {
@@ -358,14 +352,14 @@ extension CLVTableDataSource: UITableViewDelegate {
         case .reminders:
             tableView.deselectRow(at: indexPath, animated: false)
         case .pinned, .unpinned:
-            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-                owsFailDebug("Missing threadViewModel.")
+            guard let thread = thread(forIndexPath: indexPath) else {
+                owsFailDebug("Missing thread.")
                 return
             }
             if viewState.multiSelectState.isActive {
                 viewController.updateCaptions()
             } else {
-                viewController.presentThread(threadViewModel.threadRecord, animated: true)
+                viewController.presentThread(thread, animated: true)
             }
         case .archiveButton:
             if viewState.multiSelectState.isActive {
@@ -388,22 +382,26 @@ extension CLVTableDataSource: UITableViewDelegate {
         guard viewController.canPresentPreview(fromIndexPath: indexPath) else {
             return nil
         }
-        guard let thread = renderState.thread(forIndexPath: indexPath) else {
+        guard let thread = thread(forIndexPath: indexPath) else {
             return nil
         }
 
-        return UIContextMenuConfiguration(identifier: thread.uniqueId as NSString,
-                                          previewProvider: { [weak viewController] in
-                                            viewController?.createPreviewController(atIndexPath: indexPath)
-                                          },
-                                          actionProvider: { _ in
-                                            // nil for now. But we may want to add options like "Pin" or "Mute" in the future
-                                            return nil
-                                          })
+        return UIContextMenuConfiguration(
+            identifier: thread.uniqueId as NSString,
+            previewProvider: { [weak viewController] in
+                viewController?.createPreviewController(atIndexPath: indexPath)
+            },
+            actionProvider: { _ in
+                // nil for now. But we may want to add options like "Pin" or "Mute" in the future
+                return nil
+            }
+        )
     }
 
-    public func tableView(_ tableView: UITableView,
-                          previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    public func tableView(
+        _ tableView: UITableView,
+        previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
         AssertIsOnMainThread()
 
         guard let threadId = configuration.identifier as? String else {
@@ -452,9 +450,11 @@ extension CLVTableDataSource: UITableViewDelegate {
         return UITargetedPreview(view: cell, parameters: params, target: target)
     }
 
-    public func tableView(_ tableView: UITableView,
-                          willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
-                          animator: UIContextMenuInteractionCommitAnimating) {
+    public func tableView(
+        _ tableView: UITableView,
+        willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
+        animator: UIContextMenuInteractionCommitAnimating
+    ) {
         AssertIsOnMainThread()
 
         guard let viewController = self.viewController else {
@@ -541,7 +541,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         AssertIsOnMainThread()
-                guard let section = ChatListSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableView.automaticDimension
         }
@@ -593,11 +593,11 @@ extension CLVTableDataSource: UITableViewDataSource {
         if let result = viewController.conversationCellHeightCache {
             return result
         }
-        guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
+        guard let cellContentToken = buildCellContentToken(for: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableView.automaticDimension
         }
-        let result = ChatListCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
+        let result = ChatListCell.measureCellHeight(cellContentToken: cellContentToken)
         viewController.conversationCellHeightCache = result
         return result
     }
@@ -609,28 +609,26 @@ extension CLVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
+        guard let contentToken = buildCellContentToken(for: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableViewCell()
         }
-        let configuration = cellConfigurationAndContentToken.configuration
-        let contentToken = cellConfigurationAndContentToken.contentToken
 
         cell.configure(cellContentToken: contentToken, spoilerAnimationManager: viewState.spoilerAnimationManager)
-        let thread = configuration.thread.threadRecord
         let cellName: String = {
-            if let groupThread = thread as? TSGroupThread {
+            switch contentToken.thread {
+            case let groupThread as TSGroupThread:
                 return "cell-group-\(groupThread.groupModel.groupName ?? "unknown")"
-            } else if let contactThread = thread as? TSContactThread {
+            case let contactThread as TSContactThread:
                 return "cell-contact-\(contactThread.contactAddress.stringForDisplay)"
-            } else {
-                owsFailDebug("invalid-thread-\(thread.uniqueId) ")
+            default:
+                owsFailDebug("invalid-thread-\(contentToken.thread.uniqueId) ")
                 return "Unknown"
             }
         }()
         cell.accessibilityIdentifier = cellName
 
-        if isConversationActive(forThread: thread) {
+        if isConversationActive(threadUniqueId: contentToken.thread.uniqueId) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         } else if !viewState.multiSelectState.isActive {
             tableView.deselectRow(at: indexPath, animated: false)
@@ -640,14 +638,14 @@ extension CLVTableDataSource: UITableViewDataSource {
         return cell
     }
 
-    private func isConversationActive(forThread thread: TSThread) -> Bool {
+    private func isConversationActive(threadUniqueId: String) -> Bool {
         AssertIsOnMainThread()
 
         guard let conversationSplitViewController = splitViewController as? ConversationSplitViewController else {
             owsFailDebug("Missing conversationSplitViewController.")
             return false
         }
-        return conversationSplitViewController.selectedThread?.uniqueId == thread.uniqueId
+        return conversationSplitViewController.selectedThread?.uniqueId == threadUniqueId
     }
 
     private func buildArchivedConversationsButtonCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
@@ -665,16 +663,13 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     // MARK: - Edit Actions
 
-    public func tableView(_ tableView: UITableView,
-                          commit editingStyle: UITableViewCell.EditingStyle,
-                          forRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
         // TODO: Is this method necessary?
     }
 
-    public func tableView(_ tableView: UITableView,
-                          trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let section = ChatListSection(rawValue: indexPath.section) else {
@@ -695,9 +690,10 @@ extension CLVTableDataSource: UITableViewDataSource {
                 return nil
             }
 
-            return viewController.trailingSwipeActionsConfiguration(for: threadViewModel,
-                                                                       closeConversationBlock: { [weak self] in
-                if let self = self, self.isConversationActive(forThread: threadViewModel.threadRecord) {
+            let threadUniqueId = threadViewModel.threadRecord.uniqueId
+            return viewController.trailingSwipeActionsConfiguration(for: threadViewModel, closeConversationBlock: { [weak self] in
+                guard let self else { return }
+                if self.isConversationActive(threadUniqueId: threadUniqueId) {
                     viewController.conversationSplitViewController?.closeSelectedConversation(animated: true)
                 }
             })
@@ -722,8 +718,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         }
     }
 
-    public func tableView(_ tableView: UITableView,
-                          leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    public func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let section = ChatListSection(rawValue: indexPath.section) else {
@@ -786,33 +781,35 @@ extension CLVTableDataSource {
         AssertIsOnMainThread()
 
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return false }
-        guard let homeCell = tableView.cellForRow(at: indexPath) as? ChatListCell else { return false }
-        guard let configToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken else { return false }
+        guard let cell = tableView.cellForRow(at: indexPath) as? ChatListCell else { return false }
+        guard let contentToken = buildCellContentToken(for: indexPath) else { return false }
 
-        let cellWasVisible = homeCell.isCellVisible
-        homeCell.reset()
+        let cellWasVisible = cell.isCellVisible
+        cell.reset()
         // reduces flicker effects for already visible cells
-        homeCell.configure(cellContentToken: configToken, spoilerAnimationManager: viewState.spoilerAnimationManager, asyncAvatarLoadingAllowed: false)
-        homeCell.isCellVisible = cellWasVisible
+        cell.configure(
+            cellContentToken: contentToken,
+            spoilerAnimationManager: viewState.spoilerAnimationManager,
+            asyncAvatarLoadingAllowed: false
+        )
+        cell.isCellVisible = cellWasVisible
         return true
     }
 
-    fileprivate struct CLVCellConfigurationAndContentToken {
-        let configuration: ChatListCell.Configuration
-        let contentToken: CLVCellContentToken
-    }
-
     // This method can be called from any thread.
-    private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?) -> ChatListCell.Configuration {
+    private static func buildCellConfiguration(
+        threadViewModel: ThreadViewModel,
+        lastReloadDate: Date?
+    ) -> ChatListCell.Configuration {
         owsAssertDebug(threadViewModel.chatListInfo != nil)
-        let configuration = ChatListCell.Configuration(thread: threadViewModel,
-                                                       lastReloadDate: lastReloadDate,
-                                                       isBlocked: threadViewModel.isBlocked)
+        let configuration = ChatListCell.Configuration(
+            threadViewModel: threadViewModel,
+            lastReloadDate: lastReloadDate
+        )
         return configuration
     }
 
-    fileprivate func buildCellConfigurationAndContentTokenSync(forIndexPath indexPath: IndexPath) -> CLVCellConfigurationAndContentToken? {
+    private func buildCellContentToken(for indexPath: IndexPath) -> CLVCellContentToken? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
@@ -823,29 +820,23 @@ extension CLVTableDataSource {
             owsFailDebug("Missing viewController.")
             return nil
         }
+        let cellContentCache = viewController.cellContentCache
+        let cellContentCacheKey = threadViewModel.threadRecord.uniqueId
+        // If we have an existing CLVCellContentToken, use it. Cell
+        // measurement/arrangement is expensive.
+        if let cellContentToken = cellContentCache.get(key: cellContentCacheKey) {
+            return cellContentToken
+        }
         let lastReloadDate: Date? = {
             guard viewState.hasEverAppeared else {
                 return nil
             }
             return self.lastReloadDate
         }()
-        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate)
-        let cellContentCache = viewController.cellContentCache
-        let contentToken = { () -> CLVCellContentToken in
-            // If we have an existing CLVCellContentToken, use it.
-            // Cell measurement/arrangement is expensive.
-            let cacheKey = configuration.thread.threadRecord.uniqueId
-            if let cellContentToken = cellContentCache.get(key: cacheKey) {
-                return cellContentToken
-            }
-
-            let cellContentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
-            cellContentCache.set(key: cacheKey, value: cellContentToken)
-            return cellContentToken
-        }()
-        return CLVCellConfigurationAndContentToken(configuration: configuration,
-                                                  contentToken: contentToken)
+        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel, lastReloadDate: lastReloadDate)
+        let cellContentToken = ChatListCell.buildCellContentToken(for: configuration)
+        cellContentCache.set(key: cellContentCacheKey, value: cellContentToken)
+        return cellContentToken
     }
 
     // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
@@ -897,7 +888,7 @@ extension CLVTableDataSource {
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
                                                             lastReloadDate: lastReloadDate)
-            let contentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
+            let contentToken = ChatListCell.buildCellContentToken(for: configuration)
             return (threadViewModel, contentToken)
         }.done(on: DispatchQueue.main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in
             // Commit the preloaded values to their respective caches.

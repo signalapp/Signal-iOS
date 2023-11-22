@@ -50,7 +50,8 @@ extension ChatListViewController {
         animated: Bool
     ) {
         conversationSplitViewController?.presentThread(
-            thread, action: action,
+            thread,
+            action: action,
             focusMessageId: focusMessageId,
             animated: animated
         )

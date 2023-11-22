@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
-public class ChatListCell: UITableViewCell {
+class ChatListCell: UITableViewCell {
 
-    public static let reuseIdentifier = "ChatListCell"
+    static let reuseIdentifier = "ChatListCell"
 
     private var avatarView: ConversationAvatarView?
     private let nameLabel = CVLabel()
@@ -30,14 +32,14 @@ public class ChatListCell: UITableViewCell {
     // The "Wrapper" shows either "snippet label" or "typing indicator".
     private let bottomRowWrapper = ManualLayoutView(name: "bottomRowWrapper")
 
-    public var isCellVisible = false {
+    var isCellVisible = false {
         didSet {
             updateTypingIndicatorState()
             spoilerConfigBuilder.isViewVisible = isCellVisible
         }
     }
 
-    private var cvviews: [CVView] {
+    private var cvViews: [CVView] {
         [
             nameLabel,
             snippetLabel,
@@ -85,9 +87,8 @@ public class ChatListCell: UITableViewCell {
             let config: HydratedMessageBody.DisplayConfiguration
         }
 
-        let thread: ThreadViewModel
+        let threadViewModel: ThreadViewModel
         let lastReloadDate: Date?
-        let isBlocked: Bool
         let overrideSnippet: OverrideSnippet?
         let overrideDate: Date?
 
@@ -100,10 +101,10 @@ public class ChatListCell: UITableViewCell {
                 // don't show "unread badge" or "message status" indicator.
                 return .none
             }
-            guard thread.hasUnreadMessages else {
+            guard threadViewModel.hasUnreadMessages else {
                 return .none
             }
-            let unreadCount = thread.unreadCount
+            let unreadCount = threadViewModel.unreadCount
             if unreadCount > 0 {
                 return .unreadWithCount(count: unreadCount)
             } else {
@@ -112,23 +113,24 @@ public class ChatListCell: UITableViewCell {
         }
 
         init(
-            thread: ThreadViewModel,
+            threadViewModel: ThreadViewModel,
             lastReloadDate: Date?,
-            isBlocked: Bool,
             overrideSnippet: OverrideSnippet? = nil,
             overrideDate: Date? = nil
         ) {
-            self.thread = thread
+            self.threadViewModel = threadViewModel
             self.lastReloadDate = lastReloadDate
-            self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
         }
     }
+
     private var cellContentToken: CLVCellContentToken?
-    public var nextUpdateTimestamp: Date?
-    var thread: TSThread? {
-        cellContentToken?.thread
+
+    var nextUpdateTimestamp: Date?
+
+    private var thread: TSThread? {
+        cellContentToken?.configuration.thread
     }
 
     // MARK: - View Constants
@@ -191,31 +193,23 @@ public class ChatListCell: UITableViewCell {
     }
 
     // This method can be invoked from any thread.
-    internal static func buildCellContentToken(forConfiguration configuration: Configuration) -> CLVCellContentToken {
-        let configs = buildCellConfigs(configuration: configuration)
-        let measurements = buildMeasurements(configuration: configuration,
-                                             configs: configs)
-        let cellContentToken = CLVCellContentToken(configs: configs,
-                                                  measurements: measurements)
-        return cellContentToken
+    static func buildCellContentToken(for configuration: Configuration) -> CLVCellContentToken {
+        let contentConfiguration = buildContentConfiguration(for: configuration)
+        let contentMeasurements = buildContentMeasurements(for: contentConfiguration)
+        return CLVCellContentToken(configuration: contentConfiguration, measurements: contentMeasurements)
     }
 
-    private static func buildCellConfigs(configuration: Configuration) -> CLVCellConfigs {
-        let shouldShowMuteIndicator = Self.shouldShowMuteIndicator(configuration: configuration)
-        let messageStatusToken = Self.buildMessageStatusToken(configuration: configuration)
-        let unreadIndicatorLabelConfig = Self.buildUnreadIndicatorLabelConfig(configuration: configuration)
-
-        return CLVCellConfigs(
-            thread: configuration.thread.threadRecord,
+    private static func buildContentConfiguration(for configuration: Configuration) -> CLVCellContentConfiguration {
+        return CLVCellContentConfiguration(
+            thread: configuration.threadViewModel.threadRecord,
             lastReloadDate: configuration.lastReloadDate,
-            timestamp: configuration.overrideDate ?? configuration.thread.chatListInfo?.lastMessageDate,
-            isBlocked: configuration.isBlocked,
-            shouldShowVerifiedBadge: configuration.thread.threadRecord.isNoteToSelf,
-            shouldShowMuteIndicator: shouldShowMuteIndicator,
+            timestamp: configuration.overrideDate ?? configuration.threadViewModel.chatListInfo?.lastMessageDate,
+            isBlocked: configuration.threadViewModel.isBlocked,
+            shouldShowVerifiedBadge: configuration.threadViewModel.threadRecord.isNoteToSelf,
+            shouldShowMuteIndicator: Self.shouldShowMuteIndicator(configuration: configuration),
             hasOverrideSnippet: configuration.hasOverrideSnippet,
-            messageStatusToken: messageStatusToken,
-            unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
-
+            messageStatusToken: Self.buildMessageStatusToken(configuration: configuration),
+            unreadIndicatorLabelConfig: Self.buildUnreadIndicatorLabelConfig(configuration: configuration),
             topRowStackConfig: Self.topRowStackConfig,
             bottomRowStackConfig: Self.bottomRowStackConfig,
             vStackConfig: Self.vStackConfig,
@@ -227,43 +221,46 @@ public class ChatListCell: UITableViewCell {
         )
     }
 
-    private static func buildMeasurements(configuration: Configuration,
-                                          configs: CLVCellConfigs) -> CLVCellMeasurements {
-        let shouldShowVerifiedBadge = configs.shouldShowVerifiedBadge
-        let shouldShowMuteIndicator = configs.shouldShowMuteIndicator
+    private static func buildContentMeasurements(for configuration: CLVCellContentConfiguration) -> CLVCellContentMeasurements {
+        let shouldShowVerifiedBadge = configuration.shouldShowVerifiedBadge
+        let shouldShowMuteIndicator = configuration.shouldShowMuteIndicator
 
-        let topRowStackConfig = configs.topRowStackConfig
-        let bottomRowStackConfig = configs.bottomRowStackConfig
-        let vStackConfig = configs.vStackConfig
-        let outerHStackConfig = configs.outerHStackConfig
-        let avatarStackConfig = configs.avatarStackConfig
-        let snippetLabelConfig = configs.snippetLabelConfig
-        let nameLabelConfig = configs.nameLabelConfig
-        let dateTimeLabelConfig = configs.dateTimeLabelConfig
+        let topRowStackConfig = configuration.topRowStackConfig
+        let bottomRowStackConfig = configuration.bottomRowStackConfig
+        let vStackConfig = configuration.vStackConfig
+        let outerHStackConfig = configuration.outerHStackConfig
+        let avatarStackConfig = configuration.avatarStackConfig
+        let snippetLabelConfig = configuration.snippetLabelConfig
+        let nameLabelConfig = configuration.nameLabelConfig
+        let dateTimeLabelConfig = configuration.dateTimeLabelConfig
 
         var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
-        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
-                                                maxWidth: .greatestFiniteMagnitude)
-        topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
-                                                                         verticalFlowBehavior: .fixed))
+        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: .greatestFiniteMagnitude)
+        topRowStackSubviewInfos.append(
+            nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress, verticalFlowBehavior: .fixed)
+        )
         if shouldShowVerifiedBadge {
             topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
         if shouldShowMuteIndicator {
             topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
-        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
-                                                maxWidth: CGFloat.greatestFiniteMagnitude)
-        topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
-                                                                         verticalFlowBehavior: .fixed))
+        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig, maxWidth: CGFloat.greatestFiniteMagnitude)
+        topRowStackSubviewInfos.append(
+            dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand, verticalFlowBehavior: .fixed)
+        )
 
-        let avatarSize: CGSize = .square(CGFloat(ChatListCell.avatarSize))
-        let avatarStackMeasurement = ManualStackView.measure(config: avatarStackConfig,
-                                                             subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
+        let avatarSize: CGSize = .square(CGFloat(avatarSize))
+        let avatarStackMeasurement = ManualStackView.measure(
+            config: avatarStackConfig,
+            subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
+        )
         let avatarStackSize = avatarStackMeasurement.measuredSize
 
-        let topRowStackMeasurement = ManualStackView.measure(config: topRowStackConfig,
-                                                             subviewInfos: topRowStackSubviewInfos)
+        let topRowStackMeasurement = ManualStackView.measure(
+            config: topRowStackConfig,
+            subviewInfos: topRowStackSubviewInfos
+        )
         let topRowStackSize = topRowStackMeasurement.measuredSize
 
         // Reserve space for two lines of snippet text, taking into account
@@ -276,50 +273,53 @@ public class ChatListCell: UITableViewCell {
             bottomRowWrapperSize.asManualSubviewInfo()
         ]
 
-        if let messageStatusToken = configs.messageStatusToken {
+        if let messageStatusToken = configuration.messageStatusToken {
             let statusIndicatorSize = messageStatusToken.image.size
             // The status indicator should vertically align with the
             // first line of the snippet.
             let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
-            bottomRowStackSubviewInfos.append(statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true,
-                                                                                      locationOffset: locationOffset))
+            bottomRowStackSubviewInfos.append(
+                statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset)
+            )
         }
 
-        var unreadBadgeMeasurements: CLVUnreadBadgeMeasurements?
-        if let unreadMeasurements = measureUnreadBadge(unreadIndicatorLabelConfig: configs.unreadIndicatorLabelConfig) {
-            unreadBadgeMeasurements = unreadMeasurements
-            let unreadBadgeSize = unreadMeasurements.badgeSize
+        let unreadBadgeMeasurements = measureUnreadBadge(unreadIndicatorLabelConfig: configuration.unreadIndicatorLabelConfig)
+        if let unreadBadgeMeasurements {
+            let unreadBadgeSize = unreadBadgeMeasurements.badgeSize
             // The unread indicator should vertically align with the
             // first line of the snippet.
             let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
-            bottomRowStackSubviewInfos.append(unreadBadgeSize.asManualSubviewInfo(hasFixedSize: true,
-                                                                                  locationOffset: locationOffset))
+            bottomRowStackSubviewInfos.append(
+                unreadBadgeSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset)
+            )
         }
 
-        let bottomRowStackMeasurement = ManualStackView.measure(config: bottomRowStackConfig,
-                                                                subviewInfos: bottomRowStackSubviewInfos)
+        let bottomRowStackMeasurement = ManualStackView.measure(
+            config: bottomRowStackConfig,
+            subviewInfos: bottomRowStackSubviewInfos
+        )
         let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
 
-        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
-                                                        subviewInfos: [
-                                                            topRowStackSize.asManualSubviewInfo,
-                                                            bottomRowStackSize.asManualSubviewInfo
-                                                        ])
+        let vStackMeasurement = ManualStackView.measure(
+            config: vStackConfig,
+            subviewInfos: [ topRowStackSize.asManualSubviewInfo, bottomRowStackSize.asManualSubviewInfo ]
+        )
         let vStackSize = vStackMeasurement.measuredSize
 
-        let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
-                                                             subviewInfos: [
-                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
-                                                                vStackSize.asManualSubviewInfo
-                                                             ])
+        let outerHStackMeasurement = ManualStackView.measure(
+            config: outerHStackConfig,
+            subviewInfos: [ avatarStackSize.asManualSubviewInfo(hasFixedWidth: true), vStackSize.asManualSubviewInfo ]
+        )
 
-        return CLVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
-                                  topRowStackMeasurement: topRowStackMeasurement,
-                                  bottomRowStackMeasurement: bottomRowStackMeasurement,
-                                  vStackMeasurement: vStackMeasurement,
-                                  outerHStackMeasurement: outerHStackMeasurement,
-                                  snippetLineHeight: snippetLineHeight,
-                                  unreadBadgeMeasurements: unreadBadgeMeasurements)
+        return CLVCellContentMeasurements(
+            avatarStackMeasurement: avatarStackMeasurement,
+            topRowStackMeasurement: topRowStackMeasurement,
+            bottomRowStackMeasurement: bottomRowStackMeasurement,
+            vStackMeasurement: vStackMeasurement,
+            outerHStackMeasurement: outerHStackMeasurement,
+            snippetLineHeight: snippetLineHeight,
+            unreadBadgeMeasurements: unreadBadgeMeasurements
+        )
     }
 
     func configure(
@@ -335,19 +335,15 @@ public class ChatListCell: UITableViewCell {
 
         self.cellContentToken = cellContentToken
 
-        let shouldShowMuteIndicator = cellContentToken.shouldShowMuteIndicator
-
-        let configs = cellContentToken.configs
-        let topRowStackConfig = configs.topRowStackConfig
-        let bottomRowStackConfig = configs.bottomRowStackConfig
-        let vStackConfig = configs.vStackConfig
-        let outerHStackConfig = configs.outerHStackConfig
-        let avatarStackConfig = configs.avatarStackConfig
-        let snippetLabelConfig = configs.snippetLabelConfig
-        let nameLabelConfig = configs.nameLabelConfig
-        let dateTimeLabelConfig = configs.dateTimeLabelConfig
-
-        let shouldShowVerifiedBadge = configs.thread.isNoteToSelf
+        let configuration = cellContentToken.configuration
+        let topRowStackConfig = configuration.topRowStackConfig
+        let bottomRowStackConfig = configuration.bottomRowStackConfig
+        let vStackConfig = configuration.vStackConfig
+        let outerHStackConfig = configuration.outerHStackConfig
+        let avatarStackConfig = configuration.avatarStackConfig
+        let snippetLabelConfig = configuration.snippetLabelConfig
+        let nameLabelConfig = configuration.nameLabelConfig
+        let dateTimeLabelConfig = configuration.dateTimeLabelConfig
 
         let measurements = cellContentToken.measurements
         let avatarStackMeasurement = measurements.avatarStackMeasurement
@@ -365,7 +361,7 @@ public class ChatListCell: UITableViewCell {
         owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
         avatarView?.updateWithSneakyTransactionIfNecessary({ config in
-            config.dataSource = .thread(cellContentToken.thread)
+            config.dataSource = .thread(configuration.thread)
             if asyncAvatarLoadingAllowed && cellContentToken.shouldLoadAvatarAsync {
                 config.usePlaceholderImages()
             } else {
@@ -376,10 +372,12 @@ public class ChatListCell: UITableViewCell {
         typingIndicatorView.configureForChatList()
 
         NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(typingIndicatorStateDidChange),
-                                               name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(typingIndicatorStateDidChange),
+            name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
+            object: nil
+        )
 
         // The top row contains:
         //
@@ -395,19 +393,19 @@ public class ChatListCell: UITableViewCell {
         // before the date/time label.
         //
         // The catch is that mute icon should "hug" the name label, so the
-        // name label can't expand to occupt any underflow in the layout.
+        // name label can't expand to occupy any underflow in the layout.
         var topRowStackSubviews = [UIView]()
 
         nameLabelConfig.applyForRendering(label: nameLabel)
         topRowStackSubviews.append(nameLabel)
 
-        if shouldShowVerifiedBadge {
+        if configuration.shouldShowVerifiedBadge {
             badgeView.image = Theme.iconImage(.official)
             badgeView.tintColor = .ows_signalBlue
             topRowStackSubviews.append(badgeView)
         }
 
-        if shouldShowMuteIndicator {
+        if configuration.shouldShowMuteIndicator {
             muteIconView.image = UIImage(imageLiteralResourceName: "bell-slash")
             muteIconView.tintColor = Self.snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
             topRowStackSubviews.append(muteIconView)
@@ -415,7 +413,7 @@ public class ChatListCell: UITableViewCell {
 
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
         self.nextUpdateTimestamp = nil
-        if let date = configs.timestamp, !DateUtil.dateIsOlderThanToday(date) {
+        if let date = configuration.timestamp, !DateUtil.dateIsOlderThanToday(date) {
             self.dateTimeLabel.text = DateUtil.formatDateShort(date)
             let calendar = Calendar.current
             let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
@@ -440,31 +438,30 @@ public class ChatListCell: UITableViewCell {
                snippetSize.height > snippetLineHeight * 2 {
                 owsFailDebug("view: \(view.bounds.size), snippetSize: \(snippetSize), snippetLineHeight: \(snippetLineHeight), snippetLabelConfig: \(snippetLabelConfig)")
             }
-            let snippetFrame = CGRect(x: 0,
-                                      y: 0,
-                                      width: view.width,
-                                      height: min(view.bounds.height, ceil(snippetSize.height)))
+            let snippetFrame = CGRect(x: 0, y: 0, width: view.width, height: min(view.bounds.height, ceil(snippetSize.height)))
             self.snippetLabel.frame = snippetFrame
         }
         let typingIndicatorSize = TypingIndicatorView.measurement().measuredSize
         bottomRowWrapper.addSubview(typingIndicatorView) { [weak self] _ in
             guard let self = self else { return }
             // Vertically align the typing indicator with the first line of the snippet label.
-            self.typingIndicatorView.frame = CGRect(x: 0,
-                                                    y: (snippetLineHeight - typingIndicatorSize.height) * 0.5,
-                                                    width: typingIndicatorSize.width,
-                                                    height: typingIndicatorSize.height)
+            self.typingIndicatorView.frame = CGRect(
+                x: 0,
+                y: (snippetLineHeight - typingIndicatorSize.height) * 0.5,
+                width: typingIndicatorSize.width,
+                height: typingIndicatorSize.height
+            )
         }
         updateTypingIndicatorState()
 
         var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
-        if let messageStatusToken = configs.messageStatusToken {
+        if let messageStatusToken = configuration.messageStatusToken {
             let statusIndicator = configureStatusIndicatorView(token: messageStatusToken)
             bottomRowStackSubviews.append(statusIndicator)
         }
 
         // If there are unread messages, show the "unread badge."
-        if let unreadIndicatorLabelConfig = configs.unreadIndicatorLabelConfig,
+        if let unreadIndicatorLabelConfig = configuration.unreadIndicatorLabelConfig,
            let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
             let unreadBadge = configureUnreadBadge(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
                                                    unreadBadgeMeasurements: unreadBadgeMeasurements)
@@ -478,15 +475,17 @@ public class ChatListCell: UITableViewCell {
         // It is only safe to reuse the bottom row wrapper if its subview list
         // hasn't changed.
         let newReuseToken = ReuseToken(
-            hasVerifiedBadge: shouldShowVerifiedBadge,
-            hasMuteIndicator: shouldShowMuteIndicator,
-            hasMessageStatusToken: configs.messageStatusToken != nil,
+            hasVerifiedBadge: configuration.shouldShowVerifiedBadge,
+            hasMuteIndicator: configuration.shouldShowMuteIndicator,
+            hasMessageStatusToken: configuration.messageStatusToken != nil,
             hasUnreadBadge: measurements.unreadBadgeMeasurements != nil
         )
 
-        avatarStack.configure(config: avatarStackConfig,
-                              measurement: avatarStackMeasurement,
-                              subviews: avatarStackSubviews)
+        avatarStack.configure(
+            config: avatarStackConfig,
+            measurement: avatarStackMeasurement,
+            subviews: avatarStackSubviews
+        )
 
         // topRowStack can only be configured for reuse if
         // its subview list hasn't changed.
@@ -518,19 +517,11 @@ public class ChatListCell: UITableViewCell {
 
         // vStack and outerHStack can always be configured for reuse.
         if self.reuseToken != nil {
-            vStack.configureForReuse(config: vStackConfig,
-                                     measurement: vStackMeasurement)
-
-            outerHStack.configureForReuse(config: outerHStackConfig,
-                                          measurement: outerHStackMeasurement)
+            vStack.configureForReuse(config: vStackConfig, measurement: vStackMeasurement)
+            outerHStack.configureForReuse(config: outerHStackConfig, measurement: outerHStackMeasurement)
         } else {
-            vStack.configure(config: vStackConfig,
-                             measurement: vStackMeasurement,
-                             subviews: vStackSubviews)
-
-            outerHStack.configure(config: outerHStackConfig,
-                                  measurement: outerHStackMeasurement,
-                                  subviews: outerHStackSubviews)
+            vStack.configure(config: vStackConfig, measurement: vStackMeasurement, subviews: vStackSubviews)
+            outerHStack.configure(config: outerHStackConfig, measurement: outerHStackMeasurement, subviews: outerHStackSubviews)
         }
 
         self.reuseToken = newReuseToken
@@ -539,54 +530,63 @@ public class ChatListCell: UITableViewCell {
     // MARK: - Stack Configs
 
     private static var topRowStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .center,
-                               spacing: 6,
-                               layoutMargins: .zero)
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 6,
+            layoutMargins: .zero
+        )
     }
 
     private static var bottomRowStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .center,
-                               spacing: 6,
-                               layoutMargins: .zero)
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 6,
+            layoutMargins: .zero
+        )
     }
 
     private static var vStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .vertical,
-                               alignment: .fill,
-                               spacing: 1,
-                               layoutMargins: UIEdgeInsets(top: 7,
-                                                           leading: 0,
-                                                           bottom: 9,
-                                                           trailing: 0))
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 1,
+            layoutMargins: UIEdgeInsets(top: 7, leading: 0, bottom: 9, trailing: 0)
+        )
     }
 
     private static var outerHStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .center,
-                               spacing: 12,
-                               layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0))
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 12,
+            layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0)
+        )
     }
 
     private static var avatarStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .center,
-                               spacing: 0,
-                               layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12))
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)
+        )
     }
 
     // MARK: - Message Status Indicator
 
     private static func buildMessageStatusToken(configuration: Configuration) -> CLVMessageStatusToken? {
-
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
-        let shouldHideStatusIndicator = configuration.hasOverrideSnippet
-        let thread = configuration.thread
-        guard !shouldHideStatusIndicator,
-            let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage,
-            let messageStatus = configuration.thread.chatListInfo?.lastMessageOutgoingStatus
+        let shouldShowStatusIndicator = !configuration.hasOverrideSnippet
+        guard shouldShowStatusIndicator else {
+            return nil
+        }
+        let threadViewModel = configuration.threadViewModel
+        guard
+            let outgoingMessage = threadViewModel.lastMessageForInbox as? TSOutgoingMessage,
+            let messageStatus = threadViewModel.chatListInfo?.lastMessageOutgoingStatus
         else {
             return nil
         }
@@ -628,9 +628,11 @@ public class ChatListCell: UITableViewCell {
         guard let image = statusIndicatorImage else {
             return nil
         }
-        return CLVMessageStatusToken(image: image.withRenderingMode(.alwaysTemplate),
-                                    tintColor: messageStatusViewTintColor,
-                                    shouldAnimateStatusIcon: shouldAnimateStatusIcon)
+        return CLVMessageStatusToken(
+            image: image.withRenderingMode(.alwaysTemplate),
+            tintColor: messageStatusViewTintColor,
+            shouldAnimateStatusIcon: shouldAnimateStatusIcon
+        )
     }
 
     private func configureStatusIndicatorView(token: CLVMessageStatusToken) -> UIView {
@@ -684,39 +686,38 @@ public class ChatListCell: UITableViewCell {
             return nil
         }
 
-        let unreadLabelSize = CVText.measureLabel(config: unreadIndicatorLabelConfig,
-                                                  maxWidth: .greatestFiniteMagnitude)
+        let unreadLabelSize = CVText.measureLabel(config: unreadIndicatorLabelConfig, maxWidth: .greatestFiniteMagnitude)
 
         // This is a bit arbitrary, but it should scale with the size of dynamic text.
         let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.25)
         // The "end caps" of the pill shape should be a half-circle.
         let minMargin = CeilEven(unreadBadgeHeight * 0.5)
         // Pill should be at least circular; can be wider.
-        let badgeSize = CGSize(width: max(unreadBadgeHeight,
-                                          unreadLabelSize.width + minMargin),
-                               height: unreadBadgeHeight)
-
-        return CLVUnreadBadgeMeasurements(badgeSize: badgeSize,
-                                         unreadLabelSize: unreadLabelSize)
+        let badgeSize = CGSize(
+            width: max(unreadBadgeHeight, unreadLabelSize.width + minMargin),
+            height: unreadBadgeHeight
+        )
+        return CLVUnreadBadgeMeasurements(badgeSize: badgeSize, unreadLabelSize: unreadLabelSize)
     }
 
-    private func configureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig,
-                                      unreadBadgeMeasurements measurements: CLVUnreadBadgeMeasurements) -> UIView {
+    private func configureUnreadBadge(
+        unreadIndicatorLabelConfig: CVLabelConfig,
+        unreadBadgeMeasurements: CLVUnreadBadgeMeasurements
+    ) -> UIView {
 
         let unreadLabel = self.unreadLabel
         unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
         unreadLabel.removeFromSuperview()
-        let unreadLabelSize = measurements.unreadLabelSize
+        let unreadLabelSize = unreadBadgeMeasurements.unreadLabelSize
 
         let unreadBadge = self.unreadBadge
         unreadBadge.backgroundColor = .ows_accentBlue
         unreadBadge.addSubview(unreadLabel) { view in
             // Center within badge.
-            unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5,
-                                       size: unreadLabelSize)
+            unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5, size: unreadLabelSize)
         }
 
-        let unreadBadgeHeight = measurements.badgeSize.height
+        let unreadBadgeHeight = unreadBadgeMeasurements.badgeSize.height
         unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2
         return unreadBadge
     }
@@ -724,8 +725,8 @@ public class ChatListCell: UITableViewCell {
     // MARK: - Label Configs
 
     private static func cvTextSnippet(configuration: Configuration) -> CVTextValue {
-        owsAssertDebug(configuration.thread.chatListInfo != nil)
-        let snippet: CLVSnippet = configuration.thread.chatListInfo?.snippet ?? .none
+        owsAssertDebug(configuration.threadViewModel.chatListInfo != nil)
+        let snippet: CLVSnippet = configuration.threadViewModel.chatListInfo?.snippet ?? .none
 
         switch snippet {
         case .blocked:
@@ -836,13 +837,13 @@ public class ChatListCell: UITableViewCell {
     }
 
     private static func shouldShowMuteIndicator(configuration: Configuration) -> Bool {
-        !configuration.hasOverrideSnippet && !configuration.isBlocked && !configuration.thread.hasPendingMessageRequest && configuration.thread.isMuted
+        !configuration.hasOverrideSnippet && !configuration.threadViewModel.isBlocked && !configuration.threadViewModel.hasPendingMessageRequest && configuration.threadViewModel.isMuted
     }
 
     private static func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
-        let thread = configuration.thread
+        let threadViewModel = configuration.threadViewModel
         var text: String = ""
-        if let labelDate = configuration.overrideDate ?? thread.chatListInfo?.lastMessageDate {
+        if let labelDate = configuration.overrideDate ?? threadViewModel.chatListInfo?.lastMessageDate {
             text = DateUtil.formatDateShort(labelDate)
         }
         return CVLabelConfig.unstyledText(
@@ -854,16 +855,16 @@ public class ChatListCell: UITableViewCell {
     }
 
     private static func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
-        let thread = configuration.thread
+        let threadViewModel = configuration.threadViewModel
         let text: String = {
-            if thread.threadRecord is TSContactThread {
-                if thread.threadRecord.isNoteToSelf {
+            if threadViewModel.threadRecord is TSContactThread {
+                if threadViewModel.threadRecord.isNoteToSelf {
                     return MessageStrings.noteToSelf
                 } else {
-                    return thread.name
+                    return threadViewModel.name
                 }
             } else {
-                if let name: String = thread.name.nilIfEmpty {
+                if let name: String = threadViewModel.name.nilIfEmpty {
                     return name
                 } else {
                     return MessageStrings.newGroupDefaultTitle
@@ -901,7 +902,7 @@ public class ChatListCell: UITableViewCell {
 
     // MARK: - Reuse
 
-    public override func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         reset()
@@ -911,8 +912,8 @@ public class ChatListCell: UITableViewCell {
         nextUpdateTimestamp = nil
         isCellVisible = false
 
-        for cvview in cvviews {
-            cvview.reset()
+        for cvView in cvViews {
+            cvView.reset()
         }
         avatarView = nil
 
@@ -945,9 +946,7 @@ public class ChatListCell: UITableViewCell {
     private func typingIndicatorStateDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
-        guard let thread = self.thread,
-              let notificationThreadId = notification.object as? String,
-              thread.uniqueId == notificationThreadId else {
+        guard let thread, let threadId = notification.object as? String, thread.uniqueId == threadId else {
             return
         }
 
@@ -957,21 +956,23 @@ public class ChatListCell: UITableViewCell {
     // MARK: - Typing Indicators
 
     private var shouldShowTypingIndicators: Bool {
-        guard let cellContentToken = self.cellContentToken else {
+        guard let cellContentToken else {
             return false
         }
-        let thread = cellContentToken.thread
-        if !cellContentToken.hasOverrideSnippet,
-           nil != typingIndicatorsImpl.typingAddress(forThread: thread) {
-            return true
+        let thread = cellContentToken.configuration.thread
+        guard
+            !cellContentToken.configuration.hasOverrideSnippet,
+            typingIndicatorsImpl.typingAddress(forThread: thread) != nil
+        else {
+            return false
         }
-        return false
+        return true
     }
 
     private func updateTypingIndicatorState() {
         AssertIsOnMainThread()
 
-        let shouldShowTypingIndicators = self.shouldShowTypingIndicators && self.isCellVisible
+        let shouldShowTypingIndicators = self.isCellVisible && self.shouldShowTypingIndicators
 
         // We use "override snippets" to show "message" search results.
         // We don't want to show typing indicators in that case.
@@ -986,7 +987,7 @@ public class ChatListCell: UITableViewCell {
         }
     }
 
-    public func ensureCellAnimations() {
+    func ensureCellAnimations() {
         AssertIsOnMainThread()
 
         updateTypingIndicatorState()
@@ -1003,8 +1004,7 @@ private struct CLVMessageStatusToken {
 
 // MARK: -
 
-private struct CLVCellConfigs {
-    // State
+private struct CLVCellContentConfiguration {
     let thread: TSThread
     let lastReloadDate: Date?
     let timestamp: Date?
@@ -1013,9 +1013,8 @@ private struct CLVCellConfigs {
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
     let messageStatusToken: CLVMessageStatusToken?
-    let unreadIndicatorLabelConfig: CVLabelConfig?
 
-    // Configs
+    let unreadIndicatorLabelConfig: CVLabelConfig?
     let topRowStackConfig: ManualStackView.Config
     let bottomRowStackConfig: ManualStackView.Config
     let vStackConfig: ManualStackView.Config
@@ -1035,7 +1034,7 @@ private struct CLVUnreadBadgeMeasurements {
 
 // MARK: -
 
-private struct CLVCellMeasurements {
+private struct CLVCellContentMeasurements {
     let avatarStackMeasurement: ManualStackView.Measurement
     let topRowStackMeasurement: ManualStackView.Measurement
     let bottomRowStackMeasurement: ManualStackView.Measurement
@@ -1076,29 +1075,25 @@ private struct CLVCellMeasurements {
 //   be rendered in the cell, its measurement/layout, etc.
 //   CLVCellContentToken is expensive to build.
 class CLVCellContentToken {
-    fileprivate let configs: CLVCellConfigs
-    fileprivate let measurements: CLVCellMeasurements
-
-    fileprivate var thread: TSThread { configs.thread }
-    fileprivate var isBlocked: Bool { configs.isBlocked }
-    fileprivate var shouldShowMuteIndicator: Bool { configs.shouldShowMuteIndicator }
-    fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
+    fileprivate let configuration: CLVCellContentConfiguration
+    fileprivate let measurements: CLVCellContentMeasurements
 
     fileprivate var shouldLoadAvatarAsync: Bool {
         // We want reloads to load avatars sync, but subsequent avatar loads
         // (e.g. from scrolling) and the initial load should be async.
-        guard let lastReloadDate = configs.lastReloadDate else {
+        guard let lastReloadDate = configuration.lastReloadDate else {
             return true
         }
         let avatarAsyncLoadInterval = kSecondInterval * 1
         return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
     }
 
-    fileprivate init(configs: CLVCellConfigs,
-                     measurements: CLVCellMeasurements) {
-        self.configs = configs
+    fileprivate init(configuration: CLVCellContentConfiguration, measurements: CLVCellContentMeasurements) {
+        self.configuration = configuration
         self.measurements = measurements
     }
+
+    var thread: TSThread { configuration.thread }
 }
 
 // MARK: -
