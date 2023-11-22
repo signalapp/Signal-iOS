@@ -15,7 +15,9 @@ public protocol SDSDatabaseStorageDelegate {
 // MARK: -
 
 @objc
-public class SDSDatabaseStorage: SDSTransactable {
+public class SDSDatabaseStorage: NSObject {
+
+    private let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
 
     private weak var delegate: SDSDatabaseStorageDelegate?
 
@@ -399,7 +401,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync, object: nil)
     }
 
-    // MARK: - SDSTransactable
+    // MARK: - Reading & Writing
 
     public func readThrows<T>(
         file: String = #file,
@@ -410,7 +412,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         try grdbStorage.read { try block($0.asAnyRead) }
     }
 
-    public override func read(
+    public func read(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
@@ -437,11 +439,47 @@ public class SDSDatabaseStorage: SDSTransactable {
         read(file: String(cString: file), function: String(cString: function), line: line, block: block)
     }
 
+    @discardableResult
+    public func read<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyReadTransaction) throws -> T
+    ) rethrows -> T {
+        return try _read(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+    }
+
+    // The "rescue" pattern is used in LibDispatch (and replicated here) to
+    // allow "rethrows" to work properly.
+    private func _read<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (SDSAnyReadTransaction) throws -> T,
+        rescue: (Error) throws -> Void
+    ) rethrows -> T {
+        var value: T!
+        var thrown: Error?
+        read(file: file, function: function, line: line) { tx in
+            do {
+                value = try block(tx)
+            } catch {
+                thrown = error
+            }
+        }
+        if let thrown {
+            try rescue(thrown.grdbErrorForLogging)
+        }
+        return value
+    }
+
     // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
-    public override func write(file: String = #file,
-                               function: String = #function,
-                               line: Int = #line,
-                               block: (SDSAnyWriteTransaction) -> Void) {
+    public func write(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> Void
+    ) {
         #if TESTABLE_BUILD
         if Thread.isMainThread && AppReadiness.isAppReady {
             Logger.warn("Database write on main thread.")
@@ -472,6 +510,205 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
 
         crossProcess.notifyChangedAsync()
+    }
+
+    @discardableResult
+    public func write<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) throws -> T
+    ) rethrows -> T {
+        return try _write(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+    }
+
+    // The "rescue" pattern is used in LibDispatch (and replicated here) to
+    // allow "rethrows" to work properly.
+    private func _write<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (SDSAnyWriteTransaction) throws -> T,
+        rescue: (Error) throws -> Void
+    ) rethrows -> T {
+        var value: T!
+        var thrown: Error?
+        write(file: file, function: function, line: line) { tx in
+            do {
+                value = try block(tx)
+            } catch {
+                thrown = error
+            }
+        }
+        if let thrown {
+            try rescue(thrown.grdbErrorForLogging)
+        }
+        return value
+    }
+
+    // MARK: - Async
+
+    @objc(asyncReadWithBlock:)
+    public func asyncReadObjC(block: @escaping (SDSAnyReadTransaction) -> Void) {
+        asyncRead(file: "objc", function: "block", line: 0, block: block)
+    }
+
+    @objc(asyncReadWithBlock:completion:)
+    public func asyncReadObjC(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncRead(file: "objc", function: "block", line: 0, block: block, completion: completion)
+    }
+
+    public func asyncRead(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyReadTransaction) -> Void,
+        completionQueue: DispatchQueue = .main,
+        completion: (() -> Void)? = nil
+    ) {
+        DispatchQueue.global().async {
+            self.read(file: file, function: function, line: line, block: block)
+
+            if let completion {
+                completionQueue.async(execute: completion)
+            }
+        }
+    }
+
+    public func asyncWrite(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> Void
+    ) {
+        asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
+    }
+
+    public func asyncWrite(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> Void,
+        completion: (() -> Void)?
+    ) {
+        asyncWrite(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
+    }
+
+    public func asyncWrite(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> Void,
+        completionQueue: DispatchQueue,
+        completion: (() -> Void)?
+    ) {
+        self.asyncWriteQueue.async {
+            self.write(file: file, function: function, line: line, block: block)
+            if let completion {
+                completionQueue.async(execute: completion)
+            }
+        }
+    }
+
+    // MARK: - Awaitable
+
+    public func awaitableWrite<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) throws -> T
+    ) async rethrows -> T {
+        return try await _awaitableWrite(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+    }
+
+    private func _awaitableWrite<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: @escaping (SDSAnyWriteTransaction) throws -> T,
+        rescue: @escaping (Error) throws -> Void
+    ) async rethrows -> T {
+        let result: Result<T, Error> = await withCheckedContinuation { continuation in
+            asyncWriteQueue.async {
+                do {
+                    let result = try self.write(file: file, function: function, line: line, block: block)
+                    continuation.resume(returning: .success(result))
+                } catch {
+                    continuation.resume(returning: .failure(error))
+                }
+            }
+        }
+        switch result {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            try rescue(error)
+            fatalError()
+        }
+    }
+
+    // MARK: - Promises
+
+    public func read<T>(
+        _: PromiseNamespace,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (SDSAnyReadTransaction) throws -> T
+    ) -> Promise<T> {
+        return Promise { future in
+            DispatchQueue.global().async {
+                do {
+                    future.resolve(try self.read(file: file, function: function, line: line, block: block))
+                } catch {
+                    future.reject(error)
+                }
+            }
+        }
+    }
+
+    public func write<T>(
+        _: PromiseNamespace,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        _ block: @escaping (SDSAnyWriteTransaction) throws -> T
+    ) -> Promise<T> {
+        return Promise { future in
+            self.asyncWriteQueue.async {
+                do {
+                    future.resolve(try self.write(file: file, function: function, line: line, block: block))
+                } catch {
+                    future.reject(error)
+                }
+            }
+        }
+    }
+
+    // MARK: - Obj-C Bridge
+
+    /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
+    @available(*, deprecated, message: "Use DatabaseStorageWrite() instead")
+    @objc
+    func __private_objc_write(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> Void
+    ) {
+        write(file: file, function: function, line: line, block: block)
+    }
+
+    /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
+    @available(*, deprecated, message: "Use DatabaseStorageAsyncWrite() instead")
+    @objc
+    func __private_objc_asyncWrite(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> Void
+    ) {
+        asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
 
     public static func owsFormatLogMessage(file: String = #file,

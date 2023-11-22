@@ -2081,7 +2081,6 @@
 		F9C5CD1F289453B300548EEE /* GRDBDatabaseStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA43289453B100548EEE /* SDSTransaction.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD23289453B300548EEE /* SDSTransactable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA44289453B100548EEE /* SDSTransactable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA45289453B100548EEE /* SDSCrossProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA48289453B100548EEE /* DeepCopy.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4781,7 +4780,6 @@
 		F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapter.swift; sourceTree = "<group>"; };
 		F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSDatabaseStorage+Objc.h"; sourceTree = "<group>"; };
 		F9C5CA43289453B100548EEE /* SDSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransaction.swift; sourceTree = "<group>"; };
-		F9C5CA44289453B100548EEE /* SDSTransactable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransactable.swift; sourceTree = "<group>"; };
 		F9C5CA45289453B100548EEE /* SDSCrossProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDSCrossProcess.h; sourceTree = "<group>"; };
 		F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigrator.swift; sourceTree = "<group>"; };
 		F9C5CA48289453B100548EEE /* DeepCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepCopy.swift; sourceTree = "<group>"; };
@@ -9650,7 +9648,6 @@
 				F9C5CA4A289453B100548EEE /* SDSRecordType.swift */,
 				F9C5CA4F289453B100548EEE /* SDSSerializable.swift */,
 				F9C5CA39289453B100548EEE /* SDSTableMetadata.swift */,
-				F9C5CA44289453B100548EEE /* SDSTransactable.swift */,
 				F9C5CA43289453B100548EEE /* SDSTransaction.swift */,
 				F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */,
 			);
@@ -12971,7 +12968,6 @@
 				F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */,
 				F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */,
 				F9C5CD19289453B300548EEE /* SDSTableMetadata.swift in Sources */,
-				F9C5CD23289453B300548EEE /* SDSTransactable.swift in Sources */,
 				F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */,
 				66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */,
 				662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */,
