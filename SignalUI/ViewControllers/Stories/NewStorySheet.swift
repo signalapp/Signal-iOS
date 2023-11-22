@@ -109,6 +109,7 @@ public class NewStorySheet: OWSTableSheetViewController {
 
             let contentRow = UIStackView(arrangedSubviews: [ iconView, titleStack ])
             contentRow.spacing = ContactCellView.avatarTextHSpacing
+            contentRow.alignment = .center
 
             cell.contentView.addSubview(contentRow)
             contentRow.autoPinWidthToSuperviewMargins()
