@@ -56,7 +56,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .outgoing,
             callStatus: .individual(.notAccepted),
-            timestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat
         )
 
         let contactServiceId = contactAddress.aci!
@@ -157,7 +157,15 @@ private func notImplemented() -> Never {
 // MARK: MockGroupCallRecordManager
 
 private class MockGroupCallRecordManager: GroupCallRecordManager {
-    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupThread: TSGroupThread, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupThread: TSGroupThread, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+        notImplemented()
+    }
+
+    func createOrUpdateCallRecord(callId: UInt64, groupThread: TSGroupThread, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+        notImplemented()
+    }
+
+    func updateCallBeganTimestampIfEarlier(existingCallRecord: CallRecord, callEventTimestamp: UInt64, tx: DBWriteTransaction) {
         notImplemented()
     }
 }
@@ -193,11 +201,11 @@ private class MockIndividualCallRecordManager: IndividualCallRecordManager {
         updatedRecords.append(.individual(newIndividualCallStatus))
     }
 
-    func updateInteractionTypeAndRecordIfExists(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, newCallInteractionType: RPRecentCallType, tx: SignalServiceKit.DBWriteTransaction) {
+    func updateInteractionTypeAndRecordIfExists(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, newCallInteractionType: RPRecentCallType, tx: DBWriteTransaction) {
         notImplemented()
     }
 
-    func createOrUpdateRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, tx: SignalServiceKit.DBWriteTransaction) {
+    func createOrUpdateRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, tx: DBWriteTransaction) {
         notImplemented()
     }
 }

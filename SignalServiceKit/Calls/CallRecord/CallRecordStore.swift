@@ -22,6 +22,24 @@ public protocol CallRecordStore {
         tx: DBWriteTransaction
     ) -> Bool
 
+    /// Update the direction of the given call record.
+    /// - Returns
+    /// True if the record was successfully updated. False otherwise.
+    func updateDirection(
+        callRecord: CallRecord,
+        newCallDirection: CallRecord.CallDirection,
+        tx: DBWriteTransaction
+    ) -> Bool
+
+    /// Update the call-began timestamp of the given call record.
+    /// - Returns
+    /// True if the record was successfully updated. False otherwise.
+    func updateTimestamp(
+        callRecord: CallRecord,
+        newCallBeganTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) -> Bool
+
     /// Update all relevant records in response to a thread merge.
     /// - Parameter fromThreadRowId
     /// The SQLite row ID of the thread being merged from.
@@ -65,6 +83,30 @@ class CallRecordStoreImpl: CallRecordStore {
         updateRecordStatusIfAllowed(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func updateDirection(
+        callRecord: CallRecord,
+        newCallDirection: CallRecord.CallDirection,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        updateDirection(
+            callRecord: callRecord,
+            newCallDirection: newCallDirection,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func updateTimestamp(
+        callRecord: CallRecord,
+        newCallBeganTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        updateTimestamp(
+            callRecord: callRecord,
+            newCallBeganTimestamp: newCallBeganTimestamp,
             db: SDSDB.shimOnlyBridge(tx).database
         )
     }
@@ -128,6 +170,36 @@ class CallRecordStoreImpl: CallRecordStore {
         logger.info("Updating existing call record.")
 
         callRecord.callStatus = newCallStatus
+        do {
+            try callRecord.update(db)
+            return true
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+            return false
+        }
+    }
+
+    func updateDirection(
+        callRecord: CallRecord,
+        newCallDirection: CallRecord.CallDirection,
+        db: Database
+    ) -> Bool {
+        callRecord.callDirection = newCallDirection
+        do {
+            try callRecord.update(db)
+            return true
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+            return false
+        }
+    }
+
+    func updateTimestamp(
+        callRecord: CallRecord,
+        newCallBeganTimestamp: UInt64,
+        db: Database
+    ) -> Bool {
+        callRecord.callBeganTimestamp = newCallBeganTimestamp
         do {
             try callRecord.update(db)
             return true

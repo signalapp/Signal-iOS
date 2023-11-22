@@ -34,7 +34,7 @@ final class CallRecordStoreTest: XCTestCase {
             callType: .audioCall,
             callDirection: .outgoing,
             callStatus: callStatus,
-            timestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat
         )
     }
 
@@ -274,7 +274,8 @@ private extension CallRecord {
             threadRowId == (overridingThreadRowId ?? other.threadRowId),
             callType == other.callType,
             callDirection == other.callDirection,
-            callStatus == other.callStatus
+            callStatus == other.callStatus,
+            callBeganTimestamp == other.callBeganTimestamp
         {
             return true
         }

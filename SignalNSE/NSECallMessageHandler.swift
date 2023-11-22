@@ -185,8 +185,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         NSELogger.uncorrelated.info("Received group call update for thread \(groupThread.uniqueId)")
         lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
             groupThread,
-            expectedEraId: updateMessage.eraID,
-            triggerEventTimestamp: serverReceivedTimestamp,
-            completion: completion)
+            peekTrigger: .receivedGroupUpdateMessage(
+                eraId: updateMessage.eraID,
+                messageTimestamp: serverReceivedTimestamp
+            ),
+            completion: completion
+        )
     }
 }

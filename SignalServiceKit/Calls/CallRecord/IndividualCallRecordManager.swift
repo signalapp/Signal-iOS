@@ -175,7 +175,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             callType: callType,
             callDirection: callDirection,
             callStatus: .individual(individualCallStatus),
-            timestamp: individualCallInteraction.timestamp
+            callBeganTimestamp: individualCallInteraction.timestamp
         )
 
         guard callRecordStore.insert(

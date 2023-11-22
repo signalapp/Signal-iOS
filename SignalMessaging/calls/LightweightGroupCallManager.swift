@@ -16,6 +16,24 @@ import SignalRingRTC
 /// This class is subclassed by ``CallService`` in the main app, to additionally
 /// manage calls this device is actively participating in.
 open class LightweightGroupCallManager: NSObject, Dependencies {
+    /// The triggers that may kick off a group call peek.
+    public enum PeekTrigger {
+        /// We received a group update message, and are peeking in response.
+        case receivedGroupUpdateMessage(eraId: String?, messageTimestamp: UInt64)
+
+        /// A local event occurred such that we want to peek.
+        case localEvent(timestamp: UInt64 = Date().ows_millisecondsSince1970)
+
+        var timestamp: UInt64 {
+            switch self {
+            case let .receivedGroupUpdateMessage(_, messageTimestamp):
+                return messageTimestamp
+            case let .localEvent(timestamp):
+                return timestamp
+            }
+        }
+    }
+
     public let sfuClient: SFUClient
     public let httpClient: HTTPClient
 
@@ -29,6 +47,10 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
     private var interactionStore: InteractionStore {
         DependenciesBridge.shared.interactionStore
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        DependenciesBridge.shared.tsAccountManager
     }
 
     private var sfuUrl: String {
@@ -47,39 +69,66 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
     open dynamic func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
-        expectedEraId: String? = nil,
-        triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+        peekTrigger: PeekTrigger,
         completion: (() -> Void)? = nil
     ) {
         guard thread.isLocalUserFullMember else { return }
 
         firstly(on: DispatchQueue.global()) { () -> Promise<PeekInfo> in
-            if let expectedEraId {
-                // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
-                // If it's the current call, we'll update with the PeekInfo once fetched
-                // Otherwise, it'll be marked as ended as soon as we complete the fetch
-                // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
-                self.insertPlaceholderGroupCallMessageIfNecessary(
-                    eraId: expectedEraId,
-                    discoveredAtTimestamp: triggerEventTimestamp,
+            switch peekTrigger {
+            case .localEvent, .receivedGroupUpdateMessage(nil, _):
+                break
+            case let .receivedGroupUpdateMessage(.some(eraId), messageTimestamp):
+                /// If we're expecting a call with a specific era ID,
+                /// prepopulate an entry in the database. If it's the current
+                /// call, we'll populate it once we've fetched the peek info.
+                /// Otherwise, it'll be marked ended after the fetch.
+                ///
+                /// If we fail to fetch, this entry will stick around until the
+                /// next peek info fetch.
+                self.upsertPlaceholderGroupCallModelsIfNecessary(
+                    eraId: eraId,
+                    triggerEventTimestamp: messageTimestamp,
                     groupThread: thread
                 )
             }
 
             return self.fetchPeekInfo(for: thread)
         }.then(on: DispatchQueue.sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
-            // We only want to update the call message with the participants of the peekInfo if the peek's
-            // era matches the era for the expected message. This wouldn't be the case if say, a device starts
-            // fetching a whole batch of messages offline and it includes the group call signaling messages from
-            // two different eras.
-            if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
+            let shouldUpdateCallModels: Bool = {
+                guard let infoEraId = info.eraId else {
+                    // We do want to update models if there's no active call, in
+                    // case we need to reflect that a call has ended.
+                    return true
+                }
+
+                switch peekTrigger {
+                case let .receivedGroupUpdateMessage(eraId, _):
+                    /// If we're processing a group call update message for an
+                    /// old call, with a non-current era ID, we don't need to
+                    /// update any models. Instead, silently drop the peek.
+                    ///
+                    /// Instead, any models pertaining to the old call will be
+                    /// cleaned up during a future peek.
+                    return eraId == infoEraId
+                case .localEvent:
+                    return true
+                }
+            }()
+
+            if shouldUpdateCallModels {
                 Logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
 
-                return self.updateGroupCallModelsForPeek(
-                    info,
-                    for: thread,
-                    timestamp: triggerEventTimestamp
-                )
+                return self.databaseStorage.write(.promise) { tx in
+                    self.updateGroupCallModelsForPeek(
+                        peekInfo: info,
+                        groupThread: thread,
+                        triggerEventTimestamp: peekTrigger.timestamp,
+                        tx: tx
+                    )
+                }.recover { error in
+                    owsFailDebug("Failed to get database write: \(error)")
+                }
             } else {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
                 return Guarantee.value(())
@@ -101,90 +150,94 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
     /// Update models for the group call in the given thread using the given
     /// peek info.
-    @discardableResult
     public func updateGroupCallModelsForPeek(
-        _ info: PeekInfo,
-        for groupThread: TSGroupThread,
-        timestamp: UInt64
-    ) -> Guarantee<Void> {
-        return databaseStorage.write(.promise) { tx in
-            let currentCallId: UInt64? = info.eraId.map { callIdFromEra($0) }
+        peekInfo: PeekInfo,
+        groupThread: TSGroupThread,
+        triggerEventTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let currentCallId: UInt64? = peekInfo.eraId.map { callIdFromEra($0) }
 
-            // Clean up any unended group calls that don't match the currently
-            // in-progress call.
-            let interactionForCurrentCall = self.cleanUpUnendedGroupCalls(
-                currentCallId: currentCallId,
+        // Clean up any unended group calls that don't match the currently
+        // in-progress call.
+        let interactionForCurrentCall = self.cleanUpUnendedCallMessagesAsNecessary(
+            currentCallId: currentCallId,
+            groupThread: groupThread,
+            tx: tx
+        )
+
+        guard
+            let currentCallId,
+            let creatorAci = peekInfo.creator.map({ Aci(fromUUID: $0) })
+        else { return }
+
+        let joinedMemberAcis = peekInfo.joinedMembers.map { Aci(fromUUID: $0) }
+
+        let interactionToUpdate: OWSGroupCallMessage? = {
+            if let interactionForCurrentCall {
+                return interactionForCurrentCall
+            }
+
+            guard let groupThreadRowId = groupThread.sqliteRowId else {
+                owsFailDebug("Missing SQLite row ID for group thread!")
+                return nil
+            }
+
+            // Call IDs are server-defined, and don't reset immediately
+            // after a call finishes. That means that if a call has recently
+            // concluded – i.e., there is no "current call" interaction – we
+            // may still have a record of that concluded call that has the
+            // "current" call ID. If so, we should reuse/update it and its
+            // interaction.
+            if let existingCallRecordForCallId = self.callRecordStore.fetch(
+                callId: currentCallId,
+                threadRowId: groupThreadRowId,
+                tx: tx.asV2Write
+            ) {
+                return self.interactionStore.fetchAssociatedInteraction(
+                    callRecord: existingCallRecordForCallId, tx: tx.asV2Read
+                )
+            }
+
+            return nil
+        }()
+
+        if let interactionToUpdate {
+            let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
+
+            self.interactionStore.updateGroupCallInteractionAcis(
+                groupCallInteraction: interactionToUpdate,
+                joinedMemberAcis: joinedMemberAcis,
+                creatorAci: creatorAci,
+                tx: tx.asV2Write
+            )
+
+            if wasOldMessageEmpty {
+                postUserNotificationIfNecessary(
+                    groupCallMessage: interactionToUpdate,
+                    joinedMemberAcis: joinedMemberAcis,
+                    creatorAci: creatorAci,
+                    groupThread: groupThread,
+                    tx: tx
+                )
+            }
+        } else if !joinedMemberAcis.isEmpty {
+            let newMessage = self.createModelsForNewGroupCall(
+                callId: currentCallId,
+                joinedMemberAcis: joinedMemberAcis,
+                creatorAci: creatorAci,
+                triggerEventTimestamp: triggerEventTimestamp,
+                groupThread: groupThread,
+                tx: tx.asV2Write
+            )
+
+            postUserNotificationIfNecessary(
+                groupCallMessage: newMessage,
+                joinedMemberAcis: joinedMemberAcis,
+                creatorAci: creatorAci,
                 groupThread: groupThread,
                 tx: tx
             )
-
-            guard
-                let currentCallId,
-                let creatorAci = info.creator.map({ Aci(fromUUID: $0) })
-            else { return }
-
-            let joinedMemberAcis = info.joinedMembers.map { Aci(fromUUID: $0) }
-
-            let interactionToUpdate: OWSGroupCallMessage? = {
-                if let interactionForCurrentCall {
-                    return interactionForCurrentCall
-                }
-
-                guard let groupThreadRowId = groupThread.sqliteRowId else {
-                    owsFailDebug("Missing SQLite row ID for group thread!")
-                    return nil
-                }
-
-                // Call IDs are server-defined, and don't reset immediately
-                // after a call finishes. That means that if a call has recently
-                // concluded – i.e., there is no "current call" interaction – we
-                // may still have a record of that concluded call that has the
-                // "current" call ID. If so, we should reuse/update it and its
-                // interaction.
-                if let existingCallRecordForCallId = self.callRecordStore.fetch(
-                    callId: currentCallId,
-                    threadRowId: groupThreadRowId,
-                    tx: tx.asV2Write
-                ) {
-                    return self.interactionStore.fetchAssociatedInteraction(
-                        callRecord: existingCallRecordForCallId, tx: tx.asV2Read
-                    )
-                }
-
-                return nil
-            }()
-
-            if let interactionToUpdate {
-                let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
-
-                self.interactionStore.updateGroupCallInteractionAcis(
-                    groupCallInteraction: interactionToUpdate,
-                    joinedMemberAcis: joinedMemberAcis,
-                    creatorAci: creatorAci,
-                    tx: tx.asV2Write
-                )
-
-                if wasOldMessageEmpty {
-                    self.postUserNotificationIfNecessary(
-                        groupCallMessage: interactionToUpdate, transaction: tx
-                    )
-                }
-            } else if !info.joinedMembers.isEmpty {
-                let newMessage = self.createModelsForNewGroupCall(
-                    callId: currentCallId,
-                    joinedMemberAcis: joinedMemberAcis,
-                    creatorAci: creatorAci,
-                    discoveredAtTimestamp: timestamp,
-                    groupThread: groupThread,
-                    tx: tx.asV2Write
-                )
-
-                self.postUserNotificationIfNecessary(
-                    groupCallMessage: newMessage, transaction: tx
-                )
-            }
-        }.recover(on: DispatchQueue.sharedUtility) { error in
-            owsFailDebug("Failed to update call message with error: \(error)")
         }
     }
 
@@ -192,7 +245,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         callId: UInt64,
         joinedMemberAcis: [Aci],
         creatorAci: Aci?,
-        discoveredAtTimestamp: UInt64,
+        triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread,
         tx: DBWriteTransaction
     ) -> OWSGroupCallMessage {
@@ -200,7 +253,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             joinedMemberAcis: joinedMemberAcis.map { AciObjC($0) },
             creatorAci: creatorAci.map { AciObjC($0) },
             thread: groupThread,
-            sentAtTimestamp: discoveredAtTimestamp
+            sentAtTimestamp: triggerEventTimestamp
         )
         interactionStore.insertInteraction(
             newGroupCallInteraction, tx: tx
@@ -216,7 +269,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         return newGroupCallInteraction
     }
 
-    /// Ends all group calls that do not match the given call ID.
+    /// Marks all group call messages not matching the given call ID as "ended".
+    ///
     /// - Parameter currentCallId
     /// The ID of the in-progress call for this group, if any.
     /// - Parameter groupThread
@@ -224,7 +278,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
     /// - Returns
     /// The interaction representing the in-progress call for the given group
     /// (matching the given call ID), if any.
-    private func cleanUpUnendedGroupCalls(
+    private func cleanUpUnendedCallMessagesAsNecessary(
         currentCallId: UInt64?,
         groupThread: TSGroupThread,
         tx: SDSAnyWriteTransaction
@@ -297,9 +351,9 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         return currentCallIdInteractions.first
     }
 
-    private func insertPlaceholderGroupCallMessageIfNecessary(
+    private func upsertPlaceholderGroupCallModelsIfNecessary(
         eraId: String,
-        discoveredAtTimestamp: UInt64,
+        triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread
     ) {
         AssertNotOnMainThread()
@@ -321,25 +375,32 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 return
             }
 
-            guard callRecordStore.fetch(
+            if let existingCallRecord = callRecordStore.fetch(
                 callId: callId,
                 threadRowId: groupThreadRowId,
-                tx: tx.asV2Write
-            ) == nil else {
-                // If we already have a call record for this call ID, bail.
-                return
+                tx: tx.asV2Read
+            ) {
+                /// We've already learned about this call, potentially via an
+                /// opportunistic peek. If we're now learning that the call may
+                /// have started earlier than we learned about it, we should
+                /// track the earlier time.
+                groupCallRecordManager.updateCallBeganTimestampIfEarlier(
+                    existingCallRecord: existingCallRecord,
+                    callEventTimestamp: triggerEventTimestamp,
+                    tx: tx.asV2Write
+                )
+            } else {
+                Logger.info("Inserting placeholder group call message with callId: \(callId)")
+
+                _ = createModelsForNewGroupCall(
+                    callId: callId,
+                    joinedMemberAcis: [],
+                    creatorAci: nil,
+                    triggerEventTimestamp: triggerEventTimestamp,
+                    groupThread: groupThread,
+                    tx: tx.asV2Write
+                )
             }
-
-            Logger.info("Inserting placeholder group call message with callId: \(callId)")
-
-            _ = createModelsForNewGroupCall(
-                callId: callId,
-                joinedMemberAcis: [],
-                creatorAci: nil,
-                discoveredAtTimestamp: discoveredAtTimestamp,
-                groupThread: groupThread,
-                tx: tx.asV2Write
-            )
         }
     }
 
@@ -363,23 +424,29 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         }
     }
 
-    open dynamic func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+    open dynamic func postUserNotificationIfNecessary(
+        groupCallMessage: OWSGroupCallMessage,
+        joinedMemberAcis: [Aci],
+        creatorAci: Aci,
+        groupThread: TSGroupThread,
+        tx: SDSAnyWriteTransaction
+    ) {
         AssertNotOnMainThread()
 
-        // The message must have at least one participant
-        guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
+        // We must have at least one participant, and it can't have been created
+        // by the local user.
+        guard
+            !joinedMemberAcis.isEmpty,
+            let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
+            creatorAci != localAci
+        else { return }
 
-        // The creator of the call must be known, and it can't be the local user
-        guard let creator = groupCallMessage.creatorAddress, !creator.isLocalAddress else { return }
-
-        guard let thread = TSGroupThread.anyFetch(uniqueId: groupCallMessage.uniqueThreadId, transaction: transaction) else {
-            owsFailDebug("Unknown thread")
-            return
-        }
-        Self.notificationPresenter?.notifyUser(forPreviewableInteraction: groupCallMessage,
-                                               thread: thread,
-                                               wantsSound: true,
-                                               transaction: transaction)
+        notificationPresenter?.notifyUser(
+            forPreviewableInteraction: groupCallMessage,
+            thread: groupThread,
+            wantsSound: true,
+            transaction: tx
+        )
     }
 }
 

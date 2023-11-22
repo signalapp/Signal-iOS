@@ -36,7 +36,7 @@
 		329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */; };
 		32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */; };
 		32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */; };
-		32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */; };
+		32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */; };
 		32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */; };
 		32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */; };
 		32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C584A725B81C6600256804 /* AvatarViewController.swift */; };
@@ -2601,7 +2601,7 @@
 		329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfacePreferenceViewController.swift; sourceTree = "<group>"; };
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
 		32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupCallPill.swift; sourceTree = "<group>"; };
-		32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallUpdateMessageHandler.swift; sourceTree = "<group>"; };
+		32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallAccessoryMessageDelegate.swift; sourceTree = "<group>"; };
 		32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
 		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
 		32C584A725B81C6600256804 /* AvatarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewController.swift; sourceTree = "<group>"; };
@@ -7370,8 +7370,8 @@
 		8814D9642564A32500A472E3 /* Group */ = {
 			isa = PBXGroup;
 			children = (
+				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
 				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
-				32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -12042,6 +12042,7 @@
 				503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */,
 				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
+				32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */,
@@ -12049,7 +12050,6 @@
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,
 				328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */,
 				88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */,
-				32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */,
 				88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */,
 				88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */,
 				88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */,
