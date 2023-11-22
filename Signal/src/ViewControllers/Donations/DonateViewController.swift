@@ -89,6 +89,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             )
         }
 
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         render(oldState: nil)
         loadAndUpdateState()
 

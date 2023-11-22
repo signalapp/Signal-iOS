@@ -30,7 +30,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
 
     public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
-    public override var navbarBackgroundColorOverride: UIColor? { .clear }
+    public override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
 
     init(
         donationAmount: FiatMoney,
@@ -77,7 +77,14 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        cardNumberView.becomeFirstResponder()
+        switch paymentMethod {
+        case .card:
+            cardNumberView.becomeFirstResponder()
+        case .sepa:
+            ibanView.becomeFirstResponder()
+        case .ideal:
+            break
+        }
     }
 
     public override func themeDidChange() {
@@ -89,7 +96,8 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     // MARK: - Events
 
     private func didSubmit() {
-        // TODO: Dismiss keyboard?
+        dismissKeyboard()
+
         switch formState {
         case .invalid, .potentiallyValid:
             owsFailDebug("[Donations] It should be impossible to submit the form without a fully-valid card. Is the submit button properly disabled?")
@@ -117,6 +125,19 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                     owsFailDebug("Gift badges do not support bank transfers")
                 }
             }
+        }
+    }
+
+    private func dismissKeyboard() {
+        [
+            cardNumberView,
+            expirationView,
+            cvvView,
+            ibanView,
+            nameView,
+            emailView,
+        ].forEach { formFieldView in
+            formFieldView.resignFirstResponder()
         }
     }
 
@@ -155,7 +176,6 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             .underlineColor: UIColor.clear,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
-        subheaderTextView.textAlignment = .center
 
         // Only change the placeholder when enough digits are entered.
         // Helps avoid a jittery UI as you type/delete.

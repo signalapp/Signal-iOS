@@ -88,6 +88,9 @@ extension DonationPaymentDetailsViewController {
         @discardableResult
         override func becomeFirstResponder() -> Bool { textField.becomeFirstResponder() }
 
+        @discardableResult
+        override func resignFirstResponder() -> Bool { textField.resignFirstResponder() }
+
         // MARK: Initializers
 
         init(
@@ -122,6 +125,12 @@ extension DonationPaymentDetailsViewController {
 
                 let titleAndTextFieldHStack = UIStackView(arrangedSubviews: [titleContainer, textAndErrorVStack])
                 titleAndTextFieldHStack.axis = .horizontal
+
+                // Keep the title label aligned with the text field
+                titleAndTextFieldHStack.alignment = .top
+                textField.setCompressionResistanceVerticalHigh()
+                textField.autoPinHeight(toHeightOf: titleContainer)
+
                 titleContainer.autoSetDimension(.width, toSize: width + Self.titleSpacing)
 
                 self.addSubview(titleAndTextFieldHStack)
