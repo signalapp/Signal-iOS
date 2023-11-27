@@ -31,6 +31,8 @@ private extension TSOutgoingMessage {
 
 public class MessageSender: Dependencies {
 
+    private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
+
     public init() {
         SwiftSingletons.register(self)
     }
@@ -556,20 +558,36 @@ public class MessageSender: Dependencies {
         return message.hasRenderableContent() ? .normal : .low
     }
 
-    private func prepareToSendMessages() async throws -> SenderCertificates {
-        let isAppLockedDueToPreKeyUpdateFailures = databaseStorage.read { tx in
-            DependenciesBridge.shared.preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+    private func waitForPreKeyRotationIfNeeded() async throws {
+        while let taskToWaitFor = preKeyRotationTaskIfNeeded() {
+            try await taskToWaitFor.value
         }
-        if isAppLockedDueToPreKeyUpdateFailures {
-            Logger.info("Rotating signed pre-key before sending message.")
-            // Retry prekey update every time user tries to send a message while app is
-            // disabled due to prekey update failures.
-            //
-            // Only try to update the signed prekey; updating it is sufficient to
-            // re-enable message sending.
-            try await DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys().awaitable()
+    }
+
+    private let pendingPreKeyRotation = AtomicValue<Task<Void, Error>?>(nil, lock: AtomicLock())
+
+    private func preKeyRotationTaskIfNeeded() -> Task<Void, Error>? {
+        return pendingPreKeyRotation.map { existingTask in
+            if let existingTask {
+                return existingTask
+            }
+            let shouldRunPreKeyRotation = databaseStorage.read { tx in
+                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+            }
+            if shouldRunPreKeyRotation {
+                Logger.info("Rotating signed pre-key before sending message.")
+                // Retry prekey update every time user tries to send a message while app is
+                // disabled due to prekey update failures.
+                //
+                // Only try to update the signed prekey; updating it is sufficient to
+                // re-enable message sending.
+                return Task {
+                    try await self.preKeyManager.rotateSignedPreKeys().awaitable()
+                    self.pendingPreKeyRotation.set(nil)
+                }
+            }
+            return nil
         }
-        return try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
     }
 
     // Mark skipped recipients as such. We may skip because:
@@ -747,7 +765,8 @@ public class MessageSender: Dependencies {
             throw OWSUnretryableMessageSenderError()
         }
         do {
-            let senderCertificates = try await prepareToSendMessages()
+            try await waitForPreKeyRotationIfNeeded()
+            let senderCertificates = try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
         } catch {
             if message.wasSentToAnyRecipient {
