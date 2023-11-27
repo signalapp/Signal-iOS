@@ -74,13 +74,6 @@ extension PreKey {
             // May also create the pni identity key if it didn't exist;
             // if it did the existing key will be reused.
             case createOrRotatePniKeys(targets: Operation.Target)
-
-            // Update the targeted prekeys, regardless of their current state.
-            // May also create the identity key if it didn't exist;
-            // if it did the existing key will be reused.
-            // TODO: remove this mode, everything that was create should
-            // either use new registration methods or pni methods.
-            case legacy_create(identity: OWSIdentity, targets: Operation.Target)
         }
     }
 }

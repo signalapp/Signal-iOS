@@ -240,12 +240,6 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
     public func clearPreAuthChallengeToken() {
         didClearPreAuthChallengeToken = true
     }
-
-    public func syncPushTokensForcingUpload(
-        auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult> {
-        fatalError("Only legacy registration should be syncing push tokens")
-    }
 }
 
 // MARK: - ReceiptManager

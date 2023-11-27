@@ -287,10 +287,6 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
     func receivePreAuthChallengeToken() -> Guarantee<String>
 
     func clearPreAuthChallengeToken()
-
-    func syncPushTokensForcingUpload(
-        auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult>
 }
 
 public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _RegistrationCoordinator_PushRegistrationManagerShim {
@@ -327,28 +323,6 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
 
     public func clearPreAuthChallengeToken() {
         manager.clearPreAuthChallengeToken()
-    }
-
-    public func syncPushTokensForcingUpload(
-        auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult> {
-        let job = SyncPushTokensJob(mode: .forceUpload, auth: auth)
-        return Guarantee.wrapAsync {
-            do {
-                try await job.run()
-                return .success
-            } catch {
-                if error.isNetworkFailureOrTimeout {
-                    return .networkError
-                }
-                switch error {
-                case PushRegistrationError.pushNotSupported(let description):
-                    return .pushUnsupported(description: description)
-                default:
-                    return .genericError(error)
-                }
-            }
-        }
     }
 }
 

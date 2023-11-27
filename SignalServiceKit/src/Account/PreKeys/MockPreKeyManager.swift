@@ -64,7 +64,6 @@ internal class MockPreKeyManager: PreKeyManager {
         return .value(())
     }
 
-    func legacy_createPreKeys(auth: SignalServiceKit.ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func rotateSignedPreKeys() -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }

@@ -30,12 +30,6 @@ public protocol PreKeyOperationFactory {
         didSucceed: @escaping () -> Void
     ) -> OWSOperation
 
-    func legacy_createPreKeysOperation(
-        for identity: OWSIdentity,
-        auth: ChatServiceAuth,
-        didSucceed: @escaping () -> Void
-    ) -> OWSOperation
-
     func refreshPreKeysOperation(
         for identity: OWSIdentity,
         shouldRefreshOneTimePreKeys: Bool,
@@ -117,26 +111,6 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
             auth: auth,
             context: context,
             future: future,
-            didSucceed: didSucceed
-        )
-    }
-
-    public func legacy_createPreKeysOperation(
-        for identity: OWSIdentity,
-        auth: ChatServiceAuth,
-        didSucceed: @escaping () -> Void
-    ) -> OWSOperation {
-        let targets: PreKey.Operation.Target = [
-            .oneTimePreKey,
-            .signedPreKey,
-            .oneTimePqPreKey,
-            .lastResortPqPreKey
-        ]
-
-        return PreKeyOperation(
-            action: .legacy_create(identity: identity, targets: targets),
-            auth: auth,
-            context: context,
             didSucceed: didSucceed
         )
     }

@@ -138,18 +138,6 @@ extension PreKeyTasks {
                     )
                     .runTask(targets: targets)
                     .map(on: SyncScheduler()) { $0 }
-            case .legacy_create(let identity, let targets):
-                PreKey.logger.info("[\(identity)] Legacy prekey operation [\(targets)]")
-                bundlePromise = Legacy_Generate
-                    .init(
-                        context: generateContext,
-                        messageProcessor: context.messageProcessor,
-                        tsAccountManager: context.tsAccountManager
-                    )
-                    .runTask(
-                        identity: action.identity,
-                        targets: targets
-                    ).map(on: SyncScheduler()) { $0 }
             }
 
             return bundlePromise.then(on: globalQueue()) { (bundle: PreKeyUploadBundle) -> Promise<Void> in
@@ -199,7 +187,7 @@ fileprivate extension PreKey.Operation.Action {
 
     var identity: OWSIdentity {
         switch self {
-        case .refresh(let identity, _), .rotate(let identity, _), .legacy_create(let identity, _), .createOneTimePreKeys(let identity):
+        case .refresh(let identity, _), .rotate(let identity, _), .createOneTimePreKeys(let identity):
             return identity
         case .createOrRotatePniKeys:
             return .pni

@@ -35,8 +35,6 @@ public protocol PreKeyManager {
 
     func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void>
 
-    func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void>
-
     /// Our local PNI can get out of sync with the server, including because we never had
     /// a PNI or the server never got ours. In these cases we create new PNI prekeys
     /// to give to the server, ignoring any old ones we may have had.

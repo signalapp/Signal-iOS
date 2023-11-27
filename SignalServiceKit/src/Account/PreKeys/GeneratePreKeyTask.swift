@@ -161,49 +161,6 @@ extension PreKeyTasks {
         }
     }
 
-    // TODO: remove this once legacy registration usage is cleaned up.
-    /// When we register, we create a new identity key and other keys. So this variant:
-    /// CAN create a new identity key (or uses any existing one)
-    /// ALWAYS changes the targeted keys (regardless of current key state)
-    internal class Legacy_Generate: GenerateBase {
-
-        private let messageProcessor: PreKey.Operation.Shims.MessageProcessor
-        private let tsAccountManager: TSAccountManager
-
-        internal init(
-            context: Generate.Context,
-            messageProcessor: PreKey.Operation.Shims.MessageProcessor,
-            tsAccountManager: TSAccountManager
-        ) {
-            self.messageProcessor = messageProcessor
-            self.tsAccountManager = tsAccountManager
-            super.init(context: context)
-        }
-
-        func runTask(
-            identity: OWSIdentity,
-            targets: PreKey.Operation.Target
-        ) -> Promise<PartialPreKeyUploadBundle> {
-            let messageProcessingPromise: Promise<Void>
-
-            // Legacy code was reliant on this check. To be removed soon.
-            if context.db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
-                messageProcessingPromise = messageProcessor.fetchingAndProcessingCompletePromise()
-            } else {
-                messageProcessingPromise = .value(())
-            }
-            let identityKeyPair = getOrCreateIdentityKeyPair(identity: identity)
-            return messageProcessingPromise
-                .map(on: context.scheduler) {
-                    try self.createPartialBundle(
-                        identity: identity,
-                        identityKeyPair: identityKeyPair,
-                        targets: targets
-                    )
-                }
-        }
-    }
-
     /// When we create our PNI (as part of hello world) we are allowed to
     /// create a new identity key. So this variant:
     /// CAN create a new identity key (or uses any existing one)

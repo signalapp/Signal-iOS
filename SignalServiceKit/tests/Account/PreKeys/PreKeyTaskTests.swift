@@ -64,9 +64,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreateAll() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .all),
+            action: .rotate(identity: .aci, targets: .all),
             auth: .implicit(),
             context: context
         )
@@ -88,9 +88,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreateSignedPreKeyOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .signedPreKey),
+            action: .rotate(identity: .aci, targets: .signedPreKey),
             auth: .implicit(),
             context: context
         )
@@ -116,9 +116,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreatePreKeyOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .oneTimePreKey),
+            action: .rotate(identity: .aci, targets: .oneTimePreKey),
             auth: .implicit(),
             context: context
         )
@@ -150,7 +150,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .all),
+            action: .rotate(identity: .aci, targets: .all),
             auth: .implicit(),
             context: context
         )
@@ -173,7 +173,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .signedPreKey),
+            action: .rotate(identity: .aci, targets: .signedPreKey),
             auth: .implicit(),
             context: context
         )
@@ -197,7 +197,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .oneTimePreKey),
+            action: .rotate(identity: .aci, targets: .oneTimePreKey),
             auth: .implicit(),
             context: context
         )
@@ -217,9 +217,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreatePqKeysOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: [.lastResortPqPreKey, .oneTimePqPreKey]),
+            action: .rotate(identity: .aci, targets: [.lastResortPqPreKey, .oneTimePqPreKey]),
             auth: .implicit(),
             context: context
         )
@@ -245,18 +245,18 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testIdentityKeyCreated() {
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: []),
+            action: .createOrRotatePniKeys(targets: []),
             auth: .implicit(),
             context: context
         )
 
-        XCTAssertNil(mockIdentityManager.aciKeyPair)
+        XCTAssertNil(mockIdentityManager.pniKeyPair)
 
         _ = task.runPreKeyTask()
         testSchedulers.scheduler.start()
 
         // Validate key created
-        XCTAssertNotNil(mockIdentityManager.aciKeyPair)
+        XCTAssertNotNil(mockIdentityManager.pniKeyPair)
     }
 
     //

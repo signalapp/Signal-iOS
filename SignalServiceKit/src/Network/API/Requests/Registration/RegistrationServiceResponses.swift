@@ -68,7 +68,6 @@ public enum RegistrationServiceResponses {
         /// The attempt to send a verification code failed because an external service (e.g. the SMS provider) refused to deliver the code.
         /// Response body has `SendVerificationCodeFailedResponse` with more detailed information.
         case providerFailure = 440
-        case legacy_providerFailure = 502
         case unexpectedError = -1
 
         static public var unknown: Self { .unexpectedError }
