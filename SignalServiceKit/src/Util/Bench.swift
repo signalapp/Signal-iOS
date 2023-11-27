@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// Benchmark time for async code by calling the passed in block parameter when the work
 /// is done.
@@ -137,20 +138,17 @@ public func BenchEventStart(title: String, eventId: BenchmarkEventId, logInProdu
     }
 }
 
-public func BenchEventComplete(eventId: BenchmarkEventId, logIfAbsent: Bool = true) {
-    BenchEventComplete(eventIds: [eventId], logIfAbsent: logIfAbsent)
+public func BenchEventComplete(eventId: BenchmarkEventId) {
+    BenchEventComplete(eventIds: [eventId])
 }
 
-public func BenchEventComplete(eventIds: [BenchmarkEventId], logIfAbsent: Bool = true) {
+public func BenchEventComplete(eventIds: [BenchmarkEventId]) {
     eventQueue.sync {
         for eventId in eventIds {
             guard let event = runningEvents.removeValue(forKey: eventId) else {
-                if logIfAbsent {
-                    Logger.debug("no active event with id: \(eventId)")
-                }
+                owsFailDebug("Can't end event that wasn't started.")
                 return
             }
-
             event.completion()
         }
     }
@@ -169,43 +167,6 @@ private let eventQueue = DispatchQueue(label: "org.signal.bench")
 
 @objc
 public class BenchManager: NSObject {
-
-    @objc
-    public class func startEvent(title: String, eventId: BenchmarkEventId) {
-        startEvent(title: title, eventId: eventId, logInProduction: false)
-    }
-
-    @objc
-    public class func startEvent(title: String, eventId: BenchmarkEventId, logInProduction: Bool) {
-        BenchEventStart(title: title, eventId: eventId, logInProduction: logInProduction)
-    }
-
-    @objc
-    public class func completeEvent(eventId: BenchmarkEventId) {
-        BenchEventComplete(eventId: eventId)
-    }
-
-    @objc
-    public class func completeEvent(eventId: BenchmarkEventId, logIfAbsent: Bool) {
-        BenchEventComplete(eventId: eventId, logIfAbsent: logIfAbsent)
-    }
-
-    @objc
-    public class func completeEvents(eventIds: [BenchmarkEventId], logIfAbsent: Bool = true) {
-        guard !eventIds.isEmpty else { return }
-        BenchEventComplete(eventIds: eventIds, logIfAbsent: logIfAbsent)
-    }
-
-    @objc
-    public class func benchAsync(title: String, block: (@escaping () -> Void) -> Void) {
-        BenchAsync(title: title, block: block)
-    }
-
-    @objc
-    public class func bench(title: String, block: () -> Void) {
-        Bench(title: title, block: block)
-    }
-
     @objc
     public class func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
         Bench(title: title, logIfLongerThan: intervalLimit, logInProduction: logInProduction, block: block)
