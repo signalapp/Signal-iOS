@@ -65,6 +65,7 @@ extension AppDelegate {
         defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
 
         Cryptography.seedRandom()
 

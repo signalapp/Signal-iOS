@@ -167,7 +167,6 @@ public class ChatListViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        BenchManager.completeEvent(eventId: "AppStart", logIfAbsent: false)
         AppReadiness.setUIIsReady()
 
         if getStartedBanner == nil && !hasEverPresentedExperienceUpgrade && ExperienceUpgradeManager.presentNext(fromViewController: self) {

@@ -1581,10 +1581,6 @@ public class MessageSender: Dependencies {
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(messageSend.serviceId), wasSentByUD: wasSentByUD, transaction: transaction)
 
-            transaction.addSyncCompletion {
-                BenchManager.completeEvent(eventId: "sendMessageMarkedAsSent-\(message.timestamp)")
-            }
-
             // If we've just delivered a message to a user, we know they have a valid
             // Signal account. However, if we're sending a story, the server will
             // always tell us the recipient is registered, so we can't use this as an
