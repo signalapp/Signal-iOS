@@ -1188,14 +1188,9 @@ public class MessageSender: Dependencies {
         guard message.shouldSyncTranscript() else {
             return
         }
-        do {
-            try await message.sendSyncTranscript()
-            await databaseStorage.awaitableWrite { tx in
-                message.update(withHasSyncedTranscript: true, transaction: tx)
-            }
-            Logger.info("Successfully sent sync transcript.")
-        } catch {
-            Logger.info("Failed to send sync transcript: \(error) (isRetryable: \(error.isRetryable))")
+        try await message.sendSyncTranscript()
+        await databaseStorage.awaitableWrite { tx in
+            message.update(withHasSyncedTranscript: true, transaction: tx)
         }
     }
 
