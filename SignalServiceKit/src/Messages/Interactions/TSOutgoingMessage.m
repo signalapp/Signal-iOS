@@ -5,7 +5,6 @@
 
 #import "TSOutgoingMessage.h"
 #import "AppReadiness.h"
-#import "MessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
 #import "TSAttachmentStream.h"
@@ -17,6 +16,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OutgoingGroupProtoResult) {
     OutgoingGroupProtoResult_AddedWithoutGroupAvatar,

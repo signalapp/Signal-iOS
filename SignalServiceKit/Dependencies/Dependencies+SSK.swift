@@ -89,10 +89,12 @@ public extension NSObject {
         SSKEnvironment.shared.messageManagerRef
     }
 
+    @nonobjc
     final var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
     }
 
+    @nonobjc
     static var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
     }

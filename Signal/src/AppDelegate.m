@@ -16,7 +16,6 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMath.h>

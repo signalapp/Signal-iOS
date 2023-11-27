@@ -9,7 +9,6 @@
 #import "ContactsManagerProtocol.h"
 #import "HTTPUtils.h"
 #import "MIMETypeUtil.h"
-#import "MessageSender.h"
 #import "NSData+Image.h"
 #import "NotificationsProtocol.h"
 #import "OWSCallMessageHandler.h"

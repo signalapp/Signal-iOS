@@ -132,7 +132,7 @@ public class MessageSendLog {
             // not a major issue. The MSL is critical for correct behavior of sender
             // key messages. For non sender key messages, it's a nice-to-have in case
             // some unforeseen decryption failure happens.
-            owsAssertDebug(message.isSyncMessage, "Found an MSL inconsistency for a non-sync message.")
+            owsAssertDebug(message is OWSOutgoingSyncMessage, "Found an MSL inconsistency for a non-sync message.")
             return nil
         }
 

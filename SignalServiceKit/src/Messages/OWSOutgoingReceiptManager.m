@@ -6,7 +6,6 @@
 #import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
 #import "FunctionalUtil.h"
-#import "MessageSender.h"
 #import "OWSError.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "TSContactThread.h"

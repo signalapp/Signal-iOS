@@ -568,7 +568,7 @@ extension MessageSender {
                     let responseBody = try Self.decode409Response(data: responseData)
                     self.databaseStorage.write { tx in
                         for account in responseBody {
-                            Self.updateDevices(
+                            self.updateDevices(
                                 serviceId: account.serviceId,
                                 devicesToAdd: account.devices.missingDevices,
                                 devicesToRemove: account.devices.extraDevices,

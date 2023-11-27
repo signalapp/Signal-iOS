@@ -249,18 +249,19 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     private func waitForResendRequestRatchetKey(line: UInt = #line) -> Promise<PublicKey> {
         let (promise, future) = Promise<PublicKey>.pending()
 
+        fakeMessageSender.stubbedFailingErrors = [nil]
         fakeMessageSender.sendMessageWasCalledBlock = { message in
             guard let resendRequest = message as? OWSOutgoingResendRequest else {
                 return
             }
+            self.fakeMessageSender.sendMessageWasCalledBlock = nil
+
             let decryptionError = try! DecryptionErrorMessage(bytes: resendRequest.decryptionErrorData)
             if let ratchetKey = decryptionError.ratchetKey {
                 future.resolve(ratchetKey)
             } else {
                 XCTFail("missing ratchet key", line: line)
             }
-
-            self.fakeMessageSender.sendMessageWasCalledBlock = nil
         }
         return promise
     }

@@ -164,7 +164,6 @@ public class AttachmentMultisend: Dependencies {
                         contentType: attachment.mimeType,
                         sourceFilename: attachment.filenameOrDefault,
                         caption: attachment.captionText,
-                        albumMessageId: nil,
                         isBorderless: attachment.isBorderless,
                         isLoopingVideo: attachment.isLoopingVideo
                     )
@@ -193,7 +192,7 @@ public class AttachmentMultisend: Dependencies {
 
             for attachmentInfo in attachmentsToUpload {
                 do {
-                    let attachmentToUpload = try attachmentInfo.value.asStreamConsumingDataSource(withIsVoiceMessage: false)
+                    let attachmentToUpload = try attachmentInfo.value.asStreamConsumingDataSource(isVoiceMessage: false)
                     attachmentToUpload.anyInsert(transaction: transaction)
 
                     // Finally we map the unique ID of each TSAttachment we intend to upload to the unique IDs of

@@ -5,7 +5,6 @@
 
 #import "OWSReceiptManager.h"
 #import "AppReadiness.h"
-#import "MessageSender.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"

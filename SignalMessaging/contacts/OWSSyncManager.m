@@ -12,7 +12,6 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>

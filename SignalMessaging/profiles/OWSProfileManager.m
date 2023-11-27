@@ -13,7 +13,6 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>

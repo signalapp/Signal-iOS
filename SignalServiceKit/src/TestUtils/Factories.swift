@@ -565,16 +565,14 @@ public class ConversationFactory: NSObject {
         ContactThreadFactory().create(transaction: transaction)
     }
 
-    @objc
     public var attachmentInfoBuilder: (TSOutgoingMessage, String?) -> OutgoingAttachmentInfo = { outgoingMessage, caption in
         let dataSource = DataSourceValue.dataSource(with: ImageFactory().buildPNGData(), fileExtension: "png")!
-        return OutgoingAttachmentInfo(dataSource: dataSource,
-                                      contentType: "image/png",
-                                      sourceFilename: nil,
-                                      caption: caption,
-                                      albumMessageId: outgoingMessage.uniqueId,
-                                      isBorderless: false,
-                                      isLoopingVideo: false)
+        return OutgoingAttachmentInfo(
+            dataSource: dataSource,
+            contentType: "image/png",
+            caption: caption,
+            albumMessageId: outgoingMessage.uniqueId
+        )
     }
 
 }

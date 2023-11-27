@@ -299,13 +299,15 @@ public class SignalAttachment: NSObject {
     }
 
     public func buildOutgoingAttachmentInfo(message: TSMessage? = nil) -> OutgoingAttachmentInfo {
-        return OutgoingAttachmentInfo(dataSource: dataSource,
-                                      contentType: mimeType,
-                                      sourceFilename: filenameOrDefault,
-                                      caption: captionText,
-                                      albumMessageId: message?.uniqueId,
-                                      isBorderless: isBorderless,
-                                      isLoopingVideo: isLoopingVideo)
+        return OutgoingAttachmentInfo(
+            dataSource: dataSource,
+            contentType: mimeType,
+            sourceFilename: filenameOrDefault,
+            caption: captionText,
+            albumMessageId: message?.uniqueId,
+            isBorderless: isBorderless,
+            isLoopingVideo: isLoopingVideo
+        )
     }
 
     public func staticThumbnail() -> UIImage? {
