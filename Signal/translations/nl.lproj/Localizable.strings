@@ -488,7 +488,7 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ steunt Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Je Boost-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar wil je onze technologie, die voor jou is gebouwd, ook steunen? Overweeg dan om maandelijkse donaties in te stellen.";
+"BADGE_EXPIRED_BOOST_BODY" = "Je Boost-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar wil je onze technologie, die voor jou is gebouwd, ook steunen? Overweeg dan om een maandelijkse donatie in te stellen.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Je Boost-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt je Boost-badge opnieuw voor 30 dagen activeren met een eenmalige donatie.";
@@ -506,7 +506,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Maandelijkse donatie stopgezet";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@\n\nYour badge will no longer be visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Je maandelijkse donaties zijn stopgezet. %1$@ \n\nJe badge is niet langer zichtbaar op je profiel.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Je bankoverschrijving is ontvangen. Je kunt deze badge op je profiel weergeven om te laten zien dat je ons steunt.";
@@ -734,7 +734,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Niet beantwoord";
 
 /* Button to start a call */
-"CALL_START_BUTTON" = "Start Call";
+"CALL_START_BUTTON" = "Oproep beginnen";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal-oproep %1$@";
@@ -779,7 +779,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Oproep beëindigen";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "Leave call";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "Oproep verlaten";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
@@ -797,13 +797,13 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schakel over naar video-oproep";
 
 /* Accessibility label for turning off the camera */
-"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Turn off camera";
+"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Camera uitschakelen";
 
 /* Accessibility label for turning on the camera */
-"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Turn on camera";
+"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Camera inschakelen";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Unmute";
+"CALL_VIEW_UNMUTE_LABEL" = "Dempen opheffen";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Terugbellen";
@@ -1112,7 +1112,7 @@
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_TITLE" = "Allow Contact Access";
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "Toegang tot contacten toestaan";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
@@ -1934,16 +1934,16 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "De verwerking van een bankoverschrijving duurt doorgaans 1 werkdag. Wacht tot deze betaling is voltooid voordat je nog een donatie doet.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "De verwerking van een bankoverschrijving duurt doorgaans 1 werkdag. Wacht tot deze betaling is voltooid voordat je je maandelijkse donaties bijwerkt.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "De verwerking van een bankoverschrijving duurt doorgaans 1 werkdag. Wacht tot deze betaling is voltooid voordat je je maandelijkse donatie bijwerkt.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "You can send up to %1$@ via bank transfer. Try a different amount or a different payment method.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Via een bankoverschrijving kun je maximaal %1$@ overmaken. Probeer een ander bedrag of een andere betaalmethode.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Je donatie wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding. Wacht tot deze betaling is voltooid voordat je nog een donatie doet.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Je donatie wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding. Wacht tot deze betaling is voltooid voordat je je maandelijkse donaties bijwerkt.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Je donatie wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding. Wacht tot deze betaling is voltooid voordat je je maandelijkse donatie bijwerkt.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Kies een bedrag om te doneren.";
@@ -1955,7 +1955,7 @@
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Je donatie is in behandeling";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Donation Amount Too High";
+"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Donatiebedrag te hoog";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Je donatie is in behandeling";
@@ -1979,7 +1979,7 @@
 "DONATE_SCREEN_ONE_TIME_CHOICE" = "Eenmalig";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Maandelijkse donaties bijwerken";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Maandelijkse donatie bijwerken";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "Er zijn problemen met het verwerken van je bankoverschrijving. %1$@";
@@ -1997,7 +1997,7 @@
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je maandelijkse donatie is in behandeling. De %1$@-badge kun je op je profiel weergeven wanneer je donatie is ontvangen.\n\nDe verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
-"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Maandelijkse donaties vernieuwen";
+"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Maandelijkse donatie vernieuwen";
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Opnieuw proberen";
@@ -2159,7 +2159,7 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy boven winst";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Maandelijkse donaties vernieuwen";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Maandelijkse donatie vernieuwen";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Opnieuw proberen";
@@ -3407,7 +3407,7 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Alle als gelezen markeren";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Choose Your Bank";
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Kies je bank";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Teken waar je maar wilt om iets te vervagen";
@@ -7280,7 +7280,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Wordt nog verwerkt";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donaties stopzetten";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donatie stopzetten";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Bevestigen";
@@ -7289,7 +7289,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Er zal niet opnieuw geld worden afgeschreven. Je badge zal worden verwijderd van je profiel wanneer je laatste betalingsperiode is afgelopen.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donaties annuleren?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donatie stopzetten?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "De badge kan niet worden toegevoegd aan je account. Neem contact op met ondersteuning.";
@@ -7313,7 +7313,7 @@
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Je donatie wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Je maandelijkse donaties zijn stopgezet";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Je maandelijkse donatie is stopgezet";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Niet nu";
@@ -7322,7 +7322,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Het nieuw ingestelde bedrag (%1$@) zal vandaag al worden afgeschreven. Datzelfde bedrag zal dan steeds precies een maand later opnieuw worden afgeschreven.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donaties bijwerken?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donatie bijwerken?";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Uit";
