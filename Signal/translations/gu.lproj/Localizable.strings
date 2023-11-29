@@ -506,7 +506,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "માસિક દાન રદ કર્યું";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@\n\nYour badge will no longer be visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન રદ કરવામાં આવ્યું હતું. %1$@\n\nતમારું બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "તમારું બેંક ટ્રાન્સફર પ્રાપ્ત થયું. તમારો સપોર્ટ બતાવવા માટે તમે તમારી પ્રોફાઇલ પર આ બૅજ પ્રદર્શિત કરવાનું પસંદ કરી શકો છો.";
@@ -734,7 +734,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "કોઇ જવાબ નથી";
 
 /* Button to start a call */
-"CALL_START_BUTTON" = "Start Call";
+"CALL_START_BUTTON" = "કૉલ શરૂ કરો";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %1$@";
@@ -779,7 +779,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "કૉલ નો અંત કરો";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "Leave call";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "કૉલ છોડો";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "મ્યૂટ કરો";
@@ -797,13 +797,13 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "વિડિયો કૉલમાં બદલો";
 
 /* Accessibility label for turning off the camera */
-"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Turn off camera";
+"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "કૅમેરા બંધ કરો";
 
 /* Accessibility label for turning on the camera */
-"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Turn on camera";
+"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "કૅમેરા ચાલુ કરો";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Unmute";
+"CALL_VIEW_UNMUTE_LABEL" = "અનમ્યૂટ કરો";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "પાછો કૉલ કરો";
@@ -1112,7 +1112,7 @@
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_TITLE" = "Allow Contact Access";
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "સંપર્કનો ઍક્સેસ આપો";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "સંપર્ક સપોર્ટ";
@@ -1937,7 +1937,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "બેંક ટ્રાન્સફરની પ્રક્રિયામાં સામાન્ય રીતે 1 કામકાજી દિવસ લાગે છે. તમારું સબ્સ્ક્રિપ્શન અપડેટ કરતાં પહેલાં કૃપા કરીને આ ચુકવણી પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "You can send up to %1$@ via bank transfer. Try a different amount or a different payment method.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "તમે બેંક ટ્રાન્સફર દ્વારા %1$@ સુધી મોકલી શકો છો. કોઈ બીજી રકમ અથવા અલગ ચુકવણી પદ્ધતિ અજમાવી જુઓ.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "તમારા દાનની પ્રક્રિયા હજી ચાલુ છે. આમાં તમારા કનેક્શનને આધારે થોડી મિનિટો લાગી શકે છે. અન્ય દાન આપતાં પહેલાં કૃપા કરીને આ ચુકવણી પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ.";
@@ -1955,7 +1955,7 @@
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "તમારું દાન બાકી છે";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Donation Amount Too High";
+"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "દાનની રકમ બહુ વધારે છે";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "તમારા દાનની પ્રક્રિયા ચાલુ છે";
@@ -3407,7 +3407,7 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "તમામ વાંચો";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Choose Your Bank";
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "તમારી બેંક પસંદ કરો";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ઝાંખા કરવા માટે ગમે તે જગ્યાએ દોરો";

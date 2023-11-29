@@ -506,7 +506,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "تم إلغاء التبرعات الشهرية";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@\n\nYour badge will no longer be visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تم إلغاء التبرّع الشهري المُتكرر. %1$@\n\nلن تبقى شارتك ظاهرة على حسابك الشخصي.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "تم التوصل بتحويلك المصرفي. يُمكنك اختيار عرض هذه الشارة على حسابك الشخصي لإظهار دعمك.";
@@ -734,7 +734,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "لم يتم الرد";
 
 /* Button to start a call */
-"CALL_START_BUTTON" = "Start Call";
+"CALL_START_BUTTON" = "بدء المكالمة";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "‪سيجنال %1$@";
@@ -779,7 +779,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "إنهاء المُكالمة";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "Leave call";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "مغادرة المكالمة";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "كتم";
@@ -797,13 +797,13 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التبديل إلى مكالمة بالصورة";
 
 /* Accessibility label for turning off the camera */
-"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Turn off camera";
+"CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "اطفيء الكاميرا";
 
 /* Accessibility label for turning on the camera */
-"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Turn on camera";
+"CALL_VIEW_TURN_VIDEO_ON_LABEL" = "شغِّل الكاميرا";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Unmute";
+"CALL_VIEW_UNMUTE_LABEL" = "إعادة الصوت";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "إعادة الاتصال";
@@ -1112,7 +1112,7 @@
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_TITLE" = "Allow Contact Access";
+"CONTACT_SHARING_NO_ACCESS_TITLE" = "السماح بالوصول لجهات الاتصال";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "الاتصال بالدعم";
@@ -1937,7 +1937,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "عادة ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة. يُرجى الانتظار حتى اكتمال تبرعك هذا قبل تحديث اشتراكك.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "You can send up to %1$@ via bank transfer. Try a different amount or a different payment method.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "يُمكنك إرسال ما يصل إلى %1$@ عبر تحويل مصرفي. جرّب مبلغًا مختلفًا أو طريقة دفع أخرى.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "لا يزال تبرعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك. يُرجى الانتظار حتى اكتمال تبرعك هذا قبل التبرع مرة أخرى.";
@@ -1955,7 +1955,7 @@
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "لديك تبرّع مُعلق";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Donation Amount Too High";
+"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "مبلغ التبرّع كبير جدًا";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "لديك تبرع قيد المعالجة";
@@ -3407,7 +3407,7 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "قراءة الكل";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Choose Your Bank";
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "اختر مصرفك";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان للتضبيب";
