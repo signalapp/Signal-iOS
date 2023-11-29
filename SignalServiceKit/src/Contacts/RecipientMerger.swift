@@ -318,6 +318,8 @@ class RecipientMergerImpl: RecipientMerger {
             return
         }
 
+        Logger.info("Associating \(aci) with \(pni) from a signature")
+
         mergeAndNotify(
             existingRecipients: [pniRecipient, aciRecipient],
             mightReplaceNonnilPhoneNumber: true,
