@@ -14,7 +14,7 @@ message BackupInfo {
   // @required
   optional uint64 version = 1;
   // @required
-  optional uint64 backupTime = 2;
+  optional uint64 backupTimeMs = 2;
 }
 
 message Frame {
@@ -30,8 +30,8 @@ message Frame {
 
 message AccountData {
   enum PhoneNumberSharingMode {
-    EVERYBODY = 0;
-    CONTACTS_ONLY = 1;
+    UNKNOWN = 0;
+    EVERYBODY = 1;
     NOBODY = 2;
   }
   message UsernameLink {
@@ -56,79 +56,59 @@ message AccountData {
 
   message AccountSettings {
     // @required
-    optional bool noteToSelfArchived = 1;
+    optional bool readReceipts = 1;
     // @required
-    optional bool readReceipts = 2;
+    optional bool sealedSenderIndicators = 2;
     // @required
-    optional bool sealedSenderIndicators = 3;
+    optional bool typingIndicators = 3;
     // @required
-    optional bool typingIndicators = 4;
+    optional bool noteToSelfMarkedUnread = 4;
     // @required
-    optional bool proxiedLinkPreviews = 5;
+    optional bool linkPreviews = 5;
     // @required
-    optional bool noteToSelfMarkedUnread = 6;
+    optional bool unlistedPhoneeumber = 6;
     // @required
-    optional bool linkPreviews = 7;
+    optional bool preferContactAvatars = 7;
     // @required
-    optional bool unlistedPhoneNumber = 8;
+    optional uint32 universalExpireTimer = 8;
+    repeated string preferredReactionEmoji = 9;
     // @required
-    optional bool preferContactAvatars = 9;
+    optional bool displayBadgesOnProfile = 10;
     // @required
-    optional uint32 universalExpireTimer = 10;
-    repeated string preferredReactionEmoji = 11;
+    optional bool keepMutedChatsArchived = 11;
     // @required
-    optional bool displayBadgesOnProfile = 12;
+    optional bool myStoriesPrivacyHasBeenSet = 12; // Removed 'has' prefix on spec definition to avoid name conflict.
     // @required
-    optional bool keepMutedChatsArchived = 13;
+    optional bool onboardingStoryHasBeenViewed = 13; // Removed 'has' prefix on spec definition to avoid name conflict.
     // @required
-    optional bool myStoriesPrivacyHasBeenSet = 14; // Removed 'has' prefix on spec definition to avoid name conflict.
+    optional bool storiesDisabled = 14;
+    optional bool storyViewReceiptsEnabled = 15;
     // @required
-    optional bool onboardingStoryHasBeenViewed = 15; // Removed 'has' prefix on spec definition to avoid name conflict.
+    optional bool groupStoryEducationSheetHasBeenSeen = 16; // Removed 'has' prefix on spec definition to avoid name conflict.
     // @required
-    optional bool storiesDisabled = 16;
-    optional bool storyViewReceiptsEnabled = 17;
-    // @required
-    optional bool onboardingStoryHasBeenRead = 18; // Removed 'has' prefix on spec definition to avoid name conflict.
-    // @required
-    optional bool groupStoryEducationSheetHasBeenSet = 19; // Removed 'has' prefix on spec definition to avoid name conflict.
-    // @required
-    optional bool usernameOnboardingHasBeenCompleted = 20; // Removed 'has' prefix on spec definition to avoid name conflict.
-    optional PhoneNumberSharingMode phoneNumberSharingMode = 21;
+    optional bool usernameOnboardingHasBeenCompleted = 17; // Removed 'has' prefix on spec definition to avoid name conflict.
+    optional PhoneNumberSharingMode phoneNumberSharingMode = 18;
   }
 
   // @required
-  optional bytes aciIdentityPublicKey = 1;
+  optional bytes profileKey = 1;
+  optional string username = 2;
   // @required
-  optional bytes aciIdentityPrivateKey = 2;
+  optional UsernameLink usernameLink = 3;
   // @required
-  optional bytes pniIdentityPublicKey = 3;
+  optional string givenName = 4;
   // @required
-  optional bytes pniIdentityPrivateKey = 4;
+  optional string familyName = 5;
   // @required
-  optional bytes profileKey = 5;
-  optional string username = 6;
+  optional string avatarPath = 6;
   // @required
-  optional UsernameLink usernameLink = 7;
+  optional bytes subscriberId = 7;
   // @required
-  optional string givenName = 8;
+  optional string subscriberCurrencyCode = 8;
   // @required
-  optional string familyName = 9;
+  optional bool subscriptionManuallyCancelled = 9;
   // @required
-  optional string avatarPath = 10;
-  // @required
-  optional bytes subscriberId = 11;
-  // @required
-  optional string subscriberCurrencyCode = 12;
-  // @required
-  optional bool subscriptionManuallyCancelled = 13;
-  // @required
-  optional AccountSettings accountSettings = 14;
-  // @required
-  optional bytes aci = 15;
-  // @required
-  optional bytes pni = 16;
-  // @required
-  optional uint64 e164 = 17;
+  optional AccountSettings accountSettings = 10;
 }
 
 message Recipient {
@@ -139,10 +119,17 @@ message Recipient {
     optional Group group = 3;
     optional DistributionList distributionList = 4;
     optional SelfRecipient selfRecipient = 5;
+    optional ReleaseNotes releaseNotes = 6;
   // }
 }
 
 message Contact {
+  enum Registered {
+    UNKNOWN = 0;
+    REGISTERED = 1;
+    NOT_REGISTERED = 2;
+  }
+
   optional bytes aci = 1; // should be 16 bytes
   optional bytes pni = 2; // should be 16 bytes
   optional string username = 3;
@@ -151,11 +138,6 @@ message Contact {
   optional bool blocked = 5;
   // @required
   optional bool hidden = 6;
-  enum Registered {
-    UNKNOWN = 0;
-    REGISTERED = 1;
-    NOT_REGISTERED = 2;
-  }
   optional Registered registered = 7;
   // @required
   optional uint64 unregisteredTimestamp = 8;
@@ -164,9 +146,8 @@ message Contact {
   optional bool profileSharing = 10;
   optional string profileGivenName = 11;
   optional string profileFamilyName = 12;
-  optional string profileJoinedName = 13;
   // @required
-  optional bool hideStory = 14;
+  optional bool hideStory = 13;
 }
 
 message Group {
@@ -188,6 +169,9 @@ message Group {
 message SelfRecipient {
 }
 
+message ReleaseNotes {
+}
+
 message Chat {
   // @required
   optional uint64 id = 1; // generated id for reference only within this file
@@ -196,18 +180,26 @@ message Chat {
   // @required
   optional bool archived = 3;
   // @required
-  optional bool pinned = 4;
+  optional uint32 pinnedOrder = 4; // 0 = unpinned, otherwise chat is considered pinned and will be displayed in ascending order
   // @required
-  optional uint64 expirationTimer = 5;
+  optional uint64 expirationTimerMs = 5;
   // @required
-  optional uint64 muteUntil = 6;
+  optional uint64 muteUntilMs = 6;
   // @required
   optional bool markedUnread = 7;
   // @required
   optional bool dontNotifyForMentionsIfMuted = 8;
+  optional FilePointer wallpaper = 9;
 }
 
 message DistributionList {
+  enum PrivacyMode {
+    UNKNOWN = 0;
+    ONLY_WITH = 1;
+    ALL_EXCEPT = 2;
+    ALL = 3;
+  }
+
   // @required
   optional string name = 1;
   // @required
@@ -216,15 +208,8 @@ message DistributionList {
   optional bool allowReplies = 3;
   // @required
   optional uint64 deletionTimestamp = 4;
-  // @required
-  optional bool isUnknown = 5;
-  enum PrivacyMode {
-    ONLY_WITH = 0;
-    ALL_EXCEPT = 1;
-    ALL = 2;
-  }
-  optional PrivacyMode privacyMode = 6;
-  repeated uint64 memberRecipientIds = 7; // generated recipient id
+  optional PrivacyMode privacyMode = 5;
+  repeated uint64 memberRecipientIds = 6; // generated recipient id
 }
 
 message Identity {
@@ -243,16 +228,31 @@ message Identity {
 }
 
 message Call {
+  enum Type {
+    UNKNOWN_TYPE = 0;
+    AUDIO_CALL = 1;
+    VIDEO_CALL = 2;
+    GROUP_CALL = 3;
+    AD_HOC_CALL = 4;
+  }
+
+  enum Event {
+    UNKNOWN_EVENT = 0;
+    OUTGOING = 1; // 1:1 calls only
+    ACCEPTED = 2; // 1:1 and group calls. Group calls: You accepted a ring.
+    NOT_ACCEPTED = 3; // 1:1 calls only,
+    MISSED = 4; // 1:1 and group. Group calls: The remote ring has expired or was cancelled by the ringer.
+    DELETE = 5; // 1:1 and Group/Ad-Hoc Calls.
+    GENERIC_GROUP_CALL = 6; // Group/Ad-Hoc Calls only. Initial state
+    JOINED = 7; // Group Calls: User has joined the group call.
+    DECLINED = 8; // Group Calls: If you declined a ring.
+    OUTGOING_RING = 9; // Group Calls: If you are ringing a group.
+  }
+
   // @required
   optional uint64 callId = 1;
   // @required
-  optional uint64 peerRecipientId = 2;
-  enum Type {
-    AUDIO_CALL = 0;
-    VIDEO_CALL = 1;
-    GROUP_CALL = 2;
-    AD_HOC_CALL = 3;
-  }
+  optional uint64 conversationRecipientId = 2;
   optional Type type = 3;
   // @required
   optional bool outgoing = 4;
@@ -260,29 +260,19 @@ message Call {
   optional uint64 timestamp = 5;
   // @required
   optional uint64 ringerRecipientId = 6;
-  enum Event {
-    OUTGOING = 0; // 1:1 calls only
-    ACCEPTED = 1; // 1:1 and group calls. Group calls: You accepted a ring.
-    NOT_ACCEPTED = 2; // 1:1 calls only,
-    MISSED = 3; // 1:1 and group/ad-hoc calls. Group calls: The remote ring has expired or was cancelled by the ringer.
-    DELETE = 4; // 1:1 and Group/Ad-Hoc Calls.
-    GENERIC_GROUP_CALL = 5; // Group/Ad-Hoc Calls only. Initial state
-    JOINED = 6; // Group Calls: User has joined the group call.
-    RINGING = 7; // Group Calls: If a ring was requested by another user.
-    DECLINED = 8; // Group Calls: If you declined a ring.
-    OUTGOING_RING = 9; // Group Calls: If you are ringing a group.
-  }
   optional Event event = 7;
 }
 
 message ChatItem {
   message IncomingMessageDetails {
     // @required
-    optional uint64 dateServerSent = 1;
+    optional uint64 dateReceived = 1;
     // @required
-    optional bool read = 2;
+    optional uint64 dateServerSent = 2;
     // @required
-    optional bool sealedSender = 3;
+    optional bool read = 3;
+    // @required
+    optional bool sealedSender = 4;
   }
 
   message OutgoingMessageDetails {
@@ -295,38 +285,37 @@ message ChatItem {
   optional uint64 authorId = 2; // recipient id
   // @required
   optional uint64 dateSent = 3;
+  optional uint64 expireStartMs = 4; // timestamp of when expiration timer started ticking down
+  optional uint64 expiresInMs = 5; // how long timer of message is (ms)
+  repeated ChatItem revisions = 6; // ordered from oldest to newest
   // @required
-  optional uint64 dateReceived = 4;
-  optional uint64 expireStart = 5; // timestamp of when expiration timer started ticking down
-  optional uint64 expiresIn = 6; // how long timer of message is (ms)
-  repeated ChatItem revisions = 7;
-  // @required
-  optional bool sms = 8;
+  optional bool sms = 7;
 
   // oneof directionalDetails {
-    optional IncomingMessageDetails incoming = 9;
-    optional OutgoingMessageDetails outgoing = 10;
+    optional IncomingMessageDetails incoming = 8;
+    optional OutgoingMessageDetails outgoing = 9;
   // }
 
   // oneof item {
-    optional StandardMessage standardMessage = 11;
-    optional ContactMessage contactMessage = 12;
-    optional VoiceMessage voiceMessage = 13;
-    optional StickerMessage stickerMessage = 14;
-    optional RemoteDeletedMessage remoteDeletedMessage = 15;
-    optional UpdateMessage updateMessage = 16;
+    optional StandardMessage standardMessage = 10;
+    optional ContactMessage contactMessage = 11;
+    optional VoiceMessage voiceMessage = 12;
+    optional StickerMessage stickerMessage = 13;
+    optional RemoteDeletedMessage remoteDeletedMessage = 14;
+    optional UpdateMessage updateMessage = 15;
   // }
 }
 
 message SendStatus {
   enum Status {
-    FAILED = 0;
-    PENDING = 1;
-    SENT = 2;
-    DELIVERED = 3;
-    READ = 4;
-    VIEWED = 5;
-    SKIPPED = 6; // e.g. user in group was blocked, so we skipped sending to them
+    UNKNOWN = 0;
+    FAILED = 1;
+    PENDING = 2;
+    SENT = 3;
+    DELIVERED = 4;
+    READ = 5;
+    VIEWED = 6;
+    SKIPPED = 7; // e.g. user in group was blocked, so we skipped sending to them
   }
   // @required
   optional uint64 recipientId = 1;
@@ -350,9 +339,9 @@ message Text {
 message StandardMessage {
   optional Quote quote = 1;
   optional Text text = 2;
-  repeated AttachmentPointer attachments = 3;
-  optional LinkPreview linkPreview = 4;
-  optional AttachmentPointer longText = 5;
+  repeated FilePointer attachments = 3;
+  repeated LinkPreview linkPreview = 4;
+  optional FilePointer longText = 5;
   repeated Reaction reactions = 6;
 }
 
@@ -373,10 +362,11 @@ message ContactAttachment {
 
   message Phone {
     enum Type {
-      HOME = 0;
-      MOBILE = 1;
-      WORK = 2;
-      CUSTOM = 3;
+      UNKNOWN = 0;
+      HOME = 1;
+      MOBILE = 2;
+      WORK = 3;
+      CUSTOM = 4;
     }
 
     optional string value = 1;
@@ -386,10 +376,11 @@ message ContactAttachment {
 
   message Email {
     enum Type {
-      HOME = 0;
-      MOBILE = 1;
-      WORK = 2;
-      CUSTOM = 3;
+      UNKNOWN = 0;
+      HOME = 1;
+      MOBILE = 2;
+      WORK = 3;
+      CUSTOM = 4;
     }
 
     optional string value = 1;
@@ -399,9 +390,10 @@ message ContactAttachment {
 
   message PostalAddress {
     enum Type {
-      HOME = 0;
-      WORK = 1;
-      CUSTOM = 2;
+      UNKNOWN = 0;
+      HOME = 1;
+      WORK = 2;
+      CUSTOM = 3;
     }
 
     optional Type type = 1;
@@ -416,8 +408,8 @@ message ContactAttachment {
   }
 
   message Avatar {
-    optional AttachmentPointer avatar = 1;
-    optional bool isProfile = 2;
+    // @required
+    optional FilePointer avatar = 1;
   }
 
   optional Name name = 1;
@@ -432,14 +424,14 @@ message DocumentMessage {
   // @required
   optional Text text = 1;
   // @required
-  optional AttachmentPointer document = 2;
+  optional FilePointer document = 2;
   repeated Reaction reactions = 3;
 }
 
 message VoiceMessage {
   optional Quote quote = 1;
   // @required
-  optional AttachmentPointer audio = 2;
+  optional FilePointer audio = 2;
   repeated Reaction reactions = 3;
 }
 
@@ -461,62 +453,85 @@ message ScheduledMessage {
 }
 
 message Sticker {
+  // @required
   optional bytes packId = 1;
+  // @required
   optional bytes packKey = 2;
+  // @required
   optional uint32 stickerId = 3;
-  optional AttachmentPointer data = 4;
-  optional string emoji = 5;
+  optional string emoji = 4;
 }
 
 message LinkPreview {
+  // @required
   optional string url = 1;
   optional string title = 2;
-  optional AttachmentPointer image = 3;
+  optional FilePointer image = 3;
   optional string descriptionText = 4;
   optional uint64 date = 5;
 }
 
-message AttachmentPointer {
+message FilePointer {
+  message BackupLocator {
+    // @required
+    optional string mediaName = 1;
+    // @required
+    optional uint32 cdnNumber = 2;
+  }
+
+  message AttachmentLocator {
+    // @required
+    optional string cdnKey = 1;
+    // @required
+    optional uint32 cdnNumber = 2;
+    // @required
+    optional uint64 uploadTimestamp = 3;
+  }
+
+  message LegacyAttachmentLocator {
+  }
+
   enum Flags {
     VOICE_MESSAGE = 0;
     BORDERLESS = 1;
     GIF = 2;
   }
 
-  // oneof attachmentIdentifier {
-    optional fixed64 cdnId = 1;
-    optional string cdnKey = 2;
+  // oneof locator {
+    optional BackupLocator backupLocator = 1;
+    optional AttachmentLocator attachmentLocator= 2;
+    optional LegacyAttachmentLocator legacyAttachmentLocator = 3;
   // }
 
-  optional string contentType = 3;
   optional bytes key = 4;
-  optional uint32 size = 5;
-  optional bytes digest = 6;
-  optional bytes incrementalMac = 7;
-  optional bytes incrementalMacChunkSize = 8;
-  optional string fileName = 9;
-  optional uint32 flags = 10;
-  optional uint32 width = 11;
-  optional uint32 height = 12;
-  optional string caption = 13;
-  optional string blurHash = 14;
-  optional uint64 uploadTimestamp = 15;
-  optional uint32 cdnNumber = 16;
+  optional string contentType = 5;
+  optional uint32 size = 6;
+  optional bytes digest = 7;
+  optional bytes incrementalMac = 8;
+  optional bytes incrementalMacChunkSize = 9;
+  optional string fileName = 10;
+  optional uint32 flags = 11;
+  optional uint32 width = 12;
+  optional uint32 height = 13;
+  optional string caption = 14;
+  optional string blurHash = 15;
 }
 
 message Quote {
   enum Type {
-    NORMAL = 0;
-    GIFTBADGE = 1;
+    UNKNOWN = 0;
+    NORMAL = 1;
+    GIFTBADGE = 2;
   }
 
   message QuotedAttachment {
     optional string contentType = 1;
     optional string fileName = 2;
-    optional AttachmentPointer thumbnail = 3;
+    optional FilePointer thumbnail = 3;
   }
 
-  optional uint64 id = 1;
+  optional uint64 targetSentTimestamp = 1; // null if the target message could not be found at time of quote insert
+  // @required
   optional uint64 authorId = 2;
   optional string text = 3;
   repeated QuotedAttachment attachments = 4;
@@ -538,7 +553,7 @@ message BodyRange {
   optional uint32 length = 2;
 
   // oneof associatedValue {
-    optional string mentionAci = 3;
+    optional bytes mentionAci = 3;
     optional Style style = 4;
   // }
 }
@@ -576,49 +591,51 @@ message CallingMessage {
 
 message CallMessage {
   enum Type {
-    INCOMING_AUDIO_CALL = 0;
-    INCOMING_VIDEO_CALL = 1;
-    OUTGOING_AUDIO_CALL = 2;
-    OUTGOING_VIDEO_CALL = 3;
-    MISSED_AUDIO_CALL = 4;
-    MISSED_VIDEO_CALL = 5;
+    UNKNOWN = 0;
+    INCOMING_AUDIO_CALL = 1;
+    INCOMING_VIDEO_CALL = 2;
+    OUTGOING_AUDIO_CALL = 3;
+    OUTGOING_VIDEO_CALL = 4;
+    MISSED_AUDIO_CALL = 5;
+    MISSED_VIDEO_CALL = 6;
   }
 }
 
 message GroupCallMessage {
   // @required
-  optional bytes startedCallUuid = 1;
+  optional bytes startedCallAci = 1;
   // @required
   optional uint64 startedCallTimestamp = 2;
-  repeated bytes inCallUuids = 3;
-  // @required
-  optional bool isCallFull = 4;
+  repeated bytes inCallAcis = 3;
 }
 
 message SimpleUpdate {
   enum Type {
-    JOINED_SIGNAL = 0;
-    IDENTITY_UPDATE = 1;
-    IDENTITY_VERIFIED = 2;
-    IDENTITY_DEFAULT = 3; // marking as unverified
-    CHANGE_NUMBER = 4;
-    BOOST_REQUEST = 5;
-    END_SESSION = 6;
-    CHAT_SESSION_REFRESH = 7;
-    BAD_DECRYPT = 8;
-    PAYMENTS_ACTIVATED = 9;
-    PAYMENT_ACTIVATION_REQUEST = 10;
+    UNKNOWN = 0;
+    JOINED_SIGNAL = 1;
+    IDENTITY_UPDATE = 2;
+    IDENTITY_VERIFIED = 3;
+    IDENTITY_DEFAULT = 4; // marking as unverified
+    CHANGE_NUMBER = 5;
+    BOOST_REQUEST = 6;
+    END_SESSION = 7;
+    CHAT_SESSION_REFRESH = 8;
+    BAD_DECRYPT = 9;
+    PAYMENTS_ACTIVATED = 10;
+    PAYMENT_ACTIVATION_REQUEST = 11;
   }
+
+  optional Type type = 1;
 }
 
 message GroupDescriptionUpdate {
   // @required
-  optional string body = 1;
+  optional string newDescription = 1;
 }
 
 message ExpirationTimerChange {
   // @required
-  optional uint32 expiresIn = 1;
+  optional uint32 expiresInMs = 1;
 }
 
 message ProfileChange {
@@ -652,7 +669,7 @@ message StickerPack {
 
 message StickerPackSticker {
   // @required
-  optional AttachmentPointer data = 1;
+  optional FilePointer data = 1;
   // @required
   optional string emoji = 2;
 }

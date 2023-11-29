@@ -24,7 +24,7 @@ public class BackupProtoBackupInfo: NSObject, Codable, NSSecureCoding {
     public let version: UInt64
 
     @objc
-    public let backupTime: UInt64
+    public let backupTimeMs: UInt64
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -36,10 +36,10 @@ public class BackupProtoBackupInfo: NSObject, Codable, NSSecureCoding {
 
     private init(proto: BackupProtos_BackupInfo,
                  version: UInt64,
-                 backupTime: UInt64) {
+                 backupTimeMs: UInt64) {
         self.proto = proto
         self.version = version
-        self.backupTime = backupTime
+        self.backupTimeMs = backupTimeMs
     }
 
     @objc
@@ -59,14 +59,14 @@ public class BackupProtoBackupInfo: NSObject, Codable, NSSecureCoding {
         }
         let version = proto.version
 
-        guard proto.hasBackupTime else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: backupTime")
+        guard proto.hasBackupTimeMs else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: backupTimeMs")
         }
-        let backupTime = proto.backupTime
+        let backupTimeMs = proto.backupTimeMs
 
         self.init(proto: proto,
                   version: version,
-                  backupTime: backupTime)
+                  backupTimeMs: backupTimeMs)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -107,14 +107,14 @@ public class BackupProtoBackupInfo: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoBackupInfo {
     @objc
-    public static func builder(version: UInt64, backupTime: UInt64) -> BackupProtoBackupInfoBuilder {
-        return BackupProtoBackupInfoBuilder(version: version, backupTime: backupTime)
+    public static func builder(version: UInt64, backupTimeMs: UInt64) -> BackupProtoBackupInfoBuilder {
+        return BackupProtoBackupInfoBuilder(version: version, backupTimeMs: backupTimeMs)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoBackupInfoBuilder {
-        let builder = BackupProtoBackupInfoBuilder(version: version, backupTime: backupTime)
+        let builder = BackupProtoBackupInfoBuilder(version: version, backupTimeMs: backupTimeMs)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -131,11 +131,11 @@ public class BackupProtoBackupInfoBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(version: UInt64, backupTime: UInt64) {
+    fileprivate init(version: UInt64, backupTimeMs: UInt64) {
         super.init()
 
         setVersion(version)
-        setBackupTime(backupTime)
+        setBackupTimeMs(backupTimeMs)
     }
 
     @objc
@@ -144,8 +144,8 @@ public class BackupProtoBackupInfoBuilder: NSObject {
     }
 
     @objc
-    public func setBackupTime(_ valueParam: UInt64) {
-        proto.backupTime = valueParam
+    public func setBackupTimeMs(_ valueParam: UInt64) {
+        proto.backupTimeMs = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -718,9 +718,6 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
     fileprivate let proto: BackupProtos_AccountData.AccountSettings
 
     @objc
-    public let noteToSelfArchived: Bool
-
-    @objc
     public let readReceipts: Bool
 
     @objc
@@ -730,16 +727,13 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
     public let typingIndicators: Bool
 
     @objc
-    public let proxiedLinkPreviews: Bool
-
-    @objc
     public let noteToSelfMarkedUnread: Bool
 
     @objc
     public let linkPreviews: Bool
 
     @objc
-    public let unlistedPhoneNumber: Bool
+    public let unlistedPhoneeumber: Bool
 
     @objc
     public let preferContactAvatars: Bool
@@ -763,10 +757,7 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
     public let storiesDisabled: Bool
 
     @objc
-    public let onboardingStoryHasBeenRead: Bool
-
-    @objc
-    public let groupStoryEducationSheetHasBeenSet: Bool
+    public let groupStoryEducationSheetHasBeenSeen: Bool
 
     @objc
     public let usernameOnboardingHasBeenCompleted: Bool
@@ -814,14 +805,12 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
     }
 
     private init(proto: BackupProtos_AccountData.AccountSettings,
-                 noteToSelfArchived: Bool,
                  readReceipts: Bool,
                  sealedSenderIndicators: Bool,
                  typingIndicators: Bool,
-                 proxiedLinkPreviews: Bool,
                  noteToSelfMarkedUnread: Bool,
                  linkPreviews: Bool,
-                 unlistedPhoneNumber: Bool,
+                 unlistedPhoneeumber: Bool,
                  preferContactAvatars: Bool,
                  universalExpireTimer: UInt32,
                  displayBadgesOnProfile: Bool,
@@ -829,18 +818,15 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
                  myStoriesPrivacyHasBeenSet: Bool,
                  onboardingStoryHasBeenViewed: Bool,
                  storiesDisabled: Bool,
-                 onboardingStoryHasBeenRead: Bool,
-                 groupStoryEducationSheetHasBeenSet: Bool,
+                 groupStoryEducationSheetHasBeenSeen: Bool,
                  usernameOnboardingHasBeenCompleted: Bool) {
         self.proto = proto
-        self.noteToSelfArchived = noteToSelfArchived
         self.readReceipts = readReceipts
         self.sealedSenderIndicators = sealedSenderIndicators
         self.typingIndicators = typingIndicators
-        self.proxiedLinkPreviews = proxiedLinkPreviews
         self.noteToSelfMarkedUnread = noteToSelfMarkedUnread
         self.linkPreviews = linkPreviews
-        self.unlistedPhoneNumber = unlistedPhoneNumber
+        self.unlistedPhoneeumber = unlistedPhoneeumber
         self.preferContactAvatars = preferContactAvatars
         self.universalExpireTimer = universalExpireTimer
         self.displayBadgesOnProfile = displayBadgesOnProfile
@@ -848,8 +834,7 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
         self.myStoriesPrivacyHasBeenSet = myStoriesPrivacyHasBeenSet
         self.onboardingStoryHasBeenViewed = onboardingStoryHasBeenViewed
         self.storiesDisabled = storiesDisabled
-        self.onboardingStoryHasBeenRead = onboardingStoryHasBeenRead
-        self.groupStoryEducationSheetHasBeenSet = groupStoryEducationSheetHasBeenSet
+        self.groupStoryEducationSheetHasBeenSeen = groupStoryEducationSheetHasBeenSeen
         self.usernameOnboardingHasBeenCompleted = usernameOnboardingHasBeenCompleted
     }
 
@@ -865,11 +850,6 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
     }
 
     fileprivate convenience init(_ proto: BackupProtos_AccountData.AccountSettings) throws {
-        guard proto.hasNoteToSelfArchived else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: noteToSelfArchived")
-        }
-        let noteToSelfArchived = proto.noteToSelfArchived
-
         guard proto.hasReadReceipts else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: readReceipts")
         }
@@ -885,11 +865,6 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
         }
         let typingIndicators = proto.typingIndicators
 
-        guard proto.hasProxiedLinkPreviews else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: proxiedLinkPreviews")
-        }
-        let proxiedLinkPreviews = proto.proxiedLinkPreviews
-
         guard proto.hasNoteToSelfMarkedUnread else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: noteToSelfMarkedUnread")
         }
@@ -900,10 +875,10 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
         }
         let linkPreviews = proto.linkPreviews
 
-        guard proto.hasUnlistedPhoneNumber else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: unlistedPhoneNumber")
+        guard proto.hasUnlistedPhoneeumber else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: unlistedPhoneeumber")
         }
-        let unlistedPhoneNumber = proto.unlistedPhoneNumber
+        let unlistedPhoneeumber = proto.unlistedPhoneeumber
 
         guard proto.hasPreferContactAvatars else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: preferContactAvatars")
@@ -940,15 +915,10 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
         }
         let storiesDisabled = proto.storiesDisabled
 
-        guard proto.hasOnboardingStoryHasBeenRead else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: onboardingStoryHasBeenRead")
+        guard proto.hasGroupStoryEducationSheetHasBeenSeen else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: groupStoryEducationSheetHasBeenSeen")
         }
-        let onboardingStoryHasBeenRead = proto.onboardingStoryHasBeenRead
-
-        guard proto.hasGroupStoryEducationSheetHasBeenSet else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: groupStoryEducationSheetHasBeenSet")
-        }
-        let groupStoryEducationSheetHasBeenSet = proto.groupStoryEducationSheetHasBeenSet
+        let groupStoryEducationSheetHasBeenSeen = proto.groupStoryEducationSheetHasBeenSeen
 
         guard proto.hasUsernameOnboardingHasBeenCompleted else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: usernameOnboardingHasBeenCompleted")
@@ -956,14 +926,12 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
         let usernameOnboardingHasBeenCompleted = proto.usernameOnboardingHasBeenCompleted
 
         self.init(proto: proto,
-                  noteToSelfArchived: noteToSelfArchived,
                   readReceipts: readReceipts,
                   sealedSenderIndicators: sealedSenderIndicators,
                   typingIndicators: typingIndicators,
-                  proxiedLinkPreviews: proxiedLinkPreviews,
                   noteToSelfMarkedUnread: noteToSelfMarkedUnread,
                   linkPreviews: linkPreviews,
-                  unlistedPhoneNumber: unlistedPhoneNumber,
+                  unlistedPhoneeumber: unlistedPhoneeumber,
                   preferContactAvatars: preferContactAvatars,
                   universalExpireTimer: universalExpireTimer,
                   displayBadgesOnProfile: displayBadgesOnProfile,
@@ -971,8 +939,7 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
                   myStoriesPrivacyHasBeenSet: myStoriesPrivacyHasBeenSet,
                   onboardingStoryHasBeenViewed: onboardingStoryHasBeenViewed,
                   storiesDisabled: storiesDisabled,
-                  onboardingStoryHasBeenRead: onboardingStoryHasBeenRead,
-                  groupStoryEducationSheetHasBeenSet: groupStoryEducationSheetHasBeenSet,
+                  groupStoryEducationSheetHasBeenSeen: groupStoryEducationSheetHasBeenSeen,
                   usernameOnboardingHasBeenCompleted: usernameOnboardingHasBeenCompleted)
     }
 
@@ -1014,14 +981,14 @@ public class BackupProtoAccountDataAccountSettings: NSObject, Codable, NSSecureC
 
 extension BackupProtoAccountDataAccountSettings {
     @objc
-    public static func builder(noteToSelfArchived: Bool, readReceipts: Bool, sealedSenderIndicators: Bool, typingIndicators: Bool, proxiedLinkPreviews: Bool, noteToSelfMarkedUnread: Bool, linkPreviews: Bool, unlistedPhoneNumber: Bool, preferContactAvatars: Bool, universalExpireTimer: UInt32, displayBadgesOnProfile: Bool, keepMutedChatsArchived: Bool, myStoriesPrivacyHasBeenSet: Bool, onboardingStoryHasBeenViewed: Bool, storiesDisabled: Bool, onboardingStoryHasBeenRead: Bool, groupStoryEducationSheetHasBeenSet: Bool, usernameOnboardingHasBeenCompleted: Bool) -> BackupProtoAccountDataAccountSettingsBuilder {
-        return BackupProtoAccountDataAccountSettingsBuilder(noteToSelfArchived: noteToSelfArchived, readReceipts: readReceipts, sealedSenderIndicators: sealedSenderIndicators, typingIndicators: typingIndicators, proxiedLinkPreviews: proxiedLinkPreviews, noteToSelfMarkedUnread: noteToSelfMarkedUnread, linkPreviews: linkPreviews, unlistedPhoneNumber: unlistedPhoneNumber, preferContactAvatars: preferContactAvatars, universalExpireTimer: universalExpireTimer, displayBadgesOnProfile: displayBadgesOnProfile, keepMutedChatsArchived: keepMutedChatsArchived, myStoriesPrivacyHasBeenSet: myStoriesPrivacyHasBeenSet, onboardingStoryHasBeenViewed: onboardingStoryHasBeenViewed, storiesDisabled: storiesDisabled, onboardingStoryHasBeenRead: onboardingStoryHasBeenRead, groupStoryEducationSheetHasBeenSet: groupStoryEducationSheetHasBeenSet, usernameOnboardingHasBeenCompleted: usernameOnboardingHasBeenCompleted)
+    public static func builder(readReceipts: Bool, sealedSenderIndicators: Bool, typingIndicators: Bool, noteToSelfMarkedUnread: Bool, linkPreviews: Bool, unlistedPhoneeumber: Bool, preferContactAvatars: Bool, universalExpireTimer: UInt32, displayBadgesOnProfile: Bool, keepMutedChatsArchived: Bool, myStoriesPrivacyHasBeenSet: Bool, onboardingStoryHasBeenViewed: Bool, storiesDisabled: Bool, groupStoryEducationSheetHasBeenSeen: Bool, usernameOnboardingHasBeenCompleted: Bool) -> BackupProtoAccountDataAccountSettingsBuilder {
+        return BackupProtoAccountDataAccountSettingsBuilder(readReceipts: readReceipts, sealedSenderIndicators: sealedSenderIndicators, typingIndicators: typingIndicators, noteToSelfMarkedUnread: noteToSelfMarkedUnread, linkPreviews: linkPreviews, unlistedPhoneeumber: unlistedPhoneeumber, preferContactAvatars: preferContactAvatars, universalExpireTimer: universalExpireTimer, displayBadgesOnProfile: displayBadgesOnProfile, keepMutedChatsArchived: keepMutedChatsArchived, myStoriesPrivacyHasBeenSet: myStoriesPrivacyHasBeenSet, onboardingStoryHasBeenViewed: onboardingStoryHasBeenViewed, storiesDisabled: storiesDisabled, groupStoryEducationSheetHasBeenSeen: groupStoryEducationSheetHasBeenSeen, usernameOnboardingHasBeenCompleted: usernameOnboardingHasBeenCompleted)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoAccountDataAccountSettingsBuilder {
-        let builder = BackupProtoAccountDataAccountSettingsBuilder(noteToSelfArchived: noteToSelfArchived, readReceipts: readReceipts, sealedSenderIndicators: sealedSenderIndicators, typingIndicators: typingIndicators, proxiedLinkPreviews: proxiedLinkPreviews, noteToSelfMarkedUnread: noteToSelfMarkedUnread, linkPreviews: linkPreviews, unlistedPhoneNumber: unlistedPhoneNumber, preferContactAvatars: preferContactAvatars, universalExpireTimer: universalExpireTimer, displayBadgesOnProfile: displayBadgesOnProfile, keepMutedChatsArchived: keepMutedChatsArchived, myStoriesPrivacyHasBeenSet: myStoriesPrivacyHasBeenSet, onboardingStoryHasBeenViewed: onboardingStoryHasBeenViewed, storiesDisabled: storiesDisabled, onboardingStoryHasBeenRead: onboardingStoryHasBeenRead, groupStoryEducationSheetHasBeenSet: groupStoryEducationSheetHasBeenSet, usernameOnboardingHasBeenCompleted: usernameOnboardingHasBeenCompleted)
+        let builder = BackupProtoAccountDataAccountSettingsBuilder(readReceipts: readReceipts, sealedSenderIndicators: sealedSenderIndicators, typingIndicators: typingIndicators, noteToSelfMarkedUnread: noteToSelfMarkedUnread, linkPreviews: linkPreviews, unlistedPhoneeumber: unlistedPhoneeumber, preferContactAvatars: preferContactAvatars, universalExpireTimer: universalExpireTimer, displayBadgesOnProfile: displayBadgesOnProfile, keepMutedChatsArchived: keepMutedChatsArchived, myStoriesPrivacyHasBeenSet: myStoriesPrivacyHasBeenSet, onboardingStoryHasBeenViewed: onboardingStoryHasBeenViewed, storiesDisabled: storiesDisabled, groupStoryEducationSheetHasBeenSeen: groupStoryEducationSheetHasBeenSeen, usernameOnboardingHasBeenCompleted: usernameOnboardingHasBeenCompleted)
         builder.setPreferredReactionEmoji(preferredReactionEmoji)
         if hasStoryViewReceiptsEnabled {
             builder.setStoryViewReceiptsEnabled(storyViewReceiptsEnabled)
@@ -1045,17 +1012,15 @@ public class BackupProtoAccountDataAccountSettingsBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(noteToSelfArchived: Bool, readReceipts: Bool, sealedSenderIndicators: Bool, typingIndicators: Bool, proxiedLinkPreviews: Bool, noteToSelfMarkedUnread: Bool, linkPreviews: Bool, unlistedPhoneNumber: Bool, preferContactAvatars: Bool, universalExpireTimer: UInt32, displayBadgesOnProfile: Bool, keepMutedChatsArchived: Bool, myStoriesPrivacyHasBeenSet: Bool, onboardingStoryHasBeenViewed: Bool, storiesDisabled: Bool, onboardingStoryHasBeenRead: Bool, groupStoryEducationSheetHasBeenSet: Bool, usernameOnboardingHasBeenCompleted: Bool) {
+    fileprivate init(readReceipts: Bool, sealedSenderIndicators: Bool, typingIndicators: Bool, noteToSelfMarkedUnread: Bool, linkPreviews: Bool, unlistedPhoneeumber: Bool, preferContactAvatars: Bool, universalExpireTimer: UInt32, displayBadgesOnProfile: Bool, keepMutedChatsArchived: Bool, myStoriesPrivacyHasBeenSet: Bool, onboardingStoryHasBeenViewed: Bool, storiesDisabled: Bool, groupStoryEducationSheetHasBeenSeen: Bool, usernameOnboardingHasBeenCompleted: Bool) {
         super.init()
 
-        setNoteToSelfArchived(noteToSelfArchived)
         setReadReceipts(readReceipts)
         setSealedSenderIndicators(sealedSenderIndicators)
         setTypingIndicators(typingIndicators)
-        setProxiedLinkPreviews(proxiedLinkPreviews)
         setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
         setLinkPreviews(linkPreviews)
-        setUnlistedPhoneNumber(unlistedPhoneNumber)
+        setUnlistedPhoneeumber(unlistedPhoneeumber)
         setPreferContactAvatars(preferContactAvatars)
         setUniversalExpireTimer(universalExpireTimer)
         setDisplayBadgesOnProfile(displayBadgesOnProfile)
@@ -1063,14 +1028,8 @@ public class BackupProtoAccountDataAccountSettingsBuilder: NSObject {
         setMyStoriesPrivacyHasBeenSet(myStoriesPrivacyHasBeenSet)
         setOnboardingStoryHasBeenViewed(onboardingStoryHasBeenViewed)
         setStoriesDisabled(storiesDisabled)
-        setOnboardingStoryHasBeenRead(onboardingStoryHasBeenRead)
-        setGroupStoryEducationSheetHasBeenSet(groupStoryEducationSheetHasBeenSet)
+        setGroupStoryEducationSheetHasBeenSeen(groupStoryEducationSheetHasBeenSeen)
         setUsernameOnboardingHasBeenCompleted(usernameOnboardingHasBeenCompleted)
-    }
-
-    @objc
-    public func setNoteToSelfArchived(_ valueParam: Bool) {
-        proto.noteToSelfArchived = valueParam
     }
 
     @objc
@@ -1089,11 +1048,6 @@ public class BackupProtoAccountDataAccountSettingsBuilder: NSObject {
     }
 
     @objc
-    public func setProxiedLinkPreviews(_ valueParam: Bool) {
-        proto.proxiedLinkPreviews = valueParam
-    }
-
-    @objc
     public func setNoteToSelfMarkedUnread(_ valueParam: Bool) {
         proto.noteToSelfMarkedUnread = valueParam
     }
@@ -1104,8 +1058,8 @@ public class BackupProtoAccountDataAccountSettingsBuilder: NSObject {
     }
 
     @objc
-    public func setUnlistedPhoneNumber(_ valueParam: Bool) {
-        proto.unlistedPhoneNumber = valueParam
+    public func setUnlistedPhoneeumber(_ valueParam: Bool) {
+        proto.unlistedPhoneeumber = valueParam
     }
 
     @objc
@@ -1159,13 +1113,8 @@ public class BackupProtoAccountDataAccountSettingsBuilder: NSObject {
     }
 
     @objc
-    public func setOnboardingStoryHasBeenRead(_ valueParam: Bool) {
-        proto.onboardingStoryHasBeenRead = valueParam
-    }
-
-    @objc
-    public func setGroupStoryEducationSheetHasBeenSet(_ valueParam: Bool) {
-        proto.groupStoryEducationSheetHasBeenSet = valueParam
+    public func setGroupStoryEducationSheetHasBeenSeen(_ valueParam: Bool) {
+        proto.groupStoryEducationSheetHasBeenSeen = valueParam
     }
 
     @objc
@@ -1215,23 +1164,23 @@ extension BackupProtoAccountDataAccountSettingsBuilder {
 
 @objc
 public enum BackupProtoAccountDataPhoneNumberSharingMode: Int32 {
-    case everybody = 0
-    case contactsOnly = 1
+    case unknown = 0
+    case everybody = 1
     case nobody = 2
 }
 
 private func BackupProtoAccountDataPhoneNumberSharingModeWrap(_ value: BackupProtos_AccountData.PhoneNumberSharingMode) -> BackupProtoAccountDataPhoneNumberSharingMode {
     switch value {
+    case .unknown: return .unknown
     case .everybody: return .everybody
-    case .contactsOnly: return .contactsOnly
     case .nobody: return .nobody
     }
 }
 
 private func BackupProtoAccountDataPhoneNumberSharingModeUnwrap(_ value: BackupProtoAccountDataPhoneNumberSharingMode) -> BackupProtos_AccountData.PhoneNumberSharingMode {
     switch value {
+    case .unknown: return .unknown
     case .everybody: return .everybody
-    case .contactsOnly: return .contactsOnly
     case .nobody: return .nobody
     }
 }
@@ -1242,18 +1191,6 @@ private func BackupProtoAccountDataPhoneNumberSharingModeUnwrap(_ value: BackupP
 public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: BackupProtos_AccountData
-
-    @objc
-    public let aciIdentityPublicKey: Data
-
-    @objc
-    public let aciIdentityPrivateKey: Data
-
-    @objc
-    public let pniIdentityPublicKey: Data
-
-    @objc
-    public let pniIdentityPrivateKey: Data
 
     @objc
     public let profileKey: Data
@@ -1283,15 +1220,6 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
     public let accountSettings: BackupProtoAccountDataAccountSettings
 
     @objc
-    public let aci: Data
-
-    @objc
-    public let pni: Data
-
-    @objc
-    public let e164: UInt64
-
-    @objc
     public var username: String? {
         guard hasUsername else {
             return nil
@@ -1312,10 +1240,6 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_AccountData,
-                 aciIdentityPublicKey: Data,
-                 aciIdentityPrivateKey: Data,
-                 pniIdentityPublicKey: Data,
-                 pniIdentityPrivateKey: Data,
                  profileKey: Data,
                  usernameLink: BackupProtoAccountDataUsernameLink,
                  givenName: String,
@@ -1324,15 +1248,8 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
                  subscriberID: Data,
                  subscriberCurrencyCode: String,
                  subscriptionManuallyCancelled: Bool,
-                 accountSettings: BackupProtoAccountDataAccountSettings,
-                 aci: Data,
-                 pni: Data,
-                 e164: UInt64) {
+                 accountSettings: BackupProtoAccountDataAccountSettings) {
         self.proto = proto
-        self.aciIdentityPublicKey = aciIdentityPublicKey
-        self.aciIdentityPrivateKey = aciIdentityPrivateKey
-        self.pniIdentityPublicKey = pniIdentityPublicKey
-        self.pniIdentityPrivateKey = pniIdentityPrivateKey
         self.profileKey = profileKey
         self.usernameLink = usernameLink
         self.givenName = givenName
@@ -1342,9 +1259,6 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
         self.subscriberCurrencyCode = subscriberCurrencyCode
         self.subscriptionManuallyCancelled = subscriptionManuallyCancelled
         self.accountSettings = accountSettings
-        self.aci = aci
-        self.pni = pni
-        self.e164 = e164
     }
 
     @objc
@@ -1359,26 +1273,6 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
     }
 
     fileprivate convenience init(_ proto: BackupProtos_AccountData) throws {
-        guard proto.hasAciIdentityPublicKey else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: aciIdentityPublicKey")
-        }
-        let aciIdentityPublicKey = proto.aciIdentityPublicKey
-
-        guard proto.hasAciIdentityPrivateKey else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: aciIdentityPrivateKey")
-        }
-        let aciIdentityPrivateKey = proto.aciIdentityPrivateKey
-
-        guard proto.hasPniIdentityPublicKey else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pniIdentityPublicKey")
-        }
-        let pniIdentityPublicKey = proto.pniIdentityPublicKey
-
-        guard proto.hasPniIdentityPrivateKey else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pniIdentityPrivateKey")
-        }
-        let pniIdentityPrivateKey = proto.pniIdentityPrivateKey
-
         guard proto.hasProfileKey else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: profileKey")
         }
@@ -1424,26 +1318,7 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
         }
         let accountSettings = try BackupProtoAccountDataAccountSettings(proto.accountSettings)
 
-        guard proto.hasAci else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: aci")
-        }
-        let aci = proto.aci
-
-        guard proto.hasPni else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pni")
-        }
-        let pni = proto.pni
-
-        guard proto.hasE164 else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: e164")
-        }
-        let e164 = proto.e164
-
         self.init(proto: proto,
-                  aciIdentityPublicKey: aciIdentityPublicKey,
-                  aciIdentityPrivateKey: aciIdentityPrivateKey,
-                  pniIdentityPublicKey: pniIdentityPublicKey,
-                  pniIdentityPrivateKey: pniIdentityPrivateKey,
                   profileKey: profileKey,
                   usernameLink: usernameLink,
                   givenName: givenName,
@@ -1452,10 +1327,7 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
                   subscriberID: subscriberID,
                   subscriberCurrencyCode: subscriberCurrencyCode,
                   subscriptionManuallyCancelled: subscriptionManuallyCancelled,
-                  accountSettings: accountSettings,
-                  aci: aci,
-                  pni: pni,
-                  e164: e164)
+                  accountSettings: accountSettings)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -1496,14 +1368,14 @@ public class BackupProtoAccountData: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoAccountData {
     @objc
-    public static func builder(aciIdentityPublicKey: Data, aciIdentityPrivateKey: Data, pniIdentityPublicKey: Data, pniIdentityPrivateKey: Data, profileKey: Data, usernameLink: BackupProtoAccountDataUsernameLink, givenName: String, familyName: String, avatarPath: String, subscriberID: Data, subscriberCurrencyCode: String, subscriptionManuallyCancelled: Bool, accountSettings: BackupProtoAccountDataAccountSettings, aci: Data, pni: Data, e164: UInt64) -> BackupProtoAccountDataBuilder {
-        return BackupProtoAccountDataBuilder(aciIdentityPublicKey: aciIdentityPublicKey, aciIdentityPrivateKey: aciIdentityPrivateKey, pniIdentityPublicKey: pniIdentityPublicKey, pniIdentityPrivateKey: pniIdentityPrivateKey, profileKey: profileKey, usernameLink: usernameLink, givenName: givenName, familyName: familyName, avatarPath: avatarPath, subscriberID: subscriberID, subscriberCurrencyCode: subscriberCurrencyCode, subscriptionManuallyCancelled: subscriptionManuallyCancelled, accountSettings: accountSettings, aci: aci, pni: pni, e164: e164)
+    public static func builder(profileKey: Data, usernameLink: BackupProtoAccountDataUsernameLink, givenName: String, familyName: String, avatarPath: String, subscriberID: Data, subscriberCurrencyCode: String, subscriptionManuallyCancelled: Bool, accountSettings: BackupProtoAccountDataAccountSettings) -> BackupProtoAccountDataBuilder {
+        return BackupProtoAccountDataBuilder(profileKey: profileKey, usernameLink: usernameLink, givenName: givenName, familyName: familyName, avatarPath: avatarPath, subscriberID: subscriberID, subscriberCurrencyCode: subscriberCurrencyCode, subscriptionManuallyCancelled: subscriptionManuallyCancelled, accountSettings: accountSettings)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoAccountDataBuilder {
-        let builder = BackupProtoAccountDataBuilder(aciIdentityPublicKey: aciIdentityPublicKey, aciIdentityPrivateKey: aciIdentityPrivateKey, pniIdentityPublicKey: pniIdentityPublicKey, pniIdentityPrivateKey: pniIdentityPrivateKey, profileKey: profileKey, usernameLink: usernameLink, givenName: givenName, familyName: familyName, avatarPath: avatarPath, subscriberID: subscriberID, subscriberCurrencyCode: subscriberCurrencyCode, subscriptionManuallyCancelled: subscriptionManuallyCancelled, accountSettings: accountSettings, aci: aci, pni: pni, e164: e164)
+        let builder = BackupProtoAccountDataBuilder(profileKey: profileKey, usernameLink: usernameLink, givenName: givenName, familyName: familyName, avatarPath: avatarPath, subscriberID: subscriberID, subscriberCurrencyCode: subscriberCurrencyCode, subscriptionManuallyCancelled: subscriptionManuallyCancelled, accountSettings: accountSettings)
         if let _value = username {
             builder.setUsername(_value)
         }
@@ -1523,13 +1395,9 @@ public class BackupProtoAccountDataBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(aciIdentityPublicKey: Data, aciIdentityPrivateKey: Data, pniIdentityPublicKey: Data, pniIdentityPrivateKey: Data, profileKey: Data, usernameLink: BackupProtoAccountDataUsernameLink, givenName: String, familyName: String, avatarPath: String, subscriberID: Data, subscriberCurrencyCode: String, subscriptionManuallyCancelled: Bool, accountSettings: BackupProtoAccountDataAccountSettings, aci: Data, pni: Data, e164: UInt64) {
+    fileprivate init(profileKey: Data, usernameLink: BackupProtoAccountDataUsernameLink, givenName: String, familyName: String, avatarPath: String, subscriberID: Data, subscriberCurrencyCode: String, subscriptionManuallyCancelled: Bool, accountSettings: BackupProtoAccountDataAccountSettings) {
         super.init()
 
-        setAciIdentityPublicKey(aciIdentityPublicKey)
-        setAciIdentityPrivateKey(aciIdentityPrivateKey)
-        setPniIdentityPublicKey(pniIdentityPublicKey)
-        setPniIdentityPrivateKey(pniIdentityPrivateKey)
         setProfileKey(profileKey)
         setUsernameLink(usernameLink)
         setGivenName(givenName)
@@ -1539,53 +1407,6 @@ public class BackupProtoAccountDataBuilder: NSObject {
         setSubscriberCurrencyCode(subscriberCurrencyCode)
         setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
         setAccountSettings(accountSettings)
-        setAci(aci)
-        setPni(pni)
-        setE164(e164)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAciIdentityPublicKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.aciIdentityPublicKey = valueParam
-    }
-
-    public func setAciIdentityPublicKey(_ valueParam: Data) {
-        proto.aciIdentityPublicKey = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAciIdentityPrivateKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.aciIdentityPrivateKey = valueParam
-    }
-
-    public func setAciIdentityPrivateKey(_ valueParam: Data) {
-        proto.aciIdentityPrivateKey = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPniIdentityPublicKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.pniIdentityPublicKey = valueParam
-    }
-
-    public func setPniIdentityPublicKey(_ valueParam: Data) {
-        proto.pniIdentityPublicKey = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPniIdentityPrivateKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.pniIdentityPrivateKey = valueParam
-    }
-
-    public func setPniIdentityPrivateKey(_ valueParam: Data) {
-        proto.pniIdentityPrivateKey = valueParam
     }
 
     @objc
@@ -1692,33 +1513,6 @@ public class BackupProtoAccountDataBuilder: NSObject {
         proto.accountSettings = valueParam.proto
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAci(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.aci = valueParam
-    }
-
-    public func setAci(_ valueParam: Data) {
-        proto.aci = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setPni(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.pni = valueParam
-    }
-
-    public func setPni(_ valueParam: Data) {
-        proto.pni = valueParam
-    }
-
-    @objc
-    public func setE164(_ valueParam: UInt64) {
-        proto.e164 = valueParam
-    }
-
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
     }
@@ -1774,6 +1568,9 @@ public class BackupProtoRecipient: NSObject, Codable, NSSecureCoding {
     @objc
     public let selfRecipient: BackupProtoSelfRecipient?
 
+    @objc
+    public let releaseNotes: BackupProtoReleaseNotes?
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1787,13 +1584,15 @@ public class BackupProtoRecipient: NSObject, Codable, NSSecureCoding {
                  contact: BackupProtoContact?,
                  group: BackupProtoGroup?,
                  distributionList: BackupProtoDistributionList?,
-                 selfRecipient: BackupProtoSelfRecipient?) {
+                 selfRecipient: BackupProtoSelfRecipient?,
+                 releaseNotes: BackupProtoReleaseNotes?) {
         self.proto = proto
         self.id = id
         self.contact = contact
         self.group = group
         self.distributionList = distributionList
         self.selfRecipient = selfRecipient
+        self.releaseNotes = releaseNotes
     }
 
     @objc
@@ -1833,12 +1632,18 @@ public class BackupProtoRecipient: NSObject, Codable, NSSecureCoding {
             selfRecipient = BackupProtoSelfRecipient(proto.selfRecipient)
         }
 
+        var releaseNotes: BackupProtoReleaseNotes?
+        if proto.hasReleaseNotes {
+            releaseNotes = BackupProtoReleaseNotes(proto.releaseNotes)
+        }
+
         self.init(proto: proto,
                   id: id,
                   contact: contact,
                   group: group,
                   distributionList: distributionList,
-                  selfRecipient: selfRecipient)
+                  selfRecipient: selfRecipient,
+                  releaseNotes: releaseNotes)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -1898,6 +1703,9 @@ extension BackupProtoRecipient {
         }
         if let _value = selfRecipient {
             builder.setSelfRecipient(_value)
+        }
+        if let _value = releaseNotes {
+            builder.setReleaseNotes(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1968,6 +1776,17 @@ public class BackupProtoRecipientBuilder: NSObject {
 
     public func setSelfRecipient(_ valueParam: BackupProtoSelfRecipient) {
         proto.selfRecipient = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setReleaseNotes(_ valueParam: BackupProtoReleaseNotes?) {
+        guard let valueParam = valueParam else { return }
+        proto.releaseNotes = valueParam.proto
+    }
+
+    public func setReleaseNotes(_ valueParam: BackupProtoReleaseNotes) {
+        proto.releaseNotes = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2151,18 +1970,6 @@ public class BackupProtoContact: NSObject, Codable, NSSecureCoding {
         return proto.hasProfileFamilyName
     }
 
-    @objc
-    public var profileJoinedName: String? {
-        guard hasProfileJoinedName else {
-            return nil
-        }
-        return proto.profileJoinedName
-    }
-    @objc
-    public var hasProfileJoinedName: Bool {
-        return proto.hasProfileJoinedName
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2300,9 +2107,6 @@ extension BackupProtoContact {
         if let _value = profileFamilyName {
             builder.setProfileFamilyName(_value)
         }
-        if let _value = profileJoinedName {
-            builder.setProfileJoinedName(_value)
-        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2423,17 +2227,6 @@ public class BackupProtoContactBuilder: NSObject {
 
     public func setProfileFamilyName(_ valueParam: String) {
         proto.profileFamilyName = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setProfileJoinedName(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.profileJoinedName = valueParam
-    }
-
-    public func setProfileJoinedName(_ valueParam: String) {
-        proto.profileJoinedName = valueParam
     }
 
     @objc
@@ -2851,6 +2644,139 @@ extension BackupProtoSelfRecipientBuilder {
 
 #endif
 
+// MARK: - BackupProtoReleaseNotes
+
+@objc
+public class BackupProtoReleaseNotes: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_ReleaseNotes
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_ReleaseNotes) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_ReleaseNotes(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_ReleaseNotes) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoReleaseNotes {
+    @objc
+    public static func builder() -> BackupProtoReleaseNotesBuilder {
+        return BackupProtoReleaseNotesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoReleaseNotesBuilder {
+        let builder = BackupProtoReleaseNotesBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoReleaseNotesBuilder: NSObject {
+
+    private var proto = BackupProtos_ReleaseNotes()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoReleaseNotes {
+        return BackupProtoReleaseNotes(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoReleaseNotes {
+        return BackupProtoReleaseNotes(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoReleaseNotes(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoReleaseNotes {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoReleaseNotesBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoReleaseNotes? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - BackupProtoChat
 
 @objc
@@ -2868,19 +2794,22 @@ public class BackupProtoChat: NSObject, Codable, NSSecureCoding {
     public let archived: Bool
 
     @objc
-    public let pinned: Bool
+    public let pinnedOrder: UInt32
 
     @objc
-    public let expirationTimer: UInt64
+    public let expirationTimerMs: UInt64
 
     @objc
-    public let muteUntil: UInt64
+    public let muteUntilMs: UInt64
 
     @objc
     public let markedUnread: Bool
 
     @objc
     public let dontNotifyForMentionsIfMuted: Bool
+
+    @objc
+    public let wallpaper: BackupProtoFilePointer?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -2894,20 +2823,22 @@ public class BackupProtoChat: NSObject, Codable, NSSecureCoding {
                  id: UInt64,
                  recipientID: UInt64,
                  archived: Bool,
-                 pinned: Bool,
-                 expirationTimer: UInt64,
-                 muteUntil: UInt64,
+                 pinnedOrder: UInt32,
+                 expirationTimerMs: UInt64,
+                 muteUntilMs: UInt64,
                  markedUnread: Bool,
-                 dontNotifyForMentionsIfMuted: Bool) {
+                 dontNotifyForMentionsIfMuted: Bool,
+                 wallpaper: BackupProtoFilePointer?) {
         self.proto = proto
         self.id = id
         self.recipientID = recipientID
         self.archived = archived
-        self.pinned = pinned
-        self.expirationTimer = expirationTimer
-        self.muteUntil = muteUntil
+        self.pinnedOrder = pinnedOrder
+        self.expirationTimerMs = expirationTimerMs
+        self.muteUntilMs = muteUntilMs
         self.markedUnread = markedUnread
         self.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
+        self.wallpaper = wallpaper
     }
 
     @objc
@@ -2937,20 +2868,20 @@ public class BackupProtoChat: NSObject, Codable, NSSecureCoding {
         }
         let archived = proto.archived
 
-        guard proto.hasPinned else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pinned")
+        guard proto.hasPinnedOrder else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pinnedOrder")
         }
-        let pinned = proto.pinned
+        let pinnedOrder = proto.pinnedOrder
 
-        guard proto.hasExpirationTimer else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: expirationTimer")
+        guard proto.hasExpirationTimerMs else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: expirationTimerMs")
         }
-        let expirationTimer = proto.expirationTimer
+        let expirationTimerMs = proto.expirationTimerMs
 
-        guard proto.hasMuteUntil else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: muteUntil")
+        guard proto.hasMuteUntilMs else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: muteUntilMs")
         }
-        let muteUntil = proto.muteUntil
+        let muteUntilMs = proto.muteUntilMs
 
         guard proto.hasMarkedUnread else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: markedUnread")
@@ -2962,15 +2893,21 @@ public class BackupProtoChat: NSObject, Codable, NSSecureCoding {
         }
         let dontNotifyForMentionsIfMuted = proto.dontNotifyForMentionsIfMuted
 
+        var wallpaper: BackupProtoFilePointer?
+        if proto.hasWallpaper {
+            wallpaper = try BackupProtoFilePointer(proto.wallpaper)
+        }
+
         self.init(proto: proto,
                   id: id,
                   recipientID: recipientID,
                   archived: archived,
-                  pinned: pinned,
-                  expirationTimer: expirationTimer,
-                  muteUntil: muteUntil,
+                  pinnedOrder: pinnedOrder,
+                  expirationTimerMs: expirationTimerMs,
+                  muteUntilMs: muteUntilMs,
                   markedUnread: markedUnread,
-                  dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted)
+                  dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted,
+                  wallpaper: wallpaper)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -3011,14 +2948,17 @@ public class BackupProtoChat: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoChat {
     @objc
-    public static func builder(id: UInt64, recipientID: UInt64, archived: Bool, pinned: Bool, expirationTimer: UInt64, muteUntil: UInt64, markedUnread: Bool, dontNotifyForMentionsIfMuted: Bool) -> BackupProtoChatBuilder {
-        return BackupProtoChatBuilder(id: id, recipientID: recipientID, archived: archived, pinned: pinned, expirationTimer: expirationTimer, muteUntil: muteUntil, markedUnread: markedUnread, dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted)
+    public static func builder(id: UInt64, recipientID: UInt64, archived: Bool, pinnedOrder: UInt32, expirationTimerMs: UInt64, muteUntilMs: UInt64, markedUnread: Bool, dontNotifyForMentionsIfMuted: Bool) -> BackupProtoChatBuilder {
+        return BackupProtoChatBuilder(id: id, recipientID: recipientID, archived: archived, pinnedOrder: pinnedOrder, expirationTimerMs: expirationTimerMs, muteUntilMs: muteUntilMs, markedUnread: markedUnread, dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoChatBuilder {
-        let builder = BackupProtoChatBuilder(id: id, recipientID: recipientID, archived: archived, pinned: pinned, expirationTimer: expirationTimer, muteUntil: muteUntil, markedUnread: markedUnread, dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted)
+        let builder = BackupProtoChatBuilder(id: id, recipientID: recipientID, archived: archived, pinnedOrder: pinnedOrder, expirationTimerMs: expirationTimerMs, muteUntilMs: muteUntilMs, markedUnread: markedUnread, dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted)
+        if let _value = wallpaper {
+            builder.setWallpaper(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3035,15 +2975,15 @@ public class BackupProtoChatBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(id: UInt64, recipientID: UInt64, archived: Bool, pinned: Bool, expirationTimer: UInt64, muteUntil: UInt64, markedUnread: Bool, dontNotifyForMentionsIfMuted: Bool) {
+    fileprivate init(id: UInt64, recipientID: UInt64, archived: Bool, pinnedOrder: UInt32, expirationTimerMs: UInt64, muteUntilMs: UInt64, markedUnread: Bool, dontNotifyForMentionsIfMuted: Bool) {
         super.init()
 
         setId(id)
         setRecipientID(recipientID)
         setArchived(archived)
-        setPinned(pinned)
-        setExpirationTimer(expirationTimer)
-        setMuteUntil(muteUntil)
+        setPinnedOrder(pinnedOrder)
+        setExpirationTimerMs(expirationTimerMs)
+        setMuteUntilMs(muteUntilMs)
         setMarkedUnread(markedUnread)
         setDontNotifyForMentionsIfMuted(dontNotifyForMentionsIfMuted)
     }
@@ -3064,18 +3004,18 @@ public class BackupProtoChatBuilder: NSObject {
     }
 
     @objc
-    public func setPinned(_ valueParam: Bool) {
-        proto.pinned = valueParam
+    public func setPinnedOrder(_ valueParam: UInt32) {
+        proto.pinnedOrder = valueParam
     }
 
     @objc
-    public func setExpirationTimer(_ valueParam: UInt64) {
-        proto.expirationTimer = valueParam
+    public func setExpirationTimerMs(_ valueParam: UInt64) {
+        proto.expirationTimerMs = valueParam
     }
 
     @objc
-    public func setMuteUntil(_ valueParam: UInt64) {
-        proto.muteUntil = valueParam
+    public func setMuteUntilMs(_ valueParam: UInt64) {
+        proto.muteUntilMs = valueParam
     }
 
     @objc
@@ -3086,6 +3026,17 @@ public class BackupProtoChatBuilder: NSObject {
     @objc
     public func setDontNotifyForMentionsIfMuted(_ valueParam: Bool) {
         proto.dontNotifyForMentionsIfMuted = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setWallpaper(_ valueParam: BackupProtoFilePointer?) {
+        guard let valueParam = valueParam else { return }
+        proto.wallpaper = valueParam.proto
+    }
+
+    public func setWallpaper(_ valueParam: BackupProtoFilePointer) {
+        proto.wallpaper = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -3125,13 +3076,15 @@ extension BackupProtoChatBuilder {
 
 @objc
 public enum BackupProtoDistributionListPrivacyMode: Int32 {
-    case onlyWith = 0
-    case allExcept = 1
-    case all = 2
+    case unknown = 0
+    case onlyWith = 1
+    case allExcept = 2
+    case all = 3
 }
 
 private func BackupProtoDistributionListPrivacyModeWrap(_ value: BackupProtos_DistributionList.PrivacyMode) -> BackupProtoDistributionListPrivacyMode {
     switch value {
+    case .unknown: return .unknown
     case .onlyWith: return .onlyWith
     case .allExcept: return .allExcept
     case .all: return .all
@@ -3140,6 +3093,7 @@ private func BackupProtoDistributionListPrivacyModeWrap(_ value: BackupProtos_Di
 
 private func BackupProtoDistributionListPrivacyModeUnwrap(_ value: BackupProtoDistributionListPrivacyMode) -> BackupProtos_DistributionList.PrivacyMode {
     switch value {
+    case .unknown: return .unknown
     case .onlyWith: return .onlyWith
     case .allExcept: return .allExcept
     case .all: return .all
@@ -3164,9 +3118,6 @@ public class BackupProtoDistributionList: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let deletionTimestamp: UInt64
-
-    @objc
-    public let isUnknown: Bool
 
     public var privacyMode: BackupProtoDistributionListPrivacyMode? {
         guard hasPrivacyMode else {
@@ -3205,14 +3156,12 @@ public class BackupProtoDistributionList: NSObject, Codable, NSSecureCoding {
                  name: String,
                  distributionID: Data,
                  allowReplies: Bool,
-                 deletionTimestamp: UInt64,
-                 isUnknown: Bool) {
+                 deletionTimestamp: UInt64) {
         self.proto = proto
         self.name = name
         self.distributionID = distributionID
         self.allowReplies = allowReplies
         self.deletionTimestamp = deletionTimestamp
-        self.isUnknown = isUnknown
     }
 
     @objc
@@ -3247,17 +3196,11 @@ public class BackupProtoDistributionList: NSObject, Codable, NSSecureCoding {
         }
         let deletionTimestamp = proto.deletionTimestamp
 
-        guard proto.hasIsUnknown else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: isUnknown")
-        }
-        let isUnknown = proto.isUnknown
-
         self.init(proto: proto,
                   name: name,
                   distributionID: distributionID,
                   allowReplies: allowReplies,
-                  deletionTimestamp: deletionTimestamp,
-                  isUnknown: isUnknown)
+                  deletionTimestamp: deletionTimestamp)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -3298,14 +3241,14 @@ public class BackupProtoDistributionList: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoDistributionList {
     @objc
-    public static func builder(name: String, distributionID: Data, allowReplies: Bool, deletionTimestamp: UInt64, isUnknown: Bool) -> BackupProtoDistributionListBuilder {
-        return BackupProtoDistributionListBuilder(name: name, distributionID: distributionID, allowReplies: allowReplies, deletionTimestamp: deletionTimestamp, isUnknown: isUnknown)
+    public static func builder(name: String, distributionID: Data, allowReplies: Bool, deletionTimestamp: UInt64) -> BackupProtoDistributionListBuilder {
+        return BackupProtoDistributionListBuilder(name: name, distributionID: distributionID, allowReplies: allowReplies, deletionTimestamp: deletionTimestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoDistributionListBuilder {
-        let builder = BackupProtoDistributionListBuilder(name: name, distributionID: distributionID, allowReplies: allowReplies, deletionTimestamp: deletionTimestamp, isUnknown: isUnknown)
+        let builder = BackupProtoDistributionListBuilder(name: name, distributionID: distributionID, allowReplies: allowReplies, deletionTimestamp: deletionTimestamp)
         if let _value = privacyMode {
             builder.setPrivacyMode(_value)
         }
@@ -3326,14 +3269,13 @@ public class BackupProtoDistributionListBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(name: String, distributionID: Data, allowReplies: Bool, deletionTimestamp: UInt64, isUnknown: Bool) {
+    fileprivate init(name: String, distributionID: Data, allowReplies: Bool, deletionTimestamp: UInt64) {
         super.init()
 
         setName(name)
         setDistributionID(distributionID)
         setAllowReplies(allowReplies)
         setDeletionTimestamp(deletionTimestamp)
-        setIsUnknown(isUnknown)
     }
 
     @objc
@@ -3366,11 +3308,6 @@ public class BackupProtoDistributionListBuilder: NSObject {
     @objc
     public func setDeletionTimestamp(_ valueParam: UInt64) {
         proto.deletionTimestamp = valueParam
-    }
-
-    @objc
-    public func setIsUnknown(_ valueParam: Bool) {
-        proto.isUnknown = valueParam
     }
 
     @objc
@@ -3673,14 +3610,16 @@ extension BackupProtoIdentityBuilder {
 
 @objc
 public enum BackupProtoCallType: Int32 {
-    case audioCall = 0
-    case videoCall = 1
-    case groupCall = 2
-    case adHocCall = 3
+    case unknownType = 0
+    case audioCall = 1
+    case videoCall = 2
+    case groupCall = 3
+    case adHocCall = 4
 }
 
 private func BackupProtoCallTypeWrap(_ value: BackupProtos_Call.TypeEnum) -> BackupProtoCallType {
     switch value {
+    case .unknownType: return .unknownType
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
     case .groupCall: return .groupCall
@@ -3690,6 +3629,7 @@ private func BackupProtoCallTypeWrap(_ value: BackupProtos_Call.TypeEnum) -> Bac
 
 private func BackupProtoCallTypeUnwrap(_ value: BackupProtoCallType) -> BackupProtos_Call.TypeEnum {
     switch value {
+    case .unknownType: return .unknownType
     case .audioCall: return .audioCall
     case .videoCall: return .videoCall
     case .groupCall: return .groupCall
@@ -3701,20 +3641,21 @@ private func BackupProtoCallTypeUnwrap(_ value: BackupProtoCallType) -> BackupPr
 
 @objc
 public enum BackupProtoCallEvent: Int32 {
-    case outgoing = 0
-    case accepted = 1
-    case notAccepted = 2
-    case missed = 3
-    case delete = 4
-    case genericGroupCall = 5
-    case joined = 6
-    case ringing = 7
+    case unknownEvent = 0
+    case outgoing = 1
+    case accepted = 2
+    case notAccepted = 3
+    case missed = 4
+    case delete = 5
+    case genericGroupCall = 6
+    case joined = 7
     case declined = 8
     case outgoingRing = 9
 }
 
 private func BackupProtoCallEventWrap(_ value: BackupProtos_Call.Event) -> BackupProtoCallEvent {
     switch value {
+    case .unknownEvent: return .unknownEvent
     case .outgoing: return .outgoing
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
@@ -3722,7 +3663,6 @@ private func BackupProtoCallEventWrap(_ value: BackupProtos_Call.Event) -> Backu
     case .delete: return .delete
     case .genericGroupCall: return .genericGroupCall
     case .joined: return .joined
-    case .ringing: return .ringing
     case .declined: return .declined
     case .outgoingRing: return .outgoingRing
     }
@@ -3730,6 +3670,7 @@ private func BackupProtoCallEventWrap(_ value: BackupProtos_Call.Event) -> Backu
 
 private func BackupProtoCallEventUnwrap(_ value: BackupProtoCallEvent) -> BackupProtos_Call.Event {
     switch value {
+    case .unknownEvent: return .unknownEvent
     case .outgoing: return .outgoing
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
@@ -3737,7 +3678,6 @@ private func BackupProtoCallEventUnwrap(_ value: BackupProtoCallEvent) -> Backup
     case .delete: return .delete
     case .genericGroupCall: return .genericGroupCall
     case .joined: return .joined
-    case .ringing: return .ringing
     case .declined: return .declined
     case .outgoingRing: return .outgoingRing
     }
@@ -3754,7 +3694,7 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
     public let callID: UInt64
 
     @objc
-    public let peerRecipientID: UInt64
+    public let conversationRecipientID: UInt64
 
     @objc
     public let outgoing: Bool
@@ -3815,13 +3755,13 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
 
     private init(proto: BackupProtos_Call,
                  callID: UInt64,
-                 peerRecipientID: UInt64,
+                 conversationRecipientID: UInt64,
                  outgoing: Bool,
                  timestamp: UInt64,
                  ringerRecipientID: UInt64) {
         self.proto = proto
         self.callID = callID
-        self.peerRecipientID = peerRecipientID
+        self.conversationRecipientID = conversationRecipientID
         self.outgoing = outgoing
         self.timestamp = timestamp
         self.ringerRecipientID = ringerRecipientID
@@ -3844,10 +3784,10 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
         }
         let callID = proto.callID
 
-        guard proto.hasPeerRecipientID else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: peerRecipientID")
+        guard proto.hasConversationRecipientID else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: conversationRecipientID")
         }
-        let peerRecipientID = proto.peerRecipientID
+        let conversationRecipientID = proto.conversationRecipientID
 
         guard proto.hasOutgoing else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: outgoing")
@@ -3866,7 +3806,7 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
 
         self.init(proto: proto,
                   callID: callID,
-                  peerRecipientID: peerRecipientID,
+                  conversationRecipientID: conversationRecipientID,
                   outgoing: outgoing,
                   timestamp: timestamp,
                   ringerRecipientID: ringerRecipientID)
@@ -3910,14 +3850,14 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoCall {
     @objc
-    public static func builder(callID: UInt64, peerRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) -> BackupProtoCallBuilder {
-        return BackupProtoCallBuilder(callID: callID, peerRecipientID: peerRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
+    public static func builder(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) -> BackupProtoCallBuilder {
+        return BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoCallBuilder {
-        let builder = BackupProtoCallBuilder(callID: callID, peerRecipientID: peerRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
+        let builder = BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
         if let _value = type {
             builder.setType(_value)
         }
@@ -3940,11 +3880,11 @@ public class BackupProtoCallBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(callID: UInt64, peerRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) {
+    fileprivate init(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) {
         super.init()
 
         setCallID(callID)
-        setPeerRecipientID(peerRecipientID)
+        setConversationRecipientID(conversationRecipientID)
         setOutgoing(outgoing)
         setTimestamp(timestamp)
         setRingerRecipientID(ringerRecipientID)
@@ -3956,8 +3896,8 @@ public class BackupProtoCallBuilder: NSObject {
     }
 
     @objc
-    public func setPeerRecipientID(_ valueParam: UInt64) {
-        proto.peerRecipientID = valueParam
+    public func setConversationRecipientID(_ valueParam: UInt64) {
+        proto.conversationRecipientID = valueParam
     }
 
     @objc
@@ -4026,6 +3966,9 @@ public class BackupProtoChatItemIncomingMessageDetails: NSObject, Codable, NSSec
     fileprivate let proto: BackupProtos_ChatItem.IncomingMessageDetails
 
     @objc
+    public let dateReceived: UInt64
+
+    @objc
     public let dateServerSent: UInt64
 
     @objc
@@ -4043,10 +3986,12 @@ public class BackupProtoChatItemIncomingMessageDetails: NSObject, Codable, NSSec
     }
 
     private init(proto: BackupProtos_ChatItem.IncomingMessageDetails,
+                 dateReceived: UInt64,
                  dateServerSent: UInt64,
                  read: Bool,
                  sealedSender: Bool) {
         self.proto = proto
+        self.dateReceived = dateReceived
         self.dateServerSent = dateServerSent
         self.read = read
         self.sealedSender = sealedSender
@@ -4064,6 +4009,11 @@ public class BackupProtoChatItemIncomingMessageDetails: NSObject, Codable, NSSec
     }
 
     fileprivate convenience init(_ proto: BackupProtos_ChatItem.IncomingMessageDetails) throws {
+        guard proto.hasDateReceived else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: dateReceived")
+        }
+        let dateReceived = proto.dateReceived
+
         guard proto.hasDateServerSent else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: dateServerSent")
         }
@@ -4080,6 +4030,7 @@ public class BackupProtoChatItemIncomingMessageDetails: NSObject, Codable, NSSec
         let sealedSender = proto.sealedSender
 
         self.init(proto: proto,
+                  dateReceived: dateReceived,
                   dateServerSent: dateServerSent,
                   read: read,
                   sealedSender: sealedSender)
@@ -4123,14 +4074,14 @@ public class BackupProtoChatItemIncomingMessageDetails: NSObject, Codable, NSSec
 
 extension BackupProtoChatItemIncomingMessageDetails {
     @objc
-    public static func builder(dateServerSent: UInt64, read: Bool, sealedSender: Bool) -> BackupProtoChatItemIncomingMessageDetailsBuilder {
-        return BackupProtoChatItemIncomingMessageDetailsBuilder(dateServerSent: dateServerSent, read: read, sealedSender: sealedSender)
+    public static func builder(dateReceived: UInt64, dateServerSent: UInt64, read: Bool, sealedSender: Bool) -> BackupProtoChatItemIncomingMessageDetailsBuilder {
+        return BackupProtoChatItemIncomingMessageDetailsBuilder(dateReceived: dateReceived, dateServerSent: dateServerSent, read: read, sealedSender: sealedSender)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoChatItemIncomingMessageDetailsBuilder {
-        let builder = BackupProtoChatItemIncomingMessageDetailsBuilder(dateServerSent: dateServerSent, read: read, sealedSender: sealedSender)
+        let builder = BackupProtoChatItemIncomingMessageDetailsBuilder(dateReceived: dateReceived, dateServerSent: dateServerSent, read: read, sealedSender: sealedSender)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4147,12 +4098,18 @@ public class BackupProtoChatItemIncomingMessageDetailsBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(dateServerSent: UInt64, read: Bool, sealedSender: Bool) {
+    fileprivate init(dateReceived: UInt64, dateServerSent: UInt64, read: Bool, sealedSender: Bool) {
         super.init()
 
+        setDateReceived(dateReceived)
         setDateServerSent(dateServerSent)
         setRead(read)
         setSealedSender(sealedSender)
+    }
+
+    @objc
+    public func setDateReceived(_ valueParam: UInt64) {
+        proto.dateReceived = valueParam
     }
 
     @objc
@@ -4368,9 +4325,6 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
     public let dateSent: UInt64
 
     @objc
-    public let dateReceived: UInt64
-
-    @objc
     public let revisions: [BackupProtoChatItem]
 
     @objc
@@ -4401,21 +4355,21 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
     public let updateMessage: BackupProtoUpdateMessage?
 
     @objc
-    public var expireStart: UInt64 {
-        return proto.expireStart
+    public var expireStartMs: UInt64 {
+        return proto.expireStartMs
     }
     @objc
-    public var hasExpireStart: Bool {
-        return proto.hasExpireStart
+    public var hasExpireStartMs: Bool {
+        return proto.hasExpireStartMs
     }
 
     @objc
-    public var expiresIn: UInt64 {
-        return proto.expiresIn
+    public var expiresInMs: UInt64 {
+        return proto.expiresInMs
     }
     @objc
-    public var hasExpiresIn: Bool {
-        return proto.hasExpiresIn
+    public var hasExpiresInMs: Bool {
+        return proto.hasExpiresInMs
     }
 
     public var hasUnknownFields: Bool {
@@ -4430,7 +4384,6 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
                  chatID: UInt64,
                  authorID: UInt64,
                  dateSent: UInt64,
-                 dateReceived: UInt64,
                  revisions: [BackupProtoChatItem],
                  sms: Bool,
                  incoming: BackupProtoChatItemIncomingMessageDetails?,
@@ -4445,7 +4398,6 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
         self.chatID = chatID
         self.authorID = authorID
         self.dateSent = dateSent
-        self.dateReceived = dateReceived
         self.revisions = revisions
         self.sms = sms
         self.incoming = incoming
@@ -4484,11 +4436,6 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: dateSent")
         }
         let dateSent = proto.dateSent
-
-        guard proto.hasDateReceived else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: dateReceived")
-        }
-        let dateReceived = proto.dateReceived
 
         var revisions: [BackupProtoChatItem] = []
         revisions = try proto.revisions.map { try BackupProtoChatItem($0) }
@@ -4542,7 +4489,6 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
                   chatID: chatID,
                   authorID: authorID,
                   dateSent: dateSent,
-                  dateReceived: dateReceived,
                   revisions: revisions,
                   sms: sms,
                   incoming: incoming,
@@ -4593,19 +4539,19 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoChatItem {
     @objc
-    public static func builder(chatID: UInt64, authorID: UInt64, dateSent: UInt64, dateReceived: UInt64, sms: Bool) -> BackupProtoChatItemBuilder {
-        return BackupProtoChatItemBuilder(chatID: chatID, authorID: authorID, dateSent: dateSent, dateReceived: dateReceived, sms: sms)
+    public static func builder(chatID: UInt64, authorID: UInt64, dateSent: UInt64, sms: Bool) -> BackupProtoChatItemBuilder {
+        return BackupProtoChatItemBuilder(chatID: chatID, authorID: authorID, dateSent: dateSent, sms: sms)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoChatItemBuilder {
-        let builder = BackupProtoChatItemBuilder(chatID: chatID, authorID: authorID, dateSent: dateSent, dateReceived: dateReceived, sms: sms)
-        if hasExpireStart {
-            builder.setExpireStart(expireStart)
+        let builder = BackupProtoChatItemBuilder(chatID: chatID, authorID: authorID, dateSent: dateSent, sms: sms)
+        if hasExpireStartMs {
+            builder.setExpireStartMs(expireStartMs)
         }
-        if hasExpiresIn {
-            builder.setExpiresIn(expiresIn)
+        if hasExpiresInMs {
+            builder.setExpiresInMs(expiresInMs)
         }
         builder.setRevisions(revisions)
         if let _value = incoming {
@@ -4648,13 +4594,12 @@ public class BackupProtoChatItemBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(chatID: UInt64, authorID: UInt64, dateSent: UInt64, dateReceived: UInt64, sms: Bool) {
+    fileprivate init(chatID: UInt64, authorID: UInt64, dateSent: UInt64, sms: Bool) {
         super.init()
 
         setChatID(chatID)
         setAuthorID(authorID)
         setDateSent(dateSent)
-        setDateReceived(dateReceived)
         setSms(sms)
     }
 
@@ -4674,18 +4619,13 @@ public class BackupProtoChatItemBuilder: NSObject {
     }
 
     @objc
-    public func setDateReceived(_ valueParam: UInt64) {
-        proto.dateReceived = valueParam
+    public func setExpireStartMs(_ valueParam: UInt64) {
+        proto.expireStartMs = valueParam
     }
 
     @objc
-    public func setExpireStart(_ valueParam: UInt64) {
-        proto.expireStart = valueParam
-    }
-
-    @objc
-    public func setExpiresIn(_ valueParam: UInt64) {
-        proto.expiresIn = valueParam
+    public func setExpiresInMs(_ valueParam: UInt64) {
+        proto.expiresInMs = valueParam
     }
 
     @objc
@@ -4828,17 +4768,19 @@ extension BackupProtoChatItemBuilder {
 
 @objc
 public enum BackupProtoSendStatusStatus: Int32 {
-    case failed = 0
-    case pending = 1
-    case sent = 2
-    case delivered = 3
-    case read = 4
-    case viewed = 5
-    case skipped = 6
+    case unknown = 0
+    case failed = 1
+    case pending = 2
+    case sent = 3
+    case delivered = 4
+    case read = 5
+    case viewed = 6
+    case skipped = 7
 }
 
 private func BackupProtoSendStatusStatusWrap(_ value: BackupProtos_SendStatus.Status) -> BackupProtoSendStatusStatus {
     switch value {
+    case .unknown: return .unknown
     case .failed: return .failed
     case .pending: return .pending
     case .sent: return .sent
@@ -4851,6 +4793,7 @@ private func BackupProtoSendStatusStatusWrap(_ value: BackupProtos_SendStatus.St
 
 private func BackupProtoSendStatusStatusUnwrap(_ value: BackupProtoSendStatusStatus) -> BackupProtos_SendStatus.Status {
     switch value {
+    case .unknown: return .unknown
     case .failed: return .failed
     case .pending: return .pending
     case .sent: return .sent
@@ -5299,13 +5242,13 @@ public class BackupProtoStandardMessage: NSObject, Codable, NSSecureCoding {
     public let text: BackupProtoText?
 
     @objc
-    public let attachments: [BackupProtoAttachmentPointer]
+    public let attachments: [BackupProtoFilePointer]
 
     @objc
-    public let linkPreview: BackupProtoLinkPreview?
+    public let linkPreview: [BackupProtoLinkPreview]
 
     @objc
-    public let longText: BackupProtoAttachmentPointer?
+    public let longText: BackupProtoFilePointer?
 
     @objc
     public let reactions: [BackupProtoReaction]
@@ -5321,9 +5264,9 @@ public class BackupProtoStandardMessage: NSObject, Codable, NSSecureCoding {
     private init(proto: BackupProtos_StandardMessage,
                  quote: BackupProtoQuote?,
                  text: BackupProtoText?,
-                 attachments: [BackupProtoAttachmentPointer],
-                 linkPreview: BackupProtoLinkPreview?,
-                 longText: BackupProtoAttachmentPointer?,
+                 attachments: [BackupProtoFilePointer],
+                 linkPreview: [BackupProtoLinkPreview],
+                 longText: BackupProtoFilePointer?,
                  reactions: [BackupProtoReaction]) {
         self.proto = proto
         self.quote = quote
@@ -5348,7 +5291,7 @@ public class BackupProtoStandardMessage: NSObject, Codable, NSSecureCoding {
     fileprivate convenience init(_ proto: BackupProtos_StandardMessage) throws {
         var quote: BackupProtoQuote?
         if proto.hasQuote {
-            quote = BackupProtoQuote(proto.quote)
+            quote = try BackupProtoQuote(proto.quote)
         }
 
         var text: BackupProtoText?
@@ -5356,17 +5299,15 @@ public class BackupProtoStandardMessage: NSObject, Codable, NSSecureCoding {
             text = try BackupProtoText(proto.text)
         }
 
-        var attachments: [BackupProtoAttachmentPointer] = []
-        attachments = proto.attachments.map { BackupProtoAttachmentPointer($0) }
+        var attachments: [BackupProtoFilePointer] = []
+        attachments = try proto.attachments.map { try BackupProtoFilePointer($0) }
 
-        var linkPreview: BackupProtoLinkPreview?
-        if proto.hasLinkPreview {
-            linkPreview = BackupProtoLinkPreview(proto.linkPreview)
-        }
+        var linkPreview: [BackupProtoLinkPreview] = []
+        linkPreview = try proto.linkPreview.map { try BackupProtoLinkPreview($0) }
 
-        var longText: BackupProtoAttachmentPointer?
+        var longText: BackupProtoFilePointer?
         if proto.hasLongText {
-            longText = BackupProtoAttachmentPointer(proto.longText)
+            longText = try BackupProtoFilePointer(proto.longText)
         }
 
         var reactions: [BackupProtoReaction] = []
@@ -5434,9 +5375,7 @@ extension BackupProtoStandardMessage {
             builder.setText(_value)
         }
         builder.setAttachments(attachments)
-        if let _value = linkPreview {
-            builder.setLinkPreview(_value)
-        }
+        builder.setLinkPreview(linkPreview)
         if let _value = longText {
             builder.setLongText(_value)
         }
@@ -5479,34 +5418,33 @@ public class BackupProtoStandardMessageBuilder: NSObject {
     }
 
     @objc
-    public func addAttachments(_ valueParam: BackupProtoAttachmentPointer) {
+    public func addAttachments(_ valueParam: BackupProtoFilePointer) {
         proto.attachments.append(valueParam.proto)
     }
 
     @objc
-    public func setAttachments(_ wrappedItems: [BackupProtoAttachmentPointer]) {
+    public func setAttachments(_ wrappedItems: [BackupProtoFilePointer]) {
         proto.attachments = wrappedItems.map { $0.proto }
     }
 
     @objc
-    @available(swift, obsoleted: 1.0)
-    public func setLinkPreview(_ valueParam: BackupProtoLinkPreview?) {
-        guard let valueParam = valueParam else { return }
-        proto.linkPreview = valueParam.proto
+    public func addLinkPreview(_ valueParam: BackupProtoLinkPreview) {
+        proto.linkPreview.append(valueParam.proto)
     }
 
-    public func setLinkPreview(_ valueParam: BackupProtoLinkPreview) {
-        proto.linkPreview = valueParam.proto
+    @objc
+    public func setLinkPreview(_ wrappedItems: [BackupProtoLinkPreview]) {
+        proto.linkPreview = wrappedItems.map { $0.proto }
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setLongText(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setLongText(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.longText = valueParam.proto
     }
 
-    public func setLongText(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setLongText(_ valueParam: BackupProtoFilePointer) {
         proto.longText = valueParam.proto
     }
 
@@ -5595,7 +5533,7 @@ public class BackupProtoContactMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate convenience init(_ proto: BackupProtos_ContactMessage) throws {
         var contact: [BackupProtoContactAttachment] = []
-        contact = proto.contact.map { BackupProtoContactAttachment($0) }
+        contact = try proto.contact.map { try BackupProtoContactAttachment($0) }
 
         var reactions: [BackupProtoReaction] = []
         reactions = try proto.reactions.map { try BackupProtoReaction($0) }
@@ -6014,14 +5952,16 @@ extension BackupProtoContactAttachmentNameBuilder {
 
 @objc
 public enum BackupProtoContactAttachmentPhoneType: Int32 {
-    case home = 0
-    case mobile = 1
-    case work = 2
-    case custom = 3
+    case unknown = 0
+    case home = 1
+    case mobile = 2
+    case work = 3
+    case custom = 4
 }
 
 private func BackupProtoContactAttachmentPhoneTypeWrap(_ value: BackupProtos_ContactAttachment.Phone.TypeEnum) -> BackupProtoContactAttachmentPhoneType {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .mobile: return .mobile
     case .work: return .work
@@ -6031,6 +5971,7 @@ private func BackupProtoContactAttachmentPhoneTypeWrap(_ value: BackupProtos_Con
 
 private func BackupProtoContactAttachmentPhoneTypeUnwrap(_ value: BackupProtoContactAttachmentPhoneType) -> BackupProtos_ContactAttachment.Phone.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .mobile: return .mobile
     case .work: return .work
@@ -6255,14 +6196,16 @@ extension BackupProtoContactAttachmentPhoneBuilder {
 
 @objc
 public enum BackupProtoContactAttachmentEmailType: Int32 {
-    case home = 0
-    case mobile = 1
-    case work = 2
-    case custom = 3
+    case unknown = 0
+    case home = 1
+    case mobile = 2
+    case work = 3
+    case custom = 4
 }
 
 private func BackupProtoContactAttachmentEmailTypeWrap(_ value: BackupProtos_ContactAttachment.Email.TypeEnum) -> BackupProtoContactAttachmentEmailType {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .mobile: return .mobile
     case .work: return .work
@@ -6272,6 +6215,7 @@ private func BackupProtoContactAttachmentEmailTypeWrap(_ value: BackupProtos_Con
 
 private func BackupProtoContactAttachmentEmailTypeUnwrap(_ value: BackupProtoContactAttachmentEmailType) -> BackupProtos_ContactAttachment.Email.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .mobile: return .mobile
     case .work: return .work
@@ -6496,13 +6440,15 @@ extension BackupProtoContactAttachmentEmailBuilder {
 
 @objc
 public enum BackupProtoContactAttachmentPostalAddressType: Int32 {
-    case home = 0
-    case work = 1
-    case custom = 2
+    case unknown = 0
+    case home = 1
+    case work = 2
+    case custom = 3
 }
 
 private func BackupProtoContactAttachmentPostalAddressTypeWrap(_ value: BackupProtos_ContactAttachment.PostalAddress.TypeEnum) -> BackupProtoContactAttachmentPostalAddressType {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .work: return .work
     case .custom: return .custom
@@ -6511,6 +6457,7 @@ private func BackupProtoContactAttachmentPostalAddressTypeWrap(_ value: BackupPr
 
 private func BackupProtoContactAttachmentPostalAddressTypeUnwrap(_ value: BackupProtoContactAttachmentPostalAddressType) -> BackupProtos_ContactAttachment.PostalAddress.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .home: return .home
     case .work: return .work
     case .custom: return .custom
@@ -6894,16 +6841,7 @@ public class BackupProtoContactAttachmentAvatar: NSObject, Codable, NSSecureCodi
     fileprivate let proto: BackupProtos_ContactAttachment.Avatar
 
     @objc
-    public let avatar: BackupProtoAttachmentPointer?
-
-    @objc
-    public var isProfile: Bool {
-        return proto.isProfile
-    }
-    @objc
-    public var hasIsProfile: Bool {
-        return proto.hasIsProfile
-    }
+    public let avatar: BackupProtoFilePointer
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -6914,7 +6852,7 @@ public class BackupProtoContactAttachmentAvatar: NSObject, Codable, NSSecureCodi
     }
 
     private init(proto: BackupProtos_ContactAttachment.Avatar,
-                 avatar: BackupProtoAttachmentPointer?) {
+                 avatar: BackupProtoFilePointer) {
         self.proto = proto
         self.avatar = avatar
     }
@@ -6927,14 +6865,14 @@ public class BackupProtoContactAttachmentAvatar: NSObject, Codable, NSSecureCodi
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_ContactAttachment.Avatar(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_ContactAttachment.Avatar) {
-        var avatar: BackupProtoAttachmentPointer?
-        if proto.hasAvatar {
-            avatar = BackupProtoAttachmentPointer(proto.avatar)
+    fileprivate convenience init(_ proto: BackupProtos_ContactAttachment.Avatar) throws {
+        guard proto.hasAvatar else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: avatar")
         }
+        let avatar = try BackupProtoFilePointer(proto.avatar)
 
         self.init(proto: proto,
                   avatar: avatar)
@@ -6978,20 +6916,14 @@ public class BackupProtoContactAttachmentAvatar: NSObject, Codable, NSSecureCodi
 
 extension BackupProtoContactAttachmentAvatar {
     @objc
-    public static func builder() -> BackupProtoContactAttachmentAvatarBuilder {
-        return BackupProtoContactAttachmentAvatarBuilder()
+    public static func builder(avatar: BackupProtoFilePointer) -> BackupProtoContactAttachmentAvatarBuilder {
+        return BackupProtoContactAttachmentAvatarBuilder(avatar: avatar)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoContactAttachmentAvatarBuilder {
-        let builder = BackupProtoContactAttachmentAvatarBuilder()
-        if let _value = avatar {
-            builder.setAvatar(_value)
-        }
-        if hasIsProfile {
-            builder.setIsProfile(isProfile)
-        }
+        let builder = BackupProtoContactAttachmentAvatarBuilder(avatar: avatar)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -7008,19 +6940,21 @@ public class BackupProtoContactAttachmentAvatarBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
+    fileprivate init(avatar: BackupProtoFilePointer) {
+        super.init()
+
+        setAvatar(avatar)
+    }
+
+    @objc
     @available(swift, obsoleted: 1.0)
-    public func setAvatar(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setAvatar(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.avatar = valueParam.proto
     }
 
-    public func setAvatar(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setAvatar(_ valueParam: BackupProtoFilePointer) {
         proto.avatar = valueParam.proto
-    }
-
-    @objc
-    public func setIsProfile(_ valueParam: Bool) {
-        proto.isProfile = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -7029,12 +6963,7 @@ public class BackupProtoContactAttachmentAvatarBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoContactAttachmentAvatar {
-        return BackupProtoContactAttachmentAvatar(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoContactAttachmentAvatar {
-        return BackupProtoContactAttachmentAvatar(proto)
+        return try BackupProtoContactAttachmentAvatar(proto)
     }
 
     @objc
@@ -7055,7 +6984,7 @@ extension BackupProtoContactAttachmentAvatar {
 extension BackupProtoContactAttachmentAvatarBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoContactAttachmentAvatar? {
-        return self.buildInfallibly()
+        return try! self.build()
     }
 }
 
@@ -7125,10 +7054,10 @@ public class BackupProtoContactAttachment: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_ContactAttachment(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_ContactAttachment) {
+    fileprivate convenience init(_ proto: BackupProtos_ContactAttachment) throws {
         var name: BackupProtoContactAttachmentName?
         if proto.hasName {
             name = BackupProtoContactAttachmentName(proto.name)
@@ -7145,7 +7074,7 @@ public class BackupProtoContactAttachment: NSObject, Codable, NSSecureCoding {
 
         var avatar: BackupProtoContactAttachmentAvatar?
         if proto.hasAvatar {
-            avatar = BackupProtoContactAttachmentAvatar(proto.avatar)
+            avatar = try BackupProtoContactAttachmentAvatar(proto.avatar)
         }
 
         self.init(proto: proto,
@@ -7298,12 +7227,7 @@ public class BackupProtoContactAttachmentBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoContactAttachment {
-        return BackupProtoContactAttachment(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoContactAttachment {
-        return BackupProtoContactAttachment(proto)
+        return try BackupProtoContactAttachment(proto)
     }
 
     @objc
@@ -7324,7 +7248,7 @@ extension BackupProtoContactAttachment {
 extension BackupProtoContactAttachmentBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoContactAttachment? {
-        return self.buildInfallibly()
+        return try! self.build()
     }
 }
 
@@ -7341,7 +7265,7 @@ public class BackupProtoDocumentMessage: NSObject, Codable, NSSecureCoding {
     public let text: BackupProtoText
 
     @objc
-    public let document: BackupProtoAttachmentPointer
+    public let document: BackupProtoFilePointer
 
     @objc
     public let reactions: [BackupProtoReaction]
@@ -7356,7 +7280,7 @@ public class BackupProtoDocumentMessage: NSObject, Codable, NSSecureCoding {
 
     private init(proto: BackupProtos_DocumentMessage,
                  text: BackupProtoText,
-                 document: BackupProtoAttachmentPointer,
+                 document: BackupProtoFilePointer,
                  reactions: [BackupProtoReaction]) {
         self.proto = proto
         self.text = text
@@ -7384,7 +7308,7 @@ public class BackupProtoDocumentMessage: NSObject, Codable, NSSecureCoding {
         guard proto.hasDocument else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: document")
         }
-        let document = BackupProtoAttachmentPointer(proto.document)
+        let document = try BackupProtoFilePointer(proto.document)
 
         var reactions: [BackupProtoReaction] = []
         reactions = try proto.reactions.map { try BackupProtoReaction($0) }
@@ -7433,7 +7357,7 @@ public class BackupProtoDocumentMessage: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoDocumentMessage {
     @objc
-    public static func builder(text: BackupProtoText, document: BackupProtoAttachmentPointer) -> BackupProtoDocumentMessageBuilder {
+    public static func builder(text: BackupProtoText, document: BackupProtoFilePointer) -> BackupProtoDocumentMessageBuilder {
         return BackupProtoDocumentMessageBuilder(text: text, document: document)
     }
 
@@ -7458,7 +7382,7 @@ public class BackupProtoDocumentMessageBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(text: BackupProtoText, document: BackupProtoAttachmentPointer) {
+    fileprivate init(text: BackupProtoText, document: BackupProtoFilePointer) {
         super.init()
 
         setText(text)
@@ -7478,12 +7402,12 @@ public class BackupProtoDocumentMessageBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDocument(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setDocument(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.document = valueParam.proto
     }
 
-    public func setDocument(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setDocument(_ valueParam: BackupProtoFilePointer) {
         proto.document = valueParam.proto
     }
 
@@ -7541,7 +7465,7 @@ public class BackupProtoVoiceMessage: NSObject, Codable, NSSecureCoding {
     public let quote: BackupProtoQuote?
 
     @objc
-    public let audio: BackupProtoAttachmentPointer
+    public let audio: BackupProtoFilePointer
 
     @objc
     public let reactions: [BackupProtoReaction]
@@ -7556,7 +7480,7 @@ public class BackupProtoVoiceMessage: NSObject, Codable, NSSecureCoding {
 
     private init(proto: BackupProtos_VoiceMessage,
                  quote: BackupProtoQuote?,
-                 audio: BackupProtoAttachmentPointer,
+                 audio: BackupProtoFilePointer,
                  reactions: [BackupProtoReaction]) {
         self.proto = proto
         self.quote = quote
@@ -7578,13 +7502,13 @@ public class BackupProtoVoiceMessage: NSObject, Codable, NSSecureCoding {
     fileprivate convenience init(_ proto: BackupProtos_VoiceMessage) throws {
         var quote: BackupProtoQuote?
         if proto.hasQuote {
-            quote = BackupProtoQuote(proto.quote)
+            quote = try BackupProtoQuote(proto.quote)
         }
 
         guard proto.hasAudio else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: audio")
         }
-        let audio = BackupProtoAttachmentPointer(proto.audio)
+        let audio = try BackupProtoFilePointer(proto.audio)
 
         var reactions: [BackupProtoReaction] = []
         reactions = try proto.reactions.map { try BackupProtoReaction($0) }
@@ -7633,7 +7557,7 @@ public class BackupProtoVoiceMessage: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoVoiceMessage {
     @objc
-    public static func builder(audio: BackupProtoAttachmentPointer) -> BackupProtoVoiceMessageBuilder {
+    public static func builder(audio: BackupProtoFilePointer) -> BackupProtoVoiceMessageBuilder {
         return BackupProtoVoiceMessageBuilder(audio: audio)
     }
 
@@ -7661,7 +7585,7 @@ public class BackupProtoVoiceMessageBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(audio: BackupProtoAttachmentPointer) {
+    fileprivate init(audio: BackupProtoFilePointer) {
         super.init()
 
         setAudio(audio)
@@ -7680,12 +7604,12 @@ public class BackupProtoVoiceMessageBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setAudio(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setAudio(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.audio = valueParam.proto
     }
 
-    public func setAudio(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setAudio(_ valueParam: BackupProtoFilePointer) {
         proto.audio = valueParam.proto
     }
 
@@ -7776,7 +7700,7 @@ public class BackupProtoStickerMessage: NSObject, Codable, NSSecureCoding {
         guard proto.hasSticker else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: sticker")
         }
-        let sticker = BackupProtoSticker(proto.sticker)
+        let sticker = try BackupProtoSticker(proto.sticker)
 
         var reactions: [BackupProtoReaction] = []
         reactions = try proto.reactions.map { try BackupProtoReaction($0) }
@@ -8224,40 +8148,13 @@ public class BackupProtoSticker: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_Sticker
 
     @objc
-    public let data: BackupProtoAttachmentPointer?
+    public let packID: Data
 
     @objc
-    public var packID: Data? {
-        guard hasPackID else {
-            return nil
-        }
-        return proto.packID
-    }
-    @objc
-    public var hasPackID: Bool {
-        return proto.hasPackID
-    }
+    public let packKey: Data
 
     @objc
-    public var packKey: Data? {
-        guard hasPackKey else {
-            return nil
-        }
-        return proto.packKey
-    }
-    @objc
-    public var hasPackKey: Bool {
-        return proto.hasPackKey
-    }
-
-    @objc
-    public var stickerID: UInt32 {
-        return proto.stickerID
-    }
-    @objc
-    public var hasStickerID: Bool {
-        return proto.hasStickerID
-    }
+    public let stickerID: UInt32
 
     @objc
     public var emoji: String? {
@@ -8280,9 +8177,13 @@ public class BackupProtoSticker: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_Sticker,
-                 data: BackupProtoAttachmentPointer?) {
+                 packID: Data,
+                 packKey: Data,
+                 stickerID: UInt32) {
         self.proto = proto
-        self.data = data
+        self.packID = packID
+        self.packKey = packKey
+        self.stickerID = stickerID
     }
 
     @objc
@@ -8293,17 +8194,29 @@ public class BackupProtoSticker: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_Sticker(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_Sticker) {
-        var data: BackupProtoAttachmentPointer?
-        if proto.hasData {
-            data = BackupProtoAttachmentPointer(proto.data)
+    fileprivate convenience init(_ proto: BackupProtos_Sticker) throws {
+        guard proto.hasPackID else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packID")
         }
+        let packID = proto.packID
+
+        guard proto.hasPackKey else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packKey")
+        }
+        let packKey = proto.packKey
+
+        guard proto.hasStickerID else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: stickerID")
+        }
+        let stickerID = proto.stickerID
 
         self.init(proto: proto,
-                  data: data)
+                  packID: packID,
+                  packKey: packKey,
+                  stickerID: stickerID)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -8344,26 +8257,14 @@ public class BackupProtoSticker: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoSticker {
     @objc
-    public static func builder() -> BackupProtoStickerBuilder {
-        return BackupProtoStickerBuilder()
+    public static func builder(packID: Data, packKey: Data, stickerID: UInt32) -> BackupProtoStickerBuilder {
+        return BackupProtoStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoStickerBuilder {
-        let builder = BackupProtoStickerBuilder()
-        if let _value = packID {
-            builder.setPackID(_value)
-        }
-        if let _value = packKey {
-            builder.setPackKey(_value)
-        }
-        if hasStickerID {
-            builder.setStickerID(stickerID)
-        }
-        if let _value = data {
-            builder.setData(_value)
-        }
+        let builder = BackupProtoStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID)
         if let _value = emoji {
             builder.setEmoji(_value)
         }
@@ -8381,6 +8282,15 @@ public class BackupProtoStickerBuilder: NSObject {
 
     @objc
     fileprivate override init() {}
+
+    @objc
+    fileprivate init(packID: Data, packKey: Data, stickerID: UInt32) {
+        super.init()
+
+        setPackID(packID)
+        setPackKey(packKey)
+        setStickerID(stickerID)
+    }
 
     @objc
     @available(swift, obsoleted: 1.0)
@@ -8411,17 +8321,6 @@ public class BackupProtoStickerBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setData(_ valueParam: BackupProtoAttachmentPointer?) {
-        guard let valueParam = valueParam else { return }
-        proto.data = valueParam.proto
-    }
-
-    public func setData(_ valueParam: BackupProtoAttachmentPointer) {
-        proto.data = valueParam.proto
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
     public func setEmoji(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         proto.emoji = valueParam
@@ -8437,12 +8336,7 @@ public class BackupProtoStickerBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoSticker {
-        return BackupProtoSticker(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoSticker {
-        return BackupProtoSticker(proto)
+        return try BackupProtoSticker(proto)
     }
 
     @objc
@@ -8463,7 +8357,7 @@ extension BackupProtoSticker {
 extension BackupProtoStickerBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoSticker? {
-        return self.buildInfallibly()
+        return try! self.build()
     }
 }
 
@@ -8477,19 +8371,10 @@ public class BackupProtoLinkPreview: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_LinkPreview
 
     @objc
-    public let image: BackupProtoAttachmentPointer?
+    public let url: String
 
     @objc
-    public var url: String? {
-        guard hasURL else {
-            return nil
-        }
-        return proto.url
-    }
-    @objc
-    public var hasURL: Bool {
-        return proto.hasURL
-    }
+    public let image: BackupProtoFilePointer?
 
     @objc
     public var title: String? {
@@ -8533,8 +8418,10 @@ public class BackupProtoLinkPreview: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_LinkPreview,
-                 image: BackupProtoAttachmentPointer?) {
+                 url: String,
+                 image: BackupProtoFilePointer?) {
         self.proto = proto
+        self.url = url
         self.image = image
     }
 
@@ -8546,16 +8433,22 @@ public class BackupProtoLinkPreview: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_LinkPreview(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_LinkPreview) {
-        var image: BackupProtoAttachmentPointer?
+    fileprivate convenience init(_ proto: BackupProtos_LinkPreview) throws {
+        guard proto.hasURL else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: url")
+        }
+        let url = proto.url
+
+        var image: BackupProtoFilePointer?
         if proto.hasImage {
-            image = BackupProtoAttachmentPointer(proto.image)
+            image = try BackupProtoFilePointer(proto.image)
         }
 
         self.init(proto: proto,
+                  url: url,
                   image: image)
     }
 
@@ -8597,17 +8490,14 @@ public class BackupProtoLinkPreview: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoLinkPreview {
     @objc
-    public static func builder() -> BackupProtoLinkPreviewBuilder {
-        return BackupProtoLinkPreviewBuilder()
+    public static func builder(url: String) -> BackupProtoLinkPreviewBuilder {
+        return BackupProtoLinkPreviewBuilder(url: url)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoLinkPreviewBuilder {
-        let builder = BackupProtoLinkPreviewBuilder()
-        if let _value = url {
-            builder.setUrl(_value)
-        }
+        let builder = BackupProtoLinkPreviewBuilder(url: url)
         if let _value = title {
             builder.setTitle(_value)
         }
@@ -8636,6 +8526,13 @@ public class BackupProtoLinkPreviewBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
+    fileprivate init(url: String) {
+        super.init()
+
+        setUrl(url)
+    }
+
+    @objc
     @available(swift, obsoleted: 1.0)
     public func setUrl(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
@@ -8659,12 +8556,12 @@ public class BackupProtoLinkPreviewBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setImage(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setImage(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.image = valueParam.proto
     }
 
-    public func setImage(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setImage(_ valueParam: BackupProtoFilePointer) {
         proto.image = valueParam.proto
     }
 
@@ -8690,12 +8587,7 @@ public class BackupProtoLinkPreviewBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoLinkPreview {
-        return BackupProtoLinkPreview(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoLinkPreview {
-        return BackupProtoLinkPreview(proto)
+        return try BackupProtoLinkPreview(proto)
     }
 
     @objc
@@ -8716,22 +8608,520 @@ extension BackupProtoLinkPreview {
 extension BackupProtoLinkPreviewBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoLinkPreview? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoFilePointerBackupLocator
+
+@objc
+public class BackupProtoFilePointerBackupLocator: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_FilePointer.BackupLocator
+
+    @objc
+    public let mediaName: String
+
+    @objc
+    public let cdnNumber: UInt32
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_FilePointer.BackupLocator,
+                 mediaName: String,
+                 cdnNumber: UInt32) {
+        self.proto = proto
+        self.mediaName = mediaName
+        self.cdnNumber = cdnNumber
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_FilePointer.BackupLocator(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_FilePointer.BackupLocator) throws {
+        guard proto.hasMediaName else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: mediaName")
+        }
+        let mediaName = proto.mediaName
+
+        guard proto.hasCdnNumber else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: cdnNumber")
+        }
+        let cdnNumber = proto.cdnNumber
+
+        self.init(proto: proto,
+                  mediaName: mediaName,
+                  cdnNumber: cdnNumber)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoFilePointerBackupLocator {
+    @objc
+    public static func builder(mediaName: String, cdnNumber: UInt32) -> BackupProtoFilePointerBackupLocatorBuilder {
+        return BackupProtoFilePointerBackupLocatorBuilder(mediaName: mediaName, cdnNumber: cdnNumber)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoFilePointerBackupLocatorBuilder {
+        let builder = BackupProtoFilePointerBackupLocatorBuilder(mediaName: mediaName, cdnNumber: cdnNumber)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoFilePointerBackupLocatorBuilder: NSObject {
+
+    private var proto = BackupProtos_FilePointer.BackupLocator()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(mediaName: String, cdnNumber: UInt32) {
+        super.init()
+
+        setMediaName(mediaName)
+        setCdnNumber(cdnNumber)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMediaName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.mediaName = valueParam
+    }
+
+    public func setMediaName(_ valueParam: String) {
+        proto.mediaName = valueParam
+    }
+
+    @objc
+    public func setCdnNumber(_ valueParam: UInt32) {
+        proto.cdnNumber = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoFilePointerBackupLocator {
+        return try BackupProtoFilePointerBackupLocator(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoFilePointerBackupLocator(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoFilePointerBackupLocator {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoFilePointerBackupLocatorBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoFilePointerBackupLocator? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoFilePointerAttachmentLocator
+
+@objc
+public class BackupProtoFilePointerAttachmentLocator: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_FilePointer.AttachmentLocator
+
+    @objc
+    public let cdnKey: String
+
+    @objc
+    public let cdnNumber: UInt32
+
+    @objc
+    public let uploadTimestamp: UInt64
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_FilePointer.AttachmentLocator,
+                 cdnKey: String,
+                 cdnNumber: UInt32,
+                 uploadTimestamp: UInt64) {
+        self.proto = proto
+        self.cdnKey = cdnKey
+        self.cdnNumber = cdnNumber
+        self.uploadTimestamp = uploadTimestamp
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_FilePointer.AttachmentLocator(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_FilePointer.AttachmentLocator) throws {
+        guard proto.hasCdnKey else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: cdnKey")
+        }
+        let cdnKey = proto.cdnKey
+
+        guard proto.hasCdnNumber else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: cdnNumber")
+        }
+        let cdnNumber = proto.cdnNumber
+
+        guard proto.hasUploadTimestamp else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: uploadTimestamp")
+        }
+        let uploadTimestamp = proto.uploadTimestamp
+
+        self.init(proto: proto,
+                  cdnKey: cdnKey,
+                  cdnNumber: cdnNumber,
+                  uploadTimestamp: uploadTimestamp)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoFilePointerAttachmentLocator {
+    @objc
+    public static func builder(cdnKey: String, cdnNumber: UInt32, uploadTimestamp: UInt64) -> BackupProtoFilePointerAttachmentLocatorBuilder {
+        return BackupProtoFilePointerAttachmentLocatorBuilder(cdnKey: cdnKey, cdnNumber: cdnNumber, uploadTimestamp: uploadTimestamp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoFilePointerAttachmentLocatorBuilder {
+        let builder = BackupProtoFilePointerAttachmentLocatorBuilder(cdnKey: cdnKey, cdnNumber: cdnNumber, uploadTimestamp: uploadTimestamp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoFilePointerAttachmentLocatorBuilder: NSObject {
+
+    private var proto = BackupProtos_FilePointer.AttachmentLocator()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(cdnKey: String, cdnNumber: UInt32, uploadTimestamp: UInt64) {
+        super.init()
+
+        setCdnKey(cdnKey)
+        setCdnNumber(cdnNumber)
+        setUploadTimestamp(uploadTimestamp)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setCdnKey(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.cdnKey = valueParam
+    }
+
+    public func setCdnKey(_ valueParam: String) {
+        proto.cdnKey = valueParam
+    }
+
+    @objc
+    public func setCdnNumber(_ valueParam: UInt32) {
+        proto.cdnNumber = valueParam
+    }
+
+    @objc
+    public func setUploadTimestamp(_ valueParam: UInt64) {
+        proto.uploadTimestamp = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoFilePointerAttachmentLocator {
+        return try BackupProtoFilePointerAttachmentLocator(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoFilePointerAttachmentLocator(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoFilePointerAttachmentLocator {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoFilePointerAttachmentLocatorBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoFilePointerAttachmentLocator? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoFilePointerLegacyAttachmentLocator
+
+@objc
+public class BackupProtoFilePointerLegacyAttachmentLocator: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_FilePointer.LegacyAttachmentLocator
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_FilePointer.LegacyAttachmentLocator) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_FilePointer.LegacyAttachmentLocator(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_FilePointer.LegacyAttachmentLocator) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoFilePointerLegacyAttachmentLocator {
+    @objc
+    public static func builder() -> BackupProtoFilePointerLegacyAttachmentLocatorBuilder {
+        return BackupProtoFilePointerLegacyAttachmentLocatorBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoFilePointerLegacyAttachmentLocatorBuilder {
+        let builder = BackupProtoFilePointerLegacyAttachmentLocatorBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoFilePointerLegacyAttachmentLocatorBuilder: NSObject {
+
+    private var proto = BackupProtos_FilePointer.LegacyAttachmentLocator()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoFilePointerLegacyAttachmentLocator {
+        return BackupProtoFilePointerLegacyAttachmentLocator(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoFilePointerLegacyAttachmentLocator {
+        return BackupProtoFilePointerLegacyAttachmentLocator(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoFilePointerLegacyAttachmentLocator(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoFilePointerLegacyAttachmentLocator {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoFilePointerLegacyAttachmentLocatorBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoFilePointerLegacyAttachmentLocator? {
         return self.buildInfallibly()
     }
 }
 
 #endif
 
-// MARK: - BackupProtoAttachmentPointerFlags
+// MARK: - BackupProtoFilePointerFlags
 
 @objc
-public enum BackupProtoAttachmentPointerFlags: Int32 {
+public enum BackupProtoFilePointerFlags: Int32 {
     case voiceMessage = 0
     case borderless = 1
     case gif = 2
 }
 
-private func BackupProtoAttachmentPointerFlagsWrap(_ value: BackupProtos_AttachmentPointer.Flags) -> BackupProtoAttachmentPointerFlags {
+private func BackupProtoFilePointerFlagsWrap(_ value: BackupProtos_FilePointer.Flags) -> BackupProtoFilePointerFlags {
     switch value {
     case .voiceMessage: return .voiceMessage
     case .borderless: return .borderless
@@ -8739,7 +9129,7 @@ private func BackupProtoAttachmentPointerFlagsWrap(_ value: BackupProtos_Attachm
     }
 }
 
-private func BackupProtoAttachmentPointerFlagsUnwrap(_ value: BackupProtoAttachmentPointerFlags) -> BackupProtos_AttachmentPointer.Flags {
+private func BackupProtoFilePointerFlagsUnwrap(_ value: BackupProtoFilePointerFlags) -> BackupProtos_FilePointer.Flags {
     switch value {
     case .voiceMessage: return .voiceMessage
     case .borderless: return .borderless
@@ -8747,32 +9137,32 @@ private func BackupProtoAttachmentPointerFlagsUnwrap(_ value: BackupProtoAttachm
     }
 }
 
-// MARK: - BackupProtoAttachmentPointer
+// MARK: - BackupProtoFilePointer
 
 @objc
-public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
+public class BackupProtoFilePointer: NSObject, Codable, NSSecureCoding {
 
-    fileprivate let proto: BackupProtos_AttachmentPointer
-
-    @objc
-    public var cdnID: UInt64 {
-        return proto.cdnID
-    }
-    @objc
-    public var hasCdnID: Bool {
-        return proto.hasCdnID
-    }
+    fileprivate let proto: BackupProtos_FilePointer
 
     @objc
-    public var cdnKey: String? {
-        guard hasCdnKey else {
+    public let backupLocator: BackupProtoFilePointerBackupLocator?
+
+    @objc
+    public let attachmentLocator: BackupProtoFilePointerAttachmentLocator?
+
+    @objc
+    public let legacyAttachmentLocator: BackupProtoFilePointerLegacyAttachmentLocator?
+
+    @objc
+    public var key: Data? {
+        guard hasKey else {
             return nil
         }
-        return proto.cdnKey
+        return proto.key
     }
     @objc
-    public var hasCdnKey: Bool {
-        return proto.hasCdnKey
+    public var hasKey: Bool {
+        return proto.hasKey
     }
 
     @objc
@@ -8785,18 +9175,6 @@ public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasContentType: Bool {
         return proto.hasContentType
-    }
-
-    @objc
-    public var key: Data? {
-        guard hasKey else {
-            return nil
-        }
-        return proto.key
-    }
-    @objc
-    public var hasKey: Bool {
-        return proto.hasKey
     }
 
     @objc
@@ -8907,24 +9285,6 @@ public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
         return proto.hasBlurHash
     }
 
-    @objc
-    public var uploadTimestamp: UInt64 {
-        return proto.uploadTimestamp
-    }
-    @objc
-    public var hasUploadTimestamp: Bool {
-        return proto.hasUploadTimestamp
-    }
-
-    @objc
-    public var cdnNumber: UInt32 {
-        return proto.cdnNumber
-    }
-    @objc
-    public var hasCdnNumber: Bool {
-        return proto.hasCdnNumber
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -8933,8 +9293,14 @@ public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
         return proto.unknownFields
     }
 
-    private init(proto: BackupProtos_AttachmentPointer) {
+    private init(proto: BackupProtos_FilePointer,
+                 backupLocator: BackupProtoFilePointerBackupLocator?,
+                 attachmentLocator: BackupProtoFilePointerAttachmentLocator?,
+                 legacyAttachmentLocator: BackupProtoFilePointerLegacyAttachmentLocator?) {
         self.proto = proto
+        self.backupLocator = backupLocator
+        self.attachmentLocator = attachmentLocator
+        self.legacyAttachmentLocator = legacyAttachmentLocator
     }
 
     @objc
@@ -8944,12 +9310,30 @@ public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
 
     @objc
     public convenience init(serializedData: Data) throws {
-        let proto = try BackupProtos_AttachmentPointer(serializedData: serializedData)
-        self.init(proto)
+        let proto = try BackupProtos_FilePointer(serializedData: serializedData)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_AttachmentPointer) {
-        self.init(proto: proto)
+    fileprivate convenience init(_ proto: BackupProtos_FilePointer) throws {
+        var backupLocator: BackupProtoFilePointerBackupLocator?
+        if proto.hasBackupLocator {
+            backupLocator = try BackupProtoFilePointerBackupLocator(proto.backupLocator)
+        }
+
+        var attachmentLocator: BackupProtoFilePointerAttachmentLocator?
+        if proto.hasAttachmentLocator {
+            attachmentLocator = try BackupProtoFilePointerAttachmentLocator(proto.attachmentLocator)
+        }
+
+        var legacyAttachmentLocator: BackupProtoFilePointerLegacyAttachmentLocator?
+        if proto.hasLegacyAttachmentLocator {
+            legacyAttachmentLocator = BackupProtoFilePointerLegacyAttachmentLocator(proto.legacyAttachmentLocator)
+        }
+
+        self.init(proto: proto,
+                  backupLocator: backupLocator,
+                  attachmentLocator: attachmentLocator,
+                  legacyAttachmentLocator: legacyAttachmentLocator)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -8988,27 +9372,30 @@ public class BackupProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 }
 
-extension BackupProtoAttachmentPointer {
+extension BackupProtoFilePointer {
     @objc
-    public static func builder() -> BackupProtoAttachmentPointerBuilder {
-        return BackupProtoAttachmentPointerBuilder()
+    public static func builder() -> BackupProtoFilePointerBuilder {
+        return BackupProtoFilePointerBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
-    public func asBuilder() -> BackupProtoAttachmentPointerBuilder {
-        let builder = BackupProtoAttachmentPointerBuilder()
-        if hasCdnID {
-            builder.setCdnID(cdnID)
+    public func asBuilder() -> BackupProtoFilePointerBuilder {
+        let builder = BackupProtoFilePointerBuilder()
+        if let _value = backupLocator {
+            builder.setBackupLocator(_value)
         }
-        if let _value = cdnKey {
-            builder.setCdnKey(_value)
+        if let _value = attachmentLocator {
+            builder.setAttachmentLocator(_value)
         }
-        if let _value = contentType {
-            builder.setContentType(_value)
+        if let _value = legacyAttachmentLocator {
+            builder.setLegacyAttachmentLocator(_value)
         }
         if let _value = key {
             builder.setKey(_value)
+        }
+        if let _value = contentType {
+            builder.setContentType(_value)
         }
         if hasSize {
             builder.setSize(size)
@@ -9040,12 +9427,6 @@ extension BackupProtoAttachmentPointer {
         if let _value = blurHash {
             builder.setBlurHash(_value)
         }
-        if hasUploadTimestamp {
-            builder.setUploadTimestamp(uploadTimestamp)
-        }
-        if hasCdnNumber {
-            builder.setCdnNumber(cdnNumber)
-        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -9054,38 +9435,44 @@ extension BackupProtoAttachmentPointer {
 }
 
 @objc
-public class BackupProtoAttachmentPointerBuilder: NSObject {
+public class BackupProtoFilePointerBuilder: NSObject {
 
-    private var proto = BackupProtos_AttachmentPointer()
+    private var proto = BackupProtos_FilePointer()
 
     @objc
     fileprivate override init() {}
 
     @objc
-    public func setCdnID(_ valueParam: UInt64) {
-        proto.cdnID = valueParam
+    @available(swift, obsoleted: 1.0)
+    public func setBackupLocator(_ valueParam: BackupProtoFilePointerBackupLocator?) {
+        guard let valueParam = valueParam else { return }
+        proto.backupLocator = valueParam.proto
+    }
+
+    public func setBackupLocator(_ valueParam: BackupProtoFilePointerBackupLocator) {
+        proto.backupLocator = valueParam.proto
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setCdnKey(_ valueParam: String?) {
+    public func setAttachmentLocator(_ valueParam: BackupProtoFilePointerAttachmentLocator?) {
         guard let valueParam = valueParam else { return }
-        proto.cdnKey = valueParam
+        proto.attachmentLocator = valueParam.proto
     }
 
-    public func setCdnKey(_ valueParam: String) {
-        proto.cdnKey = valueParam
+    public func setAttachmentLocator(_ valueParam: BackupProtoFilePointerAttachmentLocator) {
+        proto.attachmentLocator = valueParam.proto
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setContentType(_ valueParam: String?) {
+    public func setLegacyAttachmentLocator(_ valueParam: BackupProtoFilePointerLegacyAttachmentLocator?) {
         guard let valueParam = valueParam else { return }
-        proto.contentType = valueParam
+        proto.legacyAttachmentLocator = valueParam.proto
     }
 
-    public func setContentType(_ valueParam: String) {
-        proto.contentType = valueParam
+    public func setLegacyAttachmentLocator(_ valueParam: BackupProtoFilePointerLegacyAttachmentLocator) {
+        proto.legacyAttachmentLocator = valueParam.proto
     }
 
     @objc
@@ -9097,6 +9484,17 @@ public class BackupProtoAttachmentPointerBuilder: NSObject {
 
     public func setKey(_ valueParam: Data) {
         proto.key = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setContentType(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.contentType = valueParam
+    }
+
+    public func setContentType(_ valueParam: String) {
+        proto.contentType = valueParam
     }
 
     @objc
@@ -9185,49 +9583,34 @@ public class BackupProtoAttachmentPointerBuilder: NSObject {
         proto.blurHash = valueParam
     }
 
-    @objc
-    public func setUploadTimestamp(_ valueParam: UInt64) {
-        proto.uploadTimestamp = valueParam
-    }
-
-    @objc
-    public func setCdnNumber(_ valueParam: UInt32) {
-        proto.cdnNumber = valueParam
-    }
-
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
     }
 
     @objc
-    public func build() throws -> BackupProtoAttachmentPointer {
-        return BackupProtoAttachmentPointer(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoAttachmentPointer {
-        return BackupProtoAttachmentPointer(proto)
+    public func build() throws -> BackupProtoFilePointer {
+        return try BackupProtoFilePointer(proto)
     }
 
     @objc
     public func buildSerializedData() throws -> Data {
-        return try BackupProtoAttachmentPointer(proto).serializedData()
+        return try BackupProtoFilePointer(proto).serializedData()
     }
 }
 
 #if TESTABLE_BUILD
 
-extension BackupProtoAttachmentPointer {
+extension BackupProtoFilePointer {
     @objc
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension BackupProtoAttachmentPointerBuilder {
+extension BackupProtoFilePointerBuilder {
     @objc
-    public func buildIgnoringErrors() -> BackupProtoAttachmentPointer? {
-        return self.buildInfallibly()
+    public func buildIgnoringErrors() -> BackupProtoFilePointer? {
+        return try! self.build()
     }
 }
 
@@ -9241,7 +9624,7 @@ public class BackupProtoQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding
     fileprivate let proto: BackupProtos_Quote.QuotedAttachment
 
     @objc
-    public let thumbnail: BackupProtoAttachmentPointer?
+    public let thumbnail: BackupProtoFilePointer?
 
     @objc
     public var contentType: String? {
@@ -9276,7 +9659,7 @@ public class BackupProtoQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding
     }
 
     private init(proto: BackupProtos_Quote.QuotedAttachment,
-                 thumbnail: BackupProtoAttachmentPointer?) {
+                 thumbnail: BackupProtoFilePointer?) {
         self.proto = proto
         self.thumbnail = thumbnail
     }
@@ -9289,13 +9672,13 @@ public class BackupProtoQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_Quote.QuotedAttachment(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_Quote.QuotedAttachment) {
-        var thumbnail: BackupProtoAttachmentPointer?
+    fileprivate convenience init(_ proto: BackupProtos_Quote.QuotedAttachment) throws {
+        var thumbnail: BackupProtoFilePointer?
         if proto.hasThumbnail {
-            thumbnail = BackupProtoAttachmentPointer(proto.thumbnail)
+            thumbnail = try BackupProtoFilePointer(proto.thumbnail)
         }
 
         self.init(proto: proto,
@@ -9396,12 +9779,12 @@ public class BackupProtoQuoteQuotedAttachmentBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setThumbnail(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setThumbnail(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.thumbnail = valueParam.proto
     }
 
-    public func setThumbnail(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setThumbnail(_ valueParam: BackupProtoFilePointer) {
         proto.thumbnail = valueParam.proto
     }
 
@@ -9411,12 +9794,7 @@ public class BackupProtoQuoteQuotedAttachmentBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoQuoteQuotedAttachment {
-        return BackupProtoQuoteQuotedAttachment(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoQuoteQuotedAttachment {
-        return BackupProtoQuoteQuotedAttachment(proto)
+        return try BackupProtoQuoteQuotedAttachment(proto)
     }
 
     @objc
@@ -9437,7 +9815,7 @@ extension BackupProtoQuoteQuotedAttachment {
 extension BackupProtoQuoteQuotedAttachmentBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoQuoteQuotedAttachment? {
-        return self.buildInfallibly()
+        return try! self.build()
     }
 }
 
@@ -9447,12 +9825,14 @@ extension BackupProtoQuoteQuotedAttachmentBuilder {
 
 @objc
 public enum BackupProtoQuoteType: Int32 {
-    case normal = 0
-    case giftbadge = 1
+    case unknown = 0
+    case normal = 1
+    case giftbadge = 2
 }
 
 private func BackupProtoQuoteTypeWrap(_ value: BackupProtos_Quote.TypeEnum) -> BackupProtoQuoteType {
     switch value {
+    case .unknown: return .unknown
     case .normal: return .normal
     case .giftbadge: return .giftbadge
     }
@@ -9460,6 +9840,7 @@ private func BackupProtoQuoteTypeWrap(_ value: BackupProtos_Quote.TypeEnum) -> B
 
 private func BackupProtoQuoteTypeUnwrap(_ value: BackupProtoQuoteType) -> BackupProtos_Quote.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .normal: return .normal
     case .giftbadge: return .giftbadge
     }
@@ -9473,27 +9854,21 @@ public class BackupProtoQuote: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_Quote
 
     @objc
+    public let authorID: UInt64
+
+    @objc
     public let attachments: [BackupProtoQuoteQuotedAttachment]
 
     @objc
     public let bodyRanges: [BackupProtoBodyRange]
 
     @objc
-    public var id: UInt64 {
-        return proto.id
+    public var targetSentTimestamp: UInt64 {
+        return proto.targetSentTimestamp
     }
     @objc
-    public var hasID: Bool {
-        return proto.hasID
-    }
-
-    @objc
-    public var authorID: UInt64 {
-        return proto.authorID
-    }
-    @objc
-    public var hasAuthorID: Bool {
-        return proto.hasAuthorID
+    public var hasTargetSentTimestamp: Bool {
+        return proto.hasTargetSentTimestamp
     }
 
     @objc
@@ -9537,9 +9912,11 @@ public class BackupProtoQuote: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_Quote,
+                 authorID: UInt64,
                  attachments: [BackupProtoQuoteQuotedAttachment],
                  bodyRanges: [BackupProtoBodyRange]) {
         self.proto = proto
+        self.authorID = authorID
         self.attachments = attachments
         self.bodyRanges = bodyRanges
     }
@@ -9552,17 +9929,23 @@ public class BackupProtoQuote: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try BackupProtos_Quote(serializedData: serializedData)
-        self.init(proto)
+        try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: BackupProtos_Quote) {
+    fileprivate convenience init(_ proto: BackupProtos_Quote) throws {
+        guard proto.hasAuthorID else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: authorID")
+        }
+        let authorID = proto.authorID
+
         var attachments: [BackupProtoQuoteQuotedAttachment] = []
-        attachments = proto.attachments.map { BackupProtoQuoteQuotedAttachment($0) }
+        attachments = try proto.attachments.map { try BackupProtoQuoteQuotedAttachment($0) }
 
         var bodyRanges: [BackupProtoBodyRange] = []
         bodyRanges = proto.bodyRanges.map { BackupProtoBodyRange($0) }
 
         self.init(proto: proto,
+                  authorID: authorID,
                   attachments: attachments,
                   bodyRanges: bodyRanges)
     }
@@ -9605,19 +9988,16 @@ public class BackupProtoQuote: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoQuote {
     @objc
-    public static func builder() -> BackupProtoQuoteBuilder {
-        return BackupProtoQuoteBuilder()
+    public static func builder(authorID: UInt64) -> BackupProtoQuoteBuilder {
+        return BackupProtoQuoteBuilder(authorID: authorID)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoQuoteBuilder {
-        let builder = BackupProtoQuoteBuilder()
-        if hasID {
-            builder.setId(id)
-        }
-        if hasAuthorID {
-            builder.setAuthorID(authorID)
+        let builder = BackupProtoQuoteBuilder(authorID: authorID)
+        if hasTargetSentTimestamp {
+            builder.setTargetSentTimestamp(targetSentTimestamp)
         }
         if let _value = text {
             builder.setText(_value)
@@ -9643,8 +10023,15 @@ public class BackupProtoQuoteBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    public func setId(_ valueParam: UInt64) {
-        proto.id = valueParam
+    fileprivate init(authorID: UInt64) {
+        super.init()
+
+        setAuthorID(authorID)
+    }
+
+    @objc
+    public func setTargetSentTimestamp(_ valueParam: UInt64) {
+        proto.targetSentTimestamp = valueParam
     }
 
     @objc
@@ -9694,12 +10081,7 @@ public class BackupProtoQuoteBuilder: NSObject {
 
     @objc
     public func build() throws -> BackupProtoQuote {
-        return BackupProtoQuote(proto)
-    }
-
-    @objc
-    public func buildInfallibly() -> BackupProtoQuote {
-        return BackupProtoQuote(proto)
+        return try BackupProtoQuote(proto)
     }
 
     @objc
@@ -9720,7 +10102,7 @@ extension BackupProtoQuote {
 extension BackupProtoQuoteBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoQuote? {
-        return self.buildInfallibly()
+        return try! self.build()
     }
 }
 
@@ -9786,7 +10168,7 @@ public class BackupProtoBodyRange: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var mentionAci: String? {
+    public var mentionAci: Data? {
         guard hasMentionAci else {
             return nil
         }
@@ -9929,12 +10311,12 @@ public class BackupProtoBodyRangeBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setMentionAci(_ valueParam: String?) {
+    public func setMentionAci(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
         proto.mentionAci = valueParam
     }
 
-    public func setMentionAci(_ valueParam: String) {
+    public func setMentionAci(_ valueParam: Data) {
         proto.mentionAci = valueParam
     }
 
@@ -10691,16 +11073,18 @@ extension BackupProtoCallingMessageBuilder {
 
 @objc
 public enum BackupProtoCallMessageType: Int32 {
-    case incomingAudioCall = 0
-    case incomingVideoCall = 1
-    case outgoingAudioCall = 2
-    case outgoingVideoCall = 3
-    case missedAudioCall = 4
-    case missedVideoCall = 5
+    case unknown = 0
+    case incomingAudioCall = 1
+    case incomingVideoCall = 2
+    case outgoingAudioCall = 3
+    case outgoingVideoCall = 4
+    case missedAudioCall = 5
+    case missedVideoCall = 6
 }
 
 private func BackupProtoCallMessageTypeWrap(_ value: BackupProtos_CallMessage.TypeEnum) -> BackupProtoCallMessageType {
     switch value {
+    case .unknown: return .unknown
     case .incomingAudioCall: return .incomingAudioCall
     case .incomingVideoCall: return .incomingVideoCall
     case .outgoingAudioCall: return .outgoingAudioCall
@@ -10712,6 +11096,7 @@ private func BackupProtoCallMessageTypeWrap(_ value: BackupProtos_CallMessage.Ty
 
 private func BackupProtoCallMessageTypeUnwrap(_ value: BackupProtoCallMessageType) -> BackupProtos_CallMessage.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .incomingAudioCall: return .incomingAudioCall
     case .incomingVideoCall: return .incomingVideoCall
     case .outgoingAudioCall: return .outgoingAudioCall
@@ -10862,17 +11247,14 @@ public class BackupProtoGroupCallMessage: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_GroupCallMessage
 
     @objc
-    public let startedCallUuid: Data
+    public let startedCallAci: Data
 
     @objc
     public let startedCallTimestamp: UInt64
 
     @objc
-    public let isCallFull: Bool
-
-    @objc
-    public var inCallUuids: [Data] {
-        return proto.inCallUuids
+    public var inCallAcis: [Data] {
+        return proto.inCallAcis
     }
 
     public var hasUnknownFields: Bool {
@@ -10884,13 +11266,11 @@ public class BackupProtoGroupCallMessage: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_GroupCallMessage,
-                 startedCallUuid: Data,
-                 startedCallTimestamp: UInt64,
-                 isCallFull: Bool) {
+                 startedCallAci: Data,
+                 startedCallTimestamp: UInt64) {
         self.proto = proto
-        self.startedCallUuid = startedCallUuid
+        self.startedCallAci = startedCallAci
         self.startedCallTimestamp = startedCallTimestamp
-        self.isCallFull = isCallFull
     }
 
     @objc
@@ -10905,25 +11285,19 @@ public class BackupProtoGroupCallMessage: NSObject, Codable, NSSecureCoding {
     }
 
     fileprivate convenience init(_ proto: BackupProtos_GroupCallMessage) throws {
-        guard proto.hasStartedCallUuid else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: startedCallUuid")
+        guard proto.hasStartedCallAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: startedCallAci")
         }
-        let startedCallUuid = proto.startedCallUuid
+        let startedCallAci = proto.startedCallAci
 
         guard proto.hasStartedCallTimestamp else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: startedCallTimestamp")
         }
         let startedCallTimestamp = proto.startedCallTimestamp
 
-        guard proto.hasIsCallFull else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: isCallFull")
-        }
-        let isCallFull = proto.isCallFull
-
         self.init(proto: proto,
-                  startedCallUuid: startedCallUuid,
-                  startedCallTimestamp: startedCallTimestamp,
-                  isCallFull: isCallFull)
+                  startedCallAci: startedCallAci,
+                  startedCallTimestamp: startedCallTimestamp)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -10964,15 +11338,15 @@ public class BackupProtoGroupCallMessage: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoGroupCallMessage {
     @objc
-    public static func builder(startedCallUuid: Data, startedCallTimestamp: UInt64, isCallFull: Bool) -> BackupProtoGroupCallMessageBuilder {
-        return BackupProtoGroupCallMessageBuilder(startedCallUuid: startedCallUuid, startedCallTimestamp: startedCallTimestamp, isCallFull: isCallFull)
+    public static func builder(startedCallAci: Data, startedCallTimestamp: UInt64) -> BackupProtoGroupCallMessageBuilder {
+        return BackupProtoGroupCallMessageBuilder(startedCallAci: startedCallAci, startedCallTimestamp: startedCallTimestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoGroupCallMessageBuilder {
-        let builder = BackupProtoGroupCallMessageBuilder(startedCallUuid: startedCallUuid, startedCallTimestamp: startedCallTimestamp, isCallFull: isCallFull)
-        builder.setInCallUuids(inCallUuids)
+        let builder = BackupProtoGroupCallMessageBuilder(startedCallAci: startedCallAci, startedCallTimestamp: startedCallTimestamp)
+        builder.setInCallAcis(inCallAcis)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -10989,23 +11363,22 @@ public class BackupProtoGroupCallMessageBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(startedCallUuid: Data, startedCallTimestamp: UInt64, isCallFull: Bool) {
+    fileprivate init(startedCallAci: Data, startedCallTimestamp: UInt64) {
         super.init()
 
-        setStartedCallUuid(startedCallUuid)
+        setStartedCallAci(startedCallAci)
         setStartedCallTimestamp(startedCallTimestamp)
-        setIsCallFull(isCallFull)
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setStartedCallUuid(_ valueParam: Data?) {
+    public func setStartedCallAci(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
-        proto.startedCallUuid = valueParam
+        proto.startedCallAci = valueParam
     }
 
-    public func setStartedCallUuid(_ valueParam: Data) {
-        proto.startedCallUuid = valueParam
+    public func setStartedCallAci(_ valueParam: Data) {
+        proto.startedCallAci = valueParam
     }
 
     @objc
@@ -11014,18 +11387,13 @@ public class BackupProtoGroupCallMessageBuilder: NSObject {
     }
 
     @objc
-    public func addInCallUuids(_ valueParam: Data) {
-        proto.inCallUuids.append(valueParam)
+    public func addInCallAcis(_ valueParam: Data) {
+        proto.inCallAcis.append(valueParam)
     }
 
     @objc
-    public func setInCallUuids(_ wrappedItems: [Data]) {
-        proto.inCallUuids = wrappedItems
-    }
-
-    @objc
-    public func setIsCallFull(_ valueParam: Bool) {
-        proto.isCallFull = valueParam
+    public func setInCallAcis(_ wrappedItems: [Data]) {
+        proto.inCallAcis = wrappedItems
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -11065,21 +11433,23 @@ extension BackupProtoGroupCallMessageBuilder {
 
 @objc
 public enum BackupProtoSimpleUpdateType: Int32 {
-    case joinedSignal = 0
-    case identityUpdate = 1
-    case identityVerified = 2
-    case identityDefault = 3
-    case changeNumber = 4
-    case boostRequest = 5
-    case endSession = 6
-    case chatSessionRefresh = 7
-    case badDecrypt = 8
-    case paymentsActivated = 9
-    case paymentActivationRequest = 10
+    case unknown = 0
+    case joinedSignal = 1
+    case identityUpdate = 2
+    case identityVerified = 3
+    case identityDefault = 4
+    case changeNumber = 5
+    case boostRequest = 6
+    case endSession = 7
+    case chatSessionRefresh = 8
+    case badDecrypt = 9
+    case paymentsActivated = 10
+    case paymentActivationRequest = 11
 }
 
 private func BackupProtoSimpleUpdateTypeWrap(_ value: BackupProtos_SimpleUpdate.TypeEnum) -> BackupProtoSimpleUpdateType {
     switch value {
+    case .unknown: return .unknown
     case .joinedSignal: return .joinedSignal
     case .identityUpdate: return .identityUpdate
     case .identityVerified: return .identityVerified
@@ -11096,6 +11466,7 @@ private func BackupProtoSimpleUpdateTypeWrap(_ value: BackupProtos_SimpleUpdate.
 
 private func BackupProtoSimpleUpdateTypeUnwrap(_ value: BackupProtoSimpleUpdateType) -> BackupProtos_SimpleUpdate.TypeEnum {
     switch value {
+    case .unknown: return .unknown
     case .joinedSignal: return .joinedSignal
     case .identityUpdate: return .identityUpdate
     case .identityVerified: return .identityVerified
@@ -11116,6 +11487,26 @@ private func BackupProtoSimpleUpdateTypeUnwrap(_ value: BackupProtoSimpleUpdateT
 public class BackupProtoSimpleUpdate: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: BackupProtos_SimpleUpdate
+
+    public var type: BackupProtoSimpleUpdateType? {
+        guard hasType else {
+            return nil
+        }
+        return BackupProtoSimpleUpdateTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: BackupProtoSimpleUpdateType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: SimpleUpdate.type.")
+        }
+        return BackupProtoSimpleUpdateTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11190,6 +11581,9 @@ extension BackupProtoSimpleUpdate {
     @objc
     public func asBuilder() -> BackupProtoSimpleUpdateBuilder {
         let builder = BackupProtoSimpleUpdateBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11204,6 +11598,11 @@ public class BackupProtoSimpleUpdateBuilder: NSObject {
 
     @objc
     fileprivate override init() {}
+
+    @objc
+    public func setType(_ valueParam: BackupProtoSimpleUpdateType) {
+        proto.type = BackupProtoSimpleUpdateTypeUnwrap(valueParam)
+    }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
         proto.unknownFields = unknownFields
@@ -11251,7 +11650,7 @@ public class BackupProtoGroupDescriptionUpdate: NSObject, Codable, NSSecureCodin
     fileprivate let proto: BackupProtos_GroupDescriptionUpdate
 
     @objc
-    public let body: String
+    public let newDescription: String
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11262,9 +11661,9 @@ public class BackupProtoGroupDescriptionUpdate: NSObject, Codable, NSSecureCodin
     }
 
     private init(proto: BackupProtos_GroupDescriptionUpdate,
-                 body: String) {
+                 newDescription: String) {
         self.proto = proto
-        self.body = body
+        self.newDescription = newDescription
     }
 
     @objc
@@ -11279,13 +11678,13 @@ public class BackupProtoGroupDescriptionUpdate: NSObject, Codable, NSSecureCodin
     }
 
     fileprivate convenience init(_ proto: BackupProtos_GroupDescriptionUpdate) throws {
-        guard proto.hasBody else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: body")
+        guard proto.hasNewDescription else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: newDescription")
         }
-        let body = proto.body
+        let newDescription = proto.newDescription
 
         self.init(proto: proto,
-                  body: body)
+                  newDescription: newDescription)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -11326,14 +11725,14 @@ public class BackupProtoGroupDescriptionUpdate: NSObject, Codable, NSSecureCodin
 
 extension BackupProtoGroupDescriptionUpdate {
     @objc
-    public static func builder(body: String) -> BackupProtoGroupDescriptionUpdateBuilder {
-        return BackupProtoGroupDescriptionUpdateBuilder(body: body)
+    public static func builder(newDescription: String) -> BackupProtoGroupDescriptionUpdateBuilder {
+        return BackupProtoGroupDescriptionUpdateBuilder(newDescription: newDescription)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoGroupDescriptionUpdateBuilder {
-        let builder = BackupProtoGroupDescriptionUpdateBuilder(body: body)
+        let builder = BackupProtoGroupDescriptionUpdateBuilder(newDescription: newDescription)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11350,21 +11749,21 @@ public class BackupProtoGroupDescriptionUpdateBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(body: String) {
+    fileprivate init(newDescription: String) {
         super.init()
 
-        setBody(body)
+        setNewDescription(newDescription)
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setBody(_ valueParam: String?) {
+    public func setNewDescription(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.body = valueParam
+        proto.newDescription = valueParam
     }
 
-    public func setBody(_ valueParam: String) {
-        proto.body = valueParam
+    public func setNewDescription(_ valueParam: String) {
+        proto.newDescription = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -11408,7 +11807,7 @@ public class BackupProtoExpirationTimerChange: NSObject, Codable, NSSecureCoding
     fileprivate let proto: BackupProtos_ExpirationTimerChange
 
     @objc
-    public let expiresIn: UInt32
+    public let expiresInMs: UInt32
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11419,9 +11818,9 @@ public class BackupProtoExpirationTimerChange: NSObject, Codable, NSSecureCoding
     }
 
     private init(proto: BackupProtos_ExpirationTimerChange,
-                 expiresIn: UInt32) {
+                 expiresInMs: UInt32) {
         self.proto = proto
-        self.expiresIn = expiresIn
+        self.expiresInMs = expiresInMs
     }
 
     @objc
@@ -11436,13 +11835,13 @@ public class BackupProtoExpirationTimerChange: NSObject, Codable, NSSecureCoding
     }
 
     fileprivate convenience init(_ proto: BackupProtos_ExpirationTimerChange) throws {
-        guard proto.hasExpiresIn else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: expiresIn")
+        guard proto.hasExpiresInMs else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: expiresInMs")
         }
-        let expiresIn = proto.expiresIn
+        let expiresInMs = proto.expiresInMs
 
         self.init(proto: proto,
-                  expiresIn: expiresIn)
+                  expiresInMs: expiresInMs)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -11483,14 +11882,14 @@ public class BackupProtoExpirationTimerChange: NSObject, Codable, NSSecureCoding
 
 extension BackupProtoExpirationTimerChange {
     @objc
-    public static func builder(expiresIn: UInt32) -> BackupProtoExpirationTimerChangeBuilder {
-        return BackupProtoExpirationTimerChangeBuilder(expiresIn: expiresIn)
+    public static func builder(expiresInMs: UInt32) -> BackupProtoExpirationTimerChangeBuilder {
+        return BackupProtoExpirationTimerChangeBuilder(expiresInMs: expiresInMs)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoExpirationTimerChangeBuilder {
-        let builder = BackupProtoExpirationTimerChangeBuilder(expiresIn: expiresIn)
+        let builder = BackupProtoExpirationTimerChangeBuilder(expiresInMs: expiresInMs)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11507,15 +11906,15 @@ public class BackupProtoExpirationTimerChangeBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(expiresIn: UInt32) {
+    fileprivate init(expiresInMs: UInt32) {
         super.init()
 
-        setExpiresIn(expiresIn)
+        setExpiresInMs(expiresInMs)
     }
 
     @objc
-    public func setExpiresIn(_ valueParam: UInt32) {
-        proto.expiresIn = valueParam
+    public func setExpiresInMs(_ valueParam: UInt32) {
+        proto.expiresInMs = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -12287,7 +12686,7 @@ public class BackupProtoStickerPackSticker: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_StickerPackSticker
 
     @objc
-    public let data: BackupProtoAttachmentPointer
+    public let data: BackupProtoFilePointer
 
     @objc
     public let emoji: String
@@ -12301,7 +12700,7 @@ public class BackupProtoStickerPackSticker: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_StickerPackSticker,
-                 data: BackupProtoAttachmentPointer,
+                 data: BackupProtoFilePointer,
                  emoji: String) {
         self.proto = proto
         self.data = data
@@ -12323,7 +12722,7 @@ public class BackupProtoStickerPackSticker: NSObject, Codable, NSSecureCoding {
         guard proto.hasData else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: data")
         }
-        let data = BackupProtoAttachmentPointer(proto.data)
+        let data = try BackupProtoFilePointer(proto.data)
 
         guard proto.hasEmoji else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: emoji")
@@ -12373,7 +12772,7 @@ public class BackupProtoStickerPackSticker: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoStickerPackSticker {
     @objc
-    public static func builder(data: BackupProtoAttachmentPointer, emoji: String) -> BackupProtoStickerPackStickerBuilder {
+    public static func builder(data: BackupProtoFilePointer, emoji: String) -> BackupProtoStickerPackStickerBuilder {
         return BackupProtoStickerPackStickerBuilder(data: data, emoji: emoji)
     }
 
@@ -12397,7 +12796,7 @@ public class BackupProtoStickerPackStickerBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(data: BackupProtoAttachmentPointer, emoji: String) {
+    fileprivate init(data: BackupProtoFilePointer, emoji: String) {
         super.init()
 
         setData(data)
@@ -12406,12 +12805,12 @@ public class BackupProtoStickerPackStickerBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setData(_ valueParam: BackupProtoAttachmentPointer?) {
+    public func setData(_ valueParam: BackupProtoFilePointer?) {
         guard let valueParam = valueParam else { return }
         proto.data = valueParam.proto
     }
 
-    public func setData(_ valueParam: BackupProtoAttachmentPointer) {
+    public func setData(_ valueParam: BackupProtoFilePointer) {
         proto.data = valueParam.proto
     }
 

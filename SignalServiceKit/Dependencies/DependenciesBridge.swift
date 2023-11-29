@@ -584,16 +584,20 @@ public class DependenciesBridge {
         )
 
         self.cloudBackupManager = CloudBackupManagerImpl(
-            blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
             dateProvider: dateProvider,
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
-            groupsV2: groupsV2,
-            profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
-            recipientHidingManager: recipientHidingManager,
-            signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
-            storyFinder: CloudBackup.Wrappers.StoryFinder(),
-            streamProvider: CloudBackupOutputStreamProviderImpl(),
+            recipientArchiver: CloudBackupRecipientArchiverImpl(
+                blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
+                groupsV2: groupsV2,
+                profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
+                recipientHidingManager: recipientHidingManager,
+                signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
+                storyFinder: CloudBackup.Wrappers.StoryFinder(),
+                tsAccountManager: tsAccountManager,
+                tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+            ),
+            streamProvider: CloudBackupProtoStreamProviderImpl(),
             tsAccountManager: tsAccountManager,
             tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
             tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
