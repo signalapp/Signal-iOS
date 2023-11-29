@@ -1,1 +1,1 @@
-• Ми оновили інтерфейс для поширення контактів, тож тепер ви можете надіслати другу контакти улюбленого дизайнера інтер'єру на екрані з новим дизайном. А для максимального феншуй ми додали можливість вибрати, якими полями поділитися.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

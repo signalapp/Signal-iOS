@@ -1,1 +1,1 @@
-• Vi har opdateret kontaktdelingsgrænsefladen, så du nu kan sende dine venner oplysninger om din yndlingsindretningsarkitekt på en skærm, der allerede er blevet renoveret. Du kan også stadig vælge, hvilke felter du vil dele for at opnå maksimal feng shui.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

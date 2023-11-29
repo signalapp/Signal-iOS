@@ -1,1 +1,1 @@
-• Wir haben die Benutzeroberfläche für die Kontaktfreigabe aktualisiert. Jetzt kannst du Freunden Infos zu deinem Lieblingsdekorateur oder deiner Lieblingsdekorateurin auf einem bereits neu dekorierten Bildschirm schicken. Für den maximalen Feng Shui-Effekt kannst du weiterhin auswählen, welche Felder du teilen möchtest.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

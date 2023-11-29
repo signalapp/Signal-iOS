@@ -1,1 +1,1 @@
-• Nous avons mis à jour l'interface de partage des contacts. Vous pouvez désormais partager les coordonnées de votre décorateur d'intérieur préféré avec vos amis depuis un écran lui-même déjà redécoré. Et pour encore plus de feng shui, vous pouvez également sélectionner les champs à partager.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

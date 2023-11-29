@@ -1,1 +1,1 @@
-• قمنا بتحديث واجهة مشاركة جهات الاتصال، لذا يُمكنك الآن إرسال معلومات مُصمم الديكور الداخلي المُفضل لديك إلى صديقك على شاشة تم تحسينها بالفعل. لا يزال بإمكانك تحديد الحقول التي تريد مُشاركتها للحصول على أقصى قدر من فلسفة الفنغ شوي لتحقيق التناغم.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

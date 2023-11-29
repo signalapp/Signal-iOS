@@ -1,1 +1,1 @@
-• Abbiamo aggiornato l'interfaccia della schermata di condivisione contatti: inviare il numero del parrucchiere al tuo amico non è mai stato così bello (e puoi anche scegliere quali campi del contatto condividere).
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

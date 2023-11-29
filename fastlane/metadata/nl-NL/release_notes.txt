@@ -1,1 +1,1 @@
-• We hebben de interface voor het delen van contacten bijgewerkt. Nu kun je je vrienden laten weten wie je favoriete binnenhuisarchitect is via een scherm met een nieuw design. Je kunt nog steeds selecteren welke velden je wilt delen voor maximale feng shui.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

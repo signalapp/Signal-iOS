@@ -1,1 +1,1 @@
-• Am actualizat interfața de distribuire a contactelor, așa că acum îi poți trimite prietenului tău informațiile despre decoratorul tău de interior preferat pe un ecran care a fost deja redecorat. Poți selecta în continuare ce câmpuri să distribui, pentru feng shui maxim.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

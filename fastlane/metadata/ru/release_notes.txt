@@ -1,1 +1,1 @@
-• Мы обновили интерфейс обмена контактами, и теперь вы можете отправить другу информацию о вашем любимом дизайнере интерьеров на экране с новым дизайном. Вы также можете выбрать поля, чтобы всё было максимально по фэн-шуй.
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 

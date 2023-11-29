@@ -1,1 +1,1 @@
-• हमने संपर्क साझाकरण इंटरफ़ेस अपडेट किया है, तो अब आप अपने दोस्त को अपने पसंदीदा इंटीरियर डेकोरेटर की जानकारी उस स्क्रीन पर भेज सकते हैं जिसे पहले ही पुनः सजाया जा चुका है। आप अभी भी चुन सकते हैं कि अधिकतम फेंगशुई के लिए किन फ़ील्ड्स को साझा करना है।
+• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 
