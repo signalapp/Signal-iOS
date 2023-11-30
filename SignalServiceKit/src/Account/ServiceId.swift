@@ -54,10 +54,6 @@ public struct AtLeastOneServiceId {
     }
 }
 
-extension ServiceId {
-    public var temporary_rawUUID: UUID { rawUUID }
-}
-
 @objc
 public class ServiceIdObjC: NSObject, NSCopying {
     public var wrappedValue: ServiceId { owsFail("Subclasses must implement.") }
