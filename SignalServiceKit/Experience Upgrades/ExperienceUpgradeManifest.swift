@@ -5,6 +5,7 @@
 
 import Foundation
 import Contacts
+import SignalCoreKit
 
 public enum ExperienceUpgradeManifest: Dependencies {
     /// Prompts the user to create a PIN, if they did not create one during
@@ -566,12 +567,10 @@ extension ExperienceUpgradeManifest {
                 with: AppVersionImpl.shared.currentAppVersion4
             ) != .orderedDescending
         else {
-            Logger.debug("App version \(AppVersionImpl.shared.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
             return false
         }
 
         guard Date().timeIntervalSince1970 > TimeInterval(megaphone.manifest.dontShowBefore) else {
-            Logger.debug("Remote megaphone should not be shown until later!")
             return false
         }
 
@@ -586,11 +585,12 @@ extension ExperienceUpgradeManifest {
             csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)",
             localIdentifiers: localIdentifiers
         ) else {
-            Logger.debug("Remote megaphone not enabled for this user, by country code!")
             return false
         }
 
-        guard validateRemoteMegaphone(conditionalCheck: megaphone.manifest.conditionalCheck) else {
+        guard validateRemoteMegaphone(
+            conditionalCheck: megaphone.manifest.conditionalCheck, tx: tx
+        ) else {
             return false
         }
 
@@ -612,9 +612,10 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func validateRemoteMegaphone(
-        conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?
+        conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?,
+        tx: SDSAnyReadTransaction
     ) -> Bool {
-        guard let conditionalCheck = conditionalCheck else {
+        guard let conditionalCheck else {
             // Having no conditional check is valid.
             return true
         }
@@ -626,6 +627,12 @@ extension ExperienceUpgradeManifest {
                 !localProfileBadgeInfo.isEmpty
             {
                 // Fail the check if we currently have a badge.
+                return false
+            } else if
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .hasAnyPaymentsStillProcessing(tx: tx.asV2Read)
+            {
+                // Fail the check if we have any in-progress payments.
                 return false
             }
 
@@ -672,5 +679,22 @@ private extension RemoteMegaphoneModel.Manifest.Action {
         }
 
         return true
+    }
+}
+
+private extension SubscriptionReceiptCredentialResultStore {
+    /// Do we have any payments that have been initiated, but are still
+    /// in-progress?
+    func hasAnyPaymentsStillProcessing(tx: DBReadTransaction) -> Bool {
+        for requestErrorMode in Mode.allCases {
+            if
+                let requestError = getRequestError(errorMode: requestErrorMode, tx: tx),
+                case .paymentStillProcessing = requestError.errorCode
+            {
+                return true
+            }
+        }
+
+        return false
     }
 }
