@@ -27,7 +27,7 @@ class CallAudioService: NSObject, CallObserver {
     }
 
     // Track whether the speaker should be enabled or not.
-    private var isSpeakerEnabled = false
+    private(set) var isSpeakerEnabled = false
 
     // MARK: Vibration config
     private let vibrateRepeatDuration = 1.6
