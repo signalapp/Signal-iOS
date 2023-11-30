@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public enum _SubscriptionReceiptCredentialResultStore_Mode {
+public enum _SubscriptionReceiptCredentialResultStore_Mode: CaseIterable {
     /// Refers to a one-time boost.
     case oneTimeBoost
     /// Refers to a recurring subscription that was started for the first time.
