@@ -45,10 +45,10 @@ PODS:
     - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack (~> 3.7.4)
-  - SignalRingRTC (2.34.4):
+  - SignalRingRTC (2.34.5):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.34.4)
-  - SignalRingRTC/WebRTC (2.34.4):
+    - SignalRingRTC/WebRTC (= 2.34.5)
+  - SignalRingRTC/WebRTC (2.34.5):
     - SignalCoreKit
   - SQLCipher (4.5.5):
     - SQLCipher/standard (= 4.5.5)
@@ -84,7 +84,7 @@ DEPENDENCIES:
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.34.4`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.34.5`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.5.5-f_barrierfsync-fts5`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.34.4
+    :tag: v2.34.5
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.5.5-f_barrierfsync-fts5
@@ -167,7 +167,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.34.4
+    :tag: v2.34.5
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.5.5-f_barrierfsync-fts5
@@ -193,12 +193,12 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
-  SignalRingRTC: 9afc38f8dd7937a63c9d4f5778e9e7fc58527ccd
+  SignalRingRTC: f32399d2370dd224d8d97c412d64656bcd4b637c
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 1e2c4cb43fb9074172234d4d48bed0c696823daf
+PODFILE CHECKSUM: 66336e04040e4d98de422a65ebb7c0da3d20e413
 
 COCOAPODS: 1.12.1
