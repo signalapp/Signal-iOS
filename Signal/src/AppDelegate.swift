@@ -465,10 +465,13 @@ extension AppDelegate {
                 regLoader.restoreLastMode(transaction: tx.asV2Read)
             )
         }
+
+        let needsOnboarding = !hasProfileName && (tsRegistrationState.isPrimaryDevice ?? true)
+
         if let lastMode {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
-        } else if !(hasProfileName && tsRegistrationState.isRegistered) {
+        } else if needsOnboarding || !tsRegistrationState.isRegistered {
             if UIDevice.current.isIPad {
                 if tsRegistrationState == .delinked {
                     // If we are delinked, go to the chat list in the delinked state.
