@@ -864,10 +864,6 @@ extension AppDelegate {
 
                     ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
                 }
-
-                // Start running the disappearing messages job in case the newly registered user
-                // enables this feature
-                self.disappearingMessagesJob.startIfNecessary()
             }
         }
 
