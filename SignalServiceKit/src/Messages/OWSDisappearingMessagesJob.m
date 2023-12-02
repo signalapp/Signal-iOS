@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Can we move to Signal-iOS?
 @interface OWSDisappearingMessagesJob ()
 
-@property (nonatomic, readonly) DisappearingMessagesFinder *disappearingMessagesFinder;
-
 + (dispatch_queue_t)serialQueue;
 
 // These three properties should only be accessed on the main thread.
@@ -52,8 +50,6 @@ void AssertIsOnDisappearingMessagesQueue(void)
     if (!self) {
         return self;
     }
-
-    _disappearingMessagesFinder = [DisappearingMessagesFinder new];
 
     // suspenders in case a deletion schedule is missed.
     NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
@@ -89,99 +85,10 @@ void AssertIsOnDisappearingMessagesQueue(void)
     return queue;
 }
 
-- (NSUInteger)deleteExpiredMessages
+- (NSInteger)runLoop
 {
     AssertIsOnDisappearingMessagesQueue();
-
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    __block NSUInteger expirationCount = 0;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.disappearingMessagesFinder
-            enumerateExpiredMessagesWithTransaction:transaction
-                                              block:^(TSMessage *message) {
-                                                  // We want to compute `now` *after* our finder fetches results.
-                                                  // Otherwise, if we computed it before the finder, and a message had
-                                                  // expired in the tiny gap between that computation and when the
-                                                  // finder runs, we would skip deleting an expired message until the
-                                                  // next expiration run.
-                                                  uint64_t now = [NSDate ows_millisecondTimeStamp];
-
-                                                  // sanity check
-                                                  if (message.expiresAt > now) {
-                                                      OWSFailDebug(@"Refusing to remove message which doesn't expire "
-                                                                   @"until: %llu, now: %lld",
-                                                          message.expiresAt,
-                                                          now);
-                                                      return;
-                                                  }
-
-                                                  [message anyRemoveWithTransaction:transaction];
-                                                  expirationCount++;
-                                              }];
-    });
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
-    return expirationCount;
-}
-
-- (NSUInteger)deleteExpiredStories
-{
-    AssertIsOnDisappearingMessagesQueue();
-
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    __block NSUInteger expirationCount = 0;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        expirationCount = [StoryManager deleteExpiredStoriesWithTransaction:transaction];
-    });
-
-    OWSLogDebug(@"Removed %lu expired stories", (unsigned long)expirationCount);
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
-    return expirationCount;
-}
-
-// deletes any expired messages and schedules the next run.
-- (NSUInteger)runLoop
-{
-    OWSLogVerbose(@"in runLoop");
-    AssertIsOnDisappearingMessagesQueue();
-
-    NSUInteger deletedCount = [self deleteExpiredMessages] + [self deleteExpiredStories];
-
-    __block NSNumber *nextMessageExpirationTimestampNumber;
-    __block NSNumber *nextStoryExpirationTimestampNumber;
-    [self.databaseStorage
-        readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            nextMessageExpirationTimestampNumber =
-                [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
-            nextStoryExpirationTimestampNumber = [StoryManager nextExpirationTimestampWithTransaction:transaction];
-        }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-
-    uint64_t nextExpirationAt;
-    if (nextMessageExpirationTimestampNumber && nextStoryExpirationTimestampNumber) {
-        uint64_t nextMessageExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
-        uint64_t nextStoryExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
-        nextExpirationAt = MIN(nextMessageExpirationAt, nextStoryExpirationAt);
-    } else if (nextMessageExpirationTimestampNumber) {
-        nextExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
-    } else if (nextStoryExpirationTimestampNumber) {
-        nextExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
-    } else {
-        OWSLogDebug(@"No more expiring messages.");
-        return deletedCount;
-    }
-
-    NSDate *nextExpirationDate = [NSDate ows_dateWithMillisecondsSince1970:nextExpirationAt];
-    [self scheduleRunByDate:nextExpirationDate];
-
-    return deletedCount;
+    return [self _runLoop];
 }
 
 - (void)startAnyExpirationForMessage:(TSMessage *)message
@@ -193,9 +100,6 @@ void AssertIsOnDisappearingMessagesQueue(void)
     if (!message.shouldStartExpireTimer) {
         return;
     }
-
-    NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
-    OWSLogDebug(@"Starting expiration for message read %f seconds ago", startedSecondsAgo);
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
@@ -234,19 +138,10 @@ void AssertIsOnDisappearingMessagesQueue(void)
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             // Theoretically this shouldn't be necessary, but there was a race condition when receiving a backlog
             // of messages across timer changes which could cause a disappearing message's timer to never be started.
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
-            });
-            
+            [self cleanUpMessagesWhichFailedToStartExpiringWithSneakyTransaction];
             [self runLoop];
         });
     });
-}
-
-- (void)schedulePass
-{
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(
-        ^{ dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{ [self runLoop]; }); });
 }
 
 #ifdef TESTABLE_BUILD
@@ -287,18 +182,10 @@ void AssertIsOnDisappearingMessagesQueue(void)
         NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, date.timeIntervalSinceNow);
         NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
         if (self.nextDisappearanceDate && [self.nextDisappearanceDate isBeforeDate:newTimerScheduleDate]) {
-            OWSLogVerbose(@"Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
-                [self.dateFormatter stringFromDate:date],
-                (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
-                [self.dateFormatter stringFromDate:self.nextDisappearanceDate],
-                (int)round(MAX(0, [self.nextDisappearanceDate timeIntervalSinceDate:[NSDate new]])));
             return;
         }
 
         // Update Schedule
-        OWSLogVerbose(@"Scheduled run at %@ (%d sec.)",
-            [self.dateFormatter stringFromDate:newTimerScheduleDate],
-            (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
         [self resetNextDisappearanceTimer];
         self.nextDisappearanceDate = newTimerScheduleDate;
         self.nextDisappearanceTimer = [NSTimer weakTimerWithTimeInterval:delaySeconds
@@ -313,7 +200,6 @@ void AssertIsOnDisappearingMessagesQueue(void)
 - (void)disappearanceTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    OWSLogDebug(@"");
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
@@ -331,7 +217,6 @@ void AssertIsOnDisappearingMessagesQueue(void)
 - (void)fallbackTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    OWSLogDebug(@"");
 
     BOOL recentlyScheduledDisappearanceTimer = NO;
     if (fabs(self.nextDisappearanceDate.timeIntervalSinceNow) < 1.0) {
@@ -339,13 +224,12 @@ void AssertIsOnDisappearingMessagesQueue(void)
     }
 
     if (!CurrentAppContext().isMainAppAndActive) {
-        OWSLogInfo(@"Ignoring fallbacktimer for app which is not main and active.");
         return;
     }
 
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
-            NSUInteger deletedCount = [self runLoop];
+            NSInteger deletedCount = [self runLoop];
 
             // Normally deletions should happen via the disappearanceTimer, to make sure that they're prompt.
             // So, if we're deleting something via this fallback timer, something may have gone wrong. The
@@ -365,26 +249,6 @@ void AssertIsOnDisappearingMessagesQueue(void)
     [self.nextDisappearanceTimer invalidate];
     self.nextDisappearanceTimer = nil;
     self.nextDisappearanceDate = nil;
-}
-
-#pragma mark - Cleanup
-
-- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-
-    NSArray<NSString *> *messageIds =
-        [self.disappearingMessagesFinder fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:transaction];
-    for (NSString *messageId in messageIds) {
-        TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:messageId transaction:transaction];
-        if (message == nil) {
-            OWSFailDebug(@"Missing message.");
-            continue;
-        }
-
-        // We don't know when it was actually read, so assume it was read as soon as it was received.
-        uint64_t readTimeBestGuess = message.receivedAtTimestamp;
-        [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
-    }
 }
 
 #pragma mark - Notifications

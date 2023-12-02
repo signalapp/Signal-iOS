@@ -195,25 +195,23 @@ public class StoryManager: NSObject {
         }
     }
 
-    @objc
-    public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
-        var removedCount: UInt = 0
+    public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> Int {
+        var removedCount = 0
         StoryFinder.enumerateExpiredStories(transaction: transaction) { message, _ in
             guard !message.authorAddress.isSystemStoryAddress else {
                 // We do not auto-expire system stories, they remain until viewed.
                 return
             }
-            Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetimeMillis)")
             message.anyRemove(transaction: transaction)
             removedCount += 1
         }
+        Logger.info("Deleted \(removedCount) expired stories")
         return removedCount
     }
 
-    @objc
-    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
+    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
         guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
-        return NSNumber(value: timestamp + storyLifetimeMillis)
+        return timestamp + storyLifetimeMillis
     }
 
     private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
