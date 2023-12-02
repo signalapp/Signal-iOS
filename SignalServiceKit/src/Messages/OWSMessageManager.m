@@ -151,9 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWSMessageManagerMessageTypeTypingMessage:
             [self handleIncomingEnvelope:request.decryptedEnvelope
-                       withTypingMessage:contentProto.typingMessage
-                 serverDeliveryTimestamp:request.serverDeliveryTimestamp
-                             transaction:transaction];
+                           typingMessage:contentProto.typingMessage
+                                      tx:transaction];
             break;
         case OWSMessageManagerMessageTypeNullMessage:
             OWSLogInfo(@"Received null message.");
@@ -678,99 +677,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)handleIncomingEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
-             withTypingMessage:(SSKProtoTypingMessage *)typingMessage
-       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (!decryptedEnvelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!typingMessage) {
-        OWSFailDebug(@"Missing typingMessage.");
-        return;
-    }
-    if (typingMessage.timestamp != decryptedEnvelope.timestamp) {
-        OWSFailDebug(@"typingMessage has invalid timestamp.");
-        return;
-    }
-    SSKProtoEnvelope *_Nonnull envelope = decryptedEnvelope.envelope;
-
-    NSData *groupId = typingMessage.groupID;
-    if (groupId != nil) {
-        [self ensureGroupIdMapping:groupId transaction:transaction];
-    }
-
-    if (envelope.sourceAddress.isLocalAddress) {
-        OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
-        return;
-    }
-
-    TSThread *_Nullable thread;
-    if (groupId != nil) {
-        if ([self.blockingManager isGroupIdBlocked:groupId transaction:transaction]) {
-            OWSLogError(@"Ignoring blocked message from %@ in group %@", decryptedEnvelope.sourceAciObjC, groupId);
-            return;
-        }
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-        if (groupThread != nil && !groupThread.isLocalUserFullOrInvitedMember) {
-            OWSLogInfo(@"Ignoring messages for left group.");
-            return;
-        }
-        if ([groupThread.groupModel isKindOfClass:TSGroupModelV2.class]) {
-            TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
-            if (groupModel.isAnnouncementsOnly
-                && ![groupModel.groupMembership isFullMemberAndAdministrator:envelope.sourceAddress]) {
-                return;
-            }
-        }
-        thread = groupThread;
-    } else {
-        thread = [TSContactThread getThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
-    }
-
-    if (!thread) {
-        // This isn't necessarily an error.  We might not yet know about the thread,
-        // in which case we don't need to display the typing indicators.
-        OWSLogWarn(@"Could not locate thread for typingMessage.");
-        return;
-    }
-
-    if (!typingMessage.hasAction) {
-        OWSFailDebug(@"Type message is missing action.");
-        return;
-    }
-
-    // We should ignore typing indicator messages.
-    if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0 && serverDeliveryTimestamp > 0) {
-        uint64_t relevancyCutoff = serverDeliveryTimestamp - (uint64_t)(5 * kMinuteInterval);
-        if (envelope.serverTimestamp < relevancyCutoff) {
-            OWSLogInfo(@"Discarding obsolete typing indicator message.");
-            return;
-        }
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        switch (typingMessage.unwrappedAction) {
-            case SSKProtoTypingMessageActionStarted:
-                [self.typingIndicatorsImpl didReceiveTypingStartedMessageInThread:thread
-                                                                        senderAci:decryptedEnvelope.sourceAciObjC
-                                                                         deviceId:decryptedEnvelope.sourceDeviceId];
-                break;
-            case SSKProtoTypingMessageActionStopped:
-                [self.typingIndicatorsImpl didReceiveTypingStoppedMessageInThread:thread
-                                                                        senderAci:decryptedEnvelope.sourceAciObjC
-                                                                         deviceId:decryptedEnvelope.sourceDeviceId];
-                break;
-            default:
-                OWSFailDebug(@"Typing message has unexpected action.");
-                break;
-        }
-    });
-}
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
                                            dataMessage:(SSKProtoDataMessage *)dataMessage

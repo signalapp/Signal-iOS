@@ -594,6 +594,77 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
+        _ envelope: DecryptedIncomingEnvelope,
+        typingMessage: SSKProtoTypingMessage,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard typingMessage.timestamp == envelope.timestamp else {
+            owsFailDebug("typingMessage has invalid timestamp")
+            return
+        }
+        let groupId = typingMessage.groupID
+        if let groupId {
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
+        }
+        // TODO: Merge the above/below `if let groupId` blocks when moving this check.
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if envelope.sourceAci == tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
+            return
+        }
+        let thread: TSThread
+        if let groupId {
+            if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
+                Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in \(groupId)")
+                return
+            }
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+                // This isn't necessarily an error. We might not yet know about the thread,
+                // in which case we don't need to display the typing indicators.
+                Logger.warn("Ignoring typingMessage for non-existent thread")
+                return
+            }
+            guard groupThread.isLocalUserFullOrInvitedMember else {
+                Logger.info("Ignoring message for left group")
+                return
+            }
+            if let groupModel = groupThread.groupModel as? TSGroupModelV2, groupModel.isAnnouncementsOnly {
+                guard groupModel.groupMembership.isFullMemberAndAdministrator(envelope.sourceAci) else {
+                    return
+                }
+            }
+            thread = groupThread
+        } else {
+            let sourceAddress = SignalServiceAddress(envelope.sourceAci)
+            guard let contactThread = TSContactThread.getWithContactAddress(sourceAddress, transaction: tx) else {
+                // This isn't necessarily an error. We might not yet know about the thread,
+                // in which case we don't need to display the typing indicators.
+                Logger.warn("Ignoring typingMessage for non-existent thread")
+                return
+            }
+            thread = contactThread
+        }
+        DispatchQueue.main.async {
+            switch typingMessage.action {
+            case .started:
+                Self.typingIndicatorsImpl.didReceiveTypingStartedMessage(
+                    inThread: thread,
+                    senderAci: envelope.sourceAciObjC,
+                    deviceId: envelope.sourceDeviceId
+                )
+            case .stopped:
+                Self.typingIndicatorsImpl.didReceiveTypingStoppedMessage(
+                    inThread: thread,
+                    senderAci: envelope.sourceAciObjC,
+                    deviceId: envelope.sourceDeviceId
+                )
+            case .none:
+                owsFailDebug("typingMessage has unexpected action")
+            }
+        }
+    }
+
+    @objc
+    func handleIncomingEnvelope(
         _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withDecryptionErrorMessage bytes: Data,
         transaction writeTx: SDSAnyWriteTransaction
