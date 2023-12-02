@@ -22,6 +22,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         self.footerOverlay = footerOverlay
 
         super.init(itemModel: itemModel)
+
+        databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -134,6 +136,18 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         var measuredSize = stackMeasurement.measuredSize
         measuredSize.width = maxWidth
         return measuredSize
+    }
+
+    /// Checks if the message still exists and stops playback if it does not.
+    private func checkIfMessageStillExists() {
+        let messageWasDeleted = databaseStorage.read { tx in
+            TSInteraction.anyFetch(uniqueId: interaction.uniqueId, transaction: tx) == nil
+        }
+
+        if messageWasDeleted,
+           cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId) == .playing {
+            cvAudioPlayer.stopAll()
+        }
     }
 
     // MARK: - Events
@@ -288,6 +302,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     }
 }
 
+// MARK: - CVAudioPlayerListener
+
 extension CVComponentAudioAttachment: CVAudioPlayerListener {
     func audioPlayerStateDidChange(attachmentId: String) {}
 
@@ -297,6 +313,26 @@ extension CVComponentAudioAttachment: CVAudioPlayerListener {
     }
 
     func audioPlayerDidMarkViewed(attachmentId: String) {}
+}
+
+// MARK: - DatabaseChangeDelegate
+
+extension CVComponentAudioAttachment: DatabaseChangeDelegate {
+    public func databaseChangesDidUpdate(databaseChanges: SignalServiceKit.DatabaseChanges) {
+        guard databaseChanges.didUpdate(interaction: self.interaction) else {
+            return
+        }
+
+        checkIfMessageStillExists()
+    }
+
+    public func databaseChangesDidUpdateExternally() {
+        checkIfMessageStillExists()
+    }
+
+    public func databaseChangesDidReset() {
+        checkIfMessageStillExists()
+    }
 }
 
 // MARK: -
