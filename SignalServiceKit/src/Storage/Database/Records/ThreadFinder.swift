@@ -164,10 +164,19 @@ public class ThreadFinder: Dependencies {
             )
         {
             // If the user hides a contact and said contact subsequently sends an incoming
-            // message, we display the message request UI.
-            return interactionFinder.mostRecentInteraction(
+            // message or calls, we display the message request UI.
+            let mostRecentInteraction = interactionFinder.mostRecentInteraction(
                 transaction: transaction
-            )?.interactionType == .incomingMessage
+            )
+            let isLatestInteractionIncomingMessage = mostRecentInteraction?.interactionType == .incomingMessage
+            var isLatestInteractionMissedCall = false
+            if
+                let call = mostRecentInteraction as? TSCall,
+                call.callType == .incomingMissed
+            {
+                isLatestInteractionMissedCall = true
+            }
+            return isLatestInteractionIncomingMessage || isLatestInteractionMissedCall
         }
 
         // If the thread is already whitelisted, do nothing. The user has already
