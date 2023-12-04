@@ -231,10 +231,9 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    @objc
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
-        senderServiceId: ServiceIdObjC,
+        senderServiceId: ServiceId,
         senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
@@ -251,7 +250,7 @@ public class EarlyMessageManager: NSObject {
         recordEarlyReceipt(
             .init(
                 receiptType: type,
-                sender: senderServiceId.wrappedValue,
+                sender: senderServiceId,
                 senderDeviceId: senderDeviceId,
                 timestamp: timestamp
             ),

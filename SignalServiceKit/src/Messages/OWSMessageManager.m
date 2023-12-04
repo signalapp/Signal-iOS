@@ -58,46 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-// This code path is for server-generated receipts only.
-- (void)handleDeliveryReceipt:(ServerReceiptEnvelope *)envelope
-                      context:(id<DeliveryReceiptContext>)context
-                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    // Server-generated delivery receipts don't include a "delivery timestamp".
-    // The envelope's timestamp gives the timestamp of the message this receipt
-    // is for. Unlike UD receipts, it is not meant to be the time the message
-    // was delivered. We use the current time as a good-enough guess. We could
-    // also use the envelope's serverTimestamp.
-    const uint64_t deliveryTimestamp = [NSDate ows_millisecondTimeStamp];
-    if (![SDS fitsInInt64:deliveryTimestamp]) {
-        OWSFailDebug(@"Invalid timestamp.");
-        return;
-    }
-
-    NSArray<NSNumber *> *earlyReceiptTimestamps =
-        [self.receiptManager processDeliveryReceiptsFrom:envelope.sourceServiceIdObjC
-                                       recipientDeviceId:envelope.sourceDeviceId
-                                          sentTimestamps:@[ @(envelope.timestamp) ]
-                                       deliveryTimestamp:deliveryTimestamp
-                                                 context:context
-                                                      tx:transaction];
-
-    [self recordEarlyReceiptOfType:SSKProtoReceiptMessageTypeDelivery
-                   senderServiceId:envelope.sourceServiceIdObjC
-                    senderDeviceId:envelope.sourceDeviceId
-                        timestamps:earlyReceiptTimestamps
-                   remoteTimestamp:deliveryTimestamp
-                       transaction:transaction];
-}
-
 - (void)handleRequest:(MessageManagerRequest *)request
               context:(id<DeliveryReceiptContext>)context
           transaction:(SDSAnyWriteTransaction *)transaction
@@ -159,9 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWSMessageManagerMessageTypeReceiptMessage:
             [self handleIncomingEnvelope:request.decryptedEnvelope
-                      withReceiptMessage:contentProto.receiptMessage
+                          receiptMessage:contentProto.receiptMessage
                                  context:context
-                             transaction:transaction];
+                                      tx:transaction];
             break;
         case OWSMessageManagerMessageTypeDecryptionErrorMessage:
             [self handleIncomingEnvelope:request.decryptedEnvelope
@@ -285,96 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
                                                                            transaction:transaction];
         return thread;
-    }
-}
-
-// This code path is for UD receipts.
-- (void)handleIncomingEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
-            withReceiptMessage:(SSKProtoReceiptMessage *)receiptMessage
-                       context:(id<DeliveryReceiptContext>)context
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!decryptedEnvelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!receiptMessage) {
-        OWSFailDebug(@"Missing receiptMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (!receiptMessage.hasType) {
-        OWSFailDebug(@"Missing type for receipt message, ignoring.");
-        return;
-    }
-
-    NSArray<NSNumber *> *sentTimestamps = receiptMessage.timestamp;
-    for (NSNumber *sentTimestamp in sentTimestamps) {
-        if (![SDS fitsInInt64:sentTimestamp.unsignedLongLongValue]) {
-            OWSFailDebug(@"Invalid timestamp.");
-            return;
-        }
-    }
-
-    NSArray<NSNumber *> *earlyTimestamps;
-
-    switch (receiptMessage.unwrappedType) {
-        case SSKProtoReceiptMessageTypeDelivery:
-            earlyTimestamps = [self.receiptManager processDeliveryReceiptsFrom:decryptedEnvelope.sourceAciObjC
-                                                             recipientDeviceId:decryptedEnvelope.sourceDeviceId
-                                                                sentTimestamps:sentTimestamps
-                                                             deliveryTimestamp:decryptedEnvelope.timestamp
-                                                                       context:context
-                                                                            tx:transaction];
-            break;
-        case SSKProtoReceiptMessageTypeRead:
-            earlyTimestamps = [self.receiptManager processReadReceiptsFrom:decryptedEnvelope.sourceAciObjC
-                                                         recipientDeviceId:decryptedEnvelope.sourceDeviceId
-                                                            sentTimestamps:sentTimestamps
-                                                             readTimestamp:decryptedEnvelope.timestamp
-                                                                        tx:transaction];
-            break;
-        case SSKProtoReceiptMessageTypeViewed:
-            earlyTimestamps = [self.receiptManager processViewedReceiptsFrom:decryptedEnvelope.sourceAciObjC
-                                                           recipientDeviceId:decryptedEnvelope.sourceDeviceId
-                                                              sentTimestamps:sentTimestamps
-                                                             viewedTimestamp:decryptedEnvelope.timestamp
-                                                                          tx:transaction];
-            break;
-        default:
-            OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
-            return;
-    }
-
-    [self recordEarlyReceiptOfType:receiptMessage.unwrappedType
-                   senderServiceId:decryptedEnvelope.sourceAciObjC
-                    senderDeviceId:decryptedEnvelope.sourceDeviceId
-                        timestamps:earlyTimestamps
-                   remoteTimestamp:decryptedEnvelope.timestamp
-                       transaction:transaction];
-}
-
-// remoteTimestamp is the time the message was delivered, read, or viewed.
-// earlyTimestamps contains the collection of outgoing messages referred to by the receipt.
-- (void)recordEarlyReceiptOfType:(SSKProtoReceiptMessageType)receiptType
-                 senderServiceId:(ServiceIdObjC *)senderServiceId
-                  senderDeviceId:(uint32_t)senderDeviceId
-                      timestamps:(NSArray<NSNumber *> *)earlyTimestamps
-                 remoteTimestamp:(uint64_t)remoteTimestamp
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
-        OWSLogInfo(@"Record early receipt for %@", nsEarlyTimestamp);
-        const UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
-        [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptType
-                                                               senderServiceId:senderServiceId
-                                                                senderDeviceId:senderDeviceId
-                                                                     timestamp:remoteTimestamp
-                                                    associatedMessageTimestamp:earlyTimestamp
-                                                                            tx:transaction];
     }
 }
 

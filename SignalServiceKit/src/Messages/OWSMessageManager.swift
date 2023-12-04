@@ -163,11 +163,47 @@ extension OWSMessageManager {
             case .serverReceipt:
                 owsAssertDebug(plaintextData == nil)
                 let envelope = try ServerReceiptEnvelope(validatedEnvelope)
-                handleDeliveryReceipt(envelope, context: PassthroughDeliveryReceiptContext(), transaction: tx)
+                handleDeliveryReceipt(envelope: envelope, context: PassthroughDeliveryReceiptContext(), tx: tx)
             }
         } catch {
             Logger.warn("Dropping invalid envelope \(error)")
         }
+    }
+
+    /// This code path is for server-generated receipts only.
+    func handleDeliveryReceipt(
+        envelope: ServerReceiptEnvelope,
+        context: DeliveryReceiptContext,
+        tx: SDSAnyWriteTransaction
+    ) {
+        // Server-generated delivery receipts don't include a "delivery timestamp".
+        // The envelope's timestamp gives the timestamp of the message this receipt
+        // is for. Unlike UD receipts, it is not meant to be the time the message
+        // was delivered. We use the current time as a good-enough guess. We could
+        // also use the envelope's serverTimestamp.
+        let deliveryTimestamp = NSDate.ows_millisecondTimeStamp()
+        guard SDS.fitsInInt64(deliveryTimestamp) else {
+            owsFailDebug("Invalid timestamp.")
+            return
+        }
+
+        let earlyReceiptTimestamps = receiptManager.processDeliveryReceipts(
+            from: envelope.sourceServiceId,
+            recipientDeviceId: envelope.sourceDeviceId,
+            sentTimestamps: [ envelope.timestamp ],
+            deliveryTimestamp: deliveryTimestamp,
+            context: context,
+            tx: tx
+        )
+
+        recordEarlyReceipts(
+            receiptType: .delivery,
+            senderServiceId: envelope.sourceServiceId,
+            senderDeviceId: envelope.sourceDeviceId,
+            associatedMessageTimestamps: earlyReceiptTimestamps,
+            actionTimestamp: deliveryTimestamp,
+            tx: tx
+        )
     }
 
     /// Called when we've finished processing an envelope.
@@ -1054,6 +1090,94 @@ extension OWSMessageManager {
             case .none:
                 owsFailDebug("typingMessage has unexpected action")
             }
+        }
+    }
+
+    /// This code path is for UD receipts.
+    @objc
+    func handleIncomingEnvelope(
+        _ envelope: DecryptedIncomingEnvelope,
+        receiptMessage: SSKProtoReceiptMessage,
+        context: DeliveryReceiptContext,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard let receiptType = receiptMessage.type else {
+            owsFailDebug("Missing type for receipt message.")
+            return
+        }
+
+        let sentTimestamps = receiptMessage.timestamp
+        for sentTimestamp in sentTimestamps {
+            guard SDS.fitsInInt64(sentTimestamp) else {
+                owsFailDebug("Invalid timestamp.")
+                return
+            }
+        }
+
+        let earlyTimestamps: [UInt64]
+        switch receiptType {
+        case .delivery:
+            earlyTimestamps = receiptManager.processDeliveryReceipts(
+                from: envelope.sourceAci,
+                recipientDeviceId: envelope.sourceDeviceId,
+                sentTimestamps: sentTimestamps,
+                deliveryTimestamp: envelope.timestamp,
+                context: context,
+                tx: tx
+            )
+        case .read:
+            earlyTimestamps = receiptManager.processReadReceipts(
+                from: envelope.sourceAci,
+                recipientDeviceId: envelope.sourceDeviceId,
+                sentTimestamps: sentTimestamps,
+                readTimestamp: envelope.timestamp,
+                tx: tx
+            )
+        case .viewed:
+            earlyTimestamps = receiptManager.processViewedReceipts(
+                from: envelope.sourceAci,
+                recipientDeviceId: envelope.sourceDeviceId,
+                sentTimestamps: sentTimestamps,
+                viewedTimestamp: envelope.timestamp,
+                tx: tx
+            )
+        }
+
+        recordEarlyReceipts(
+            receiptType: receiptType,
+            senderServiceId: envelope.sourceAci,
+            senderDeviceId: envelope.sourceDeviceId,
+            associatedMessageTimestamps: earlyTimestamps,
+            actionTimestamp: envelope.timestamp,
+            tx: tx
+        )
+    }
+
+    /// Records early receipts for a set of message timestamps.
+    ///
+    /// - Parameter associatedMessageTimestamps: A list of message timestamps
+    /// that may need to be marked viewed/read/delivered after they are
+    /// received.
+    ///
+    /// - Parameter actionTimestamp: The timestamp when the other user
+    /// viewed/read/received the message.
+    private func recordEarlyReceipts(
+        receiptType: SSKProtoReceiptMessageType,
+        senderServiceId: ServiceId,
+        senderDeviceId: UInt32,
+        associatedMessageTimestamps: [UInt64],
+        actionTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        for associatedMessageTimestamp in associatedMessageTimestamps {
+            earlyMessageManager.recordEarlyReceiptForOutgoingMessage(
+                type: receiptType,
+                senderServiceId: senderServiceId,
+                senderDeviceId: senderDeviceId,
+                timestamp: actionTimestamp,
+                associatedMessageTimestamp: associatedMessageTimestamp,
+                tx: tx
+            )
         }
     }
 

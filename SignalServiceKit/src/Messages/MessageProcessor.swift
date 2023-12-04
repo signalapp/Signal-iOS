@@ -438,7 +438,7 @@ public class MessageProcessor: NSObject {
             messageManager.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .serverReceipt(let serverReceiptEnvelope):
-            messageManager.handleDeliveryReceipt(serverReceiptEnvelope, context: context, transaction: transaction)
+            messageManager.handleDeliveryReceipt(envelope: serverReceiptEnvelope, context: context, tx: transaction)
             return nil
         }
     }

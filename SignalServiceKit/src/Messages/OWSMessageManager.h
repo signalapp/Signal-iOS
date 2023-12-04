@@ -42,10 +42,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
                                     envelope:(SSKProtoEnvelope *)envelope
                                  transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)handleDeliveryReceipt:(ServerReceiptEnvelope *)envelope
-                      context:(id<DeliveryReceiptContext>)context
-                  transaction:(SDSAnyWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END
