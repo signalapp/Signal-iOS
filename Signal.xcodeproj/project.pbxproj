@@ -1914,7 +1914,6 @@
 		F9C5CC3E289453B300548EEE /* OWSMessageContentJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C94E289453B100548EEE /* OWSMessageContentJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC3F289453B300548EEE /* OWSMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C94F289453B100548EEE /* OWSMessageManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC40289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C950289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CC41289453B300548EEE /* OWSMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C951289453B100548EEE /* OWSMessageManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC42289453B300548EEE /* OWSUnknownProtocolVersionMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C952289453B100548EEE /* OWSUnknownProtocolVersionMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC43289453B300548EEE /* OWSOutgoingSenderKeyDistributionMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C953289453B100548EEE /* OWSOutgoingSenderKeyDistributionMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC44289453B300548EEE /* MessageSender+SenderKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C954289453B100548EEE /* MessageSender+SenderKey.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1984,7 +1983,6 @@
 		F9C5CC89289453B300548EEE /* OWSOutgoingSenderKeyDistributionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C99C289453B100548EEE /* OWSOutgoingSenderKeyDistributionMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C99D289453B100548EEE /* EarlyMessageManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC8B289453B300548EEE /* OWSUnknownProtocolVersionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C99E289453B100548EEE /* OWSUnknownProtocolVersionMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CC8C289453B300548EEE /* OWSMessageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C99F289453B100548EEE /* OWSMessageManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC8D289453B300548EEE /* OWSMessageContentJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9A0289453B100548EEE /* OWSMessageContentJob.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC8E289453B300548EEE /* SSKProtos.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9A3289453B100548EEE /* SSKProtos.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9A4289453B100548EEE /* SignalIOS.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4628,7 +4626,6 @@
 		F9C5C94E289453B100548EEE /* OWSMessageContentJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageContentJob.h; sourceTree = "<group>"; };
 		F9C5C94F289453B100548EEE /* OWSMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageManager.swift; sourceTree = "<group>"; };
 		F9C5C950289453B100548EEE /* OWSAddToProfileWhitelistOfferMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSAddToProfileWhitelistOfferMessage+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C951289453B100548EEE /* OWSMessageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageManager.m; sourceTree = "<group>"; };
 		F9C5C952289453B100548EEE /* OWSUnknownProtocolVersionMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUnknownProtocolVersionMessage.h; sourceTree = "<group>"; };
 		F9C5C953289453B100548EEE /* OWSOutgoingSenderKeyDistributionMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingSenderKeyDistributionMessage.h; sourceTree = "<group>"; };
 		F9C5C954289453B100548EEE /* MessageSender+SenderKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MessageSender+SenderKey.swift"; sourceTree = "<group>"; };
@@ -4698,7 +4695,6 @@
 		F9C5C99C289453B100548EEE /* OWSOutgoingSenderKeyDistributionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingSenderKeyDistributionMessage.m; sourceTree = "<group>"; };
 		F9C5C99D289453B100548EEE /* EarlyMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EarlyMessageManager.swift; sourceTree = "<group>"; };
 		F9C5C99E289453B100548EEE /* OWSUnknownProtocolVersionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUnknownProtocolVersionMessage.m; sourceTree = "<group>"; };
-		F9C5C99F289453B100548EEE /* OWSMessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageManager.h; sourceTree = "<group>"; };
 		F9C5C9A0289453B100548EEE /* OWSMessageContentJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageContentJob.m; sourceTree = "<group>"; };
 		F9C5C9A3289453B100548EEE /* SSKProtos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKProtos.swift; sourceTree = "<group>"; };
 		F9C5C9A4289453B100548EEE /* SignalIOS.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOS.pb.swift; sourceTree = "<group>"; };
@@ -9217,8 +9213,6 @@
 				F9C5C983289453B100548EEE /* OWSMessageDecrypter.swift */,
 				F9C5C955289453B100548EEE /* OWSMessageHandler.h */,
 				F9C5C99A289453B100548EEE /* OWSMessageHandler.m */,
-				F9C5C99F289453B100548EEE /* OWSMessageManager.h */,
-				F9C5C951289453B100548EEE /* OWSMessageManager.m */,
 				F9C5C94F289453B100548EEE /* OWSMessageManager.swift */,
 				F9C5C973289453B100548EEE /* OWSMessageSend.swift */,
 				F9C5C97C289453B100548EEE /* OWSOutgoingNullMessage.h */,
@@ -10345,7 +10339,6 @@
 				F9C5CDCF289453B400548EEE /* OWSMath.h in Headers */,
 				F9C5CC3E289453B300548EEE /* OWSMessageContentJob.h in Headers */,
 				F9C5CC45289453B300548EEE /* OWSMessageHandler.h in Headers */,
-				F9C5CC8C289453B300548EEE /* OWSMessageManager.h in Headers */,
 				F9C5CD92289453B300548EEE /* OWSMultipart.h in Headers */,
 				F9C5CDD3289453B400548EEE /* OWSOperation.h in Headers */,
 				F9C5CC2D289453B300548EEE /* OWSOutgoingCallMessage.h in Headers */,
@@ -12903,7 +12896,6 @@
 				F9C5CC8D289453B300548EEE /* OWSMessageContentJob.m in Sources */,
 				F9C5CC71289453B300548EEE /* OWSMessageDecrypter.swift in Sources */,
 				F9C5CC87289453B300548EEE /* OWSMessageHandler.m in Sources */,
-				F9C5CC41289453B300548EEE /* OWSMessageManager.m in Sources */,
 				F9C5CC3F289453B300548EEE /* OWSMessageManager.swift in Sources */,
 				F9C5CC61289453B300548EEE /* OWSMessageSend.swift in Sources */,
 				F9C5CE5E289453B400548EEE /* OWSMockSyncManager.swift in Sources */,

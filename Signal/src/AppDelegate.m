@@ -19,7 +19,6 @@
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMath.h>
-#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StickerInfo.h>

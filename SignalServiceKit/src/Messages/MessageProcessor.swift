@@ -431,7 +431,7 @@ public class MessageProcessor: NSObject {
             )
             return nil
         case .messageManagerRequest(let messageManagerRequest):
-            messageManager.handle(messageManagerRequest, context: context, transaction: transaction)
+            messageManager.handleRequest(messageManagerRequest, context: context, tx: transaction)
             messageManager.finishProcessingEnvelope(messageManagerRequest.decryptedEnvelope, tx: transaction)
             return nil
         case .clearPlaceholdersOnly(let decryptedEnvelope):
