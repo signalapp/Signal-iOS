@@ -27,21 +27,24 @@ class MessageSendLogObjC: NSObject {
 }
 
 public class MessageSendLog {
-    private let databaseStorage: SDSDatabaseStorage
+    private let db: DB
     private let dateProvider: DateProvider
 
     public init(
-        databaseStorage: SDSDatabaseStorage,
+        db: DB,
         dateProvider: @escaping DateProvider
     ) {
-        self.databaseStorage = databaseStorage
+        self.db = db
         self.dateProvider = dateProvider
     }
 
-    private static let payloadLifetime = RemoteConfig.messageSendLogEntryLifetime
+    private enum Constants {
+        static let payloadLifetime: TimeInterval = RemoteConfig.messageSendLogEntryLifetime
+        static let cleanupLimit = 25
+    }
 
     private func currentExpiredPayloadTimestamp() -> UInt64 {
-        dateProvider().addingTimeInterval(-Self.payloadLifetime).ows_millisecondsSince1970
+        dateProvider().addingTimeInterval(-Constants.payloadLifetime).ows_millisecondsSince1970
     }
 
     struct Payload: Codable, FetchableRecord, MutablePersistableRecord {
@@ -359,25 +362,38 @@ public class MessageSendLog {
         }
     }
 
-    public func schedulePeriodicCleanup(on scheduler: Scheduler) {
+    public func cleanUpAndScheduleNextOccurrence(on scheduler: Scheduler) {
         scheduler.async {
-            self._performPeriodicCleanup(on: scheduler)
+            do {
+                try self.cleanUpExpiredEntries()
+            } catch {
+                Logger.warn("Couldn't prune stale MSL entries \(error)")
+            }
+
+            scheduler.asyncAfter(wallDeadline: .now() + kDayInterval) { [weak self] in
+                self?.cleanUpAndScheduleNextOccurrence(on: scheduler)
+            }
         }
     }
 
-    private func _performPeriodicCleanup(on scheduler: Scheduler) {
-        let expirationTimestamp = currentExpiredPayloadTimestamp()
-        do {
-            try databaseStorage.write { tx in
-                let db = tx.unwrapGrdbWrite.database
-                return try Payload.filter(Column("sentTimestamp") < expirationTimestamp).deleteAll(db)
+    public func cleanUpExpiredEntries() throws {
+        let cutoffTimestamp = currentExpiredPayloadTimestamp()
+        let fetchRequest = Payload
+            .select(Column("payloadId"), as: Int64.self)
+            .filter(Column("sentTimestamp") < cutoffTimestamp)
+            .limit(Constants.cleanupLimit)
+        let count = try TimeGatedBatch.processAll(db: db) { tx in
+            do {
+                let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database
+                let payloadIds = try fetchRequest.fetchAll(db)
+                try Payload.filter(keys: payloadIds).deleteAll(db)
+                return payloadIds.count
+            } catch {
+                throw error.grdbErrorForLogging
             }
-        } catch {
-            Logger.warn("Couldn't prune stale MSL entries \(error)")
         }
-
-        scheduler.asyncAfter(wallDeadline: .now() + kDayInterval) {
-            self._performPeriodicCleanup(on: scheduler)
+        if count > 0 {
+            Logger.info("Deleted \(count) stale MSL entries")
         }
     }
 }

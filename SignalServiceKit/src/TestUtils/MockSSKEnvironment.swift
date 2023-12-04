@@ -169,7 +169,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             udManager: udManager,
             websocketFactory: webSocketFactory
         )
-        let messageSendLog = MessageSendLog(databaseStorage: databaseStorage, dateProvider: { Date() })
+        let messageSendLog = MessageSendLog(db: dependenciesBridge.db, dateProvider: { Date() })
 
         super.init(
             contactsManager: contactsManager,

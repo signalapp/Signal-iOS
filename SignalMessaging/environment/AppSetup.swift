@@ -134,7 +134,7 @@ public class AppSetup {
         let messageManager = OWSMessageManager()
         let remoteConfigManager = RemoteConfigManagerImpl(
             appExpiry: appExpiry,
-            db: DependenciesBridge.shared.db,
+            db: dependenciesBridge.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
@@ -175,7 +175,7 @@ public class AppSetup {
             websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(
-            databaseStorage: databaseStorage,
+            db: dependenciesBridge.db,
             dateProvider: { Date() }
         )
 

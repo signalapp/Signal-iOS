@@ -309,6 +309,12 @@ extension AppDelegate {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            // This runs every 24 hours or so.
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            messageSendLog.cleanUpAndScheduleNextOccurrence(on: DispatchQueue.global(qos: .utility))
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
         }
 

@@ -41,11 +41,6 @@ enum LaunchJobs {
             // should be marked as failures.
             FailedAttachmentDownloadsJob().runSync(databaseStorage: databaseStorage)
 
-            // Kick off a low priority trim of the MSL.
-            // This will reschedule itself on a background queue ~24h or so.
-            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-            messageSendLog.schedulePeriodicCleanup(on: DispatchQueue.sharedUtility)
-
             return .value(())
         }.done(on: DispatchQueue.main) {
             backgroundTask.end()
