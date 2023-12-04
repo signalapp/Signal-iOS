@@ -648,7 +648,7 @@ extension OWSMessageManager {
         // If we can and should try to "process" (e.g. generate user-visible
         // interactions) for the data message, preprocessDataMessage will return a
         // thread. If not, we should abort immediately.
-        guard let thread = preprocessDataMessage(dataMessage, envelope: envelope.envelope, transaction: tx) else {
+        guard let thread = preprocessDataMessage(dataMessage, envelope: envelope, tx: tx) else {
             return
         }
 
@@ -695,6 +695,57 @@ extension OWSMessageManager {
             authedAccount: .implicit(),
             transaction: tx
         )
+    }
+
+    /// Returns a thread reference if message processing should proceed.
+    ///
+    /// Message processing involves generating user-visible interactions, and we
+    /// don't do that if there's an invalid group context, or if there's a valid
+    /// group context but the sender/local user aren't in the group.
+    private func preprocessDataMessage(
+        _ dataMessage: SSKProtoDataMessage,
+        envelope: DecryptedIncomingEnvelope,
+        tx: SDSAnyWriteTransaction
+    ) -> TSThread? {
+        guard let groupContext = dataMessage.groupV2 else {
+            let contactAddress = SignalServiceAddress(envelope.sourceAci)
+            return TSContactThread.getOrCreateThread(withContactAddress: contactAddress, transaction: tx)
+        }
+        guard let masterKey = groupContext.masterKey else {
+            owsFailDebug("Missing masterKey.")
+            return nil
+        }
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+        } catch {
+            owsFailDebug("Invalid group context.")
+            return nil
+        }
+        guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: tx) else {
+            owsFailDebug("Unknown v2 group.")
+            return nil
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("invalid group model.")
+            return nil
+        }
+        guard groupContext.hasRevision, groupModel.revision >= groupContext.revision else {
+            owsFailDebug("Group v2 revision larger than \(groupModel.revision) in \(groupContextInfo.groupId)")
+            return nil
+        }
+        guard groupThread.isLocalUserFullMember else {
+            // We don't want to process user-visible messages for groups in which we
+            // are a pending member.
+            Logger.info("Ignoring messages for invited group or left group.")
+            return nil
+        }
+        guard groupModel.groupMembership.isFullMember(envelope.sourceAci) else {
+            // We don't want to process group messages for non-members.
+            Logger.info("Ignoring message from not in group user \(envelope.sourceAci)")
+            return nil
+        }
+        return groupThread
     }
 
     private func processFlaglessDataMessage(
@@ -1488,11 +1539,7 @@ extension OWSMessageManager {
             return .invalidEdit
         }
 
-        guard let thread = preprocessDataMessage(
-            dataMessage,
-            envelope: decryptedEnvelope.envelope,
-            transaction: tx
-        ) else {
+        guard let thread = preprocessDataMessage(dataMessage, envelope: decryptedEnvelope, tx: tx) else {
             Logger.warn("Missing edit message thread.")
             return .invalidEdit
         }
