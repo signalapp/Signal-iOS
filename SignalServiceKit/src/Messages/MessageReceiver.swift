@@ -177,14 +177,13 @@ public final class MessageReceiver: Dependencies {
         Logger.info("handling content: \(protoContent.contentDescription)")
 
         switch request.messageType {
-        case .syncMessage:
-            handleIncomingEnvelope(request: request, syncMessage: protoContent.syncMessage!, tx: tx)
+        case .syncMessage(let syncMessage):
+            handleIncomingEnvelope(request: request, syncMessage: syncMessage, tx: tx)
             DependenciesBridge.shared.deviceManager.setHasReceivedSyncMessage(transaction: tx.asV2Write)
-        case .dataMessage:
-            handleIncomingEnvelope(request: request, dataMessage: protoContent.dataMessage!, tx: tx)
-        case .callMessage:
+        case .dataMessage(let dataMessage):
+            handleIncomingEnvelope(request: request, dataMessage: dataMessage, tx: tx)
+        case .callMessage(let callMessage):
             owsAssertDebug(!request.shouldDiscardVisibleMessages)
-            let callMessage = protoContent.callMessage!
             let action = callMessageHandler?.action(
                 for: request.envelope,
                 callMessage: callMessage,
@@ -205,25 +204,18 @@ public final class MessageReceiver: Dependencies {
             @unknown default:
                 Logger.info("Ignoring call message w/ts \(request.decryptedEnvelope.timestamp)")
             }
-        case .typingMessage:
-            handleIncomingEnvelope(request: request, typingMessage: protoContent.typingMessage!, tx: tx)
+        case .typingMessage(let typingMessage):
+            handleIncomingEnvelope(request: request, typingMessage: typingMessage, tx: tx)
         case .nullMessage:
             Logger.info("Received null message.")
-        case .receiptMessage:
-            handleIncomingEnvelope(request: request, receiptMessage: protoContent.receiptMessage!, context: context, tx: tx)
-        case .decryptionErrorMessage:
-            handleIncomingEnvelope(request: request, decryptionErrorMessage: protoContent.decryptionErrorMessage!, tx: tx)
-        case .storyMessage:
-            handleIncomingEnvelope(request: request, storyMessage: protoContent.storyMessage!, tx: tx)
-        case .hasSenderKeyDistributionMessage:
-            // Sender key distribution messages are not mutually exclusive. They can be
-            // included with any message type. However, they're not processed here. They're
-            // processed in the -preprocess phase that occurs post-decryption.
-            //
-            // See: preprocessEnvelope(...)
-            break
-        case .editMessage:
-            let result = handleIncomingEnvelope(request: request, editMessage: protoContent.editMessage!, tx: tx)
+        case .receiptMessage(let receiptMessage):
+            handleIncomingEnvelope(request: request, receiptMessage: receiptMessage, context: context, tx: tx)
+        case .decryptionErrorMessage(let decryptionErrorMessage):
+            handleIncomingEnvelope(request: request, decryptionErrorMessage: decryptionErrorMessage, tx: tx)
+        case .storyMessage(let storyMessage):
+            handleIncomingEnvelope(request: request, storyMessage: storyMessage, tx: tx)
+        case .editMessage(let editMessage):
+            let result = handleIncomingEnvelope(request: request, editMessage: editMessage, tx: tx)
             switch result {
             case .success, .invalidEdit:
                 break
@@ -233,12 +225,14 @@ public final class MessageReceiver: Dependencies {
                     plainTextData: request.plaintextData,
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                    associatedMessageTimestamp: protoContent.editMessage!.targetSentTimestamp,
+                    associatedMessageTimestamp: editMessage.targetSentTimestamp,
                     associatedMessageAuthor: request.decryptedEnvelope.sourceAciObjC,
                     transaction: tx
                 )
             }
-        case .unknown:
+        case .handledElsewhere:
+            break
+        case .none:
             Logger.warn("Ignoring envelope with unknown type.")
         }
     }
@@ -2014,77 +2008,64 @@ extension SSKProtoSyncMessage {
 
 // MARK: -
 
-@objc
-enum OWSMessageManagerMessageType: UInt {
-    case syncMessage
-    case dataMessage
-    case callMessage
-    case typingMessage
+enum MessageReceiverMessageType {
+    case syncMessage(SSKProtoSyncMessage)
+    case dataMessage(SSKProtoDataMessage)
+    case callMessage(SSKProtoCallMessage)
+    case typingMessage(SSKProtoTypingMessage)
     case nullMessage
-    case receiptMessage
-    case decryptionErrorMessage
-    case storyMessage
-    case hasSenderKeyDistributionMessage
-    case editMessage
-    case unknown
+    case receiptMessage(SSKProtoReceiptMessage)
+    case decryptionErrorMessage(Data)
+    case storyMessage(SSKProtoStoryMessage)
+    case editMessage(SSKProtoEditMessage)
+    case handledElsewhere
 }
 
-@objc
-class MessageReceiverRequest: NSObject {
-    @objc
+class MessageReceiverRequest {
     let decryptedEnvelope: DecryptedIncomingEnvelope
-
-    @objc
     let envelope: SSKProtoEnvelope
-
-    @objc
     let plaintextData: Data
-
-    @objc
     let wasReceivedByUD: Bool
-
-    @objc
     let serverDeliveryTimestamp: UInt64
-
-    @objc
     let shouldDiscardVisibleMessages: Bool
-
-    @objc
     let protoContent: SSKProtoContent
-
-    @objc
-    var messageType: OWSMessageManagerMessageType {
-        if protoContent.syncMessage != nil {
-            return .syncMessage
+    var messageType: MessageReceiverMessageType? {
+        if let syncMessage = protoContent.syncMessage {
+            return .syncMessage(syncMessage)
         }
-        if protoContent.dataMessage != nil {
-            return .dataMessage
+        if let dataMessage = protoContent.dataMessage {
+            return .dataMessage(dataMessage)
         }
-        if protoContent.callMessage != nil {
-            return .callMessage
+        if let callMessage = protoContent.callMessage {
+            return .callMessage(callMessage)
         }
-        if protoContent.typingMessage != nil {
-            return .typingMessage
+        if let typingMessage = protoContent.typingMessage {
+            return .typingMessage(typingMessage)
         }
         if protoContent.nullMessage != nil {
             return .nullMessage
         }
-        if protoContent.receiptMessage != nil {
-            return .receiptMessage
+        if let receiptMessage = protoContent.receiptMessage {
+            return .receiptMessage(receiptMessage)
         }
-        if protoContent.decryptionErrorMessage != nil {
-            return .decryptionErrorMessage
+        if let decryptionErrorMessage = protoContent.decryptionErrorMessage {
+            return .decryptionErrorMessage(decryptionErrorMessage)
         }
-        if protoContent.storyMessage != nil {
-            return .storyMessage
+        if let storyMessage = protoContent.storyMessage {
+            return .storyMessage(storyMessage)
         }
         if protoContent.hasSenderKeyDistributionMessage {
-            return .hasSenderKeyDistributionMessage
+            // Sender key distribution messages are not mutually exclusive. They can be
+            // included with any message type. However, they're not processed here. They're
+            // processed in the -preprocess phase that occurs post-decryption.
+            //
+            // See: preprocessEnvelope(...)
+            return .handledElsewhere
         }
-        if protoContent.editMessage != nil {
-            return .editMessage
+        if let editMessage = protoContent.editMessage {
+            return .editMessage(editMessage)
         }
-        return .unknown
+        return nil
     }
 
     enum BuildResult {
