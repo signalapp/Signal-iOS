@@ -40,7 +40,6 @@ class MessageReceiptSet: NSObject, Codable {
 }
 
 extension OWSOutgoingReceiptManager {
-    @objc
     func enqueueDeliveryReceipt(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
         messageUniqueId: String?,

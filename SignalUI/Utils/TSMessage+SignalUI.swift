@@ -59,7 +59,7 @@ public extension TSMessage {
 
                         if let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
                             _ = TSMessage.tryToRemotelyDeleteMessage(
-                                fromAuthor: AciObjC(aci),
+                                fromAuthor: aci,
                                 sentAtTimestamp: latestMessage.timestamp,
                                 threadUniqueId: latestThread.uniqueId,
                                 serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.

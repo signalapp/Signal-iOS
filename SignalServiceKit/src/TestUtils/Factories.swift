@@ -327,7 +327,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         return .none
     }
 
-    public var authorAciBuilder: (TSThread) -> AciObjC = { thread in
+    public var authorAciBuilder: (TSThread) -> Aci = { thread in
         return { () -> SignalServiceAddress in
             switch thread {
             case let contactThread as TSContactThread:
@@ -339,7 +339,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                 owsFailDebug("unexpected thread type")
                 return CommonGenerator.address()
             }
-        }().aci.map { AciObjC($0) }!
+        }().aci!
     }
 
     public var sourceDeviceIdBuilder: () -> UInt32 = {
@@ -370,7 +370,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         return nil
     }
 
-    public var serverTimestampBuilder: () -> NSNumber? = {
+    public var serverTimestampBuilder: () -> UInt64? = {
         return nil
     }
 
@@ -390,11 +390,11 @@ public class IncomingMessageFactory: NSObject, Factory {
         return false
     }
 
-    public var storyAuthorAciBuilder: () -> AciObjC? = {
+    public var storyAuthorAciBuilder: () -> Aci? = {
         nil
     }
 
-    public var storyTimestampBuilder: () -> NSNumber? = {
+    public var storyTimestampBuilder: () -> UInt64? = {
         nil
     }
 

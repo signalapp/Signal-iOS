@@ -11,7 +11,7 @@ import LibSignalClient
 /// non-overlapping representation which can also be used for message drafts in the composer.
 ///
 /// This object must be further applied to NSAttributedString to actually display mentions and styles.
-@objcMembers
+@objc
 public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
 
     // Limit to up to 250 ranges per message.
@@ -27,6 +27,8 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
 
     /// Mentions can overlap with styles but not with each other.
     public let mentions: [NSRange: Aci]
+
+    @objc
     public var hasMentions: Bool { !mentions.isEmpty }
 
     /// Sorted from lowest location to highest location
@@ -63,6 +65,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         self.init(mentions: mentions, orderedMentions: orderedMentions, collapsedStyles: collapsedStyles)
     }
 
+    @objc
     public convenience init(protos: [SSKProtoBodyRange]) {
         var mentions = [NSRange: Aci]()
         var styles = [NSRangedValue<SingleStyle>]()
@@ -411,6 +414,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     // MARK: Proto conversion
 
     /// If bodyLength is provided (is nonnegative), drops any ranges that exceed the length.
+    @objc
     func toProtoBodyRanges(bodyLength: Int = -1) -> [SSKProtoBodyRange] {
         let maxBodyLength = bodyLength < 0 ? nil : bodyLength
         var protos = [SSKProtoBodyRange]()

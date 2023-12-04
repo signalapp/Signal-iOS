@@ -637,7 +637,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
             let messageBuilder = TSIncomingMessageBuilder.builder(
                 thread: thread,
                 timestamp: incomingMessage.dateReceived,
-                authorAci: .init(authorAci),
+                authorAci: authorAci,
                 // TODO: this needs to be added to the proto
                 sourceDeviceId: 1,
                 messageBody: standardMessage.text?.body,

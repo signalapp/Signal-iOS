@@ -238,8 +238,7 @@ extension OWSMessageManager {
         }
     }
 
-    @objc(groupIdForDataMessage:)
-    func groupId(for dataMessage: SSKProtoDataMessage) -> Data? {
+    private func groupId(for dataMessage: SSKProtoDataMessage) -> Data? {
         guard let groupContext = dataMessage.groupV2 else {
             return nil
         }
@@ -323,7 +322,7 @@ extension OWSMessageManager {
                     let result = ReactionManager.processIncomingReaction(
                         reaction,
                         thread: thread,
-                        reactor: decryptedEnvelope.sourceAciObjC,
+                        reactor: decryptedEnvelope.sourceAci,
                         timestamp: sent.timestamp,
                         serverTimestamp: decryptedEnvelope.serverTimestamp,
                         expiresInSeconds: dataMessage.expireTimer,
@@ -347,7 +346,7 @@ extension OWSMessageManager {
                     }
                 } else if let delete = dataMessage.delete {
                     let result = TSMessage.tryToRemotelyDeleteMessage(
-                        fromAuthor: decryptedEnvelope.sourceAciObjC,
+                        fromAuthor: decryptedEnvelope.sourceAci,
                         sentAtTimestamp: delete.targetSentTimestamp,
                         threadUniqueId: transcript.thread?.uniqueId,
                         serverTimestamp: decryptedEnvelope.serverTimestamp,
@@ -570,6 +569,401 @@ extension OWSMessageManager {
             blockedAcis: blockedAcis,
             blockedGroupIds: Set(blocked.groupIds),
             tx: tx
+        )
+    }
+
+    @objc
+    func handleIncomingEnvelope(
+        _ envelope: DecryptedIncomingEnvelope,
+        dataMessage: SSKProtoDataMessage,
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        shouldDiscardVisibleMessages: Bool,
+        tx: SDSAnyWriteTransaction
+    ) {
+        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
+            Logger.info("timestamp: \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp), \(Self.descriptionForDataMessageContents(dataMessage))")
+        }
+
+        if let groupId = self.groupId(for: dataMessage) {
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
+
+            if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
+                Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in group \(groupId)")
+                return
+            }
+        }
+
+        // This prevents replay attacks by the service.
+        guard !dataMessage.hasTimestamp || dataMessage.timestamp == envelope.timestamp else {
+            owsFailDebug("Ignoring message with non-matching data message timestamp from \(envelope.sourceAci)")
+            return
+        }
+
+        if let profileKey = dataMessage.profileKey {
+            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, tx: tx)
+        }
+
+        // Pre-process the data message. For v1 and v2 group messages this involves
+        // checking group state, possibly creating the group thread, possibly
+        // responding to group info requests, etc.
+        //
+        // If we can and should try to "process" (e.g. generate user-visible
+        // interactions) for the data message, preprocessDataMessage will return a
+        // thread. If not, we should abort immediately.
+        guard let thread = preprocessDataMessage(dataMessage, envelope: envelope.envelope, transaction: tx) else {
+            return
+        }
+
+        var message: TSIncomingMessage?
+        if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.endSession.rawValue) != 0 {
+            handleIncomingEndSessionEnvelope(envelope, withDataMessage: dataMessage, tx: tx)
+        } else if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
+            updateDisappearingMessageConfiguration(envelope: envelope, dataMessage: dataMessage, thread: thread, tx: tx)
+        } else if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.profileKeyUpdate.rawValue) != 0 {
+            // Do nothing, we handle profile keys on all incoming messages above.
+        } else {
+            message = processFlaglessDataMessage(
+                dataMessage,
+                envelope: envelope,
+                thread: thread,
+                plaintextData: plaintextData,
+                wasReceivedByUD: wasReceivedByUD,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                tx: tx
+            )
+        }
+
+        // Send delivery receipts for "valid data" messages received via UD.
+        if wasReceivedByUD {
+            outgoingReceiptManager.enqueueDeliveryReceipt(for: envelope, messageUniqueId: message?.uniqueId, tx: tx)
+        }
+    }
+
+    private func setProfileKeyIfValid(_ profileKey: Data, for aci: Aci, tx: SDSAnyWriteTransaction) {
+        guard profileKey.count == kAES256_KeyByteLength else {
+            owsFailDebug("Invalid profile key length \(profileKey.count) from \(aci)")
+            return
+        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+        if aci == localAci, tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice != false {
+            return
+        }
+        profileManager.setProfileKeyData(
+            profileKey,
+            for: SignalServiceAddress(aci),
+            userProfileWriter: .localUser,
+            authedAccount: .implicit(),
+            transaction: tx
+        )
+    }
+
+    private func processFlaglessDataMessage(
+        _ dataMessage: SSKProtoDataMessage,
+        envelope: DecryptedIncomingEnvelope,
+        thread: TSThread,
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        shouldDiscardVisibleMessages: Bool,
+        tx: SDSAnyWriteTransaction
+    ) -> TSIncomingMessage? {
+        guard !dataMessage.hasRequiredProtocolVersion || dataMessage.requiredProtocolVersion <= SSKProtos.currentProtocolVersion else {
+            owsFailDebug("Unknown protocol version: \(dataMessage.requiredProtocolVersion)")
+            OWSUnknownProtocolVersionMessage(
+                thread: thread,
+                sender: SignalServiceAddress(envelope.sourceAci),
+                protocolVersion: UInt(dataMessage.requiredProtocolVersion)
+            ).anyInsert(transaction: tx)
+            return nil
+        }
+
+        let deviceAddress = "\(envelope.sourceAci).\(envelope.sourceDeviceId)"
+        let messageDescription: String
+        if let groupThread = thread as? TSGroupThread {
+            messageDescription = "Incoming message from \(deviceAddress) in group \(groupThread.groupModel.groupId) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
+        } else {
+            messageDescription = "Incoming message from \(deviceAddress) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
+        }
+
+        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
+            Logger.info(messageDescription)
+        }
+
+        if let reaction = dataMessage.reaction {
+            if DebugFlags.internalLogging || CurrentAppContext().isNSE {
+                Logger.info("Reaction: \(messageDescription)")
+            }
+            let result = ReactionManager.processIncomingReaction(
+                reaction,
+                thread: thread,
+                reactor: envelope.sourceAci,
+                timestamp: envelope.timestamp,
+                serverTimestamp: envelope.serverTimestamp,
+                expiresInSeconds: dataMessage.expireTimer,
+                sentTranscript: nil,
+                transaction: tx
+            )
+            switch result {
+            case .success, .invalidReaction:
+                break
+            case .associatedMessageMissing:
+                earlyMessageManager.recordEarlyEnvelope(
+                    envelope.envelope,
+                    plainTextData: plaintextData,
+                    wasReceivedByUD: wasReceivedByUD,
+                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    associatedMessageTimestamp: reaction.timestamp,
+                    associatedMessageAuthor: AciObjC(aciString: reaction.targetAuthorAci),
+                    transaction: tx
+                )
+            }
+            return nil
+        }
+
+        if let delete = dataMessage.delete {
+            let result = TSMessage.tryToRemotelyDeleteMessage(
+                fromAuthor: envelope.sourceAci,
+                sentAtTimestamp: delete.targetSentTimestamp,
+                threadUniqueId: thread.uniqueId,
+                serverTimestamp: envelope.serverTimestamp,
+                transaction: tx
+            )
+            switch result {
+            case .success:
+                break
+            case .invalidDelete:
+                Logger.warn("Couldn't process invalid remote delete w/ts \(delete.targetSentTimestamp)")
+            case .deletedMessageMissing:
+                earlyMessageManager.recordEarlyEnvelope(
+                    envelope.envelope,
+                    plainTextData: plaintextData,
+                    wasReceivedByUD: wasReceivedByUD,
+                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    associatedMessageTimestamp: delete.targetSentTimestamp,
+                    associatedMessageAuthor: envelope.sourceAciObjC,
+                    transaction: tx
+                )
+            }
+            return nil
+        }
+
+        if shouldDiscardVisibleMessages {
+            // Now that "reactions" and "delete for everyone" have been processed, the
+            // only possible outcome of further processing is a visible message or
+            // group call update, both of which should be discarded.
+            Logger.info("Discarding message w/ts \(envelope.timestamp)")
+            return nil
+        }
+
+        if let groupCallUpdate = dataMessage.groupCallUpdate {
+            guard let groupThread = thread as? TSGroupThread else {
+                Logger.warn("Ignoring group call update for non-group thread")
+                return nil
+            }
+            let pendingTask = Self.buildPendingTask(label: "GroupCallUpdate")
+            callMessageHandler?.receivedGroupCallUpdateMessage(
+                groupCallUpdate,
+                for: groupThread,
+                serverReceivedTimestamp: envelope.timestamp,
+                completion: { pendingTask.complete() }
+            )
+            return nil
+        }
+
+        let body = dataMessage.body
+        let bodyRanges = dataMessage.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: dataMessage.bodyRanges)
+        let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }
+        let quotedMessage = TSQuotedMessage(for: dataMessage, thread: thread, transaction: tx)
+        let contact = OWSContact.contact(for: dataMessage, transaction: tx)
+
+        var linkPreview: OWSLinkPreview?
+        do {
+            linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: dataMessage, body: body, transaction: tx)
+        } catch LinkPreviewError.noPreview {
+            // this is fine
+        } catch {
+            Logger.warn("linkPreviewError: \(error)")
+        }
+
+        var messageSticker: MessageSticker?
+        do {
+            messageSticker = try MessageSticker.buildValidatedMessageSticker(dataMessage: dataMessage, transaction: tx)
+        } catch StickerError.noSticker {
+            // this is fine
+        } catch {
+            Logger.warn("stickerError: \(error)")
+        }
+
+        let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
+        let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
+        let paymentModels = TSPaymentModels.parsePaymentProtos(dataMessage: dataMessage, thread: thread)
+
+        if let paymentModels {
+            paymentsHelper.processIncomingPaymentNotification(
+                thread: thread,
+                paymentNotification: paymentModels.notification,
+                senderAci: envelope.sourceAciObjC,
+                transaction: tx
+            )
+        } else if let payment = dataMessage.payment, let activation = payment.activation {
+            switch activation.type {
+            case .none, .request:
+                paymentsHelper.processIncomingPaymentsActivationRequest(thread: thread, senderAci: envelope.sourceAciObjC, transaction: tx)
+            case .activated:
+                paymentsHelper.processIncomingPaymentsActivatedMessage(thread: thread, senderAci: envelope.sourceAciObjC, transaction: tx)
+            }
+            return nil
+        }
+
+        updateDisappearingMessageConfiguration(envelope: envelope, dataMessage: dataMessage, thread: thread, tx: tx)
+
+        var storyTimestamp: UInt64?
+        var storyAuthorAci: Aci?
+        if let storyContext = dataMessage.storyContext, storyContext.hasSentTimestamp, storyContext.hasAuthorAci {
+            storyTimestamp = storyContext.sentTimestamp
+            storyAuthorAci = Aci.parseFrom(aciString: storyContext.authorAci)
+            Logger.info("Processing storyContext for message w/ts \(envelope.timestamp), storyTimestamp: \(String(describing: storyTimestamp)), authorAci: \(String(describing: storyAuthorAci))")
+            guard storyAuthorAci != nil else {
+                owsFailDebug("Discarding story reply with invalid ACI")
+                return nil
+            }
+        }
+
+        // Legit usage of senderTimestamp when creating an incoming group message
+        // record.
+        //
+        // The builder() factory method requires us to specify every property so
+        // that this will break if we add any new properties.
+        let message = TSIncomingMessageBuilder.builder(
+            thread: thread,
+            timestamp: envelope.timestamp,
+            authorAci: envelope.sourceAci,
+            sourceDeviceId: envelope.sourceDeviceId,
+            messageBody: body,
+            bodyRanges: bodyRanges,
+            attachmentIds: [],
+            editState: .none,
+            expiresInSeconds: dataMessage.expireTimer,
+            quotedMessage: quotedMessage,
+            contactShare: contact,
+            linkPreview: linkPreview,
+            messageSticker: messageSticker,
+            serverTimestamp: envelope.serverTimestamp,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            serverGuid: serverGuid?.uuidString.lowercased(),
+            wasReceivedByUD: wasReceivedByUD,
+            isViewOnceMessage: isViewOnceMessage,
+            storyAuthorAci: storyAuthorAci,
+            storyTimestamp: storyTimestamp,
+            storyReactionEmoji: nil,
+            giftBadge: giftBadge,
+            paymentNotification: paymentModels?.notification
+        ).build()
+
+        guard message.shouldBeSaved else {
+            owsFailDebug("We should be able to save all incoming messages.")
+            return nil
+        }
+
+        // Typically `hasRenderableContent` will depend on whether or not the
+        // message has any attachmentIds. However, because the message is partially
+        // built and doesn't have the attachments yet, we check for attachments
+        // explicitly. Story replies cannot have attachments, so we can bail on
+        // them here immediately.
+        guard message.hasRenderableContent() || (!dataMessage.attachments.isEmpty && !message.isStoryReply) else {
+            Logger.warn("Ignoring empty: \(messageDescription)")
+            return nil
+        }
+
+        if message.giftBadge != nil, thread.isGroupThread {
+            owsFailDebug("Ignoring gift sent to group.")
+            return nil
+        }
+
+        // Check for any placeholders inserted because of a previously
+        // undecryptable message. The sender may have resent the message. If so, we
+        // should swap it in place of the placeholder.
+        message.insertOrReplacePlaceholder(from: SignalServiceAddress(envelope.sourceAci), transaction: tx)
+
+        // Inserting the message may have modified the thread on disk, so reload
+        // it. For example, we may have marked the thread as visible.
+        thread.anyReload(transaction: tx)
+
+        let attachmentPointers = TSAttachmentPointer.attachmentPointers(
+            fromProtos: dataMessage.attachments,
+            albumMessage: message
+        )
+        if !attachmentPointers.isEmpty {
+            var attachmentIds = message.attachmentIds
+            for attachmentPointer in attachmentPointers {
+                attachmentPointer.anyInsert(transaction: tx)
+                attachmentIds.append(attachmentPointer.uniqueId)
+            }
+            message.anyUpdateIncomingMessage(transaction: tx) { message in
+                message.attachmentIds = attachmentIds
+            }
+        }
+
+        owsAssertDebug(message.hasRenderableContent())
+
+        earlyMessageManager.applyPendingMessages(for: message, transaction: tx)
+
+        // Any messages sent from the current user - from this device or another -
+        // should be automatically marked as read.
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if envelope.sourceAci == tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
+            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx)
+            owsFailDebug("Incoming messages from yourself aren't supported.")
+            // Don't send a read receipt for messages sent by ourselves.
+            message.markAsRead(
+                atTimestamp: envelope.timestamp,
+                thread: thread,
+                circumstance: hasPendingMessageRequest ? .onLinkedDeviceWhilePendingMessageRequest : .onLinkedDevice,
+                shouldClearNotifications: false, // not required, since no notifications if sent by local
+                transaction: tx
+            )
+        }
+
+        attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(message, transaction: tx)
+        notificationsManager.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
+
+        if CurrentAppContext().isMainApp {
+            DispatchQueue.main.async {
+                Self.typingIndicatorsImpl.didReceiveIncomingMessage(
+                    inThread: thread,
+                    senderAci: envelope.sourceAciObjC,
+                    deviceId: envelope.sourceDeviceId
+                )
+            }
+        }
+
+        return nil
+    }
+
+    private func updateDisappearingMessageConfiguration(
+        envelope: DecryptedIncomingEnvelope,
+        dataMessage: SSKProtoDataMessage,
+        thread: TSThread,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard let contactThread = thread as? TSContactThread else {
+            return
+        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            owsFailDebug("Not registered.")
+            return
+        }
+        GroupManager.remoteUpdateDisappearingMessages(
+            withContactThread: contactThread,
+            disappearingMessageToken: DisappearingMessageToken.token(forProtoExpireTimer: dataMessage.expireTimer),
+            changeAuthor: envelope.sourceAciObjC,
+            localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
+            transaction: tx
         )
     }
 
@@ -1010,8 +1404,7 @@ extension OWSMessageManager {
         }
     }
 
-    @objc
-    func handleIncomingEndSessionEnvelope(
+    private func handleIncomingEndSessionEnvelope(
         _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withDataMessage dataMessage: SSKProtoDataMessage,
         tx: SDSAnyWriteTransaction
