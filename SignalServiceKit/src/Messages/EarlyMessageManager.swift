@@ -507,7 +507,7 @@ public class EarlyMessageManager: NSObject {
                 continue
             }
 
-            Self.messageManager.processEnvelope(
+            Self.messageReceiver.processEnvelope(
                 earlyEnvelope.envelope,
                 plaintextData: plaintextData,
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,

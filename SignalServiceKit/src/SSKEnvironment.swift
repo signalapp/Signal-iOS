@@ -36,7 +36,7 @@ public class SSKEnvironment: NSObject {
     public let linkPreviewManagerRef: OWSLinkPreviewManager
     public let pendingReceiptRecorderRef: PendingReceiptRecorder
     public let profileManagerRef: ProfileManagerProtocol
-    public let messageManagerRef: OWSMessageManager
+    public let messageReceiverRef: MessageReceiver
     public let blockingManagerRef: BlockingManager
     public let remoteConfigManagerRef: RemoteConfigManager
     public let udManagerRef: OWSUDManager
@@ -94,7 +94,7 @@ public class SSKEnvironment: NSObject {
         pendingReceiptRecorder: PendingReceiptRecorder,
         profileManager: ProfileManagerProtocol,
         networkManager: NetworkManager,
-        messageManager: OWSMessageManager,
+        messageReceiver: MessageReceiver,
         blockingManager: BlockingManager,
         remoteConfigManager: RemoteConfigManager,
         aciSignalProtocolStore: SignalProtocolStore,
@@ -152,7 +152,7 @@ public class SSKEnvironment: NSObject {
         self.pendingReceiptRecorderRef = pendingReceiptRecorder
         self.profileManagerRef = profileManager
         self.networkManagerRef = networkManager
-        self.messageManagerRef = messageManager
+        self.messageReceiverRef = messageReceiver
         self.blockingManagerRef = blockingManager
         self.remoteConfigManagerRef = remoteConfigManager
         self.aciSignalProtocolStoreRef = aciSignalProtocolStore

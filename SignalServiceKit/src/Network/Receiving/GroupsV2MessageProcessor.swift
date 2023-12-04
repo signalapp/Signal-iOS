@@ -567,7 +567,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             } else {
                 // The forced unwraps are checked in `discardMode`, so they can't fail.
                 // TODO: Refactor so that the compiler enforces the above statement.
-                self.messageManager.processEnvelope(
+                self.messageReceiver.processEnvelope(
                     jobInfo.envelope!,
                     plaintextData: job.plaintextData!,
                     wasReceivedByUD: job.wasReceivedByUD,

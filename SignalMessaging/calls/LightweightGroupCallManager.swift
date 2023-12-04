@@ -441,7 +441,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             creatorAci != localAci
         else { return }
 
-        notificationPresenter?.notifyUser(
+        notificationPresenter.notifyUser(
             forPreviewableInteraction: groupCallMessage,
             thread: groupThread,
             wantsSound: true,

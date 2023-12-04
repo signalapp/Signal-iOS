@@ -131,7 +131,7 @@ public class AppSetup {
         let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
-        let messageManager = OWSMessageManager()
+        let messageReceiver = MessageReceiver()
         let remoteConfigManager = RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             db: dependenciesBridge.db,
@@ -194,7 +194,7 @@ public class AppSetup {
             pendingReceiptRecorder: pendingReceiptRecorder,
             profileManager: profileManager,
             networkManager: networkManager,
-            messageManager: messageManager,
+            messageReceiver: messageReceiver,
             blockingManager: blockingManager,
             remoteConfigManager: remoteConfigManager,
             aciSignalProtocolStore: aciSignalProtocolStore,

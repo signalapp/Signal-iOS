@@ -4177,7 +4177,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
     private static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
         databaseStorage.write { tx in
-            messageManager.processEnvelope(
+            messageReceiver.processEnvelope(
                 envelope,
                 plaintextData: plaintextData,
                 wasReceivedByUD: false,

@@ -216,7 +216,7 @@ class NotificationService: UNNotificationServiceExtension {
                     // Wait until all outgoing messages are sent.
                     ("Pending outgoing message", Self.messageSender.pendingSendsPromise()),
                     // Wait until all sync requests are fulfilled.
-                    ("Pending sync request", OWSMessageManager.pendingTasksPromise())
+                    ("Pending sync request", MessageReceiver.pendingTasksPromise())
                 ]
                 let joinedPromise = Promise.when(resolved: completionPromises.map { (name, promise) in
                     promise.done(on: DispatchQueue.global()) {

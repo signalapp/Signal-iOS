@@ -81,12 +81,14 @@ public extension NSObject {
         SSKEnvironment.shared.messageFetcherJobRef
     }
 
-    final var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManagerRef
+    @nonobjc
+    final var messageReceiver: MessageReceiver {
+        SSKEnvironment.shared.messageReceiverRef
     }
 
-    static var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManagerRef
+    @nonobjc
+    static var messageReceiver: MessageReceiver {
+        SSKEnvironment.shared.messageReceiverRef
     }
 
     @nonobjc
@@ -517,12 +519,14 @@ public extension Dependencies {
         SSKEnvironment.shared.messageFetcherJobRef
     }
 
-    var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManagerRef
+    @nonobjc
+    var messageReceiver: MessageReceiver {
+        SSKEnvironment.shared.messageReceiverRef
     }
 
-    static var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManagerRef
+    @nonobjc
+    static var messageReceiver: MessageReceiver {
+        SSKEnvironment.shared.messageReceiverRef
     }
 
     var messageSender: MessageSender {
@@ -550,12 +554,12 @@ public extension Dependencies {
     }
 
     // This singleton is configured after the environments are created.
-    var notificationsManager: NotificationsProtocol? {
+    var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
     // This singleton is configured after the environments are created.
-    static var notificationsManager: NotificationsProtocol? {
+    static var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
@@ -769,11 +773,11 @@ public extension Dependencies {
         .shared
     }
 
-    var notificationPresenter: NotificationsProtocol? {
+    var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }
 
-    static var notificationPresenter: NotificationsProtocol? {
+    static var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }
 

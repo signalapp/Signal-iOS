@@ -59,9 +59,12 @@ public enum SealedSenderContentHint: Int, Codable, CustomStringConvertible {
 
 // MARK: -
 
-public final class OWSMessageManager: NSObject {
+public final class MessageReceiver: Dependencies {
 
-    private static let pendingTasks = PendingTasks(label: "messageManager")
+    public init() {
+    }
+
+    private static let pendingTasks = PendingTasks(label: "messageReceiver")
 
     public static func pendingTasksPromise() -> Promise<Void> {
         // This promise blocks on all pending tasks already in flight,
@@ -71,7 +74,6 @@ public final class OWSMessageManager: NSObject {
         pendingTasks.pendingTasksPromise()
     }
 
-    @objc
     public static func buildPendingTask(label: String) -> PendingTask {
         Self.pendingTasks.buildPendingTask(label: label)
     }
@@ -145,7 +147,7 @@ public final class OWSMessageManager: NSObject {
                     plaintextData: plaintextData
                 )
                 checkForUnknownLinkedDevice(in: decryptedEnvelope, tx: tx)
-                let buildResult = MessageManagerRequest.buildRequest(
+                let buildResult = MessageReceiverRequest.buildRequest(
                     for: decryptedEnvelope,
                     serverDeliveryTimestamp: serverDeliveryTimestamp,
                     shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
@@ -154,8 +156,8 @@ public final class OWSMessageManager: NSObject {
                 switch buildResult {
                 case .discard:
                     break
-                case .request(let messageManagerRequest):
-                    handleRequest(messageManagerRequest, context: PassthroughDeliveryReceiptContext(), tx: tx)
+                case .request(let messageReceiverRequest):
+                    handleRequest(messageReceiverRequest, context: PassthroughDeliveryReceiptContext(), tx: tx)
                     fallthrough
                 case .noContent:
                     finishProcessingEnvelope(decryptedEnvelope, tx: tx)
@@ -170,7 +172,7 @@ public final class OWSMessageManager: NSObject {
         }
     }
 
-    func handleRequest(_ request: MessageManagerRequest, context: DeliveryReceiptContext, tx: SDSAnyWriteTransaction) {
+    func handleRequest(_ request: MessageReceiverRequest, context: DeliveryReceiptContext, tx: SDSAnyWriteTransaction) {
         let protoContent = request.protoContent
         Logger.info("handling content: \(protoContent.contentDescription)")
 
@@ -362,7 +364,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         syncMessage: SSKProtoSyncMessage,
         tx: SDSAnyWriteTransaction
     ) {
@@ -475,7 +477,7 @@ public final class OWSMessageManager: NSObject {
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
                     if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
-                        let pendingTask = OWSMessageManager.buildPendingTask(label: "GroupCallUpdate")
+                        let pendingTask = MessageReceiver.buildPendingTask(label: "GroupCallUpdate")
                         callMessageHandler?.receivedGroupCallUpdateMessage(
                             groupCallUpdate,
                             for: groupThread,
@@ -678,7 +680,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         dataMessage: SSKProtoDataMessage,
         tx: SDSAnyWriteTransaction
     ) {
@@ -807,7 +809,7 @@ public final class OWSMessageManager: NSObject {
 
     private func processFlaglessDataMessage(
         _ dataMessage: SSKProtoDataMessage,
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         thread: TSThread,
         tx: SDSAnyWriteTransaction
     ) -> TSIncomingMessage? {
@@ -1110,7 +1112,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         callMessage: SSKProtoCallMessage,
         tx: SDSAnyWriteTransaction
     ) {
@@ -1269,7 +1271,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         typingMessage: SSKProtoTypingMessage,
         tx: SDSAnyWriteTransaction
     ) {
@@ -1342,7 +1344,7 @@ public final class OWSMessageManager: NSObject {
 
     /// This code path is for UD receipts.
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         receiptMessage: SSKProtoReceiptMessage,
         context: DeliveryReceiptContext,
         tx: SDSAnyWriteTransaction
@@ -1430,7 +1432,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         decryptionErrorMessage: Data,
         tx: SDSAnyWriteTransaction
     ) {
@@ -1503,7 +1505,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         storyMessage: SSKProtoStoryMessage,
         tx: SDSAnyWriteTransaction
     ) {
@@ -1519,8 +1521,7 @@ public final class OWSMessageManager: NSObject {
         }
     }
 
-    @objc(OWSEditProcessingResult)
-    enum EditProcessingResult: Int, Error {
+    private enum EditProcessingResult: Int, Error {
         case editedMessageMissing
         case invalidEdit
         case success
@@ -1584,7 +1585,7 @@ public final class OWSMessageManager: NSObject {
     }
 
     private func handleIncomingEnvelope(
-        request: MessageManagerRequest,
+        request: MessageReceiverRequest,
         editMessage: SSKProtoEditMessage,
         tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
@@ -1691,7 +1692,6 @@ public final class OWSMessageManager: NSObject {
         return message
     }
 
-    @objc
     public static func descriptionForDataMessageContents(_ dataMessage: SSKProtoDataMessage) -> String {
         var splits = [String]()
         if !dataMessage.attachments.isEmpty {
@@ -1745,7 +1745,6 @@ public final class OWSMessageManager: NSObject {
         return "[" + splits.joined(separator: ", ") + "]"
     }
 
-    @objc
     func checkForUnknownLinkedDevice(in envelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         let aci = envelope.sourceAci
         let deviceId = envelope.sourceDeviceId
@@ -2031,7 +2030,7 @@ enum OWSMessageManagerMessageType: UInt {
 }
 
 @objc
-class MessageManagerRequest: NSObject {
+class MessageReceiverRequest: NSObject {
     @objc
     let decryptedEnvelope: DecryptedIncomingEnvelope
 
@@ -2091,7 +2090,7 @@ class MessageManagerRequest: NSObject {
     enum BuildResult {
         case discard
         case noContent
-        case request(MessageManagerRequest)
+        case request(MessageReceiverRequest)
     }
 
     static func buildRequest(
@@ -2129,7 +2128,7 @@ class MessageManagerRequest: NSObject {
             }
         }
 
-        return .request(MessageManagerRequest(
+        return .request(MessageReceiverRequest(
             decryptedEnvelope: decryptedEnvelope,
             protoContent: contentProto,
             serverDeliveryTimestamp: serverDeliveryTimestamp,

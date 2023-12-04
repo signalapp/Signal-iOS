@@ -68,7 +68,7 @@ public class CallMessageRelay: Dependencies {
                 let adjustedDeliveryTimestamp =
                     payload.serverDeliveryTimestamp + UInt64(1000 * max(0, delaySecondsSinceDelivery))
 
-                messageManager.processEnvelope(
+                messageReceiver.processEnvelope(
                     payload.envelope,
                     plaintextData: payload.plaintextData,
                     wasReceivedByUD: payload.wasReceivedByUD,
