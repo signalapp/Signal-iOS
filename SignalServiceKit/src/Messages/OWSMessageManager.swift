@@ -1003,6 +1003,146 @@ extension OWSMessageManager {
         )
     }
 
+    @objc
+    func handleIncomingEnvelope(
+        _ envelope: DecryptedIncomingEnvelope,
+        callMessage: SSKProtoCallMessage,
+        serverDeliveryTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        // If destinationDevice is defined, ignore messages not addressed to this device.
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+        if callMessage.hasDestinationDeviceID, callMessage.destinationDeviceID != localDeviceId {
+            Logger.info("Ignoring call message for other device #\(callMessage.destinationDeviceID)")
+            return
+        }
+
+        if let profileKey = callMessage.profileKey {
+            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, tx: tx)
+        }
+
+        let supportsMultiRing = callMessage.hasSupportsMultiRing && callMessage.supportsMultiRing
+
+        // Any call message which will result in the posting a new incoming call to CallKit
+        // must be handled sync if we're already on the main thread.  This includes "offer"
+        // and "urgent opaque" call messages.  Otherwise we violate this constraint:
+        //
+        // (PushKit) Apps receiving VoIP pushes must post an incoming call via CallKit in the same run loop as
+        // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
+        //
+        // Which can result in the main app being terminated with 0xBAADCA11:
+        //
+        // The exception code "0xbaadca11" indicates that your app was killed for failing to
+        // report a CallKit call in response to a PushKit notification.
+        //
+        // Or this form of crash:
+        //
+        // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
+        if Thread.isMainThread, let offer = callMessage.offer {
+            Logger.info("Handling 'offer' call message synchronously")
+            callMessageHandler?.receivedOffer(
+                offer,
+                from: SignalServiceAddress(envelope.sourceAci),
+                sourceDevice: envelope.sourceDeviceId,
+                sentAtTimestamp: envelope.timestamp,
+                serverReceivedTimestamp: envelope.serverTimestamp,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                supportsMultiRing: supportsMultiRing,
+                transaction: tx
+            )
+            return
+        }
+        if Thread.isMainThread, let opaque = callMessage.opaque, opaque.urgency == .handleImmediately {
+            Logger.info("Handling 'opaque' call message synchronously")
+            callMessageHandler?.receivedOpaque(
+                opaque,
+                from: envelope.sourceAciObjC,
+                sourceDevice: envelope.sourceDeviceId,
+                serverReceivedTimestamp: envelope.serverTimestamp,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                transaction: tx
+            )
+            return
+        }
+
+        // By dispatching async, we introduce the possibility that these messages might be lost
+        // if the app exits before this block is executed.  This is fine, since the call by
+        // definition will end if the app exits.
+        DispatchQueue.main.async { [databaseStorage, callMessageHandler] in
+            if let offer = callMessage.offer {
+                databaseStorage.write { tx in
+                    callMessageHandler?.receivedOffer(
+                        offer,
+                        from: SignalServiceAddress(envelope.sourceAci),
+                        sourceDevice: envelope.sourceDeviceId,
+                        sentAtTimestamp: envelope.timestamp,
+                        serverReceivedTimestamp: envelope.serverTimestamp,
+                        serverDeliveryTimestamp: serverDeliveryTimestamp,
+                        supportsMultiRing: supportsMultiRing,
+                        transaction: tx
+                    )
+                }
+                return
+            }
+            if let answer = callMessage.answer {
+                callMessageHandler?.receivedAnswer(
+                    answer,
+                    from: SignalServiceAddress(envelope.sourceAci),
+                    sourceDevice: envelope.sourceDeviceId,
+                    supportsMultiRing: supportsMultiRing
+                )
+                return
+            }
+            if !callMessage.iceUpdate.isEmpty {
+                callMessageHandler?.receivedIceUpdate(
+                    callMessage.iceUpdate,
+                    from: SignalServiceAddress(envelope.sourceAci),
+                    sourceDevice: envelope.sourceDeviceId
+                )
+                return
+            }
+            if let legacyHangup = callMessage.legacyHangup {
+                callMessageHandler?.receivedHangup(
+                    legacyHangup,
+                    from: SignalServiceAddress(envelope.sourceAci),
+                    sourceDevice: envelope.sourceDeviceId
+                )
+                return
+            }
+            if let hangup = callMessage.hangup {
+                callMessageHandler?.receivedHangup(
+                    hangup,
+                    from: SignalServiceAddress(envelope.sourceAci),
+                    sourceDevice: envelope.sourceDeviceId
+                )
+                return
+            }
+            if let busy = callMessage.busy {
+                callMessageHandler?.receivedBusy(
+                    busy,
+                    from: SignalServiceAddress(envelope.sourceAci),
+                    sourceDevice: envelope.sourceDeviceId
+                )
+                return
+            }
+            if let opaque = callMessage.opaque {
+                databaseStorage.read { tx in
+                    callMessageHandler?.receivedOpaque(
+                        opaque,
+                        from: envelope.sourceAciObjC,
+                        sourceDevice: envelope.sourceDeviceId,
+                        serverReceivedTimestamp: envelope.serverTimestamp,
+                        serverDeliveryTimestamp: serverDeliveryTimestamp,
+                        transaction: tx
+                    )
+                }
+                return
+            }
+            Logger.warn("Call message with no actionable payload.")
+        }
+    }
+
     private func handleIncomingEnvelope(
         _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withSenderKeyDistributionMessage skdmData: Data,

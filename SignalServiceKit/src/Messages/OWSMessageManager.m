@@ -103,9 +103,9 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
                 case OWSCallMessageActionProcess:
                     [self handleIncomingEnvelope:request.decryptedEnvelope
-                                 withCallMessage:contentProto.callMessage
+                                     callMessage:contentProto.callMessage
                          serverDeliveryTimestamp:request.serverDeliveryTimestamp
-                                     transaction:transaction];
+                                              tx:transaction];
                     break;
             }
             break;
@@ -248,155 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleIncomingEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
-               withCallMessage:(SSKProtoCallMessage *)callMessage
-       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!decryptedEnvelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!callMessage) {
-        OWSFailDebug(@"Missing callMessage.");
-        return;
-    }
-    SSKProtoEnvelope *_Nonnull envelope = decryptedEnvelope.envelope;
-
-    [self ensureGroupIdMapping:envelope withCallMessage:callMessage transaction:transaction];
-
-    // If destinationDevice is defined, ignore messages not addressed to this device.
-    uint32_t deviceId = [TSAccountManagerObjcBridge storedDeviceIdWith:transaction];
-    if ([callMessage hasDestinationDeviceID]) {
-        if ([callMessage destinationDeviceID] != deviceId) {
-            OWSLogInfo(@"Ignoring call message that is not for this device! intended: %u this: %u",
-                [callMessage destinationDeviceID],
-                deviceId);
-            return;
-        }
-    }
-
-    if ([callMessage hasProfileKey]) {
-        NSData *profileKey = [callMessage profileKey];
-        SignalServiceAddress *address = envelope.sourceAddress;
-        if (address.isLocalAddress && [TSAccountManagerObjcBridge isPrimaryDeviceWith:transaction]) {
-            OWSLogVerbose(@"Ignoring profile key for local device on primary.");
-        } else if (profileKey.length != kAES256_KeyByteLength) {
-            OWSFailDebug(
-                @"Unexpected profile key length: %lu on message from: %@", (unsigned long)profileKey.length, address);
-        } else {
-            [self.profileManager setProfileKeyData:profileKey
-                                        forAddress:address
-                                 userProfileWriter:UserProfileWriter_LocalUser
-                                     authedAccount:AuthedAccount.implicit
-                                       transaction:transaction];
-        }
-    }
-
-    BOOL supportsMultiRing = false;
-    if ([callMessage hasSupportsMultiRing]) {
-        supportsMultiRing = callMessage.supportsMultiRing;
-    }
-
-    // Any call message which will result in the posting a new incoming call to CallKit
-    // must be handled sync if we're already on the main thread.  This includes "offer"
-    // and "urgent opaque" call messages.  Otherwise we violate this constraint:
-    //
-    // (PushKit) Apps receiving VoIP pushes must post an incoming call via CallKit in the same run loop as
-    // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
-    //
-    // Which can result in the main app being terminated with 0xBAADCA11:
-    //
-    // The exception code "0xbaadca11" indicates that your app was killed for failing to
-    // report a CallKit call in response to a PushKit notification.
-    //
-    // Or this form of crash:
-    //
-    // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
-    if (NSThread.isMainThread && callMessage.offer) {
-        OWSLogInfo(@"Handling 'offer' call message offer sync.");
-        [self.callMessageHandler receivedOffer:callMessage.offer
-                                    fromCaller:envelope.sourceAddress
-                                  sourceDevice:envelope.sourceDevice
-                               sentAtTimestamp:envelope.timestamp
-                       serverReceivedTimestamp:envelope.serverTimestamp
-                       serverDeliveryTimestamp:serverDeliveryTimestamp
-                             supportsMultiRing:supportsMultiRing
-                                   transaction:transaction];
-        return;
-    } else if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
-        && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
-        OWSLogInfo(@"Handling 'urgent opaque' call message offer sync.");
-        [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                     fromCaller:decryptedEnvelope.sourceAciObjC
-                                   sourceDevice:decryptedEnvelope.sourceDeviceId
-                        serverReceivedTimestamp:decryptedEnvelope.serverTimestamp
-                        serverDeliveryTimestamp:serverDeliveryTimestamp
-                                    transaction:transaction];
-        return;
-    }
-
-    // By dispatching async, we introduce the possibility that these messages might be lost
-    // if the app exits before this block is executed.  This is fine, since the call by
-    // definition will end if the app exits.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (callMessage.offer) {
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
-                [self.callMessageHandler receivedOffer:callMessage.offer
-                                            fromCaller:envelope.sourceAddress
-                                          sourceDevice:envelope.sourceDevice
-                                       sentAtTimestamp:envelope.timestamp
-                               serverReceivedTimestamp:envelope.serverTimestamp
-                               serverDeliveryTimestamp:serverDeliveryTimestamp
-                                     supportsMultiRing:supportsMultiRing
-                                           transaction:sdsWriteBlockTransaction];
-            });
-        } else if (callMessage.answer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer
-                                         fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice
-                                  supportsMultiRing:supportsMultiRing];
-        } else if (callMessage.iceUpdate.count > 0) {
-            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate
-                                            fromCaller:envelope.sourceAddress
-                                          sourceDevice:envelope.sourceDevice];
-        } else if (callMessage.legacyHangup) {
-            OWSLogVerbose(@"Received CallMessage with Legacy Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.legacyHangup
-                                         fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice];
-        } else if (callMessage.hangup) {
-            OWSLogVerbose(@"Received CallMessage with Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.hangup
-                                         fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice];
-        } else if (callMessage.busy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy
-                                       fromCaller:envelope.sourceAddress
-                                     sourceDevice:envelope.sourceDevice];
-        } else if (callMessage.opaque) {
-            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *sdsWriteBlockTransaction) {
-                [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                             fromCaller:decryptedEnvelope.sourceAciObjC
-                                           sourceDevice:decryptedEnvelope.sourceDeviceId
-                                serverReceivedTimestamp:decryptedEnvelope.serverTimestamp
-                                serverDeliveryTimestamp:serverDeliveryTimestamp
-                                            transaction:sdsWriteBlockTransaction];
-            }];
-        } else {
-            OWSLogWarn(@"Call message with no actionable payload.");
-        }
-    });
-}
-
 #pragma mark - Group ID Mapping
-
-- (void)ensureGroupIdMapping:(SSKProtoEnvelope *)envelope
-             withCallMessage:(SSKProtoCallMessage *)callMessage
-                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // TODO: Update this to reflect group calls.
-}
 
 - (void)ensureGroupIdMapping:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
 {
