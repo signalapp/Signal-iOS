@@ -636,6 +636,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return true
     }
 
+    func scrollToBottom() {
+        inputTextView.scrollToBottom()
+    }
+
     func updateFontSizes() {
         inputTextView.font = .dynamicTypeBody
     }
@@ -2099,9 +2103,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         var contentSize = textView.attributedText.boundingRect(with: maxSize, options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size
         contentSize.height += textView.textContainerInset.top
         contentSize.height += textView.textContainerInset.bottom
-
-        // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
-        textView.contentSize = contentSize
 
         let newHeight = CGFloatClamp(
             contentSize.height,

@@ -359,7 +359,7 @@ public final class ConversationViewController: OWSViewController {
         self.updateNavigationTitle()
 
         self.ensureBottomViewType()
-        self.updateInputToolbarLayout()
+        self.updateInputToolbarLayout(initialLayout: true)
         self.refreshCallState()
 
         self.showMessageRequestDialogIfRequired()
