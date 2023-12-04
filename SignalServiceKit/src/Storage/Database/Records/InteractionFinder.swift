@@ -266,32 +266,21 @@ public class InteractionFinder: NSObject {
         return nil
     }
 
-    public class func interactionIdsWithExpiredPerConversationExpiration(
-        transaction: SDSAnyReadTransaction
-    ) -> [String] {
+    public class func fetchSomeExpiredMessageRowIds(now: UInt64, limit: Int, tx: SDSAnyReadTransaction) throws -> [Int64] {
         // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
         //       once expiration has begun we want to see it through.
-        let now: UInt64 = NSDate.ows_millisecondTimeStamp()
         let sql = """
-            SELECT \(interactionColumn: .uniqueId)
+            SELECT \(interactionColumn: .id)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .expiresAt) > 0
             AND \(interactionColumn: .expiresAt) <= ?
+            LIMIT \(limit)
         """
-        let statementArguments: StatementArguments = [
-            now
-        ]
-        var result = [String]()
         do {
-            result = try String.fetchAll(
-                transaction.unwrapGrdbRead.database,
-                sql: sql,
-                arguments: statementArguments
-            )
+            return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql, arguments: [now])
         } catch {
-            owsFailDebug("error: \(error)")
+            throw error.grdbErrorForLogging
         }
-        return result
     }
 
     public class func fetchAllMessageUniqueIdsWhichFailedToStartExpiring(
@@ -1184,47 +1173,6 @@ public class InteractionFinder: NSObject {
             owsFail("Failed to find Incoming message")
         }
     }
-
-    #if DEBUG
-    func enumerateUnstartedExpiringMessages(
-        transaction: SDSAnyReadTransaction,
-        block: @escaping (TSMessage, inout Bool) -> Void
-    ) {
-        // NOTE: We DO consult storedShouldStartExpireTimer here.
-        //       We don't want to start expiration until it is true.
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
-            AND (
-                \(interactionColumn: .expiresAt) IS 0 OR
-                \(interactionColumn: .expireStartedAt) IS 0
-            )
-        """
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: [threadUniqueId],
-            transaction: transaction.unwrapGrdbRead
-        )
-
-        do {
-            while let interaction = try cursor.next() {
-                guard let message = interaction as? TSMessage else {
-                    owsFailDebug("Unexpected object: \(type(of: interaction))")
-                    return
-                }
-                var stop: Bool = false
-                block(message, &stop)
-                if stop {
-                    return
-                }
-            }
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
-    #endif
 
     public func outgoingMessageCount(transaction: SDSAnyReadTransaction) -> UInt {
         let sql = """

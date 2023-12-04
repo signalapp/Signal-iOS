@@ -735,8 +735,7 @@
 		50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */; };
 		50B815862A5E15390009D42D /* OWSIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = 50B815852A5E14FF0009D42D /* OWSIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
-		50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */; };
-		50C38CAD2A8EB2610030A731 /* DB+TimeBatchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */; };
+		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
 		50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */; };
@@ -756,6 +755,7 @@
 		50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */; };
 		50F75E312AD9F18F0032530F /* RecipientDatabaseTableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */; };
 		50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */; };
+		50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */; };
 		50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
@@ -3347,8 +3347,7 @@
 		50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelperTest.swift; sourceTree = "<group>"; };
 		50B815852A5E14FF0009D42D /* OWSIdentity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIdentity.h; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
-		50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatching.swift"; sourceTree = "<group>"; };
-		50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatchingTest.swift"; sourceTree = "<group>"; };
+		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
 		50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProvider.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeHelper.swift; sourceTree = "<group>"; };
@@ -3368,6 +3367,7 @@
 		50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountMergeObserver.swift; sourceTree = "<group>"; };
 		50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDatabaseTableTest.swift; sourceTree = "<group>"; };
 		50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileWhitelistMerger.swift; sourceTree = "<group>"; };
+		50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatch.swift; sourceTree = "<group>"; };
 		50F9460F2AD768AF002EF293 /* MockIdentityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockIdentityManager.swift; sourceTree = "<group>"; };
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
@@ -7062,7 +7062,6 @@
 		6673FF85297B690C00F96CFD /* V2 */ = {
 			isa = PBXGroup;
 			children = (
-				50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */,
 				6673FF86297B694C00F96CFD /* DB.swift */,
 				6673FF88297B6AF800F96CFD /* DBTransaction.swift */,
 				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
@@ -8802,6 +8801,7 @@
 				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
 				F94261DA289B1B5400460798 /* TestModelTests.swift */,
+				50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */,
 			);
 			name = Storage;
 			path = SignalServiceKit/tests/Storage;
@@ -9018,7 +9018,6 @@
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
 				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
-				50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */,
 				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 				D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */,
@@ -9723,6 +9722,7 @@
 				F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */,
 				F9C5CA83289453B100548EEE /* StorageCoordinator.h */,
 				F9C5CA51289453B100548EEE /* StorageCoordinator.m */,
+				50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */,
 				F9C5CA7E289453B100548EEE /* TSStorageKeys.h */,
 				F9C5CA84289453B100548EEE /* TSYapDatabaseObject.h */,
 				F9C5CA7D289453B100548EEE /* TSYapDatabaseObject.m */,
@@ -12645,7 +12645,6 @@
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,
-				50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */,
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
@@ -13215,6 +13214,7 @@
 				D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,
+				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,
 				661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */,
 				664657452ACB34AA0099DE1C /* TSAccountManagerImpl+Shims.swift in Sources */,
 				661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */,
@@ -13362,7 +13362,6 @@
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
 				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
-				50C38CAD2A8EB2610030A731 /* DB+TimeBatchingTest.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
@@ -13485,6 +13484,7 @@
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,
+				50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */,
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,

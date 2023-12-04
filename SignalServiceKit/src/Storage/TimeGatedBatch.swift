@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension DB {
+enum TimeGatedBatch {
     /// Processes `objects` within one or more transactions.
     ///
     /// You probably don't need this method and shouldn't use it. Splitting an
@@ -32,8 +32,9 @@ extension DB {
     /// have elapsed since the transaction was opened. Note: This means the
     /// actual maximum transaction duration is unbounded because `block` may
     /// never return or may run extremely slow queries.
-    public func enumerateWithTimeBatchedWriteTx<T>(
+    public static func enumerateObjects<T>(
         _ objects: some Sequence<T>,
+        db: DB,
         yieldTxAfter: TimeInterval = 1.0,
         file: String = #file,
         function: String = #function,
@@ -43,7 +44,7 @@ extension DB {
         var isDone = false
         var objectEnumerator = objects.makeIterator()
         while !isDone {
-            try write(file: file, function: function, line: line) { tx in
+            try db.write(file: file, function: function, line: line) { tx in
                 let startTime = CACurrentMediaTime()
                 while true {
                     guard let object = objectEnumerator.next() else {
@@ -59,6 +60,58 @@ extension DB {
                     }
                     // Process another object with this transaction...
                 }
+            }
+        }
+    }
+
+    /// Processes all elements in batches bound by time.
+    ///
+    /// This method invokes `processBatch` repeatedly & in a tight loop. It
+    /// stops when `processBatch` returns zero (indicating an empty batch).
+    /// Callers must ensure `processBatch` eventually returns zero; they likely
+    /// need to delete objects as part of each batch or maintain a cursor to
+    /// avoid processing the same elements multiple times.
+    ///
+    /// This method is most useful for "fetch and delete" operations that are
+    /// trying to avoid DELETE-ing rows from the database while SELECT-ing them
+    /// via enumeration. This method will execute multiple batches within a
+    /// single transaction (if time allows), so those operations can fetch &
+    /// delete in small batches without exploding the number of transactions.
+    ///
+    /// - Returns: The total number of items processed across all batches.
+    static func processAll(
+        db: DB,
+        yieldTxAfter maximumDuration: TimeInterval = 0.5,
+        processBatch: (DBWriteTransaction) throws -> Int
+    ) rethrows -> Int {
+        var itemCount = 0
+        while true {
+            let (txItemCount, mightHaveMore) = try db.write { tx in
+                let startTime = CACurrentMediaTime()
+                return try processSome(yieldDeadline: startTime + maximumDuration, processBatch: processBatch, tx: tx)
+            }
+            itemCount += txItemCount
+            guard mightHaveMore else {
+                break
+            }
+        }
+        return itemCount
+    }
+
+    private static func processSome(
+        yieldDeadline: CFTimeInterval,
+        processBatch: (DBWriteTransaction) throws -> Int,
+        tx: DBWriteTransaction
+    ) rethrows -> (txItemCount: Int, mightHaveMore: Bool) {
+        var itemCount = 0
+        while true {
+            let batchCount = try autoreleasepool { try processBatch(tx) }
+            if batchCount == 0 {
+                return (itemCount, mightHaveMore: false)
+            }
+            itemCount += batchCount
+            guard CACurrentMediaTime() < yieldDeadline else {
+                return (itemCount, mightHaveMore: true)
             }
         }
     }

@@ -18,22 +18,47 @@ extension OWSDisappearingMessagesJob {
             .isCorrupted
     }
 
-    private func deleteExpiredMessages() -> Int {
-        return databaseStorage.write { tx in
-            var expirationCount = 0
-            DisappearingMessagesFinder().enumerateExpiredMessages(transaction: tx) { message in
-                message.anyRemove(transaction: tx)
-                expirationCount += 1
-            }
-            if expirationCount > 0 {
-                Logger.info("Deleted \(expirationCount) expired messages")
-            }
-            return expirationCount
-        }
+    private enum Constants {
+        static let fetchCount = 50
     }
 
-    private func deleteExpiredStories() -> Int {
-        return databaseStorage.write { tx in StoryManager.deleteExpiredStories(transaction: tx) }
+    private func deleteAllExpiredMessages() throws -> Int {
+        let db = DependenciesBridge.shared.db
+        let count = try TimeGatedBatch.processAll(db: db) { tx in try deleteSomeExpiredMessages(tx: tx) }
+        if count > 0 { Logger.info("Deleted \(count) expired messages") }
+        return count
+    }
+
+    private func deleteSomeExpiredMessages(tx: DBWriteTransaction) throws -> Int {
+        let tx = SDSDB.shimOnlyBridge(tx)
+        let now = Date.ows_millisecondTimestamp()
+        let rowIds = try InteractionFinder.fetchSomeExpiredMessageRowIds(now: now, limit: Constants.fetchCount, tx: tx)
+        for rowId in rowIds {
+            guard let message = InteractionFinder.fetch(rowId: rowId, transaction: tx) else {
+                // We likely hit a database error that's not exposed to us. It's important
+                // that we stop in this case to avoid infinite loops.
+                throw OWSAssertionError("Couldn't fetch message that must exist.")
+            }
+            message.anyRemove(transaction: tx)
+        }
+        return rowIds.count
+    }
+
+    private func deleteAllExpiredStories() throws -> Int {
+        let db = DependenciesBridge.shared.db
+        let count = try TimeGatedBatch.processAll(db: db) { tx in try deleteSomeExpiredStories(tx: tx) }
+        if count > 0 { Logger.info("Deleted \(count) expired stories") }
+        return count
+    }
+
+    private func deleteSomeExpiredStories(tx: DBWriteTransaction) throws -> Int {
+        let tx = SDSDB.shimOnlyBridge(tx)
+        let now = Date.ows_millisecondTimestamp()
+        let storyMessages = try StoryFinder.fetchSomeExpiredStories(now: now, limit: Constants.fetchCount, tx: tx)
+        for storyMessage in storyMessages {
+            storyMessage.anyRemove(transaction: tx)
+        }
+        return storyMessages.count
     }
 
     // deletes any expired messages and schedules the next run.
@@ -42,7 +67,13 @@ extension OWSDisappearingMessagesJob {
         let backgroundTask = OWSBackgroundTask(label: #function)
         defer { backgroundTask.end() }
 
-        let deletedCount = deleteExpiredMessages() + deleteExpiredStories()
+        var deletedCount = 0
+        do {
+            deletedCount += try deleteAllExpiredMessages()
+            deletedCount += try deleteAllExpiredStories()
+        } catch {
+            owsFailDebug("Couldn't delete expired messages/stories: \(error)")
+        }
 
         let nextExpirationAt = databaseStorage.read { tx in
             return [

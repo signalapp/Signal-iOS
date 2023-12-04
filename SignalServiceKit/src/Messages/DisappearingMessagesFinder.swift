@@ -6,27 +6,6 @@
 import Foundation
 
 class DisappearingMessagesFinder {
-    public func enumerateExpiredMessages(transaction: SDSAnyReadTransaction, block: (TSMessage) -> Void) {
-        // Since we can't directly mutate the enumerated expired messages, we store only their ids
-        // in hopes of saving a little memory and then enumerate the (larger) TSMessage objects one
-        // at a time.
-        let expiredMessageIds = InteractionFinder.interactionIdsWithExpiredPerConversationExpiration(
-            transaction: transaction
-        )
-        for expiredMessageId in expiredMessageIds {
-            guard
-                let message = TSMessage.anyFetchMessage(
-                    uniqueId: expiredMessageId,
-                    transaction: transaction
-                )
-            else {
-                owsFailDebug("Missing interaction")
-                continue
-            }
-            block(message)
-        }
-    }
-
     public func fetchAllMessageUniqueIdsWhichFailedToStartExpiring(tx: SDSAnyReadTransaction) -> [String] {
         InteractionFinder.fetchAllMessageUniqueIdsWhichFailedToStartExpiring(transaction: tx)
     }
@@ -44,30 +23,4 @@ class DisappearingMessagesFinder {
         }
         return message.expiresAt
     }
-
-    #if TESTABLE_BUILD
-
-    /// Don't use this in production because we don't want to instantiate potentially many messages
-    /// at once. Useful for testing.
-    func fetchExpiredMessages(transaction: SDSAnyReadTransaction) -> [TSMessage] {
-        var result = [TSMessage]()
-        enumerateExpiredMessages(transaction: transaction) { result.append($0) }
-        return result
-    }
-
-    /// Don't use this in production because we don't want to instantiate potentially many messages
-    /// at once. Useful for testing.
-    func fetchUnstartedExpiringMessages(
-        in thread: TSThread,
-        transaction: SDSAnyReadTransaction
-    ) -> [TSMessage] {
-        var result = [TSMessage]()
-        let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        finder.enumerateUnstartedExpiringMessages(transaction: transaction) { message, _ in
-            result.append(message)
-        }
-        return result
-    }
-
-    #endif
 }
