@@ -790,12 +790,6 @@
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
 
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
-
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Turn off camera";
 
