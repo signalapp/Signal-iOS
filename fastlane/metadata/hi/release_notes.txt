@@ -1,1 +1,1 @@
-• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 
+• यह अपडेट एक दुर्लभ कीबोर्ड बग को ठीक करता है जिसके कारण कभी-कभी ऐप क्रैश हो जाता है। हालाँकि यह बग लगभग कभी नहीं हुआ, हमारा मानना है कि कीबोर्ड केवल तभी क्रैश होना चाहिए जब आप पुराने सिंथेसाइज़र पर ध्वनि प्रभाव मोड में सही नोट बजाते हैं। 

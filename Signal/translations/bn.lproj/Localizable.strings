@@ -1109,7 +1109,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "কোন পরিচিতি ক্ষেত্র নির্বাচিত হয়নি।";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "আপনার কন্টাক্টে Signal-এর অ্যাক্সেস প্রয়োজন। iOS সেটিংসে যান এবং কন্টাক্ট চালু করুন। আপনার কন্টাক্টগুলো এনক্রিপ্ট অবস্থায় আছে এবং সেগুলো Signal পরিষেবায় দৃশ্যমান নয়।";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "পরিচিতি অ্যাক্সেসের অনুমতি দিন";

@@ -1109,7 +1109,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Aucun champ de contact n’a été sélectionné";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal doit pouvoir accéder à vos contacts. Rendez-vous dans les paramètres iOS et autorisez l'accès aux contacts. Votre liste de contacts est chiffrée et le service Signal n’y a pas accès.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Autoriser l’accès aux contacts";

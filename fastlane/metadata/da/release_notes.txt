@@ -1,1 +1,1 @@
-• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 
+• Denne opdatering retter en sjælden tastaturfejl, som nogle gange fik appen til at gå ned. Selvom denne fejl næsten aldrig opstod, mener vi, at tastaturer kun bør crashe, hvis du spiller den rigtige tone i lydeffekttilstand på en gammel synthesizer. 

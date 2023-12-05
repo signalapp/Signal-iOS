@@ -1,1 +1,1 @@
-• This update fixes a rare keyboard bug that sometimes caused the app to crash. Even though this bug almost never happened, we believe that keyboards should only crash if you play the right note in the sound effect mode on an old synthesizer. 
+• Aquesta actualització corregeix un error que de vegades feia que l'app es tanqués de sobte quan apareixia el teclat. Si et poses a tremolar que sigui davant del teclat del piano i no del d'escriure! 
