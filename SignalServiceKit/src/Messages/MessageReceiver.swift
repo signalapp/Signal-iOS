@@ -2054,16 +2054,17 @@ class MessageReceiverRequest {
         if let storyMessage = protoContent.storyMessage {
             return .storyMessage(storyMessage)
         }
-        if protoContent.hasSenderKeyDistributionMessage {
-            // Sender key distribution messages are not mutually exclusive. They can be
-            // included with any message type. However, they're not processed here. They're
-            // processed in the -preprocess phase that occurs post-decryption.
-            //
-            // See: preprocessEnvelope(...)
-            return .handledElsewhere
-        }
         if let editMessage = protoContent.editMessage {
             return .editMessage(editMessage)
+        }
+        // All mutually-exclusive top-level proto content types should be placed
+        // above this comment. Below this comment, we return `.handledElsewhere`
+        // for cases that *might* be combined with another type or sent alone.
+        if protoContent.hasSenderKeyDistributionMessage {
+            // Sender key distribution messages are not mutually exclusive. They can be
+            // included with any message type. However, they're not processed here.
+            // They're processed in the -preprocess phase that occurs post-decryption.
+            return .handledElsewhere
         }
         return nil
     }
