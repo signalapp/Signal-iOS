@@ -78,7 +78,6 @@ extension PreKeyTasks {
             }
             return PartialPreKeyUploadBundle(
                 identity: identity,
-                identityKeyPair: identityKeyPair,
                 signedPreKey: signedPreKey,
                 preKeyRecords: preKeyRecords,
                 lastResortPreKey: lastResortPreKey,

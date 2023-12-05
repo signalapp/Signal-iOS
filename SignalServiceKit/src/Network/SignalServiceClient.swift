@@ -20,7 +20,6 @@ public protocol SignalServiceClient {
     /// TSAccountManager).
     func registerPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -93,7 +92,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
     public func registerPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -102,7 +100,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     ) -> Promise<Void> {
         let request = OWSRequestFactory.registerPrekeysRequest(
             identity: identity,
-            identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             prekeyRecords: preKeyRecords,
             pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,

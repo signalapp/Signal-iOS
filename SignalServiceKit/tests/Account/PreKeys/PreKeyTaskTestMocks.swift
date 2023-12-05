@@ -82,7 +82,6 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     var setPreKeysResult: ConsumableMockPromise<Void> = .unset
     var identity: OWSIdentity?
-    var identityKey: IdentityKey?
     var signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
     var preKeyRecords: [SignalServiceKit.PreKeyRecord]?
     var pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?
@@ -101,7 +100,6 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     override func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?,
@@ -110,7 +108,6 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
     ) -> Promise<Void> {
         return setPreKeysResult.consumeIntoPromise().map(on: schedulers.sync) {
             self.identity = identity
-            self.identityKey = identityKey
             self.signedPreKeyRecord = signedPreKeyRecord
             self.preKeyRecords = preKeyRecords
             self.pqLastResortPreKeyRecord = pqLastResortPreKeyRecord

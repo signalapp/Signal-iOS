@@ -354,7 +354,6 @@ extension OWSRequestFactory {
     /// TSAccountManager).
     static func registerPrekeysRequest(
         identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         prekeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -368,7 +367,6 @@ extension OWSRequestFactory {
 
         var parameters = [String: Any]()
 
-        parameters["identityKey"] = identityKey.serialize().asData.base64EncodedStringWithoutPadding()
         if let signedPreKeyRecord {
             parameters["signedPreKey"] = signedPreKeyRequestParameters(signedPreKeyRecord)
         }

@@ -7,7 +7,6 @@ import Foundation
 
 public protocol PreKeyUploadBundle {
     var identity: OWSIdentity { get }
-    var identityKeyPair: ECKeyPair { get }
     func getSignedPreKey() -> SignedPreKeyRecord?
     func getPreKeyRecords() -> [PreKeyRecord]?
     func getLastResortPreKey() -> KyberPreKeyRecord?
@@ -16,7 +15,6 @@ public protocol PreKeyUploadBundle {
 
 public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
     public let identity: OWSIdentity
-    public let identityKeyPair: ECKeyPair
     public let signedPreKey: SignedPreKeyRecord?
     public let preKeyRecords: [PreKeyRecord]?
     public let lastResortPreKey: KyberPreKeyRecord?
@@ -24,14 +22,12 @@ public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
 
     internal init(
         identity: OWSIdentity,
-        identityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord? = nil,
         preKeyRecords: [PreKeyRecord]? = nil,
         lastResortPreKey: KyberPreKeyRecord? = nil,
         pqPreKeyRecords: [KyberPreKeyRecord]? = nil
     ) {
         self.identity = identity
-        self.identityKeyPair = identityKeyPair
         self.signedPreKey = signedPreKey
         self.preKeyRecords = preKeyRecords
         self.lastResortPreKey = lastResortPreKey

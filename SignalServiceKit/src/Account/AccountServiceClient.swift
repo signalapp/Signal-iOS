@@ -22,7 +22,6 @@ public class AccountServiceClient: NSObject {
 
     public func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -31,7 +30,6 @@ public class AccountServiceClient: NSObject {
     ) -> Promise<Void> {
         return serviceClient.registerPreKeys(
             for: identity,
-            identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             preKeyRecords: preKeyRecords,
             pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,

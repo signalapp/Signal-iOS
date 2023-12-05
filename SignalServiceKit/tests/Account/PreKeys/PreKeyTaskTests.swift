@@ -79,7 +79,6 @@ final class PreKeyTaskTests: XCTestCase {
 
         // Validate
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
@@ -107,7 +106,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
         XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
         XCTAssertNil(mockServiceClient.pqPreKeyRecords)
@@ -136,7 +134,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.pqPreKeyRecords)
         XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
@@ -161,7 +158,6 @@ final class PreKeyTaskTests: XCTestCase {
         testSchedulers.scheduler.start()
 
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertEqual(mockServiceClient.identityKey, mockIdentityManager.aciKeyPair!.keyPair.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
         XCTAssertEqual(mockServiceClient.pqPreKeyRecords?.count, 100)
@@ -236,7 +232,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 100)
         XCTAssertNotNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
 
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
@@ -487,7 +482,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
         XCTAssertEqual(mockPniProtocolStore.mockPreKeyStore.records.count, 100)
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
     }
 
