@@ -31,17 +31,20 @@ class CallControls: UIView {
         action: #selector(CallControlsViewModel.didPressAudioSource)
     )
     private lazy var muteButton = createButton(
-        iconName: "mic-slash-fill-28",
+        iconName: "mic-fill",
+        selectedIconName: "mic-slash-fill-28",
         accessibilityLabel: viewModel.muteButtonAccessibilityLabel,
         action: #selector(CallControlsViewModel.didPressMute)
     )
     private lazy var videoButton = createButton(
         iconName: "video-fill-28",
+        selectedIconName: "video-slash-fill-28",
         accessibilityLabel: viewModel.videoButtonAccessibilityLabel,
         action: #selector(CallControlsViewModel.didPressVideo)
     )
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
+        selectedIconName: "bell-slash-fill",
         // TODO: Accessibility label
         action: #selector(CallControlsViewModel.didPressRing)
     )
@@ -223,8 +226,14 @@ class CallControls: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createButton(iconName: String, accessibilityLabel: String? = nil, action: Selector) -> CallButton {
+    private func createButton(
+        iconName: String,
+        selectedIconName: String? = nil,
+        accessibilityLabel: String? = nil,
+        action: Selector
+    ) -> CallButton {
         let button = CallButton(iconName: iconName)
+        button.selectedIconName = selectedIconName
         button.accessibilityLabel = accessibilityLabel
         button.addTarget(viewModel, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
@@ -416,9 +425,9 @@ private class CallControlsViewModel {
                 call.ringRestrictions.isEmpty,
                 case .shouldRing = call.groupCallRingState
             {
-                isSelected = true
-            } else {
                 isSelected = false
+            } else {
+                isSelected = true
             }
             // Leave the button enabled so we can present an explanatory toast, but show it disabled.
             let shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
@@ -435,7 +444,7 @@ private class CallControlsViewModel {
     }
 
     var videoButtonIsSelected: Bool {
-        return !call.isOutgoingVideoMuted
+        return call.isOutgoingVideoMuted
     }
 
     var muteButtonIsSelected: Bool {
@@ -443,16 +452,11 @@ private class CallControlsViewModel {
     }
 
     var ringButtonIsSelected: Bool {
-        // Ring button currently only used for group calls.
-        switch call.groupCallRingState {
-        case .doNotRing:
-            return false
-        case .shouldRing:
-            return true
-        default:
-            // Ring button shouldn't be displayed in any other cases anyway
-            return false
+        if let config = ringButtonConfiguration {
+            return config.isSelected
         }
+        // Ring button shouldn't be shown in this case anyway.
+        return false
     }
 
     var audioSourceButtonIsSelected: Bool {
@@ -550,10 +554,10 @@ extension CallControlsViewModel {
 
     @objc
     func didPressVideo() {
-        callService.updateIsLocalVideoMuted(isLocalVideoMuted: videoButtonIsSelected)
+        callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.isOutgoingVideoMuted)
 
         // When turning off video, default speakerphone to on.
-        if !videoButtonIsSelected && !callService.audioService.hasExternalInputs {
+        if call.isOutgoingVideoMuted && !callService.audioService.hasExternalInputs {
             callService.audioService.requestSpeakerphone(call: self.call, isEnabled: true)
         }
         refreshView?()
@@ -562,7 +566,14 @@ extension CallControlsViewModel {
     @objc
     func didPressRing() {
         if call.ringRestrictions.isEmpty {
-            call.groupCallRingState = !ringButtonIsSelected ? .shouldRing : .doNotRing
+            switch call.groupCallRingState {
+            case .shouldRing:
+                call.groupCallRingState = .doNotRing
+            case .doNotRing:
+                call.groupCallRingState = .shouldRing
+            default:
+                owsFailBeta("Ring button should not have been available to press!")
+            }
             refreshView?()
         }
         delegate?.didPressRing()
