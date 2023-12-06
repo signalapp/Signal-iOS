@@ -506,7 +506,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Maandelijkse donatie stopgezet";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Je maandelijkse donaties zijn stopgezet. %1$@ \n\nJe badge is niet langer zichtbaar op je profiel.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Je maandelijkse donatie is stopgezet. %1$@ \n\nJe badge is niet langer zichtbaar op je profiel.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Je bankoverschrijving is ontvangen. Je kunt deze badge op je profiel weergeven om te laten zien dat je ons steunt.";
@@ -789,12 +789,6 @@
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Wissel van camera voor/achter";
-
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Overschakelen naar spraakoproep";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schakel over naar video-oproep";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Camera uitschakelen";
@@ -1109,7 +1103,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Geen contactvelden geselecteerd.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal heeft toegang tot je contacten nodig. Ga naar iOS-instellingen en schakel contacten in. Je contacten zijn versleuteld en niet zichtbaar voor de Signal-service.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Toegang tot contacten toestaan";
@@ -1907,10 +1901,10 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Namens %1$@";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Krijg de %1$@-badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Krijg de ‘%1$@’-badge";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Gebruik 30 dagen de %1$@-badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Gebruik 30 dagen de ‘%1$@’-badge";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donatie aan Signal";
@@ -1970,7 +1964,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Hernieuwt %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Ontvang een %1$@-badge";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Ontvang een ‘%1$@’-badge";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/maand";
@@ -1991,10 +1985,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donatie is in behandeling";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je eenmalige donatie is in behandeling. De %1$@-badge kun je op je profiel weergeven wanneer je donatie is ontvangen.\n\nDe verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je eenmalige donatie is in behandeling. De ‘%1$@’-badge kun je op je profiel weergeven wanneer je donatie is ontvangen.\n\nDe verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je maandelijkse donatie is in behandeling. De %1$@-badge kun je op je profiel weergeven wanneer je donatie is ontvangen.\n\nDe verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je maandelijkse donatie is in behandeling. De ‘%1$@’-badge kun je op je profiel weergeven wanneer je donatie is ontvangen.\n\nDe verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Maandelijkse donatie vernieuwen";
@@ -2186,7 +2180,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Donatie is in behandeling";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Donatie aan het verwerken...";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Aan het verwerken...";
 
 /* A label describing a donation payment that has failed to process. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Fout bij het verwerken van donatie";
@@ -2234,7 +2228,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Je kunt toegang inschakelen via de iOS-instellingenapp.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal heeft toegang nodig tot je contacten om contactinformatie te bewerken";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal heeft toegang tot je contacten nodig om contactinformatie te bewerken";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Groep bewerken";
@@ -2822,22 +2816,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink uitgeschakeld.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "De groepslink is ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "De groepslink met beheerdersgoedkeuring van nieuwe leden is ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepslink ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepslink met beheerdersgoedkeuring van nieuwe leden ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink met beheerdersgoedkeuring van nieuwe leden ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "De groepslink is ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "De groepslink zonder beheerdersgoedkeuring van nieuwe leden is ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepslink ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepslink zonder beheerdersgoedkeuring van nieuwe leden ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink zonder beheerdersgoedkeuring van nieuwe leden ingeschakeld.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " De groepslink is vernieuwd.";
@@ -2849,22 +2843,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepslink vernieuwd.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "De beheerderstoestemming-vereiste om via de groepslink lid te mogen worden van de groep is uitgeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Beheerdersgoedkeuring van nieuwe leden is uitgeschakeld voor de groepslink.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt de beheerderstoestemming-vereiste om via de groepslink lid te mogen worden uitgeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt beheerdersgoedkeuring van nieuwe leden uitgeschakeld voor de groepslink.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de beheerderstoestemming-vereiste om via de groepslink lid te mogen worden van de groep uitgeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft beheerdersgoedkeuring van nieuwe leden uitgeschakeld voor de groepslink.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "De beheerderstoestemming-vereiste om via de groepslink lid te mogen worden van de groep is uitgeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Beheerdersgoedkeuring van nieuwe leden is ingeschakeld voor de groepslink.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt de beheerderstoestemming-vereiste om via de groepslink lid te mogen worden van de groep ingeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt beheerdersgoedkeuring van nieuwe leden ingeschakeld voor de groepslink.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de beheerderstoestemming-vereiste om via de groepslink lid te mogen worden van de groep uitgeschakeld.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft beheerdersgoedkeuring van nieuwe leden ingeschakeld voor de groepslink.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
@@ -2927,10 +2921,10 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Je moet Signal op dit apparaat bijwerken om te kunnen deelnemen aan deze groep.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Vereis voor iedere persoon die via de groepslink lid wil worden eerst toestemming van een beheerder.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Vereis voor iedere persoon die via de groepslink lid wil worden eerst goedkeuring van een beheerder.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Beheerderstoestemming vereisen";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe leden goedkeuren";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Groepslink inschakelen en delen";
@@ -2939,7 +2933,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Groepslink delen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Je kunt een groepslink delen met vrienden zodat ze zelf gemakkelijk lid kunnen worden van deze groep.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Je kunt een groepslink delen met vrienden zodat ze gemakkelijk lid kunnen worden van deze groep.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Vrienden uitnodigen";
@@ -2948,7 +2942,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Je kunt vrienden voor deze groep uitnodigen via een groepslink";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Als de optie ‘Beheerderstoestemming vereisen’ is ingeschakeld moet een beheerder eerst nog toestemming geven voor iemand lid mag worden van de groep.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen kunnen lid worden van je groep. Als de optie ‘Nieuwe leden goedkeuren’ is ingeschakeld moet een beheerder nieuwe leden eerst nog goedkeuren.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Deel code";
@@ -2957,7 +2951,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR-code";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Beheerderstoestemming vereisen";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe leden goedkeuren";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Link kopiëren";
@@ -2966,13 +2960,13 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Groepslink";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vereis voor iedere persoon die via de groepslink lid wil worden eerst toestemming van een beheerder.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vereis voor iedere persoon die via de groepslink lid wil worden eerst goedkeuring van een beheerder.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Link vernieuwen";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Weet je zeker dat je de groepslink wilt vernieuwen? Als je de link vernieuwt zullen mensen niet langer lid kunnen worden via de huidige link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Weet je zeker dat je de groepslink wilt vernieuwen? Als je de link vernieuwt kunnen mensen niet langer lid worden via de huidige link.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Delen";
@@ -2987,7 +2981,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Delen via Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Ieder die over deze link beschikt kan de naam, afbeelding en het aantal leden van deze groep zien en kan ook een verzoek indienen om lid te mogen worden. Deel deze link alleen met personen die je vertrouwt.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Iedereen met deze link kan de naam, afbeelding en het aantal groepsleden zien en kan een verzoek indienen om lid te mogen worden deze groep. Deel deze link alleen met personen die je vertrouwt.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Groepslink";
@@ -4136,7 +4130,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Je kunt deze toestemming verlenen in de iOS-instellingenapp.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal heeft toegang nodig tot je foto’s voor deze functie.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal heeft toegang tot je foto’s nodig voor deze functie.";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kunt niet nog meer apparaten koppelen.";
@@ -4262,7 +4256,7 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naam van verhaal (verplicht)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Gebruikers selecteren";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Personen selecteren";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Personen";
@@ -5102,22 +5096,22 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode verifiëren";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Signal vraagt je af en toe om je pincode te bevestigen, zodat je je pincode goed onthoudt.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je pincode te bevestigen, zodat je je pincode goed onthoudt.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Signal zal je er binnen een aantal dagen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We zullen het over een paar dagen opnieuw vragen.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verifieer je Signal-pincode";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Signal zal je er morgen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We zullen het morgen opnieuw vragen.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Signal zal je er binnen een aantal weken opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We zullen het over een aantal weken opnieuw vragen.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Signal zal je er na een week opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We zullen het over een week opnieuw vragen.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Ongeldige pincode, probeer het opnieuw.";
@@ -5186,7 +5180,7 @@
 "PRIVACY_VERIFY_BUTTON" = "Als geverifieerd markeren";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Gebruikers toevoegen";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Personen toevoegen";
 
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Aangepast verhaal wissen";
@@ -5471,7 +5465,7 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update vereist";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
-"REGISTRATION_CAPTCHA_TITLE" = "Signal moet verifiëren dat je een mens bent";
+"REGISTRATION_CAPTCHA_TITLE" = "We moeten verifiëren dat je een mens bent";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landcode";
@@ -5657,7 +5651,7 @@
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Was voorheen geverifieerd";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Veiligheidsnummer veranderingen";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Veranderingen in veiligheidsnummer";
 
 /* Text explaining that the given contact has had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Geverifieerd";
@@ -7013,7 +7007,7 @@
 "STORIES_SAVE_FAILED" = "Verhaal opslaan mislukt";
 
 /* Context menu action to save the selected story */
-"STORIES_SAVE_STORY_ACTION" = "Bijlage opslaan";
+"STORIES_SAVE_STORY_ACTION" = "Opslaan";
 
 /* Footer for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_FOOTER" = "Verhaaldelen verdwijnen automatisch na 24 uur. Kies wie jouw verhalen kan zien of maak nieuwe verhalen voor specifieke personen of groepen.";
@@ -7304,7 +7298,7 @@
 "SUSTAINER_VIEW_PRICING" = "%1$@/maand";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Donatie aan het verwerken...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Aan het verwerken...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Hernieuwt %1$@";
@@ -7589,13 +7583,13 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer gedeeld, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Herstellen";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "QR-code vernieuwen";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code reset, werken je bestaande QR-code en link niet meer.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code vernieuwd, werken je bestaande QR-code en link niet meer.";
 
 /* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Link aan het resetten…";
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Link aan het vernieuwen…";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "delen";

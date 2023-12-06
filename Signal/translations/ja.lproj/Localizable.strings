@@ -790,12 +790,6 @@
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "カメラを切り替える";
 
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "音声通話に切り替える";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "ビデオ通話に切り替える";
-
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "カメラを切る";
 
@@ -1109,7 +1103,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "連絡先の項目が選択されていません。";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signalに連絡先へのアクセスが必要です。iOSの設定へ移動し、連絡先をオンにします。連絡先は暗号化され、私たちSignalからは見えません。";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "連絡先へのアクセス許可";

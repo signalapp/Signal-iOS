@@ -790,12 +790,6 @@
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "轉換前後鏡頭";
 
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "轉用語音通話";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "改做視像通話";
-
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "閂咗個相機";
 
@@ -1109,7 +1103,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "未有揀選聯絡人欄位。";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal 需要存取你嘅通訊錄資料。請你去 iOS 設定，然後開啟通訊錄。你嘅通訊錄資料已經加密，Signal 唔會睇到。";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "允許「聯絡人」存取";

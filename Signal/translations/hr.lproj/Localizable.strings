@@ -790,12 +790,6 @@
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Promijeni smjer kamere";
 
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Prebacite se na glasovni poziv";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Prebacite se na video poziv";
-
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Isključi kameru";
 
@@ -1109,7 +1103,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nije odabrano polje za kontakt.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal needs access to your contacts. Go to iOS Settings and turn on contacts. Your contacts are encrypted and not visible to the Signal service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal treba pristup vašim kontaktima. Idite u postavke iOS-a i omogućite pristup kontaktima. Vaši kontakti su šifrirani i nisu vidljivi usluzi Signal.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Dozvoli pristup kontaktima";
