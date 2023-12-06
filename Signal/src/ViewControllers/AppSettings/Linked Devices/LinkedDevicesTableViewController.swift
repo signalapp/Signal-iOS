@@ -7,6 +7,10 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
+// This has a long and awful name so that if the condition is ever changed,
+// the text shown to internal users about it can be changed too.
+private var shouldShowDeviceIdsBecauseUserIsInternal: Bool { DebugFlags.internalSettings }
+
 private struct DisplayableDevice {
     let device: OWSDevice
     let displayName: String
@@ -228,6 +232,9 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                     return cell
                 })
                 devicesSection.add(item)
+            }
+            if shouldShowDeviceIdsBecauseUserIsInternal {
+                devicesSection.footerTitle = "Device IDs (and this message) are only shown to internal users."
             }
             contents.add(devicesSection)
         }
@@ -471,7 +478,7 @@ private class DeviceTableViewCell: UITableViewCell {
         linkedLabel.font = .dynamicTypeFootnote
         lastSeenLabel.font = .dynamicTypeFootnote
 
-        if DebugFlags.internalSettings {
+        if shouldShowDeviceIdsBecauseUserIsInternal {
             nameLabel.text = LocalizationNotNeeded(String(
                 format: "#%ld: %@",
                 displayableDevice.device.deviceId,
