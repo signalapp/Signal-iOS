@@ -75,7 +75,7 @@ extension TSInteraction {
             case .threadMerge: return false
             case .sessionSwitchover: return false
             case .typeGroupUpdate:
-                guard let updates = infoMessage.groupUpdateItems(transaction: transaction) else {
+                guard let updates = infoMessage.displayableGroupUpdateItems(tx: transaction) else {
                     return true
                 }
                 return updates.contains { $0.shouldAppearInInbox }

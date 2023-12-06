@@ -7,168 +7,224 @@ import Foundation
 import LibSignalClient
 import SignalCoreKit
 
-public protocol GroupUpdateItemBuilder {
-    /// Build a list of group updates by "diffing" the old and new group states
-    /// alongside the other relevant properties given here.
+public protocol DisplayableGroupUpdateItemBuilder {
+    /// Build a list of group updates using the given precomputed, persisted
+    /// update items.
     ///
-    /// - Returns
-    /// A list of updates. Each update item can present itself as localized
-    /// text.
-    func buildUpdateItems(
+    /// - Important
+    /// If there are precomputed update items available, this method should be
+    /// preferred over all others.
+    func displayableUpdateItemsForPrecomputed(
+        precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
         oldGroupModel: TSGroupModel?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem]
+
+    /// Build group update items for a just-inserted group.
+    ///
+    /// - Note
+    /// You should use this method if there are neither precomputed update items
+    /// nor an "old group model" available.
+    func displayableUpdateItemsForNewGroup(
+        newGroupModel: TSGroupModel,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem]
+
+    /// Build a list of group updates by "diffing" the old and new group states.
+    ///
+    /// - Note
+    /// You should use this method if there are not precomputed update items,
+    /// but we do have both an "old/new group model" from before and after a
+    /// group update.
+    func displayableUpdateItemsByDiffingModels(
+        oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSourceAddress: SignalServiceAddress?,
         updaterKnownToBeLocalUser: Bool,
-        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
         tx: DBReadTransaction
-    ) -> [GroupUpdateItem]
+    ) -> [DisplayableGroupUpdateItem]
 
-    /// Get a default group update item, if the values to build more specific
-    /// group updates are not available.
-    func defaultGroupUpdateItem(
+    /// Get a default group update item, if the models required to build more
+    /// specific group updates are not available.
+    func defaultDisplayableUpdateItem(
         groupUpdateSourceAddress: SignalServiceAddress?,
         localIdentifiers: LocalIdentifiers?,
         tx: DBReadTransaction
-    ) -> GroupUpdateItem
+    ) -> DisplayableGroupUpdateItem
 }
 
-public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
+public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemBuilder {
     private let contactsManager: Shims.ContactsManager
 
     init(contactsManager: Shims.ContactsManager) {
         self.contactsManager = contactsManager
     }
 
-    public func buildUpdateItems(
+    public func displayableUpdateItemsForNewGroup(
+        newGroupModel: TSGroupModel,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem] {
+        let updater: Updater = .build(
+            localIdentifiers: localIdentifiers,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+            contactsManager: contactsManager,
+            tx: tx
+        )
+
+        let items = NewGroupUpdateItemBuilder(
+            contactsManager: contactsManager
+        ).buildGroupUpdateItems(
+            newGroupModel: newGroupModel,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            updater: updater,
+            localIdentifiers: localIdentifiers,
+            tx: tx
+        )
+
+        return validateUpdateItemsNotEmpty(
+            tentativeUpdateItems: items,
+            updater: updater
+        )
+    }
+
+    public func displayableUpdateItemsForPrecomputed(
+        precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
         oldGroupModel: TSGroupModel?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem] {
+        let updater: Updater = .build(
+            localIdentifiers: localIdentifiers,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+            contactsManager: contactsManager,
+            tx: tx
+        )
+
+        let items = PrecomputedGroupUpdateItemBuilder(
+            contactsManager: contactsManager
+        ).buildGroupUpdateItems(
+            precomputedUpdateItems: precomputedUpdateItems,
+            oldGroupMembership: oldGroupModel?.groupMembership,
+            updater: updater,
+            localIdentifiers: localIdentifiers,
+            tx: tx
+        )
+
+        return validateUpdateItemsNotEmpty(
+            tentativeUpdateItems: items,
+            updater: updater
+        )
+    }
+
+    public func displayableUpdateItemsByDiffingModels(
+        oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSourceAddress: SignalServiceAddress?,
         updaterKnownToBeLocalUser: Bool,
-        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
         tx: DBReadTransaction
-    ) -> [GroupUpdateItem] {
-        return SingleUseGroupUpdateItemBuilderImpl(
+    ) -> [DisplayableGroupUpdateItem] {
+        let updater: Updater = .build(
+            localIdentifiers: localIdentifiers,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+            contactsManager: contactsManager,
+            tx: tx
+        )
+
+        let items = DiffingGroupUpdateItemBuilder(
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
+            updater: updater,
             localIdentifiers: localIdentifiers,
             groupUpdateSourceAddress: groupUpdateSourceAddress,
-            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
-            updateMessages: updateMessages,
             contactsManager: contactsManager,
             tx: tx
         ).itemList
+
+        return validateUpdateItemsNotEmpty(
+            tentativeUpdateItems: items,
+            updater: updater
+        )
     }
 
-    public func defaultGroupUpdateItem(
+    public func defaultDisplayableUpdateItem(
         groupUpdateSourceAddress: SignalServiceAddress?,
         localIdentifiers: LocalIdentifiers?,
         tx: DBReadTransaction
-    ) -> GroupUpdateItem {
-        return SingleUseGroupUpdateItemBuilderImpl.defaultGroupUpdateItem(
+    ) -> DisplayableGroupUpdateItem {
+        return DefaultGroupUpdateItemBuilder().buildGroupUpdateItem(
             groupUpdateSourceAddress: groupUpdateSourceAddress,
             localIdentifiers: localIdentifiers,
             contactsManager: contactsManager,
             tx: tx
         )
+    }
+
+    private func validateUpdateItemsNotEmpty(
+        tentativeUpdateItems: [DisplayableGroupUpdateItem],
+        updater: Updater,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) -> [DisplayableGroupUpdateItem] {
+        guard tentativeUpdateItems.isEmpty else {
+            return tentativeUpdateItems
+        }
+
+        owsFailDebug("Empty group update!", file: file, function: function, line: line)
+
+        switch updater {
+        case .localUser:
+            return [.genericUpdateByLocalUser]
+        case let .otherUser(updaterName, updaterAddress):
+            return [.genericUpdateByOtherUser(
+                updaterName: updaterName,
+                updaterAddress: updaterAddress
+            )]
+        case .unknown:
+            return [.genericUpdateByUnknownUser]
+        }
     }
 }
 
-/// This type populates itself, on initialization, with items representing the
-/// updates made to a group. These updates are determined by "diffing" the old
-/// and new group states, alongside information such as who the "updater" was.
-///
-/// The returned updates map to user-presentable localized strings.
-///
-/// - Note:
-/// Historically, group update items were computed using a struct that populated
-/// itself with update items during initialization. Rather than refactor many,
-/// many call sites to pass through the historically stored-as-properties values
-/// used by that computation, we preserve that pattern here and wrap it in a
-/// protocolized type above.
-private struct SingleUseGroupUpdateItemBuilderImpl {
-    typealias Shims = GroupUpdateItemBuilderImpl.Shims
+// MARK: -
 
-    private let contactsManager: Shims.ContactsManager
-
-    private let localIdentifiers: LocalIdentifiers
-    private let updater: Updater
-    private let isReplacingJoinRequestPlaceholder: Bool
-
-    /// The update items, in order.
-    private(set) var itemList = [GroupUpdateItem]()
-
-    /// Create a ``GroupUpdateCopy``.
-    ///
-    /// - Parameter groupUpdateSourceAddress
-    /// The address to whom this update should be attributed, if known.
-    /// - Parameter updaterKnownToBeLocalUser
-    /// Whether we know, ahead of time, that this update should be attributed to
-    /// the local user. Necessary if we cannot reliably determine attribution
-    /// via ``groupUpdateSourceAddress`` alone. For example, the update address
-    /// may refer to a PNI that has moved to another owner.
-    init(
-        oldGroupModel: TSGroupModel?,
-        newGroupModel: TSGroupModel,
-        oldDisappearingMessageToken: DisappearingMessageToken?,
-        newDisappearingMessageToken: DisappearingMessageToken?,
-        localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
-        updaterKnownToBeLocalUser: Bool,
-        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
-        contactsManager: Shims.ContactsManager,
-        tx: DBReadTransaction
-    ) {
-        self.contactsManager = contactsManager
-
-        self.localIdentifiers = localIdentifiers
-        self.updater = Self.buildUpdater(
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
-            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
-            localIdentifiers: localIdentifiers,
-            contactsManager: contactsManager,
-            tx: tx
-        )
-
-        if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
-        } else {
-            self.isReplacingJoinRequestPlaceholder = false
-        }
-
-        populate(
-            oldGroupModel: oldGroupModel,
-            newGroupModel: newGroupModel,
-            oldDisappearingMessageToken: oldDisappearingMessageToken,
-            newDisappearingMessageToken: newDisappearingMessageToken,
-            updateMessages: updateMessages,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
-            tx: tx
-        )
-
-        switch updater {
-        case .unknown:
-            Logger.warn("Missing updater info!")
-        default:
-            break
-        }
-    }
+private enum Updater {
+    case localUser
+    case otherUser(updaterName: String, updaterAddress: SignalServiceAddress)
+    case unknown
 
     /// Determine who this update should be attributed to.
     ///
     /// - Parameter updaterKnownToBeLocalUser
     /// Whether we know ahead of time that the updater is the local user.
-    private static func buildUpdater(
+    static func build(
+        localIdentifiers: LocalIdentifiers?,
         groupUpdateSourceAddress: SignalServiceAddress?,
         updaterKnownToBeLocalUser: Bool,
-        localIdentifiers: LocalIdentifiers?,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
     ) -> Updater {
@@ -189,13 +245,380 @@ private struct SingleUseGroupUpdateItemBuilderImpl {
             updaterAddress: updaterAddress
         )
     }
+}
 
-    // MARK: - Is local user?
+// MARK: -
+
+private enum MembershipStatus {
+    case normalMember
+    case invited(invitedBy: Aci?)
+    case requesting
+    case none
+
+    static func local(
+        localIdentifiers: LocalIdentifiers,
+        groupMembership: GroupMembership
+    ) -> MembershipStatus {
+        let aciMembership = of(
+            serviceId: localIdentifiers.aci,
+            groupMembership: groupMembership
+        )
+
+        switch aciMembership {
+        case .invited, .requesting, .normalMember:
+            return aciMembership
+        case .none:
+            break
+        }
+
+        if let localPni = localIdentifiers.pni {
+            return of(
+                serviceId: localPni,
+                groupMembership: groupMembership
+            )
+        }
+
+        return .none
+    }
+
+    static func of(
+        address: SignalServiceAddress,
+        groupMembership: GroupMembership
+    ) -> MembershipStatus {
+        guard let serviceId = address.serviceId else {
+            return .none
+        }
+
+        return of(
+            serviceId: serviceId,
+            groupMembership: groupMembership
+        )
+    }
+
+    private static func of(
+        serviceId: ServiceId,
+        groupMembership: GroupMembership
+    ) -> MembershipStatus {
+        if groupMembership.isFullMember(serviceId) {
+            return .normalMember
+        } else if groupMembership.isInvitedMember(serviceId) {
+            return .invited(invitedBy: groupMembership.addedByAci(
+                forInvitedMember: serviceId
+            ))
+        } else if groupMembership.isRequestingMember(serviceId) {
+            return .requesting
+        } else {
+            return .none
+        }
+    }
+}
+
+// MARK: -
+
+/// Aggregates invite-related changes in which the invitee is unnamed, so we can
+/// display one update rather than individual updates for each unnamed user.
+private struct UnnamedInviteCounts {
+    var newInviteCount: UInt = 0
+    var revokedInviteCount: UInt = 0
+}
+
+// MARK: -
+
+private struct PrecomputedGroupUpdateItemBuilder {
+    private let contactsManager: Shims.ContactsManager
+
+    init(contactsManager: Shims.ContactsManager) {
+        self.contactsManager = contactsManager
+    }
+
+    func buildGroupUpdateItems(
+        precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
+        oldGroupMembership: GroupMembership?,
+        updater: Updater,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem] {
+        return precomputedUpdateItems.compactMap { persistableGroupUpdateItem -> DisplayableGroupUpdateItem? in
+            switch persistableGroupUpdateItem {
+            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail):
+                return sequenceOfInviteLinkRequestAndCancelsItem(
+                    updater: updater,
+                    count: count,
+                    isTail: isTail
+                )
+            case let .invitedPniPromotedToFullMemberAci(pni, aci):
+                let invitedPniAddress = SignalServiceAddress(pni.wrappedValue)
+                let fullMemberAciAddress = SignalServiceAddress(aci.wrappedValue)
+
+                return DiffingGroupUpdateItemBuilder.userInviteWasAcceptedItem(
+                    invitedAsAddress: invitedPniAddress,
+                    acceptedAsAddress: fullMemberAciAddress,
+                    oldGroupMembership: oldGroupMembership,
+                    updater: updater,
+                    isLocalUserBlock: { localIdentifiers.isLocalUser(address: $0) },
+                    contactsManager: contactsManager,
+                    tx: tx
+                )
+            case let .inviteRemoved(invitee, wasLocalUser):
+                var unnamedInviteCounts = UnnamedInviteCounts()
+
+                if let item = DiffingGroupUpdateItemBuilder.userInviteWasDeclinedOrRevokedItem(
+                    inviteeAddress: SignalServiceAddress(invitee.wrappedValue),
+                    inviteeKnownToBeLocalUser: wasLocalUser,
+                    oldGroupMembership: oldGroupMembership,
+                    unnamedInviteCounts: &unnamedInviteCounts,
+                    updater: updater,
+                    isLocalUserBlock: { localIdentifiers.isLocalUser(address: $0) },
+                    contactsManager: contactsManager,
+                    tx: tx
+                ) {
+                    return item
+                } else {
+                    return DiffingGroupUpdateItemBuilder.unnamedUserInvitesWereRevokedItem(
+                        count: unnamedInviteCounts.revokedInviteCount,
+                        updater: updater
+                    )
+                }
+            }
+        }
+    }
+
+    private func sequenceOfInviteLinkRequestAndCancelsItem(
+        updater: Updater,
+        count: UInt,
+        isTail: Bool
+    ) -> DisplayableGroupUpdateItem? {
+        let updaterName: String
+        let updaterAddress: SignalServiceAddress
+        switch updater {
+        case .localUser:
+            owsFailDebug("How did we create one of these for the local user? That should never happen!")
+            return nil
+        case .unknown:
+            owsFailDebug("How did we create one of these for an unknown user? That should never happen!")
+            return nil
+        case let .otherUser(updaterNameParam, updaterAddressParam):
+            updaterName = updaterNameParam
+            updaterAddress = updaterAddressParam
+        }
+
+        guard count > 0 else {
+            // We haven't actually collapsed anything, so we should fall back to
+            // the regular ol' "user requested to join".
+            return .otherUserRequestedToJoin(
+                userName: updaterName,
+                userAddress: updaterAddress
+            )
+        }
+
+        return .sequenceOfInviteLinkRequestAndCancels(
+            userName: updaterName,
+            userAddress: updaterAddress,
+            count: count,
+            isTail: isTail
+        )
+    }
+}
+
+// MARK: -
+
+private struct NewGroupUpdateItemBuilder {
+    private let contactsManager: Shims.ContactsManager
+
+    init(contactsManager: Shims.ContactsManager) {
+        self.contactsManager = contactsManager
+    }
+
+    func buildGroupUpdateItems(
+        newGroupModel: TSGroupModel,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        updater: Updater,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem] {
+        var items = [DisplayableGroupUpdateItem]()
+
+        // We're just learning of the group.
+        groupWasInsertedItem(
+            updater: updater,
+            localIdentifiers: localIdentifiers,
+            newGroupModel: newGroupModel,
+            newGroupMembership: newGroupModel.groupMembership,
+            tx: tx
+        ).map {
+            items.append($0)
+        }
+
+        // Skip update items for things like name, avatar, current members. Do
+        // add update items for the current disappearing messages state. We can
+        // use unknown attribution here – either we created the group (so it was
+        // us who set the time) or someone else did (so we don't know who set
+        // the timer), and unknown attribution is always safe.
+        DiffingGroupUpdateItemBuilder.disappearingMessageUpdateItem(
+            updater: updater,
+            oldToken: nil,
+            newToken: newDisappearingMessageToken,
+            forceUnknownAttribution: true
+        ).map {
+            items.append($0)
+        }
+
+        if newGroupModel.wasJustCreatedByLocalUserV2 {
+            items.append(.createdByLocalUser)
+        }
+
+        return items
+    }
+
+    private func groupWasInsertedItem(
+        updater: Updater,
+        localIdentifiers: LocalIdentifiers,
+        newGroupModel: TSGroupModel,
+        newGroupMembership: GroupMembership,
+        tx: DBReadTransaction
+    ) -> DisplayableGroupUpdateItem? {
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
+            // This is a V1 group. While we may be able to be more specific, we
+            // shouldn't stress over V1 group update messages.
+            return .createdByUnknownUser
+        }
+
+        let wasGroupJustCreated = newGroupModel.revision == 0
+        if wasGroupJustCreated {
+            switch updater {
+            case .localUser:
+                return .createdByLocalUser
+            case let .otherUser(updaterName, updaterAddress):
+                return .createdByOtherUser(
+                    updaterName: updaterName,
+                    updaterAddress: updaterAddress
+                )
+            case .unknown:
+                return .createdByUnknownUser
+            }
+        }
+
+        switch MembershipStatus.local(
+            localIdentifiers: localIdentifiers,
+            groupMembership: newGroupMembership
+        ) {
+        case .normalMember:
+            // We checked above if the group was just created, in which case
+            // it'd be implicit that we were added.
+
+            switch updater {
+            case let .otherUser(updaterName, updaterAddress):
+                return .localUserAddedByOtherUser(
+                    updaterName: updaterName,
+                    updaterAddress: updaterAddress
+                )
+            default:
+                if newGroupModel.didJustAddSelfViaGroupLink {
+                    return .localUserJoined
+                } else {
+                    return .localUserAddedByUnknownUser
+                }
+            }
+        case .invited(invitedBy: let inviterAci):
+            if let inviterAci {
+                let inviterAddress = SignalServiceAddress(inviterAci)
+
+                return .localUserWasInvitedByOtherUser(
+                    updaterName: contactsManager.displayName(address: inviterAddress, tx: tx),
+                    updaterAddress: inviterAddress
+                )
+            } else {
+                return .localUserWasInvitedByUnknownUser
+            }
+        case .requesting:
+            return DiffingGroupUpdateItemBuilder.userRequestedToJoinUpdateItem(
+                address: localIdentifiers.aciAddress,
+                isLocalUserBlock: { localIdentifiers.isLocalUser(address: $0) },
+                contactsManager: contactsManager,
+                tx: tx
+            )
+        case .none:
+            owsFailDebug("Group was inserted without local membership!")
+            return nil
+        }
+    }
+}
+
+// MARK: -
+
+/// This type populates itself, on initialization, with items representing the
+/// updates made to a group. These updates are determined by "diffing" the old
+/// and new group states, alongside information such as who the "updater" was.
+///
+/// The returned updates map to user-presentable localized strings.
+///
+/// - Note:
+/// Historically, group update items were computed using a struct that populated
+/// itself with update items during initialization. Rather than refactor many,
+/// many call sites to pass through the historically stored-as-properties values
+/// used by that computation, we preserve that pattern here and wrap it in a
+/// protocolized type above.
+private struct DiffingGroupUpdateItemBuilder {
+    private let contactsManager: Shims.ContactsManager
+
+    private let localIdentifiers: LocalIdentifiers
+    private let updater: Updater
+    private let isReplacingJoinRequestPlaceholder: Bool
+
+    /// The update items, in order.
+    private(set) var itemList = [DisplayableGroupUpdateItem]()
+
+    /// Create a ``GroupUpdateCopy``.
+    ///
+    /// - Parameter groupUpdateSourceAddress
+    /// The address to whom this update should be attributed, if known.
+    /// - Parameter updaterKnownToBeLocalUser
+    /// Whether we know, ahead of time, that this update should be attributed to
+    /// the local user. Necessary if we cannot reliably determine attribution
+    /// via ``groupUpdateSourceAddress`` alone. For example, the update address
+    /// may refer to a PNI that has moved to another owner.
+    init(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel,
+        oldDisappearingMessageToken: DisappearingMessageToken?,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        updater: Updater,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        contactsManager: Shims.ContactsManager,
+        tx: DBReadTransaction
+    ) {
+        self.contactsManager = contactsManager
+
+        self.localIdentifiers = localIdentifiers
+        self.updater = updater
+
+        if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
+            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
+        } else {
+            self.isReplacingJoinRequestPlaceholder = false
+        }
+
+        populate(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            oldDisappearingMessageToken: oldDisappearingMessageToken,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            tx: tx
+        )
+
+        switch updater {
+        case .unknown:
+            Logger.warn("Missing updater info!")
+        default:
+            break
+        }
+    }
 
     /// Returns whether the given address matches the local user's ACI or PNI.
     private func isLocalUser(address: SignalServiceAddress?) -> Bool {
-        guard let address else { return false }
-        return localIdentifiers.contains(address: address)
+        return localIdentifiers.isLocalUser(address: address)
     }
 
     /// Returns whether the local user is contained in the given addresses.
@@ -203,196 +626,80 @@ private struct SingleUseGroupUpdateItemBuilderImpl {
         return addresses.contains { isLocalUser(address: $0) }
     }
 
-    private mutating func addItem(_ item: GroupUpdateItem) {
+    private mutating func addItem(_ item: DisplayableGroupUpdateItem) {
         itemList.append(item)
     }
-}
 
-// MARK: - Population
-
-private extension SingleUseGroupUpdateItemBuilderImpl {
+    // MARK: Population
 
     /// Populate this builder's list of update items, by diffing the provided
     /// values.
     mutating func populate(
-        oldGroupModel: TSGroupModel?,
+        oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
         groupUpdateSourceAddress: SignalServiceAddress?,
         tx: DBReadTransaction
     ) {
-        if let oldGroupModel = oldGroupModel {
-            if
-                let updateMessages,
-                addPrecomputedUpdateMessages(
-                    updateMessages: updateMessages.updateMessages,
-                    oldGroupMembership: oldGroupModel.groupMembership,
-                    tx: tx
-                )
-            {
-                return
-            } else if isReplacingJoinRequestPlaceholder {
-                addMembershipUpdates(
-                    oldGroupMembership: oldGroupModel.groupMembership,
-                    newGroupMembership: newGroupModel.groupMembership,
-                    newGroupModel: newGroupModel,
-                    groupUpdateSourceAddress: groupUpdateSourceAddress,
-                    forLocalUserOnly: true,
-                    tx: tx
-                )
-
-                addDisappearingMessageUpdates(
-                    oldToken: oldDisappearingMessageToken,
-                    newToken: newDisappearingMessageToken
-                )
-            } else if wasJustMigrated(newGroupModel: newGroupModel) {
-                addMigrationUpdates(
-                    oldGroupMembership: oldGroupModel.groupMembership,
-                    newGroupMembership: newGroupModel.groupMembership,
-                    newGroupModel: newGroupModel
-                )
-            } else {
-                addMembershipUpdates(
-                    oldGroupMembership: oldGroupModel.groupMembership,
-                    newGroupMembership: newGroupModel.groupMembership,
-                    newGroupModel: newGroupModel,
-                    groupUpdateSourceAddress: groupUpdateSourceAddress,
-                    forLocalUserOnly: false,
-                    tx: tx
-                )
-
-                addAttributesUpdates(
-                    oldGroupModel: oldGroupModel,
-                    newGroupModel: newGroupModel
-                )
-
-                addAccessUpdates(
-                    oldGroupModel: oldGroupModel,
-                    newGroupModel: newGroupModel
-                )
-
-                addDisappearingMessageUpdates(
-                    oldToken: oldDisappearingMessageToken,
-                    newToken: newDisappearingMessageToken
-                )
-
-                addGroupInviteLinkUpdates(
-                    oldGroupModel: oldGroupModel,
-                    newGroupModel: newGroupModel
-                )
-
-                addIsAnnouncementOnlyLinkUpdates(
-                    oldGroupModel: oldGroupModel,
-                    newGroupModel: newGroupModel
-                )
-            }
-        } else {
-            // We're just learning of the group.
-            addGroupWasInserted(
-                newGroupModel: newGroupModel,
+        if isReplacingJoinRequestPlaceholder {
+            addMembershipUpdates(
+                oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
+                newGroupModel: newGroupModel,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                forLocalUserOnly: true,
                 tx: tx
             )
 
-            // Skip description of overall group state (current name, avatar, members, etc.).
-            //
-            // Include a description of current DM state, if necessary.
-            addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
-                                          newToken: newDisappearingMessageToken)
+            addDisappearingMessageUpdates(
+                oldToken: oldDisappearingMessageToken,
+                newToken: newDisappearingMessageToken
+            )
+        } else if wasJustMigrated(newGroupModel: newGroupModel) {
+            addMigrationUpdates(
+                oldGroupMembership: oldGroupModel.groupMembership,
+                newGroupMembership: newGroupModel.groupMembership,
+                newGroupModel: newGroupModel
+            )
+        } else {
+            addMembershipUpdates(
+                oldGroupMembership: oldGroupModel.groupMembership,
+                newGroupMembership: newGroupModel.groupMembership,
+                newGroupModel: newGroupModel,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                forLocalUserOnly: false,
+                tx: tx
+            )
 
-            if newGroupModel.wasJustCreatedByLocalUserV2 {
-                addWasJustCreatedByLocalUserUpdates()
-            }
-        }
+            addAttributesUpdates(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel
+            )
 
-        if itemList.count < 1 {
-            owsFailDebug("Empty group update!")
+            addAccessUpdates(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel
+            )
 
-            switch updater {
-            case .localUser:
-                addItem(.genericUpdateByLocalUser)
-            case let .otherUser(updaterName, updaterAddress):
-                addItem(.genericUpdateByOtherUser(updaterName: updaterName, updaterAddress: updaterAddress))
-            case .unknown:
-                addItem(.genericUpdateByUnknownUser)
-            }
+            addDisappearingMessageUpdates(
+                oldToken: oldDisappearingMessageToken,
+                newToken: newDisappearingMessageToken
+            )
+
+            addGroupInviteLinkUpdates(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel
+            )
+
+            addIsAnnouncementOnlyLinkUpdates(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel
+            )
         }
     }
 
-    // MARK: - Precomputed update messages
-
-    /// Add copy from precomputed update messages.
-    ///
-    /// - Returns
-    /// Whether or not any messages were added.
-    mutating func addPrecomputedUpdateMessages(
-        updateMessages: [TSInfoMessage.UpdateMessage],
-        oldGroupMembership: GroupMembership,
-        tx: DBReadTransaction
-    ) -> Bool {
-        var addedItems: Bool = false
-
-        var unnamedInviteCounts = UnnamedInviteCounts()
-
-        for updateMessage in updateMessages {
-            switch updateMessage {
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail):
-                if addSequenceOfInviteLinkRequestAndCancels(count: count, isTail: isTail) {
-                    addedItems = true
-                }
-            case let .invitedPniPromotedToFullMemberAci(pni, aci):
-                let invitedPniAddress = SignalServiceAddress(pni.wrappedValue)
-                let fullMemberAciAddress = SignalServiceAddress(aci.wrappedValue)
-
-                addUserInviteWasAccepted(
-                    invitedAsAddress: invitedPniAddress,
-                    acceptedAsAddress: fullMemberAciAddress,
-                    oldGroupMembership: oldGroupMembership,
-                    tx: tx
-                )
-
-                addedItems = true
-            case let .inviteRemoved(invitee, wasLocalUser):
-                addUserInviteWasDeclinedOrRevoked(
-                    inviteeAddress: SignalServiceAddress(invitee.wrappedValue),
-                    inviteeKnownToBeLocalUser: wasLocalUser,
-                    oldGroupMembership: oldGroupMembership,
-                    unnamedInviteCounts: &unnamedInviteCounts,
-                    tx: tx
-                )
-
-                // At least, we added something to the unnamed invite counts
-                // that we will add after the loop.
-                addedItems = true
-            }
-        }
-
-        addUnnamedInviteCounts(unnamedInviteCounts: unnamedInviteCounts)
-
-        return addedItems
-    }
-
-    mutating func addSequenceOfInviteLinkRequestAndCancels(count: UInt, isTail: Bool) -> Bool {
-        guard
-            count > 0,
-            case let .otherUser(updaterName, updaterAddress) = updater
-        else {
-            return false
-        }
-
-        addItem(.sequenceOfInviteLinkRequestAndCancels(
-            userName: updaterName,
-            userAddress: updaterAddress,
-            count: count,
-            isTail: isTail
-        ))
-
-        return true
-    }
-
-    // MARK: - Attributes
+    // MARK: Attributes
 
     mutating func addAttributesUpdates(
         oldGroupModel: TSGroupModel,
@@ -496,7 +803,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    // MARK: - Access
+    // MARK: Access
 
     mutating func addAccessUpdates(
         oldGroupModel: TSGroupModel,
@@ -544,15 +851,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    // MARK: - Membership
-
-    /// Aggregates invite-related changes in which the invitee is unnamed, so we
-    /// can display one update rather than individual updates for each unnamed
-    /// user.
-    struct UnnamedInviteCounts {
-        var newInviteCount: UInt = 0
-        var revokedInviteCount: UInt = 0
-    }
+    // MARK: Membership
 
     mutating func addMembershipUpdates(
         oldGroupMembership: GroupMembership,
@@ -592,8 +891,8 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                 continue
             }
 
-            let oldMembershipStatus = Self.membershipStatus(of: address, in: oldGroupMembership)
-            let newMembershipStatus = Self.membershipStatus(of: address, in: newGroupMembership)
+            let oldMembershipStatus: MembershipStatus = .of(address: address, groupMembership: oldGroupMembership)
+            let newMembershipStatus: MembershipStatus = .of(address: address, groupMembership: newGroupMembership)
 
             switch oldMembershipStatus {
             case .normalMember:
@@ -706,7 +1005,8 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
             }
         }
 
-        addUnnamedInviteCounts(unnamedInviteCounts: unnamedInviteCounts)
+        addUnnamedUsersWereInvited(count: unnamedInviteCounts.newInviteCount)
+        addUnnamedUserInvitesWereRevoked(count: unnamedInviteCounts.revokedInviteCount)
 
         addInvalidInviteUpdates(oldGroupMembership: oldGroupMembership,
                                 newGroupMembership: newGroupMembership)
@@ -780,7 +1080,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
     ) {
 
         if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-            newGroupModelV2.wasJustMigrated {
+           newGroupModelV2.wasJustMigrated {
             // All v1 group members become admins when the
             // group is migrated to v2. We don't need to
             // surface this to the user.
@@ -972,86 +1272,103 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         oldGroupMembership: GroupMembership,
         tx: DBReadTransaction
     ) {
+        addItem(Self.userInviteWasAcceptedItem(
+            invitedAsAddress: invitedAsAddress,
+            acceptedAsAddress: acceptedAsAddress,
+            oldGroupMembership: oldGroupMembership,
+            updater: updater,
+            isLocalUserBlock: { isLocalUser(address: $0) },
+            contactsManager: contactsManager,
+            tx: tx
+        ))
+    }
+
+    static func userInviteWasAcceptedItem(
+        invitedAsAddress: SignalServiceAddress,
+        acceptedAsAddress: SignalServiceAddress,
+        oldGroupMembership: GroupMembership?,
+        updater: Updater,
+        isLocalUserBlock: IsLocalUserBlock,
+        contactsManager: Shims.ContactsManager,
+        tx: DBReadTransaction
+    ) -> DisplayableGroupUpdateItem {
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
 
-        if let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: invitedAsAddress) {
+        if let inviterAci = oldGroupMembership?.addedByAci(forInvitedMember: invitedAsAddress) {
             inviterAddress = SignalServiceAddress(inviterAci)
             inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
 
-        if isLocalUser(address: acceptedAsAddress) {
+        if isLocalUserBlock(acceptedAsAddress) {
             switch updater {
             case .localUser:
                 if let inviterName, let inviterAddress {
-                    addItem(.localUserAcceptedInviteFromInviter(
+                    return .localUserAcceptedInviteFromInviter(
                         inviterName: inviterName,
                         inviterAddress: inviterAddress
-                    ))
+                    )
                 } else {
                     owsFailDebug("Missing inviter name!")
-                    addItem(.localUserAcceptedInviteFromUnknownUser)
+                    return .localUserAcceptedInviteFromUnknownUser
                 }
             case let .otherUser(updaterName, updaterAddress):
-                addItem(.localUserAddedByOtherUser(
+                return .localUserAddedByOtherUser(
                     updaterName: updaterName,
                     updaterAddress: updaterAddress
-                ))
+                )
             case .unknown:
-                addItem(.localUserJoined)
+                return .localUserJoined
             }
         } else {
             let acceptedAsName = contactsManager.displayName(address: acceptedAsAddress, tx: tx)
 
             switch updater {
             case .localUser:
-                addItem(.otherUserAddedByLocalUser(
+                return .otherUserAddedByLocalUser(
                     userName: acceptedAsName,
                     userAddress: acceptedAsAddress
-                ))
+                )
             case let .otherUser(updaterName, updaterAddress):
                 if invitedAsAddress == updaterAddress || acceptedAsAddress == updaterAddress {
                     // The update came from the person who was invited.
 
-                    if isLocalUser(address: inviterAddress) {
-                        addItem(.otherUserAcceptedInviteFromLocalUser(
+                    if isLocalUserBlock(invitedAsAddress) {
+                        return .otherUserAcceptedInviteFromLocalUser(
                             userName: acceptedAsName,
                             userAddress: acceptedAsAddress
-                        ))
+                        )
                     } else if let inviterName, let inviterAddress {
-                        addItem(.otherUserAcceptedInviteFromInviter(
+                        return .otherUserAcceptedInviteFromInviter(
                             userName: acceptedAsName,
                             userAddress: acceptedAsAddress,
                             inviterName: inviterName,
                             inviterAddress: inviterAddress
-                        ))
+                        )
                     } else {
                         owsFailDebug("Missing inviter name.")
-                        addItem(.otherUserAcceptedInviteFromUnknownUser(
+                        return .otherUserAcceptedInviteFromUnknownUser(
                             userName: acceptedAsName,
                             userAddress: acceptedAsAddress
-                        ))
+                        )
                     }
                 } else {
-                    addItem(.otherUserAddedByOtherUser(
+                    return .otherUserAddedByOtherUser(
                         updaterName: updaterName,
                         updaterAddress: updaterAddress,
                         userName: acceptedAsName,
                         userAddress: acceptedAsAddress
-                    ))
+                    )
                 }
             case .unknown:
-                addItem(.otherUserJoined(
+                return .otherUserJoined(
                     userName: acceptedAsName,
                     userAddress: acceptedAsAddress
-                ))
+                )
             }
         }
     }
 
-    /// Add that the given invited address declined or had their invite revoked.
-    /// - Parameter inviteeKnownToBeLocalUser
-    /// Whether we know ahead of time that the invitee was the local user.
     mutating func addUserInviteWasDeclinedOrRevoked(
         inviteeAddress: SignalServiceAddress,
         inviteeKnownToBeLocalUser: Bool,
@@ -1059,33 +1376,63 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         unnamedInviteCounts: inout UnnamedInviteCounts,
         tx: DBReadTransaction
     ) {
+        Self.userInviteWasDeclinedOrRevokedItem(
+            inviteeAddress: inviteeAddress,
+            inviteeKnownToBeLocalUser: inviteeKnownToBeLocalUser,
+            oldGroupMembership: oldGroupMembership,
+            unnamedInviteCounts: &unnamedInviteCounts,
+            updater: updater,
+            isLocalUserBlock: { isLocalUser(address: $0) },
+            contactsManager: contactsManager,
+            tx: tx
+        ).map {
+            addItem($0)
+        }
+    }
 
+    /// An update item for the fact that the given invited address declined or
+    /// had their invite revoked.
+    /// - Parameter inviteeKnownToBeLocalUser
+    /// Whether we know ahead of time that the invitee was the local user.
+    /// - Returns
+    /// An update item, if one could be created. If `nil` is returned, inspect
+    /// `unnamedInviteCounts` to see if an unnamed invite was affected.
+    static func userInviteWasDeclinedOrRevokedItem(
+        inviteeAddress: SignalServiceAddress,
+        inviteeKnownToBeLocalUser: Bool,
+        oldGroupMembership: GroupMembership?,
+        unnamedInviteCounts: inout UnnamedInviteCounts,
+        updater: Updater,
+        isLocalUserBlock: IsLocalUserBlock,
+        contactsManager: Shims.ContactsManager,
+        tx: DBReadTransaction
+    ) -> DisplayableGroupUpdateItem? {
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: inviteeAddress) {
+        if let inviterAci = oldGroupMembership?.addedByAci(forInvitedMember: inviteeAddress) {
             inviterAddress = SignalServiceAddress(inviterAci)
             inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
 
-        if inviteeKnownToBeLocalUser || isLocalUser(address: inviteeAddress) {
+        if inviteeKnownToBeLocalUser || isLocalUserBlock(inviteeAddress) {
             switch updater {
             case .localUser:
                 if let inviterName, let inviterAddress {
-                    addItem(.localUserDeclinedInviteFromInviter(
+                    return .localUserDeclinedInviteFromInviter(
                         inviterName: inviterName,
                         inviterAddress: inviterAddress
-                    ))
+                    )
                 } else {
                     owsFailDebug("Missing inviter name!")
-                    addItem(.localUserDeclinedInviteFromUnknownUser)
+                    return .localUserDeclinedInviteFromUnknownUser
                 }
             case let .otherUser(updaterName, updaterAddress):
-                addItem(.localUserInviteRevoked(
+                return .localUserInviteRevoked(
                     revokerName: updaterName,
                     revokerAddress: updaterAddress
-                ))
+                )
             case .unknown:
-                addItem(.localUserInviteRevokedByUnknownUser)
+                return .localUserInviteRevokedByUnknownUser
             }
         } else {
             // PNI TODO: If someone declines an invitation we sent to their PNI, or if we revoke their invitation, this won't find their name.
@@ -1093,30 +1440,32 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
             switch updater {
             case .localUser:
-                addItem(.otherUserInviteRevokedByLocalUser(
+                return .otherUserInviteRevokedByLocalUser(
                     userName: inviteeName,
                     userAddress: inviteeAddress
-                ))
+                )
             case .otherUser(_, let updaterAddress):
                 if inviteeAddress == updaterAddress {
-                    if isLocalUser(address: inviterAddress) {
-                        addItem(.otherUserDeclinedInviteFromLocalUser(
+                    if let inviterAddress, isLocalUserBlock(inviterAddress) {
+                        return .otherUserDeclinedInviteFromLocalUser(
                             userName: inviteeName,
                             userAddress: inviteeAddress
-                        ))
+                        )
                     } else if let inviterName, let inviterAddress {
-                        addItem(.otherUserDeclinedInviteFromInviter(
+                        return .otherUserDeclinedInviteFromInviter(
                             inviterName: inviterName,
                             inviterAddress: inviterAddress
-                        ))
+                        )
                     } else {
-                        addItem(.otherUserDeclinedInviteFromUnknownUser)
+                        return .otherUserDeclinedInviteFromUnknownUser
                     }
                 } else {
                     unnamedInviteCounts.revokedInviteCount += 1
+                    return nil
                 }
             case .unknown:
                 unnamedInviteCounts.revokedInviteCount += 1
+                return nil
             }
         }
     }
@@ -1240,11 +1589,6 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    mutating func addUnnamedInviteCounts(unnamedInviteCounts: UnnamedInviteCounts) {
-        addUnnamedUsersWereInvited(count: unnamedInviteCounts.newInviteCount)
-        addUnnamedUserInvitesWereRevoked(count: unnamedInviteCounts.revokedInviteCount)
-    }
-
     mutating func addUnnamedUsersWereInvited(count: UInt) {
         guard count > 0 else {
             return
@@ -1266,38 +1610,64 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
     }
 
     mutating func addUnnamedUserInvitesWereRevoked(count: UInt) {
+        Self.unnamedUserInvitesWereRevokedItem(
+            count: count,
+            updater: updater
+        ).map {
+            addItem($0)
+        }
+    }
+
+    static func unnamedUserInvitesWereRevokedItem(
+        count: UInt,
+        updater: Updater
+    ) -> DisplayableGroupUpdateItem? {
         guard count > 0 else {
-            return
+            return nil
         }
 
         switch updater {
         case .localUser:
             owsFailDebug("When local user is updater, should have named invites!")
-            addItem(.unnamedUserInvitesWereRevokedByLocalUser(count: count))
+            return .unnamedUserInvitesWereRevokedByLocalUser(count: count)
         case let .otherUser(updaterName, updaterAddress):
-            addItem(.unnamedUserInvitesWereRevokedByOtherUser(
+            return .unnamedUserInvitesWereRevokedByOtherUser(
                 updaterName: updaterName,
                 updaterAddress: updaterAddress,
                 count: count
-            ))
+            )
         case .unknown:
-            addItem(.unnamedUserInvitesWereRevokedByUnknownUser(count: count))
+            return .unnamedUserInvitesWereRevokedByUnknownUser(count: count)
         }
     }
 
-    // MARK: - Requesting Members
+    // MARK: Requesting Members
 
     mutating func addUserRequestedToJoinGroup(
         address requesterAddress: SignalServiceAddress,
         tx: DBReadTransaction
     ) {
-        if isLocalUser(address: requesterAddress) {
-            addItem(.localUserRequestedToJoin)
+        addItem(Self.userRequestedToJoinUpdateItem(
+            address: requesterAddress,
+            isLocalUserBlock: { isLocalUser(address: $0) },
+            contactsManager: contactsManager,
+            tx: tx
+        ))
+    }
+
+    static func userRequestedToJoinUpdateItem(
+        address requesterAddress: SignalServiceAddress,
+        isLocalUserBlock: IsLocalUserBlock,
+        contactsManager: Shims.ContactsManager,
+        tx: DBReadTransaction
+    ) -> DisplayableGroupUpdateItem {
+        if isLocalUserBlock(requesterAddress) {
+            return .localUserRequestedToJoin
         } else {
-            addItem(.otherUserRequestedToJoin(
+            return .otherUserRequestedToJoin(
                 userName: contactsManager.displayName(address: requesterAddress, tx: tx),
                 userAddress: requesterAddress
-            ))
+            )
         }
     }
 
@@ -1420,7 +1790,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    // MARK: - Disappearing Messages
+    // MARK: Disappearing Messages
 
     /// Add disappearing message timer updates to the item list.
     ///
@@ -1431,14 +1801,10 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         oldToken: DisappearingMessageToken?,
         newToken: DisappearingMessageToken?
     ) {
-        guard let newToken else {
-            // This info message was created before we embedded DM state.
-            return
-        }
-
-        // This might be zero if DMs are not enabled.
-        let durationString = newToken.durationString
-
+        // If this update represents us joining the group, we want to make
+        // sure we use "unknown" attribution for whatever the disappearing
+        // message timer is set to. Since we just joined, we can't know who
+        // set the timer.
         let localUserJustJoined = itemList.contains { updateItem in
             switch updateItem {
             case
@@ -1452,67 +1818,85 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
             }
         }
 
-        if localUserJustJoined, newToken.isEnabled {
-            // If this update represents us joining the group, we want to make
-            // sure we use "unknown" attribution for whatever the disappearing
-            // message timer is set to. Since we just joined, we can't know who
-            // set the timer.
+        Self.disappearingMessageUpdateItem(
+            updater: updater,
+            oldToken: oldToken,
+            newToken: newToken,
+            forceUnknownAttribution: localUserJustJoined
+        ).map {
+            addItem($0)
+        }
+    }
 
-            addItem(.disappearingMessagesEnabledByUnknownUser(duration: durationString))
-            return
+    static func disappearingMessageUpdateItem(
+        updater: Updater,
+        oldToken: DisappearingMessageToken?,
+        newToken: DisappearingMessageToken?,
+        forceUnknownAttribution: Bool
+    ) -> DisplayableGroupUpdateItem? {
+        guard let newToken else {
+            // This info message was created before we embedded DM state.
+            return nil
+        }
+
+        // This might be zero if DMs are not enabled.
+        let durationString = newToken.durationString
+
+        if forceUnknownAttribution, newToken.isEnabled {
+            return .disappearingMessagesEnabledByUnknownUser(duration: durationString)
         }
 
         guard let oldToken else {
             if newToken.isEnabled {
                 switch updater {
                 case .localUser:
-                    addItem(.disappearingMessagesUpdatedNoOldTokenByLocalUser(
+                    return .disappearingMessagesUpdatedNoOldTokenByLocalUser(
                         duration: durationString
-                    ))
+                    )
                 case .otherUser, .unknown:
-                    addItem(.disappearingMessagesUpdatedNoOldTokenByUnknownUser(
+                    return .disappearingMessagesUpdatedNoOldTokenByUnknownUser(
                         duration: durationString
-                    ))
+                    )
                 }
             }
 
-            return
+            return nil
         }
 
         guard newToken != oldToken else {
             // No change to disappearing message configuration occurred.
-            return
+            return nil
         }
 
         if newToken.isEnabled {
             switch updater {
             case .localUser:
-                addItem(.disappearingMessagesEnabledByLocalUser(duration: durationString))
+                return .disappearingMessagesEnabledByLocalUser(duration: durationString)
             case let .otherUser(updaterName, updaterAddress):
-                addItem(.disappearingMessagesEnabledByOtherUser(
+                return .disappearingMessagesEnabledByOtherUser(
                     updaterName: updaterName,
                     updaterAddress: updaterAddress,
                     duration: durationString
-                ))
+                )
             case .unknown:
-                addItem(.disappearingMessagesEnabledByUnknownUser(duration: durationString))
+                return .disappearingMessagesEnabledByUnknownUser(duration: durationString)
             }
         } else {
             switch updater {
             case .localUser:
-                addItem(.disappearingMessagesDisabledByLocalUser)
+                return .disappearingMessagesDisabledByLocalUser
             case let .otherUser(updaterName, updaterAddress):
-                addItem(.disappearingMessagesDisabledByOtherUser(
+                return .disappearingMessagesDisabledByOtherUser(
                     updaterName: updaterName,
                     updaterAddress: updaterAddress
-                ))
+                )
             case .unknown:
-                addItem(.disappearingMessagesDisabledByUnknownUser)
+                return .disappearingMessagesDisabledByUnknownUser
             }
         }
     }
 
-    // MARK: - Group Invite Links
+    // MARK: Group Invite Links
 
     mutating func addGroupInviteLinkUpdates(
         oldGroupModel: TSGroupModel,
@@ -1622,7 +2006,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    // MARK: - Announcement-Only Groups
+    // MARK: Announcement-Only Groups
 
     mutating func addIsAnnouncementOnlyLinkUpdates(
         oldGroupModel: TSGroupModel,
@@ -1669,83 +2053,12 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         }
     }
 
-    // MARK: -
-
-    mutating func addGroupWasInserted(
-        newGroupModel: TSGroupModel,
-        newGroupMembership: GroupMembership,
-        tx: DBReadTransaction
-    ) {
-        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
-            // This is a V1 group. While we may be able to be more specific, we
-            // shouldn't stress over V1 group update messages.
-            addItem(.createdByUnknownUser)
-            return
-        }
-
-        let wasGroupJustCreated = newGroupModel.revision == 0
-        if wasGroupJustCreated {
-            switch updater {
-            case .localUser:
-                addItem(.createdByLocalUser)
-            case let .otherUser(updaterName, updaterAddress):
-                addItem(.createdByOtherUser(
-                    updaterName: updaterName,
-                    updaterAddress: updaterAddress
-                ))
-            case .unknown:
-                addItem(.createdByUnknownUser)
-            }
-        }
-
-        switch localMembershipStatus(for: newGroupMembership) {
-        case .normalMember:
-            guard !wasGroupJustCreated else {
-                // If group was just created, it's implicit that we were added.
-                return
-            }
-
-            switch updater {
-            case let .otherUser(updaterName, updaterAddress):
-                addItem(.localUserAddedByOtherUser(
-                    updaterName: updaterName,
-                    updaterAddress: updaterAddress
-                ))
-            default:
-                if newGroupModel.didJustAddSelfViaGroupLink {
-                    addItem(.localUserJoined)
-                } else {
-                    addItem(.localUserAddedByUnknownUser)
-                }
-            }
-        case .invited(invitedBy: let inviterAci):
-            if let inviterAci {
-                let inviterAddress = SignalServiceAddress(inviterAci)
-
-                addItem(.localUserWasInvitedByOtherUser(
-                    updaterName: contactsManager.displayName(address: inviterAddress, tx: tx),
-                    updaterAddress: inviterAddress
-                ))
-            } else {
-                addItem(.localUserWasInvitedByUnknownUser)
-            }
-        case .requesting:
-            addUserRequestedToJoinGroup(address: localIdentifiers.aciAddress, tx: tx)
-        case .none:
-            owsFailDebug("Group was inserted without local membership!")
-        }
-    }
-
-    mutating func addWasJustCreatedByLocalUserUpdates() {
-        addItem(.wasJustCreatedByLocalUser)
-    }
-
-    // MARK: - Migration
+    // MARK: Migration
 
     private func wasJustMigrated(newGroupModel: TSGroupModel) -> Bool {
         guard let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-            newGroupModelV2.wasJustMigrated else {
-                return false
+              newGroupModelV2.wasJustMigrated else {
+            return false
         }
         return true
     }
@@ -1758,79 +2071,23 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         owsAssertDebug(wasJustMigrated(newGroupModel: newGroupModel))
         addItem(.wasMigrated)
     }
+}
 
-    // MARK: - Membership Status
+// MARK: -
 
-    enum MembershipStatus {
-        case normalMember
-        case invited(invitedBy: Aci?)
-        case requesting
-        case none
-    }
+private struct DefaultGroupUpdateItemBuilder {
+    init() {}
 
-    func localMembershipStatus(for groupMembership: GroupMembership) -> MembershipStatus {
-        let aciMembership = Self.membershipStatus(serviceId: localIdentifiers.aci, in: groupMembership)
-
-        switch aciMembership {
-        case .invited, .requesting, .normalMember:
-            return aciMembership
-        case .none:
-            break
-        }
-
-        if let localPni = localIdentifiers.pni {
-            return Self.membershipStatus(serviceId: localPni, in: groupMembership)
-        }
-
-        return .none
-    }
-
-    static func membershipStatus(
-        of address: SignalServiceAddress,
-        in groupMembership: GroupMembership
-    ) -> MembershipStatus {
-        guard let serviceId = address.serviceId else {
-            return .none
-        }
-
-        return membershipStatus(serviceId: serviceId, in: groupMembership)
-    }
-
-    static func membershipStatus(
-        serviceId: ServiceId,
-        in groupMembership: GroupMembership
-    ) -> MembershipStatus {
-        if groupMembership.isFullMember(serviceId) {
-            return .normalMember
-        } else if groupMembership.isInvitedMember(serviceId) {
-            return .invited(invitedBy: groupMembership.addedByAci(forInvitedMember: serviceId))
-        } else if groupMembership.isRequestingMember(serviceId) {
-            return .requesting
-        } else {
-            return .none
-        }
-    }
-
-    // MARK: - Updater
-
-    enum Updater {
-        case localUser
-        case otherUser(updaterName: String, updaterAddress: SignalServiceAddress)
-        case unknown
-    }
-
-    // MARK: - Defaults
-
-    static func defaultGroupUpdateItem(
+    func buildGroupUpdateItem(
         groupUpdateSourceAddress: SignalServiceAddress?,
         localIdentifiers: LocalIdentifiers?,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
-    ) -> GroupUpdateItem {
-        let updater = buildUpdater(
+    ) -> DisplayableGroupUpdateItem {
+        let updater: Updater = .build(
+            localIdentifiers: localIdentifiers,
             groupUpdateSourceAddress: groupUpdateSourceAddress,
             updaterKnownToBeLocalUser: false,
-            localIdentifiers: localIdentifiers,
             contactsManager: contactsManager,
             tx: tx
         )
@@ -1849,9 +2106,21 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
     }
 }
 
+// MARK: -
+
+private extension LocalIdentifiers {
+    func isLocalUser(address: SignalServiceAddress?) -> Bool {
+        guard let address else { return false }
+        return contains(address: address)
+    }
+}
+
 // MARK: - Dependencies
 
-extension GroupUpdateItemBuilderImpl {
+private typealias Shims = DisplayableGroupUpdateItemBuilderImpl.Shims
+private typealias IsLocalUserBlock = (SignalServiceAddress) -> Bool
+
+extension DisplayableGroupUpdateItemBuilderImpl {
     enum Shims {
         typealias ContactsManager = _GroupUpdateCopy_ContactsManager_Shim
     }

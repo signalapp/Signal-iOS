@@ -6,10 +6,23 @@
 import Foundation
 import LibSignalClient
 
+// MARK: - Group updates
+
 public extension TSInfoMessage {
+    private var displayableGroupUpdateIemBuilder: DisplayableGroupUpdateItemBuilder {
+        DisplayableGroupUpdateItemBuilderImpl(
+            contactsManager: DisplayableGroupUpdateItemBuilderImpl.Wrappers.ContactsManager(
+                contactsManager
+            )
+        )
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        DependenciesBridge.shared.tsAccountManager
+    }
 
     @objc
-    func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> NSAttributedString {
+    func groupUpdateDescription(transaction tx: SDSAnyReadTransaction) -> NSAttributedString {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string
         if let customMessage = self.customMessage {
@@ -17,36 +30,49 @@ public extension TSInfoMessage {
         }
 
         guard
-            let newGroupModel,
-            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)
+            let newGroupModel = self.newGroupModel,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read)
         else {
-            return GroupUpdateItemBuilderImpl(
-                contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager)
-            ).defaultGroupUpdateItem(
+            return displayableGroupUpdateIemBuilder.defaultDisplayableUpdateItem(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 localIdentifiers: nil,
-                tx: transaction.asV2Read
+                tx: tx.asV2Read
             ).localizedText
         }
 
-        return groupUpdateDescription(
+        let updateItems = buildGroupUpdateItems(
             newGroupModel: newGroupModel,
             localIdentifiers: localIdentifiers,
-            transaction: transaction
+            tx: tx.asV2Read
         )
+
+        guard let firstUpdateItem = updateItems.first else {
+            owsFailBeta("Should never have an empty update items list!")
+            return NSAttributedString()
+        }
+
+        let initialString = NSMutableAttributedString(
+            attributedString: firstUpdateItem.localizedText
+        )
+
+        return updateItems.dropFirst().reduce(initialString) { partialResult, updateItem in
+            partialResult.append("\n")
+            partialResult.append(updateItem.localizedText)
+            return partialResult
+        }
     }
 
-    func groupUpdateItems(transaction: SDSAnyReadTransaction) -> [GroupUpdateItem]? {
+    func displayableGroupUpdateItems(tx: SDSAnyReadTransaction) -> [DisplayableGroupUpdateItem]? {
         guard
-            customMessage == nil,
-            let newGroupModel
+            self.customMessage == nil,
+            let newGroupModel = self.newGroupModel
         else {
             // Legacy group updates persisted a pre-rendered string.
             return nil
         }
 
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-            tx: transaction.asV2Read
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(
+            tx: tx.asV2Read
         ) else {
             owsFailDebug("Missing local identifiers!")
             return nil
@@ -55,10 +81,65 @@ public extension TSInfoMessage {
         return buildGroupUpdateItems(
             newGroupModel: newGroupModel,
             localIdentifiers: localIdentifiers,
-            transaction: transaction
+            tx: tx.asV2Read
         )
     }
 
+    private func buildGroupUpdateItems(
+        newGroupModel: TSGroupModel,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBReadTransaction
+    ) -> [DisplayableGroupUpdateItem] {
+        let oldGroupModel = self.oldGroupModel
+        let oldDisappearingMessageToken = self.oldDisappearingMessageToken
+        let newDisappearingMessageToken = self.newDisappearingMessageToken
+        let groupUpdateSourceAddress = self.groupUpdateSourceAddress
+        let updaterKnownToBeLocalUser = self.updaterWasLocalUser
+
+        if let precomputedUpdateItems = self.precomputedGroupUpdateItems {
+            /// If we have precomputed group update items, we should always
+            /// prefer displaying them.
+            return displayableGroupUpdateIemBuilder.displayableUpdateItemsForPrecomputed(
+                precomputedUpdateItems: precomputedUpdateItems.updateItems,
+                oldGroupModel: oldGroupModel,
+                localIdentifiers: localIdentifiers,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+                tx: tx
+            )
+        } else if let oldGroupModel {
+            /// If we don't have precomputed update items, but we do have group
+            /// models from before/after the group update, we can diff them to
+            /// compute the update items now.
+            return displayableGroupUpdateIemBuilder.displayableUpdateItemsByDiffingModels(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+                oldDisappearingMessageToken: oldDisappearingMessageToken,
+                newDisappearingMessageToken: newDisappearingMessageToken,
+                localIdentifiers: localIdentifiers,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+                tx: tx
+            )
+        } else {
+            /// If we don't have precomputed update items, and there's no
+            /// "before" group models, this must be a new group and we can
+            /// compute update items based on the new models.
+            return displayableGroupUpdateIemBuilder.displayableUpdateItemsForNewGroup(
+                newGroupModel: newGroupModel,
+                newDisappearingMessageToken: newDisappearingMessageToken,
+                localIdentifiers: localIdentifiers,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                updaterKnownToBeLocalUser: updaterWasLocalUser,
+                tx: tx
+            )
+        }
+    }
+}
+
+// MARK: -
+
+public extension TSInfoMessage {
     @objc
     func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
         guard let profileChanges = profileChanges,
@@ -126,61 +207,13 @@ public extension TSInfoMessage {
     var profileChangeNewNameComponents: PersonNameComponents? {
         return profileChanges?.newNameComponents
     }
-}
-
-// MARK: -
-
-extension TSInfoMessage {
-    private func groupUpdateDescription(
-        newGroupModel: TSGroupModel,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyReadTransaction
-    ) -> NSAttributedString {
-        let updateItems = buildGroupUpdateItems(
-            newGroupModel: newGroupModel,
-            localIdentifiers: localIdentifiers,
-            transaction: transaction
-        )
-
-        guard let firstUpdateItem = updateItems.first else {
-            owsFailBeta("Should never have an empty update items list!")
-            return NSAttributedString()
-        }
-
-        let initialString = NSMutableAttributedString(attributedString: firstUpdateItem.localizedText)
-
-        return updateItems.dropFirst().reduce(initialString) { partialResult, updateItem in
-            partialResult.append("\n")
-            partialResult.append(updateItem.localizedText)
-            return partialResult
-        }
-    }
-
-    private func buildGroupUpdateItems(
-        newGroupModel: TSGroupModel,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyReadTransaction
-    ) -> [GroupUpdateItem] {
-        return GroupUpdateItemBuilderImpl(
-            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager)
-        ).buildUpdateItems(
-            oldGroupModel: oldGroupModel,
-            newGroupModel: newGroupModel,
-            oldDisappearingMessageToken: oldDisappearingMessageToken,
-            newDisappearingMessageToken: newDisappearingMessageToken,
-            localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
-            updaterKnownToBeLocalUser: updaterWasLocalUser,
-            updateMessages: updateMessages,
-            tx: transaction.asV2Read
-        )
-    }
 
     @objc
-    public static func legacyDisappearingMessageUpdateDescription(token newToken: DisappearingMessageToken,
-                                                                  wasAddedToExistingGroup: Bool,
-                                                                  updaterName: String?) -> String {
-
+    static func legacyDisappearingMessageUpdateDescription(
+        token newToken: DisappearingMessageToken,
+        wasAddedToExistingGroup: Bool,
+        updaterName: String?
+    ) -> String {
         // This might be zero if DMs are not enabled.
         let durationString = newToken.durationString
 
@@ -349,8 +382,8 @@ extension TSInfoMessage {
         return groupModel
     }
 
-    public var updateMessages: UpdateMessagesWrapper? {
-        return infoMessageValue(forKey: .updateMessages)
+    public var precomputedGroupUpdateItems: PersistableGroupUpdateItemsWrapper? {
+        return infoMessageValue(forKey: .groupUpdateItems)
     }
 
     public var oldGroupModel: TSGroupModel? {
@@ -412,8 +445,8 @@ extension TSInfoMessage {
         }
     }
 
-    public func setUpdateMessages(_ updateMessages: UpdateMessagesWrapper) {
-        setInfoMessageValue(updateMessages, forKey: .updateMessages)
+    public func setGroupUpdateItemsWrapper(_ updateItemsWrapper: PersistableGroupUpdateItemsWrapper) {
+        setInfoMessageValue(updateItemsWrapper, forKey: .groupUpdateItems)
     }
 
     public func setNewGroupModel(_ newGroupModel: TSGroupModel) {

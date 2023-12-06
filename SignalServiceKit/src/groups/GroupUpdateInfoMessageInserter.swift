@@ -40,7 +40,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     ) {
         let transaction = SDSDB.shimOnlyBridge(v2Transaction)
 
-        var updateMessagesForNewMessage: [TSInfoMessage.UpdateMessage] = []
+        var updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem] = []
 
         if
             let oldGroupModel,
@@ -71,18 +71,18 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                     break
                 case .updatesCollapsedIntoExistingMessage?:
                     return
-                case .updateMessageForNewMessage(let updateMessage)?:
-                    updateMessagesForNewMessage.append(updateMessage)
+                case .updateItemForNewMessage(let updateItem)?:
+                    updateItemsForNewMessage.append(updateItem)
                 }
             case .invitedPnisPromotedToFullMemberAcis(let promotions):
                 for (pni, aci) in promotions {
-                    updateMessagesForNewMessage.append(
+                    updateItemsForNewMessage.append(
                         .invitedPniPromotedToFullMemberAci(pni: pni.codableUuid, aci: aci.codableUuid)
                     )
                 }
             case .invitesRemoved(let inviteeServiceIds):
                 for removedInviteServiceId in inviteeServiceIds {
-                    updateMessagesForNewMessage.append(
+                    updateItemsForNewMessage.append(
                         .inviteRemoved(
                             invitee: removedInviteServiceId.codableUppercaseString,
                             wasLocalUser: localIdentifiers.contains(serviceId: removedInviteServiceId)
@@ -118,8 +118,8 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             userInfoForNewMessage[.updaterKnownToBeLocalUser] = false
         }
 
-        if !updateMessagesForNewMessage.isEmpty {
-            userInfoForNewMessage[.updateMessages] = TSInfoMessage.UpdateMessagesWrapper(updateMessagesForNewMessage)
+        if !updateItemsForNewMessage.isEmpty {
+            userInfoForNewMessage[.groupUpdateItems] = TSInfoMessage.PersistableGroupUpdateItemsWrapper(updateItemsForNewMessage)
         }
 
         let infoMessage = TSInfoMessage(

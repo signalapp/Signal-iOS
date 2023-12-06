@@ -6,7 +6,7 @@
 import Foundation
 import SignalCoreKit
 
-public enum GroupUpdateItem {
+public enum DisplayableGroupUpdateItem {
     case genericUpdateByLocalUser
     case genericUpdateByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case genericUpdateByUnknownUser
@@ -1204,7 +1204,7 @@ public enum GroupUpdateItem {
 
 // MARK: - NSAttributedString
 
-extension GroupUpdateItem {
+extension DisplayableGroupUpdateItem {
     enum FormatArg {
         case raw(_ value: CVarArg)
         case name(_ string: String, _ address: SignalServiceAddress)
@@ -1230,7 +1230,7 @@ public extension NSAttributedString.Key {
 extension NSAttributedString {
     static func make(
         fromFormat format: String,
-        groupUpdateFormatArgs: [GroupUpdateItem.FormatArg]
+        groupUpdateFormatArgs: [DisplayableGroupUpdateItem.FormatArg]
     ) -> NSAttributedString {
         make(
             fromFormat: format,

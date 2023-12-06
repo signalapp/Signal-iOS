@@ -38,7 +38,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
 
-extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUpdateMessages;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateItems;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldDisappearingMessageToken;

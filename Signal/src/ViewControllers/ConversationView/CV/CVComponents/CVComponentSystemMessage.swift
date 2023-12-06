@@ -618,26 +618,30 @@ extension CVComponentSystemMessage {
         let font = Self.textLabelFont
         let labelText = NSMutableAttributedString()
 
-        if let infoMessage = interaction as? TSInfoMessage,
-           infoMessage.messageType == .typeGroupUpdate,
-           let groupUpdates = infoMessage.groupUpdateItems(transaction: transaction),
-           !groupUpdates.isEmpty {
+        if
+            let infoMessage = interaction as? TSInfoMessage,
+            infoMessage.messageType == .typeGroupUpdate,
+            let displayableGroupUpdates = infoMessage.displayableGroupUpdateItems(tx: transaction),
+            !displayableGroupUpdates.isEmpty
+        {
 
-            for (index, updateItem) in groupUpdates.enumerated() {
-                let iconName = Self.iconName(forGroupUpdateItem: updateItem)
-                labelText.appendTemplatedImage(named: iconName,
-                                               font: font,
-                                               heightReference: ImageAttachmentHeightReference.lineHeight)
+            for (index, updateItem) in displayableGroupUpdates.enumerated() {
+                labelText.appendTemplatedImage(
+                    named: Self.iconName(displayableGroupUpdateItem: updateItem),
+                    font: font,
+                    heightReference: ImageAttachmentHeightReference.lineHeight
+                )
+
                 labelText.append("  ", attributes: [:])
                 labelText.append(updateItem.localizedText)
 
-                let isLast = index == groupUpdates.count - 1
+                let isLast = index == displayableGroupUpdates.count - 1
                 if !isLast {
                     labelText.append("\n", attributes: [:])
                 }
             }
 
-            if groupUpdates.count > 1 {
+            if displayableGroupUpdates.count > 1 {
                 let paragraphStyle = NSMutableParagraphStyle()
                 paragraphStyle.paragraphSpacing = 12
                 paragraphStyle.alignment = .center
@@ -809,8 +813,8 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func iconName(forGroupUpdateItem groupUpdateItem: GroupUpdateItem) -> String {
-        switch groupUpdateItem {
+    private static func iconName(displayableGroupUpdateItem: DisplayableGroupUpdateItem) -> String {
+        switch displayableGroupUpdateItem {
         case
                 .localUserLeft,
                 .otherUserLeft:
@@ -1149,13 +1153,13 @@ extension CVComponentSystemMessage {
 
             guard
                 let oldGroupModel = infoMessage.oldGroupModel,
-                let groupUpdateItems = infoMessage.groupUpdateItems(transaction: transaction),
-                !groupUpdateItems.isEmpty
+                let displayableGroupUpdateItems = infoMessage.displayableGroupUpdateItems(tx: transaction),
+                !displayableGroupUpdateItems.isEmpty
             else {
                 return nil
             }
 
-            for updateItem in groupUpdateItems {
+            for updateItem in displayableGroupUpdateItems {
                 switch updateItem {
                 case .wasMigrated:
                     return Action(

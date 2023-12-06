@@ -349,7 +349,7 @@ extension OWSUserProfileBadgeInfo: DeepCopyable {
 // MARK: -
 
 @objc
-extension TSInfoMessage.UpdateMessagesWrapper: DeepCopyable {
+extension TSInfoMessage.PersistableGroupUpdateItemsWrapper: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)

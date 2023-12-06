@@ -15,7 +15,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         /// Update messages pertaining to the membership change are available
         /// and a new info message should be inserted containing them. Existing
         /// messages may have been updated while computing these updates.
-        case updateMessageForNewMessage(TSInfoMessage.UpdateMessage)
+        case updateItemForNewMessage(TSInfoMessage.PersistableGroupUpdateItem)
     }
 
     func handlePossiblyCollapsibleMembershipChange(
@@ -94,8 +94,8 @@ extension GroupUpdateInfoMessageInserterImpl {
         // most recent message) in the future.
 
         guard
-            let mostRecentUpdateMessage = mostRecentInfoMsg.updateMessages?.asSingleMessage,
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = mostRecentUpdateMessage,
+            let mostRecentUpdateItem = mostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem,
+            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = mostRecentUpdateItem,
             requestingAci == mostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
         else {
             return nil
@@ -103,12 +103,12 @@ extension GroupUpdateInfoMessageInserterImpl {
 
         owsAssertDebug(isTail)
 
-        mostRecentInfoMsg.setSingleUpdateMessage(
-            singleUpdateMessage: .sequenceOfInviteLinkRequestAndCancels(count: count, isTail: false)
+        mostRecentInfoMsg.setSingleUpdateItem(
+            singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: count, isTail: false)
         )
         mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
-        return .updateMessageForNewMessage(
+        return .updateItemForNewMessage(
             .sequenceOfInviteLinkRequestAndCancels(count: 0, isTail: true)
         )
     }
@@ -138,11 +138,11 @@ extension GroupUpdateInfoMessageInserterImpl {
 
         if
             let secondMostRecentInfoMsg = secondMostRecentInfoMsg,
-            let updateMessage = secondMostRecentInfoMsg.updateMessages?.asSingleMessage,
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = updateMessage,
+            let updateItem = secondMostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem,
+            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = updateItem,
             cancelingAci == secondMostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
         {
-            switch mostRecentInfoMsg.updateMessages?.asSingleMessage {
+            switch mostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem {
             case .sequenceOfInviteLinkRequestAndCancels(0, true)?: break
             default: owsFailDebug("Unexpected state for most recent info message")
             }
@@ -151,16 +151,16 @@ extension GroupUpdateInfoMessageInserterImpl {
 
             owsAssertDebug(!isTail)
             secondMostRecentInfoMsg.setNewGroupModel(newGroupModel)
-            secondMostRecentInfoMsg.setSingleUpdateMessage(
-                singleUpdateMessage: .sequenceOfInviteLinkRequestAndCancels(count: count + 1, isTail: true)
+            secondMostRecentInfoMsg.setSingleUpdateItem(
+                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: count + 1, isTail: true)
             )
             secondMostRecentInfoMsg.anyUpsert(transaction: transaction)
 
             return .updatesCollapsedIntoExistingMessage
         } else {
             mostRecentInfoMsg.setNewGroupModel(newGroupModel)
-            mostRecentInfoMsg.setSingleUpdateMessage(
-                singleUpdateMessage: .sequenceOfInviteLinkRequestAndCancels(count: 1, isTail: true)
+            mostRecentInfoMsg.setSingleUpdateItem(
+                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: 1, isTail: true)
             )
             mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -208,19 +208,19 @@ extension GroupUpdateInfoMessageInserterImpl {
 
 // MARK: TSInfoMessage extension
 
-private extension TSInfoMessage.UpdateMessagesWrapper {
-    var asSingleMessage: TSInfoMessage.UpdateMessage? {
-        guard updateMessages.count == 1 else {
+private extension TSInfoMessage.PersistableGroupUpdateItemsWrapper {
+    var asSingleUpdateItem: TSInfoMessage.PersistableGroupUpdateItem? {
+        guard updateItems.count == 1 else {
             return nil
         }
 
-        return updateMessages.first
+        return updateItems.first
     }
 }
 
 private extension TSInfoMessage {
-    func setSingleUpdateMessage(singleUpdateMessage: UpdateMessage) {
-        setUpdateMessages(UpdateMessagesWrapper([singleUpdateMessage]))
+    func setSingleUpdateItem(singleUpdateItem: PersistableGroupUpdateItem) {
+        setGroupUpdateItemsWrapper(PersistableGroupUpdateItemsWrapper([singleUpdateItem]))
     }
 
     func representsSingleRequestToJoin() -> Aci? {

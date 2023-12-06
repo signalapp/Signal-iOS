@@ -8,8 +8,8 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class TSInfoMessageUpdateMessagesTest: XCTestCase {
-    private typealias UpdateMessage = TSInfoMessage.UpdateMessage
+class TSInfoMessagePersistableGroupUpdateItemTest: XCTestCase {
+    private typealias UpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     // MARK: - Hardcoded constant data
 
@@ -25,11 +25,11 @@ class TSInfoMessageUpdateMessagesTest: XCTestCase {
     func testHardcodedJsonDataDecodes() {
         switch HardcodedDataTestMode.mode {
         case .printStrings:
-            UpdateMessage.printHardcodedJsonDataForConstants()
+            UpdateItem.printHardcodedJsonDataForConstants()
         case .runTest:
-            for (idx, (constant, jsonData)) in UpdateMessage.constants.enumerated() {
+            for (idx, (constant, jsonData)) in UpdateItem.constants.enumerated() {
                 do {
-                    let decoded = try JSONDecoder().decode(UpdateMessage.self, from: jsonData)
+                    let decoded = try JSONDecoder().decode(UpdateItem.self, from: jsonData)
                     try constant.validate(against: decoded)
                 } catch let error where error is DecodingError {
                     XCTFail("Failed to decode JSON model for constant \(idx): \(error)")
@@ -43,8 +43,8 @@ class TSInfoMessageUpdateMessagesTest: XCTestCase {
     }
 }
 
-extension TSInfoMessage.UpdateMessage: ValidatableModel {
-    static var constants: [(TSInfoMessage.UpdateMessage, base64JsonData: Data)] {
+extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
+    static var constants: [(TSInfoMessage.PersistableGroupUpdateItem, base64JsonData: Data)] {
         [
             (
                 .sequenceOfInviteLinkRequestAndCancels(count: 12, isTail: true),
@@ -64,7 +64,7 @@ extension TSInfoMessage.UpdateMessage: ValidatableModel {
         ]
     }
 
-    func validate(against: TSInfoMessage.UpdateMessage) throws {
+    func validate(against: TSInfoMessage.PersistableGroupUpdateItem) throws {
         var validated: Bool = false
 
         switch (self, against) {
