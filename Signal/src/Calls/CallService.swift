@@ -1056,7 +1056,6 @@ extension SignalCall {
             let groupCall = groupCall,
             let groupThread = thread as? TSGroupThread
         else {
-            owsFailDebug("Failed to unpack group call!")
             return nil
         }
 

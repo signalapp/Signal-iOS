@@ -101,13 +101,15 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
     // MARK: - CallServiceObserver
 
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        if let (oldGroupThread, oldGroupCall) = oldValue.flatMap({ $0.unpackGroupCall() }) {
-            localDeviceMaybeLeftGroupCall(
-                groupThread: oldGroupThread,
-                groupCall: oldGroupCall
-            )
+        guard let (oldGroupThread, oldGroupCall) = oldValue.flatMap({ $0.unpackGroupCall() }) else {
+            // Observers receive updates for all kinds of calls, 
+            // but we only care about group calls here.
+            return
         }
-
+        localDeviceMaybeLeftGroupCall(
+            groupThread: oldGroupThread,
+            groupCall: oldGroupCall
+        )
         localDeviceGroupCallDidEnd()
     }
 
