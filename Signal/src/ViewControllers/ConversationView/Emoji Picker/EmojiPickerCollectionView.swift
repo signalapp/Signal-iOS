@@ -312,7 +312,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     private func searchResults(_ searchText: String?) -> [EmojiWithSkinTones] {
-        guard let searchText = searchText else {
+        guard let searchText = searchText?.stripped else {
             return []
         }
 
