@@ -584,6 +584,10 @@ public class DependenciesBridge {
         )
 
         self.cloudBackupManager = CloudBackupManagerImpl(
+            chatArchiver: CloudBackupChatArchiverImpl(
+                dmConfigurationStore: disappearingMessagesConfigurationStore,
+                threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+            ),
             dateProvider: dateProvider,
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,

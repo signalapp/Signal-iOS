@@ -377,7 +377,10 @@ public protocol _CloudBackup_TSThreadShim {
 
     func enumerateAllGroupThreads(tx: DBReadTransaction, block: @escaping (TSGroupThread) -> Void) throws
 
-    func enumerateAll(tx: DBReadTransaction, block: @escaping (TSThread) -> Void)
+    func enumerateAll(
+        tx: DBReadTransaction,
+        block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void
+    )
 
     func fetch(threadUniqueId: String, tx: DBReadTransaction) -> TSThread?
 
@@ -410,11 +413,14 @@ public class _CloudBackup_TSThreadWrapper: _CloudBackup_TSThreadShim {
         try ThreadFinder().enumerateGroupThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
-    public func enumerateAll(tx: DBReadTransaction, block: @escaping (TSThread) -> Void) {
+    public func enumerateAll(
+        tx: DBReadTransaction,
+        block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
         TSThread.anyEnumerate(
             transaction: SDSDB.shimOnlyBridge(tx),
-            block: { thread, _ in
-                block(thread)
+            block: { thread, stop in
+                block(thread, stop)
             }
         )
     }

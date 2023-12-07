@@ -10,6 +10,7 @@ public class NotImplementedError: Error {}
 
 public class CloudBackupManagerImpl: CloudBackupManager {
 
+    private let chatArchiver: CloudBackupChatArchiver
     private let dateProvider: DateProvider
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
@@ -20,6 +21,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
     private let tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
 
     public init(
+        chatArchiver: CloudBackupChatArchiver,
         dateProvider: @escaping DateProvider,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -29,6 +31,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         tsInteractionFetcher: CloudBackup.Shims.TSInteractionFetcher,
         tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
     ) {
+        self.chatArchiver = chatArchiver
         self.dateProvider = dateProvider
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
@@ -103,14 +106,27 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         case .completeFailure(let error):
             throw error
         }
-        let chatIdMap = try writeThreads(
-            recipientContext: recipientArchivingContext,
+
+        let chatArchivingContext = CloudBackup.ChatArchivingContext(
+            recipientContext: recipientArchivingContext
+        )
+        let chatArchiveResult = chatArchiver.archiveChats(
             stream: stream,
+            context: chatArchivingContext,
             tx: tx
         )
+        switch chatArchiveResult {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            // TODO: how many failures is too many?
+            Logger.warn("Failed to serialize \(partialFailures.count) chats")
+        case .completeFailure(let error):
+            throw error
+        }
         try writeMessages(
             recipientContext: recipientArchivingContext,
-            chatMap: chatIdMap,
+            chatContext: chatArchivingContext,
             stream: stream,
             tx: tx
         )
@@ -131,95 +147,9 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         }
     }
 
-    private func writeThreads(
-        recipientContext: CloudBackup.RecipientArchivingContext,
-        stream: CloudBackupProtoOutputStream,
-        tx: DBReadTransaction
-    ) throws -> [String: UInt64] {
-        var currentChatId: UInt64 = 1
-        var idMap = [String: UInt64]()
-
-        var firstError: Error?
-
-        var pinnedOrder: UInt32 = 0
-
-        tsThreadFetcher.enumerateAll(tx: tx) { thread in
-            do {
-                guard thread is TSGroupThread || thread is TSContactThread else {
-                    return
-                }
-                let contactAddress = (thread as? TSContactThread)?.contactAddress
-
-                let recipientProtoId: CloudBackup.RecipientId
-                if
-                    let groupId = (thread as? TSGroupThread)?.groupId,
-                    let id = recipientContext[.group(groupId)]
-                {
-                    recipientProtoId = id
-                } else if
-                    let contactAddress = (thread as? TSContactThread)?.contactAddress,
-                    let id = recipientContext[contactAddress]
-                {
-                    recipientProtoId = id
-                } else {
-                    owsFailDebug("Missing proto recipient id!")
-                    return
-                }
-
-                let threadAssociatedData = self.tsThreadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
-
-                let thisThreadPinnedOrder: UInt32
-                if self.tsThreadFetcher.isThreadPinned(thread) {
-                    pinnedOrder += 1
-                    thisThreadPinnedOrder = pinnedOrder
-                } else {
-                    // Hardcoded 0 for unpinned.
-                    thisThreadPinnedOrder = 0
-                }
-
-                let chatBuilder = BackupProtoChat.builder(
-                    id: currentChatId,
-                    recipientID: recipientProtoId.value,
-                    archived: threadAssociatedData.isArchived,
-                    // TODO: proper pinned thread ordering
-                    pinnedOrder: thisThreadPinnedOrder,
-                    // TODO: should this be millis? or seconds?
-                    expirationTimerMs: UInt64(self.dmConfigurationStore.durationSeconds(for: thread, tx: tx)),
-                    muteUntilMs: threadAssociatedData.mutedUntilTimestamp,
-                    markedUnread: threadAssociatedData.isMarkedUnread,
-                    // TODO: this is commented out on storageService? ignoring for now.
-                    dontNotifyForMentionsIfMuted: false
-                )
-                idMap[thread.uniqueId] = currentChatId
-                currentChatId += 1
-
-                let chatProto = try chatBuilder.build()
-                let frameBuilder = BackupProtoFrame.builder()
-                frameBuilder.setChat(chatProto)
-                let frame = try frameBuilder.build()
-
-                switch stream.writeFrame(frame) {
-                case .success:
-                    break
-                case .fileIOError(let error), .protoSerializationError(let error):
-                    throw error
-                }
-
-            } catch let error {
-                firstError = firstError ?? error
-            }
-        }
-
-        if let firstError {
-            throw firstError
-        }
-
-        return idMap
-    }
-
     private func writeMessages(
         recipientContext: CloudBackup.RecipientArchivingContext,
-        chatMap: [String: UInt64],
+        chatContext: CloudBackup.ChatArchivingContext,
         stream: CloudBackupProtoOutputStream,
         tx: DBReadTransaction
     ) throws {
@@ -236,7 +166,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                     // TODO: handle remotely deleted messages
                     return
                 }
-                guard let chatId = chatMap[message.uniqueThreadId] else {
+                guard let chatId = chatContext[message.uniqueThreadIdentifier] else {
                     owsFailDebug("Message missing chat")
                     return
                 }
@@ -247,7 +177,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 }
 
                 let chatItemBuilder = BackupProtoChatItem.builder(
-                    chatID: chatId,
+                    chatID: chatId.value,
                     authorID: authorId.value,
                     dateSent: message.timestamp,
                     sms: false
@@ -430,7 +360,9 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
 
         let recipientContext = CloudBackup.RecipientRestoringContext()
-        var threadUniqueIdMap = [UInt64: String]()
+        let chatContext = CloudBackup.ChatRestoringContext(
+            recipientContext: recipientContext
+        )
 
         while hasMoreFrames {
             let frame: BackupProtoFrame
@@ -461,24 +393,42 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                         throw dbError
                     case .invalidProtoData:
                         throw OWSAssertionError("Invalid proto data!")
-                    case .identifierNotFound:
+                    case .identifierNotFound, .referencedDatabaseObjectNotFound:
                         throw OWSAssertionError("Recipients are the root objects, should be impossible!")
                     case .unknownFrameType:
                         throw OWSAssertionError("Found unrecognized frame type")
                     }
                 }
             } else if let chat = frame.chat {
-                try handleReadChat(
+                let chatResult = chatArchiver.restore(
                     chat,
-                    recipientContext: recipientContext,
-                    threadUniqueIdMap: &threadUniqueIdMap,
+                    context: chatContext,
                     tx: tx
                 )
+                switch chatResult {
+                case .success:
+                    continue
+                case .failure(_, let error):
+                    // TODO: maybe track which IDs failed to attribute later failures
+                    // that reference this ID.
+                    switch error {
+                    case .databaseInsertionFailed(let dbError):
+                        throw dbError
+                    case .invalidProtoData:
+                        throw OWSAssertionError("Invalid proto data!")
+                    case .identifierNotFound, .referencedDatabaseObjectNotFound:
+                        // TODO: can we attribute the failure to a recipient proto
+                        // that had an error? (vs one that just wasn't present at all)
+                        throw OWSAssertionError("Referenced object doesn't exist!")
+                    case .unknownFrameType:
+                        throw OWSAssertionError("Found unrecognized frame type")
+                    }
+                }
             } else if let chatItem = frame.chatItem {
                 try handleReadChatItem(
                     chatItem: chatItem,
                     recipientContext: recipientContext,
-                    threadUniqueIdMap: threadUniqueIdMap,
+                    chatContext: chatContext,
                     tx: tx
                 )
             }
@@ -487,87 +437,10 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         return stream.closeFileStream()
     }
 
-    private func handleReadChat(
-        _ chatProto: BackupProtoChat,
-        recipientContext: CloudBackup.RecipientRestoringContext,
-        threadUniqueIdMap: inout [UInt64: String],
-        tx: DBWriteTransaction
-    ) throws {
-        let thread: TSThread
-        switch recipientContext[chatProto.recipientId] {
-        case .none:
-            owsFailDebug("Missing recipient for chat!")
-            return
-        case .noteToSelf:
-            // TODO: handle note to self chat, create the tsThread
-            return
-        case .group(let groupId):
-            // We don't create the group thread here; that happened when parsing the Group.
-            // Instead, just set metadata.
-            guard let groupThread = tsThreadFetcher.fetch(groupId: groupId, tx: tx) else {
-                return
-            }
-            thread = groupThread
-        case let .contact(aci, pni, e164):
-            let address = SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: e164?.stringValue)
-            thread = tsThreadFetcher.getOrCreateContactThread(with: address, tx: tx)
-        }
-
-        threadUniqueIdMap[chatProto.id] = thread.uniqueId
-
-        var associatedDataNeedsUpdate = false
-        var isArchived: Bool?
-        var isMarkedUnread: Bool?
-        var mutedUntilTimestamp: UInt64?
-
-        // TODO: should probably unarchive if set to false?
-        if chatProto.archived {
-            associatedDataNeedsUpdate = true
-            isArchived = true
-        }
-        if chatProto.markedUnread {
-            associatedDataNeedsUpdate = true
-            isMarkedUnread = true
-        }
-        if chatProto.muteUntilMs != 0 {
-            associatedDataNeedsUpdate = true
-            mutedUntilTimestamp = chatProto.muteUntilMs
-        }
-
-        if associatedDataNeedsUpdate {
-            let threadAssociatedData = tsThreadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
-            tsThreadFetcher.updateAssociatedData(
-                threadAssociatedData,
-                isArchived: isArchived,
-                isMarkedUnread: isMarkedUnread,
-                mutedUntilTimestamp: mutedUntilTimestamp,
-                tx: tx
-            )
-        }
-        // TODO: recover pinned chat ordering
-        if chatProto.pinnedOrder != 0 {
-            do {
-                try tsThreadFetcher.pinThread(thread, tx: tx)
-            } catch {
-                // TODO: we might pin a thread thats already pinned.
-                // Ignore this error, but ideally catch others.
-            }
-        }
-
-        if chatProto.expirationTimerMs != 0 {
-            // TODO: should this be millis? or seconds?
-            dmConfigurationStore.set(
-                token: .init(isEnabled: true, durationSeconds: UInt32(chatProto.expirationTimerMs)),
-                for: .thread(thread),
-                tx: tx
-            )
-        }
-    }
-
     private func handleReadChatItem(
         chatItem: BackupProtoChatItem,
         recipientContext: CloudBackup.RecipientRestoringContext,
-        threadUniqueIdMap: [UInt64: String],
+        chatContext: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) throws {
         guard let standardMessage = chatItem.standardMessage else {
@@ -576,8 +449,8 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         }
 
         guard
-            let threadUniqueId = threadUniqueIdMap[chatItem.chatID],
-            let thread = tsThreadFetcher.fetch(threadUniqueId: threadUniqueId, tx: tx)
+            let threadUniqueId = chatContext[chatItem.chatId],
+            let thread = tsThreadFetcher.fetch(threadUniqueId: threadUniqueId.value, tx: tx)
         else {
             owsFailDebug("Missing thread for message!")
             return

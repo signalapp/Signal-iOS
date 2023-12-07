@@ -10,6 +10,11 @@ extension CloudBackup {
         case protoSerializationError(Error)
         case fileIOError(Error)
 
+        /// The object we are archiving references another object that should have an id assigned
+        /// in the proto, but does not.
+        /// e.g. we try to archive a message to a recipient aci, but that aci has no ``CloudBackup.RecipientId``.
+        case referencedIdMissing
+
         /// An error generating the master key for a group, causing the group to be skipped.
         case groupMasterKeyError(Error)
     }
@@ -35,6 +40,10 @@ extension CloudBackup {
         case identifierNotFound
         /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
         case invalidProtoData
+        /// The object being inserted depended on another object that should have been created
+        /// earlier but was not.
+        /// e.g. a message being inserted needs a TSThread to have been created from the chat.
+        case referencedDatabaseObjectNotFound
         case databaseInsertionFailed(Error)
         /// The contents of the frame are not recognized by any archiver and were ignored.
         case unknownFrameType
