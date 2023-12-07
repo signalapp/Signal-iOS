@@ -15,7 +15,8 @@ final class GroupCallRecordManagerTest: XCTestCase {
     private var mockTSAccountManager: MockTSAccountManager!
 
     private var mockDB: MockDB!
-    private var groupCallRecordManager: SnoopingGroupCallRecordManagerImpl!
+    private var snoopingGroupCallRecordManager: SnoopingGroupCallRecordManagerImpl!
+    private var groupCallRecordManager: GroupCallRecordManagerImpl!
 
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
@@ -24,7 +25,13 @@ final class GroupCallRecordManagerTest: XCTestCase {
         mockTSAccountManager = MockTSAccountManager()
 
         mockDB = MockDB()
-        groupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
+        snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
+            callRecordStore: mockCallRecordStore,
+            interactionStore: mockInteractionStore,
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
+            tsAccountManager: mockTSAccountManager
+        )
+        groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
             outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
@@ -47,6 +54,58 @@ final class GroupCallRecordManagerTest: XCTestCase {
         return (thread, interaction)
     }
 
+    // MARK: - Create or update record
+
+    func testCreateOrUpdate_CallsCreateAndInsertsInteraction() {
+        let (thread, _) = createInteraction()
+
+        mockDB.write { tx in
+            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+                callId: .maxRandom,
+                groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
+                callDirection: .incoming,
+                groupCallStatus: .joined,
+                callEventTimestamp: .maxRandomInt64Compat,
+                shouldSendSyncMessage: true,
+                tx: tx
+            )
+        }
+
+        XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 1)
+        XCTAssertTrue(snoopingGroupCallRecordManager.didAskToCreate)
+    }
+
+    func testCreateOrUpdate_CallsUpdate() {
+        let (thread, interaction) = createInteraction()
+
+        let callRecord = CallRecord(
+            callId: .maxRandom,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
+            callType: .groupCall,
+            callDirection: .incoming,
+            callStatus: .group(.generic),
+            callBeganTimestamp: .maxRandomInt64Compat
+        )
+        mockCallRecordStore.callRecords.append(callRecord)
+
+        mockDB.write { tx in
+            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+                callId: callRecord.callId,
+                groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
+                callDirection: .incoming,
+                groupCallStatus: .joined,
+                callEventTimestamp: .maxRandomInt64Compat,
+                shouldSendSyncMessage: true,
+                tx: tx
+            )
+        }
+
+        XCTAssertTrue(snoopingGroupCallRecordManager.didAskToUpdate)
+    }
+
     // MARK: - Create group call record
 
     func testCreateGroupCallRecord() {
@@ -57,7 +116,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createGroupCallRecord(
                 callId: .maxRandom,
                 groupCallInteraction: interaction1,
+                groupCallInteractionRowId: interaction1.sqliteRowId!,
                 groupThread: thread1,
+                groupThreadRowId: thread1.sqliteRowId!,
                 callDirection: .outgoing,
                 groupCallStatus: .joined,
                 callEventTimestamp: .maxRandomInt64Compat,
@@ -73,7 +134,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createGroupCallRecord(
                 callId: .maxRandom,
                 groupCallInteraction: interaction2,
+                groupCallInteractionRowId: interaction2.sqliteRowId!,
                 groupThread: thread2,
+                groupThreadRowId: thread2.sqliteRowId!,
                 callDirection: .outgoing,
                 groupCallStatus: .joined,
                 callEventTimestamp: .maxRandomInt64Compat,
@@ -93,7 +156,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createGroupCallRecordForPeek(
                 callId: .maxRandom,
                 groupCallInteraction: interaction,
+                groupCallInteractionRowId: interaction.sqliteRowId!,
                 groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
                 tx: tx
             )
         }
@@ -109,28 +174,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
-    // MARK: - Create or update record
+    // MARK: Update record
 
-    func testCreateOrUpdate_CallsCreateAndInsertsInteraction() {
-        let (thread, _) = createInteraction()
-
-        mockDB.write { tx in
-            groupCallRecordManager.createOrUpdateCallRecord(
-                callId: .maxRandom,
-                groupThread: thread,
-                callDirection: .incoming,
-                groupCallStatus: .joined,
-                callEventTimestamp: .maxRandomInt64Compat,
-                shouldSendSyncMessage: true,
-                tx: tx
-            )
-        }
-
-        XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 1)
-        XCTAssertEqual(groupCallRecordManager.didAskToCreateRecordStatus, .joined)
-    }
-
-    func testCreateOrUpdate_Updates() {
+    func testUpdate_Updates() {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -148,6 +194,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
                 callDirection: .outgoing,
                 groupCallStatus: .ringingAccepted,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
@@ -161,7 +208,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
-    func testCreateOrUpdate_UpdateSkipsDirectionAndSyncMessage() {
+    func testUpdate_SkipsDirectionAndSyncMessage() {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -179,6 +226,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
                 callDirection: .incoming,
                 groupCallStatus: .joined,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
@@ -192,7 +240,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
-    func testCreateOrUpdate_UpdateSkipsSyncMessageIfStatusTransitionDisallowed() {
+    func testUpdate_SkipsSyncMessageIfStatusTransitionDisallowed() {
         let (thread, interaction) = createInteraction()
 
         let callRecord = CallRecord(
@@ -201,7 +249,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             threadRowId: thread.sqliteRowId!,
             callType: .groupCall,
             callDirection: .incoming,
-            callStatus: .group(.generic),
+            callStatus: .group(.joined),
             callBeganTimestamp: .maxRandomInt64Compat
         )
         mockCallRecordStore.callRecords.append(callRecord)
@@ -211,8 +259,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.createOrUpdateCallRecord(
                 callId: callRecord.callId,
                 groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
                 callDirection: .incoming,
-                groupCallStatus: .joined,
+                groupCallStatus: .generic,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
                 shouldSendSyncMessage: true,
                 tx: tx
@@ -220,8 +269,38 @@ final class GroupCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordDirectionTo)
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .group(.joined))
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .group(.generic))
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+    }
+
+    func testUpdate_UpdatesCallBeganTimestamp() {
+        let (thread, interaction) = createInteraction()
+
+        let callRecord = CallRecord(
+            callId: .maxRandom,
+            interactionRowId: interaction.sqliteRowId!,
+            threadRowId: thread.sqliteRowId!,
+            callType: .groupCall,
+            callDirection: .incoming,
+            callStatus: .group(.joined),
+            callBeganTimestamp: .maxRandomInt64Compat
+        )
+        mockCallRecordStore.callRecords.append(callRecord)
+
+        mockDB.write { tx in
+            groupCallRecordManager.createOrUpdateCallRecord(
+                callId: callRecord.callId,
+                groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
+                callDirection: .incoming,
+                groupCallStatus: .generic,
+                callEventTimestamp: callRecord.callBeganTimestamp - 5,
+                shouldSendSyncMessage: true,
+                tx: tx
+            )
+        }
+
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateTimestampTo, callRecord.callBeganTimestamp - 5)
     }
 
     // MARK: - Update call began timestamp
@@ -263,16 +342,21 @@ final class GroupCallRecordManagerTest: XCTestCase {
 // MARK: - SnoopingGroupCallRecordManagerImpl
 
 /// In testing ``GroupCallRecordManagerImpl``'s `createOrUpdate` method, we only
-/// really care to test that the `create` method is called correctly. That
-/// method's real implementation is tested separately.
+/// really care to test that the `create` and `update` methods are called
+/// correctly. Those methods' real implementations are tested separately.
 ///
-/// This calss snoops on the `create` method so we can verify it's being called.
+/// This class snoops on those methods so we can verify they're being called.
 private class SnoopingGroupCallRecordManagerImpl: GroupCallRecordManagerImpl {
-    var didAskToCreateRecordStatus: CallRecord.CallStatus.GroupCallStatus?
+    var didAskToCreate = false
+    override func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+        didAskToCreate = true
+        return nil
+    }
 
-    override func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupThread: TSGroupThread, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
-        didAskToCreateRecordStatus = groupCallStatus
-        return super.createGroupCallRecord(callId: callId, groupCallInteraction: groupCallInteraction, groupThread: groupThread, callDirection: callDirection, groupCallStatus: groupCallStatus, callEventTimestamp: callEventTimestamp, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
+    var didAskToUpdate = false
+    override func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+        didAskToUpdate = true
+        return
     }
 }
 

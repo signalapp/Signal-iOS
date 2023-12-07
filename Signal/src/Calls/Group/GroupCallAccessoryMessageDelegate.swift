@@ -232,6 +232,11 @@ private extension GroupCallRecordManager {
         joinTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
+        guard let groupThreadRowId = groupThread.sqliteRowId else {
+            owsFailDebug("Missing SQLite row ID for thread!")
+            return
+        }
+
         let callId = callIdFromEra(eraId)
         let groupCallStatus: CallRecord.CallStatus.GroupCallStatus
         let callDirection: CallRecord.CallDirection
@@ -259,6 +264,7 @@ private extension GroupCallRecordManager {
         createOrUpdateCallRecord(
             callId: callId,
             groupThread: groupThread,
+            groupThreadRowId: groupThreadRowId,
             callDirection: callDirection,
             groupCallStatus: groupCallStatus,
             callEventTimestamp: joinTimestamp,
@@ -277,9 +283,15 @@ private extension GroupCallRecordManager {
         groupThread: TSGroupThread,
         tx: SDSAnyWriteTransaction
     ) {
+        guard let groupThreadRowId = groupThread.sqliteRowId else {
+            owsFailDebug("Missing SQLite row ID for thread!")
+            return
+        }
+
         createOrUpdateCallRecord(
             callId: callIdFromRingId(ringId),
             groupThread: groupThread,
+            groupThreadRowId: groupThreadRowId,
             callDirection: .incoming,
             groupCallStatus: .ringingNotAccepted,
             callEventTimestamp: Date().ows_millisecondsSince1970,

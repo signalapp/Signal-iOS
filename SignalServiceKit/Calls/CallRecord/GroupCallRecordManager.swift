@@ -6,11 +6,25 @@
 import LibSignalClient
 
 public protocol GroupCallRecordManager {
+    /// Create or update a group call record with the given parameters.
+    func createOrUpdateCallRecord(
+        callId: UInt64,
+        groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
+        callDirection: CallRecord.CallDirection,
+        groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        callEventTimestamp: UInt64,
+        shouldSendSyncMessage: Bool,
+        tx: DBWriteTransaction
+    )
+
     /// Create a group call record with the given parameters.
     func createGroupCallRecord(
         callId: UInt64,
         groupCallInteraction: OWSGroupCallMessage,
+        groupCallInteractionRowId: Int64,
         groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
@@ -18,12 +32,12 @@ public protocol GroupCallRecordManager {
         tx: DBWriteTransaction
     ) -> CallRecord?
 
-    /// Create or update a group call record with the given parameters.
-    func createOrUpdateCallRecord(
-        callId: UInt64,
+    /// Update an group existing call record with the given parameters.
+    func updateGroupCallRecord(
         groupThread: TSGroupThread,
-        callDirection: CallRecord.CallDirection,
-        groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        existingCallRecord: CallRecord,
+        newCallDirection: CallRecord.CallDirection,
+        newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
@@ -53,13 +67,17 @@ public extension GroupCallRecordManager {
     func createGroupCallRecordForPeek(
         callId: UInt64,
         groupCallInteraction: OWSGroupCallMessage,
+        groupCallInteractionRowId: Int64,
         groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
         tx: DBWriteTransaction
     ) -> CallRecord? {
         createGroupCallRecord(
             callId: callId,
             groupCallInteraction: groupCallInteraction,
+            groupCallInteractionRowId: groupCallInteractionRowId,
             groupThread: groupThread,
+            groupThreadRowId: groupThreadRowId,
             callDirection: .incoming,
             groupCallStatus: .generic,
             callEventTimestamp: groupCallInteraction.timestamp,
@@ -87,64 +105,16 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         self.outgoingSyncMessageManager = outgoingSyncMessageManager
     }
 
-    public func createGroupCallRecord(
-        callId: UInt64,
-        groupCallInteraction: OWSGroupCallMessage,
-        groupThread: TSGroupThread,
-        callDirection: CallRecord.CallDirection,
-        groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
-        callEventTimestamp: UInt64,
-        shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
-    ) -> CallRecord? {
-        guard
-            let threadRowId = groupThread.sqliteRowId,
-            let callInteractionRowId = groupCallInteraction.sqliteRowId
-        else {
-            logger.error("Missing SQLite row ID for models!")
-            return nil
-        }
-
-        let newCallRecord = CallRecord(
-            callId: callId,
-            interactionRowId: callInteractionRowId,
-            threadRowId: threadRowId,
-            callType: .groupCall,
-            callDirection: callDirection,
-            callStatus: .group(groupCallStatus),
-            callBeganTimestamp: groupCallInteraction.timestamp
-        )
-
-        guard callRecordStore.insert(
-            callRecord: newCallRecord, tx: tx
-        ) else { return nil }
-
-        if shouldSendSyncMessage {
-            outgoingSyncMessageManager.sendSyncMessage(
-                groupThread: groupThread,
-                callRecord: newCallRecord,
-                callEventTimestamp: callEventTimestamp,
-                tx: tx
-            )
-        }
-
-        return newCallRecord
-    }
-
     public func createOrUpdateCallRecord(
         callId: UInt64,
         groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
-        guard let groupThreadRowId = groupThread.sqliteRowId else {
-            logger.error("Missing SQLite row ID for thread!")
-            return
-        }
-
         if let existingCallRecord = callRecordStore.fetch(
             callId: callId,
             threadRowId: groupThreadRowId,
@@ -168,10 +138,16 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             )
             interactionStore.insertInteraction(newGroupCallInteraction, tx: tx)
 
+            guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
+                owsFail("Missing SQLite row ID for just-inserted interaction!")
+            }
+
             _ = createGroupCallRecord(
                 callId: callId,
                 groupCallInteraction: newGroupCallInteraction,
+                groupCallInteractionRowId: interactionRowId,
                 groupThread: groupThread,
+                groupThreadRowId: groupThreadRowId,
                 callDirection: callDirection,
                 groupCallStatus: groupCallStatus,
                 callEventTimestamp: callEventTimestamp,
@@ -181,23 +157,45 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         }
     }
 
-    public func updateCallBeganTimestampIfEarlier(
-        existingCallRecord: CallRecord,
+    public func createGroupCallRecord(
+        callId: UInt64,
+        groupCallInteraction: OWSGroupCallMessage,
+        groupCallInteractionRowId: Int64,
+        groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
+        callDirection: CallRecord.CallDirection,
+        groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
+        shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
-    ) {
-        guard callEventTimestamp < existingCallRecord.callBeganTimestamp else {
-            return
+    ) -> CallRecord? {
+        let newCallRecord = CallRecord(
+            callId: callId,
+            interactionRowId: groupCallInteractionRowId,
+            threadRowId: groupThreadRowId,
+            callType: .groupCall,
+            callDirection: callDirection,
+            callStatus: .group(groupCallStatus),
+            callBeganTimestamp: groupCallInteraction.timestamp
+        )
+
+        guard callRecordStore.insert(
+            callRecord: newCallRecord, tx: tx
+        ) else { return nil }
+
+        if shouldSendSyncMessage {
+            outgoingSyncMessageManager.sendSyncMessage(
+                groupThread: groupThread,
+                callRecord: newCallRecord,
+                callEventTimestamp: callEventTimestamp,
+                tx: tx
+            )
         }
 
-        _ = callRecordStore.updateTimestamp(
-            callRecord: existingCallRecord,
-            newCallBeganTimestamp: callEventTimestamp,
-            tx: tx
-        )
+        return newCallRecord
     }
 
-    private func updateGroupCallRecord(
+    public func updateGroupCallRecord(
         groupThread: TSGroupThread,
         existingCallRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
@@ -206,6 +204,14 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
+        /// Any time we're updating a group call record, we should check for a
+        /// call-began timestamp earlier than the one we're aware of.
+        updateCallBeganTimestampIfEarlier(
+            existingCallRecord: existingCallRecord,
+            callEventTimestamp: callEventTimestamp,
+            tx: tx
+        )
+
         if existingCallRecord.callDirection != newCallDirection {
             guard callRecordStore.updateDirection(
                 callRecord: existingCallRecord,
@@ -228,5 +234,21 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 tx: tx
             )
         }
+    }
+
+    public func updateCallBeganTimestampIfEarlier(
+        existingCallRecord: CallRecord,
+        callEventTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        guard callEventTimestamp < existingCallRecord.callBeganTimestamp else {
+            return
+        }
+
+        _ = callRecordStore.updateTimestamp(
+            callRecord: existingCallRecord,
+            newCallBeganTimestamp: callEventTimestamp,
+            tx: tx
+        )
     }
 }

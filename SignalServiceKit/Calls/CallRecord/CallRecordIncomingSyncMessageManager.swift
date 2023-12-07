@@ -47,8 +47,8 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        switch incomingSyncMessage.conversationParams {
-        case let .oneToOne(contactServiceId, individualCallStatus, individualCallInteractionType):
+        switch incomingSyncMessage.conversationType {
+        case let .individual(contactServiceId):
             guard
                 let contactThread = fetchThread(
                     contactServiceId: contactServiceId, tx: tx
@@ -59,24 +59,35 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 return
             }
 
+            let individualCallStatus: CallRecord.CallStatus.IndividualCallStatus = {
+                switch incomingSyncMessage.callEvent {
+                case .accepted: return .accepted
+                case .notAccepted: return .notAccepted
+                }
+            }()
+
+            let individualCallInteractionType: RPRecentCallType = {
+                switch (incomingSyncMessage.callDirection, incomingSyncMessage.callEvent) {
+                case (.incoming, .accepted): return .incomingAnsweredElsewhere
+                case (.incoming, .notAccepted): return .incomingDeclinedElsewhere
+                case (.outgoing, .accepted): return .outgoing
+                case (.outgoing, .notAccepted): return .outgoingMissed
+                }
+            }()
+
             if let existingCallRecord = callRecordStore.fetch(
                 callId: incomingSyncMessage.callId,
                 threadRowId: contactThreadRowId,
                 tx: tx
             ) {
-                guard
-                    let existingCallInteraction: TSCall = interactionStore.fetchAssociatedInteraction(
-                        callRecord: existingCallRecord, tx: tx
-                    ),
-                    let existingCallThread: TSContactThread = threadStore.fetchAssociatedThread(
-                        callRecord: existingCallRecord, tx: tx
-                    )
-                else { return }
+                guard let existingCallInteraction: TSCall = interactionStore.fetchAssociatedInteraction(
+                    callRecord: existingCallRecord, tx: tx
+                ) else { return }
 
                 updateIndividualCallRecordForIncomingSyncMessage(
                     existingCallRecord: existingCallRecord,
                     existingCallInteraction: existingCallInteraction,
-                    existingCallThread: existingCallThread,
+                    existingCallThread: contactThread,
                     newIndividualCallStatus: individualCallStatus,
                     newIndividualCallInteractionType: individualCallInteractionType,
                     syncMessageTimestamp: syncMessageTimestamp,
@@ -96,12 +107,122 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     tx: tx
                 )
             }
-        case .group:
-            logger.warn("Not handling incoming call event sync message for group!")
+        case let .group(groupId):
+            guard FeatureFlags.groupCallDispositionSyncMessages else {
+                logger.warn("Dropping incoming group call disposition sync message – feature not yet supported!")
+                return
+            }
+
+            guard
+                let groupThread = fetchThread(groupId: groupId, tx: tx),
+                let groupThreadRowId = groupThread.sqliteRowId
+            else {
+                logger.error("Missing group thread for incoming call event sync message!")
+                return
+            }
+
+            if let existingCallRecord = callRecordStore.fetch(
+                callId: incomingSyncMessage.callId,
+                threadRowId: groupThreadRowId,
+                tx: tx
+            ) {
+                guard let existingCallInteraction: OWSGroupCallMessage = interactionStore.fetchAssociatedInteraction(
+                    callRecord: existingCallRecord, tx: tx
+                ) else { return }
+
+                guard case let .group(existingCallStatus) = existingCallRecord.callStatus else {
+                    logger.error("Missing group call status for group call record!")
+                    return
+                }
+
+                switch incomingSyncMessage.callDirection {
+                case .incoming:
+                    break
+                case .outgoing:
+                    switch incomingSyncMessage.callEvent {
+                    case .accepted:
+                        logger.error("We shouldn't have an existing call record for a sync message about an outgoing, accepted call.")
+                    case .notAccepted:
+                        logger.error("How did we decline an outgoing call?")
+                    }
+
+                    return
+                }
+
+                let newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus = {
+                    switch incomingSyncMessage.callEvent {
+                    case .accepted:
+                        // We joined on another device. If we knew about ringing
+                        // on this device we know the ringing was accepted, and
+                        // otherwise it was a non-ringing join.
+                        switch existingCallStatus {
+                        case .generic, .joined:
+                            return .joined
+                        case .ringingAccepted, .ringingNotAccepted, .incomingRingingMissed:
+                            return .ringingAccepted
+                        }
+                    case .notAccepted:
+                        // We declined on another device. If we joined the call
+                        // on this device, we'll prefer that status.
+                        switch existingCallStatus {
+                        case .generic, .incomingRingingMissed, .ringingNotAccepted:
+                            return .ringingNotAccepted
+                        case .joined, .ringingAccepted:
+                            return existingCallStatus
+                        }
+                    }
+                }()
+
+                updateGroupCallRecordForIncomingSyncMessage(
+                    existingCallRecord: existingCallRecord,
+                    existingCallInteraction: existingCallInteraction,
+                    existingGroupThread: groupThread,
+                    newGroupCallStatus: newGroupCallStatus,
+                    callEventTimestamp: incomingSyncMessage.callTimestamp,
+                    syncMessageTimestamp: syncMessageTimestamp,
+                    tx: tx
+                )
+            } else {
+                let groupCallStatus: CallRecord.CallStatus.GroupCallStatus
+
+                switch (incomingSyncMessage.callDirection, incomingSyncMessage.callEvent) {
+                case (.outgoing, .notAccepted):
+                    logger.error("How did we decline a call we started?")
+                    return
+                case (.outgoing, .accepted):
+                    // We don't track the status of outgoing group rings, so
+                    // we'll assume the ringing was accepted.
+                    groupCallStatus = .ringingAccepted
+                case (.incoming, .accepted):
+                    // Unclear if there was ringing involved. If so, we'll
+                    // update the call record to reflect that if we get the ring
+                    // update.
+                    groupCallStatus = .joined
+                case (.incoming, .notAccepted):
+                    // We only send this combination for ring declines, so we
+                    // can assume that's what this was.
+                    groupCallStatus = .ringingNotAccepted
+                }
+
+                createGroupCallRecordForIncomingSyncMessage(
+                    callId: incomingSyncMessage.callId,
+                    groupThread: groupThread,
+                    groupThreadRowId: groupThreadRowId,
+                    callDirection: incomingSyncMessage.callDirection,
+                    groupCallStatus: groupCallStatus,
+                    callEventTimestamp: incomingSyncMessage.callTimestamp,
+                    syncMessageTimestamp: syncMessageTimestamp,
+                    tx: tx
+                )
+            }
         }
     }
+}
 
-    private func updateIndividualCallRecordForIncomingSyncMessage(
+// MARK: - Individual call
+
+private extension CallRecordIncomingSyncMessageManagerImpl {
+    func updateIndividualCallRecordForIncomingSyncMessage(
         existingCallRecord: CallRecord,
         existingCallInteraction: TSCall,
         existingCallThread: TSContactThread,
@@ -110,6 +231,8 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
+        logger.info("Updating 1:1 call record and interaction from incoming sync message.")
+
         interactionStore.updateIndividualCallInteractionType(
             individualCallInteraction: existingCallInteraction,
             newCallInteractionType: newIndividualCallInteractionType,
@@ -132,7 +255,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         )
     }
 
-    private func createIndividualCallRecordForIncomingSyncMessage(
+    func createIndividualCallRecordForIncomingSyncMessage(
         contactThread: TSContactThread,
         contactThreadRowId: Int64,
         callId: UInt64,
@@ -178,8 +301,90 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
             tx: tx
         )
     }
+}
 
-    private func markThingsAsReadForIncomingSyncMessage(
+// MARK: - Group calls
+
+private extension CallRecordIncomingSyncMessageManagerImpl {
+    func updateGroupCallRecordForIncomingSyncMessage(
+        existingCallRecord: CallRecord,
+        existingCallInteraction: OWSGroupCallMessage,
+        existingGroupThread: TSGroupThread,
+        newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        callEventTimestamp: UInt64,
+        syncMessageTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        logger.info("Updating group call record for incoming sync message.")
+
+        groupCallRecordManager.updateGroupCallRecord(
+            groupThread: existingGroupThread,
+            existingCallRecord: existingCallRecord,
+            newCallDirection: existingCallRecord.callDirection,
+            newGroupCallStatus: newGroupCallStatus,
+            callEventTimestamp: callEventTimestamp,
+            shouldSendSyncMessage: false,
+            tx: tx
+        )
+
+        markThingsAsReadForIncomingSyncMessage(
+            callInteraction: existingCallInteraction,
+            thread: existingGroupThread,
+            syncMessageTimestamp: syncMessageTimestamp,
+            tx: tx
+        )
+    }
+
+    func createGroupCallRecordForIncomingSyncMessage(
+        callId: UInt64,
+        groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
+        callDirection: CallRecord.CallDirection,
+        groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        callEventTimestamp: UInt64,
+        syncMessageTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        logger.info("Creating group call record and interaction for incoming sync message.")
+
+        let newGroupCallInteraction = OWSGroupCallMessage(
+            joinedMemberAcis: [],
+            creatorAci: nil,
+            thread: groupThread,
+            sentAtTimestamp: callEventTimestamp
+        )
+        interactionStore.insertInteraction(newGroupCallInteraction, tx: tx)
+
+        guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
+            owsFail("Missing SQLite row ID for just-inserted interaction!")
+        }
+
+        _ = groupCallRecordManager.createGroupCallRecord(
+            callId: callId,
+            groupCallInteraction: newGroupCallInteraction,
+            groupCallInteractionRowId: interactionRowId,
+            groupThread: groupThread,
+            groupThreadRowId: groupThreadRowId,
+            callDirection: callDirection,
+            groupCallStatus: groupCallStatus,
+            callEventTimestamp: callEventTimestamp,
+            shouldSendSyncMessage: false,
+            tx: tx
+        )
+
+        markThingsAsReadForIncomingSyncMessage(
+            callInteraction: newGroupCallInteraction,
+            thread: groupThread,
+            syncMessageTimestamp: syncMessageTimestamp,
+            tx: tx
+        )
+    }
+}
+
+// MARK: -
+
+private extension CallRecordIncomingSyncMessageManagerImpl {
+    func markThingsAsReadForIncomingSyncMessage(
         callInteraction: TSInteraction & OWSReadTracking,
         thread: TSThread,
         syncMessageTimestamp: UInt64,
@@ -194,9 +399,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
             tx: tx
         )
     }
-}
 
-private extension CallRecordIncomingSyncMessageManagerImpl {
     func fetchThread(
         contactServiceId: ServiceId,
         tx: DBReadTransaction
@@ -212,7 +415,13 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
 
         return contactThread
     }
+
+    func fetchThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        return threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+    }
 }
+
+// MARK: -
 
 private extension CallRecord.CallType {
     var individualCallOfferType: TSRecentCallOfferType {

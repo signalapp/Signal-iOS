@@ -11,6 +11,7 @@ public protocol ThreadStore {
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
+    func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread?
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction)
     func updateThread(_ thread: TSThread, tx: DBWriteTransaction)
 }
@@ -65,6 +66,10 @@ public class ThreadStoreImpl: ThreadStore {
 
     public func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
         ContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        TSGroupThread.fetch(groupId: groupId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -124,6 +129,12 @@ public class MockThreadStore: ThreadStore {
 
     public func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
         threads.lazy.compactMap { $0 as? TSContactThread }.filter { $0.contactPhoneNumber == phoneNumber }
+    }
+
+    public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        threads
+            .first { $0.groupModelIfGroupThread?.groupId == groupId }
+            .map { $0 as! TSGroupThread }
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {

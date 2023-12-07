@@ -168,7 +168,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
         guard
             let currentCallId,
-            let creatorAci = peekInfo.creator.map({ Aci(fromUUID: $0) })
+            let creatorAci = peekInfo.creator.map({ Aci(fromUUID: $0) }),
+            let groupThreadRowId = groupThread.sqliteRowId
         else { return }
 
         let joinedMemberAcis = peekInfo.joinedMembers.map { Aci(fromUUID: $0) }
@@ -176,11 +177,6 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         let interactionToUpdate: OWSGroupCallMessage? = {
             if let interactionForCurrentCall {
                 return interactionForCurrentCall
-            }
-
-            guard let groupThreadRowId = groupThread.sqliteRowId else {
-                owsFailDebug("Missing SQLite row ID for group thread!")
-                return nil
             }
 
             // Call IDs are server-defined, and don't reset immediately
@@ -228,6 +224,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 creatorAci: creatorAci,
                 triggerEventTimestamp: triggerEventTimestamp,
                 groupThread: groupThread,
+                groupThreadRowId: groupThreadRowId,
                 tx: tx.asV2Write
             )
 
@@ -247,6 +244,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         creatorAci: Aci?,
         triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread,
+        groupThreadRowId: Int64,
         tx: DBWriteTransaction
     ) -> OWSGroupCallMessage {
         let newGroupCallInteraction = OWSGroupCallMessage(
@@ -259,10 +257,16 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             newGroupCallInteraction, tx: tx
         )
 
+        guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
+            owsFail("Missing SQLite row ID for just-inserted interaction!")
+        }
+
         _ = groupCallRecordManager.createGroupCallRecordForPeek(
             callId: callId,
             groupCallInteraction: newGroupCallInteraction,
+            groupCallInteractionRowId: interactionRowId,
             groupThread: groupThread,
+            groupThreadRowId: groupThreadRowId,
             tx: tx
         )
 
@@ -398,6 +402,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     creatorAci: nil,
                     triggerEventTimestamp: triggerEventTimestamp,
                     groupThread: groupThread,
+                    groupThreadRowId: groupThreadRowId,
                     tx: tx.asV2Write
                 )
             }
