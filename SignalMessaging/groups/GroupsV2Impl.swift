@@ -497,10 +497,12 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         return serviceIds
     }
 
-    private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
-                                                      groupChangeProto: GroupsProtoGroupChangeActions,
-                                                      changeActionsProtoData: Data,
-                                                      groupV2Params: GroupV2Params) {
+    private func sendGroupUpdateMessageToRemovedUsers(
+        groupThread: TSGroupThread,
+        groupChangeProto: GroupsProtoGroupChangeActions,
+        changeActionsProtoData: Data,
+        groupV2Params: GroupV2Params
+    ) {
         let serviceIds = membersRemovedByChangeActions(groupChangeProto: groupChangeProto, groupV2Params: groupV2Params)
 
         guard !serviceIds.isEmpty else {
@@ -512,40 +514,32 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             return
         }
 
-        let contactThreads = databaseStorage.write { tx in
-            serviceIds.map { serviceId in
-                TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(serviceId), transaction: tx)
-            }
+        let plaintextData: Data
+        do {
+            let groupV2Context = try GroupsV2Protos.buildGroupContextV2Proto(
+                groupModel: groupModel,
+                changeActionsProtoData: changeActionsProtoData
+            )
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setGroupV2(groupV2Context)
+            dataBuilder.setRequiredProtocolVersion(1)
+
+            let dataProto = try dataBuilder.build()
+            let contentBuilder = SSKProtoContent.builder()
+            contentBuilder.setDataMessage(dataProto)
+            plaintextData = try contentBuilder.buildSerializedData()
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
         }
-        for contactThread in contactThreads {
-            let contentProtoData: Data
-            do {
-                let groupV2Context = try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel,
-                                                                                 changeActionsProtoData: changeActionsProtoData)
 
-                let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(groupV2Context)
-                dataBuilder.setRequiredProtocolVersion(1)
-
-                let dataProto = try dataBuilder.build()
-                let contentBuilder = SSKProtoContent.builder()
-                contentBuilder.setDataMessage(dataProto)
-                contentProtoData = try contentBuilder.buildSerializedData()
-            } catch {
-                owsFailDebug("Error: \(error)")
-                continue
-            }
-
-            databaseStorage.write { transaction in
-                let message = OWSStaticOutgoingMessage(thread: contactThread,
-                                                       plaintextData: contentProtoData,
-                                                       transaction: transaction)
-
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: message.asPreparer,
-                    limitToCurrentProcessLifetime: true,
-                    transaction: transaction
-                )
+        databaseStorage.write { tx in
+            for serviceId in serviceIds {
+                let address = SignalServiceAddress(serviceId)
+                let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
+                let message = OWSStaticOutgoingMessage(thread: contactThread, plaintextData: plaintextData, transaction: tx)
+                Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
             }
         }
     }

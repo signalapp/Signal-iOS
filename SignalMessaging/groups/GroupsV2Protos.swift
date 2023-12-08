@@ -244,7 +244,7 @@ public class GroupsV2Protos {
             }
         }
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     // MARK: -
