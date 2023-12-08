@@ -12,7 +12,6 @@ final class GroupCallRecordManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockInteractionStore: MockInteractionStore!
     private var mockOutgoingSyncMessageManager: MockCallRecordOutgoingSyncMessageManager!
-    private var mockTSAccountManager: MockTSAccountManager!
 
     private var mockDB: MockDB!
     private var snoopingGroupCallRecordManager: SnoopingGroupCallRecordManagerImpl!
@@ -22,20 +21,17 @@ final class GroupCallRecordManagerTest: XCTestCase {
         mockCallRecordStore = MockCallRecordStore()
         mockInteractionStore = MockInteractionStore()
         mockOutgoingSyncMessageManager = MockCallRecordOutgoingSyncMessageManager()
-        mockTSAccountManager = MockTSAccountManager()
 
         mockDB = MockDB()
         snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
-            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
-            tsAccountManager: mockTSAccountManager
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager
         )
         groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
-            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
-            tsAccountManager: mockTSAccountManager
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager
         )
     }
 
@@ -240,6 +236,10 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
+    /// We shouldn't send a sync message if we tried updating a record with a
+    /// status that's illegal per the record's current state.
+    ///
+    /// In this test, we try to illegally go from "joined" to "generic".
     func testUpdate_SkipsSyncMessageIfStatusTransitionDisallowed() {
         let (thread, interaction) = createInteraction()
 
@@ -253,7 +253,6 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callBeganTimestamp: .maxRandomInt64Compat
         )
         mockCallRecordStore.callRecords.append(callRecord)
-        mockCallRecordStore.shouldAllowStatusUpdate = false
 
         mockDB.write { tx in
             groupCallRecordManager.createOrUpdateCallRecord(
@@ -269,7 +268,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordDirectionTo)
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .group(.generic))
+        XCTAssertNil(mockCallRecordStore.askedToUpdateRecordStatusTo)
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 

@@ -214,9 +214,11 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
-    func testUpdate_noSyncMessageIfUpdateFails() {
-        mockCallRecordStore.shouldAllowStatusUpdate = false
-
+    /// We shouldn't send a sync message if we tried updating a record with a
+    /// status that's illegal per the record's current state.
+    ///
+    /// In this test, we try to illegally go from "accepted" to "pending".
+    func testUpdate_noSyncMessageIfStatusTransitionDisallowed() {
         let (thread, interaction) = createInteraction()
         let callRecord = CallRecord(
             callId: .maxRandom,
@@ -224,7 +226,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             threadRowId: thread.sqliteRowId!,
             callType: .audioCall,
             callDirection: .incoming,
-            callStatus: .individual(.notAccepted),
+            callStatus: .individual(.accepted),
             callBeganTimestamp: interaction.timestamp
         )
 
@@ -232,13 +234,13 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             individualCallRecordManager.updateRecord(
                 contactThread: thread,
                 existingCallRecord: callRecord,
-                newIndividualCallStatus: .accepted,
+                newIndividualCallStatus: .pending,
                 shouldSendSyncMessage: true,
                 tx: tx
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
+        XCTAssertNil(mockCallRecordStore.askedToUpdateRecordStatusTo)
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 

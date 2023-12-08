@@ -91,18 +91,19 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
     private let outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+    private let statusTransitionManager: GroupCallRecordStatusTransitionManager
 
     private var logger: CallRecordLogger { .shared }
 
     init(
         callRecordStore: CallRecordStore,
         interactionStore: InteractionStore,
-        outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager,
-        tsAccountManager: TSAccountManager
+        outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
     ) {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore
         self.outgoingSyncMessageManager = outgoingSyncMessageManager
+        self.statusTransitionManager = GroupCallRecordStatusTransitionManager()
     }
 
     public func createOrUpdateCallRecord(
@@ -220,7 +221,20 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             ) else { return }
         }
 
-        guard callRecordStore.updateRecordStatusIfAllowed(
+        guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
+            logger.error("Missing group call status while trying to update record!")
+            return
+        }
+
+        guard statusTransitionManager.isStatusTransitionAllowed(
+            fromGroupCallStatus: groupCallStatus,
+            toGroupCallStatus: newGroupCallStatus
+        ) else {
+            logger.warn("Status transition \(groupCallStatus) -> \(newGroupCallStatus) not allowed. Skipping record update.")
+            return
+        }
+
+        guard callRecordStore.updateRecordStatus(
             callRecord: existingCallRecord,
             newCallStatus: .group(newGroupCallStatus),
             tx: tx
@@ -250,5 +264,71 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             newCallBeganTimestamp: callEventTimestamp,
             tx: tx
         )
+    }
+}
+
+// MARK: -
+
+class GroupCallRecordStatusTransitionManager {
+    init() {}
+
+    func isStatusTransitionAllowed(
+        fromGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        toGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
+    ) -> Bool {
+        switch fromGroupCallStatus {
+        case .generic:
+            switch toGroupCallStatus {
+            case .generic: return false
+            case .joined:
+                // User joined a call started without ringing.
+                return true
+            case .ringingAccepted, .ringingNotAccepted, .incomingRingingMissed:
+                // This probably indicates a race between us opportunistically
+                // learning about a call (e.g., by peeking), and receiving a
+                // ring for that call. That's fine, but we prefer the
+                // ring-related status.
+                return true
+            }
+        case .joined:
+            switch toGroupCallStatus {
+            case .joined: return false
+            case .generic, .ringingNotAccepted, .incomingRingingMissed:
+                // Prefer the fact that we joined somewhere.
+                return false
+            case .ringingAccepted:
+                // This probably indicates a race between us opportunistically
+                // joining about a call, and receiving a ring for that call.
+                // That's fine, but we prefer the ring-related status.
+                return true
+            }
+        case .ringingAccepted:
+            switch toGroupCallStatus {
+            case .ringingAccepted: return false
+            case .generic, .joined, .ringingNotAccepted, .incomingRingingMissed:
+                // Prefer the fact that we accepted the ring somewhere.
+                return false
+            }
+        case .ringingNotAccepted:
+            switch toGroupCallStatus {
+            case .ringingNotAccepted: return false
+            case .generic, .joined, .incomingRingingMissed:
+                // Prefer the explicit ring-related status.
+                return false
+            case .ringingAccepted:
+                // Prefer the fact that we accepted the ring somewhere.
+                return true
+            }
+        case .incomingRingingMissed:
+            switch toGroupCallStatus {
+            case .incomingRingingMissed: return false
+            case .generic, .joined:
+                // Prefer the ring-related status.
+                return false
+            case .ringingAccepted, .ringingNotAccepted:
+                // Prefer the explicit ring-related status.
+                return true
+            }
+        }
     }
 }

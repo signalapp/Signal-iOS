@@ -9,17 +9,11 @@ import XCTest
 @testable import SignalServiceKit
 
 final class CallRecordStoreTest: XCTestCase {
-    private var mockStatusTransitionManager: MockCallRecordStatusTransitionManager!
-
     private var inMemoryDB = InMemoryDB()
     private var callRecordStore: ExplainingCallRecordStoreImpl!
 
     override func setUp() {
-        mockStatusTransitionManager = MockCallRecordStatusTransitionManager()
-
-        callRecordStore = ExplainingCallRecordStoreImpl(
-            statusTransitionManager: mockStatusTransitionManager
-        )
+        callRecordStore = ExplainingCallRecordStoreImpl()
     }
 
     private func makeCallRecord(
@@ -112,9 +106,9 @@ final class CallRecordStoreTest: XCTestCase {
         XCTAssertTrue(callRecord.matches(fetchedByInteractionRowId))
     }
 
-    // MARK: - updateRecordStatusIfAllowed
+    // MARK: - updateRecordStatus
 
-    func testUpdateRecordStatus_allowed() {
+    func testUpdateRecordStatus() {
         let callRecord = makeCallRecord(callStatus: .group(.generic))
 
         inMemoryDB.write { tx in
@@ -122,11 +116,11 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         inMemoryDB.write { tx in
-            callRecordStore.updateRecordStatusIfAllowed(
+            XCTAssertTrue(callRecordStore.updateRecordStatus(
                 callRecord: callRecord,
                 newCallStatus: .group(.joined),
                 db: InMemoryDB.shimOnlyBridge(tx).db
-            )
+            ))
         }
 
         let fetched = inMemoryDB.read { tx in
@@ -138,35 +132,6 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         XCTAssertEqual(callRecord.callStatus, .group(.joined))
-        XCTAssertTrue(callRecord.matches(fetched))
-    }
-
-    func testUpdateRecordStatus_notAllowed() {
-        mockStatusTransitionManager.shouldAllowStatusTransition = false
-
-        let callRecord = makeCallRecord(callStatus: .group(.generic))
-
-        inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
-        }
-
-        inMemoryDB.write { tx in
-            _ = callRecordStore.updateRecordStatusIfAllowed(
-                callRecord: callRecord,
-                newCallStatus: .group(.joined),
-                db: InMemoryDB.shimOnlyBridge(tx).db
-            )
-        }
-
-        let fetched = inMemoryDB.read { tx in
-            callRecordStore.fetch(
-                callId: callRecord.callId,
-                threadRowId: callRecord.threadRowId,
-                db: InMemoryDB.shimOnlyBridge(tx).db
-            )!
-        }
-
-        XCTAssertEqual(callRecord.callStatus, .group(.generic))
         XCTAssertTrue(callRecord.matches(fetched))
     }
 
@@ -281,13 +246,5 @@ private extension CallRecord {
         }
 
         return false
-    }
-}
-
-private final class MockCallRecordStatusTransitionManager: CallRecordStatusTransitionManager {
-    var shouldAllowStatusTransition = true
-
-    func isStatusTransitionAllowed(from _: CallRecord.CallStatus, to _: CallRecord.CallStatus) -> Bool {
-        return shouldAllowStatusTransition
     }
 }

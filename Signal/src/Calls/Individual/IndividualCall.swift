@@ -440,21 +440,22 @@ public class IndividualCall: NSObject {
         }
         guard
             let callRecord = fetchCallRecord(transaction: transaction),
-            let newStatus: CallRecord.CallStatus = CallRecord.CallStatus.IndividualCallStatus(
+            case let .individual(existingIndividualCallStatus) = callRecord.callStatus,
+            let newIndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus(
                 individualCallInteractionType: callType
-            ).map({ .individual($0) })
+            )
         else {
             return callType
         }
-        // Multiple RPRecentCallTypes can map to the same CallRecord.Status,
-        // but transitioning from a CallRecord.Status to itself is invalid.
+        // Multiple RPRecentCallTypes can map to the same CallRecord status,
+        // but transitioning from a CallRecord status to itself is invalid.
         // Catch this case by letting the RPRecentCallType through if
         // it is different (checked above) but the mapped status is the same.
         guard
-            callRecord.callStatus == newStatus
-            || DependenciesBridge.shared.callRecordStatusTransitionManager.isStatusTransitionAllowed(
-                from: callRecord.callStatus,
-                to: newStatus
+            existingIndividualCallStatus == newIndividualCallStatus
+            || IndividualCallRecordStatusTransitionManager().isStatusTransitionAllowed(
+                fromIndividualCallStatus: existingIndividualCallStatus,
+                toIndividualCallStatus: newIndividualCallStatus
             )
          else {
             return nil

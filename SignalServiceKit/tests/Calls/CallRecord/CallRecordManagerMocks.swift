@@ -23,10 +23,9 @@ class MockCallRecordStore: CallRecordStore {
     }
 
     var askedToUpdateRecordStatusTo: CallRecord.CallStatus?
-    var shouldAllowStatusUpdate = true
-    func updateRecordStatusIfAllowed(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool {
+    func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool {
         askedToUpdateRecordStatusTo = newCallStatus
-        return shouldAllowStatusUpdate
+        return true
     }
 
     var askedToUpdateRecordDirectionTo: CallRecord.CallDirection?

@@ -54,6 +54,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     private let callRecordStore: CallRecordStore
     private let interactionStore: InteractionStore
     private let outgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager
+    private let statusTransitionManager: IndividualCallRecordStatusTransitionManager
 
     private var logger: PrefixedLogger { CallRecordLogger.shared }
 
@@ -65,6 +66,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore
         self.outgoingSyncMessageManager = outgoingSyncMessageManager
+        self.statusTransitionManager = IndividualCallRecordStatusTransitionManager()
     }
 
     public func updateInteractionTypeAndRecordIfExists(
@@ -198,7 +200,20 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
-        guard callRecordStore.updateRecordStatusIfAllowed(
+        guard case let .individual(individualCallStatus) = existingCallRecord.callStatus else {
+            logger.error("Missing individual call status while trying to update record!")
+            return
+        }
+
+        guard statusTransitionManager.isStatusTransitionAllowed(
+            fromIndividualCallStatus: individualCallStatus,
+            toIndividualCallStatus: newIndividualCallStatus
+        ) else {
+            logger.warn("Status transition \(individualCallStatus) -> \(newIndividualCallStatus) not allowed. Skipping record update.")
+            return
+        }
+
+        guard callRecordStore.updateRecordStatus(
             callRecord: existingCallRecord,
             newCallStatus: .individual(newIndividualCallStatus),
             tx: tx
@@ -288,6 +303,51 @@ extension CallRecord.CallStatus.IndividualCallStatus {
         @unknown default:
             CallRecordLogger.shared.warn("Unknown call type!")
             return nil
+        }
+    }
+}
+
+// MARK: -
+
+public class IndividualCallRecordStatusTransitionManager {
+    public init() {}
+
+    public func isStatusTransitionAllowed(
+        fromIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
+        toIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus
+    ) -> Bool {
+        switch fromIndividualCallStatus {
+        case .pending:
+            switch toIndividualCallStatus {
+            case .pending: return false
+            case .accepted, .notAccepted, .incomingMissed:
+                // Pending can transition to anything.
+                return true
+            }
+        case .accepted:
+            switch toIndividualCallStatus {
+            case .accepted, .pending: return false
+            case .notAccepted, .incomingMissed:
+                // Accepted trumps declined or missed.
+                return false
+            }
+        case .notAccepted:
+            switch toIndividualCallStatus {
+            case .notAccepted, .pending: return false
+            case .accepted:
+                // Accepted trumps declined...
+                return true
+            case .incomingMissed:
+                // ...but declined trumps missed.
+                return false
+            }
+        case .incomingMissed:
+            switch toIndividualCallStatus {
+            case .incomingMissed, .pending: return false
+            case .accepted, .notAccepted:
+                // Accepted or declined trumps missed.
+                return true
+            }
         }
     }
 }

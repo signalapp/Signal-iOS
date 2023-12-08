@@ -43,7 +43,6 @@ public class DependenciesBridge {
     public let appExpiry: AppExpiry
     public let authorMergeHelper: AuthorMergeHelper
 
-    public let callRecordStatusTransitionManager: CallRecordStatusTransitionManager
     public let callRecordStore: CallRecordStore
     public let groupCallRecordManager: GroupCallRecordManager
     public let individualCallRecordManager: IndividualCallRecordManager
@@ -376,15 +375,11 @@ public class DependenciesBridge {
                 recipientDatabaseTable: self.recipientDatabaseTable
             )
 
-            self.callRecordStatusTransitionManager = CallRecordStatusTransitionManagerImpl()
-            self.callRecordStore = CallRecordStoreImpl(
-                statusTransitionManager: self.callRecordStatusTransitionManager
-            )
+            self.callRecordStore = CallRecordStoreImpl()
             self.groupCallRecordManager = GroupCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,
                 interactionStore: interactionStore,
-                outgoingSyncMessageManager: outgoingSyncMessageManager,
-                tsAccountManager: tsAccountManager
+                outgoingSyncMessageManager: outgoingSyncMessageManager
             )
             self.individualCallRecordManager = IndividualCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,

@@ -7,37 +7,21 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class CallRecordStatusTransitionManagerTest: XCTestCase {
-    typealias CallStatus = CallRecord.CallStatus
-    typealias IndividualCallStatus = CallStatus.IndividualCallStatus
-    typealias GroupCallStatus = CallStatus.GroupCallStatus
+private typealias IndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus
+private typealias GroupCallStatus = CallRecord.CallStatus.GroupCallStatus
 
-    private var statusTransitionManager: CallRecordStatusTransitionManagerImpl!
+private typealias StatusTransitionType = Hashable & CaseIterable
+private typealias IndividualStatusTransition = StatusTransition<IndividualCallStatus, IndividualCallStatus>
+private typealias GroupStatusTransition = StatusTransition<GroupCallStatus, GroupCallStatus>
+
+final class IndividualCallRecordStatusTransitionManagerTest: XCTestCase {
+    private var statusTransitionManager: IndividualCallRecordStatusTransitionManager!
 
     override func setUp() {
-        statusTransitionManager = CallRecordStatusTransitionManagerImpl()
+        statusTransitionManager = IndividualCallRecordStatusTransitionManager()
     }
 
-    func testTransitionBetweenCasesFails() {
-        let individualToGroupCases = StatusTransition<IndividualCallStatus, GroupCallStatus>.all
-        let groupToIndividualCases = StatusTransition<GroupCallStatus, IndividualCallStatus>.all
-
-        for i2g in individualToGroupCases {
-            XCTAssertFalse(statusTransitionManager.isStatusTransitionAllowed(
-                from: .individual(i2g.from),
-                to: .group(i2g.to)
-            ))
-        }
-
-        for g2i in groupToIndividualCases {
-            XCTAssertFalse(statusTransitionManager.isStatusTransitionAllowed(
-                from: .group(g2i.from),
-                to: .individual(g2i.to)
-            ))
-        }
-    }
-
-    func testIndividualTransitions() {
+    func testTransitions() {
         let allowedTransitions: Set<IndividualStatusTransition> = [
             [.pending, .incomingMissed],
             [.pending, .notAccepted],
@@ -50,12 +34,20 @@ final class CallRecordStatusTransitionManagerTest: XCTestCase {
         for transition in IndividualStatusTransition.all {
             XCTAssertEqual(
                 statusTransitionManager.isStatusTransitionAllowed(
-                    from: .individual(transition.from),
-                    to: .individual(transition.to)
+                    fromIndividualCallStatus: transition.from,
+                    toIndividualCallStatus: transition.to
                 ),
                 allowedTransitions.contains(transition)
             )
         }
+    }
+}
+
+final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
+    private var statusTransitionManager: GroupCallRecordStatusTransitionManager!
+
+    override func setUp() {
+        statusTransitionManager = GroupCallRecordStatusTransitionManager()
     }
 
     func testGroupTransitions() {
@@ -73,8 +65,8 @@ final class CallRecordStatusTransitionManagerTest: XCTestCase {
         for transition in GroupStatusTransition.all {
             XCTAssertEqual(
                 statusTransitionManager.isStatusTransitionAllowed(
-                    from: .group(transition.from),
-                    to: .group(transition.to)
+                    fromGroupCallStatus: transition.from,
+                    toGroupCallStatus: transition.to
                 ),
                 allowedTransitions.contains(transition)
             )
@@ -82,32 +74,26 @@ final class CallRecordStatusTransitionManagerTest: XCTestCase {
     }
 }
 
-// MARK: - Status transitions
+// MARK: -
 
-private extension CallRecordStatusTransitionManagerTest {
-    typealias StatusTransitionType = Hashable & CaseIterable
-    typealias IndividualStatusTransition = StatusTransition<IndividualCallStatus, IndividualCallStatus>
-    typealias GroupStatusTransition = StatusTransition<GroupCallStatus, GroupCallStatus>
+private struct StatusTransition<FromType: StatusTransitionType, ToType: StatusTransitionType>: Hashable {
+    let from: FromType
+    let to: ToType
 
-    struct StatusTransition<FromType: StatusTransitionType, ToType: StatusTransitionType>: Hashable {
-        let from: FromType
-        let to: ToType
+    static var all: Set<StatusTransition<FromType, ToType>> {
+        var cases: Set<StatusTransition<FromType, ToType>> = []
 
-        static var all: Set<StatusTransition<FromType, ToType>> {
-            var cases: Set<StatusTransition<FromType, ToType>> = []
-
-            for fromStatus in FromType.allCases {
-                for toStatus in ToType.allCases {
-                    cases.insert(StatusTransition(from: fromStatus, to: toStatus))
-                }
+        for fromStatus in FromType.allCases {
+            for toStatus in ToType.allCases {
+                cases.insert(StatusTransition(from: fromStatus, to: toStatus))
             }
-
-            return cases
         }
+
+        return cases
     }
 }
 
-extension CallRecordStatusTransitionManagerTest.StatusTransition: ExpressibleByArrayLiteral where FromType == ToType {
+extension StatusTransition: ExpressibleByArrayLiteral where FromType == ToType {
     typealias ArrayLiteralElement = FromType
 
     init(arrayLiteral elements: ToType...) {

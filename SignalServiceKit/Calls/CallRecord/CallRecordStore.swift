@@ -12,11 +12,10 @@ public protocol CallRecordStore {
     /// True if the record was successfully inserted. False otherwise.
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool
 
-    /// Update the status of the given call record, if the new status is allowed
-    /// per the current status of the call record.
+    /// Update the status of the given call record.
     /// - Returns
     /// True if the record was successfully updated. False otherwise.
-    func updateRecordStatusIfAllowed(
+    func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
@@ -63,11 +62,7 @@ public protocol CallRecordStore {
 }
 
 class CallRecordStoreImpl: CallRecordStore {
-    private let statusTransitionManager: CallRecordStatusTransitionManager
-
-    init(statusTransitionManager: CallRecordStatusTransitionManager) {
-        self.statusTransitionManager = statusTransitionManager
-    }
+    init() {}
 
     // MARK: - Protocol methods
 
@@ -75,12 +70,12 @@ class CallRecordStoreImpl: CallRecordStore {
         insert(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
     }
 
-    func updateRecordStatusIfAllowed(
+    func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
     ) -> Bool {
-        updateRecordStatusIfAllowed(
+        updateRecordStatus(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
             db: SDSDB.shimOnlyBridge(tx).database
@@ -152,20 +147,12 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
-    func updateRecordStatusIfAllowed(
+    func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         db: Database
     ) -> Bool {
         let logger = CallRecordLogger.shared.suffixed(with: " \(callRecord.callStatus) -> \(newCallStatus)")
-
-        guard statusTransitionManager.isStatusTransitionAllowed(
-            from: callRecord.callStatus,
-            to: newCallStatus
-        ) else {
-            logger.warn("Not updating call record, status transition not allowed.")
-            return false
-        }
 
         logger.info("Updating existing call record.")
 
