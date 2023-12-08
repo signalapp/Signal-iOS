@@ -267,7 +267,7 @@ public class NotificationActionHandler: Dependencies {
                         to: incomingMessage.uniqueId,
                         emoji: "👍",
                         isRemoving: false,
-                        isHighPriority: true,
+                        isHighPriority: false,
                         tx: transaction
                     )
                 }

@@ -319,7 +319,6 @@ public class AttachmentMultisend: Dependencies {
             for message in outgoingMessages {
                 messageSendPromises.append(ThreadUtil.enqueueMessagePromise(
                     message: message,
-                    isHighPriority: true,
                     transaction: transaction
                 ))
             }

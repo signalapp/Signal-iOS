@@ -310,7 +310,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                     .promise,
                     message: message.asPreparer,
                     limitToCurrentProcessLifetime: true,
-                    isHighPriority: true,
                     transaction: transaction
                 )
             }.then(on: SyncScheduler()) { messageSendPromise in

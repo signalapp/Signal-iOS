@@ -237,7 +237,6 @@ extension SharingThreadPickerViewController {
                         self.outgoingMessages.append(preparer.unpreparedMessage)
                         return ThreadUtil.enqueueMessagePromise(
                             message: preparer.unpreparedMessage,
-                            isHighPriority: true,
                             transaction: transaction
                         )
                     }
@@ -274,7 +273,6 @@ extension SharingThreadPickerViewController {
                         self.outgoingMessages.append(message)
                         return ThreadUtil.enqueueMessagePromise(
                             message: message,
-                            isHighPriority: true,
                             transaction: transaction
                         )
                     }
@@ -538,7 +536,6 @@ extension SharingThreadPickerViewController {
                 promises.append(sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: message.asPreparer,
-                    isHighPriority: true,
                     transaction: transaction
                 ))
             }

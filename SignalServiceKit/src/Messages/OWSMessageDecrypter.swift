@@ -75,7 +75,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: nullMessage.asPreparer,
-                    isHighPriority: true,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent null message after session reset " +
@@ -117,7 +116,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: profileKeyMessage.asPreparer,
-                    isHighPriority: true,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAci)")
