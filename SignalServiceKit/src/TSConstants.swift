@@ -54,8 +54,6 @@ public class TSConstants: NSObject {
     @objc
     public static var contactDiscoveryV2URL: String { shared.contactDiscoveryV2URL }
     @objc
-    public static var keyBackupURL: String { shared.keyBackupURL }
-    @objc
     public static var storageServiceURL: String { shared.storageServiceURL }
     @objc
     public static var sfuURL: String { shared.sfuURL }
@@ -80,15 +78,11 @@ public class TSConstants: NSObject {
     public static var cdn0CensorshipPrefix: String { shared.cdn0CensorshipPrefix }
     public static var cdn2CensorshipPrefix: String { shared.cdn2CensorshipPrefix }
     public static var cdn3CensorshipPrefix: String { shared.cdn3CensorshipPrefix }
-    public static var keyBackupCensorshipPrefix: String { shared.keyBackupCensorshipPrefix }
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
     public static var contactDiscoveryV2CensorshipPrefix: String { shared.contactDiscoveryV2CensorshipPrefix }
     public static var svr2CensorshipPrefix: String { shared.svr2CensorshipPrefix }
 
     static var contactDiscoveryV2MrEnclave: MrEnclave { shared.contactDiscoveryV2MrEnclave }
-
-    static var keyBackupEnclave: KeyBackupEnclave { shared.keyBackupEnclave }
-    static var keyBackupPreviousEnclaves: [KeyBackupEnclave] { shared.keyBackupPreviousEnclaves }
 
     static var svr2Enclave: MrEnclave { shared.svr2Enclave }
     static var svr2PreviousEnclaves: [MrEnclave] { shared.svr2PreviousEnclaves }
@@ -118,7 +112,6 @@ public protocol TSConstantsProtocol: AnyObject {
     var textSecureCDN2ServerURL: String { get }
     var textSecureCDN3ServerURL: String { get }
     var contactDiscoveryV2URL: String { get }
-    var keyBackupURL: String { get }
     var storageServiceURL: String { get }
     var sfuURL: String { get }
     var sfuTestURL: String { get }
@@ -135,15 +128,11 @@ public protocol TSConstantsProtocol: AnyObject {
     var cdn0CensorshipPrefix: String { get }
     var cdn2CensorshipPrefix: String { get }
     var cdn3CensorshipPrefix: String { get }
-    var keyBackupCensorshipPrefix: String { get }
     var storageServiceCensorshipPrefix: String { get }
     var contactDiscoveryV2CensorshipPrefix: String { get }
     var svr2CensorshipPrefix: String { get }
 
     var contactDiscoveryV2MrEnclave: MrEnclave { get }
-
-    var keyBackupEnclave: KeyBackupEnclave { get }
-    var keyBackupPreviousEnclaves: [KeyBackupEnclave] { get }
 
     var svr2Enclave: MrEnclave { get }
     var svr2PreviousEnclaves: [MrEnclave] { get }
@@ -151,12 +140,6 @@ public protocol TSConstantsProtocol: AnyObject {
     var applicationGroup: String { get }
 
     var serverPublicParamsBase64: String { get }
-}
-
-public struct KeyBackupEnclave: Equatable {
-    let name: String
-    let mrenclave: MrEnclave
-    let serviceId: String
 }
 
 public struct MrEnclave: Equatable {
@@ -186,7 +169,6 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3.signal.org"
     public let contactDiscoveryV2URL = "wss://cdsi.signal.org"
-    public let keyBackupURL = "https://api.backup.signal.org"
     public let storageServiceURL = "https://storage.signal.org"
     public let sfuURL = "https://sfu.voip.signal.org"
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
@@ -203,28 +185,13 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let cdn0CensorshipPrefix = "cdn"
     public let cdn2CensorshipPrefix = "cdn2"
     public let cdn3CensorshipPrefix = "cdn3"
-    public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
     public let contactDiscoveryV2CensorshipPrefix = "cdsi"
     public let svr2CensorshipPrefix = "svr2"
 
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
-    public let keyBackupEnclave = KeyBackupEnclave(
-        name: "e18376436159cda3ad7a45d9320e382e4a497f26b0dca34d8eab0bd0139483b5",
-        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
-        serviceId: "3a485adb56e2058ef7737764c738c4069dd62bc457637eafb6bbce1ce29ddb89"
-    )
-
-    // An array of previously used enclaves that we should try and restore
-    // key material from during registration. These must be ordered from
-    // newest to oldest, so we check the latest enclaves for backups before
-    // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
-        // Add the current `keyBackupEnclave` value here when replacing it.
-    ]
-
-    public let svr2Enclave = MrEnclave("6ee1042f9e20f880326686dd4ba50c25359f01e9f733eeba4382bca001d45094")
+    public let svr2Enclave = MrEnclave("a6622ad4656e1abcd0bc0ff17c229477747d2ded0495c4ebee7ed35c1789fa97")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
@@ -232,6 +199,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
         // Add the current `svr2Enclave` value here when replacing it.
+        MrEnclave("6ee1042f9e20f880326686dd4ba50c25359f01e9f733eeba4382bca001d45094")
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
@@ -251,7 +219,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3-staging.signal.org"
     public let contactDiscoveryV2URL = "wss://cdsi.staging.signal.org"
-    public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
     public let sfuURL = "https://sfu.staging.voip.signal.org"
     public let svr2URL = "wss://svr2.staging.signal.org"
@@ -270,7 +237,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let cdn0CensorshipPrefix = "cdn-staging"
     public let cdn2CensorshipPrefix = "cdn2-staging"
     public let cdn3CensorshipPrefix = "cdn3-staging"
-    public let keyBackupCensorshipPrefix = "backup-staging"
     public let storageServiceCensorshipPrefix = "storage-staging"
     public let contactDiscoveryV2CensorshipPrefix = "cdsi-staging"
     public let svr2CensorshipPrefix = "svr2-staging"
@@ -278,21 +244,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // CDS uses the same EnclaveName and MrEnclave
     public let contactDiscoveryV2MrEnclave = MrEnclave("0f6fd79cdfdaa5b2e6337f534d3baf999318b0c462a7ac1f41297a3e4b424a57")
 
-    public let keyBackupEnclave = KeyBackupEnclave(
-        name: "39963b736823d5780be96ab174869a9499d56d66497aa8f9b2244f777ebc366b",
-        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
-        serviceId: "ee1d0d972b7ea903615670de43ab1b6e7a825e811c70a29bb5fe0f819e0975fa"
-    )
-
-    // An array of previously used enclaves that we should try and restore
-    // key material from during registration. These must be ordered from
-    // newest to oldest, so we check the latest enclaves for backups before
-    // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
-        // Add the current `keyBackupEnclave` value here when replacing it.
-    ]
-
-    public let svr2Enclave = MrEnclave("a8a261420a6bb9b61aa25bf8a79e8bd20d7652531feb3381cbffd446d270be95")
+    public let svr2Enclave = MrEnclave("acb1973aa0bbbd14b3b4e06f145497d948fd4a98efc500fcce363b3b743ec482")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
@@ -300,6 +252,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
         // Add the current `svr2Enclave` value here when replacing it.
+        MrEnclave("a8a261420a6bb9b61aa25bf8a79e8bd20d7652531feb3381cbffd446d270be95")
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
@@ -329,8 +282,6 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var contactDiscoveryV2URL = defaultValues.contactDiscoveryV2URL
 
-    public lazy var keyBackupURL = defaultValues.keyBackupURL
-
     public lazy var storageServiceURL = defaultValues.storageServiceURL
 
     public lazy var sfuURL = defaultValues.sfuURL
@@ -359,8 +310,6 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var cdn3CensorshipPrefix = defaultValues.cdn3CensorshipPrefix
 
-    public lazy var keyBackupCensorshipPrefix = defaultValues.keyBackupCensorshipPrefix
-
     public lazy var storageServiceCensorshipPrefix = defaultValues.storageServiceCensorshipPrefix
 
     public lazy var contactDiscoveryV2CensorshipPrefix = defaultValues.contactDiscoveryV2CensorshipPrefix
@@ -368,10 +317,6 @@ public class TSConstantsMock: TSConstantsProtocol {
     public lazy var svr2CensorshipPrefix = defaultValues.svr2CensorshipPrefix
 
     public lazy var contactDiscoveryV2MrEnclave = defaultValues.contactDiscoveryV2MrEnclave
-
-    public lazy var keyBackupEnclave = defaultValues.keyBackupEnclave
-
-    public lazy var keyBackupPreviousEnclaves = defaultValues.keyBackupPreviousEnclaves
 
     public lazy var svr2Enclave = defaultValues.svr2Enclave
 

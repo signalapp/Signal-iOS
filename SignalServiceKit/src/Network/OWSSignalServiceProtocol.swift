@@ -33,7 +33,6 @@ public enum SignalServiceType {
     case cdn0
     case cdn2
     case cdn3
-    case kbs
     case updates
     case updates2
     case contactDiscoveryV2
@@ -77,10 +76,6 @@ public extension OWSSignalServiceProtocol {
 
     func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSessionProtocol {
         buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
-    }
-
-    func urlSessionForKBS() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .kbs)
     }
 
     func urlSessionForUpdates() -> OWSURLSessionProtocol {
@@ -146,13 +141,6 @@ extension SignalServiceType {
                 censorshipCircumventionPathPrefix: TSConstants.cdn3CensorshipPrefix,
                 shouldUseSignalCertificate: true,
                 shouldHandleRemoteDeprecation: false
-            )
-        case .kbs:
-            return SignalServiceInfo(
-                baseUrl: URL(string: TSConstants.keyBackupURL)!,
-                censorshipCircumventionPathPrefix: TSConstants.keyBackupCensorshipPrefix,
-                shouldUseSignalCertificate: true,
-                shouldHandleRemoteDeprecation: true
             )
         case .updates:
             return SignalServiceInfo(

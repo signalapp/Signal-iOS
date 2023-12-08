@@ -13,12 +13,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var hasMasterKey = false
 
-    public var currentEnclave: KeyBackupEnclave = .init(
-        name: "",
-        mrenclave: .init("8888888888888888888888888888888888888888888888888888888888888888"),
-        serviceId: ""
-    )
-
     public var hasBackedUpMasterKey: Bool = false
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
