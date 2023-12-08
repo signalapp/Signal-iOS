@@ -77,21 +77,19 @@ public class ContactShareViewController: OWSTableViewController2 {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
         if let title = shareDelegate?.titleForContactShareViewController(self) {
             navigationItem.title = title
         } else {
             navigationItem.title = OWSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
                                                       comment: "Title for the 'Approve contact share' view.")
         }
+        if let recipientsDescription = shareDelegate?.recipientsDescriptionForContactShareViewController(self) {
+            footerView.setNamesText(recipientsDescription, animated: false)
+        }
 
         updateContent()
-        updateControls()
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateControls()
+        updateProceedButtonState()
     }
 
     public override var canBecomeFirstResponder: Bool {
@@ -99,18 +97,10 @@ public class ContactShareViewController: OWSTableViewController2 {
     }
 
     public override var inputAccessoryView: UIView? {
-        return currentInputAcccessoryView
+        return footerView
     }
 
     // MARK: UI
-
-    private var currentInputAcccessoryView: UIView? {
-        didSet {
-            if oldValue != currentInputAcccessoryView {
-                reloadInputViews()
-            }
-        }
-    }
 
     private lazy var footerView: ApprovalFooterView = {
         let footerView = ApprovalFooterView()
@@ -125,22 +115,6 @@ public class ContactShareViewController: OWSTableViewController2 {
             }
         }
         return false
-    }
-
-    private func updateControls() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
-
-        guard isAtLeastOneFieldSelected() else {
-            currentInputAcccessoryView = nil
-            return
-        }
-
-        guard let recipientsDescription = shareDelegate?.recipientsDescriptionForContactShareViewController(self) else {
-            currentInputAcccessoryView = nil
-            return
-        }
-        footerView.setNamesText(recipientsDescription, animated: false)
-        currentInputAcccessoryView = footerView
     }
 
     private func updateContent() {
@@ -159,7 +133,7 @@ public class ContactShareViewController: OWSTableViewController2 {
             }
         ))
 
-       // Avatar
+        // Avatar
         if let avatarField {
             tableItems.append(OWSTableItem(
                 customCellBlock: {
@@ -184,6 +158,10 @@ public class ContactShareViewController: OWSTableViewController2 {
         contents = OWSTableContents(sections: [OWSTableSection(items: tableItems)])
     }
 
+    private func updateProceedButtonState() {
+        footerView.proceedButton.isEnabled = isAtLeastOneFieldSelected()
+    }
+
     private func toggleSelection(for contactShareField: ContactShareField) {
         contactShareField.isIncluded = !contactShareField.isIncluded
 
@@ -193,6 +171,8 @@ public class ContactShareViewController: OWSTableViewController2 {
         }) as? ContactShareFieldCell else { return }
 
         cell.updateCheckmarkState()
+
+        updateProceedButtonState()
     }
 
     // MARK: -
@@ -201,11 +181,8 @@ public class ContactShareViewController: OWSTableViewController2 {
     private func didPressSendButton() {
         AssertIsOnMainThread()
 
-        guard isAtLeastOneFieldSelected() else {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",
-                                                                       comment: "Error indicating that at least one contact field must be selected before sharing a contact."))
-            return
-        }
+        guard isAtLeastOneFieldSelected() else { return }
+
         guard contactShare.ows_isValid else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
                                                                        comment: "Error indicating that an invalid contact cannot be shared."))
@@ -325,7 +302,6 @@ extension ContactShareViewController: EditContactShareNameViewControllerDelegate
                                          didFinishWith contactName: OWSContactName) {
         contactShare = contactShare.copy(withName: contactName)
         tableView.reloadData()
-        updateControls()
     }
 }
 

@@ -23,7 +23,7 @@ private class ContactNameFieldView: UIView {
         return textField
     }()
 
-    var hasUnsavedChanges = false
+    var isEmpty: Bool { value().isEmpty }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -45,7 +45,6 @@ private class ContactNameFieldView: UIView {
 
     @objc
     private func textFieldDidChange(sender: UITextField) {
-        hasUnsavedChanges = true
         delegate?.nameFieldDidChange()
     }
 
@@ -133,7 +132,7 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
     }
 
     private func updateNavigationBar() {
-        navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges()
+        navigationItem.rightBarButtonItem?.isEnabled = canSaveChanges()
     }
 
     // MARK: -
@@ -151,9 +150,9 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
         contents = OWSTableContents(sections: [OWSTableSection(items: tableItems)])
     }
 
-    private func hasUnsavedChanges() -> Bool {
+    private func canSaveChanges() -> Bool {
         for fieldView in allNameFieldViews() {
-            if fieldView.hasUnsavedChanges {
+            if !fieldView.isEmpty {
                 return true
             }
         }
