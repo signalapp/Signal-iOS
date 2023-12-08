@@ -218,7 +218,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
-            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: Date.ows_millisecondTimestamp(), updateStorageService: true, transaction: transaction)
+            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: 0, updateStorageService: true, transaction: transaction)
         }
     }
 

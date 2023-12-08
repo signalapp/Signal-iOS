@@ -188,6 +188,8 @@ public class InteractionFinder: NSObject {
 
     public class func unreadCountInAllThreads(transaction: SDSAnyReadTransaction) -> UInt {
         do {
+            let includeMutedThreads = SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction)
+
             var unreadInteractionQuery = """
                 SELECT COUNT(interaction.\(interactionColumn: .id))
                 FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -196,21 +198,16 @@ public class InteractionFinder: NSObject {
                 WHERE associatedData.isArchived = "0"
             """
 
-            if !SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction) {
+            if !includeMutedThreads {
                 unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
             }
 
             unreadInteractionQuery += " AND \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
 
-            guard let unreadInteractionCount = try UInt.fetchOne(
-                transaction.unwrapGrdbRead.database,
-                sql: unreadInteractionQuery
-            ) else {
-                owsFailDebug("unreadInteractionCount was unexpectedly nil")
-                return 0
-            }
+            let unreadInteractionCount = try UInt.fetchOne(transaction.unwrapGrdbRead.database, sql: unreadInteractionQuery)
+            owsAssertDebug(unreadInteractionCount != nil, "unreadInteractionCount was unexpectedly nil")
 
-            let markedUnreadThreadQuery = """
+            var markedUnreadThreadQuery = """
                 SELECT COUNT(*)
                 FROM \(ThreadRecord.databaseTableName)
                 INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
@@ -220,17 +217,16 @@ public class InteractionFinder: NSObject {
                 AND \(threadColumn: .shouldThreadBeVisible) = 1
             """
 
-            guard let markedUnreadCount = try UInt.fetchOne(
-                transaction.unwrapGrdbRead.database,
-                sql: markedUnreadThreadQuery
-            ) else {
-                owsFailDebug("markedUnreadCount was unexpectedly nil")
-                return unreadInteractionCount
+            if !includeMutedThreads {
+                markedUnreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
             }
 
-            return unreadInteractionCount + markedUnreadCount
+            let markedUnreadCount = try UInt.fetchOne(transaction.unwrapGrdbRead.database, sql: markedUnreadThreadQuery)
+            owsAssertDebug(markedUnreadCount != nil, "markedUnreadCount was unexpectedly nil")
+
+            return (unreadInteractionCount ?? 0) + (markedUnreadCount ?? 0)
         } catch {
-            owsFailDebug("error: \(error)")
+            owsFailDebug("error: \(error.grdbErrorForLogging)")
             return 0
         }
     }
