@@ -42,22 +42,6 @@ public final class ThreadUtil: Dependencies {
         return message
     }
 
-    @discardableResult
-    class func enqueueMessage(
-        outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
-        thread: TSThread,
-        transaction: SDSAnyWriteTransaction
-    ) -> TSOutgoingMessage {
-        applyDisappearingMessagesConfiguration(to: builder, tx: transaction.asV2Read)
-        let message = builder.build(transaction: transaction)
-
-        message.anyInsert(transaction: transaction)
-        self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-        if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
-
-        return message
-    }
-
     private static func applyDisappearingMessagesConfiguration(to builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: builder.thread, tx: tx)
