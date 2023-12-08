@@ -153,7 +153,6 @@ public class CVComponentState: Equatable, Dependencies {
     let sticker: Sticker?
 
     struct ContactShare: Equatable {
-        // TODO: convert ContactShareViewModel to Swift?
         let state: CVContactShareView.State
     }
     let contactShare: ContactShare?

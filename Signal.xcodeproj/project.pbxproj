@@ -165,7 +165,6 @@
 		3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
 		34156C8B25A3B3D000556182 /* paymentSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 34156C8A25A3B3D000556182 /* paymentSpinner.json */; };
-		34156C8F25A7521800556182 /* CVMessageActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34156C8E25A7521700556182 /* CVMessageActionButton.swift */; };
 		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
 		3420CF6D26327B1A00E7DCB0 /* CVBackgroundContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */; };
@@ -2653,7 +2652,6 @@
 		3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyPickerViewController.swift; sourceTree = "<group>"; };
 		3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachmentProgressView.swift; sourceTree = "<group>"; };
 		34156C8A25A3B3D000556182 /* paymentSpinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = paymentSpinner.json; sourceTree = "<group>"; };
-		34156C8E25A7521700556182 /* CVMessageActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMessageActionButton.swift; sourceTree = "<group>"; };
 		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
 		341D392825472F3B00996E7B /* CVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewState.swift; sourceTree = "<group>"; };
 		3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVBackgroundContainer.swift; sourceTree = "<group>"; };
@@ -5726,7 +5724,6 @@
 				347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */,
 				347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */,
 				348815BF2553291200D4F4C4 /* CVComponentViewOnce.swift */,
-				34156C8E25A7521700556182 /* CVMessageActionButton.swift */,
 			);
 			path = CVComponents;
 			sourceTree = "<group>";
@@ -12024,7 +12021,6 @@
 				34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */,
 				348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */,
 				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
-				34156C8F25A7521800556182 /* CVMessageActionButton.swift in Sources */,
 				348815C8255346A500D4F4C4 /* CVNode.swift in Sources */,
 				34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
