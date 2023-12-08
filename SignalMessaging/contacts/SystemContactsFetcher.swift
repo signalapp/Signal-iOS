@@ -8,11 +8,6 @@ import Contacts
 import ContactsUI
 import SignalServiceKit
 
-enum Result<T, ErrorType> {
-    case success(T)
-    case error(ErrorType)
-}
-
 protocol ContactStoreAdaptee {
     var rawAuthorizationStatus: RawContactAuthorizationStatus { get }
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
@@ -122,7 +117,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
             } else {
                 owsFailDebug("Failed to fetch contacts with error:\(error)")
             }
-            return .error(error)
+            return .failure(error)
         }
 
         return .success(contacts)
@@ -375,7 +370,7 @@ public class SystemContactsFetcher: NSObject {
             switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 contacts = result
-            case .error(let error):
+            case .failure(let error):
                 completion(error)
                 return
             }
