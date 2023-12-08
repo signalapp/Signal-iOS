@@ -1018,6 +1018,7 @@
 		765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AD2A00D8B4004583A9 /* OWSTableContents.swift */; };
 		765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AF2A00D8CE004583A9 /* OWSTableSection.swift */; };
 		765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283B12A00D8EC004583A9 /* OWSTableItem.swift */; };
+		7653A1F22B06D3F00071CCC3 /* UpdateSystemContacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7653A1F12B06D3F00071CCC3 /* UpdateSystemContacts.swift */; };
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
 		76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76616C9C2A266A05005F7001 /* WindowManager.swift */; };
 		76616C9F2A268073005F7001 /* WindowManagerFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* WindowManagerFix.m */; };
@@ -1315,7 +1316,6 @@
 		A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
-		AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */; };
 		B0E5FF35E928F74474D1EF08 /* Pods_SignalNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D9B34F0D33764222824AE9 /* Pods_SignalNSE.framework */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
@@ -3633,6 +3633,7 @@
 		765283AD2A00D8B4004583A9 /* OWSTableContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableContents.swift; sourceTree = "<group>"; };
 		765283AF2A00D8CE004583A9 /* OWSTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSection.swift; sourceTree = "<group>"; };
 		765283B12A00D8EC004583A9 /* OWSTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableItem.swift; sourceTree = "<group>"; };
+		7653A1F12B06D3F00071CCC3 /* UpdateSystemContacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateSystemContacts.swift; sourceTree = "<group>"; };
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
 		76616C9C2A266A05005F7001 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		76616C9E2A2678C4005F7001 /* WindowManagerFix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WindowManagerFix.h; path = UserInterface/WindowManagerFix.h; sourceTree = "<group>"; };
@@ -3985,7 +3986,6 @@
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A5E7C674248C5442007C949A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A7B8EC9E9A08D2ACCFBE5A28 /* Pods-SignalServiceKitTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.profiling.xcconfig"; sourceTree = "<group>"; };
-		AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAddToContactViewController.swift; sourceTree = "<group>"; };
 		ACC519FE3DF79E0AF9BB1CD6 /* Pods-SignalNSE.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.app store release.xcconfig"; sourceTree = "<group>"; };
 		AEA97ACC8D9F89DB5E045B2B /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		B31469260B592A12BA0EF8FD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -5427,9 +5427,9 @@
 				347B83F82436820C0019A52C /* GroupViewHelper.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
 				32CBF07C258C939800D56903 /* NameCollisionResolutionViewController.swift */,
-				AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */,
 				348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */,
 				88BE44A526153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift */,
+				7653A1F12B06D3F00071CCC3 /* UpdateSystemContacts.swift */,
 			);
 			path = ThreadSettings;
 			sourceTree = "<group>";
@@ -12243,7 +12243,6 @@
 				88A4CC17246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift in Sources */,
 				88A4CC1D246D00090082211F /* OutgoingDeviceTransferProgressViewController.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift in Sources */,
-				AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */,
 				5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */,
@@ -12422,6 +12421,7 @@
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
+				7653A1F22B06D3F00071CCC3 /* UpdateSystemContacts.swift in Sources */,
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,

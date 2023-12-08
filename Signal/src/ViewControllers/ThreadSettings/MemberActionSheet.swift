@@ -214,7 +214,8 @@ class MemberActionSheet: OWSTableSheetViewController {
                 ),
                 accessibilityIdentifier: "MemberActionSheet.contact",
                 actionBlock: { [weak self] in
-                    self?.handleContactAction(editImmediately: false)
+                    guard let self else { return }
+                    self.viewSystemContactDetails(contactAddress: self.address)
                 }
             ))
         } else {
@@ -226,7 +227,8 @@ class MemberActionSheet: OWSTableSheetViewController {
                 ),
                 accessibilityIdentifier: "MemberActionSheet.add_to_contacts",
                 actionBlock: { [weak self] in
-                    self?.handleContactAction(editImmediately: true)
+                    guard let self else { return }
+                    self.showAddToSystemContactsActionSheet(contactAddress: self.address)
                 }
             ))
         }
@@ -247,26 +249,56 @@ class MemberActionSheet: OWSTableSheetViewController {
         ))
     }
 
-    private func handleContactAction(editImmediately: Bool) {
-        guard
-            let viewController = fromViewController,
-            let navigationController = viewController.navigationController
-        else {
-            return
-        }
-        self.dismiss(animated: true) {
-            self.contactsViewHelper.checkEditingAuthorization(
-                authorizedBehavior: .pushViewController(on: navigationController, viewController: {
-                    let result = self.contactsViewHelper.contactViewController(
-                        for: self.address,
-                        editImmediately: editImmediately
-                    )
-                    self.strongSelf = self
-                    result.delegate = self
-                    return result
-                }),
-                unauthorizedBehavior: .presentError(from: viewController)
+    private func viewSystemContactDetails(contactAddress: SignalServiceAddress) {
+        guard let viewController = fromViewController else { return }
+        let contactsViewHelper = contactsViewHelper
+
+        dismiss(animated: true) {
+            contactsViewHelper.presentSystemContactsFlow(
+                CreateOrEditContactFlow(address: contactAddress, editImmediately: false),
+                from: viewController
             )
+        }
+    }
+
+    private func showAddToSystemContactsActionSheet(contactAddress: SignalServiceAddress) {
+        guard let viewController = fromViewController else { return }
+        let contactsViewHelper = contactsViewHelper
+
+        dismiss(animated: true) {
+            let actionSheet = ActionSheetController()
+            let createNewTitle = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_NEW_CONTACT",
+                comment: "Label for 'new contact' button in conversation settings view."
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: createNewTitle,
+                style: .default,
+                handler: {_ in
+                    contactsViewHelper.presentSystemContactsFlow(
+                        CreateOrEditContactFlow(address: contactAddress),
+                        from: viewController
+                    )
+                }
+            ))
+
+            let addToExistingTitle = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                comment: "Label for 'new contact' button in conversation settings view."
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: addToExistingTitle,
+                style: .default,
+                handler: { _ in
+                    contactsViewHelper.presentSystemContactsFlow(
+                        AddToExistingContactFlow(address: contactAddress),
+                        from: viewController
+                    )
+                }
+            ))
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+
+            viewController.presentActionSheet(actionSheet)
         }
     }
 }
@@ -324,13 +356,6 @@ extension MemberActionSheet: ConversationHeaderDelegate {
     }
     func didTapAddGroupDescription() {}
     var canEditConversationAttributes: Bool { false }
-}
-
-extension MemberActionSheet: CNContactViewControllerDelegate {
-    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
-        viewController.navigationController?.popViewController(animated: true)
-        strongSelf = nil
-    }
 }
 
 extension MemberActionSheet: MediaPresentationContextProvider {

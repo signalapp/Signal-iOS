@@ -874,45 +874,28 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapUpdateSystemContact(_ address: SignalServiceAddress, newNameComponents: PersonNameComponents) {
-        guard let navigationController else {
-            return owsFailDebug("Missing navigationController.")
-        }
-        contactsViewHelper.checkEditingAuthorization(
-            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
-                let result = self.contactsViewHelper.contactViewController(
-                    for: address,
-                    editImmediately: true,
-                    updatedNameComponents: newNameComponents
-                )
-                result.delegate = self
-                return result
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+        contactsViewHelper.presentSystemContactsFlow(
+            CreateOrEditContactFlow(address: address, nameComponents: newNameComponents),
+            from: self
         )
     }
 
     public func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {
-        guard let navigationController else {
-            return owsFailDebug("Missing navigationController.")
-        }
-        contactsViewHelper.checkEditingAuthorization(
-            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+        contactsViewHelper.checkEditAuthorization(
+            authorizedBehavior: .runAction({
                 guard let existingContact: CNContact = self.databaseStorage.read(block: {
                     guard let contact = self.contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
                     return self.contactsManager.cnContact(withId: contact.cnContactId)
                 }) else {
                     owsFailDebug("Missing existing contact for phone number change.")
-                    return nil
+                    return
                 }
 
                 let address = SignalServiceAddress(serviceId: aci, phoneNumber: phoneNumberNew)
-                let result = self.contactsViewHelper.contactViewController(
-                    for: address,
-                    editImmediately: true,
-                    addToExisting: existingContact
+                self.contactsViewHelper.presentSystemContactsFlow(
+                    CreateOrEditContactFlow(address: address, contact: existingContact),
+                    from: self
                 )
-                result.delegate = self
-                return result
             }),
             unauthorizedBehavior: .presentError(from: self)
         )

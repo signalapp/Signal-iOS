@@ -307,15 +307,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
     }
 }
 
-// MARK: -
-
-extension ConversationViewController: CNContactViewControllerDelegate {
-    public func contactViewController(_ viewController: CNContactViewController,
-                                      didCompleteWith contact: CNContact?) {
-        navigationController?.popToViewController(self, animated: true)
-    }
-}
-
 // MARK: - Preview / 3D Touch / UIContextMenu Methods
 
 public extension ConversationViewController {

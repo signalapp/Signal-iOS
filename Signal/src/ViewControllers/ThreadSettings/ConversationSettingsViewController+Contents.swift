@@ -232,7 +232,7 @@ extension ConversationSettingsViewController {
                     owsFailDebug("Missing self")
                     return
                 }
-                self.presentContactViewController()
+                self.presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: false)
             }))
         } else {
             section.add(OWSTableItem(customCellBlock: { [weak self] in

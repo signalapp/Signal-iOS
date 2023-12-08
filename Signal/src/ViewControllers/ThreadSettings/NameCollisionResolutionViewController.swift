@@ -204,7 +204,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
                 return [(title: deleteActionString, action: { [weak self] in self?.deleteThread() })]
 
             case (_, let address, _) where shouldShowContactUpdateAction(for: address):
-                return [(title: updateContactActionString, action: { [weak self] in self?.presentContactUpdateSheet(for: address) })]
+                return [(title: updateContactActionString, action: { [weak self] in self?.presentUpdateContactViewController(for: address) })]
 
             case (thread: is TSGroupThread, let address, _) where
                     !address.isLocalAddress && groupViewHelper?.canRemoveFromGroup(address: model.address) == true:
@@ -271,17 +271,10 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         // groupViewHelper will call out to its delegate (us) when the membership
     }
 
-    private func presentContactUpdateSheet(for address: SignalServiceAddress) {
-        guard let navigationController else {
-            return owsFailDebug("Missing navigationController.")
-        }
-        contactsViewHelper.checkEditingAuthorization(
-            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
-                let result = self.contactsViewHelper.contactViewController(for: address, editImmediately: true)
-                result.delegate = self
-                return result
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+    private func presentUpdateContactViewController(for address: SignalServiceAddress) {
+        contactsViewHelper.presentSystemContactsFlow(
+            CreateOrEditContactFlow(address: address),
+            from: self
         )
         // We observe contact updates and will automatically update our model in response
     }
@@ -300,7 +293,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 
 // MARK: - Contacts
 
-extension NameCollisionResolutionViewController: CNContactViewControllerDelegate, ContactsViewHelperObserver {
+extension NameCollisionResolutionViewController: ContactsViewHelperObserver {
 
     func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
         guard contactsManagerImpl.isEditingAllowed else {
@@ -308,12 +301,6 @@ extension NameCollisionResolutionViewController: CNContactViewControllerDelegate
         }
         return databaseStorage.read { transaction in
             contactsManager.isSystemContact(address: address, transaction: transaction)
-        }
-    }
-
-    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
-        DispatchQueue.main.async {
-            self.navigationController?.popToViewController(self, animated: true)
         }
     }
 

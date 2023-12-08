@@ -217,122 +217,6 @@ public class ContactsViewHelper: Dependencies {
     }
 }
 
-// MARK: UI
-
-extension ContactsViewHelper {
-
-    public func contactViewController(
-        for address: SignalServiceAddress,
-        editImmediately: Bool,
-        addToExisting existingContact: CNContact? = nil,
-        updatedNameComponents: PersonNameComponents? = nil
-    ) -> CNContactViewController {
-
-        AssertIsOnMainThread()
-        owsAssertDebug(!CurrentAppContext().isNSE)
-        owsAssertDebug(contactsManagerImpl.editingAuthorization == .authorized)
-
-        let signalAccount = fetchSignalAccount(for: address)
-        var shouldEditImmediately = editImmediately
-
-        var contactViewController: CNContactViewController?
-        var cnContact: CNContact?
-
-        if let existingContact {
-            cnContact = existingContact
-
-            // Only add recipientId as a phone number for the existing contact if its not already present.
-            if let phoneNumber = address.phoneNumber {
-                let phoneNumberExists = existingContact.phoneNumbers.contains {
-                    phoneNumber == $0.value.stringValue
-                }
-
-                owsAssertBeta(!phoneNumberExists, "We currently only should the 'add to existing contact' UI for phone numbers that don't correspond to an existing user.")
-
-                if !phoneNumberExists {
-                    var phoneNumbers = existingContact.phoneNumbers
-                    phoneNumbers.append(CNLabeledValue(
-                        label: CNLabelPhoneNumberMain,
-                        value: CNPhoneNumber(stringValue: phoneNumber)
-                    ))
-                    let updatedContact = existingContact.mutableCopy() as! CNMutableContact
-                    updatedContact.phoneNumbers = phoneNumbers
-                    cnContact = updatedContact
-
-                    // When adding a phone number to an existing contact, immediately enter "edit" mode.
-                    shouldEditImmediately = true
-                }
-
-            }
-        }
-
-        if cnContact == nil, let cnContactId = signalAccount?.contact?.cnContactId {
-            cnContact = contactsManager.cnContact(withId: cnContactId)
-        }
-
-        if let updatedContact = cnContact?.mutableCopy() as? CNMutableContact {
-            if let givenName = updatedNameComponents?.givenName {
-                updatedContact.givenName = givenName
-            }
-            if let familyName = updatedNameComponents?.familyName {
-                updatedContact.familyName = familyName
-            }
-
-            if shouldEditImmediately {
-                // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
-                // saving our users a tap in some cases when we already know they want to edit.
-                contactViewController = CNContactViewController(forNewContact: updatedContact)
-
-                // Default title is "New Contact". We could give a more descriptive title, but anything
-                // seems redundant - the context is sufficiently clear.
-                contactViewController?.title = ""
-            } else {
-                contactViewController = CNContactViewController(for: updatedContact)
-            }
-        }
-
-        if contactViewController == nil {
-            let newContact = CNMutableContact()
-            if let phoneNumber = address.phoneNumber {
-                newContact.phoneNumbers = [ CNLabeledValue(
-                    label: CNLabelPhoneNumberMain,
-                    value: CNPhoneNumber(stringValue: phoneNumber)
-                )]
-            }
-
-            databaseStorage.read { tx in
-                if let givenName = profileManagerImpl.givenName(for: address, transaction: tx) {
-                    newContact.givenName = givenName
-                }
-                if let familyName = profileManagerImpl.familyName(for: address, transaction: tx) {
-                    newContact.familyName = familyName
-                }
-                if let profileAvatar = profileManagerImpl.profileAvatar(
-                    for: address,
-                    downloadIfMissing: true,
-                    authedAccount: .implicit(),
-                    transaction: tx
-                ) {
-                    newContact.imageData = profileAvatar.pngData()
-                }
-            }
-
-            if let givenName = updatedNameComponents?.givenName {
-                newContact.givenName = givenName
-            }
-            if let familyName = updatedNameComponents?.familyName {
-                newContact.familyName = familyName
-            }
-            contactViewController = CNContactViewController(forNewContact: newContact)
-        }
-
-        contactViewController?.allowsActions = false
-        contactViewController?.allowsEditing = true
-
-        return contactViewController!
-    }
-}
-
 // MARK: Presenting Permission-Gated Views
 
 public extension ContactsViewHelper {
@@ -341,80 +225,48 @@ public extension ContactsViewHelper {
         static let contactsAccessNotAllowedLearnMoreURL = URL(string: "https://support.signal.org/hc/articles/360007319011#ipad_contacts")!
     }
 
-    private enum Purpose {
-        case edit
+    enum ReadPurpose {
         case share
         case invite
+    }
+
+    private enum Access {
+        case edit
+        case read(ReadPurpose)
     }
 
     enum AuthorizedBehavior {
         case runAction(() -> Void)
         case pushViewController(on: UINavigationController, viewController: () -> UIViewController?)
-
-    }
-
-    private func perform(authorizedBehavior: AuthorizedBehavior) {
-        switch authorizedBehavior {
-        case .runAction(let authorizedBlock):
-            authorizedBlock()
-        case .pushViewController(on: let navigationController, viewController: let viewControllerBlock):
-            guard let contactViewController = viewControllerBlock() else {
-                return owsFailDebug("Missing contactViewController.")
-            }
-            navigationController.pushViewController(contactViewController, animated: true)
-        }
     }
 
     enum UnauthorizedBehavior {
         case presentError(from: UIViewController)
     }
 
-    private func performWhenDenied(unauthorizedBehavior: UnauthorizedBehavior, purpose: Purpose) {
-        switch unauthorizedBehavior {
-        case .presentError(from: let viewController):
-            Self.presentContactAccessDeniedAlert(from: viewController, purpose: purpose)
-        }
-    }
-
-    private func performWhenNotAllowed(unauthorizedBehavior: UnauthorizedBehavior) {
-        switch unauthorizedBehavior {
-        case .presentError(from: let viewController):
-            Self.presentContactAccessNotAllowedAlert(from: viewController)
-        }
-    }
-
-    func checkEditingAuthorization(authorizedBehavior: AuthorizedBehavior, unauthorizedBehavior: UnauthorizedBehavior) {
+    func checkEditAuthorization(
+        authorizedBehavior: AuthorizedBehavior,
+        unauthorizedBehavior: UnauthorizedBehavior
+    ) {
         AssertIsOnMainThread()
 
         switch contactsManagerImpl.editingAuthorization {
         case .notAllowed:
             performWhenNotAllowed(unauthorizedBehavior: unauthorizedBehavior)
         case .denied, .restricted:
-            performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, purpose: .edit)
+            performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, access: .edit)
         case .authorized:
             perform(authorizedBehavior: authorizedBehavior)
         }
     }
 
-    enum SharingPurpose {
-        case share
-        case invite
-    }
-
-    func checkSharingAuthorization(
-        purpose: SharingPurpose,
+    func checkReadAuthorization(
+        purpose: ReadPurpose,
         authorizedBehavior: AuthorizedBehavior,
         unauthorizedBehavior: UnauthorizedBehavior
     ) {
         let deniedBlock = {
-            let internalPurpose: Purpose
-            switch purpose {
-            case .share:
-                internalPurpose = .share
-            case .invite:
-                internalPurpose = .invite
-            }
-            self.performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, purpose: internalPurpose)
+            self.performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, access: .read(purpose))
         }
 
         switch contactsManagerImpl.sharingAuthorization {
@@ -435,13 +287,39 @@ public extension ContactsViewHelper {
         }
     }
 
-    private static func presentContactAccessDeniedAlert(from viewController: UIViewController, purpose: Purpose) {
+    private func perform(authorizedBehavior: AuthorizedBehavior) {
+        switch authorizedBehavior {
+        case .runAction(let authorizedBlock):
+            authorizedBlock()
+        case .pushViewController(on: let navigationController, viewController: let viewControllerBlock):
+            guard let viewController = viewControllerBlock() else {
+                return owsFailDebug("Missing contactViewController.")
+            }
+            navigationController.pushViewController(viewController, animated: true)
+        }
+    }
+
+    private func performWhenDenied(unauthorizedBehavior: UnauthorizedBehavior, access: Access) {
+        switch unauthorizedBehavior {
+        case .presentError(from: let viewController):
+            Self.presentContactAccessDeniedAlert(from: viewController, access: access)
+        }
+    }
+
+    private func performWhenNotAllowed(unauthorizedBehavior: UnauthorizedBehavior) {
+        switch unauthorizedBehavior {
+        case .presentError(from: let viewController):
+            Self.presentContactAccessNotAllowedAlert(from: viewController)
+        }
+    }
+
+    private static func presentContactAccessDeniedAlert(from viewController: UIViewController, access: Access) {
         owsAssertDebug(!CurrentAppContext().isNSE)
 
         let title: String
         let message: String
 
-        switch purpose {
+        switch access {
         case .edit:
             title = OWSLocalizedString(
                 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE",
@@ -452,25 +330,28 @@ public extension ContactsViewHelper {
                 comment: "Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions"
             )
 
-        case .share:
-            title = OWSLocalizedString(
-                "CONTACT_SHARING_NO_ACCESS_TITLE",
-                comment: "Alert title when contacts disabled while trying to share a contact."
-            )
-            message = OWSLocalizedString(
-                "CONTACT_SHARING_NO_ACCESS_BODY",
-                comment: "Alert body when contacts disabled while trying to share a contact."
-            )
+        case .read(let readPurpose):
+            switch readPurpose {
+            case .share:
+                title = OWSLocalizedString(
+                    "CONTACT_SHARING_NO_ACCESS_TITLE",
+                    comment: "Alert title when contacts disabled while trying to share a contact."
+                )
+                message = OWSLocalizedString(
+                    "CONTACT_SHARING_NO_ACCESS_BODY",
+                    comment: "Alert body when contacts disabled while trying to share a contact."
+                )
 
-        case .invite:
-            title = OWSLocalizedString(
-                "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE",
-                comment: "Alert title when contacts disabled while trying to invite contacts to signal"
-            )
-            message = OWSLocalizedString(
-                "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY",
-                comment: "Alert body when contacts disabled while trying to invite contacts to signal"
-            )
+            case .invite:
+                title = OWSLocalizedString(
+                    "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE",
+                    comment: "Alert title when contacts disabled while trying to invite contacts to signal"
+                )
+                message = OWSLocalizedString(
+                    "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY",
+                    comment: "Alert body when contacts disabled while trying to invite contacts to signal"
+                )
+            }
         }
 
         let actionSheet = ActionSheetController(title: title, message: message)

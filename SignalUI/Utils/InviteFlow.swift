@@ -106,7 +106,7 @@ public class InviteFlow: NSObject {
         guard let presentingViewController else { return }
 
         self.channel = channel
-        contactsViewHelper.checkSharingAuthorization(
+        contactsViewHelper.checkReadAuthorization(
             purpose: .invite,
             authorizedBehavior: .runAction({
                 let picker = ContactPickerViewController(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)

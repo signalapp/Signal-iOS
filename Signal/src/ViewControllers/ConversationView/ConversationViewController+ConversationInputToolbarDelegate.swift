@@ -603,7 +603,7 @@ fileprivate extension ConversationViewController {
         AssertIsOnMainThread()
 
         dismissKeyBoard()
-        contactsViewHelper.checkSharingAuthorization(
+        contactsViewHelper.checkReadAuthorization(
             purpose: .share,
             authorizedBehavior: .runAction({
                 let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)

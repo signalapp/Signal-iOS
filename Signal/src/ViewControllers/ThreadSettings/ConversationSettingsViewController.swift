@@ -366,7 +366,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             title: createNewTitle,
             style: .default,
             handler: { [weak self] _ in
-                self?.presentContactViewController()
+                self?.presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: true)
             }
         ))
 
@@ -378,13 +378,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             title: addToExistingTitle,
             style: .default,
             handler: { [weak self] _ in
-                self?.presentAddToContactViewController(address: contactThread.contactAddress)
+                self?.presentAddToExistingContactFlow(address: contactThread.contactAddress)
             }
         ))
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        self.presentActionSheet(actionSheet)
+        presentActionSheet(actionSheet)
     }
 
     // MARK: - Actions
@@ -526,21 +526,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(groupLinkViewController, animated: true)
     }
 
-    func presentContactViewController() {
-        guard let navigationController else {
-            return owsFailDebug("Missing navigationController.")
-        }
-        contactsViewHelper.checkEditingAuthorization(
-            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
-                guard let contactThread = self.thread as? TSContactThread else { return nil }
-                let result = self.contactsViewHelper.contactViewController(
-                    for: contactThread.contactAddress,
-                    editImmediately: true
-                )
-                result.delegate = self
-                return result
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+    func presentCreateOrEditContactViewController(address: SignalServiceAddress, editImmediately: Bool) {
+        contactsViewHelper.presentSystemContactsFlow(
+            CreateOrEditContactFlow(address: address, editImmediately: editImmediately),
+            from: self,
+            completion: {
+                self.updateTableContents()
+            }
         )
     }
 
@@ -564,15 +556,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         present(badgeSheet, animated: true, completion: nil)
     }
 
-    private func presentAddToContactViewController(address: SignalServiceAddress) {
-        guard let navigationController else {
-            return owsFailDebug("Missing navigationController.")
-        }
-        contactsViewHelper.checkEditingAuthorization(
-            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
-                OWSAddToContactViewController(address: address)
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+    private func presentAddToExistingContactFlow(address: SignalServiceAddress) {
+        contactsViewHelper.presentSystemContactsFlow(
+            AddToExistingContactFlow(address: address),
+            from: self,
+            completion: {
+                self.updateTableContents()
+            }
         )
     }
 
@@ -942,8 +932,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         if isGroupThread {
             showGroupAttributesView(editAction: .none)
-        } else {
-            presentContactViewController()
+        } else if let contactThread = thread as? TSContactThread {
+            presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: true)
         }
     }
 
@@ -1032,16 +1022,6 @@ extension ConversationSettingsViewController: ContactsViewHelperObserver {
 
     func contactsViewHelperDidUpdateContacts() {
         updateTableContents()
-    }
-}
-
-// MARK: -
-
-extension ConversationSettingsViewController: CNContactViewControllerDelegate {
-
-    public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
-        updateTableContents()
-        navigationController?.popToViewController(self, animated: true)
     }
 }
 

@@ -144,7 +144,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: -
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        contactsViewHelper.checkEditingAuthorization(
+        contactsViewHelper.checkEditAuthorization(
             authorizedBehavior: .runAction({
                 guard let systemContact = contactShare.dbRecord.buildSystemContact(withImageData: contactShare.avatarImageData) else {
                     owsFailDebug("Could not derive system contact.")
@@ -171,7 +171,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         guard let navigationController = fromViewController.navigationController else {
             return owsFailDebug("Missing navigationController.")
         }
-        contactsViewHelper.checkEditingAuthorization(
+        contactsViewHelper.checkEditAuthorization(
             authorizedBehavior: .pushViewController(on: navigationController, viewController: {
                 AddContactShareToExistingContactViewController(contactShare: contactShare)
             }),
