@@ -1215,7 +1215,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .viewOnce,
             .audioAttachment,
             .genericAttachment,
-            .contactShare
+            .contactShare,
+            .reactions
         ]
         var contents = [String]()
         for key in accessibilityComponentKeys {
@@ -1255,7 +1256,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // * senderAvatar
         // * quotedReply
         // * linkPreview
-        // * reactions
         // * bottomButtons
         // * sendFailureBadge
 

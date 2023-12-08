@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-public class CVComponentReactions: CVComponentBase, CVComponent {
+public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibilityComponent {
 
     public var componentKey: CVComponentKey { .reactions }
 
@@ -63,6 +63,42 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
         }
         componentDelegate.didTapReactions(reactionState: reactionState, message: message)
         return true
+    }
+
+    // MARK: - Accessibility
+
+    public var accessibilityDescription: String {
+        var fullString = ""
+        let pills = [viewState.pill1, viewState.pill2, viewState.pill3].compactMap{ $0 }
+
+        for pill in pills {
+            let string: String
+            switch pill {
+            case .emoji(let emoji, let count, _):
+                string = String(
+                    format: OWSLocalizedString(
+                        "MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d",
+                        tableName: "PluralAware",
+                        comment: "Accessibility label reading out a reaction to a message and its count. Embeds {{ count }} and {{ emoji name }}."
+                    ),
+                    count,
+                    emoji
+                )
+            case .moreCount(let count, _):
+                string = String(
+                    format: OWSLocalizedString(
+                        "OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d",
+                        tableName: "PluralAware",
+                        comment: "Accessibility label stating that there are additional reactions to a message that couldn't be displayed. Embeds {{ count of additional reactions }}"
+                    ),
+                    count
+                )
+            }
+            fullString.append(string)
+            fullString.append(" ")
+        }
+
+        return fullString
     }
 
     // MARK: -
