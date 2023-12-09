@@ -43,9 +43,30 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         self.shapeMode = shapeMode
         self.themeMode = themeMode
 
-        super.init(name: "ColorOrGradientSwatchView")
+        var colorName: String?
+        if #available(iOS 14.0, *) {
+            switch setting {
+            case .solidColor(let color),
+                 .themedColor(let color, _):
+                colorName = color.asUIColor.accessibilityName
+            case .gradient(let gradientColor1, let gradientColor2, _),
+                 .themedGradient(let gradientColor1, let gradientColor2, _, _, _):
+                colorName = String(
+                    format: OWSLocalizedString(
+                        "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL",
+                        comment: "Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }}"
+                    ),
+                    gradientColor1.asUIColor.accessibilityName,
+                    gradientColor2.asUIColor.accessibilityName
+                )
+            }
+        }
+
+        super.init(name: colorName ?? "ColorOrGradientSwatchView")
 
         self.shouldDeactivateConstraints = false
+
+        self.isAccessibilityElement = true
 
         configure()
 
