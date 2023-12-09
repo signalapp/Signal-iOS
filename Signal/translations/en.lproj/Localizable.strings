@@ -25,6 +25,9 @@
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
+/* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker similar to %@";
+
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
 
