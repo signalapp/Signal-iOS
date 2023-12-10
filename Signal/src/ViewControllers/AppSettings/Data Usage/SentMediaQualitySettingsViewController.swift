@@ -7,12 +7,14 @@ import SignalServiceKit
 import SignalUI
 
 class SentMediaQualitySettingsViewController: OWSTableViewController2 {
-    private lazy var currentQualityLevel = databaseStorage.read { ImageQualityLevel.default(transaction: $0) }
-    private let updateHandler: (ImageQualityLevel) -> Void
-    init(updateHandler: @escaping (ImageQualityLevel) -> Void) {
+    private let updateHandler: (_ isHighQuality: Bool) -> Void
+    init(updateHandler: @escaping (_ isHighQuality: Bool) -> Void) {
         self.updateHandler = updateHandler
         super.init()
     }
+
+    private var remoteDefaultLevel: ImageQualityLevel!
+    private var currentQualityLevel: ImageQualityLevel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +23,13 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
             comment: "Item title for the sent media quality setting"
         )
+
+        databaseStorage.read { tx in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
+            remoteDefaultLevel = ImageQualityLevel.remoteDefault(localPhoneNumber: localPhoneNumber)
+            currentQualityLevel = ImageQualityLevel.resolvedQuality(tx: tx)
+        }
 
         updateTableContents()
     }
@@ -39,25 +48,24 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             comment: "The footer for the photos and videos section in the sent media quality settings."
         )
 
-        section.add(qualityItem(.standard))
+        section.add(qualityItem(remoteDefaultLevel))
         section.add(qualityItem(.high))
 
         contents.add(section)
-
     }
 
     func qualityItem(_ level: ImageQualityLevel) -> OWSTableItem {
         return OWSTableItem(
             text: level.localizedString,
             actionBlock: { [weak self] in
-                self?.changeLevel(level)
+                self?.changeLevel(isHighQuality: level == .high)
             },
             accessoryType: currentQualityLevel == level ? .checkmark : .none
         )
     }
 
-    func changeLevel(_ level: ImageQualityLevel) {
-        updateHandler(level)
+    func changeLevel(isHighQuality: Bool) {
+        updateHandler(isHighQuality)
         navigationController?.popViewController(animated: true)
     }
 }

@@ -108,11 +108,6 @@ extension MessageSender {
         intendedRecipients: [ServiceId],
         udAccessMap: [ServiceId: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
-        guard !RemoteConfig.senderKeyKillSwitch else {
-            Logger.info("Sender key kill switch activated. No recipients support sender key.")
-            return .init(fanoutOnlyParticipants: intendedRecipients)
-        }
-
         guard thread.usesSenderKey else {
             return .init(fanoutOnlyParticipants: intendedRecipients)
         }
@@ -573,7 +568,7 @@ extension MessageSender {
                     let responseBody = try Self.decode409Response(data: responseData)
                     self.databaseStorage.write { tx in
                         for account in responseBody {
-                            Self.updateDevices(
+                            self.updateDevices(
                                 serviceId: account.serviceId,
                                 devicesToAdd: account.devices.missingDevices,
                                 devicesToRemove: account.devices.extraDevices,

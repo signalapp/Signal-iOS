@@ -101,12 +101,15 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         // Do nothing
     }
 
+    public var syncedMasterKey: Data?
+
     public func storeSyncedMasterKey(
         data: Data,
         authedDevice: AuthedDevice,
+        updateStorageService: Bool,
         transaction: DBWriteTransaction
     ) {
-        // Do nothing
+        syncedMasterKey = data
     }
 
     public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
@@ -137,11 +140,13 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         doesHavePendingRestoration = false
     }
 
+    public var useDeviceLocalMasterKeyMock: ((_ authedAccount: AuthedAccount) -> Void)?
+
     public func useDeviceLocalMasterKey(
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        // Do nothing
+        useDeviceLocalMasterKeyMock?(authedAccount)
     }
 
     public var dataGenerator: (SVR.DerivedKey) -> Data? = { _ in return nil }

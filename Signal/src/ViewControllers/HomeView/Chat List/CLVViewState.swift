@@ -6,52 +6,59 @@
 import SignalServiceKit
 import SignalUI
 
-public class CLVViewState {
+class CLVViewState {
 
-    public let tableDataSource = CLVTableDataSource()
+    let tableDataSource = CLVTableDataSource()
 
-    public let multiSelectState = MultiSelectState()
+    let multiSelectState = MultiSelectState()
 
-    public let loadCoordinator = CLVLoadCoordinator()
+    let loadCoordinator = CLVLoadCoordinator()
 
     // MARK: - Caches
 
-    public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
+    let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
     let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
-    public var conversationCellHeightCache: CGFloat?
+    var conversationCellHeightCache: CGFloat?
 
-    public var spoilerAnimationManager = SpoilerAnimationManager()
+    var spoilerAnimationManager = SpoilerAnimationManager()
 
     // MARK: - Views
 
     let searchBar = OWSSearchBar()
     let searchResultsController = ConversationSearchViewController()
     let reminderViews = CLVReminderViews()
+    let settingsButtonCreator = ChatListSettingsButtonCreator()
+    let proxyButtonCreator = ChatListProxyButtonCreator(socketManager: DependenciesBridge.shared.socketManager)
 
     // MARK: - State
 
-    // TODO: We should make this a let.
-    var chatListMode: ChatListMode = .inbox
+    let chatListMode: ChatListMode
 
     var shouldBeUpdatingView = false
 
     var isViewVisible = false
     var hasEverAppeared = false
 
-    var unreadPaymentNotificationsCount: UInt = 0
+    var unreadPaymentNotificationsCount: UInt = 0 {
+        didSet { settingsButtonCreator.updateState(hasUnreadPaymentNotification: unreadPaymentNotificationsCount > 0) }
+    }
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 
     // MARK: - Initializer
 
-    public func configure() {
+    init(chatListMode: ChatListMode) {
+        self.chatListMode = chatListMode
+    }
+
+    func configure() {
         tableDataSource.configure(viewState: self)
     }
 }
 
 // MARK: -
 
-public extension ChatListViewController {
+extension ChatListViewController {
 
     var tableDataSource: CLVTableDataSource { viewState.tableDataSource }
 
@@ -61,7 +68,7 @@ public extension ChatListViewController {
 
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
-    internal var cellContentCache: LRUCache<String, CLVCellContentToken> { viewState.cellContentCache }
+    var cellContentCache: LRUCache<String, CLVCellContentToken> { viewState.cellContentCache }
 
     var conversationCellHeightCache: CGFloat? {
         get { viewState.conversationCellHeightCache }
@@ -81,10 +88,7 @@ public extension ChatListViewController {
     var numberOfInboxThreads: UInt { renderState.inboxCount }
     var numberOfArchivedThreads: UInt { renderState.archiveCount }
 
-    var chatListMode: ChatListMode {
-        get { viewState.chatListMode }
-        set { viewState.chatListMode = newValue }
-    }
+    var chatListMode: ChatListMode { viewState.chatListMode }
 
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }

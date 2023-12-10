@@ -12,7 +12,6 @@ import SignalServiceKit
 extension RegistrationCoordinatorImpl {
 
     public enum Shims {
-        public typealias AccountManager = _RegistrationCoordinator_AccountManagerShim
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
@@ -25,7 +24,6 @@ extension RegistrationCoordinatorImpl {
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
     public enum Wrappers {
-        public typealias AccountManager = _RegistrationCoordinator_AccountManagerWrapper
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
@@ -36,23 +34,6 @@ extension RegistrationCoordinatorImpl {
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
-    }
-}
-
-// MARK: - AccountManager
-
-public protocol _RegistrationCoordinator_AccountManagerShim {
-
-    func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void>
-}
-
-public class _RegistrationCoordinator_AccountManagerWrapper: _RegistrationCoordinator_AccountManagerShim {
-
-    private let manager: AccountManager
-    public init(_ manager: AccountManager) { self.manager = manager }
-
-    public func performInitialStorageServiceRestore(authedDevice: AuthedDevice) -> Promise<Void> {
-        return manager.performInitialStorageServiceRestore(authedDevice: authedDevice)
     }
 }
 
@@ -241,6 +222,8 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
         avatarData: Data?,
         authedAccount: AuthedAccount
     ) -> Promise<Void>
+
+    func scheduleReuploadLocalProfile(authedAccount: AuthedAccount)
 }
 
 public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordinator_ProfileManagerShim {
@@ -268,6 +251,10 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             userProfileWriter: .registration,
             authedAccount: authedAccount
         )
+    }
+
+    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount) {
+        return manager.reuploadLocalProfile(authedAccount: authedAccount)
     }
 }
 
@@ -300,10 +287,6 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
     func receivePreAuthChallengeToken() -> Guarantee<String>
 
     func clearPreAuthChallengeToken()
-
-    func syncPushTokensForcingUpload(
-        auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult>
 }
 
 public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _RegistrationCoordinator_PushRegistrationManagerShim {
@@ -340,28 +323,6 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
 
     public func clearPreAuthChallengeToken() {
         manager.clearPreAuthChallengeToken()
-    }
-
-    public func syncPushTokensForcingUpload(
-        auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult> {
-        let job = SyncPushTokensJob(mode: .forceUpload, auth: auth)
-        return Guarantee.wrapAsync {
-            do {
-                try await job.run()
-                return .success
-            } catch {
-                if error.isNetworkFailureOrTimeout {
-                    return .networkError
-                }
-                switch error {
-                case PushRegistrationError.pushNotSupported(let description):
-                    return .pushUnsupported(description: description)
-                default:
-                    return .genericError(error)
-                }
-            }
-        }
     }
 }
 

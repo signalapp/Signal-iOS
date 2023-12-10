@@ -282,7 +282,7 @@ public extension ConversationViewController {
         ensureBottomViewType()
     }
 
-    func updateInputToolbarLayout() {
+    func updateInputToolbarLayout(initialLayout: Bool = false) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -299,6 +299,10 @@ public extension ConversationViewController {
             // constraints on the toolbar on its own.
             self.view.setNeedsLayout()
             self.updateContentInsets()
+        }
+
+        if initialLayout {
+            inputToolbar.scrollToBottom()
         }
     }
 

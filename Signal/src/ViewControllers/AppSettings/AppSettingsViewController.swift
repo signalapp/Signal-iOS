@@ -195,20 +195,18 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        if RemoteConfig.stories {
-            section2.add(.disclosureItem(
-                icon: .settingsStories,
-                name: OWSLocalizedString(
-                    "STORY_SETTINGS_TITLE",
-                    comment: "Label for the stories section of the settings view"
-                ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stories"),
-                actionBlock: { [weak self] in
-                    let vc = StoryPrivacySettingsViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        }
+        section2.add(.disclosureItem(
+            icon: .settingsStories,
+            name: OWSLocalizedString(
+                "STORY_SETTINGS_TITLE",
+                comment: "Label for the stories section of the settings view"
+            ),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stories"),
+            actionBlock: { [weak self] in
+                let vc = StoryPrivacySettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
         section2.add(.disclosureItem(
             icon: .settingsNotifications,
             name: OWSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),

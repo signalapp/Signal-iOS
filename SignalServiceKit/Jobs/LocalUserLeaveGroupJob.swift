@@ -134,7 +134,7 @@ public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = LocalUserLeaveGroupOperation
 
     public var runningOperations = AtomicArray<LocalUserLeaveGroupOperation>()
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public var requiresInternet: Bool { true }
     public var isEnabled: Bool { true }

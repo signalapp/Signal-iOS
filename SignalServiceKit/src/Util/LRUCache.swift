@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+import SignalCoreKit
+
 // An @objc wrapper around LRUCache.
 @objc
 public class AnyLRUCache: NSObject {
@@ -119,7 +122,6 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
             return
         }
         guard cache.countLimit > 0 else {
-            Logger.verbose("Using disabled cache.")
             return
         }
         cache.setObject(value as AnyObject, forKey: key as AnyObject)

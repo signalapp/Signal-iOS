@@ -10,8 +10,6 @@ protocol GroupCallVideoGridLayoutDelegate: AnyObject {
     var maxColumns: Int { get }
     var maxRows: Int { get }
     var maxItems: Int { get }
-
-    func deviceState(for index: Int) -> RemoteDeviceState?
 }
 
 class GroupCallVideoGridLayout: UICollectionViewLayout {

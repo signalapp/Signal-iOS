@@ -14,21 +14,12 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func verifySecondaryDevice(
-        verificationCode: String,
-        phoneNumber: String,
-        authKey: String,
-        encryptedDeviceName: Data,
-        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
-    ) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)>
     /// If a username and password are both provided, those are used for the request's
     /// Authentication header. Otherwise, the default header is used (whatever's on
     /// TSAccountManager).
     func registerPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -81,13 +72,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     // MARK: - Public
 
     public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
-            Logger.debug("got response")
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -104,18 +92,14 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
     public func registerPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.registerPrekeysRequest(
             identity: identity,
-            identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             prekeyRecords: preKeyRecords,
             pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,
@@ -126,8 +110,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     public func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
-        Logger.debug("")
-
         let request = OWSRequestFactory.registerSignedPrekeyRequest(for: identity, signedPreKey: signedPreKey)
         return networkManager.makePromise(request: request).asVoid()
     }
@@ -201,58 +183,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         }
     }
 
-    public func verifySecondaryDevice(
-        verificationCode: String,
-        phoneNumber: String,
-        authKey: String,
-        encryptedDeviceName: Data,
-        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
-    ) -> Promise<VerifySecondaryDeviceResponse> {
-
-        let accountAttributes = self.databaseStorage.write { transaction in
-            return AccountAttributes.generateForSecondaryDevice(
-                fromDependencies: self,
-                svr: DependenciesBridge.shared.svr,
-                encryptedDeviceName: encryptedDeviceName,
-                transaction: transaction
-            )
-        }
-
-        let request = OWSRequestFactory.verifySecondaryDeviceRequest(
-            verificationCode: verificationCode,
-            phoneNumber: phoneNumber,
-            authPassword: authKey,
-            attributes: accountAttributes,
-            apnRegistrationId: apnRegistrationId,
-            prekeyBundles: prekeyBundles
-        )
-
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON.")
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
-
-            let deviceId: UInt32 = try parser.required(key: "deviceId")
-            let pni = Pni(fromUUID: try parser.required(key: "pni"))
-
-            return VerifySecondaryDeviceResponse(pni: pni, deviceId: deviceId)
-        }.recover { error -> Promise<VerifySecondaryDeviceResponse> in
-            if let statusCode = error.httpStatusCode, statusCode == 409 {
-                // Convert 409 errors into .obsoleteLinkedDevice so that they can be
-                // explicitly handled.
-                throw SignalServiceError.obsoleteLinkedDevice
-            } else {
-                throw DeviceLimitExceededError(error) ?? error
-            }
-        }
-    }
-
     // yields a map of ["feature_name": isEnabled]
     public func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse> {
         let request = OWSRequestFactory.getRemoteConfigRequest()
@@ -296,15 +226,11 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     // MARK: - Secondary Devices
 
     public func updateSecondaryDeviceCapabilities(_ capabilities: AccountAttributes.Capabilities, authedAccount: AuthedAccount) async throws {
-        let request = OWSRequestFactory.updateLinkedDeviceCapabilitiesRequest(for: capabilities)
+        let request = AccountAttributesRequestFactory.updateLinkedDeviceCapabilitiesRequest(
+            capabilities,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        )
         request.setAuth(authedAccount.chatServiceAuth)
         _ = try await networkManager.makePromise(request: request).awaitable()
     }
-}
-
-// MARK: -
-
-public struct VerifySecondaryDeviceResponse {
-    public let pni: Pni
-    public let deviceId: UInt32
 }

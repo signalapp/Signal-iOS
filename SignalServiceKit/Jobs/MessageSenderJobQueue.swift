@@ -104,20 +104,22 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
-    public func add(mediaMessage: TSOutgoingMessage,
-                    dataSource: DataSource,
-                    contentType: String,
-                    sourceFilename: String?,
-                    caption: String?,
-                    albumMessageId: String?,
-                    isTemporaryAttachment: Bool) {
-        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource,
-                                                    contentType: contentType,
-                                                    sourceFilename: sourceFilename,
-                                                    caption: caption,
-                                                    albumMessageId: albumMessageId,
-                                                    isBorderless: false,
-                                                    isLoopingVideo: false)
+    public func add(
+        mediaMessage: TSOutgoingMessage,
+        dataSource: DataSource,
+        contentType: String,
+        sourceFilename: String?,
+        caption: String?,
+        albumMessageId: String?,
+        isTemporaryAttachment: Bool
+    ) {
+        let attachmentInfo = OutgoingAttachmentInfo(
+            dataSource: dataSource,
+            contentType: contentType,
+            sourceFilename: sourceFilename,
+            caption: caption,
+            albumMessageId: albumMessageId
+        )
         let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
         add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }
@@ -162,12 +164,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             if let future = future {
                 jobFutures[jobRecord.uniqueId] = future
             }
-            transaction.addSyncCompletion {
-                BenchManager.startEvent(
-                    title: "Send Message Milestone: Pre-Network (\(messageRecord.timestamp))",
-                    eventId: "sendMessagePreNetwork-\(messageRecord.timestamp)"
-                )
-            }
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
         }
@@ -191,7 +187,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: MessageSenderJobRecord,
                                transaction: SDSAnyWriteTransaction) {
@@ -220,7 +216,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             jobRecord: jobRecord,
             future: jobFutures.pop(jobRecord.uniqueId)
         )
-        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.queuePriority(for: message)
+        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.sendingQueuePriority(for: message)
 
         // Media messages run on their own queue to not block future non-media sends,
         // but should not start sending until all previous operations have executed.
@@ -315,13 +311,14 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: OWSOperation
 
     override public func run() {
-        self.messageSender.sendMessage(message.asPreparer,
-                                       success: {
-                                        self.reportSuccess()
-        },
-                                       failure: { error in
-                                        self.reportError(withUndefinedRetry: error)
-        })
+        Task {
+            do {
+                try await self.messageSender.sendMessage(message.asPreparer)
+                DispatchQueue.global().async { self.reportSuccess() }
+            } catch {
+                DispatchQueue.global().async { self.reportError(withUndefinedRetry: error) }
+            }
+        }
     }
 
     override public func didSucceed() {

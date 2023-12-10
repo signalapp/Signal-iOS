@@ -27,7 +27,7 @@ class CallAudioService: NSObject, CallObserver {
     }
 
     // Track whether the speaker should be enabled or not.
-    private var isSpeakerEnabled = false
+    private(set) var isSpeakerEnabled = false
 
     // MARK: Vibration config
     private let vibrateRepeatDuration = 1.6
@@ -120,18 +120,26 @@ class CallAudioService: NSObject, CallObserver {
         self.isSpeakerEnabled = isEnabled
     }
 
-    public func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
+    private func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
         // If toggled for an group call, save the enablement state and
         // update the AudioSession.
         self.isSpeakerEnabled = isEnabled
         self.ensureProperAudioSession(call: call)
     }
 
-    public func requestSpeakerphone(call: IndividualCall, isEnabled: Bool) {
+    private func requestSpeakerphone(call: IndividualCall, isEnabled: Bool) {
         // If toggled for an individual call, save the enablement state and
         // update the AudioSession.
         self.isSpeakerEnabled = isEnabled
         self.ensureProperAudioSession(call: call)
+    }
+
+    public func requestSpeakerphone(call: SignalCall, isEnabled: Bool) {
+        if call.isGroupCall {
+            requestSpeakerphone(call: call.groupCall, isEnabled: isEnabled)
+        } else if call.isIndividualCall {
+            requestSpeakerphone(call: call.individualCall, isEnabled: isEnabled)
+        }
     }
 
     private func audioRouteDidChange() {

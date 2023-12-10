@@ -14,7 +14,7 @@ class HomeTabBarController: UITabBarController {
         case stories = 1
     }
 
-    lazy var chatListViewController = ChatListViewController()
+    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = UITabBarItem(
         title: OWSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode."),
@@ -49,13 +49,6 @@ class HomeTabBarController: UITabBarController {
         setValue(OWSTabBar(), forKey: "tabBar")
 
         delegate = self
-
-        // Don't render the tab bar at all if stories isn't enabled.
-        guard RemoteConfig.stories else {
-            viewControllers = [chatListNavController]
-            self.setTabBarHidden(true, animated: false)
-            return
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)

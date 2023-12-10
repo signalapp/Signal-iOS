@@ -119,6 +119,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             DependenciesBridge.shared.svr.storeSyncedMasterKey(
                 data: masterKey,
                 authedDevice: .implicit,
+                updateStorageService: true,
                 transaction: transaction.asV2Write
             )
         } else {
@@ -367,35 +368,24 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             if debounce {
                 self.isRequestInFlight = true
             }
-            let (promise, future) = Promise<Void>.pending()
-            messageSender.sendTemporaryAttachment(
-                dataSource,
-                contentType: OWSMimeTypeApplicationOctetStream,
-                in: result.message,
-                success: {
-                    Logger.info("Successfully sent contacts sync message.")
-                    self.databaseStorage.write { tx in
-                        Self.keyValueStore().setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
-                        self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
-                    }
-                    Self.contactSyncQueue.async {
-                        if debounce {
+            return Promise.wrapAsync {
+                defer {
+                    if debounce {
+                        Self.contactSyncQueue.async {
                             self.isRequestInFlight = false
                         }
-                        future.resolve(())
-                    }
-                },
-                failure: { error in
-                    Logger.warn("Failed to send contacts sync message: \(error)")
-                    Self.contactSyncQueue.async {
-                        if debounce {
-                            self.isRequestInFlight = false
-                        }
-                        future.reject(error)
                     }
                 }
-            )
-            return promise
+                try await self.messageSender.sendTemporaryAttachment(
+                    dataSource: dataSource,
+                    contentType: OWSMimeTypeApplicationOctetStream,
+                    message: result.message
+                )
+                await self.databaseStorage.awaitableWrite { tx in
+                    Self.keyValueStore().setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
+                    self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
+                }
+            }
         }
     }
 

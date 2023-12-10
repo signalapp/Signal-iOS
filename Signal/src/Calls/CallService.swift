@@ -42,8 +42,17 @@ public final class CallService: LightweightGroupCallManager {
 
     @objc
     public let individualCallService = IndividualCallService()
-    let groupCallMessageHandler = GroupCallUpdateMessageHandler()
     let groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
+
+    /// Needs to be lazily initialized, because it uses singletons that are not
+    /// available when this class is initialized.
+    private lazy var groupCallAccessoryMessageDelegate: GroupCallAccessoryMessageDelegate = {
+        return GroupCallAccessoryMessageHandler(
+            databaseStorage: databaseStorage,
+            groupCallRecordManager: DependenciesBridge.shared.groupCallRecordManager,
+            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
+        )
+    }()
 
     lazy private(set) var audioService = CallAudioService()
 
@@ -161,9 +170,6 @@ public final class CallService: LightweightGroupCallManager {
         callManager.delegate = self
         SwiftSingletons.register(self)
 
-        addObserverAndSyncState(observer: groupCallMessageHandler)
-        addObserverAndSyncState(observer: groupCallRemoteVideoManager)
-
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didEnterBackground),
@@ -212,6 +218,9 @@ public final class CallService: LightweightGroupCallManager {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
+
+            self.addObserverAndSyncState(observer: self.groupCallAccessoryMessageDelegate)
+            self.addObserverAndSyncState(observer: self.groupCallRemoteVideoManager)
         }
     }
 
@@ -461,14 +470,27 @@ public final class CallService: LightweightGroupCallManager {
     }
 
     func handleLocalHangupCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         if call.isIndividualCall {
             individualCallService.handleLocalHangupCall(call)
         } else {
             if case .incomingRing(_, let ringId) = call.groupCallRingState {
+                guard let (groupThread, _) = call.unpackGroupCall() else {
+                    return
+                }
+
+                groupCallAccessoryMessageDelegate.localDeviceDeclinedGroupRing(
+                    ringId: ringId,
+                    groupThread: groupThread
+                )
+
                 do {
-                    try callManager.cancelGroupRing(groupId: call.thread.groupModelIfGroupThread!.groupId,
-                                                    ringId: ringId,
-                                                    reason: .declinedByUser)
+                    try callManager.cancelGroupRing(
+                        groupId: groupThread.groupId,
+                        ringId: ringId,
+                        reason: .declinedByUser
+                    )
                 } catch {
                     owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
                 }
@@ -505,7 +527,10 @@ public final class CallService: LightweightGroupCallManager {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                peekGroupCallAndUpdateThread(thread)
+                peekGroupCallAndUpdateThread(
+                    thread,
+                    peekTrigger: .localEvent()
+                )
             } else {
                 owsFailDebug("Invalid thread type")
             }
@@ -854,8 +879,7 @@ public final class CallService: LightweightGroupCallManager {
 
     override public func peekGroupCallAndUpdateThread(
         _ thread: TSGroupThread,
-        expectedEraId: String? = nil,
-        triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+        peekTrigger: PeekTrigger,
         completion: (() -> Void)? = nil
     ) {
         // If the currentCall is for the provided thread, we don't need to perform an explicit
@@ -864,16 +888,33 @@ public final class CallService: LightweightGroupCallManager {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        super.peekGroupCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
+
+        super.peekGroupCallAndUpdateThread(
+            thread,
+            peekTrigger: peekTrigger,
+            completion: completion
+        )
     }
 
-    override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+    override public func postUserNotificationIfNecessary(
+        groupCallMessage: OWSGroupCallMessage,
+        joinedMemberAcis: [Aci],
+        creatorAci: Aci,
+        groupThread: TSGroupThread,
+        tx: SDSAnyWriteTransaction
+    ) {
         AssertNotOnMainThread()
 
         // The message can't be for the current call
-        guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
+        guard self.currentCall?.thread != groupThread else { return }
 
-        super.postUserNotificationIfNecessary(groupCallMessage: groupCallMessage, transaction: transaction)
+        super.postUserNotificationIfNecessary(
+            groupCallMessage: groupCallMessage,
+            joinedMemberAcis: joinedMemberAcis,
+            creatorAci: creatorAci,
+            groupThread: groupThread,
+            tx: tx
+        )
     }
 }
 
@@ -890,22 +931,81 @@ extension CallService: CallObserver {
     }
 
     public func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
-        Logger.info("groupCallLocalDeviceStateChanged")
         AssertIsOnMainThread()
+
+        guard let (groupThread, groupCall) = call.unpackGroupCall() else {
+            return
+        }
+
+        Logger.info("")
         updateIsVideoEnabled()
         updateGroupMembersForCurrentCallIfNecessary()
         configureDataMode()
 
-        if case .shouldRing = call.groupCallRingState,
-           call.ringRestrictions.isEmpty,
-           call.groupCall.localDeviceState.joinState == .joined,
-           call.groupCall.remoteDeviceStates.isEmpty {
-            // Don't start ringing until we join the call successfully.
-            call.groupCallRingState = .ringing
-            call.groupCall.ringAll()
-            audioService.playOutboundRing()
+        if groupCall.localDeviceState.isJoined {
+            if
+                case .shouldRing = call.groupCallRingState,
+                call.ringRestrictions.isEmpty,
+                call.groupCall.remoteDeviceStates.isEmpty
+            {
+                // Don't start ringing until we join the call successfully.
+                call.groupCallRingState = .ringing
+                call.groupCall.ringAll()
+                audioService.playOutboundRing()
+            }
+
+            if let eraId = groupCall.peekInfo?.eraId {
+                groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
+                    eraId: eraId,
+                    groupThread: groupThread,
+                    groupCallRingState: call.groupCallRingState
+                )
+            }
+        } else {
+            groupCallAccessoryMessageDelegate.localDeviceMaybeLeftGroupCall(
+                groupThread: groupThread,
+                groupCall: groupCall
+            )
         }
+    }
+
+    public func groupCallPeekChanged(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
+        guard let (groupThread, groupCall) = call.unpackGroupCall() else {
+            return
+        }
+
+        guard let peekInfo = call.groupCall.peekInfo else {
+            Logger.warn("No peek info for call: \(call)")
+            return
+        }
+
+        if
+            groupCall.localDeviceState.isJoined,
+            let eraId = peekInfo.eraId
+        {
+            groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
+                eraId: eraId,
+                groupThread: groupThread,
+                groupCallRingState: call.groupCallRingState
+            )
+        }
+
+        databaseStorage.asyncWrite { tx in
+            self.updateGroupCallModelsForPeek(
+                peekInfo: peekInfo,
+                groupThread: groupThread,
+                triggerEventTimestamp: Date.ows_millisecondTimestamp(),
+                tx: tx
+            )
+        }
+    }
+
+    public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        AssertIsOnMainThread()
+
+        groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
@@ -913,24 +1013,6 @@ extension CallService: CallObserver {
             // The first time someone joins after a ring, we need to mark the call accepted.
             // (But if we didn't ring, the call will have already been marked accepted.)
             callUIAdapter.recipientAcceptedCall(call)
-        }
-    }
-
-    public func groupCallPeekChanged(_ call: SignalCall) {
-        guard let thread = call.thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread for call: \(call)")
-            return
-        }
-        guard let peekInfo = call.groupCall.peekInfo else {
-            Logger.warn("No peek info for call: \(call)")
-            return
-        }
-        DispatchQueue.sharedUtility.async {
-            self.updateGroupCallModelsForPeek(
-                peekInfo,
-                for: thread,
-                timestamp: Date.ows_millisecondTimestamp()
-            )
         }
     }
 
@@ -964,6 +1046,30 @@ extension CallService: CallObserver {
         guard call === currentCall else { return cleanupStaleCall(call) }
 
         updateGroupMembersForCurrentCallIfNecessary()
+    }
+}
+
+extension SignalCall {
+    func unpackGroupCall() -> (TSGroupThread, GroupCall)? {
+        guard
+            isGroupCall,
+            let groupCall = groupCall,
+            let groupThread = thread as? TSGroupThread
+        else {
+            owsFailDebug("Failed to unpack group call!")
+            return nil
+        }
+
+        return (groupThread, groupCall)
+    }
+}
+
+private extension LocalDeviceState {
+    var isJoined: Bool {
+        switch joinState {
+        case .joined: return true
+        case .pending, .joining, .notJoined: return false
+        }
     }
 }
 
@@ -1347,9 +1453,7 @@ extension CallService: CallManagerDelegate {
         sender: UUID,
         update: RingUpdate
     ) {
-        guard RemoteConfig.inboundGroupRings else {
-            return
-        }
+        // [Calls] MARK: Ring updates
 
         let senderAci = Aci(fromUUID: sender)
 

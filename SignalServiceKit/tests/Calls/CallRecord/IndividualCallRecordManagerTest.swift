@@ -71,7 +71,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending),
-            timestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -121,7 +121,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending),
-            timestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -197,7 +197,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.notAccepted),
-            timestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
@@ -210,7 +210,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordTo, .individual(.accepted))
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
@@ -225,7 +225,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.notAccepted),
-            timestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
@@ -238,7 +238,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordTo, .individual(.accepted))
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
         XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
@@ -251,7 +251,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.notAccepted),
-            timestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp
         )
 
         mockDB.write { tx in
@@ -264,7 +264,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordTo, .individual(.accepted))
+        XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
         XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 }
@@ -282,47 +282,13 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
     var didAskToCreateRecord: CallRecord.CallStatus.IndividualCallStatus?
     var didAskToUpdateRecord: CallRecord.CallStatus.IndividualCallStatus?
 
-    override func createRecordForInteraction(
-        individualCallInteraction: TSCall,
-        individualCallInteractionRowId: Int64,
-        contactThread: TSContactThread,
-        contactThreadRowId: Int64,
-        callId: UInt64,
-        callType: CallRecord.CallType,
-        callDirection: CallRecord.CallDirection,
-        individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
-        shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
-    ) {
+    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         didAskToCreateRecord = individualCallStatus
-        super.createRecordForInteraction(
-            individualCallInteraction: individualCallInteraction,
-            individualCallInteractionRowId: individualCallInteractionRowId,
-            contactThread: contactThread,
-            contactThreadRowId: contactThreadRowId,
-            callId: callId,
-            callType: callType,
-            callDirection: callDirection,
-            individualCallStatus: individualCallStatus,
-            shouldSendSyncMessage: shouldSendSyncMessage,
-            tx: tx
-        )
+        return super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
     }
 
-    override func updateRecord(
-        contactThread: TSContactThread,
-        existingCallRecord: CallRecord,
-        newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
-        shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
-    ) {
+    override func updateRecord(contactThread: TSContactThread, existingCallRecord: CallRecord, newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         didAskToUpdateRecord = newIndividualCallStatus
-        super.updateRecord(
-            contactThread: contactThread,
-            existingCallRecord: existingCallRecord,
-            newIndividualCallStatus: newIndividualCallStatus,
-            shouldSendSyncMessage: shouldSendSyncMessage,
-            tx: tx
-        )
+        super.updateRecord(contactThread: contactThread, existingCallRecord: existingCallRecord, newIndividualCallStatus: newIndividualCallStatus, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
     }
 }

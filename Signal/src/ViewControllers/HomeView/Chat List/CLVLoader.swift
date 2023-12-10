@@ -59,16 +59,12 @@ enum CLVLoadResult {
 
 public class CLVLoader: Dependencies {
 
-    static func loadRenderStateForReset(viewInfo: CLVViewInfo,
-                                        transaction: SDSAnyReadTransaction) -> CLVLoadResult {
+    static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         do {
-            return try Bench(title: "loadRenderState for reset (\(viewInfo.chatListMode))") {
-                let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo,
-                                                                   transaction: transaction)
-                return CLVLoadResult.renderStateForReset(renderState: renderState)
-            }
+            let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
+            return CLVLoadResult.renderStateForReset(renderState: renderState)
         } catch {
             owsFailDebug("error: \(error)")
             return .reloadTable
@@ -217,12 +213,10 @@ public class CLVLoader: Dependencies {
             }
         }
 
-        let newRenderState = try Bench(title: "loadRenderState for diff (\(viewInfo.chatListMode))") {
-            if DebugFlags.internalLogging {
-                Logger.info("[Scroll Perf Debug] About to do loadRenderStateInternal")
-            }
-            return try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
+        if DebugFlags.internalLogging {
+            Logger.info("[Scroll Perf Debug] About to do loadRenderStateInternal")
         }
+        let newRenderState = try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys
         let oldUnpinnedThreadIds: [String] = lastRenderState.unpinnedThreads.map { $0.uniqueId }
@@ -233,7 +227,6 @@ public class CLVLoader: Dependencies {
             let threadUniqueId: String
 
             var batchUpdateId: String { threadUniqueId }
-            var logSafeDescription: String { threadUniqueId }
         }
 
         let oldPinnedValues = oldPinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }

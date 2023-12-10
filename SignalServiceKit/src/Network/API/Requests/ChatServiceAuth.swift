@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Credentials to use on a TSRequest to the chat server.
 @objc
@@ -28,12 +29,27 @@ public class ChatServiceAuth: NSObject {
         return ChatServiceAuth(.implicit)
     }
 
+    public typealias DeviceId = AuthedDevice.DeviceId
+
     @objc
     public static func explicit(
         aci: AciObjC,
+        rawDeviceId: UInt32,
         password: String
     ) -> ChatServiceAuth {
-        return ChatServiceAuth(.explicit(username: aci.serviceIdString, password: password))
+        return ChatServiceAuth.explicit(
+            aci: aci.wrappedAciValue,
+            deviceId: rawDeviceId == OWSDevice.primaryDeviceId ? .primary : .secondary(rawDeviceId),
+            password: password
+        )
+    }
+
+    public static func explicit(
+        aci: Aci,
+        deviceId: DeviceId,
+        password: String
+    ) -> ChatServiceAuth {
+        return ChatServiceAuth(.explicit(username: deviceId.authUsername(aci: aci), password: password))
     }
 
     public override var hash: Int {

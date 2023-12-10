@@ -150,6 +150,4 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 id<AppContext> CurrentAppContext(void);
 void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests);
 
-void ExitShareExtension(void);
-
 NS_ASSUME_NONNULL_END

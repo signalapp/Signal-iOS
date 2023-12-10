@@ -104,5 +104,4 @@ extension StoryContext: BatchUpdateValue {
             return "none"
         }
     }
-    public var logSafeDescription: String { batchUpdateId }
 }

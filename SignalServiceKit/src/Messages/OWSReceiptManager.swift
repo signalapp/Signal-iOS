@@ -654,12 +654,11 @@ extension OWSReceiptManager {
     /// messages. These should be persisted by the caller since the messages
     /// might arrive after the receipts.
     private func processReceiptsForMessages(
-        sentAt sentTimestamps: [NSNumber],
+        sentAt sentTimestamps: [UInt64],
         tx: SDSAnyReadTransaction,
         handleTimestampMessages: (UInt64, [TSOutgoingMessage]) -> Bool
-    ) -> [NSNumber] {
-        return sentTimestamps.filter {
-            let sentTimestamp = $0.uint64Value
+    ) -> [UInt64] {
+        return sentTimestamps.filter { sentTimestamp in
             let messages = outgoingMessages(sentAt: sentTimestamp, tx: tx)
             return !handleTimestampMessages(sentTimestamp, messages)
         }
@@ -670,20 +669,19 @@ extension OWSReceiptManager {
     /// - Returns: A subset of `sentTimestamps` that don't have corresponding
     /// messages. These should be persisted by the caller since the messages
     /// might arrive after the receipts.
-    @objc
     func processDeliveryReceipts(
-        from recipientServiceId: ServiceIdObjC,
+        from recipientServiceId: ServiceId,
         recipientDeviceId: UInt32,
-        sentTimestamps: [NSNumber],
+        sentTimestamps: [UInt64],
         deliveryTimestamp: UInt64,
         context: DeliveryReceiptContext,
         tx: SDSAnyWriteTransaction
-    ) -> [NSNumber] {
+    ) -> [UInt64] {
         return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { _, messages in
             if !messages.isEmpty {
                 for message in messages {
                     message.update(
-                        withDeliveredRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        withDeliveredRecipient: SignalServiceAddress(recipientServiceId),
                         deviceId: recipientDeviceId,
                         deliveryTimestamp: deliveryTimestamp,
                         context: context,
@@ -701,14 +699,13 @@ extension OWSReceiptManager {
     /// - Returns: A subset of `sentTimestamps` that don't have corresponding
     /// messages. These should be persisted by the caller since the messages
     /// might arrive after the receipts.
-    @objc
     func processReadReceipts(
-        from recipientAci: AciObjC,
+        from recipientAci: Aci,
         recipientDeviceId: UInt32,
-        sentTimestamps: [NSNumber],
+        sentTimestamps: [UInt64],
         readTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
-    ) -> [NSNumber] {
+    ) -> [UInt64] {
         guard self.areReadReceiptsEnabled() else {
             return []
         }
@@ -718,7 +715,7 @@ extension OWSReceiptManager {
                 // from us in that thread. Or maybe this state should hang on the thread?
                 for message in messages {
                     message.update(
-                        withReadRecipient: SignalServiceAddress(recipientAci.wrappedValue),
+                        withReadRecipient: SignalServiceAddress(recipientAci),
                         deviceId: recipientDeviceId,
                         readTimestamp: readTimestamp,
                         tx: tx
@@ -735,20 +732,19 @@ extension OWSReceiptManager {
     /// - Returns: A subset of `sentTimestamps` that don't have corresponding
     /// messages. These should be persisted by the caller since the messages
     /// might arrive after the receipts.
-    @objc
     func processViewedReceipts(
-        from recipientAci: AciObjC,
+        from recipientAci: Aci,
         recipientDeviceId: UInt32,
-        sentTimestamps: [NSNumber],
+        sentTimestamps: [UInt64],
         viewedTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
-    ) -> [NSNumber] {
+    ) -> [UInt64] {
         return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { sentTimestamp, messages in
             if !messages.isEmpty {
                 if self.areReadReceiptsEnabled() {
                     for message in messages {
                         message.update(
-                            withViewedRecipient: SignalServiceAddress(recipientAci.wrappedAciValue),
+                            withViewedRecipient: SignalServiceAddress(recipientAci),
                             deviceId: recipientDeviceId,
                             viewedTimestamp: viewedTimestamp,
                             tx: tx
@@ -765,7 +761,7 @@ extension OWSReceiptManager {
                 if StoryManager.areViewReceiptsEnabled {
                     storyMessage.markAsViewed(
                         at: viewedTimestamp,
-                        by: recipientAci.wrappedAciValue,
+                        by: recipientAci,
                         transaction: tx
                     )
                 } else {

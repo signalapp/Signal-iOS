@@ -9,44 +9,50 @@ import SignalUI
 
 @objc
 protocol CallControlsDelegate: AnyObject {
-    func didPressHangup(sender: UIButton)
-    func didPressAudioSource(sender: UIButton)
-    func didPressMute(sender: UIButton)
-    func didPressVideo(sender: UIButton)
-    func didPressRing(sender: UIButton)
-    func didPressFlipCamera(sender: UIButton)
-    func didPressJoin(sender: UIButton)
+    func didPressRing()
+    func didPressJoin()
+    func didPressHangup()
 }
 
 class CallControls: UIView {
+    private lazy var topStackView = createTopStackView()
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
             iconName: "phone-down-fill-28",
-            action: #selector(CallControlsDelegate.didPressHangup)
+            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
+            action: #selector(CallControlsViewModel.didPressHangup)
         )
         button.unselectedBackgroundColor = .ows_accentRed
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-fill-28",
-        action: #selector(CallControlsDelegate.didPressAudioSource)
+        accessibilityLabel: viewModel.audioSourceAccessibilityLabel,
+        action: #selector(CallControlsViewModel.didPressAudioSource)
     )
     private lazy var muteButton = createButton(
-        iconName: "mic-slash-fill-28",
-        action: #selector(CallControlsDelegate.didPressMute)
+        iconName: "mic-fill",
+        selectedIconName: "mic-slash-fill-28",
+        accessibilityLabel: viewModel.muteButtonAccessibilityLabel,
+        action: #selector(CallControlsViewModel.didPressMute)
     )
     private lazy var videoButton = createButton(
         iconName: "video-fill-28",
-        action: #selector(CallControlsDelegate.didPressVideo)
+        selectedIconName: "video-slash-fill-28",
+        accessibilityLabel: viewModel.videoButtonAccessibilityLabel,
+        action: #selector(CallControlsViewModel.didPressVideo)
     )
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
-        action: #selector(CallControlsDelegate.didPressRing)
+        selectedIconName: "bell-slash-fill",
+        // TODO: Accessibility label
+        action: #selector(CallControlsViewModel.didPressRing)
     )
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
             iconName: "switch-camera-28",
-            action: #selector(CallControlsDelegate.didPressFlipCamera)
+            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel,
+            action: #selector(CallControlsViewModel.didPressFlipCamera)
         )
         button.selectedIconColor = button.iconColor
         button.selectedBackgroundColor = button.unselectedBackgroundColor
@@ -65,7 +71,7 @@ class CallControls: UIView {
         button.clipsToBounds = true
         button.layer.cornerRadius = height / 2
         button.block = { [weak self, unowned button] in
-            self?.delegate.didPressJoin(sender: button)
+            self?.viewModel.didPressJoin()
         }
         button.contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
         button.addSubview(joinButtonActivityIndicator)
@@ -90,19 +96,22 @@ class CallControls: UIView {
         return view
     }()
 
-    private lazy var topStackView = createTopStackView()
-
     private weak var delegate: CallControlsDelegate!
-    private let call: SignalCall
+    private let viewModel: CallControlsViewModel
 
-    init(call: SignalCall, delegate: CallControlsDelegate) {
-        self.call = call
+    init(
+        call: SignalCall,
+        callService: CallService,
+        delegate: CallControlsDelegate
+    ) {
+        let viewModel = CallControlsViewModel(call: call, callService: callService, delegate: delegate)
+        self.viewModel = viewModel
         self.delegate = delegate
         super.init(frame: .zero)
 
-        call.addObserverAndSyncState(observer: self)
-
-        callService.audioService.delegate = self
+        viewModel.refreshView = { [weak self] in
+            self?.updateControls()
+        }
 
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
@@ -113,7 +122,10 @@ class CallControls: UIView {
         joinButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
         joinButton.autoPinHeightToSuperview()
 
-        let controlsStack = UIStackView(arrangedSubviews: [topStackView, joinButtonContainer])
+        let controlsStack = UIStackView(arrangedSubviews: [
+            topStackView,
+            joinButtonContainer
+        ])
         controlsStack.axis = .vertical
         controlsStack.spacing = 40
         controlsStack.alignment = .center
@@ -129,11 +141,6 @@ class CallControls: UIView {
         updateControls()
     }
 
-    deinit {
-        call.removeObserver(self)
-        callService.audioService.delegate = nil
-    }
-
     func createTopStackView() -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -141,8 +148,8 @@ class CallControls: UIView {
 
         stackView.addArrangedSubview(audioSourceButton)
         stackView.addArrangedSubview(flipCameraButton)
-        stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(videoButton)
+        stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(ringButton)
         stackView.addArrangedSubview(hangUpButton)
 
@@ -150,109 +157,85 @@ class CallControls: UIView {
     }
 
     private func updateControls() {
-        let hasExternalAudioInputs = callService.audioService.hasExternalInputs
-        let isLocalVideoMuted = call.groupCall.isOutgoingVideoMuted
-        let joinState = call.groupCall.localDeviceState.joinState
+        // Top row
+        audioSourceButton.isHidden = viewModel.audioSourceButtonIsHidden
+        hangUpButton.isHidden = viewModel.hangUpButtonIsHidden
+        muteButton.isHidden = viewModel.muteButtonIsHidden
+        videoButton.isHidden = viewModel.videoButtonIsHidden
+        flipCameraButton.isHidden = viewModel.flipCameraButtonIsHidden
+        ringButton.isHidden = viewModel.ringButtonIsHidden
 
-        flipCameraButton.isHidden = isLocalVideoMuted
-        videoButton.isSelected = !isLocalVideoMuted
-        muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
+        // Bottom row
+        joinButton.superview?.isHidden = viewModel.joinButtonIsHidden
 
-        ringButton.isHidden = joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
-        // Leave the button visible but locked if joining, like the "join call" button.
-        ringButton.isUserInteractionEnabled = joinState == .notJoined
-        if call.ringRestrictions.isEmpty, case .shouldRing = call.groupCallRingState {
-            ringButton.isSelected = true
-        } else {
-            ringButton.isSelected = false
-        }
-        // Leave the button enabled so we can present an explanatory toast, but show it disabled.
-        ringButton.shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
-
-        hangUpButton.isHidden = joinState != .joined
-
-        if !UIDevice.current.isIPad {
-            // Use small controls if video is enabled and we have external
-            // audio inputs, because we have five buttons now.
-            [audioSourceButton, flipCameraButton, videoButton, muteButton, ringButton, hangUpButton].forEach {
-                let isSmall = hasExternalAudioInputs && !isLocalVideoMuted
-                $0.isSmall = isSmall
-                if UIDevice.current.isNarrowerThanIPhone6 {
-                    topStackView.spacing = isSmall ? 12 : 16
-                }
+        // Sizing and spacing
+        let controlCount = topStackView.arrangedSubviews.filter({!$0.isHidden}).count
+        topStackView.spacing = viewModel.controlSpacing(controlCount: controlCount)
+        let shouldControlButtonsBeSmall = viewModel.shouldControlButtonsBeSmall(controlCount: controlCount)
+        for view in topStackView.arrangedSubviews {
+            if let button = view as? CallButton {
+                button.isSmall = shouldControlButtonsBeSmall
             }
-        }
-
-        // Audio Source Handling
-        if hasExternalAudioInputs, let audioSource = callService.audioService.currentAudioSource {
-            audioSourceButton.showDropdownArrow = true
-            audioSourceButton.isHidden = false
-
-            if audioSource.isBuiltInEarPiece {
-                audioSourceButton.iconName = "phone-fill-28"
-            } else if audioSource.isBuiltInSpeaker {
-                audioSourceButton.iconName = "speaker-fill-28"
-            } else {
-                audioSourceButton.iconName = "speaker-bt-fill-28"
-            }
-        } else if UIDevice.current.isIPad {
-            // iPad *only* supports speaker mode, if there are no external
-            // devices connected, so we don't need to show the button unless
-            // we have alternate audio sources.
-            audioSourceButton.isHidden = true
-        } else {
-            // If there are no external audio sources, and video is enabled,
-            // speaker mode is always enabled so we don't need to show the button.
-            audioSourceButton.isHidden = !isLocalVideoMuted
-
-            // No bluetooth audio detected
-            audioSourceButton.iconName = "speaker-fill-28"
-            audioSourceButton.showDropdownArrow = false
         }
 
         // Show/hide the superview to adjust the containing stack.
-        joinButton.superview?.isHidden = joinState == .joined
-        gradientView.isHidden = joinState != .joined
+        gradientView.isHidden = viewModel.gradientViewIsHidden
 
-        if call.groupCall.isFull {
-            // Make the button look disabled, but don't actually disable it.
-            // We want to show a toast if the user taps anyway.
-            joinButton.setTitleColor(.ows_whiteAlpha40, for: .normal)
-            joinButton.adjustsImageWhenHighlighted = false
+        videoButton.isSelected = viewModel.videoButtonIsSelected
+        muteButton.isSelected = viewModel.muteButtonIsSelected
+        audioSourceButton.isSelected = viewModel.audioSourceButtonIsSelected
+        ringButton.isSelected = viewModel.ringButtonIsSelected
+        flipCameraButton.isSelected = viewModel.flipCameraButtonIsSelected
 
-            joinButton.setTitle(
-                OWSLocalizedString(
-                    "GROUP_CALL_IS_FULL",
-                    comment: "Text explaining the group call is full"),
-                for: .normal)
-
-        } else if joinState == .joining || joinState == .pending {
-            joinButton.isUserInteractionEnabled = false
-            joinButtonActivityIndicator.startAnimating()
-
-            joinButton.setTitle("", for: .normal)
-
-        } else {
-            joinButton.setTitleColor(.white, for: .normal)
-            joinButton.adjustsImageWhenHighlighted = true
-            joinButton.isUserInteractionEnabled = true
-            joinButtonActivityIndicator.stopAnimating()
-
-            let startCallText = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
-            let joinCallText = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-
-            joinButton.setTitle(call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText,
-                                for: .normal)
+        if !viewModel.audioSourceButtonIsHidden {
+            let config = viewModel.audioSourceButtonConfiguration
+            audioSourceButton.showDropdownArrow = config.showDropdownArrow
+            audioSourceButton.iconName = config.iconName
         }
+
+        if
+            !viewModel.ringButtonIsHidden,
+            let ringButtonConfig = viewModel.ringButtonConfiguration
+        {
+            ringButton.isUserInteractionEnabled = ringButtonConfig.isUserInteractionEnabled
+            ringButton.isSelected = ringButtonConfig.isSelected
+            ringButton.shouldDrawAsDisabled = ringButtonConfig.shouldDrawAsDisabled
+        }
+
+        if !viewModel.joinButtonIsHidden {
+            let joinButtonConfig = viewModel.joinButtonConfig
+            joinButton.setTitle(joinButtonConfig.label, for: .normal)
+            joinButton.setTitleColor(joinButtonConfig.color, for: .normal)
+            joinButton.adjustsImageWhenHighlighted = joinButtonConfig.adjustsImageWhenHighlighted
+            joinButton.isUserInteractionEnabled = joinButtonConfig.isUserInteractionEnabled
+            if viewModel.shouldJoinButtonActivityIndicatorBeAnimating {
+                joinButtonActivityIndicator.startAnimating()
+            } else {
+                joinButtonActivityIndicator.stopAnimating()
+            }
+        }
+
+        hangUpButton.accessibilityLabel = viewModel.hangUpButtonAccessibilityLabel
+        audioSourceButton.accessibilityLabel = viewModel.audioSourceAccessibilityLabel
+        muteButton.accessibilityLabel = viewModel.muteButtonAccessibilityLabel
+        videoButton.accessibilityLabel = viewModel.videoButtonAccessibilityLabel
+        flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createButton(iconName: String, action: Selector) -> CallButton {
+    private func createButton(
+        iconName: String,
+        selectedIconName: String? = nil,
+        accessibilityLabel: String? = nil,
+        action: Selector
+    ) -> CallButton {
         let button = CallButton(iconName: iconName)
-        button.addTarget(delegate, action: action, for: .touchUpInside)
+        button.selectedIconName = selectedIconName
+        button.accessibilityLabel = accessibilityLabel
+        button.addTarget(viewModel, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
         button.alpha = 0.9
@@ -260,31 +243,414 @@ class CallControls: UIView {
     }
 }
 
-extension CallControls: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
-        updateControls()
+private class CallControlsViewModel {
+    private let call: SignalCall
+    private let callService: CallService
+    private weak var delegate: CallControlsDelegate?
+    fileprivate var refreshView: (() -> Void)?
+    init(call: SignalCall, callService: CallService, delegate: CallControlsDelegate) {
+        self.call = call
+        self.callService = callService
+        self.delegate = delegate
+        call.addObserverAndSyncState(observer: self)
+        callService.audioService.delegate = self
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
-        updateControls()
+    deinit {
+        call.removeObserver(self)
+        callService.audioService.delegate = nil
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        updateControls()
+    private var hasExternalAudioInputsAndAudioSource: Bool {
+        let audioService = callService.audioService
+        return audioService.hasExternalInputs && audioService.currentAudioSource != nil
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
-        updateControls()
+    var audioSourceButtonIsHidden: Bool {
+        if hasExternalAudioInputsAndAudioSource {
+            return false
+        } else if UIDevice.current.isIPad {
+            // iPad *only* supports speaker mode, if there are no external
+            // devices connected, so we don't need to show the button unless
+            // we have alternate audio sources.
+            return true
+        } else {
+            return !call.isOutgoingVideoMuted
+        }
+    }
+
+    struct AudioSourceButtonConfiguration {
+        let showDropdownArrow: Bool
+        let iconName: String
+    }
+
+    var audioSourceButtonConfiguration: AudioSourceButtonConfiguration {
+        let showDropdownArrow: Bool
+        let iconName: String
+        if
+            callService.audioService.hasExternalInputs,
+            let audioSource = callService.audioService.currentAudioSource
+        {
+            showDropdownArrow = true
+            if audioSource.isBuiltInEarPiece {
+                iconName = "phone-fill-28"
+            } else if audioSource.isBuiltInSpeaker {
+                iconName = "speaker-fill-28"
+            } else {
+                iconName = "speaker-bt-fill-28"
+            }
+        } else {
+            // No bluetooth audio detected
+            showDropdownArrow = false
+            iconName = "speaker-fill-28"
+        }
+        return AudioSourceButtonConfiguration(showDropdownArrow: showDropdownArrow, iconName: iconName)
+    }
+
+    var hangUpButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            return false
+        case .group(_):
+            return call.joinState != .joined
+        }
+    }
+
+    var muteButtonIsHidden: Bool {
+        return false
+    }
+
+    var videoButtonIsHidden: Bool {
+        return false
+    }
+
+    var flipCameraButtonIsHidden: Bool {
+        return call.isOutgoingVideoMuted
+    }
+
+    var joinButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            // TODO: Introduce lobby for starting 1:1 video calls.
+            return true
+        case .group(let call):
+            return call.localDeviceState.joinState == .joined
+        }
+    }
+
+    struct JoinButtonConfiguration {
+        let label: String
+        let color: UIColor
+        let adjustsImageWhenHighlighted: Bool
+        let isUserInteractionEnabled: Bool
+    }
+
+    var joinButtonConfig: JoinButtonConfiguration {
+        if !call.canJoin {
+            // Make the button look disabled, but don't actually disable it.
+            // We want to show a toast if the user taps anyway.
+            return JoinButtonConfiguration(
+                label: OWSLocalizedString(
+                    "GROUP_CALL_IS_FULL",
+                    comment: "Text explaining the group call is full"
+                ),
+                color: .ows_whiteAlpha40,
+                adjustsImageWhenHighlighted: false,
+                isUserInteractionEnabled: true
+            )
+        } else if call.joinState == .joining || call.joinState == .pending {
+            return JoinButtonConfiguration(
+                label: "",
+                color: .ows_whiteAlpha40,
+                adjustsImageWhenHighlighted: false,
+                isUserInteractionEnabled: false
+            )
+        } else {
+            let startCallText = OWSLocalizedString(
+                "CALL_START_BUTTON",
+                comment: "Button to start a call"
+            )
+            let label: String
+            switch call.mode {
+            case .individual(_):
+                // We only show a lobby for 1:1 calls when the call is being initiated.
+                // TODO: The work of adding the lobby for 1:1 calls in the unified call view
+                // controller (currently GroupCallViewController) is not yet complete.
+                label = startCallText
+            case .group(_):
+                let joinCallText = OWSLocalizedString(
+                    "GROUP_CALL_JOIN_BUTTON",
+                    comment: "Button to join an ongoing group call"
+                )
+                label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
+            }
+            return JoinButtonConfiguration(
+                label: label,
+                color: .white,
+                adjustsImageWhenHighlighted: true,
+                isUserInteractionEnabled: true
+            )
+        }
+    }
+
+    var shouldJoinButtonActivityIndicatorBeAnimating: Bool {
+        return (call.joinState == .joining || call.joinState == .pending) && !joinButtonIsHidden
+    }
+
+    var ringButtonIsHidden: Bool {
+        switch call.mode {
+        case .individual(_):
+            return true
+        case .group(_):
+            return call.joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
+        }
+    }
+
+    struct RingButtonConfiguration {
+        let isUserInteractionEnabled: Bool
+        let isSelected: Bool
+        let shouldDrawAsDisabled: Bool
+    }
+
+    var ringButtonConfiguration: RingButtonConfiguration? {
+        switch call.mode {
+        case .individual(_):
+            // We never show the ring button for 1:1 calls.
+            return nil
+        case .group(_):
+            // Leave the button visible but locked if joining, like the "join call" button.
+            let isUserInteractionEnabled = call.joinState == .notJoined
+            let isSelected: Bool
+            if
+                call.ringRestrictions.isEmpty,
+                case .shouldRing = call.groupCallRingState
+            {
+                isSelected = false
+            } else {
+                isSelected = true
+            }
+            // Leave the button enabled so we can present an explanatory toast, but show it disabled.
+            let shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
+            return RingButtonConfiguration(
+                isUserInteractionEnabled: isUserInteractionEnabled,
+                isSelected: isSelected,
+                shouldDrawAsDisabled: shouldDrawAsDisabled
+            )
+        }
+    }
+
+    var gradientViewIsHidden: Bool {
+        return call.joinState != .joined
+    }
+
+    var videoButtonIsSelected: Bool {
+        return call.isOutgoingVideoMuted
+    }
+
+    var muteButtonIsSelected: Bool {
+        return call.isOutgoingAudioMuted
+    }
+
+    var ringButtonIsSelected: Bool {
+        if let config = ringButtonConfiguration {
+            return config.isSelected
+        }
+        // Ring button shouldn't be shown in this case anyway.
+        return false
+    }
+
+    var audioSourceButtonIsSelected: Bool {
+        return callService.audioService.isSpeakerEnabled
+    }
+
+    var flipCameraButtonIsSelected: Bool {
+        return false
+    }
+
+    func controlSpacing(controlCount: Int) -> CGFloat {
+        return (UIDevice.current.isNarrowerThanIPhone6 && controlCount > 4) ? 12 : 16
+    }
+
+    func shouldControlButtonsBeSmall(controlCount: Int) -> Bool {
+        return UIDevice.current.isIPad ? false : controlCount > 4
     }
 }
 
-extension CallControls: CallAudioServiceDelegate {
+extension CallControlsViewModel: CallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+        owsAssertDebug(call.isGroupCall)
+        refreshView?()
+    }
+
+    func groupCallPeekChanged(_ call: SignalCall) {
+        refreshView?()
+    }
+
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        refreshView?()
+    }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        refreshView?()
+    }
+
+    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
+        refreshView?()
+    }
+
+    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
+        refreshView?()
+    }
+
+    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        refreshView?()
+    }
+
+    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
+        refreshView?()
+    }
+}
+
+extension CallControlsViewModel: CallAudioServiceDelegate {
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
-        updateControls()
+        refreshView?()
     }
 
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?) {
-        updateControls()
+        refreshView?()
+    }
+}
+
+extension CallControlsViewModel {
+    @objc
+    func didPressHangup() {
+        callService.callUIAdapter.localHangupCall(call)
+        delegate?.didPressHangup()
+    }
+
+    @objc
+    func didPressAudioSource() {
+        if callService.audioService.hasExternalInputs {
+            callService.audioService.presentRoutePicker()
+        } else {
+            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: !audioSourceButtonIsSelected)
+        }
+        refreshView?()
+    }
+
+    @objc
+    func didPressMute() {
+        callService.updateIsLocalAudioMuted(isLocalAudioMuted: !muteButtonIsSelected)
+        refreshView?()
+    }
+
+    @objc
+    func didPressVideo() {
+        callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.isOutgoingVideoMuted)
+
+        // When turning off video, default speakerphone to on.
+        if call.isOutgoingVideoMuted && !callService.audioService.hasExternalInputs {
+            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: true)
+        }
+        refreshView?()
+    }
+
+    @objc
+    func didPressRing() {
+        if call.ringRestrictions.isEmpty {
+            switch call.groupCallRingState {
+            case .shouldRing:
+                call.groupCallRingState = .doNotRing
+            case .doNotRing:
+                call.groupCallRingState = .shouldRing
+            default:
+                owsFailBeta("Ring button should not have been available to press!")
+            }
+            refreshView?()
+        }
+        delegate?.didPressRing()
+    }
+
+    @objc
+    func didPressFlipCamera() {
+        if let isUsingFrontCamera = call.videoCaptureController.isUsingFrontCamera {
+            callService.updateCameraSource(call: call, isUsingFrontCamera: !isUsingFrontCamera)
+            refreshView?()
+        }
+    }
+
+    @objc
+    func didPressJoin() {
+        delegate?.didPressJoin()
+    }
+}
+
+// MARK: - Accessibility
+
+extension CallControlsViewModel {
+    public var hangUpButtonAccessibilityLabel: String {
+        switch call.mode {
+        case .individual(_):
+            return OWSLocalizedString(
+                "CALL_VIEW_HANGUP_LABEL",
+                comment: "Accessibility label for hang up call"
+            )
+        case .group(_):
+            return OWSLocalizedString(
+                "CALL_VIEW_LEAVE_CALL_LABEL",
+                comment: "Accessibility label for leaving a call"
+            )
+        }
+    }
+
+    public var audioSourceAccessibilityLabel: String {
+        // TODO: This is not the most helpful descriptor.
+        return OWSLocalizedString(
+            "CALL_VIEW_AUDIO_SOURCE_LABEL",
+            comment: "Accessibility label for selection the audio source"
+        )
+    }
+
+    public var muteButtonAccessibilityLabel: String {
+        if call.isOutgoingAudioMuted {
+            return OWSLocalizedString(
+                "CALL_VIEW_UNMUTE_LABEL",
+                comment: "Accessibility label for unmuting the microphone"
+            )
+        } else {
+            return OWSLocalizedString(
+                "CALL_VIEW_MUTE_LABEL",
+                comment: "Accessibility label for muting the microphone"
+            )
+        }
+    }
+
+    public var videoButtonAccessibilityLabel: String {
+        if call.isOutgoingVideoMuted {
+            return OWSLocalizedString(
+                "CALL_VIEW_TURN_VIDEO_ON_LABEL",
+                comment: "Accessibility label for turning on the camera"
+            )
+        } else {
+            return OWSLocalizedString(
+                "CALL_VIEW_TURN_VIDEO_OFF_LABEL",
+                comment: "Accessibility label for turning off the camera"
+            )
+        }
+    }
+
+    public var flipCameraButtonAccessibilityLabel: String {
+        return OWSLocalizedString(
+            "CALL_VIEW_SWITCH_CAMERA_DIRECTION",
+            comment: "Accessibility label to toggle front- vs. rear-facing camera"
+        )
     }
 }

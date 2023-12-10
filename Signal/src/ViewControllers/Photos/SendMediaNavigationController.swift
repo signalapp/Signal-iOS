@@ -269,7 +269,6 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         ows_askForMediaLibraryPermissions { isGranted in
             guard isGranted else { return }
 
-            BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
             let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
             self.presentFullScreen(presentedViewController, animated: true)
         }

@@ -8,46 +8,18 @@ import Foundation
 #if TESTABLE_BUILD
 
 class FakeMessageSender: MessageSender {
-    public var stubbedFailingError: Error?
+    public var stubbedFailingErrors = [Error?]()
+    public var sentMessages = [TSOutgoingMessage]()
     public var sendMessageWasCalledBlock: ((TSOutgoingMessage) -> Void)?
 
-    public override func sendMessage(
-        _ outgoingMessagePreparer: OutgoingMessagePreparer,
-        success: @escaping () -> Void,
-        failure: @escaping (Error) -> Void
-    ) {
-        fakeCompletion(success: success, failure: failure)
+    override func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
         sendMessageWasCalledBlock?(outgoingMessagePreparer.message)
+        sentMessages.append(outgoingMessagePreparer.message)
+        if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
 
-    public override func sendAttachment(
-        _ dataSource: DataSource,
-        contentType: String,
-        sourceFilename: String?,
-        albumMessageId: String?,
-        in: TSOutgoingMessage,
-        success: @escaping () -> Void,
-        failure: @escaping (Error) -> Void
-    ) {
-        fakeCompletion(success: success, failure: failure)
-    }
-
-    public override func sendTemporaryAttachment(
-        _ dataSource: DataSource,
-        contentType: String,
-        in: TSOutgoingMessage,
-        success: @escaping () -> Void,
-        failure: @escaping (Error) -> Void
-    ) {
-        fakeCompletion(success: success, failure: failure)
-    }
-
-    private func fakeCompletion(success: () -> Void, failure: (Error) -> Void) {
-        if let stubbedFailingError = stubbedFailingError {
-            failure(stubbedFailingError)
-        } else {
-            success()
-        }
+    override func sendTemporaryAttachment(dataSource: DataSource, contentType: String, message: TSOutgoingMessage) async throws {
+        if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
 }
 

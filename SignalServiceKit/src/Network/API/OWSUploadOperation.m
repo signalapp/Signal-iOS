@@ -87,7 +87,6 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
     }];
 
     if (!attachmentStream) {
-        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
         // Not finding local attachment is a terminal failure.
         NSError *error = [OWSUnretryableError asNSError];
         [self reportError:error];

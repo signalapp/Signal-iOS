@@ -34,9 +34,6 @@ public class StoryManager: NSObject {
         author: Aci,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        // Drop all story messages until the feature is enabled.
-        guard RemoteConfig.stories else { return }
-
         guard StoryFinder.story(
             timestamp: timestamp,
             author: author,
@@ -125,9 +122,6 @@ public class StoryManager: NSObject {
         _ proto: SSKProtoSyncMessageSent,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        // Drop all story messages until the feature is enabled.
-        guard RemoteConfig.stories else { return }
-
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
             author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
@@ -201,25 +195,9 @@ public class StoryManager: NSObject {
         }
     }
 
-    @objc
-    public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
-        var removedCount: UInt = 0
-        StoryFinder.enumerateExpiredStories(transaction: transaction) { message, _ in
-            guard !message.authorAddress.isSystemStoryAddress else {
-                // We do not auto-expire system stories, they remain until viewed.
-                return
-            }
-            Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetimeMillis)")
-            message.anyRemove(transaction: transaction)
-            removedCount += 1
-        }
-        return removedCount
-    }
-
-    @objc
-    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
+    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
         guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
-        return NSNumber(value: timestamp + storyLifetimeMillis)
+        return timestamp + storyLifetimeMillis
     }
 
     private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
@@ -328,7 +306,7 @@ extension StoryManager {
 
     /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     @objc
-    public static var areStoriesEnabled: Bool { RemoteConfig.stories && areStoriesEnabledCache.get() }
+    public static var areStoriesEnabled: Bool { areStoriesEnabledCache.get() }
 
     public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
         keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction)

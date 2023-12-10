@@ -36,8 +36,6 @@ final public class IndividualCallService: NSObject {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
-        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.localId)")
-
         guard callService.currentCall == nil else {
             owsFailDebug("call already exists: \(String(describing: callService.currentCall))")
             return
@@ -213,8 +211,6 @@ final public class IndividualCallService: NSObject {
             callType: callType
         )
         newCall.individualCall.callId = callId
-
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             Logger.warn("user is not registered, skipping call.")
@@ -1080,10 +1076,8 @@ final public class IndividualCallService: NSObject {
 
         switch call.individualCall.state {
         case .dialing:
-            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = .remoteRinging
         case .answering:
-            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
             callService.callUIAdapter.reportIncomingCall(call)
         case .localRinging_Anticipatory:
@@ -1192,23 +1186,36 @@ final public class IndividualCallService: NSObject {
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
 
-        return firstly {
-            accountManager.getTurnServerInfo()
-        }.map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
-            Logger.debug("got turn server urls: \(turnServerInfo.urls)")
+        self.getTurnServerInfo()
+            .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
+                Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
-            return turnServerInfo.urls.map { url in
-                if url.hasPrefix("turn") {
-                    // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
-                    // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
-                    return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
-                } else {
-                    return RTCIceServer(urlStrings: [url])
+                return turnServerInfo.urls.map { url in
+                    if url.hasPrefix("turn") {
+                        // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
+                        // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
+                        return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
+                    } else {
+                        return RTCIceServer(urlStrings: [url])
+                    }
                 }
+            }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
+                Logger.error("fetching ICE servers failed with error: \(error)")
+                throw error
             }
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
-            Logger.error("fetching ICE servers failed with error: \(error)")
-            throw error
+    }
+
+    func getTurnServerInfo() -> Promise<TurnServerInfo> {
+        let request = OWSRequestFactory.turnServerInfoRequest()
+        return firstly {
+            Self.networkManager.makePromise(request: request)
+        }.map(on: DispatchQueue.global()) { response in
+            guard let json = response.responseBodyJson,
+                  let responseDictionary = json as? [String: AnyObject],
+                  let turnServerInfo = TurnServerInfo(attributes: responseDictionary) else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            return turnServerInfo
         }
     }
 

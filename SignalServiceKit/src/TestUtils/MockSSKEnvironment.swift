@@ -131,7 +131,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let contactsManager = FakeContactsManager()
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
-        let messageManager = OWSMessageManager()
+        let messageReceiver = MessageReceiver()
         let remoteConfigManager = StubbableRemoteConfigManager()
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
@@ -169,7 +169,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             udManager: udManager,
             websocketFactory: webSocketFactory
         )
-        let messageSendLog = MessageSendLog(databaseStorage: databaseStorage, dateProvider: { Date() })
+        let messageSendLog = MessageSendLog(db: dependenciesBridge.db, dateProvider: { Date() })
 
         super.init(
             contactsManager: contactsManager,
@@ -178,7 +178,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             pendingReceiptRecorder: pendingReceiptRecorder,
             profileManager: profileManager,
             networkManager: networkManager,
-            messageManager: messageManager,
+            messageReceiver: messageReceiver,
             blockingManager: blockingManager,
             remoteConfigManager: remoteConfigManager,
             aciSignalProtocolStore: aciSignalProtocolStore,

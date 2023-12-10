@@ -8,20 +8,11 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
-@objc
 public class MessageProcessor: NSObject {
-    @objc
     public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")
 
-    @objc
-    public var hasPendingEnvelopes: Bool {
+    private var hasPendingEnvelopes: Bool {
         !pendingEnvelopes.isEmpty
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func processingCompletePromise() -> AnyPromise {
-        return AnyPromise(processingCompletePromise())
     }
 
     /// When calling `processingCompletePromise` while message processing is suspended,
@@ -131,12 +122,6 @@ public class MessageProcessor: NSObject {
             self.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: suspension)
             return self.processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
         }.recover(on: SyncScheduler()) { _ in return () }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func fetchingAndProcessingCompletePromise() -> AnyPromise {
-        return AnyPromise(fetchingAndProcessingCompletePromise())
     }
 
     public func fetchingAndProcessingCompletePromise(
@@ -304,12 +289,14 @@ public class MessageProcessor: NSObject {
 
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
-    private let serialQueue = DispatchQueue(label: "org.signal.message-processor",
-                                            autoreleaseFrequency: .workItem)
+    private let serialQueue = DispatchQueue(
+        label: "org.signal.message-processor",
+        autoreleaseFrequency: .workItem
+    )
 
     private var pendingEnvelopes = PendingEnvelopes()
 
-    private var isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
+    private let isDrainingPendingEnvelopes = AtomicBool(false, lock: .init())
 
     private func drainPendingEnvelopes() {
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
@@ -443,15 +430,15 @@ public class MessageProcessor: NSObject {
                 transaction: transaction
             )
             return nil
-        case .messageManagerRequest(let messageManagerRequest):
-            messageManager.handle(messageManagerRequest, context: context, transaction: transaction)
-            messageManager.finishProcessingEnvelope(messageManagerRequest.decryptedEnvelope, tx: transaction)
+        case .messageReceiverRequest(let messageReceiverRequest):
+            messageReceiver.handleRequest(messageReceiverRequest, context: context, tx: transaction)
+            messageReceiver.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
             return nil
         case .clearPlaceholdersOnly(let decryptedEnvelope):
-            messageManager.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
+            messageReceiver.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .serverReceipt(let serverReceiptEnvelope):
-            messageManager.handleDeliveryReceipt(serverReceiptEnvelope, context: context, transaction: transaction)
+            messageReceiver.handleDeliveryReceipt(envelope: serverReceiptEnvelope, context: context, tx: transaction)
             return nil
         }
     }
@@ -466,7 +453,7 @@ public class MessageProcessor: NSObject {
     }
 
     @objc
-    func registrationStateDidChange() {
+    private func registrationStateDidChange() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.drainPendingEnvelopes()
         }
@@ -504,7 +491,7 @@ private struct ProcessingRequest {
     enum State {
         case completed(error: Error?)
         case enqueueForGroup(decryptedEnvelope: DecryptedIncomingEnvelope, envelopeData: Data)
-        case messageManagerRequest(MessageManagerRequest)
+        case messageReceiverRequest(MessageReceiverRequest)
         case serverReceipt(ServerReceiptEnvelope)
         // Message decrypted but had an invalid protobuf.
         case clearPlaceholdersOnly(DecryptedIncomingEnvelope)
@@ -521,7 +508,7 @@ private struct ProcessingRequest {
             return nil
         case .serverReceipt(let envelope):
             return [envelope.validatedEnvelope.timestamp]
-        case .messageManagerRequest(let request):
+        case .messageReceiverRequest(let request):
             guard
                 case .receiptMessage = request.messageType,
                 let receiptMessage = request.protoContent.receiptMessage,
@@ -553,7 +540,7 @@ private struct ProcessingRequestBuilder {
     let localDeviceId: UInt32
     let localIdentifiers: LocalIdentifiers
     let messageDecrypter: OWSMessageDecrypter
-    let messageManager: OWSMessageManager
+    let messageReceiver: MessageReceiver
 
     init(
         _ receivedEnvelope: ReceivedEnvelope,
@@ -561,14 +548,14 @@ private struct ProcessingRequestBuilder {
         localDeviceId: UInt32,
         localIdentifiers: LocalIdentifiers,
         messageDecrypter: OWSMessageDecrypter,
-        messageManager: OWSMessageManager
+        messageReceiver: MessageReceiver
     ) {
         self.receivedEnvelope = receivedEnvelope
         self.blockingManager = blockingManager
         self.localDeviceId = localDeviceId
         self.localIdentifiers = localIdentifiers
         self.messageDecrypter = messageDecrypter
-        self.messageManager = messageManager
+        self.messageReceiver = messageReceiver
     }
 
     func build(tx: SDSAnyWriteTransaction) -> ProcessingRequest.State {
@@ -646,7 +633,7 @@ private struct ProcessingRequestBuilder {
 
         // Pre-processing has to happen during the same transaction that performed
         // decryption.
-        messageManager.preprocessEnvelope(decryptedEnvelope, tx: tx)
+        messageReceiver.preprocessEnvelope(decryptedEnvelope, tx: tx)
 
         // If the sender is in the block list, we can skip scheduling any additional processing.
         let sourceAddress = SignalServiceAddress(decryptedEnvelope.sourceAci)
@@ -691,9 +678,9 @@ private struct ProcessingRequestBuilder {
             // (e.g. the app crashed or was killed), we'll have to re-decrypt again
             // before we process. This is safe since the decrypt operation would also
             // be rolled back (since the transaction didn't commit) and should be rare.
-            messageManager.checkForUnknownLinkedDevice(in: decryptedEnvelope, tx: tx)
+            messageReceiver.checkForUnknownLinkedDevice(in: decryptedEnvelope, tx: tx)
 
-            let buildResult = MessageManagerRequest.buildRequest(
+            let buildResult = MessageReceiverRequest.buildRequest(
                 for: decryptedEnvelope,
                 serverDeliveryTimestamp: receivedEnvelope.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
@@ -704,10 +691,9 @@ private struct ProcessingRequestBuilder {
             case .discard:
                 return .completed(error: nil)
             case .noContent:
-                messageManager.logUnactionablePayload(decryptedEnvelope.envelope)
                 return .clearPlaceholdersOnly(decryptedEnvelope)
-            case .request(let messageManagerRequest):
-                return .messageManagerRequest(messageManagerRequest)
+            case .request(let messageReceiverRequest):
+                return .messageReceiverRequest(messageReceiverRequest)
             }
         }
     }
@@ -727,7 +713,7 @@ private extension MessageProcessor {
             localDeviceId: localDeviceId,
             localIdentifiers: localIdentifiers,
             messageDecrypter: Self.messageDecrypter,
-            messageManager: Self.messageManager
+            messageReceiver: Self.messageReceiver
         )
         return ProcessingRequest(envelope, state: builder.build(tx: tx))
     }
@@ -829,8 +815,7 @@ private struct ReceivedEnvelope {
 
 // MARK: -
 
-@objc
-public enum EnvelopeSource: UInt, CustomStringConvertible {
+public enum EnvelopeSource {
     case unknown
     case websocketIdentified
     case websocketUnidentified
@@ -839,27 +824,6 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
     case identityChangeError
     case debugUI
     case tests
-
-    // MARK: - CustomStringConvertible
-
-    public var description: String {
-        switch self {
-        case .unknown:
-            return "unknown"
-        case .websocketIdentified:
-            return "websocketIdentified"
-        case .websocketUnidentified:
-            return "websocketUnidentified"
-        case .rest:
-            return "rest"
-        case .identityChangeError:
-            return "identityChangeError"
-        case .debugUI:
-            return "debugUI"
-        case .tests:
-            return "tests"
-        }
-    }
 }
 
 // MARK: -

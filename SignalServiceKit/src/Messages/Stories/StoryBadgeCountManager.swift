@@ -65,8 +65,6 @@ public class StoryBadgeCountManager: NSObject, Dependencies {
     private func computeBadgeCount() {
         guard observer != nil else { return }
 
-        guard RemoteConfig.stories else { return }
-
         let (count, isFailed) = databaseStorage.read { transaction -> (Int, Bool) in
             if StoryFinder.hasFailedStories(transaction: transaction) {
                 return (0, true)

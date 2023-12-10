@@ -268,7 +268,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         *error = OWSErrorMakeAssertionError(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -281,7 +280,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
     return [dataSource writeToUrl:originalMediaURL
                             error:error];
 }
@@ -294,9 +292,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if (originalMediaURL == nil) {
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
-    }
-    if (!SSKDebugFlags.reduceLogChatter) {
-        OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
     }
     return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
@@ -484,9 +479,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidImageCached) {
-            if (!SSKDebugFlags.reduceLogChatter) {
-                OWSLogVerbose(@"Updating isValidImageCached.");
-            }
             self.isValidImageCached = @([NSData imageMetadataWithPath:self.originalFilePath
                                                              mimeType:self.contentType
                                                        ignoreFileSize:ignoreSize]
@@ -526,7 +518,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidVideoCached) {
-            OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath
                                                                  ignoreSize:ignoreSize]);
             if (!self.isValidVideoCached) {
@@ -557,9 +548,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isAnimatedCached) {
-            if (!SSKDebugFlags.reduceLogChatter) {
-                OWSLogVerbose(@"Updating isAnimatedCached.");
-            }
             self.isAnimatedCached = @(generator());
             didUpdateCache = YES;
         }
@@ -746,38 +734,25 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
 {
-    [self applyChangeAsyncToLatestCopyWithChangeBlock:changeBlock completion:nil];
-}
-
-- (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
-                                         completion:(nullable dispatch_block_t)completion
-{
     OWSAssertDebug(changeBlock);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            // We load a new instance before using anyUpdateWithTransaction()
-            // since it isn't thread-safe to mutate the current instance async.
-            TSAttachmentStream *_Nullable latestInstance =
-                [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:self.uniqueId transaction:transaction];
-            if (latestInstance == nil) {
-                // This attachment has either not yet been saved or has been deleted; do nothing.
-                // This isn't an error per se, but these race conditions should be
-                // _very_ rare.
-                //
-                // An exception is incoming group avatar updates which we don't ever save.
-                OWSLogWarn(@"Could not load attachment.");
-                return;
-            }
-            [latestInstance anyUpdateAttachmentStreamWithTransaction:transaction
-                                                               block:^(TSAttachmentStream *attachmentStream) {
-                                                                   changeBlock(attachmentStream);
-                                                               }];
-        });
-
-        if (completion != nil) {
-            completion();
+    NSString *uniqueId = self.uniqueId;
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
+        // We load a new instance before using anyUpdateWithTransaction() since it
+        // isn't thread-safe to mutate the current instance async.
+        TSAttachmentStream *_Nullable latestInstance = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:uniqueId
+                                                                                                    transaction:tx];
+        if (latestInstance == nil) {
+            // This attachment has either not yet been saved or has been deleted; do
+            // nothing. This isn't an error per se, but these race conditions should be
+            // _very_ rare.
+            //
+            // An exception is incoming group avatar updates which we don't ever save.
+            OWSLogWarn(@"Could not load attachment.");
+            return;
         }
+        changeBlock(latestInstance);
+        [latestInstance anyOverwritingUpdateWithTransaction:tx];
     });
 }
 
@@ -1115,7 +1090,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);
     if (self.sourceFilename.length > 0) {
         builder.fileName = self.sourceFilename;
     }

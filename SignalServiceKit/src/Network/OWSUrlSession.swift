@@ -224,7 +224,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             owsFail("Request missing url.")
         }
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
-        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "dataTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -233,9 +232,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
-                                                          responseData: responseData,
-                                                          monitorId: monitorId)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
         }
     }
 
@@ -453,12 +450,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             }
 #endif
 
-            InstrumentsMonitor.stopSpan(category: "traffic",
-                                        hash: monitorId,
-                                        success: httpUrlResponse.statusCode >= 200 && httpUrlResponse.statusCode < 300,
-                                        httpUrlResponse.statusCode,
-                                        responseData?.count ?? httpUrlResponse.expectedContentLength)
-
             return httpUrlResponse
         }
     }
@@ -620,7 +611,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             owsFail("Request missing url.")
         }
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
-        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "uploadTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -629,9 +619,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
-                                                          responseData: responseData,
-                                                          monitorId: monitorId)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
         }
     }
 
@@ -650,8 +638,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let task = taskBlock()
         addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
-
-        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "downloadTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
@@ -660,7 +646,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.downloadTaskCompletionPromise(requestConfig: requestConfig, downloadUrl: downloadUrl, monitorId: monitorId)
+            return Self.downloadTaskCompletionPromise(requestConfig: requestConfig, downloadUrl: downloadUrl)
         }
     }
 
@@ -724,11 +710,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             owsFailDebug("Missing TaskState.")
             return
         }
-        InstrumentsMonitor.stopSpan(category: "traffic",
-                                    hash: monitorId,
-                                    success: true,
-                                    httpUrlResponse?.statusCode ?? -1,
-                                    responseData?.count ?? (httpUrlResponse?.expectedContentLength ?? -1))
         taskState.future.resolve((task, responseData))
     }
 

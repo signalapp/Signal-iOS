@@ -43,17 +43,20 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                 Self.profileManagerImpl.debug_regenerateLocalProfileWithSneakyTransaction()
             },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
-                guard let strongSelf = self else { return }
+                guard let self else { return }
                 guard let aThread = aThread else {
                     owsFailDebug("Missing thread.")
                     return
                 }
 
                 let message = Self.databaseStorage.read { OWSProfileKeyMessage(thread: aThread, transaction: $0) }
-                strongSelf.messageSender.sendMessage(.promise, message.asPreparer).done {
-                    Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
-                }.catch { _ in
-                    owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
+                Task {
+                    do {
+                        try await self.messageSender.sendMessage(message.asPreparer)
+                        Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
+                    } catch {
+                        owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
+                    }
                 }
             },
             OWSTableItem(title: "Re-upload Profile") {

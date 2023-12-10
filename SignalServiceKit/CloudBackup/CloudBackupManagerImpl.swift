@@ -10,44 +10,29 @@ public class NotImplementedError: Error {}
 
 public class CloudBackupManagerImpl: CloudBackupManager {
 
-    private let blockingManager: CloudBackup.Shims.BlockingManager
     private let dateProvider: DateProvider
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let groupsV2: GroupsV2
-    private let profileManager: CloudBackup.Shims.ProfileManager
-    private let recipientHidingManager: RecipientHidingManager
-    private let signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher
-    private let storyFinder: CloudBackup.Shims.StoryFinder
-    private let streamProvider: CloudBackupOutputStreamProvider
+    private let recipientArchiver: CloudBackupRecipientArchiver
+    private let streamProvider: CloudBackupProtoStreamProvider
     private let tsAccountManager: TSAccountManager
     private let tsInteractionFetcher: CloudBackup.Shims.TSInteractionFetcher
     private let tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
 
     public init(
-        blockingManager: CloudBackup.Shims.BlockingManager,
         dateProvider: @escaping DateProvider,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        groupsV2: GroupsV2,
-        profileManager: CloudBackup.Shims.ProfileManager,
-        recipientHidingManager: RecipientHidingManager,
-        signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher,
-        storyFinder: CloudBackup.Shims.StoryFinder,
-        streamProvider: CloudBackupOutputStreamProvider,
+        recipientArchiver: CloudBackupRecipientArchiver,
+        streamProvider: CloudBackupProtoStreamProvider,
         tsAccountManager: TSAccountManager,
         tsInteractionFetcher: CloudBackup.Shims.TSInteractionFetcher,
         tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
     ) {
-        self.blockingManager = blockingManager
         self.dateProvider = dateProvider
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
-        self.groupsV2 = groupsV2
-        self.profileManager = profileManager
-        self.recipientHidingManager = recipientHidingManager
-        self.signalRecipientFetcher = signalRecipientFetcher
-        self.storyFinder = storyFinder
+        self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
         self.tsAccountManager = tsAccountManager
         self.tsInteractionFetcher = tsInteractionFetcher
@@ -87,188 +72,68 @@ public class CloudBackupManagerImpl: CloudBackupManager {
     }
 
     private func _createBackup(tx: DBWriteTransaction) throws -> URL {
-        let stream: CloudBackupOutputStream
+        let stream: CloudBackupProtoOutputStream
         switch streamProvider.openOutputFileStream() {
         case .success(let streamResult):
             stream = streamResult
-        case .failure(let error):
-            throw error
+        case .unableToOpenFileStream:
+            throw OWSAssertionError("Unable to open output stream")
         }
+
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            throw OWSAssertionError("No local identifiers!")
+        }
+        let recipientArchivingContext = CloudBackup.RecipientArchivingContext(
+            localIdentifiers: localIdentifiers
+        )
 
         try writeHeader(stream: stream, tx: tx)
 
-        let (nextRecipientProtoId, addressMap) = try writeRecipients(stream: stream, tx: tx)
-        let groupIdMap = try writeGroups(nextRecipientProtoId: nextRecipientProtoId, stream: stream, tx: tx)
-        let chatIdMap = try writeThreads(addressMap: addressMap, groupIdMap: groupIdMap, stream: stream, tx: tx)
-        try writeMessages(chatMap: chatIdMap, addressMap: addressMap, stream: stream, tx: tx)
+        let recipientArchiveResult = recipientArchiver.archiveRecipients(
+            stream: stream,
+            context: recipientArchivingContext,
+            tx: tx
+        )
+        switch recipientArchiveResult {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            // TODO: how many failures is too many?
+            Logger.warn("Failed to serialize \(partialFailures.count) recipients")
+        case .completeFailure(let error):
+            throw error
+        }
+        let chatIdMap = try writeThreads(
+            recipientContext: recipientArchivingContext,
+            stream: stream,
+            tx: tx
+        )
+        try writeMessages(
+            recipientContext: recipientArchivingContext,
+            chatMap: chatIdMap,
+            stream: stream,
+            tx: tx
+        )
 
         return stream.closeFileStream()
     }
 
-    private func writeHeader(stream: CloudBackupOutputStream, tx: DBWriteTransaction) throws {
+    private func writeHeader(stream: CloudBackupProtoOutputStream, tx: DBWriteTransaction) throws {
         let backupInfo = try BackupProtoBackupInfo.builder(
             version: 1,
-            backupTime: dateProvider().ows_millisecondsSince1970
+            backupTimeMs: dateProvider().ows_millisecondsSince1970
         ).build()
-        try stream.writeHeader(backupInfo)
-    }
-
-    private func writeRecipients(
-        stream: CloudBackupOutputStream,
-        tx: DBReadTransaction
-    ) throws -> (UInt64, [SignalServiceAddress: UInt64]) {
-        var currentRecipientProtoId: UInt64 = 1
-        var addressMap = [SignalServiceAddress: UInt64]()
-
-        let whitelistedAddresses = Set(profileManager.allWhitelistedRegisteredAddresses(tx: tx))
-        let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
-
-        var firstError: Error?
-
-        guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-            throw OWSAssertionError("No local address!")
+        switch stream.writeHeader(backupInfo) {
+        case .success:
+            break
+        case .fileIOError(let error), .protoSerializationError(let error):
+            throw error
         }
-        // Write the local recipient first.
-        let selfBuilder = BackupProtoSelfRecipient.builder()
-        let selfProto = try selfBuilder.build()
-        let selfRecipientBuilder = BackupProtoRecipient.builder(id: currentRecipientProtoId)
-        addressMap[localAddress] = currentRecipientProtoId
-        currentRecipientProtoId += 1
-        selfRecipientBuilder.setSelfRecipient(selfProto)
-        let selfRecipientProto = try selfRecipientBuilder.build()
-        let selfFrameBuilder = BackupProtoFrame.builder()
-        selfFrameBuilder.setRecipient(selfRecipientProto)
-        let selfFrame = try selfFrameBuilder.build()
-        try stream.writeFrame(selfFrame)
-
-        signalRecipientFetcher.enumerateAll(tx: tx) { recipient in
-            do {
-                let recipientAddress = recipient.address
-
-                let recipientBuilder = BackupProtoRecipient.builder(
-                    id: currentRecipientProtoId
-                )
-                addressMap[recipient.address] = currentRecipientProtoId
-                currentRecipientProtoId += 1
-
-                var unregisteredAtTimestamp: UInt64 = 0
-                if !recipient.isRegistered {
-                    unregisteredAtTimestamp = (
-                        recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
-                    )
-                }
-
-                // TODO: instead of doing per-recipient fetches, we should bulk load
-                // some of these fetched fields into memory to avoid db round trips.
-                let contactBuilder = BackupProtoContact.builder(
-                    blocked: blockedAddresses.contains(recipientAddress),
-                    hidden: self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx),
-                    unregisteredTimestamp: unregisteredAtTimestamp,
-                    profileSharing: whitelistedAddresses.contains(recipient.address),
-                    hideStory: recipient.aci.map { self.storyFinder.isStoryHidden(forAci: $0, tx: tx) ?? false } ?? false
-                )
-
-                contactBuilder.setRegistered(recipient.isRegistered ? .registered : .notRegistered)
-
-                recipient.aci.map(\.rawUUID.data).map(contactBuilder.setAci)
-                recipient.pni.map(\.rawUUID.data).map(contactBuilder.setPni)
-                recipient.address.e164.map(\.uint64Value).map(contactBuilder.setE164)
-                // TODO: username?
-
-                let profile = self.profileManager.getUserProfile(for: recipientAddress, tx: tx)
-                profile?.profileKey.map(\.keyData).map(contactBuilder.setProfileKey(_:))
-                profile?.unfilteredGivenName.map(contactBuilder.setProfileGivenName(_:))
-                profile?.unfilteredFamilyName.map(contactBuilder.setProfileFamilyName(_:))
-                // TODO: joined name?
-
-                let contact = try contactBuilder.build()
-                recipientBuilder.setContact(contact)
-                let protoRecipient = try recipientBuilder.build()
-                let frameBuilder = BackupProtoFrame.builder()
-                frameBuilder.setRecipient(protoRecipient)
-                let frame = try frameBuilder.build()
-                try stream.writeFrame(frame)
-            } catch let error {
-                owsFailDebug("Failed to write recipient!")
-                firstError = firstError ?? error
-            }
-        }
-
-        if let firstError {
-            throw firstError
-        }
-
-        return (currentRecipientProtoId, addressMap)
-    }
-
-    private func writeGroups(
-        nextRecipientProtoId: UInt64,
-        stream: CloudBackupOutputStream,
-        tx: DBReadTransaction
-    ) throws -> [Data: UInt64] {
-        var currentRecipientProtoId = nextRecipientProtoId
-        var idMap = [Data: UInt64]()
-
-        var firstError: Error?
-
-        try tsThreadFetcher.enumerateAllGroupThreads(tx: tx) { groupThread in
-            do {
-                guard groupThread.isGroupV2Thread, let groupsV2Model = groupThread.groupModel as? TSGroupModelV2 else {
-                    return
-                }
-                let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupsV2Model.secretParamsData))
-                let groupMasterKey = try groupSecretParams.getMasterKey().serialize().asData
-
-                // TODO: instead of doing per-thread fetches, we should bulk load
-                // some of these fetched fields into memory to avoid db round trips.
-                let groupBuilder = BackupProtoGroup.builder(
-                    masterKey: groupMasterKey,
-                    whitelisted: self.profileManager.isThread(inProfileWhitelist: groupThread, tx: tx),
-                    hideStory: self.storyFinder.isStoryHidden(forGroupThread: groupThread, tx: tx) ?? false
-                )
-                switch groupThread.storyViewMode {
-                case .disabled:
-                    groupBuilder.setStorySendMode(.disabled)
-                case .explicit:
-                    groupBuilder.setStorySendMode(.enabled)
-                default:
-                    groupBuilder.setStorySendMode(.default)
-                }
-
-                let groupProto = try groupBuilder.build()
-                let recipientBuilder = BackupProtoRecipient.builder(
-                    id: currentRecipientProtoId
-                )
-                idMap[groupThread.groupId] = currentRecipientProtoId
-                currentRecipientProtoId += 1
-
-                recipientBuilder.setGroup(groupProto)
-
-                let recipientProto = try recipientBuilder.build()
-
-                let frameBuilder = BackupProtoFrame.builder()
-                frameBuilder.setRecipient(recipientProto)
-                let frame = try frameBuilder.build()
-
-                try stream.writeFrame(frame)
-
-            } catch let error {
-                owsFailDebug("Failed to write recipient!")
-                firstError = firstError ?? error
-            }
-        }
-
-        if let firstError {
-            throw firstError
-        }
-
-        return idMap
     }
 
     private func writeThreads(
-        addressMap: [SignalServiceAddress: UInt64],
-        groupIdMap: [Data: UInt64],
-        stream: CloudBackupOutputStream,
+        recipientContext: CloudBackup.RecipientArchivingContext,
+        stream: CloudBackupProtoOutputStream,
         tx: DBReadTransaction
     ) throws -> [String: UInt64] {
         var currentChatId: UInt64 = 1
@@ -276,21 +141,24 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
         var firstError: Error?
 
+        var pinnedOrder: UInt32 = 0
+
         tsThreadFetcher.enumerateAll(tx: tx) { thread in
             do {
                 guard thread is TSGroupThread || thread is TSContactThread else {
                     return
                 }
+                let contactAddress = (thread as? TSContactThread)?.contactAddress
 
-                let recipientProtoId: UInt64
+                let recipientProtoId: CloudBackup.RecipientId
                 if
                     let groupId = (thread as? TSGroupThread)?.groupId,
-                    let id = groupIdMap[groupId]
+                    let id = recipientContext[.group(groupId)]
                 {
                     recipientProtoId = id
                 } else if
                     let contactAddress = (thread as? TSContactThread)?.contactAddress,
-                    let id = addressMap[contactAddress]
+                    let id = recipientContext[contactAddress]
                 {
                     recipientProtoId = id
                 } else {
@@ -300,14 +168,24 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
                 let threadAssociatedData = self.tsThreadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
 
+                let thisThreadPinnedOrder: UInt32
+                if self.tsThreadFetcher.isThreadPinned(thread) {
+                    pinnedOrder += 1
+                    thisThreadPinnedOrder = pinnedOrder
+                } else {
+                    // Hardcoded 0 for unpinned.
+                    thisThreadPinnedOrder = 0
+                }
+
                 let chatBuilder = BackupProtoChat.builder(
                     id: currentChatId,
-                    recipientID: recipientProtoId,
+                    recipientID: recipientProtoId.value,
                     archived: threadAssociatedData.isArchived,
-                    pinned: self.tsThreadFetcher.isThreadPinned(thread),
+                    // TODO: proper pinned thread ordering
+                    pinnedOrder: thisThreadPinnedOrder,
                     // TODO: should this be millis? or seconds?
-                    expirationTimer: UInt64(self.dmConfigurationStore.durationSeconds(for: thread, tx: tx)),
-                    muteUntil: threadAssociatedData.mutedUntilTimestamp,
+                    expirationTimerMs: UInt64(self.dmConfigurationStore.durationSeconds(for: thread, tx: tx)),
+                    muteUntilMs: threadAssociatedData.mutedUntilTimestamp,
                     markedUnread: threadAssociatedData.isMarkedUnread,
                     // TODO: this is commented out on storageService? ignoring for now.
                     dontNotifyForMentionsIfMuted: false
@@ -320,7 +198,12 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 frameBuilder.setChat(chatProto)
                 let frame = try frameBuilder.build()
 
-                try stream.writeFrame(frame)
+                switch stream.writeFrame(frame) {
+                case .success:
+                    break
+                case .fileIOError(let error), .protoSerializationError(let error):
+                    throw error
+                }
 
             } catch let error {
                 firstError = firstError ?? error
@@ -335,9 +218,9 @@ public class CloudBackupManagerImpl: CloudBackupManager {
     }
 
     private func writeMessages(
+        recipientContext: CloudBackup.RecipientArchivingContext,
         chatMap: [String: UInt64],
-        addressMap: [SignalServiceAddress: UInt64],
-        stream: CloudBackupOutputStream,
+        stream: CloudBackupProtoOutputStream,
         tx: DBReadTransaction
     ) throws {
         guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
@@ -358,24 +241,23 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                     return
                 }
                 let authorAddress = (message as? TSIncomingMessage)?.authorAddress ?? localAddress
-                guard let authorId = addressMap[authorAddress] else {
+                guard let authorId = recipientContext[authorAddress] else {
                     owsFailDebug("missing author id!")
                     return
                 }
 
                 let chatItemBuilder = BackupProtoChatItem.builder(
                     chatID: chatId,
-                    authorID: authorId,
+                    authorID: authorId.value,
                     dateSent: message.timestamp,
-                    dateReceived: message.receivedAtTimestamp,
                     sms: false
                 )
                 // TODO: don't include messages expiring within 24hr
                 if message.expireStartedAt > 0 {
-                    chatItemBuilder.setExpireStart(message.expireStartedAt)
+                    chatItemBuilder.setExpireStartMs(message.expireStartedAt)
                 }
                 if message.expiresAt > 0 {
-                    chatItemBuilder.setExpiresIn(message.expiresAt)
+                    chatItemBuilder.setExpiresInMs(message.expiresAt)
                 }
                 switch message.editState {
                 case .latestRevisionRead, .latestRevisionUnread, .none:
@@ -387,9 +269,10 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
                 if let incomingMessage = message as? TSIncomingMessage {
                     let incomingMessageProtoBuilder = BackupProtoChatItemIncomingMessageDetails.builder(
+                        dateReceived: incomingMessage.receivedAtTimestamp,
                         dateServerSent: incomingMessage.serverDeliveryTimestamp,
                         read: incomingMessage.wasRead,
-                        sealedSender: incomingMessage.wasReceivedByUD
+                        sealedSender: incomingMessage.wasReceivedByUD.negated
                     )
                     let incomingMessageProto = try incomingMessageProtoBuilder.build()
                     chatItemBuilder.setIncoming(incomingMessageProto)
@@ -400,7 +283,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                         guard let sendState = outgoingMessage.recipientState(for: address) else {
                             return
                         }
-                        guard let recipientId = addressMap[address] else {
+                        guard let recipientId = recipientContext[address] else {
                             owsFailDebug("Missing recipient for message!")
                             return
                         }
@@ -438,7 +321,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                         }
 
                         let sendStatusBuilder: BackupProtoSendStatusBuilder = BackupProtoSendStatus.builder(
-                            recipientID: recipientId,
+                            recipientID: recipientId.value,
                             networkFailure: isNetworkFailure,
                             identityKeyMismatch: isIdentityKeyMismatchFailure,
                             sealedSender: sendState.wasSentByUD.negated,
@@ -464,8 +347,11 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                     let bodyRangeProtoBuilder = BackupProtoBodyRange.builder()
                     bodyRangeProtoBuilder.setStart(bodyRange.start)
                     bodyRangeProtoBuilder.setLength(bodyRange.length)
-                    if let mentionAci = bodyRange.mentionAci {
-                        bodyRangeProtoBuilder.setMentionAci(mentionAci)
+                    if
+                        let rawMentionAci = bodyRange.mentionAci,
+                        let mentionUuid = UUID(uuidString: rawMentionAci)
+                    {
+                        bodyRangeProtoBuilder.setMentionAci(Aci(fromUUID: mentionUuid).serviceIdBinary.asData)
                     } else if let style = bodyRange.style {
                         switch style {
                         case .none:
@@ -496,7 +382,12 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 let frameBuilder = BackupProtoFrame.builder()
                 frameBuilder.setChatItem(chatItemProto)
                 let frame = try frameBuilder.build()
-                try stream.writeFrame(frame)
+                switch stream.writeFrame(frame) {
+                case .success:
+                    break
+                case .fileIOError(let error), .protoSerializationError(let error):
+                    throw error
+                }
 
             } catch let error {
                 firstError = firstError ?? error
@@ -509,66 +400,84 @@ public class CloudBackupManagerImpl: CloudBackupManager {
     }
 
     private func _importBackup(_ fileUrl: URL, tx: DBWriteTransaction) throws {
-        let stream: CloudBackupInputStream
+        let stream: CloudBackupProtoInputStream
         switch streamProvider.openInputFileStream(fileURL: fileUrl) {
         case .success(let streamResult):
             stream = streamResult
-        case .failure(let error):
-            throw error
+        case .fileNotFound:
+            throw OWSAssertionError("file not found!")
+        case .unableToOpenFileStream:
+            throw OWSAssertionError("unable to open input stream")
         }
 
         defer {
             stream.closeFileStream()
         }
 
-        let header = try stream.readHeader()
-        guard let backupInfo = header.object else {
-            return
+        let backupInfo: BackupProtoBackupInfo
+        var hasMoreFrames = false
+        switch stream.readHeader() {
+        case .success(let header, let moreBytesAvailable):
+            backupInfo = header
+            hasMoreFrames = moreBytesAvailable
+        case .invalidByteLengthDelimiter:
+            throw OWSAssertionError("invalid byte length delimiter on header")
+        case .protoDeserializationError(let error):
+            // Fail if we fail to deserialize the header.
+            throw error
         }
 
-        Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTime)")
+        Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
 
-        var aciMap = [UInt64: Aci]()
-        var pniMap = [UInt64: Pni]()
-        var addressMap = [UInt64: SignalServiceAddress]()
-        var groupIdMap = [UInt64: Data]()
+        let recipientContext = CloudBackup.RecipientRestoringContext()
         var threadUniqueIdMap = [UInt64: String]()
 
-        var hasMoreFrames = header.moreBytesAvailable
         while hasMoreFrames {
-            let frame = try stream.readFrame()
-            hasMoreFrames = frame.moreBytesAvailable
-            if let recipient = frame.object?.recipient {
-                if let contact = recipient.contact {
-                    try handleReadContact(
-                        contact,
-                        recipientProtoId: recipient.id,
-                        aciMap: &aciMap,
-                        pniMap: &pniMap,
-                        addressMap: &addressMap,
-                        tx: tx
-                    )
-                } else if let group = recipient.group {
-                    try handleReadGroup(
-                        group,
-                        recipientProtoId: recipient.id,
-                        groupIdMap: &groupIdMap,
-                        tx: tx
-                    )
+            let frame: BackupProtoFrame
+            switch stream.readFrame() {
+            case let .success(_frame, moreBytesAvailable):
+                frame = _frame
+                hasMoreFrames = moreBytesAvailable
+            case .invalidByteLengthDelimiter:
+                throw OWSAssertionError("invalid byte length delimiter on header")
+            case .protoDeserializationError(let error):
+                // TODO: should we fail the whole thing if we fail to deserialize one frame?
+                throw error
+            }
+            if let recipient = frame.recipient {
+                let recipientResult = recipientArchiver.restore(
+                    recipient,
+                    context: recipientContext,
+                    tx: tx
+                )
+                switch recipientResult {
+                case .success:
+                    continue
+                case .failure(_, let error):
+                    // TODO: maybe track which IDs failed to attribute later failures
+                    // that reference this ID.
+                    switch error {
+                    case .databaseInsertionFailed(let dbError):
+                        throw dbError
+                    case .invalidProtoData:
+                        throw OWSAssertionError("Invalid proto data!")
+                    case .identifierNotFound:
+                        throw OWSAssertionError("Recipients are the root objects, should be impossible!")
+                    case .unknownFrameType:
+                        throw OWSAssertionError("Found unrecognized frame type")
+                    }
                 }
-            } else if let chat = frame.object?.chat {
+            } else if let chat = frame.chat {
                 try handleReadChat(
                     chat,
-                    addressMap: addressMap,
-                    groupIdMap: groupIdMap,
+                    recipientContext: recipientContext,
                     threadUniqueIdMap: &threadUniqueIdMap,
                     tx: tx
                 )
-            } else if let chatItem = frame.object?.chatItem {
+            } else if let chatItem = frame.chatItem {
                 try handleReadChatItem(
                     chatItem: chatItem,
-                    aciMap: aciMap,
-                    pniMap: pniMap,
+                    recipientContext: recipientContext,
                     threadUniqueIdMap: threadUniqueIdMap,
                     tx: tx
                 )
@@ -578,163 +487,30 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         return stream.closeFileStream()
     }
 
-    private func handleReadContact(
-        _ contactProto: BackupProtoContact,
-        recipientProtoId: UInt64,
-        aciMap: inout [UInt64: Aci],
-        pniMap: inout [UInt64: Pni],
-        addressMap: inout [UInt64: SignalServiceAddress],
-        tx: DBWriteTransaction
-    ) throws {
-        let isRegistered: Bool?
-        let unregisteredTimestamp: UInt64?
-        switch contactProto.registered {
-        case .none, .unknown:
-            isRegistered = nil
-            unregisteredTimestamp = nil
-        case .registered:
-            isRegistered = true
-            unregisteredTimestamp = nil
-        case .notRegistered:
-            isRegistered = false
-            unregisteredTimestamp = contactProto.unregisteredTimestamp
-        }
-
-        let aci: Aci? = contactProto.aci.map(UUID.from(data:))?.map(\.0).map(Aci.init(fromUUID:))
-        let pni: Pni? = contactProto.pni.map(UUID.from(data:))?.map(\.0).map(Pni.init(fromUUID:))
-        if let aci {
-            aciMap[recipientProtoId] = aci
-        }
-        if let pni {
-            pniMap[recipientProtoId] = pni
-        }
-
-        var recipient = SignalRecipient.proofOfConcept_forBackup(
-            aci: aci,
-            pni: pni,
-            phoneNumber: E164(contactProto.e164),
-            isRegistered: isRegistered,
-            unregisteredAtTimestamp: unregisteredTimestamp
-        )
-
-        // This is bad, but needed because the import can happen at any time
-        // and we don't wipe the db. in the future, we will only do this restore
-        // during registration/linking, with an empty database.
-        if let existingRecipient = signalRecipientFetcher.recipient(for: recipient.address, tx: tx) {
-            recipient = existingRecipient
-            if isRegistered == true, !recipient.isRegistered {
-                signalRecipientFetcher.markAsRegisteredAndSave(recipient, tx: tx)
-            } else if isRegistered == false, recipient.isRegistered, let unregisteredTimestamp {
-                signalRecipientFetcher.markAsUnregisteredAndSave(recipient, at: unregisteredTimestamp, tx: tx)
-            }
-        } else {
-            try signalRecipientFetcher.insert(recipient, tx: tx)
-        }
-
-        addressMap[recipientProtoId] = recipient.address
-
-        if contactProto.profileSharing {
-            // Add to the whitelist.
-            profileManager.addToWhitelist(recipient.address, tx: tx)
-        }
-
-        if contactProto.blocked {
-            blockingManager.addBlockedAddress(recipient.address, tx: tx)
-        }
-
-        if contactProto.hidden {
-            try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
-        }
-
-        if contactProto.hideStory, let aci {
-            let storyContext = storyFinder.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
-            storyFinder.setStoryContextHidden(storyContext, tx: tx)
-        }
-
-        profileManager.setProfileGivenName(
-            givenName: contactProto.profileGivenName,
-            familyName: contactProto.profileFamilyName,
-            profileKey: contactProto.profileKey,
-            address: recipient.address,
-            tx: tx
-        )
-    }
-
-    private func handleReadGroup(
-        _ groupProto: BackupProtoGroup,
-        recipientProtoId: UInt64,
-        groupIdMap: inout [UInt64: Data],
-        tx: DBWriteTransaction
-    ) throws {
-        let masterKey = groupProto.masterKey
-
-        guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-            owsFailDebug("Invalid master key.")
-            return
-        }
-
-        let groupContextInfo: GroupV2ContextInfo
-        do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
-        } catch {
-            owsFailDebug("Invalid master key.")
-            return
-        }
-        let groupId = groupContextInfo.groupId
-
-        var needsUpdate = false
-
-        let groupThread: TSGroupThread
-
-        if let localThread = tsThreadFetcher.fetch(groupId: groupId, tx: tx) {
-            let localStorySendMode = localThread.storyViewMode.storageServiceMode
-            switch (groupProto.storySendMode, localThread.storyViewMode) {
-            case (.disabled, .disabled), (.enabled, .explicit), (.default, _), (nil, _):
-                // Nothing to change.
-                break
-            case (.disabled, _):
-                tsThreadFetcher.updateWithStorySendEnabled(false, groupThread: localThread, tx: tx)
-            case (.enabled, _):
-                tsThreadFetcher.updateWithStorySendEnabled(true, groupThread: localThread, tx: tx)
-            }
-            groupThread = localThread
-        } else {
-            // TODO: creating groups is async and scheduled in GroupsV2. Punt for now.
-            return
-        }
-
-        groupIdMap[recipientProtoId] = groupId
-
-        if groupProto.whitelisted {
-            profileManager.addToWhitelist(groupThread, tx: tx)
-        }
-
-        if groupProto.hideStory {
-            let storyContext = storyFinder.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
-            storyFinder.setStoryContextHidden(storyContext, tx: tx)
-        }
-    }
-
     private func handleReadChat(
         _ chatProto: BackupProtoChat,
-        addressMap: [UInt64: SignalServiceAddress],
-        groupIdMap: [UInt64: Data],
+        recipientContext: CloudBackup.RecipientRestoringContext,
         threadUniqueIdMap: inout [UInt64: String],
         tx: DBWriteTransaction
     ) throws {
         let thread: TSThread
-        if let groupId = groupIdMap[chatProto.recipientID] {
+        switch recipientContext[chatProto.recipientId] {
+        case .none:
+            owsFailDebug("Missing recipient for chat!")
+            return
+        case .noteToSelf:
+            // TODO: handle note to self chat, create the tsThread
+            return
+        case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group.
             // Instead, just set metadata.
             guard let groupThread = tsThreadFetcher.fetch(groupId: groupId, tx: tx) else {
                 return
             }
             thread = groupThread
-        } else if let address = addressMap[chatProto.recipientID] {
+        case let .contact(aci, pni, e164):
+            let address = SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: e164?.stringValue)
             thread = tsThreadFetcher.getOrCreateContactThread(with: address, tx: tx)
-        } else {
-            owsFailDebug("Missing recipient for chat!")
-            return
         }
 
         threadUniqueIdMap[chatProto.id] = thread.uniqueId
@@ -753,9 +529,9 @@ public class CloudBackupManagerImpl: CloudBackupManager {
             associatedDataNeedsUpdate = true
             isMarkedUnread = true
         }
-        if chatProto.muteUntil != 0 {
+        if chatProto.muteUntilMs != 0 {
             associatedDataNeedsUpdate = true
-            mutedUntilTimestamp = chatProto.muteUntil
+            mutedUntilTimestamp = chatProto.muteUntilMs
         }
 
         if associatedDataNeedsUpdate {
@@ -768,7 +544,8 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 tx: tx
             )
         }
-        if chatProto.pinned {
+        // TODO: recover pinned chat ordering
+        if chatProto.pinnedOrder != 0 {
             do {
                 try tsThreadFetcher.pinThread(thread, tx: tx)
             } catch {
@@ -777,10 +554,10 @@ public class CloudBackupManagerImpl: CloudBackupManager {
             }
         }
 
-        if chatProto.expirationTimer != 0 {
+        if chatProto.expirationTimerMs != 0 {
             // TODO: should this be millis? or seconds?
             dmConfigurationStore.set(
-                token: .init(isEnabled: true, durationSeconds: UInt32(chatProto.expirationTimer)),
+                token: .init(isEnabled: true, durationSeconds: UInt32(chatProto.expirationTimerMs)),
                 for: .thread(thread),
                 tx: tx
             )
@@ -789,8 +566,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
     private func handleReadChatItem(
         chatItem: BackupProtoChatItem,
-        aciMap: [UInt64: Aci],
-        pniMap: [UInt64: Pni],
+        recipientContext: CloudBackup.RecipientRestoringContext,
         threadUniqueIdMap: [UInt64: String],
         tx: DBWriteTransaction
     ) throws {
@@ -814,7 +590,10 @@ public class CloudBackupManagerImpl: CloudBackupManager {
             var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
             for bodyRange in bodyRangesProto {
                 let range = NSRange(location: Int(bodyRange.start), length: Int(bodyRange.length))
-                if bodyRange.hasMentionAci, let mentionAci = Aci.parseFrom(aciString: bodyRange.mentionAci) {
+                if
+                    let rawMentionAci = bodyRange.mentionAci,
+                    let mentionAci = try? Aci.parseFrom(serviceIdBinary: rawMentionAci)
+                {
                     bodyMentions[range] = mentionAci
                 } else if bodyRange.hasStyle {
                     let swiftStyle: MessageBodyRanges.SingleStyle
@@ -842,15 +621,23 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
         if let incomingMessage = chatItem.incoming {
 
-            guard let authorAci = aciMap[chatItem.authorID] else {
+            let authorAci: Aci
+            switch recipientContext[chatItem.authorRecipientId] {
+            case .contact(let aci, _, _):
+                guard let aci else {
+                    fallthrough
+                }
+                authorAci = aci
+            default:
+                // Messages can only come from Acis.
                 owsFailDebug("Missing author for message!")
                 return
             }
 
             let messageBuilder = TSIncomingMessageBuilder.builder(
                 thread: thread,
-                timestamp: chatItem.dateReceived,
-                authorAci: .init(authorAci),
+                timestamp: incomingMessage.dateReceived,
+                authorAci: authorAci,
                 // TODO: this needs to be added to the proto
                 sourceDeviceId: 1,
                 messageBody: standardMessage.text?.body,
@@ -859,7 +646,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 // TODO: handle edit states
                 editState: .none,
                 // TODO: expose + set expire start time
-                expiresInSeconds: UInt32(chatItem.expiresIn),
+                expiresInSeconds: UInt32(chatItem.expiresInMs),
                 quotedMessage: nil,
                 contactShare: nil,
                 linkPreview: nil,
@@ -887,8 +674,8 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 bodyRanges: bodyRanges,
                 attachmentIds: nil,
                 // TODO: is this seconds or ms?
-                expiresInSeconds: UInt32(chatItem.expiresIn),
-                expireStartedAt: chatItem.expireStart,
+                expiresInSeconds: UInt32(chatItem.expiresInMs),
+                expireStartedAt: chatItem.expireStartMs,
                 isVoiceMessage: false,
                 groupMetaMessage: .unspecified,
                 quotedMessage: nil,
@@ -909,11 +696,15 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
             for sendStatus in outgoingMessage.sendStatus {
                 let recipient: ServiceId
-                if let aci = aciMap[sendStatus.recipientID] {
-                    recipient = aci
-                } else if let pni = pniMap[sendStatus.recipientID] {
-                    recipient = pni
-                } else {
+                switch recipientContext[chatItem.authorRecipientId] {
+                case .contact(let aci, let pni, _):
+                    guard let serviceId: ServiceId = aci ?? pni else {
+                        fallthrough
+                    }
+                    recipient = serviceId
+                default:
+                    // Recipients can only be Acis or Pnis.
+                    // TODO: what about e164s?
                     continue
                 }
 
@@ -930,6 +721,33 @@ public class CloudBackupManagerImpl: CloudBackupManager {
             }
 
             // TODO: mark the message as sent and whatnot.
+        }
+    }
+}
+
+fileprivate extension CloudBackup.RecipientArchivingContext {
+
+    subscript(address: SignalServiceAddress) -> CloudBackup.RecipientId? {
+        // swiftlint:disable:next implicit_getter
+        get {
+            if
+                let aci = address.serviceId as? Aci,
+                let id = self[.contactAci(aci)]
+            {
+                return id
+            } else if
+                let pni = address.serviceId as? Pni,
+                let id = self[.contactPni(pni)]
+            {
+                return id
+            } else if
+                let e164 = address.e164,
+                let id = self[.contactE164(e164)]
+            {
+                return id
+            } else {
+                return nil
+            }
         }
     }
 }

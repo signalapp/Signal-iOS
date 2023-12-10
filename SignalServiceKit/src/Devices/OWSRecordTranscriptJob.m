@@ -151,23 +151,33 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Check for any placeholders inserted because of a previously undecryptable message
-    // The sender may have resent the message. If so, we should swap it in place of the placeholder
-    [outgoingMessage insertOrReplacePlaceholderFrom:localIdentifiers.aciAddress transaction:transaction];
+    TSMessage *existingFailedMessage = [InteractionFinder findMessageWithTimestamp:outgoingMessage.timestamp
+                                                                          threadId:outgoingMessage.uniqueThreadId
+                                                                            author:localIdentifiers.aciAddress
+                                                                       transaction:transaction];
+    if (existingFailedMessage && [existingFailedMessage isKindOfClass:[TSOutgoingMessage class]]) {
+        // Update the reference to the outgoing message so that we apply all updates to the
+        // existing copy, and just throw away the new copy before we insert it.
+        outgoingMessage = (TSOutgoingMessage *)existingFailedMessage;
+    } else {
+        // Check for any placeholders inserted because of a previously undecryptable message
+        // The sender may have resent the message. If so, we should swap it in place of the placeholder
+        [outgoingMessage insertOrReplacePlaceholderFrom:localIdentifiers.aciAddress transaction:transaction];
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers =
-        [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
-                                             albumMessage:outgoingMessage];
-    NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
-    for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer anyInsertWithTransaction:transaction];
-        [attachmentIds addObject:pointer.uniqueId];
-    }
-    if (outgoingMessage.attachmentIds.count != attachmentIds.count) {
-        [outgoingMessage anyUpdateOutgoingMessageWithTransaction:transaction
-                                                           block:^(TSOutgoingMessage *message) {
-                                                               message.attachmentIds = [attachmentIds copy];
-                                                           }];
+        NSArray<TSAttachmentPointer *> *attachmentPointers =
+            [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
+                                                 albumMessage:outgoingMessage];
+        NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
+        for (TSAttachmentPointer *pointer in attachmentPointers) {
+            [pointer anyInsertWithTransaction:transaction];
+            [attachmentIds addObject:pointer.uniqueId];
+        }
+        if (outgoingMessage.attachmentIds.count != attachmentIds.count) {
+            [outgoingMessage anyUpdateOutgoingMessageWithTransaction:transaction
+                                                               block:^(TSOutgoingMessage *message) {
+                                                                   message.attachmentIds = [attachmentIds copy];
+                                                               }];
+        }
     }
     OWSAssertDebug(outgoingMessage.hasRenderableContent);
 

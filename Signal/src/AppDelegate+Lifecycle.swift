@@ -39,6 +39,8 @@ extension AppDelegate {
         Logger.info("applicationDidBecomeActive completed.")
     }
 
+    private static let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)
+
     @objc
     func applicationWillResignActiveSwift(_ application: UIApplication) {
         AssertIsOnMainThread()
@@ -52,16 +54,19 @@ extension AppDelegate {
 
         clearAllNotificationsAndRestoreBadgeCount()
 
-        Logger.flush()
+        let backgroundTask = OWSBackgroundTask(label: #function)
+        Self.flushQueue.async {
+            defer { backgroundTask.end() }
+            Logger.flush()
+        }
     }
 
     @objc
     func applicationDidEnterBackgroundSwift(_ application: UIApplication) {
         Logger.info("applicationDidEnterBackground.")
 
-        Logger.flush()
-
         if shouldKillAppWhenBackgrounded {
+            Logger.flush()
             exit(0)
         }
     }
@@ -90,15 +95,11 @@ extension AppDelegate {
 
             RTCInitializeSSL()
 
-            if tsRegistrationState.isRegistered {
-                // At this point, potentially lengthy DB locking migrations could be running.
-                // Avoid blocking app launch by putting all further possible DB access in async block
-                DispatchQueue.global(qos: .default).async {
-                    // Clean up any messages that expired since last launch immediately
-                    // and continue cleaning in the background.
-                    self.disappearingMessagesJob.startIfNecessary()
-                }
-            } else {
+            // Clean up any messages that expired since last launch and continue
+            // cleaning in the background.
+            self.disappearingMessagesJob.startIfNecessary()
+
+            if !tsRegistrationState.isRegistered {
                 // Unregistered user should have no unread messages. e.g. if you delete your account.
                 AppEnvironment.shared.notificationPresenter.clearAllNotifications()
             }

@@ -64,9 +64,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreateAll() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .all),
+            action: .rotate(identity: .aci, targets: .all),
             auth: .implicit(),
             context: context
         )
@@ -79,7 +79,6 @@ final class PreKeyTaskTests: XCTestCase {
 
         // Validate
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
@@ -88,9 +87,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreateSignedPreKeyOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .signedPreKey),
+            action: .rotate(identity: .aci, targets: .signedPreKey),
             auth: .implicit(),
             context: context
         )
@@ -107,7 +106,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
         XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
         XCTAssertNil(mockServiceClient.pqPreKeyRecords)
@@ -116,9 +114,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreatePreKeyOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .oneTimePreKey),
+            action: .rotate(identity: .aci, targets: .oneTimePreKey),
             auth: .implicit(),
             context: context
         )
@@ -136,7 +134,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
 
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.pqPreKeyRecords)
         XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
@@ -150,7 +147,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .all),
+            action: .rotate(identity: .aci, targets: .all),
             auth: .implicit(),
             context: context
         )
@@ -161,7 +158,6 @@ final class PreKeyTaskTests: XCTestCase {
         testSchedulers.scheduler.start()
 
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertEqual(mockServiceClient.identityKey, mockIdentityManager.aciKeyPair!.keyPair.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
         XCTAssertEqual(mockServiceClient.pqPreKeyRecords?.count, 100)
@@ -173,7 +169,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .signedPreKey),
+            action: .rotate(identity: .aci, targets: .signedPreKey),
             auth: .implicit(),
             context: context
         )
@@ -197,7 +193,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: .oneTimePreKey),
+            action: .rotate(identity: .aci, targets: .oneTimePreKey),
             auth: .implicit(),
             context: context
         )
@@ -217,9 +213,9 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testCreatePqKeysOnly() {
         mockServiceClient.setPreKeysResult = .value(())
-
+        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: [.lastResortPqPreKey, .oneTimePqPreKey]),
+            action: .rotate(identity: .aci, targets: [.lastResortPqPreKey, .oneTimePqPreKey]),
             auth: .implicit(),
             context: context
         )
@@ -236,7 +232,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 100)
         XCTAssertNotNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
 
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
         XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
@@ -245,18 +240,18 @@ final class PreKeyTaskTests: XCTestCase {
 
     func testIdentityKeyCreated() {
         let task = PreKeyTasks.PreKeyTask(
-            action: .legacy_create(identity: .aci, targets: []),
+            action: .createOrRotatePniKeys(targets: []),
             auth: .implicit(),
             context: context
         )
 
-        XCTAssertNil(mockIdentityManager.aciKeyPair)
+        XCTAssertNil(mockIdentityManager.pniKeyPair)
 
         _ = task.runPreKeyTask()
         testSchedulers.scheduler.start()
 
         // Validate key created
-        XCTAssertNotNil(mockIdentityManager.aciKeyPair)
+        XCTAssertNotNil(mockIdentityManager.pniKeyPair)
     }
 
     //
@@ -487,7 +482,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
         XCTAssertEqual(mockPniProtocolStore.mockPreKeyStore.records.count, 100)
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
     }
 

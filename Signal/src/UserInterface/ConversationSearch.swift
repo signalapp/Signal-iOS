@@ -82,7 +82,6 @@ extension ConversationSearchController: UISearchResultsUpdating {
             return
         }
         let searchText = FullTextSearchFinder.normalize(text: rawSearchText)
-        BenchManager.startEvent(title: "Conversation Search", eventId: searchText)
 
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
             self.resultsBar.updateResults(resultSet: nil)
@@ -126,7 +125,6 @@ extension ConversationSearchController: SearchResultsBarDelegate {
             return
         }
 
-        BenchEventStart(title: "Conversation Search Nav", eventId: "Conversation Search Nav: \(searchResult.messageId)")
         self.delegate?.conversationSearchController(self, didSelectMessageId: searchResult.messageId)
     }
 }

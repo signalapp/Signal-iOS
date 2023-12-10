@@ -468,15 +468,12 @@ class MessageSendLogTests: SSKBaseTestSwift {
             return (oldId, newId)
         }
 
-        // Kick off cleanup
-        let testScheduler = TestScheduler()
-        messageSendLog.schedulePeriodicCleanup(on: testScheduler)
-        testScheduler.tick()
+        try messageSendLog.cleanUpExpiredEntries()
 
-        databaseStorage.write { writeTx in
+        databaseStorage.read { tx in
             // Verify only the old message was deleted
-            XCTAssertFalse(isPayloadAlive(index: oldId, transaction: writeTx))
-            XCTAssertTrue(isPayloadAlive(index: newId, transaction: writeTx))
+            XCTAssertFalse(isPayloadAlive(index: oldId, transaction: tx))
+            XCTAssertTrue(isPayloadAlive(index: newId, transaction: tx))
         }
     }
 
@@ -491,7 +488,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
         // we get 1629210680139.
         try databaseStorage.write { writeTx in
             let messageSendLog = MessageSendLog(
-                databaseStorage: databaseStorage,
+                db: DependenciesBridge.shared.db,
                 dateProvider: { Date(timeIntervalSince1970: 1629270000) }
             )
 
@@ -560,10 +557,10 @@ class MessageSendLogTests: SSKBaseTestSwift {
         return testMessage
     }
 
-    func isPayloadAlive(index: Int64, transaction writeTx: SDSAnyWriteTransaction) -> Bool {
+    func isPayloadAlive(index: Int64, transaction tx: SDSAnyReadTransaction) -> Bool {
         let count = try! MessageSendLog.Payload
             .filter(Column("payloadId") == index)
-            .fetchCount(writeTx.unwrapGrdbWrite.database)
+            .fetchCount(tx.unwrapGrdbRead.database)
         return count > 0
     }
 }

@@ -133,13 +133,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
             return (
                 subscriberID: SubscriptionManagerImpl.getSubscriberID(transaction: tx),
-                hasEverRedeemedRecurringSubscriptionBadge: SubscriptionManagerImpl.getHasEverRedeemedRecurringSubscriptionBadge(tx: tx),
-                recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestError(
-                    errorMode: .recurringSubscription, tx: tx.asV2Read
-                ),
-                oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(
-                    errorMode: .oneTimeBoost, tx: tx.asV2Read
-                ),
+                hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx.asV2Read) != nil,
+                recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx.asV2Read),
+                oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read),
                 hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx)
             )
         }

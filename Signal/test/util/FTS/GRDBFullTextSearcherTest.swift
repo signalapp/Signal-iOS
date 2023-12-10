@@ -144,12 +144,6 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     // MARK: - Test Life Cycle
 
-    override func tearDown() {
-        super.tearDown()
-
-        SDSDatabaseStorage.shouldLogDBQueries = DebugFlags.logSQLQueries
-    }
-
     private var bobRecipient: SignalServiceAddress!
     private var aliceRecipient: SignalServiceAddress!
 
@@ -581,10 +575,6 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     // MARK: - Perf
 
     func testPerf() {
-        // Logging queries is expensive and affects the results of this test.
-        // This is restored in tearDown().
-        SDSDatabaseStorage.shouldLogDBQueries = false
-
         let aliceE164 = "+13213214321"
         let aliceUuid = UUID()
         databaseStorage.write { tx in

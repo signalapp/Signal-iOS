@@ -351,16 +351,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
 
     private func copyValue(_ value: ValueType) -> ValueType? {
         do {
-            // This is a hot code path, so only bench in debug builds.
-            let cachedValue: ValueType
-            #if TESTABLE_BUILD
-            cachedValue = try Bench(title: "Slow copy: \(logName)", logIfLongerThan: 0.001, logInProduction: false) {
-                try adapter.copy(value: value)
-            }
-            #else
-            cachedValue = try adapter.copy(value: value)
-            #endif
-            return cachedValue
+            return try adapter.copy(value: value)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil

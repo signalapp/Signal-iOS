@@ -367,7 +367,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 fromResponseBody: bodyData,
                 e164: e164
             ).map { .retryAfterTimeout($0) } ?? .genericError
-        case .providerFailure, .legacy_providerFailure:
+        case .providerFailure:
             return serverFailureResponse(fromResponseBody: bodyData, sessionAtSendTime: sessionAtSendTime).map { .serverFailure($0) } ?? .genericError
         case .missingSession:
             return .invalidSession

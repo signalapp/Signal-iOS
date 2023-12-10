@@ -365,6 +365,8 @@ public class _CloudBackup_TSInteractionWrapper: _CloudBackup_TSInteractionShim {
             )
         case .skipped:
             message.update(withSkippedRecipient: address, transaction: tx)
+        case .unknown:
+            return
         }
     }
 }

@@ -117,19 +117,16 @@ public class ReactionManager: NSObject {
         case success
     }
 
-    @objc
     public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         thread: TSThread,
-        reactor: AciObjC,
+        reactor: Aci,
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
         sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
-        let reactor = reactor.wrappedAciValue
-
         guard let emoji = reaction.emoji.strippedOrNil else {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction

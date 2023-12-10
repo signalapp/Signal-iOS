@@ -102,22 +102,41 @@ public struct Subscription: Equatable {
 
     /// The state of the subscription as understood by the backend
     ///
-    /// A subscription will be in the `active` state as long as the current subscription payment has been
-    /// successfully processed by the payment processor.
+    /// A subscription will be in the `active` state as long as the current
+    /// subscription payment has been successfully processed by the payment
+    /// processor.
     ///
-    /// One note regarding `active` state: If the user hasn't communicated with the backend in
-    /// 30-45 days, the backend will consider the user 'inactive' and set `cancelAtEndOfPeriod`
-    /// to `true`.  Once the `endOfCurrentPeriod` time has passed, the subscription status will
-    /// transition from `active` to `canceled`
+    /// - Note
+    /// Signal servers get a callback when a subscription is going to renew. If
+    /// the user hasn't performed a "subscription keep-alive in ~30-45 days, the
+    /// server will, upon getting that callback, cancel the subscription.
     public enum SubscriptionStatus: String {
         case unknown
         case trialing = "trialing"
-        case active = "active"
         case incomplete = "incomplete"
         case incompleteExpired = "incomplete_expired"
-        case pastDue = "past_due"
-        case canceled = "canceled"
         case unpaid = "unpaid"
+
+        /// Indicates the subscription has been paid successfully for the
+        /// current period, and all is well.
+        case active = "active"
+
+        /// Indicates the subscription has been unrecoverably canceled. This may
+        /// be due to terminal failures while renewing (in which case the charge
+        /// failure should be populated), or due to inactivity (in which case
+        /// there will be no charge failure, as Signal servers canceled the
+        /// subscription artificially).
+        case canceled = "canceled"
+
+        /// Indicates the subscription failed to renew, but the payment
+        /// processor is planning to retry the renewal. If the future renewal
+        /// succeeds, the subscription will go back to being "active". Continued
+        /// renewal failures will result in the subscription being canceled.
+        ///
+        /// - Note
+        /// Retries are not predictable, but are expected to happen on the scale
+        /// of days, for up to circa two weeks.
+        case pastDue = "past_due"
     }
 
     public let level: UInt
@@ -183,11 +202,11 @@ public struct Subscription: Equatable {
             throw OWSAssertionError("Unexpected payment processor: \(processorString)")
         }
 
-        let paymentMethodString: String = try params.required(key: "paymentMethod")
-        if let paymentMethod = DonationPaymentMethod(serverRawValue: paymentMethodString) {
+        let paymentMethodString: String? = try params.optional(key: "paymentMethod")
+        if let paymentMethod = paymentMethodString.map({ DonationPaymentMethod(serverRawValue: $0) }) {
             self.paymentMethod = paymentMethod
         } else {
-            owsFailDebug("[Donations] Unrecognized payment method while parsing subscription: \(paymentMethodString)")
+            owsFailDebug("[Donations] Unrecognized payment method while parsing subscription: \(paymentMethodString ?? "nil")")
             self.paymentMethod = nil
         }
 
@@ -280,7 +299,6 @@ public class SubscriptionManagerImpl: NSObject {
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
-    fileprivate static let hasEverRedeemedRecurringSubscriptionBadgeKey = "hadEverRedeemedRecurringSubscriptionBadgeKey"
 
     // MARK: Current subscription status
 
@@ -420,9 +438,10 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
-                self.clearHasEverRedeemedRecurringSubscriptionBadge(tx: transaction)
                 DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-                    .clearRequestError(errorMode: .recurringSubscription, tx: transaction.asV2Write)
+                    .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction.asV2Write)
+                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
             }
 
             self.storageServiceManager.recordPendingLocalAccountUpdates()
@@ -523,7 +542,9 @@ public class SubscriptionManagerImpl: NSObject {
         subscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
         paymentProcessor: DonationPaymentProcessor,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
+        isNewSubscription: Bool,
+        shouldSuppressPaymentAlreadyRedeemed: Bool
     ) {
         let request = generateReceiptRequest()
 
@@ -536,6 +557,8 @@ public class SubscriptionManagerImpl: NSObject {
                 subscriberID: subscriberId,
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
+                isNewSubscription: isNewSubscription,
+                shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
                 transaction: transaction
             )
         }
@@ -792,15 +815,11 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     // 3 day heartbeat interval
-    private static let heartbeatInterval: TimeInterval = 3 * 24 * 60 * 60
+    private static let heartbeatInterval: TimeInterval = 3 * kDayInterval
 
     // MARK: Heartbeat
-    @objc
+
     public class func performSubscriptionKeepAliveIfNecessary() {
-
-        // Kick job queue
-        _ = subscriptionJobQueue.runAnyQueuedRetry()
-
         Logger.info("[Donations] Checking for subscription heartbeat")
 
         // Fetch subscriberID / subscriber currencyCode
@@ -849,38 +868,77 @@ public class SubscriptionManagerImpl: NSObject {
         }.then(on: DispatchQueue.global()) {
             self.getCurrentSubscriptionStatus(for: subscriberID)
         }.done(on: DispatchQueue.global()) { subscription in
-            guard let subscription = subscription else {
-                Logger.info("[Donations] No current subscription for this subscriberID")
+            defer {
+                // We did a heartbeat, so regardless of the outcomes below we
+                // should save the fact that we did so.
                 self.updateSubscriptionHeartbeatDate()
+            }
+
+            guard let subscription else {
+                Logger.info("[Donations] No current subscription for this subscriber ID.")
                 return
             }
 
-            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
-                // When a subscription renews, the "end of period" changes to
-                // reflect a later date. When that happens, we need to re-redeem
-                // the badge for the subscription.
+            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
+                Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
+            } else if subscription.status == .pastDue {
+                /// For some payment methods (e.g., cards), the payment
+                /// processors will automatically retry a subscription-renewal
+                /// payment failure. While that's happening, the subscription
+                /// will be "past due".
+                ///
+                /// Retries will occur on the scale of days, for a period of
+                /// weeks. We don't want to attempt badge redemption during this
+                /// time since we don't expect to succeed now, but failure
+                /// doesn't yet mean much as we may succeed in the future.
+                Logger.warn("[Donations] Subscription failed to renew, but payment processor is retrying. Not yet attempting receipt credential redemption for this period.")
+            } else {
+                /// When a subscription renews, the "end of period" changes to
+                /// reflect a later date. When that happens, we need to redeem a
+                /// badge for the new period.
+                ///
+                /// We may also get here if we're missing our last subscription
+                /// expiration entirely, potentially due to a reinstall. In that
+                /// case, we don't know whether or not we've already redeemed a
+                /// badge for the period we're in. Either way, we can kick off
+                /// a receipt credential job:
+                ///
+                /// - If we haven't redeemed the badge yet, maybe because the
+                /// subscription renewed just before we reinstalled, everything
+                /// is fortuitously working as expected.
+                ///
+                /// - If we *have* redeemed the badge, we can expect the job to
+                /// fail with a "payment already redeemed" error. We'll
+                /// configure the job to swallow that error and be back to our
+                /// regular rhythm.
 
-                let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
-                Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
+                let shouldSuppressPaymentAlreadyRedeemed: Bool = {
+                    let newExpiration = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
+
+                    if let lastSubscriptionExpiration {
+                        Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newExpiration)")
+                        return false
+                    } else {
+                        Logger.warn("[Donations] Attempting receipt credential redemption during heartbeat, missing last subscription expiration. New expiration: \(newExpiration)")
+                        return true
+                    }
+                }()
+
                 requestAndRedeemReceipt(
                     subscriberId: subscriberID,
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil,
                     paymentProcessor: subscription.paymentProcessor,
-                    paymentMethod: subscription.paymentMethod
+                    paymentMethod: subscription.paymentMethod,
+                    isNewSubscription: false,
+                    shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
                 )
 
                 // Save last expiration
                 databaseStorage.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
-            } else {
-                Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
             }
-
-            // Save heartbeat
-            self.updateSubscriptionHeartbeatDate()
-
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Failed subscription heartbeat with error \(error)")
         }
@@ -1109,26 +1167,6 @@ extension SubscriptionManagerImpl {
         }
 
         return paymentMethod
-    }
-
-    // MARK: HasRedeemedRecurringSubscriptionBadge
-
-    public static func setHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
-        subscriptionKVS.setBool(true, key: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
-    }
-
-    public static func clearHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyWriteTransaction) {
-        subscriptionKVS.removeValue(forKey: hasEverRedeemedRecurringSubscriptionBadgeKey, transaction: tx)
-    }
-
-    /// Whether or not the local user has ever successfully redeemed a badge for
-    /// their current recurring subscription.
-    ///
-    /// This will be false if the user does not currently have a recurring
-    /// subscription. It may be true even if the subscription is no longer
-    /// active.
-    public static func getHasEverRedeemedRecurringSubscriptionBadge(tx: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(hasEverRedeemedRecurringSubscriptionBadgeKey, defaultValue: false, transaction: tx)
     }
 }
 

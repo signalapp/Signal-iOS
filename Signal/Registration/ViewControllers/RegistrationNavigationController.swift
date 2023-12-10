@@ -29,6 +29,7 @@ public class RegistrationNavigationController: OWSNavigationController {
         super.viewWillAppear(animated)
 
         if viewControllers.isEmpty, !isLoading {
+            Logger.info("Performing initial load")
             pushNextController(coordinator.nextStep())
         }
 
@@ -53,11 +54,13 @@ public class RegistrationNavigationController: OWSNavigationController {
         }
 
         if let loadingMode, step.isSealed.negated {
+            Logger.info("Pushing loading controller")
             isLoading = true
             pushViewController(RegistrationLoadingViewController(mode: loadingMode), animated: false) { [weak self] in
                 self?._pushNextController(step)
             }
         } else {
+            Logger.info("Skipping loading controller for \(String(describing: try? step.result?.get().logSafeString))")
             _pushNextController(step)
         }
     }
@@ -72,6 +75,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             }
             self.isLoading = false
             guard let controller = self.controller(for: step) else {
+                Logger.info("No controller for \(step.logSafeString)")
                 return
             }
             var controllerToPush: UIViewController?
@@ -79,14 +83,17 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // If we already have this controller available, update it and pop to it.
                 if type(of: viewController) == controller.viewType {
                     if let newController = controller.updateViewController(viewController) {
+                        Logger.info("Pushing new version of existing controller for \(step.logSafeString)")
                         controllerToPush = newController
                     } else {
+                        Logger.info("Popping to existing controller for \(step.logSafeString)")
                         let animatePop = !(self.topViewController is RegistrationLoadingViewController)
                         self.popToViewController(viewController, animated: animatePop)
                         return
                     }
                 }
             }
+            Logger.info("Pushing controller for \(step.logSafeString)")
             // If we got here, there were no matches and we should push.
             let vc = controllerToPush ?? controller.makeViewController(self)
             self.pushViewController(vc, animated: true, completion: nil)
@@ -384,6 +391,7 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     }
 
     public func switchToDeviceLinkingMode() {
+        Logger.info("Pushing device linking")
         let controller = RegistrationConfirmModeSwitchViewController(presenter: self)
         pushViewController(controller, animated: true, completion: nil)
     }
@@ -494,6 +502,7 @@ extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndM
 extension RegistrationNavigationController: RegistrationTransferChoicePresenter {
 
     public func transferDevice() {
+        Logger.info("Pushing device transfer")
         // We push these controllers right onto the same navigation stack, even though they
         // are not coordinator "steps". They have their own internal logic to proceed and go
         // back (direct calls to push and pop) and, when they complete, they will have _totally_

@@ -204,9 +204,8 @@ public extension TSMessage {
         case success
     }
 
-    @objc
     class func tryToRemotelyDeleteMessage(
-        fromAuthor authorAci: AciObjC,
+        fromAuthor authorAci: Aci,
         sentAtTimestamp: UInt64,
         threadUniqueId: String?,
         serverTimestamp: UInt64,
@@ -220,10 +219,10 @@ public extension TSMessage {
         if let threadUniqueId = threadUniqueId, let messageToDelete = InteractionFinder.findMessage(
             withTimestamp: sentAtTimestamp,
             threadId: threadUniqueId,
-            author: SignalServiceAddress(authorAci.wrappedAciValue),
+            author: SignalServiceAddress(authorAci),
             transaction: transaction
         ) {
-            if messageToDelete is TSOutgoingMessage, SignalServiceAddress(authorAci.wrappedAciValue).isLocalAddress {
+            if messageToDelete is TSOutgoingMessage, SignalServiceAddress(authorAci).isLocalAddress {
                 messageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
                 return .success
             } else if var incomingMessageToDelete = messageToDelete as? TSIncomingMessage {
@@ -268,7 +267,7 @@ public extension TSMessage {
             }
         } else if let storyMessage = StoryFinder.story(
             timestamp: sentAtTimestamp,
-            author: authorAci.wrappedAciValue,
+            author: authorAci,
             transaction: transaction
         ) {
             // If there are still valid contexts for this outgoing private story message, don't actually delete the model.

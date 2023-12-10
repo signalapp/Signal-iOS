@@ -24,7 +24,7 @@ extension OutgoingStoryMessage {
                     attachment.captionText = captionBody?.text
                     let attachmentStream = try attachment
                         .buildOutgoingAttachmentInfo()
-                        .asStreamConsumingDataSource(withIsVoiceMessage: attachment.isVoiceMessage)
+                        .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
                     attachmentStream.anyInsert(transaction: transaction)
 
                     var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []

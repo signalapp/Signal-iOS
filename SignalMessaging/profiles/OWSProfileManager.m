@@ -13,7 +13,6 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
@@ -33,9 +32,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) OWSUserProfile *localUserProfile;
-
-@property (nonatomic, readonly) AtomicUInt *profileAvatarDataLoadCounter;
-@property (nonatomic, readonly) AtomicUInt *profileAvatarImageLoadCounter;
 
 @property (nonatomic, readonly) id<RecipientHidingManager> recipientHidingManager;
 
@@ -90,9 +86,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseStorage);
-
-    _profileAvatarDataLoadCounter = [[AtomicUInt alloc] init:0];
-    _profileAvatarImageLoadCounter = [[AtomicUInt alloc] init:0];
 
     _whitelistedPhoneNumbersStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserWhitelistCollection"];
@@ -1580,10 +1573,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSAssertDebug(filename.length > 0);
 
-    NSUInteger loadCount = [self.profileAvatarDataLoadCounter increment];
-
-    OWSLogVerbose(@"---- loading profile avatar data: %lu.", loadCount);
-
     NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
     NSData *_Nullable avatarData = [NSData dataWithContentsOfFile:filePath];
 
@@ -1610,8 +1599,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (nil == data) {
         return nil;
     }
-    NSUInteger loadCount = [self.profileAvatarImageLoadCounter increment];
-    OWSLogVerbose(@"---- loading profile avatar image: %lu.", loadCount);
+
     UIImage *_Nullable image = [UIImage imageWithData:data];
     if (image) {
         return image;

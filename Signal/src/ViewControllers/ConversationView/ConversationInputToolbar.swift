@@ -359,10 +359,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         textViewHeightConstraint = inputTextView.autoSetDimension(.height, toSize: LayoutMetrics.minTextViewHeight)
 
-        if DebugFlags.internalLogging {
-            OWSLogger.info("")
-        }
-
         editMessageLabelWrapper.isHidden = !shouldShowEditUI
 
         quotedReplyWrapper.isHidden = quotedReply == nil
@@ -638,6 +634,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         receivedSafeAreaInsets = safeAreaInsets
         return true
+    }
+
+    func scrollToBottom() {
+        inputTextView.scrollToBottom()
     }
 
     func updateFontSizes() {
@@ -1071,9 +1071,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {
-        if DebugFlags.internalLogging {
-            OWSLogger.info("")
-        }
         quotedReply = nil
     }
 
@@ -2106,9 +2103,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         var contentSize = textView.attributedText.boundingRect(with: maxSize, options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size
         contentSize.height += textView.textContainerInset.top
         contentSize.height += textView.textContainerInset.bottom
-
-        // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
-        textView.contentSize = contentSize
 
         let newHeight = CGFloatClamp(
             contentSize.height,

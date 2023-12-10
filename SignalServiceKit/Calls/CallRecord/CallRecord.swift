@@ -20,7 +20,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callType = "type"
         case callDirection = "direction"
         case callStatus = "status"
-        case timestamp
+        case callBeganTimestamp = "timestamp"
     }
 
     public static let databaseTableName: String = "CallRecord"
@@ -53,20 +53,34 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public let threadRowId: Int64
 
     public let callType: CallType
-    public let callDirection: CallDirection
+    public internal(set) var callDirection: CallDirection
     public internal(set) var callStatus: CallStatus
 
-    /// The timestamp of the call event represented by this record.
+    /// The timestamp at which we believe the call began.
     ///
-    /// This value will originate locally for events we learned about locally,
-    /// such as receiving a 1:1 call offer message; receiving a group ring; or
-    /// opportunistically discovering a group call exists. For events that
-    /// occurred on linked devices, which we learned about via sync message,
-    /// this value may refer to a timestamp originating on the linked device.
+    /// For calls we discover on this device, such as by receiving a 1:1 call
+    /// offer message or a group call ring, this value will be the local
+    /// timestamp of the discovery.
     ///
-    /// This timestamp is intended for comparison between call records as well
-    /// as display.
-    public let timestamp: UInt64
+    /// If we receive a message indicating that the call began earlier than we
+    /// think it did, this value should reflect the earlier time. This helps
+    /// ensure that the view of this call is consistent across our devices, and
+    /// across the other participants in the call.
+    ///
+    /// For example, a linked device may opportunistically join a group call by
+    /// peeking it (and send us a sync message about that), before a ring
+    /// message for that same call arrives to us. We'll prefer the earlier time
+    /// locally, which keeps us in-sync with our linked device.
+    ///
+    /// In another example, we may discover a group call by peeking at time T,
+    /// while processing a message backlog. If that backlog contains a group
+    /// call update message for this call indicating it actually began at time
+    /// T-1, we'll prefer the earlier time, which keeps us in sync with everyone
+    /// else who got that update message.
+    ///
+    /// This timestamp is intended for comparison between call records, as well
+    /// as for display.
+    public internal(set) var callBeganTimestamp: UInt64
 
     init(
         callId: UInt64,
@@ -75,7 +89,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         callType: CallType,
         callDirection: CallDirection,
         callStatus: CallStatus,
-        timestamp: UInt64
+        callBeganTimestamp: UInt64
     ) {
         self.callIdString = String(callId)
         self.interactionRowId = interactionRowId
@@ -83,7 +97,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.callType = callType
         self.callDirection = callDirection
         self.callStatus = callStatus
-        self.timestamp = timestamp
+        self.callBeganTimestamp = callBeganTimestamp
     }
 
     /// Capture the SQLite row ID for this record, after insertion.

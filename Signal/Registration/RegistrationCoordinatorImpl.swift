@@ -732,25 +732,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// before finishing post-registration steps.
         var accountIdentity: AccountIdentity?
 
-        /// After atomic account creation, we include push tokens (if any) in
-        /// the account creation request, and this field is useless. We set it
-        /// to true immediately.
-        /// Before atomic account creation, we would have to follow up after
-        /// account creation and sync push tokens with the server. This
-        /// tracked whether we had done that (or discovered we have no token).
-        var legacy_didSyncPushTokens: Bool = false
-
-        /// Prior to the introduction of atomic account creation, we would
-        /// create and sync signed as well as one time prekeys as a follow-up
-        /// to account creation. Users may still have local persisted state
-        /// from prior to atomic account creation.
-        var legacy_didCreateAllPrekeys: Bool = false
-
         /// After registration is complete, we generate and sync
         /// one time prekeys (signed prekeys are included in the registration
         /// request). We do not proceed until this succeeds.
-        var shouldRefreshOneTimePreKeys: Bool?
-        var didRefreshOneTimePreKeys: Bool?
+        var didRefreshOneTimePreKeys: Bool = false
 
         /// When we try and register, the server gives us an error if its possible
         /// to execute a device-to-device transfer. The user can decline; if they
@@ -773,9 +758,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasGivenUpTryingToRestoreWithSVR = "hasGivenUpTryingToRestoreWithKBS"
             case sessionState
             case accountIdentity
-            case legacy_didSyncPushTokens = "didSyncPushTokens"
-            case legacy_didCreateAllPrekeys = "didSyncPrekeys"
-            case shouldRefreshOneTimePreKeys
             case didRefreshOneTimePreKeys
             case hasDeclinedTransfer
         }
@@ -787,11 +769,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func updatePersistedState(_ transaction: DBWriteTransaction, _ update: (inout PersistedState) -> Void) {
         var state: PersistedState = persistedState
         update(&state)
-        // Field is optional for backwards compatibility; write
-        // into it so we can eventually make it required.
-        if state.shouldRefreshOneTimePreKeys == nil {
-            state.shouldRefreshOneTimePreKeys = false
-        }
         self._persistedState = state
         try? self.kvStore.setCodable(state, key: Constants.persistedStateKey, transaction: transaction)
     }
@@ -910,6 +887,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
+            if !deps.svr.hasMasterKey(transaction: tx) {
+                // If we don't have a master key at this point, use a local master key.
+                deps.svr.useDeviceLocalMasterKey(
+                    authedAccount: accountIdentity.authedAccount,
+                    transaction: tx
+                )
+            }
+
             deps.registrationStateChangeManager.didRegisterPrimary(
                 e164: accountIdentity.e164,
                 aci: accountIdentity.aci,
@@ -1003,7 +988,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 // Do any storage service backups we have pending.
                 self.deps.storageServiceManager.backupPendingChanges(
-                    authedDevice: accountIdentity.authedDevice(isPrimaryDevice: true)
+                    authedDevice: accountIdentity.authedDevice
                 )
                 return .value(.done)
             }
@@ -2644,31 +2629,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         // We _must_ do these steps first.
-        // Before atomic creation, the created account starts out
-        // disabled and other endpoints won't work until we:
-        // 1. sync push tokens OR set isManualMessageFetchEnabled=true and sync account attributes
-        // 2. create prekeys and register them with the server
-        // then we can do other stuff (fetch SVR backups, set profile info, etc)
-        // If we did use atomic account creation, legacy_didSyncPushTokens should be true,
-        // and legacy_shouldCreateAllPreKeys() should be false.
-        if !persistedState.legacy_didSyncPushTokens {
-            return syncPushTokens(accountIdentity)
-        }
-        var preKeysPromise: Promise<Void>?
-        if legacy_shouldCreateAllPreKeys() {
-            // Prior to atomic account creation, the created account starts out
-            // disabled and other endpoints won't work until we create prekeys
-            // and register them with the server then we can do other stuff
-            // (fetch SVR backups, set profile info, etc).
-            preKeysPromise = self.deps.preKeyManager.legacy_createPreKeys(auth: accountIdentity.chatServiceAuth)
-        } else if shouldRefreshOneTimePreKeys() {
+        if shouldRefreshOneTimePreKeys() {
             // After atomic account creation, our account is ready to go from the start.
             // But we should still upload one-time prekeys, as that is not part
             // of account creation.
-            preKeysPromise = self.deps.preKeyManager.rotateOneTimePreKeysForRegistration(auth: accountIdentity.chatServiceAuth)
-        }
-        if let preKeysPromise {
-            return preKeysPromise
+            return self.deps.preKeyManager.rotateOneTimePreKeysForRegistration(auth: accountIdentity.chatServiceAuth)
                 .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
                     guard let self else {
                         return unretainedSelfError()
@@ -2678,7 +2643,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             // No harm marking both down as done even though
                             // we only did one or the other.
                             $0.didRefreshOneTimePreKeys = true
-                            $0.legacy_didCreateAllPrekeys = true
                         }
                     }
                     return self.nextStep()
@@ -2752,72 +2716,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // We are ready to finish! Export all state and wipe things
         // so we can re-register later if desired.
         return exportAndWipeState(accountIdentity: accountIdentity)
-    }
-
-    private func syncPushTokens(
-        _ accountIdentity: AccountIdentity,
-        retriesLeft: Int = Constants.networkErrorRetries
-    ) -> Guarantee<RegistrationStep> {
-        Logger.info("")
-
-        return deps.pushRegistrationManager
-            .syncPushTokensForcingUpload(
-                auth: accountIdentity.authedAccount.chatServiceAuth
-            )
-            .then(on: schedulers.main) { [weak self] result in
-                guard let strongSelf = self else {
-                    return unretainedSelfError()
-                }
-                switch result {
-                case .success:
-                    strongSelf.db.write { tx in
-                        strongSelf.updatePersistedState(tx) {
-                            $0.legacy_didSyncPushTokens = true
-                        }
-                    }
-                    return strongSelf.nextStep()
-                case .pushUnsupported(let description):
-                    // This can happen with:
-                    // - simulators, none of which support receiving push notifications
-                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                    // In these cases, mark the sync as done, but enable manual message fetch and sync that state to the server.
-                    // If we don't, the account will be in a "disabled" state and future requests won't work.
-                     Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                    strongSelf.inMemoryState.isManualMessageFetchEnabled = true
-                    return strongSelf.updateAccountAttributes(accountIdentity)
-                        .then(on: strongSelf.schedulers.main) { [weak self] maybeError -> Guarantee<RegistrationStep> in
-                            guard let strongSelf = self else {
-                                return unretainedSelfError()
-                            }
-                            guard maybeError == nil else {
-                                Logger.error("Unable to update account attributes for manual message fetch with error: \(String(describing: maybeError))")
-                                return .value(.showErrorSheet(.genericError))
-                            }
-                            strongSelf.db.write { tx in
-                                strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
-                                strongSelf.updatePersistedState(tx) {
-                                    // Say that we synced push tokens so that we skip this step hereafter.
-                                    $0.legacy_didSyncPushTokens = true
-                                }
-                            }
-                            return strongSelf.nextStep()
-                        }
-
-                case .networkError:
-                    if retriesLeft > 0 {
-                        return strongSelf.syncPushTokens(
-                            accountIdentity,
-                            retriesLeft: retriesLeft - 1
-                        )
-                    }
-                    return .value(.showErrorSheet(.networkError))
-                case .genericError(let error):
-                    if error.isPostRegDeregisteredError {
-                        return strongSelf.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                    }
-                    return .value(.showErrorSheet(.genericError))
-                }
-            }
     }
 
     // returns nil if no steps needed.
@@ -3004,13 +2902,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreFromStorageService(
         accountIdentity: AccountIdentity
     ) -> Guarantee<RegistrationStep> {
-        let authedDevice = accountIdentity.authedDevice(isPrimaryDevice: true)
-        return deps.accountManager.performInitialStorageServiceRestore(authedDevice: authedDevice)
+        let authedDevice = accountIdentity.authedDevice
+        return deps
+            .storageServiceManager.restoreOrCreateManifestIfNecessary(
+                authedDevice: accountIdentity.authedDevice
+            )
+            .timeout(seconds: 120)
             .then(on: schedulers.sync) { [weak self] in
                 guard let self else {
                     return unretainedSelfError()
                 }
                 self.loadProfileState()
+                if self.inMemoryState.hasProfileName {
+                    self.scheduleReuploadProfileStateAsync(accountIdentity: accountIdentity)
+                }
                 self.inMemoryState.hasRestoredFromStorageService = true
                 return self.nextStep()
             }
@@ -3056,6 +2961,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             return self.nextStep()
         }
+    }
+
+    private func scheduleReuploadProfileStateAsync(accountIdentity: AccountIdentity) {
+        Logger.debug("restored local profile name. Uploading...")
+        // if we don't have a `localGivenName`, there's nothing to upload, and trying
+        // to upload would fail.
+
+        // Note we *don't* block on the update. There's no need to block registration on
+        // it completing, and if there are any errors, it's durable.
+        self.deps.profileManager
+            .scheduleReuploadLocalProfile(authedAccount: accountIdentity.authedAccount)
     }
 
     private func loadProfileState() {
@@ -3340,14 +3256,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
         responseHandler: @escaping (AccountResponse) -> Guarantee<RegistrationStep>
     ) -> Guarantee<RegistrationStep> {
-        db.write { tx in
-            self.updatePersistedState(tx) {
-                // We are doing atomic account creation, so we should
-                // refresh the one time keys when done (as opposed to
-                // creating _all_ keys as was done prior to atomic creation)
-                $0.shouldRefreshOneTimePreKeys = true
-            }
-        }
         return self.deps.preKeyManager.createPreKeysForRegistration()
             .map(on: self.schedulers.sync) { (bundles: RegistrationPreKeyUploadBundles) -> RegistrationPreKeyUploadBundles? in
                 return bundles
@@ -3377,14 +3285,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     .then(on: self.schedulers.main) { [weak self] (accountResponse: AccountResponse) -> Guarantee<RegistrationStep> in
                         guard let self else {
                             return unretainedSelfError()
-                        }
-                        // Mark it down as having synced push tokens, which we did
-                        // as part of atomic account creation. This avoids us taking
-                        // the legacy code path later and re-syncing.
-                        self.db.write { tx in
-                            self.updatePersistedState(tx) {
-                                $0.legacy_didSyncPushTokens = true
-                            }
                         }
                         let isPrekeyUploadSuccess: Bool
                         switch accountResponse {
@@ -3515,7 +3415,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Service
             .makeWhoAmIRequest(
                 auth: ChatServiceAuth.explicit(
-                    aci: AciObjC(changeNumberState.localAci),
+                    aci: changeNumberState.localAci,
+                    deviceId: .primary,
                     password: changeNumberState.oldAuthToken
                 ),
                 signalService: deps.signalService,
@@ -3701,21 +3602,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var authedAccount: AuthedAccount {
-            return AuthedAccount.explicit(aci: aci, pni: pni, e164: e164, authPassword: authPassword)
+            return AuthedAccount.explicit(
+                aci: aci,
+                pni: pni,
+                e164: e164,
+                deviceId: .primary,
+                authPassword: authPassword
+            )
         }
 
-        func authedDevice(isPrimaryDevice: Bool) -> AuthedDevice {
+        var authedDevice: AuthedDevice {
             return .explicit(AuthedDevice.Explicit(
                 aci: aci,
                 phoneNumber: e164,
                 pni: pni,
-                isPrimaryDevice: isPrimaryDevice,
+                deviceId: .primary,
                 authPassword: authPassword
             ))
         }
 
         var chatServiceAuth: ChatServiceAuth {
-            return ChatServiceAuth.explicit(aci: AciObjC(aci), password: authPassword)
+            return ChatServiceAuth.explicit(
+                aci: aci,
+                deviceId: .primary,
+                password: authPassword
+            )
         }
     }
 
@@ -3895,25 +3806,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func legacy_shouldCreateAllPreKeys() -> Bool {
-        if persistedState.shouldRefreshOneTimePreKeys == true {
-            return false
-        }
-        switch mode {
-        case .registering, .reRegistering:
-            return !persistedState.legacy_didCreateAllPrekeys
-        case .changingNumber:
-            return false
-        }
-    }
-
     private func shouldRefreshOneTimePreKeys() -> Bool {
-        guard persistedState.shouldRefreshOneTimePreKeys == true else {
-            return false
-        }
         switch mode {
         case .registering, .reRegistering:
-            return persistedState.didRefreshOneTimePreKeys != true
+            return !persistedState.didRefreshOneTimePreKeys
         case .changingNumber:
             return false
         }

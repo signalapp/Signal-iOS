@@ -33,7 +33,7 @@ public class SessionResetJobQueue: JobQueue {
         defaultSetup()
     }
 
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         // no special handling

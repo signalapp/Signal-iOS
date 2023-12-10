@@ -81,14 +81,12 @@ public extension Factory {
     }
 }
 
-@objc
 public class ContactThreadFactory: NSObject, Factory {
 
     public var messageCount: UInt = 0
 
     // MARK: Factory
 
-    @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
         let thread = TSContactThread.getOrCreateThread(withContactAddress: contactAddressBuilder(),
                                                        transaction: transaction)
@@ -112,18 +110,15 @@ public class ContactThreadFactory: NSObject, Factory {
 
     // MARK: Dependent Factories
 
-    @objc
     public var contactAddressBuilder: () -> SignalServiceAddress = {
         return CommonGenerator.address()
     }
 }
 
-@objc
 public class OutgoingMessageFactory: NSObject, Factory {
 
     // MARK: Factory
 
-    @objc
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         // The builder() factory method requires us to specify every
         // property so that this will break if we add any new properties.
@@ -150,7 +145,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 giftBadge: giftBadgeBuilder()).build(transaction: transaction)
     }
 
-    @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         let item = self.build(transaction: transaction)
         item.anyInsert(transaction: transaction)
@@ -160,116 +154,94 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     // MARK: Dependent Factories
 
-    @objc
     public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
     // MARK: Generators
 
-    @objc
     public var timestampBuilder: () -> UInt64 = {
         return NSDate.ows_millisecondTimeStamp()
     }
 
-    @objc
     public var messageBodyBuilder: () -> String = {
         return CommonGenerator.paragraph
     }
 
-    @objc
     public var bodyRangesBuilder: () -> MessageBodyRanges = {
         return MessageBodyRanges.empty
     }
 
-    @objc
     public var attachmentIdsBuilder: () -> [String] = {
         return []
     }
 
-    @objc
     public var expiresInSecondsBuilder: () -> UInt32 = {
         return 0
     }
 
-    @objc
     public var expireStartedAtBuilder: () -> UInt64 = {
         return 0
     }
 
-    @objc
     public var isVoiceMessageBuilder: () -> Bool = {
         return false
     }
 
-    @objc
     public var groupMetaMessageBuilder: () -> TSGroupMetaMessage = {
         return .unspecified
     }
 
-    @objc
     public var quotedMessageBuilder: () -> TSQuotedMessage? = {
         return nil
     }
 
-    @objc
     public var contactShareBuilder: () -> OWSContact? = {
         return nil
     }
 
-    @objc
     public var linkPreviewBuilder: () -> OWSLinkPreview? = {
         return nil
     }
 
-    @objc
     public var messageStickerBuilder: () -> MessageSticker? = {
         return nil
     }
 
-    @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
     }
 
-    @objc
     public var changeActionsProtoDataBuilder: () -> Data? = {
         return nil
     }
 
-    @objc
     public var additionalRecipientsBuilder: () -> [SignalServiceAddress]? = {
         return nil
     }
 
-    @objc
     public var skippedRecipientsBuilder: () -> Set<SignalServiceAddress>? = {
         return nil
     }
 
-    @objc
     public var storyAuthorAciBuilder: () -> AciObjC? = {
         return nil
     }
 
-    @objc
     public var storyTimestampBuilder: () -> NSNumber? = {
         return nil
     }
 
-    @objc
     public var storyReactionEmojiBuilder: () -> String? = {
         return nil
     }
 
-    @objc
     public var giftBadgeBuilder: () -> OWSGiftBadge? = {
         return nil
     }
 
     // MARK: Delivery Receipts
 
-    @objc
     public func buildDeliveryReceipt() -> OWSReceiptsForSenderMessage {
         var item: OWSReceiptsForSenderMessage!
         write { transaction in
@@ -278,14 +250,12 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return item
     }
 
-    @objc
     public func buildDeliveryReceipt(transaction: SDSAnyWriteTransaction) -> OWSReceiptsForSenderMessage {
         let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
                                                                                 receiptSet: receiptSetBuilder(), transaction: transaction)
         return item
     }
 
-    @objc
     var receiptSetBuilder: () -> MessageReceiptSet = {
         let set = MessageReceiptSet()
         set.insert(timestamp: 1, messageUniqueId: "hello")
@@ -293,12 +263,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 }
 
-@objc
 public class IncomingMessageFactory: NSObject, Factory {
 
     // MARK: Factory
 
-    @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSIncomingMessage {
 
         let thread = threadCreator(transaction)
@@ -337,35 +305,29 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     // MARK: Dependent Factories
 
-    @objc
     public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
     // MARK: Generators
 
-    @objc
     public var timestampBuilder: () -> UInt64 = {
         return NSDate.ows_millisecondTimeStamp()
     }
 
-    @objc
     public var messageBodyBuilder: () -> String = {
         return CommonGenerator.paragraph
     }
 
-    @objc
     public var bodyRangesBuilder: () -> MessageBodyRanges = {
         return MessageBodyRanges.empty
     }
 
-    @objc
     public var editStateBuilder: () -> TSEditState = {
         return .none
     }
 
-    @objc
-    public var authorAciBuilder: (TSThread) -> AciObjC = { thread in
+    public var authorAciBuilder: (TSThread) -> Aci = { thread in
         return { () -> SignalServiceAddress in
             switch thread {
             case let contactThread as TSContactThread:
@@ -377,102 +339,82 @@ public class IncomingMessageFactory: NSObject, Factory {
                 owsFailDebug("unexpected thread type")
                 return CommonGenerator.address()
             }
-        }().aci.map { AciObjC($0) }!
+        }().aci!
     }
 
-    @objc
     public var sourceDeviceIdBuilder: () -> UInt32 = {
         return 1
     }
 
-    @objc
     public var attachmentIdsBuilder: () -> [String] = {
         return []
     }
 
-    @objc
     public var expiresInSecondsBuilder: () -> UInt32 = {
         return 0
     }
 
-    @objc
     public var quotedMessageBuilder: () -> TSQuotedMessage? = {
         return nil
     }
 
-    @objc
     public var contactShareBuilder: () -> OWSContact? = {
         return nil
     }
 
-    @objc
     public var linkPreviewBuilder: () -> OWSLinkPreview? = {
         return nil
     }
 
-    @objc
     public var messageStickerBuilder: () -> MessageSticker? = {
         return nil
     }
 
-    @objc
-    public var serverTimestampBuilder: () -> NSNumber? = {
+    public var serverTimestampBuilder: () -> UInt64? = {
         return nil
     }
 
-    @objc
     public var serverDeliveryTimestampBuilder: () -> UInt64 = {
         return 0
     }
 
-    @objc
     public var serverGuidBuilder: () -> String? = {
         return nil
     }
 
-    @objc
     public var wasReceivedByUDBuilder: () -> Bool = {
         return false
     }
 
-    @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
     }
 
-    @objc
-    public var storyAuthorAciBuilder: () -> AciObjC? = {
+    public var storyAuthorAciBuilder: () -> Aci? = {
         nil
     }
 
-    @objc
-    public var storyTimestampBuilder: () -> NSNumber? = {
+    public var storyTimestampBuilder: () -> UInt64? = {
         nil
     }
 
-    @objc
     public var storyReactionEmojiBuilder: () -> String? = {
         return nil
     }
 
-    @objc
     public var giftBadgeBuilder: () -> OWSGiftBadge? = {
         return nil
     }
 
-    @objc
     public var paymentNotificationBuilder: () -> TSPaymentNotification? = {
         return nil
     }
 }
 
-@objc
 public class GroupThreadFactory: NSObject, Factory {
 
-    @objc
     public var messageCount: UInt = 0
 
-    @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let thread = try! GroupManager.createGroupForTests(members: memberAddressesBuilder(),
                                                            name: titleBuilder(),
@@ -499,36 +441,29 @@ public class GroupThreadFactory: NSObject, Factory {
 
     // MARK: Generators
 
-    @objc
     public var titleBuilder: () -> String? = {
         return CommonGenerator.words(count: 3)
     }
 
-    @objc
     public var groupsVersionBuilder: () -> GroupsVersion = {
         // TODO: Make this .V2.
         return .V1
     }
 
-    @objc
     public var groupAvatarDataBuilder: () -> Data? = {
         return nil
     }
 
-    @objc
     public var memberAddressesBuilder: () -> [SignalServiceAddress] = {
         let groupSize = Int.random(in: 1...10)
         return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
 
-@objc
 public class ConversationFactory: NSObject {
 
-    @objc
     public var attachmentCount: Int = 0
 
-    @objc
     @discardableResult
     public func createSentMessage(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         let outgoingFactory = OutgoingMessageFactory()
@@ -560,21 +495,18 @@ public class ConversationFactory: NSObject {
         return message
     }
 
-    @objc
     public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
-    @objc
     public var attachmentInfoBuilder: (TSOutgoingMessage, String?) -> OutgoingAttachmentInfo = { outgoingMessage, caption in
         let dataSource = DataSourceValue.dataSource(with: ImageFactory().buildPNGData(), fileExtension: "png")!
-        return OutgoingAttachmentInfo(dataSource: dataSource,
-                                      contentType: "image/png",
-                                      sourceFilename: nil,
-                                      caption: caption,
-                                      albumMessageId: outgoingMessage.uniqueId,
-                                      isBorderless: false,
-                                      isLoopingVideo: false)
+        return OutgoingAttachmentInfo(
+            dataSource: dataSource,
+            contentType: "image/png",
+            caption: caption,
+            albumMessageId: outgoingMessage.uniqueId
+        )
     }
 
 }
@@ -723,26 +655,21 @@ public class ContactFactory {
     }
 }
 
-@objc
-public class CommonGenerator: NSObject {
+public class CommonGenerator {
 
-    @objc
     static public func e164() -> String {
         // note 4 zeros in the last group to mimic the spacing of a phone number
         return String(format: "+1%010ld", Int.random(in: 0..<1_000_000_0000))
     }
 
-    @objc
     static public func address() -> SignalServiceAddress {
         return address(hasPhoneNumber: true)
     }
 
-    @objc
     static public func email() -> String {
         return "\(word)@\(word).\(word)"
     }
 
-    @objc
     static public func address(hasAci: Bool = true, hasPhoneNumber: Bool = true) -> SignalServiceAddress {
         return SignalServiceAddress(
             serviceId: hasAci ? Aci.randomForTesting() : nil,
@@ -750,7 +677,6 @@ public class CommonGenerator: NSObject {
         )
     }
 
-    @objc
     static public let firstNames = [
         "Alan",
         "Alex",
@@ -820,7 +746,6 @@ public class CommonGenerator: NSObject {
         "Wendy"
     ]
 
-    @objc
     static public var lastNames = [
         "Abbott",
         "Acevedo",
@@ -1824,28 +1749,23 @@ public class CommonGenerator: NSObject {
         "Zimmerman"
     ]
 
-    @objc
     static public let nicknames = [
         "AAAA",
         "BBBB"
     ]
 
-    @objc
     static public func nickname() -> String {
         return nicknames.randomElement()!
     }
 
-    @objc
     static public func firstName() -> String {
         return firstNames.randomElement()!
     }
 
-    @objc
     static public func lastName() -> String {
         return lastNames.randomElement()!
     }
 
-    @objc
     static public func fullName() -> String {
         if Bool.random() {
             // sometimes only a first name is stored as the full name
@@ -1895,31 +1815,25 @@ public class CommonGenerator: NSObject {
         return result.joined(separator: " ")
     }
 
-    @objc
     static public var sentence: String {
         return sentences.randomElement()!
     }
 
-    @objc
     static public func sentences(count: UInt) -> [String] {
         return (0..<count).map { _ in sentence }
     }
 
-    @objc
     static public var paragraph: String {
         paragraph(sentenceCount: UInt.random(in: 2...8))
     }
 
-    @objc
     static public func paragraph(sentenceCount: UInt) -> String {
         return sentences(count: sentenceCount).joined(separator: " ")
     }
 }
 
-@objc
 public class ImageFactory: NSObject {
 
-    @objc
     public func build() -> UIImage {
         return type(of: self).buildImage(size: sizeBuilder(),
                                          backgroundColor: backgroundColorBuilder(),
@@ -1927,7 +1841,6 @@ public class ImageFactory: NSObject {
                                          text: textBuilder())
     }
 
-    @objc
     public func buildPNGData() -> Data {
         guard let data = build().pngData() else {
             owsFailDebug("data was unexpectedly nil")
@@ -1936,7 +1849,6 @@ public class ImageFactory: NSObject {
         return data
     }
 
-    @objc
     public func buildJPGData() -> Data {
         guard let data = build().jpegData(compressionQuality: 0.9) else {
             owsFailDebug("data was unexpectedly nil")

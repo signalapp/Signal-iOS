@@ -94,11 +94,30 @@ public class DonationUtilities: Dependencies {
         }()
 
         let isSEPAAvailable = {
-            guard FeatureFlags.allowSEPADonations else { return false }
+            guard RemoteConfig.sepaEnabledRegions.contains(e164: localNumber) else {
+                // Only enabled for specific regions
+                return false
+            }
+
             switch donationMode {
             case .oneTime, .monthly:
-                return true
+                if FeatureFlags.isPrerelease {
+                    // Always enabled for beta users
+                    return true
+                }
+
+                return RemoteConfig.canDonateWithSepa
             case .gift:
+                return false
+            }
+        }()
+
+        let isIDEALAvailable = {
+            guard FeatureFlags.allowIDEALDonations else { return false }
+            switch donationMode {
+            case .oneTime:
+                return true
+            case .monthly, .gift:
                 return false
             }
         }()
@@ -119,6 +138,10 @@ public class DonationUtilities: Dependencies {
 
         if isSEPAAvailable {
             result.insert(.sepa)
+        }
+
+        if isIDEALAvailable {
+            result.insert(.ideal)
         }
 
         return result
@@ -334,6 +357,10 @@ public extension DonationUtilities {
     /// Is an amount of money too small, given a minimum?
     static func isBoostAmountTooSmall(_ amount: FiatMoney, minimumAmount: FiatMoney) -> Bool {
         (amount.value <= 0) || (integralAmount(for: amount) < integralAmount(for: minimumAmount))
+    }
+
+    static func isBoostAmountTooLarge(_ amount: FiatMoney, maximumAmount: FiatMoney) -> Bool {
+        return integralAmount(for: amount) > integralAmount(for: maximumAmount)
     }
 
     /// Convert the given money amount to an integer that can be passed to

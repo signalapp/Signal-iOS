@@ -50,10 +50,13 @@ internal class MockPreKeyManager: PreKeyManager {
         ))
     }
 
+    public var didFinalizeRegistrationPrekeys = false
+
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
     ) -> Promise<Void> {
+        didFinalizeRegistrationPrekeys = true
         return .value(())
     }
 
@@ -61,7 +64,6 @@ internal class MockPreKeyManager: PreKeyManager {
         return .value(())
     }
 
-    func legacy_createPreKeys(auth: SignalServiceKit.ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func rotateSignedPreKeys() -> SignalCoreKit.Promise<Void> { Promise.value(()) }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }

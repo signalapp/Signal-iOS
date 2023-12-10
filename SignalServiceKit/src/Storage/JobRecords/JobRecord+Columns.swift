@@ -73,11 +73,15 @@ extension JobRecord {
 
         // MARK: ReceiptCredentialRedemptionJobRecord
 
-        case isBoost
-        case priorSubscriptionLevel
         case receiptCredentialPresentation
+
+        case isBoost
+
         case subscriberID
         case targetSubscriptionLevel
+        case priorSubscriptionLevel
+        case isNewSubscription
+        case shouldSuppressPaymentAlreadyRedeemed
 
         // MARK: SendGiftBadgeJobRecord & ReceiptCredentialRedemptionJobRecord
 

@@ -74,7 +74,9 @@ extension DonationPaymentDetailsViewController {
                     subscriptionLevel: newSubscriptionLevel.level,
                     priorSubscriptionLevel: priorSubscriptionLevel?.level,
                     paymentProcessor: .stripe,
-                    paymentMethod: validForm.donationPaymentMethod
+                    paymentMethod: validForm.donationPaymentMethod,
+                    isNewSubscription: true,
+                    shouldSuppressPaymentAlreadyRedeemed: false
                 )
 
                 return DonationViewsUtil.waitForSubscriptionJob(

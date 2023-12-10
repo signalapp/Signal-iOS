@@ -351,7 +351,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         }
 
         for message in messages {
-            messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
+            Task { try await self.messageSender.sendMessage(message.asPreparer) }
         }
     }
 
@@ -407,7 +407,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         }
 
         for message in messages {
-            messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
+            Task { try await self.messageSender.sendMessage(message.asPreparer) }
         }
     }
 

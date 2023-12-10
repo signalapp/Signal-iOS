@@ -718,13 +718,13 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
         fileprivate static func parseEarlyEnd(fromGroupRangeHeader header: String?) -> UInt32? {
             guard let header = header else {
-                OWSLogger.warn("Missing Content-Range for group update request with 206 response")
+                Logger.warn("Missing Content-Range for group update request with 206 response")
                 return nil
             }
 
             let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
             guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
-                OWSLogger.warn("Unparsable Content-Range for group update request: \(header)")
+                Logger.warn("Unparsable Content-Range for group update request: \(header)")
                 return nil
             }
 
@@ -734,7 +734,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             }
 
             guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
-                OWSLogger.warn("Invalid early-end in Content-Range for group update request: \(header)")
+                Logger.warn("Invalid early-end in Content-Range for group update request: \(header)")
                 return nil
             }
 

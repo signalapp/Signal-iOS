@@ -178,10 +178,13 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     private static func sendStressMessage(_ message: TSOutgoingMessage) {
         if let dynamicMessage = message as? OWSDynamicOutgoingMessage {
-            messageSender.sendMessage(dynamicMessage.asPreparer) {
-                Logger.info("Success.")
-            } failure: { error in
-                owsFailDebug("Error: \(error)")
+            Task {
+                do {
+                    try await self.messageSender.sendMessage(dynamicMessage.asPreparer)
+                    Logger.info("Success.")
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
             }
         } else {
             databaseStorage.write { transaction in

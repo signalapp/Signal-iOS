@@ -16,11 +16,29 @@ private extension TSOutgoingMessage {
     var isResendRequest: Bool {
         self is OWSOutgoingResendRequest
     }
+
+    var isSyncMessage: Bool { self is OWSOutgoingSyncMessage }
+
+    var canSendToLocalAddress: Bool {
+        return (isSyncMessage ||
+                self is OWSOutgoingCallMessage ||
+                self is OWSOutgoingResendRequest ||
+                self is OWSOutgoingResendResponse)
+    }
 }
 
-// MARK: -
+// MARK: - MessageSender
 
-extension MessageSender {
+public class MessageSender: Dependencies {
+
+    private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
+
+    public init() {
+        SwiftSingletons.register(self)
+    }
+
+    private let pendingTasks = PendingTasks(label: "Message Sends")
+
     public func pendingSendsPromise() -> Promise<Void> {
         // This promise blocks on all operations already in the queue,
         // but will not block on new operations added after this promise
@@ -28,12 +46,10 @@ extension MessageSender {
         // instances complete in a timely way.
         pendingTasks.pendingTasksPromise()
     }
-}
 
-// MARK: -
+    // MARK: - Creating Signal Protocol Sessions
 
-private extension MessageSender {
-    static func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> Bool {
+    private func containsValidSession(for serviceId: ServiceId, deviceId: UInt32, tx: DBReadTransaction) throws -> Bool {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         do {
             guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
@@ -61,13 +77,13 @@ private extension MessageSender {
         udAccess: OWSUDAccess?
     ) async throws {
         let hasSession = try databaseStorage.read { tx in
-            try Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
+            try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
         }
         if hasSession {
             return
         }
 
-        let preKeyBundle = try await Self.makePrekeyRequest(
+        let preKeyBundle = try await makePrekeyRequest(
             recipientId: recipientId,
             serviceId: serviceId,
             deviceId: deviceId,
@@ -78,7 +94,7 @@ private extension MessageSender {
         )
 
         try await databaseStorage.awaitableWrite { tx in
-            try Self.createSession(
+            try self.createSession(
                 for: preKeyBundle,
                 recipientId: recipientId,
                 serviceId: serviceId,
@@ -88,7 +104,7 @@ private extension MessageSender {
         }
     }
 
-    private static func makePrekeyRequest(
+    private func makePrekeyRequest(
         recipientId: AccountId?,
         serviceId: ServiceId,
         deviceId: UInt32,
@@ -178,7 +194,7 @@ private extension MessageSender {
         }
     }
 
-    static func createSession(
+    private func createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         recipientId: String,
         serviceId: ServiceId,
@@ -285,7 +301,11 @@ private extension MessageSender {
         owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write), "Couldn't create session.")
     }
 
-    private class func handleUntrustedIdentityKeyError(
+    // MARK: - Untrusted Identities
+
+    private let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: AtomicLock())
+
+    private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
         recipientId: AccountId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
@@ -295,23 +315,13 @@ private extension MessageSender {
             let identityManager = DependenciesBridge.shared.identityManager
             let newIdentityKey = try IdentityKey(bytes: preKeyBundle.identityKey)
             identityManager.saveIdentityKey(newIdentityKey, for: serviceId, tx: tx.asV2Write)
-            hadUntrustedIdentityKeyError(for: recipientId)
+            staleIdentityCache[recipientId] = Date()
         } catch {
             owsFailDebug("Error: \(error)")
         }
     }
-}
 
-// MARK: - Prekey Rate Limits & Untrusted Identities
-
-private extension MessageSender {
-    private static let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: AtomicLock())
-
-    class func hadUntrustedIdentityKeyError(for recipientId: AccountId) {
-        staleIdentityCache[recipientId] = Date()
-    }
-
-    class func willLikelyHaveUntrustedIdentityKeyError(for recipientId: AccountId) -> Bool {
+    private func willLikelyHaveUntrustedIdentityKeyError(for recipientId: AccountId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore, we want to avoid requesting
@@ -347,17 +357,17 @@ private extension MessageSender {
             return untrustedIdentity != nil
         }
     }
-}
 
-private extension MessageSender {
+    // MARK: - Invalid Signatures
+
     private typealias InvalidSignatureCache = [AccountId: InvalidSignatureCacheItem]
     private struct InvalidSignatureCacheItem {
         let lastErrorDate: Date
         let errorCount: UInt32
     }
-    private static let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: AtomicLock())
+    private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: AtomicLock())
 
-    class func hadInvalidKeySignatureError(for recipientId: AccountId) {
+    private func hadInvalidKeySignatureError(for recipientId: AccountId) {
         invalidKeySignatureCache.update { cache in
             var errorCount: UInt32 = 1
             if let mostRecentError = cache[recipientId] {
@@ -371,7 +381,7 @@ private extension MessageSender {
         }
     }
 
-    class func willLikelyHaveInvalidKeySignatureError(for recipientId: AccountId) -> Bool {
+    private func willLikelyHaveInvalidKeySignatureError(for recipientId: AccountId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Similar to untrusted identity errors, when an invalid signature for a prekey
@@ -395,7 +405,7 @@ private extension MessageSender {
 
             // Error has expired, remove it to reset the count
             invalidKeySignatureCache.update { cache in
-               _ = cache.removeValue(forKey: recipientId)
+                _ = cache.removeValue(forKey: recipientId)
             }
 
             return false
@@ -408,19 +418,17 @@ private extension MessageSender {
 
         return true
     }
-}
 
-// MARK: - Missing Devices
+    // MARK: - Missing Devices
 
-private extension MessageSender {
     private struct CacheKey: Hashable {
         let serviceId: ServiceId
         let deviceId: UInt32
     }
 
-    private static var missingDevicesCache = AtomicDictionary<CacheKey, Date>(lock: .init())
+    private let missingDevicesCache = AtomicDictionary<CacheKey, Date>(lock: .init())
 
-    static func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
+    private func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
         assert(!Thread.isMainThread)
 
         guard deviceId == OWSDevice.primaryDeviceId else {
@@ -434,7 +442,7 @@ private extension MessageSender {
         missingDevicesCache[cacheKey] = Date()
     }
 
-    static func deviceRecentlyReportedMissing(serviceId: ServiceId, deviceId: UInt32) -> Bool {
+    private func deviceRecentlyReportedMissing(serviceId: ServiceId, deviceId: UInt32) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore, we want to avoid requesting
@@ -458,25 +466,128 @@ private extension MessageSender {
 
         return true
     }
-}
 
-// MARK: -
+    // MARK: - Sending Attachments
 
-extension MessageSender {
-    private static func prepareToSendMessages() async throws -> SenderCertificates {
-        let isAppLockedDueToPreKeyUpdateFailures = databaseStorage.read { tx in
-            DependenciesBridge.shared.preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+    public func sendTemporaryAttachment(dataSource: DataSource, contentType: String, message: TSOutgoingMessage) async throws {
+        let outgoingMessagePreparer = OutgoingMessagePreparer(
+            message,
+            unsavedAttachmentInfos: [OutgoingAttachmentInfo(
+                dataSource: dataSource,
+                contentType: contentType,
+                sourceFilename: nil,
+                caption: nil,
+                albumMessageId: nil,
+                isBorderless: false,
+                isLoopingVideo: false
+            )]
+        )
+        let result = await Result { try await sendMessage(outgoingMessagePreparer) }
+        await databaseStorage.awaitableWrite { tx in
+            message.anyRemove(transaction: tx)
+            message.removeTemporaryAttachments(with: tx)
         }
-        if isAppLockedDueToPreKeyUpdateFailures {
-            Logger.info("Rotating signed pre-key before sending message.")
-            // Retry prekey update every time user tries to send a message while app is
-            // disabled due to prekey update failures.
-            //
-            // Only try to update the signed prekey; updating it is sufficient to
-            // re-enable message sending.
-            try await DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys().awaitable()
+        try result.get()
+    }
+
+    // MARK: - Constructing Message Sends
+
+    public func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
+        let message: TSOutgoingMessage
+        if outgoingMessagePreparer.canBePreparedWithoutTransaction {
+            message = outgoingMessagePreparer.prepareMessageWithoutTransaction()
+        } else {
+            message = try await databaseStorage.awaitableWrite { tx in
+                return try outgoingMessagePreparer.prepareMessage(transaction: tx)
+            }
         }
-        return try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
+
+        if let body = message.body {
+            owsAssertDebug(body.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold)
+        }
+
+        Logger.info("Sending \(type(of: message)), timestamp: \(message.timestamp)")
+
+        let canUseV3 = message.groupMetaMessage == .unspecified || message.groupMetaMessage == .deliver
+
+        // We create a PendingTask so we can block on flushing all current message sends.
+        let pendingTask = pendingTasks.buildPendingTask(label: "Message Send")
+        defer { pendingTask.complete() }
+
+        try await withCheckedThrowingContinuation { continuation in
+            let sendMessageOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation) {
+                try await self.sendPreparedMessage(message)
+            }
+            sendMessageOperation.queuePriority = Self.sendingQueuePriority(for: message)
+
+            for attachmentId in (outgoingMessagePreparer.savedAttachmentIds ?? []) {
+                let uploadAttachmentOperation = OWSUploadOperation(
+                    attachmentId: attachmentId,
+                    messageIds: [ message.uniqueId ],
+                    canUseV3: canUseV3
+                )
+                sendMessageOperation.addDependency(uploadAttachmentOperation)
+                OWSUploadOperation.uploadQueue.addOperation(uploadAttachmentOperation)
+            }
+
+            sendingQueue(for: message).addOperation(sendMessageOperation)
+        }
+
+        // If it succeeds, it should be marked as `.sent`.
+        owsAssertDebug(message.messageState == .sent)
+    }
+
+    private let sendingQueueMap = AtomicValue<[String: OperationQueue]>([:], lock: AtomicLock())
+
+    private func sendingQueue(for message: TSOutgoingMessage) -> OperationQueue {
+        let sendingQueueKey = message.uniqueThreadId
+        return sendingQueueMap.update { sendingQueueMap in
+            if let existingQueue = sendingQueueMap[sendingQueueKey] {
+                return existingQueue
+            }
+            let sendingQueue = OperationQueue()
+            sendingQueue.qualityOfService = .userInitiated
+            sendingQueue.maxConcurrentOperationCount = 1
+            sendingQueue.name = "MessageSender-Chat"
+            sendingQueueMap[sendingQueueKey] = sendingQueue
+            return sendingQueue
+        }
+    }
+
+    static func sendingQueuePriority(for message: TSOutgoingMessage) -> Operation.QueuePriority {
+        return message.hasRenderableContent() ? .normal : .low
+    }
+
+    private func waitForPreKeyRotationIfNeeded() async throws {
+        while let taskToWaitFor = preKeyRotationTaskIfNeeded() {
+            try await taskToWaitFor.value
+        }
+    }
+
+    private let pendingPreKeyRotation = AtomicValue<Task<Void, Error>?>(nil, lock: AtomicLock())
+
+    private func preKeyRotationTaskIfNeeded() -> Task<Void, Error>? {
+        return pendingPreKeyRotation.map { existingTask in
+            if let existingTask {
+                return existingTask
+            }
+            let shouldRunPreKeyRotation = databaseStorage.read { tx in
+                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+            }
+            if shouldRunPreKeyRotation {
+                Logger.info("Rotating signed pre-key before sending message.")
+                // Retry prekey update every time user tries to send a message while app is
+                // disabled due to prekey update failures.
+                //
+                // Only try to update the signed prekey; updating it is sufficient to
+                // re-enable message sending.
+                return Task {
+                    try await self.preKeyManager.rotateSignedPreKeys().awaitable()
+                    self.pendingPreKeyRotation.set(nil)
+                }
+            }
+            return nil
+        }
     }
 
     // Mark skipped recipients as such. We may skip because:
@@ -485,7 +596,7 @@ extension MessageSender {
     // * A recipient is blocked.
     // * A recipient is unregistered.
     // * A recipient does not have the required capability.
-    private static func markSkippedRecipients(
+    private func markSkippedRecipients(
         of message: TSOutgoingMessage,
         sendingRecipients: [ServiceId],
         tx: SDSAnyWriteTransaction
@@ -498,7 +609,7 @@ extension MessageSender {
         }
     }
 
-    private static func unsentRecipients(
+    private func unsentRecipients(
         of message: TSOutgoingMessage,
         in thread: TSThread,
         tx: SDSAnyReadTransaction
@@ -608,38 +719,34 @@ extension MessageSender {
         return (serviceIds, phoneNumbers)
     }
 
-    private static func lookUpPhoneNumbers(_ phoneNumbers: [E164]) async throws {
+    private func lookUpPhoneNumbers(_ phoneNumbers: [E164]) async throws {
         _ = try await contactDiscoveryManager.lookUp(
             phoneNumbers: Set(phoneNumbers.lazy.map { $0.stringValue }),
             mode: .outgoingMessage
         ).awaitable()
     }
-}
 
-// MARK: -
-
-@objc
-public extension TSMessage {
-    var isSyncMessage: Bool { self is OWSOutgoingSyncMessage }
-
-    var canSendToLocalAddress: Bool {
-        return (isSyncMessage ||
-                self is OWSOutgoingCallMessage ||
-                self is OWSOutgoingResendRequest ||
-                self is OWSOutgoingResendResponse)
-    }
-}
-
-// MARK: -
-
-extension MessageSender {
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func sendMessageToServiceObjC(_ message: TSOutgoingMessage) -> AnyPromise {
-        return AnyPromise(Promise.wrapAsync { try await self.sendMessageToService(message) })
+    private func areAttachmentsUploadedWithSneakyTransaction(for message: TSOutgoingMessage) -> Bool {
+        guard message.hasAttachments() else {
+            return true
+        }
+        return databaseStorage.read { tx in
+            for attachment in message.allAttachments(with: tx.unwrapGrdbRead) {
+                guard let attachment = attachment as? TSAttachmentStream else {
+                    return false
+                }
+                guard (attachment.serverId != 0 || !attachment.cdnKey.isEmpty), attachment.isUploaded else {
+                    return false
+                }
+            }
+            return true
+        }
     }
 
-    private func sendMessageToService(_ message: TSOutgoingMessage) async throws {
+    private func sendPreparedMessage(_ message: TSOutgoingMessage) async throws {
+        if !areAttachmentsUploadedWithSneakyTransaction(for: message) {
+            throw OWSUnretryableMessageSenderError()
+        }
         if DependenciesBridge.shared.appExpiry.isExpired {
             throw AppExpiredError()
         }
@@ -657,14 +764,10 @@ extension MessageSender {
         if DebugFlags.messageSendsFail.get() {
             throw OWSUnretryableMessageSenderError()
         }
-        BenchManager.completeEvent(eventId: "sendMessagePreNetwork-\(message.timestamp)")
-        BenchManager.startEvent(
-            title: "Send Message Milestone: Network (\(message.timestamp))",
-            eventId: "sendMessageNetwork-\(message.timestamp)"
-        )
         do {
-            let senderCertificates = try await Self.prepareToSendMessages()
-            try await sendMessageToService(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
+            try await waitForPreKeyRotationIfNeeded()
+            let senderCertificates = try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
+            try await sendPreparedMessage(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
         } catch {
             if message.wasSentToAnyRecipient {
                 // Always ignore the sync error...
@@ -681,8 +784,8 @@ extension MessageSender {
         /// Look up missing phone numbers & then try sending again.
         case lookUpPhoneNumbersAndTryAgain([E164])
 
-        /// Perform the `sendMessageToService` step.
-        case sendMessage(
+        /// Perform the `sendPreparedMessage` step.
+        case sendPreparedMessage(
             serializedMessage: SerializedMessage,
             thread: TSThread,
             serviceIds: [ServiceId],
@@ -691,7 +794,7 @@ extension MessageSender {
         )
     }
 
-    private func sendMessageToService(
+    private func sendPreparedMessage(
         _ message: TSOutgoingMessage,
         canLookUpPhoneNumbers: Bool,
         senderCertificates: SenderCertificates
@@ -701,7 +804,7 @@ extension MessageSender {
                 throw MessageSenderError.threadMissing
             }
 
-            let proposedAddresses = try Self.unsentRecipients(of: message, in: thread, tx: tx)
+            let proposedAddresses = try self.unsentRecipients(of: message, in: thread, tx: tx)
             let (serviceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
 
             // If we haven't yet tried to look up phone numbers, send an asynchronous
@@ -713,7 +816,7 @@ extension MessageSender {
                 return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
             }
 
-            Self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)
+            self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)
 
             let canSendToThread: Bool = {
                 if message is OWSOutgoingReactionMessage {
@@ -777,7 +880,7 @@ extension MessageSender {
                 tx: tx
             )
 
-            return .sendMessage(
+            return .sendPreparedMessage(
                 serializedMessage: serializedMessage,
                 thread: thread,
                 serviceIds: serviceIds,
@@ -790,12 +893,12 @@ extension MessageSender {
         case .none:
             return
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
-            try await Self.lookUpPhoneNumbers(phoneNumbers)
-            try await sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
-        case .sendMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
+            try await lookUpPhoneNumbers(phoneNumbers)
+            try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
+        case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
             let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
             do {
-                try await sendMessage(
+                try await sendPreparedMessage(
                     message,
                     serializedMessage: serializedMessage,
                     in: thread,
@@ -814,7 +917,7 @@ extension MessageSender {
         }
     }
 
-    private func sendMessage(
+    private func sendPreparedMessage(
         _ message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
         in thread: TSThread,
@@ -1085,21 +1188,14 @@ extension MessageSender {
         guard message.shouldSyncTranscript() else {
             return
         }
-        do {
-            try await message.sendSyncTranscript()
-            await databaseStorage.awaitableWrite { tx in
-                message.update(withHasSyncedTranscript: true, transaction: tx)
-            }
-            Logger.info("Successfully sent sync transcript.")
-        } catch {
-            Logger.info("Failed to send sync transcript: \(error) (isRetryable: \(error.isRetryable))")
+        try await message.sendSyncTranscript()
+        await databaseStorage.awaitableWrite { tx in
+            message.update(withHasSyncedTranscript: true, transaction: tx)
         }
     }
-}
 
-// MARK: -
+    // MARK: - Performing Message Sends
 
-extension MessageSender {
     struct SerializedMessage {
         let plaintextData: Data
         let payloadId: Int64?
@@ -1254,7 +1350,7 @@ extension MessageSender {
         return true
     }
 
-    func buildDeviceMessages(
+    private func buildDeviceMessages(
         messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> [DeviceMessage] {
@@ -1332,7 +1428,7 @@ extension MessageSender {
                 // If we have an invalid device exception, remove this device from the
                 // recipient and suppress the error.
                 await databaseStorage.awaitableWrite { tx in
-                    Self.updateDevices(
+                    self.updateDevices(
                         serviceId: serviceId,
                         devicesToAdd: [],
                         devicesToRemove: [deviceId],
@@ -1485,13 +1581,6 @@ extension MessageSender {
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(messageSend.serviceId), wasSentByUD: wasSentByUD, transaction: transaction)
 
-            transaction.addSyncCompletion {
-                BenchManager.completeEvent(eventId: "sendMessageNetwork-\(message.timestamp)")
-                BenchManager.completeEvent(eventId: "sendMessageMarkedAsSent-\(message.timestamp)")
-                BenchManager.startEvent(title: "Send Message Milestone: Post-Network (\(message.timestamp))",
-                                        eventId: "sendMessagePostNetwork-\(message.timestamp)")
-            }
-
             // If we've just delivered a message to a user, we know they have a valid
             // Signal account. However, if we're sending a story, the server will
             // always tell us the recipient is registered, so we can't use this as an
@@ -1623,6 +1712,8 @@ extension MessageSender {
         throw MessageSenderNoSuchSignalRecipientError()
     }
 
+    // MARK: - Unregistered, Missing, & Stale Devices
+
     func markAsUnregistered(
         serviceId: ServiceId,
         message: TSOutgoingMessage,
@@ -1645,12 +1736,10 @@ extension MessageSender {
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.
     }
-}
 
-extension MessageSender {
     private func handleMismatchedDevices(for serviceId: ServiceId, response: MessageSendFailureResponse) async {
         await databaseStorage.awaitableWrite { transaction in
-            Self.updateDevices(
+            self.updateDevices(
                 serviceId: serviceId,
                 devicesToAdd: response.missingDevices ?? [],
                 devicesToRemove: response.extraDevices ?? [],
@@ -1675,7 +1764,7 @@ extension MessageSender {
         }
     }
 
-    static func updateDevices(
+    func updateDevices(
         serviceId: ServiceId,
         devicesToAdd: [UInt32],
         devicesToRemove: [UInt32],
@@ -1703,12 +1792,10 @@ extension MessageSender {
             }
         }
     }
-}
 
-// MARK: - Message encryption
+    // MARK: - Encryption
 
-private extension MessageSender {
-    func encryptMessage(
+    private func encryptMessage(
         plaintextContent plainText: Data,
         serviceId: ServiceId,
         deviceId: UInt32,
@@ -1717,7 +1804,7 @@ private extension MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard try Self.containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
+        guard try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
 
@@ -1797,7 +1884,7 @@ private extension MessageSender {
         )
     }
 
-    func wrapPlaintextMessage(
+    private func wrapPlaintextMessage(
         plaintextContent rawPlaintext: Data,
         serviceId: ServiceId,
         deviceId: UInt32,

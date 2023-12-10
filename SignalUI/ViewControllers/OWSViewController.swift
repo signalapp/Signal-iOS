@@ -108,7 +108,7 @@ open class OWSViewController: UIViewController {
 
     deinit {
         // Surface memory leaks by logging the deallocation of view controllers.
-        OWSLogger.verbose("Dealloc: \(type(of: self))")
+        Logger.verbose("Dealloc: \(type(of: self))")
     }
 
     @available(*, unavailable)

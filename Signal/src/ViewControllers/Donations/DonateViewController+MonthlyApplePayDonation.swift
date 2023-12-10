@@ -84,7 +84,9 @@ extension DonateViewController {
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
                 paymentProcessor: .stripe,
-                paymentMethod: .applePay
+                paymentMethod: .applePay,
+                isNewSubscription: true,
+                shouldSuppressPaymentAlreadyRedeemed: false
             )
 
             DonationViewsUtil.wrapPromiseInProgressView(
@@ -96,7 +98,7 @@ extension DonateViewController {
                 Logger.info("[Donations] Monthly card donation finished")
 
                 self.didCompleteDonation(
-                    receiptCredentialSuccessMode: .recurringSubscription
+                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation
                 )
             }.catch(on: DispatchQueue.main) { [weak self] error in
                 Logger.info("[Donations] Monthly card donation failed")

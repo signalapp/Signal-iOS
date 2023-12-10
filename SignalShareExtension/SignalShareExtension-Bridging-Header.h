@@ -15,5 +15,4 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSMath.h>

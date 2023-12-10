@@ -5,7 +5,6 @@
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "AxolotlExceptions.h"
-#import "OWSMessageManager.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

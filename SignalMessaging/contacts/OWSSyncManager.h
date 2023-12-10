@@ -11,7 +11,6 @@ extern NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification;
 extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
 
 @class AnyPromise;
-@class MessageSender;
 @class OWSContactsManager;
 @class OWSIdentityManager;
 @class OWSProfileManager;

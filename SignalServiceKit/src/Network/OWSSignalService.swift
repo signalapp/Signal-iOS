@@ -218,7 +218,6 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
         if let localNumber = localNumber {
             self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensoredPhoneNumber(localNumber)
         } else {
-            OWSLogger.error("no known phone number to check for censorship.")
             self.hasCensoredPhoneNumber = false
         }
 

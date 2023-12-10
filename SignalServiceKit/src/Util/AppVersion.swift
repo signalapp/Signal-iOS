@@ -179,8 +179,6 @@ public class AppVersionImpl: AppVersion {
     private func startupLogging() {
         Logger.info("firstAppVersion: \(firstAppVersion)")
         Logger.info("lastAppVersion: \(lastAppVersion ?? "none")")
-        Logger.info("currentAppReleaseVersion: \(currentAppReleaseVersion)")
-        Logger.info("currentAppBuildVersion: \(currentAppBuildVersion)")
 
         // The long version string looks like an IPv4 address. To prevent the log scrubber from
         // scrubbing it, we replace `.` with `_`.
@@ -208,15 +206,6 @@ public class AppVersionImpl: AppVersion {
 
         Logger.info("Device Model: \(hardwareInfoString)")
 
-        if DebugFlags.internalLogging {
-            if let bundleName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
-                Logger.info("Bundle Name: \(bundleName)")
-            }
-            if let bundleDisplayName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
-                Logger.info("Bundle Display Name: \(bundleDisplayName)")
-            }
-        }
-
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: Any] {
             if let signalCommit = buildDetails["SignalCommit"] as? String {
                 Logger.info("Signal Commit: \(signalCommit)")
@@ -228,8 +217,6 @@ public class AppVersionImpl: AppVersion {
                 Logger.info("Build Date/Time: \(buildTime)")
             }
         }
-
-        Logger.info("Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount)")
     }
 
     // MARK: - Events

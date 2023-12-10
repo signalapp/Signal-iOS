@@ -62,13 +62,10 @@ class NSEContext: NSObject, AppContext {
         super.init()
 
         memoryPressureSource.setEventHandler { [weak self] in
-            let logger: NSELogger = .uncorrelated
+            guard let self else { return }
 
-            if let self = self {
-                logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
-            } else {
-                logger.warn("Memory pressure event.")
-            }
+            let logger: NSELogger = .uncorrelated
+            logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
             logger.warn("Current memory usage: \(LocalDevice.memoryUsageString)")
             logger.flush()
         }

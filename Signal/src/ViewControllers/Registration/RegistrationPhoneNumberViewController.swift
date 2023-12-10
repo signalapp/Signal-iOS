@@ -187,6 +187,8 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        Logger.info("")
+
         let shouldBecomeFirstResponder: Bool = {
             switch validationError {
             case .rateLimited:

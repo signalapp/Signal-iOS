@@ -8,6 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kOversizeTextMessageSizeThreshold;
+
 @class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
 

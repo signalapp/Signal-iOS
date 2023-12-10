@@ -575,7 +575,6 @@ struct BatchUpdateMockValue: BatchUpdateValue {
     }
 
     var batchUpdateId: String { itemId }
-    var logSafeDescription: String { itemId }
 }
 
 // MARK: -

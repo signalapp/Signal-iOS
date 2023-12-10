@@ -65,17 +65,11 @@ extension AppDelegate {
         defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
-
-        InstrumentsMonitor.enable()
-        let monitorId = InstrumentsMonitor.startSpan(category: "appstart", parent: "application", name: "didFinishLaunchingWithOptions")
-        defer { InstrumentsMonitor.stopSpan(category: "appstart", hash: monitorId) }
-
-        #if DEBUG
-        FeatureFlags.logFlags()
-        DebugFlags.logFlags()
-        #endif
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
 
         Cryptography.seedRandom()
+
+        MessageFetchBGRefreshTask.register()
 
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially
@@ -90,8 +84,6 @@ extension AppDelegate {
 
         // XXX - careful when moving this. It must happen before we load GRDB.
         verifyDBKeysAvailableBeforeBackgroundLaunch()
-
-        InstrumentsMonitor.trackEvent(name: "AppStart")
 
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications. Setting the delegate also seems to prevent us from
@@ -191,7 +183,6 @@ extension AppDelegate {
         SUIEnvironment.shared.setup()
         AppEnvironment.shared.setup()
         let result = databaseContinuation.prepareDatabase()
-        OWSAnalytics.appLaunchDidBegin()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
 
@@ -210,8 +201,6 @@ extension AppDelegate {
     }
 
     private func setupNSEInteroperation() {
-        Logger.info("")
-
         // We immediately post a notification letting the NSE know the main app has launched.
         // If it's running it should take this as a sign to terminate so we don't unintentionally
         // try and fetch messages from two processes at once.
@@ -315,8 +304,28 @@ extension AppDelegate {
         owsAssert(!AppReadiness.isAppReady)
         owsAssert(!CurrentAppContext().isRunningTests)
 
+        if DebugFlags.internalLogging {
+            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            // This runs every 24 hours or so.
+            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+            messageSendLog.cleanUpAndScheduleNextOccurrence(on: DispatchQueue.global(qos: .utility))
+        }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             OWSOrphanDataCleaner.auditOnLaunchIfNecessary()
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task.detached(priority: .low) {
+                await FullTextSearchOptimizer(
+                    appContext: appContext,
+                    db: DependenciesBridge.shared.db,
+                    keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory
+                ).run()
+            }
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
@@ -367,7 +376,7 @@ extension AppDelegate {
         DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
         Self.updateApplicationShortcutItems(isRegistered: tsRegistrationState.isRegistered)
 
         let notificationCenter = NotificationCenter.default
@@ -402,18 +411,8 @@ extension AppDelegate {
         SignalApp.shared.showLaunchInterface(launchInterface, launchStartedAt: launchStartedAt)
     }
 
-    private func enableBackgroundRefreshIfNecessary() {
-        let interval: TimeInterval
-        if
-            OWS2FAManager.shared.isRegistrationLockEnabled,
-            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        {
-            // Ping server once a day to keep-alive reglock clients.
-            interval = 24 * 60 * 60
-        } else {
-            interval = UIApplication.backgroundFetchIntervalNever
-        }
-        UIApplication.shared.setMinimumBackgroundFetchInterval(interval)
+    private func scheduleBgAppRefresh() {
+        MessageFetchBGRefreshTask.shared?.scheduleTask()
     }
 
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
@@ -472,10 +471,13 @@ extension AppDelegate {
                 regLoader.restoreLastMode(transaction: tx.asV2Read)
             )
         }
+
+        let needsOnboarding = !hasProfileName && (tsRegistrationState.isPrimaryDevice ?? true)
+
         if let lastMode {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
-        } else if !(hasProfileName && tsRegistrationState.isRegistered) {
+        } else if needsOnboarding || !tsRegistrationState.isRegistered {
             if UIDevice.current.isIPad {
                 if tsRegistrationState == .delinked {
                     // If we are delinked, go to the chat list in the delinked state.
@@ -799,37 +801,42 @@ extension AppDelegate {
 
     // MARK: - Remote notifications
 
-    enum HandleSilentPushContentResult: UInt {
+    enum HandleSilentPushContentResult {
         case handled
         case notHandled
     }
 
+    // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
     @objc
     func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                Logger.info("Ignoring remote notification; user is not registered.")
+            // TODO: Wait to invoke this until we've finished fetching messages.
+            defer { completion() }
+
+            guard let remoteNotification = remoteNotification as? [AnyHashable: Any] else {
                 return
             }
 
-            // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
-            if
-                let remoteNotification = remoteNotification as? [AnyHashable: Any],
-                self.handleSilentPushContent(remoteNotification) == .notHandled {
+            switch self.handleSilentPushContent(remoteNotification) {
+            case .handled:
+                break
+            case .notHandled:
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                    Logger.info("Ignoring remote notification; user is not registered.")
+                    return
+                }
                 self.messageFetcherJob.run()
-
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
-                self.syncManager.syncAllContactsIfFullSyncRequested()
+                _ = self.syncManager.syncAllContactsIfFullSyncRequested()
             }
-
-            completion()
         }
     }
 
-    func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) -> HandleSilentPushContentResult {
+    private func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) -> HandleSilentPushContentResult {
         if let spamChallengeToken = remoteNotification["rateLimitChallenge"] as? String {
             spamChallengeResolver.handleIncomingPushChallengeToken(spamChallengeToken)
             return .handled
@@ -851,7 +858,7 @@ extension AppDelegate {
 
         Logger.info("registrationStateDidChange")
 
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
@@ -863,10 +870,6 @@ extension AppDelegate {
 
                     ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
                 }
-
-                // Start running the disappearing messages job in case the newly registered user
-                // enables this feature
-                self.disappearingMessagesJob.startIfNecessary()
             }
         }
 
@@ -875,7 +878,7 @@ extension AppDelegate {
 
     @objc
     private func registrationLockDidChange() {
-        enableBackgroundRefreshIfNecessary()
+        scheduleBgAppRefresh()
     }
 
     // MARK: - Utilities
@@ -948,36 +951,6 @@ extension AppDelegate {
 // MARK: - UNUserNotificationCenterDelegate
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    // The method will be called on the delegate only if the application is in the foreground. If the method is not
-    // implemented or the handler is not called in a timely manner then the notification will not be presented. The
-    // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
-    // This decision should be based on whether the information in the notification is otherwise visible to the user.
-    public func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        Logger.info("")
-
-        // Capture just userInfo; we don't want to retain notification.
-        let remoteNotification = notification.request.content.userInfo
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            let options: UNNotificationPresentationOptions
-            switch self.handleSilentPushContent(remoteNotification) {
-            case .handled:
-                options = []
-            case .notHandled:
-                // We need to respect the in-app notification sound preference. This method, which is called
-                // for modern UNUserNotification users, could be a place to do that, but since we'd still
-                // need to handle this behavior for legacy UINotification users anyway, we "allow" all
-                // notification options here, and rely on the shared logic in NotificationPresenter to
-                // honor notification sound preferences for both modern and legacy users.
-                options = [.alert, .badge, .sound]
-            }
-            completionHandler(options)
-        }
-    }
-
     // The method will be called on the delegate when the user responded to the notification by opening the application,
     // dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
     // returns from application:didFinishLaunchingWithOptions:.

@@ -12,14 +12,6 @@ import SignalUI
 @objc
 public extension NSObject {
 
-    final var accountManager: AccountManager {
-        AppEnvironment.shared.accountManagerRef
-    }
-
-    static var accountManager: AccountManager {
-        AppEnvironment.shared.accountManagerRef
-    }
-
     final var callService: CallService {
         AppEnvironment.shared.callServiceRef
     }
@@ -82,13 +74,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var accountManager: AccountManager {
-        AppEnvironment.shared.accountManagerRef
-    }
-
-    static var accountManager: AccountManager {
-        AppEnvironment.shared.accountManagerRef
-    }
 
     var callService: CallService {
         AppEnvironment.shared.callServiceRef

@@ -34,6 +34,29 @@ public class ProvisioningController: NSObject {
     private var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
     private var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
+    private lazy var provisioningCoordinator: ProvisioningCoordinator = {
+        return ProvisioningCoordinatorImpl(
+            db: DependenciesBridge.shared.db,
+            identityManager: DependenciesBridge.shared.identityManager,
+            messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
+            preKeyManager: DependenciesBridge.shared.preKeyManager,
+            profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(self.profileManagerImpl),
+            pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(
+                self.pushRegistrationManager
+            ),
+            receiptManager: ProvisioningCoordinatorImpl.Wrappers.ReceiptManager(OWSReceiptManager.shared),
+            registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
+            signalService: self.signalService,
+            socketManager: DependenciesBridge.shared.socketManager,
+            storageServiceManager: self.storageServiceManager,
+            svr: DependenciesBridge.shared.svr,
+            syncManager: ProvisioningCoordinatorImpl.Wrappers.SyncManager(OWSSyncManager.shared),
+            threadStore: ThreadStoreImpl(),
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            udManager: ProvisioningCoordinatorImpl.Wrappers.UDManager(self.udManager)
+        )
+    }()
+
     private override init() {
         provisioningCipher = ProvisioningCipher.generate()
 
@@ -274,16 +297,16 @@ public class ProvisioningController: NSObject {
 
     func didSetDeviceName(_ deviceName: String, from viewController: UIViewController) {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            self.completeLinking(deviceName: deviceName).done {
-                modal.dismiss {
-                    self.provisioningDidComplete(from: viewController)
-                }
-            }.catch { error in
-                Logger.warn("error: \(error)")
-
+            self.completeLinking(deviceName: deviceName).done { result in
                 let alert: ActionSheetController
-                switch error {
-                case AccountManagerError.reregistrationDifferentAccount:
+                switch result {
+                case .success:
+                    modal.dismiss {
+                        self.provisioningDidComplete(from: viewController)
+                    }
+                    return
+                case .previouslyLinkedWithDifferentAccount:
+                    Logger.warn("was previously linked/registered on different account!")
                     let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE",
                                                   comment: "Title for error alert indicating that re-linking failed because the account did not match.")
                     let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
@@ -296,7 +319,11 @@ public class ProvisioningController: NSObject {
                                                       handler: { _ in
                                                         Self.resetDeviceState()
                                                       }))
-                case SignalServiceError.obsoleteLinkedDevice:
+                case .deviceLimitExceededError(let error):
+                    alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
+                    alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
+                case .obsoleteLinkedDeviceError:
+                    Logger.warn("obsolete device error")
                     let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
                                                   comment: "Title for error alert indicating that a linked device must be upgraded before it can be linked.")
                     let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
@@ -311,10 +338,7 @@ public class ProvisioningController: NSObject {
                                                             UIApplication.shared.open(url, options: [:])
                     }
                     alert.addAction(updateAction)
-                case let error as DeviceLimitExceededError:
-                    alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
-                    alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
-                default:
+                case .genericError(let error):
                     let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
                     let message = error.userErrorDescription
                     alert = ActionSheetController(title: title, message: message)
@@ -337,10 +361,6 @@ public class ProvisioningController: NSObject {
     }
 
     public func provisioningDidComplete(from viewController: UIViewController) {
-        self.databaseStorage.write {
-            Logger.info("completed provisioning")
-            DependenciesBridge.shared.registrationStateChangeManager.didFinishProvisioningSecondary(tx: $0.asV2Write)
-        }
         SignalApp.shared.showConversationSplitView()
     }
 
@@ -369,12 +389,18 @@ public class ProvisioningController: NSObject {
         return _awaitProvisionMessage!
     }
 
-    private func completeLinking(deviceName: String) -> Promise<Void> {
-        return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<Void> in
+    private func completeLinking(deviceName: String) -> Guarantee<CompleteProvisioningResult> {
+        return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<CompleteProvisioningResult> in
             guard let self = self else { throw PromiseError.cancelled }
 
-            return self.accountManager.completeSecondaryLinking(provisionMessage: provisionMessage,
-                                                                deviceName: deviceName)
+            return Promise.wrapAsync {
+                await self.provisioningCoordinator.completeProvisioning(
+                    provisionMessage: provisionMessage,
+                    deviceName: deviceName
+                )
+            }
+        }.recover {
+            return .value(.genericError($0))
         }
     }
 

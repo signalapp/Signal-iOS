@@ -133,8 +133,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // schema migrations.            
             guard let self = self else { return }
 
-            BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
-            defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
                 try self.setup()
             } catch {
@@ -805,10 +803,6 @@ func filterForDBQueryLog(_ input: String) -> String {
 }
 
 private func dbQueryLog(_ value: String) {
-    guard SDSDatabaseStorage.shouldLogDBQueries else {
-        return
-    }
-
     let filteredValue = filterForDBQueryLog(value)
 
     // Remove any newlines/leading space to put the log message on a single line
@@ -818,7 +812,7 @@ private func dbQueryLog(_ value: String) {
         range: filteredValue.entireRange,
         withTemplate: " ")
 
-    Logger.info(finalValue)
+    Logger.debug(finalValue)
 }
 
 // MARK: -
@@ -926,7 +920,10 @@ private struct GRDBStorage {
             try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
 
             #if DEBUG
-            db.trace { dbQueryLog("\($0)") }
+            let shouldLogDbQueries = false
+            if shouldLogDbQueries {
+                db.trace { dbQueryLog("\($0)") }
+            }
             #endif
 
             MediaGalleryManager.setup(database: db)
@@ -1136,8 +1133,6 @@ extension GRDBDatabaseStorageAdapter {
 extension GRDBDatabaseStorageAdapter {
     @objc
     public func syncTruncatingCheckpoint() throws {
-        Logger.info("Running truncating checkpoint.")
-
         SDSDatabaseStorage.shared.logFileSizes()
 
         try GRDBDatabaseStorageAdapter.checkpoint(pool: pool)

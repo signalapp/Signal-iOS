@@ -18,8 +18,7 @@ public extension SDSAnyWriteTransaction {
     var asV2Write: DBWriteTransaction { return SDSDB.WriteTx(self) }
 }
 
-/// A perfectly transparent proxy to `SDSDatabaseStorage` (note: most methods
-/// are actually implemented on `SDSTransactable`). Uses V2 types instead.
+/// A perfectly transparent proxy to `SDSDatabaseStorage`. Uses V2 types instead.
 ///
 /// Classes using `DB` can simply interact with that protocol the same way in both
 /// production code and tests, producing transaction objects which they pass down to

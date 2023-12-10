@@ -60,9 +60,7 @@ extension ChatListViewController {
                                              transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
-        return Bench(title: "loadNewRenderState") {
-            CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
-        }
+        return CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
     }
 
     fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,
@@ -110,7 +108,10 @@ extension ChatListViewController {
         tableDataSource.calcRefreshTimer()
         // We need to perform this regardless of the load result type.
         updateViewState()
-        updateBarButtonItems()
+        viewState.settingsButtonCreator.updateState(
+            hasInboxChats: renderState.inboxCount > 0,
+            hasArchivedChats: renderState.archiveCount > 0
+        )
     }
 
     fileprivate func applyPartialLoadResult(rowChanges: [CLVRowChange],
@@ -195,7 +196,6 @@ extension ChatListViewController {
         if tableUpdatesPerformed {
             tableView.endUpdates()
         }
-        BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
 

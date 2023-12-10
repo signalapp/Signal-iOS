@@ -60,6 +60,7 @@ public class SDSKeyValueStore: NSObject {
                     FROM \(table.tableName)
                     GROUP BY \(collectionColumn.columnName)
                     ORDER BY COUNT(*) DESC
+                    LIMIT 10
                     """
                 let cursor = try Row.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
                 while let row = try cursor.next() {

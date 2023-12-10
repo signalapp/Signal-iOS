@@ -76,8 +76,9 @@ enum ContactSyncAttachmentBuilder {
             threadPositions[rowId] = inboxPosition + 1 // Row numbers start from 1.
         }
 
-        var signalAccounts = isFullSync ? contactsManager.unsortedSignalAccounts(transaction: tx) : []
-        signalAccounts.append(localAccountToSync(localAddress: localAddress))
+        let localAccount = localAccountToSync(localAddress: localAddress)
+        let otherAccounts = isFullSync ? contactsManager.unsortedSignalAccounts(transaction: tx) : []
+        let signalAccounts = [localAccount] + otherAccounts.stableSort()
 
         for signalAccount in signalAccounts {
             try autoreleasepool {
@@ -95,20 +96,22 @@ enum ContactSyncAttachmentBuilder {
             }
         }
 
-        for (rowId, inboxPosition) in threadPositions {
-            try autoreleasepool {
-                guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
-                    return
+        if isFullSync {
+            for (rowId, inboxPosition) in threadPositions.sorted(by: { $0.key < $1.key }) {
+                try autoreleasepool {
+                    guard let contactThread = threadFinder.fetch(rowId: rowId, tx: tx) as? TSContactThread else {
+                        return
+                    }
+                    try writeContact(
+                        to: contactOutputStream,
+                        address: contactThread.contactAddress,
+                        contactThread: contactThread,
+                        signalAccount: nil,
+                        inboxPosition: inboxPosition,
+                        blockingManager: blockingManager,
+                        tx: tx
+                    )
                 }
-                try writeContact(
-                    to: contactOutputStream,
-                    address: contactThread.contactAddress,
-                    contactThread: contactThread,
-                    signalAccount: nil,
-                    inboxPosition: inboxPosition,
-                    blockingManager: blockingManager,
-                    tx: tx
-                )
             }
         }
     }

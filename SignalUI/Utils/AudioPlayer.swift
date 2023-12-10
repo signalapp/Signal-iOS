@@ -171,7 +171,7 @@ public class AudioPlayer: NSObject {
                 fileTypeHint: fileTypeHint?.rawValue
             )
         } catch let error as NSError {
-            OWSLogger.error("Error: \(error)")
+            Logger.error("Error: \(error)")
             stop()
 
             if error.domain == NSOSStatusErrorDomain {

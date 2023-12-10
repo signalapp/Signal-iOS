@@ -18,7 +18,7 @@ public class SendGiftBadgeJobQueue: JobQueue {
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SendGiftBadgeOperation>()
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public enum JobEvent: Int {
         case chargeSucceeded

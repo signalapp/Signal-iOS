@@ -98,8 +98,6 @@ public protocol LocalIdentifiersSetter {
         tx: DBWriteTransaction
     )
 
-    func setDidFinishProvisioning(tx: DBWriteTransaction)
-
     /// Returns true if successful. Not successful iff the old value is the same as new value (no-op).
     ///
     /// Note that the old value is NOT equivalent to ``TSRegistrationState.deregistered``
@@ -112,6 +110,7 @@ public protocol LocalIdentifiersSetter {
     func resetForReregistration(
         localNumber: E164,
         localAci: Aci,
+        wasPrimaryDevice: Bool,
         tx: DBWriteTransaction
     )
 

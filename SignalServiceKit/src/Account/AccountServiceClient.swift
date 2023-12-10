@@ -22,7 +22,6 @@ public class AccountServiceClient: NSObject {
 
     public func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -31,7 +30,6 @@ public class AccountServiceClient: NSObject {
     ) -> Promise<Void> {
         return serviceClient.registerPreKeys(
             for: identity,
-            identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             preKeyRecords: preKeyRecords,
             pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,
@@ -50,23 +48,5 @@ public class AccountServiceClient: NSObject {
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
         return serviceClient.getAccountWhoAmI()
-    }
-
-    public func verifySecondaryDevice(
-        verificationCode: String,
-        phoneNumber: String,
-        authKey: String,
-        encryptedDeviceName: Data,
-        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
-    ) -> Promise<VerifySecondaryDeviceResponse> {
-        return serviceClient.verifySecondaryDevice(
-            verificationCode: verificationCode,
-            phoneNumber: phoneNumber,
-            authKey: authKey,
-            encryptedDeviceName: encryptedDeviceName,
-            apnRegistrationId: apnRegistrationId,
-            prekeyBundles: prekeyBundles
-        )
     }
 }

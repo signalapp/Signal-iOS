@@ -13,96 +13,64 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
     // MARK: 
 
-    func test_messageIsSent() {
-        let message: TSOutgoingMessage = OutgoingMessageFactory().create()
-
-        let expectation = sentExpectation(message: message)
-
+    func test_messageIsSent() async throws {
         let jobQueue = MessageSenderJobQueue()
-        self.write { transaction in
-            jobQueue.add(message: message.asPreparer, transaction: transaction)
+        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+            let message = OutgoingMessageFactory().create(transaction: tx)
+            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            return (message, promise)
         }
+        fakeMessageSender.stubbedFailingErrors = [nil]
         jobQueue.setup()
-
-        self.wait(for: [expectation], timeout: 1)
+        try await promise.awaitable()
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [message.uniqueId])
     }
 
-    func test_waitsForSetup() {
-        let message: TSOutgoingMessage = OutgoingMessageFactory().create()
-
-        let sentBeforeReadyExpectation = sentExpectation(message: message)
-        sentBeforeReadyExpectation.isInverted = true
-
-        let jobQueue = MessageSenderJobQueue()
-
-        self.write { transaction in
-            jobQueue.add(message: message.asPreparer, transaction: transaction)
-        }
-
-        self.wait(for: [sentBeforeReadyExpectation], timeout: 1)
-
-        let sentAfterReadyExpectation = sentExpectation(message: message)
-
-        jobQueue.setup()
-
-        self.wait(for: [sentAfterReadyExpectation], timeout: 1)
-    }
-
-    func test_respectsQueueOrder() {
+    func test_respectsQueueOrder() async throws {
         let messageCount = 3
-
-        let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create() }
-        let expectations = (1...messageCount).map { self.expectation(description: "message\($0)") }
-
         let jobQueue = MessageSenderJobQueue()
-        self.write { transaction in
-            for message in messages {
-                jobQueue.add(message: message.asPreparer, transaction: transaction)
-            }
+        let (messages, promises) = await databaseStorage.awaitableWrite { tx in
+            let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create(transaction: tx) }
+            let promises = messages.map { jobQueue.add(.promise, message: $0.asPreparer, transaction: tx) }
+            return (messages, promises)
         }
-
-        let sentMessages = AtomicArray<TSOutgoingMessage>()
-        let remainingExpectations = AtomicArray(expectations)
-        fakeMessageSender.sendMessageWasCalledBlock = { sentMessage in
-            sentMessages.append(sentMessage)
-            remainingExpectations.popHead()!.fulfill()
-        }
-
+        fakeMessageSender.stubbedFailingErrors = Array(repeating: nil, count: messageCount)
         jobQueue.setup()
-
-        self.wait(for: expectations, timeout: 1.0)
-
-        XCTAssertEqual(sentMessages.get().map { $0.uniqueId }, messages.map { $0.uniqueId })
+        for promise in promises {
+            try await promise.awaitable()
+        }
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, messages.map { $0.uniqueId })
     }
 
-    func test_sendingInvisibleMessage() {
+    func test_sendingInvisibleMessage() async throws {
         let jobQueue = MessageSenderJobQueue()
+        fakeMessageSender.stubbedFailingErrors = [nil]
         jobQueue.setup()
-
-        let message = OutgoingMessageFactory().buildDeliveryReceipt()
-        let expectation = sentExpectation(message: message)
-        self.write { transaction in
-            jobQueue.add(message: message.asPreparer, transaction: transaction)
+        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+            let message = OutgoingMessageFactory().buildDeliveryReceipt(transaction: tx)
+            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            return (message, promise)
         }
-
-        self.wait(for: [expectation], timeout: 1)
+        try await promise.awaitable()
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [message.uniqueId])
     }
 
-    func test_retryableFailure() {
-        let message: TSOutgoingMessage = OutgoingMessageFactory().create()
-
+    func test_retryableFailure() async throws {
         let jobQueue = MessageSenderJobQueue()
-        self.write { transaction in
-            jobQueue.add(message: message.asPreparer, transaction: transaction)
+
+        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+            let message = OutgoingMessageFactory().create(transaction: tx)
+            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            return (message, promise)
         }
 
         let finder = JobRecordFinderImpl<MessageSenderJobRecord>()
         var readyRecords: [MessageSenderJobRecord] = []
-        self.read { transaction in
+        self.read { tx in
             readyRecords = try! finder.allRecords(
                 label: MessageSenderJobQueue.jobRecordLabel,
                 status: .ready,
-                transaction: transaction.asV2Read
+                transaction: tx.asV2Read
             )
         }
         XCTAssertEqual(1, readyRecords.count)
@@ -111,76 +79,56 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure (via `maxRetries` retryable failures)
-        let error = OWSRetryableError()
-        fakeMessageSender.stubbedFailingError = error
-        let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup.set(false)
-        }
-
+        let retryCount: Int = 110 // Matches MessageSenderOperation
+        fakeMessageSender.stubbedFailingErrors = Array(repeating: OWSRetryableError(), count: retryCount + 1)
         jobQueue.setup()
-        self.wait(for: [expectation], timeout: 1)
+
+        do {
+            let retryTriggerTask = Task.detached {
+                while true {
+                    try Task.checkCancellation()
+                    try await Task.sleep(nanoseconds: 500*NSEC_PER_USEC)
+                    _ = jobQueue.runAnyQueuedRetry()
+                }
+            }
+            defer {
+                retryTriggerTask.cancel()
+            }
+            try await promise.awaitable()
+            XCTFail("Must throw an error.")
+        } catch {}
 
         self.read { transaction in
             jobRecord = jobRecord.fetchLatest(transaction: transaction)
         }
 
-        XCTAssertEqual(1, jobRecord.failureCount)
-        XCTAssertEqual(.running, jobRecord.status)
-
-        let retryCount: UInt = 110 // Matches MessageSenderOperation
-        (1..<retryCount).forEach { _ in
-            let expectedResend = sentExpectation(message: message)
-            // Manually kick queue restart.
-            //
-            // OWSOperation uses an NSTimer backed retry mechanism, but NSTimer's are not fired
-            // during `self.wait(for:,timeout:` unless the timer was scheduled on the
-            // `RunLoop.main`.
-            //
-            // We could move the timer to fire on the main RunLoop (and have the selector dispatch
-            // back to a background queue), but the production code is simpler if we just manually
-            // kick every retry in the test case.            
-            XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
-            self.wait(for: [expectedResend], timeout: 1)
-        }
-
-        // Verify one retry left
-        self.read { transaction in
-            jobRecord = jobRecord.fetchLatest(transaction: transaction)
-        }
-        XCTAssertEqual(retryCount, jobRecord.failureCount)
-        XCTAssertEqual(.running, jobRecord.status)
-
-        // Verify final send fails permanently
-        let expectedFinalResend = sentExpectation(message: message)
-        XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
-        self.wait(for: [expectedFinalResend], timeout: 1)
-
-        self.read { transaction in
-            jobRecord = jobRecord.fetchLatest(transaction: transaction)
-        }
-
-        XCTAssertEqual(retryCount + 1, jobRecord.failureCount)
+        XCTAssertEqual(retryCount + 1, Int(jobRecord.failureCount))
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
+        XCTAssertEqual(
+            fakeMessageSender.sentMessages.map { $0.uniqueId },
+            Array(repeating: message.uniqueId, count: retryCount + 1)
+        )
 
         // No remaining retries
         XCTAssertNil(jobQueue.runAnyQueuedRetry())
     }
 
-    func test_permanentFailure() {
-        let message: TSOutgoingMessage = OutgoingMessageFactory().create()
-
+    func test_permanentFailure() async {
         let jobQueue = MessageSenderJobQueue()
-        self.write { transaction in
-            jobQueue.add(message: message.asPreparer, transaction: transaction)
+
+        let (message, promise) = await databaseStorage.awaitableWrite { tx in
+            let message = OutgoingMessageFactory().create(transaction: tx)
+            let promise = jobQueue.add(.promise, message: message.asPreparer, transaction: tx)
+            return (message, promise)
         }
 
         let finder = JobRecordFinderImpl<MessageSenderJobRecord>()
         var readyRecords: [MessageSenderJobRecord] = []
-        self.read { transaction in
+        self.read { tx in
             readyRecords = try! finder.allRecords(
                 label: MessageSenderJobQueue.jobRecordLabel,
                 status: .ready,
-                transaction: transaction.asV2Read
+                transaction: tx.asV2Read
             )
         }
         XCTAssertEqual(1, readyRecords.count)
@@ -190,44 +138,21 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         // simulate permanent failure
         let error = OWSUnretryableError()
-        fakeMessageSender.stubbedFailingError = error
-        let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup.set(false)
-        }
+        fakeMessageSender.stubbedFailingErrors = [error]
         jobQueue.setup()
-        self.wait(for: [expectation], timeout: 1)
 
-        self.read { transaction in
-            jobRecord = jobRecord.fetchLatest(transaction: transaction)
+        do {
+            try await promise.awaitable()
+            XCTFail("Must throw an error.")
+        } catch {}
+
+        self.read { tx in
+            jobRecord = jobRecord.fetchLatest(transaction: tx)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
-    }
-
-    // MARK: Private
-
-    private func sentExpectation(message: TSOutgoingMessage, block: @escaping () -> Void = { }) -> XCTestExpectation {
-        let expectation = self.expectation(description: "sent message")
-
-        fakeMessageSender.sendMessageWasCalledBlock = { [weak fakeMessageSender] sentMessage in
-            guard let fakeMessageSender = fakeMessageSender else {
-                owsFailDebug("Lost track of the message sender!")
-                return
-            }
-
-            guard sentMessage.uniqueId == message.uniqueId else {
-                XCTFail("unexpected sentMessage: \(sentMessage)")
-                return
-            }
-
-            fakeMessageSender.sendMessageWasCalledBlock = nil
-
-            expectation.fulfill()
-            block()
-        }
-
-        return expectation
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [message.uniqueId])
     }
 }
 

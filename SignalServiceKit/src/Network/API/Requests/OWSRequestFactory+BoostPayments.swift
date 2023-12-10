@@ -9,6 +9,7 @@ public extension OWSRequestFactory {
     enum StripePaymentMethod {
         public enum BankTransfer: String {
             case sepa = "SEPA_DEBIT"
+            case ideal = "IDEAL"
         }
 
         case card

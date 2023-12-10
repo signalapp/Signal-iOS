@@ -227,29 +227,6 @@ public class PreKeyManagerImpl: PreKeyManager {
         return Promise.when(fulfilled: [aciPromise, pniPromise])
     }
 
-    public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
-        PreKey.logger.info("Legacy prekey creation")
-        var operationCount = 2
-        let didSucceed = { [weak self] in
-            operationCount -= 1
-            guard operationCount == 0 else {
-                return
-            }
-            self?.refreshPreKeysDidSucceed()
-        }
-        let aciOp = preKeyOperationFactory.legacy_createPreKeysOperation(
-            for: .aci,
-            auth: auth,
-            didSucceed: didSucceed
-        )
-        let pniOp = preKeyOperationFactory.legacy_createPreKeysOperation(
-            for: .pni,
-            auth: auth,
-            didSucceed: didSucceed
-        )
-        return runPreKeyOperations([aciOp, pniOp])
-    }
-
     public func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
         PreKey.logger.info("Create or rotate PNI prekeys")
         let operation = preKeyOperationFactory.createOrRotatePNIPreKeysOperation(

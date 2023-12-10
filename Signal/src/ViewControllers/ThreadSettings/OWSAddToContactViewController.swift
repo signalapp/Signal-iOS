@@ -48,7 +48,6 @@ public class OWSAddToContactViewController: OWSViewController {
 
         tableView.allowsMultipleSelection = false
 
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: ContactCell.kSeparatorHInset, bottom: 0, right: 16)
         tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
 
         title = OWSLocalizedString(
@@ -78,8 +77,7 @@ public class OWSAddToContactViewController: OWSViewController {
                 let result = self.contactsViewHelper.contactViewController(
                     for: self.address,
                     editImmediately: true,
-                    addToExisting: cnContact,
-                    updatedNameComponents: nil
+                    addToExisting: cnContact
                 )
                 result.delegate = self
                 return result

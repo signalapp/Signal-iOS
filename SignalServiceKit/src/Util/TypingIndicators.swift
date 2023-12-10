@@ -291,8 +291,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         }
 
         private func sendTypingMessageIfNecessary(for threadUniqueId: String, action: TypingIndicatorAction) {
-            Logger.verbose("\(action)")
-
             guard let delegate = delegate else {
                 return owsFailDebug("Missing delegate.")
             }
@@ -375,8 +373,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
                 let didChange = oldValue != isTyping
                 if didChange {
-                    Logger.debug("isTyping changed: \(oldValue) -> \(self.isTyping)")
-
                     notifyIfNecessary()
                 }
             }
@@ -435,8 +431,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         }
 
         private func notifyIfNecessary() {
-            Logger.verbose("")
-
             guard let delegate = delegate else {
                 owsFailDebug("Missing delegate.")
                 return

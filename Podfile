@@ -13,21 +13,22 @@ pod 'SwiftProtobuf', ">= 1.14.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '1eccfb842c014cb0ff124cc30868f1edea43038cd489a5bb71def9a0111041d2'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.34.0', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'b69a4063d79e142f9b899dbc5af8dd6cd14e516c807a9880c3cf34e7ab6c73d5'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.36.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = '95388cccc6c6a36fc939a4b2170ff4d0d093f30eb788395e9fbd20ef56e2fa9d'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.34.3', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '9deaba66f7424aac928aeb118aec2fefbe5afae1a4fc53797cc717ca9bcbb995'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.34.5', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'GRDB.swift/SQLCipher'
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 
-pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', commit: '8ea0af7934e0107e4de8e96c8a7d5a95e2611eef'
+pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.5.5-f_barrierfsync-fts5'
+# pod 'SQLCipher', path: '../sqlcipher'
 
 ###
 # forked third party pods

@@ -20,9 +20,14 @@ enum CallRecordOutgoingSyncMessageConversationId {
 }
 
 protocol CallRecordOutgoingSyncMessageManager {
+    /// Send a sync message with the state on the given call record.
+    ///
+    /// - Parameter callEventTimestamp
+    /// The time at which the event that triggered this sync message occurred.
     func sendSyncMessage(
         conversationId: CallRecordOutgoingSyncMessageConversationId,
         callRecord: CallRecord,
+        callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     )
 
@@ -37,11 +42,13 @@ extension CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         groupThread: TSGroupThread,
         callRecord: CallRecord,
+        callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
         sendSyncMessage(
             conversationId: .group(groupId: groupThread.groupId),
             callRecord: callRecord,
+            callEventTimestamp: callEventTimestamp,
             tx: tx
         )
     }
@@ -74,9 +81,23 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
             return
         }
 
+        // [Calls] TODO: pass through the "call event timestamp" for 1:1 call events
+        //
+        // We currently use the timestamp of the call record when sending all
+        // sync messages related to a 1:1 call. That's not quite right – we
+        // should be using the timestamp of the event that triggered the sync
+        // message, such as the user declining.
+        //
+        // This isn't a big deal for 1:1 calls though, since all 1:1 calls have
+        // a well-defined "start time" that both participants know about: the
+        // timestamp of the call offer message. That means no one will in
+        // practice consume this timestamp for 1:1 calls, and we can get away
+        // with it for now.
+
         sendSyncMessage(
             conversationId: .oneToOne(contactServiceId: contactServiceId),
             callRecord: callRecord,
+            callEventTimestamp: callRecord.callBeganTimestamp,
             tx: tx
         )
     }
@@ -84,6 +105,7 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
     func sendSyncMessage(
         conversationId: CallRecordOutgoingSyncMessageConversationId,
         callRecord: CallRecord,
+        callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
         guard let outgoingCallEventType = OutgoingCallEvent.EventType(callRecord.callStatus) else {
@@ -92,7 +114,7 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
         }
 
         let outgoingCallEvent = OutgoingCallEvent(
-            timestamp: callRecord.timestamp,
+            timestamp: callEventTimestamp,
             conversationId: conversationId.asData,
             callId: callRecord.callId,
             callType: OutgoingCallEvent.CallType(callRecord.callType),

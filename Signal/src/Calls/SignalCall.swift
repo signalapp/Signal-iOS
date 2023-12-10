@@ -119,6 +119,52 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
+    public var isOutgoingVideoMuted: Bool {
+        switch mode {
+        case .individual(let call): return !call.hasLocalVideo
+        case .group(let call): return call.isOutgoingVideoMuted
+        }
+    }
+
+    public var joinState: JoinState {
+        switch mode {
+        case .individual(let call):
+            /// `JoinState` is a group call concept, but we want to bridge
+            /// between the two call types.
+            /// TODO: Continue to tweak this as we unify the individual and
+            /// group call UIs.
+            switch call.state {
+            case .idle,
+                 .remoteHangup,
+                 .remoteHangupNeedPermission,
+                 .localHangup,
+                 .remoteRinging,
+                 .localRinging_Anticipatory,
+                 .localRinging_ReadyToAnswer,
+                 .remoteBusy,
+                 .localFailure,
+                 .busyElsewhere,
+                 .answeredElsewhere,
+                 .declinedElsewhere:
+                return .notJoined
+            case .connected,
+                 .accepting,
+                 .answering,
+                 .reconnecting,
+                 .dialing:
+                return .joined
+            }
+        case .group(let call): return call.localDeviceState.joinState
+        }
+    }
+
+    public var canJoin: Bool {
+        switch mode {
+        case .individual(_): return true
+        case .group(let call): return !call.isFull
+        }
+    }
+
     /// Returns the remote party for an incoming 1:1 call, or the ringer for a group call ring.
     ///
     /// Returns `nil` for an outgoing 1:1 call, a manually-entered group call,
@@ -165,8 +211,16 @@ public class SignalCall: NSObject, CallManagerCallReference {
     internal var ringRestrictions: RingRestrictions {
         didSet {
             AssertIsOnMainThread()
-            if ringRestrictions != oldValue && groupCall.localDeviceState.joinState == .notJoined {
+            if
+                isGroupCall,
+                ringRestrictions != oldValue,
+                joinState == .notJoined
+            {
                 // Use a fake local state change to refresh the call controls.
+                //
+                // If we ever introduce ringing restrictions for 1:1 calls,
+                // a similar affordance will be needed to refresh the call
+                // controls.
                 self.groupCall(onLocalDeviceStateChanged: groupCall)
             }
         }
@@ -234,13 +288,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = groupThread
-        if !RemoteConfig.outboundGroupRings {
-            ringRestrictions = .notApplicable
-        } else {
-            ringRestrictions = []
-            if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-                ringRestrictions.insert(.groupTooLarge)
-            }
+        ringRestrictions = []
+
+        if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+            ringRestrictions.insert(.groupTooLarge)
         }
 
         // Track the callInProgress restriction regardless; we use that for purposes other than rings.

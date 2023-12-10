@@ -882,7 +882,6 @@ extension ConversationViewController: CVComponentDelegate {
                 let result = self.contactsViewHelper.contactViewController(
                     for: address,
                     editImmediately: true,
-                    addToExisting: nil,
                     updatedNameComponents: newNameComponents
                 )
                 result.delegate = self
@@ -910,8 +909,7 @@ extension ConversationViewController: CVComponentDelegate {
                 let result = self.contactsViewHelper.contactViewController(
                     for: address,
                     editImmediately: true,
-                    addToExisting: existingContact,
-                    updatedNameComponents: nil
+                    addToExisting: existingContact
                 )
                 result.delegate = self
                 return result

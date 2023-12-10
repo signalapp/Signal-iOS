@@ -708,11 +708,28 @@ extension OWSContactsManager {
 
             // Update cached SignalAccounts on disk
             Self.databaseStorage.write { transaction in
+
+                func touchContactThread(for signalAccount: SignalAccount) {
+                    if
+                        let contactThread = ContactThreadFinder()
+                            .contactThread(for: signalAccount.recipientAddress, tx: transaction),
+                        contactThread.shouldThreadBeVisible
+                    {
+                        Logger.info("Touching thread for reindexing: \(signalAccount.recipientAddress)")
+                        self.databaseStorage.touch(
+                            thread: contactThread,
+                            shouldReindex: true,
+                            transaction: transaction
+                        )
+                    }
+                }
+
                 if !signalAccountsToRemove.isEmpty {
                     Logger.info("Removing \(signalAccountsToRemove.count) old SignalAccounts.")
                     for signalAccount in signalAccountsToRemove {
                         Logger.verbose("Removing old SignalAccount: \(signalAccount.recipientAddress)")
                         signalAccount.anyRemove(transaction: transaction)
+                        touchContactThread(for: signalAccount)
                     }
                 }
 
@@ -721,6 +738,7 @@ extension OWSContactsManager {
                     for signalAccount in signalAccountsToInsert {
                         Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
                         signalAccount.anyInsert(transaction: transaction)
+                        touchContactThread(for: signalAccount)
                     }
                 }
 
@@ -1203,21 +1221,19 @@ extension OWSContactsManager {
         let systemContactsCache = SystemContactsCache()
         swiftValues.systemContactsCache = systemContactsCache
 
-        InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmSystemContactsCache") {
-            databaseStorage.read {
-                var phoneNumberCount = 0
-                if let dataProvider = swiftValues.systemContactsDataProvider.get() {
-                    let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
-                    systemContactsCache.contactsMaps.set(contactsMaps)
-                    phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
-                }
-
-                let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
-                systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
-                let signalAccountCount = unsortedSignalAccounts.count
-
-                Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
+        databaseStorage.read {
+            var phoneNumberCount = 0
+            if let dataProvider = swiftValues.systemContactsDataProvider.get() {
+                let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
+                systemContactsCache.contactsMaps.set(contactsMaps)
+                phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
             }
+
+            let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
+            systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
+            let signalAccountCount = unsortedSignalAccounts.count
+
+            Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
         }
     }
 

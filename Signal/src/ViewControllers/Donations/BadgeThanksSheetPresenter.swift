@@ -87,7 +87,7 @@ class BadgeThanksSheetPresenter {
 
             fromViewController.present(badgeThanksSheet, animated: true) {
                 self.databaseStorage.write { tx in
-                    self.receiptCredentialResultStore.clearRedemptionSuccess(
+                    self.receiptCredentialResultStore.setHasPresentedSuccess(
                         successMode: self.successMode,
                         tx: tx.asV2Write
                     )

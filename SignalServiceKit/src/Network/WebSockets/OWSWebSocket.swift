@@ -1160,10 +1160,13 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
         currentWebSocket.didConnect(delegate: self)
 
+        // If socket opens, we know we're not de-registered.
         if webSocketType == .identified {
-            // If socket opens, we know we're not de-registered.
-            DependenciesBridge.shared.db.write { tx in
-                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isDeregistered {
+                DependenciesBridge.shared.db.write { tx in
+                    DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(false, tx: tx)
+                }
             }
         }
 

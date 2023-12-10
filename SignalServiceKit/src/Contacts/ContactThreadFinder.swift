@@ -9,7 +9,7 @@ import LibSignalClient
 @objc
 public class ContactThreadFinder: NSObject {
     @objc(contactThreadForAddress:transaction:)
-    func contactThread(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> TSContactThread? {
+    public func contactThread(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> TSContactThread? {
         if let serviceId = address.serviceId, let thread = contactThreads(for: serviceId, tx: tx).first {
             return thread
         }

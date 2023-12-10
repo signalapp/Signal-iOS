@@ -63,6 +63,7 @@ extension DonationPaymentDetailsViewController {
             result.keyboardType = style.keyboardType
 
             result.delegate = self
+            result.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
             return result
         }()
@@ -86,6 +87,9 @@ extension DonationPaymentDetailsViewController {
 
         @discardableResult
         override func becomeFirstResponder() -> Bool { textField.becomeFirstResponder() }
+
+        @discardableResult
+        override func resignFirstResponder() -> Bool { textField.resignFirstResponder() }
 
         // MARK: Initializers
 
@@ -121,6 +125,12 @@ extension DonationPaymentDetailsViewController {
 
                 let titleAndTextFieldHStack = UIStackView(arrangedSubviews: [titleContainer, textAndErrorVStack])
                 titleAndTextFieldHStack.axis = .horizontal
+
+                // Keep the title label aligned with the text field
+                titleAndTextFieldHStack.alignment = .top
+                textField.setCompressionResistanceVerticalHigh()
+                textField.autoPinHeight(toHeightOf: titleContainer)
+
                 titleContainer.autoSetDimension(.width, toSize: width + Self.titleSpacing)
 
                 self.addSubview(titleAndTextFieldHStack)
@@ -161,6 +171,13 @@ extension DonationPaymentDetailsViewController {
         }
 
         // MARK: - UITextFieldDelegate
+
+        // Not technically part of UITextFieldDelegate, but added as as a
+        // target to handle the 'editingChanged' control event.
+        @objc
+        func textFieldDidChange() {
+            delegate?.didSomethingChange()
+        }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
             delegate?.didSomethingChange()

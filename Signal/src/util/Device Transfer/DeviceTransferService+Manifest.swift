@@ -176,7 +176,7 @@ extension DeviceTransferService {
             return owsFailDebug("Ignoring incoming transfer to a registered device")
         }
 
-        resetTransferDirectory()
+        resetTransferDirectory(createNewTransferDirectory: true)
 
         guard OWSFileSystem.moveFilePath(
             localURL.path,
@@ -236,7 +236,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("attempted to send manifest without an available session")
         }
 
-        resetTransferDirectory()
+        resetTransferDirectory(createNewTransferDirectory: true)
 
         // We write the manifest to a temp file, since MCSession only allows sending "typed"
         // data when sending files, unless you do your own stream management.

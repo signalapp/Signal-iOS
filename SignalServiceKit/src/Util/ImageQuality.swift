@@ -4,9 +4,9 @@
 //
 
 import Foundation
+import SignalCoreKit
 
-@objc
-public enum ImageQualityLevel: UInt {
+public enum ImageQualityLevel: UInt, Comparable {
     case one = 1
     case two = 2
     case three = 3
@@ -18,8 +18,8 @@ public enum ImageQualityLevel: UInt {
     // a lower "standard" quality than others. High quality
     // is always level three. If not remotely specified,
     // standard uses quality level two.
-    public static var standard: ImageQualityLevel {
-        RemoteConfig.standardMediaQualityLevel ?? .two
+    public static func remoteDefault(localPhoneNumber: String?) -> ImageQualityLevel {
+        return RemoteConfig.standardMediaQualityLevel(localPhoneNumber: localPhoneNumber) ?? .two
     }
 
     public var startingTier: ImageQualityTier {
@@ -52,9 +52,9 @@ public enum ImageQualityLevel: UInt {
         }
     }
 
-    public static var max: ImageQualityLevel {
+    public static var maximumForCurrentAppContext: ImageQualityLevel {
         if CurrentAppContext().isMainApp {
-            return .high
+            return .three
         } else {
             // Outside of the main app (like in the share extension)
             // we have very tight memory restrictions, and cannot
@@ -64,21 +64,39 @@ public enum ImageQualityLevel: UInt {
     }
 
     private static let keyValueStore = SDSKeyValueStore(collection: "ImageQualityLevel")
-    private static var defaultQualityKey: String { "defaultQuality" }
-    public static func `default`(transaction: SDSAnyReadTransaction) -> ImageQualityLevel {
-        guard let rawStoredQuality = keyValueStore.getUInt(defaultQualityKey, transaction: transaction),
-              let storedQuality = ImageQualityLevel(rawValue: rawStoredQuality) else {
-            return .standard
-        }
+    private static var userSelectedHighQualityKey: String { "defaultQuality" }
 
+    public static func resolvedQuality(tx: SDSAnyReadTransaction) -> ImageQualityLevel {
         // If the max quality we allow is less than the stored preference,
         // we have to restrict ourselves to the max allowed.
-        if rawStoredQuality > max.rawValue { return max }
-
-        return storedQuality
+        return min(_resolvedQuality(tx: tx), maximumForCurrentAppContext)
     }
-    public static func setDefault(_ level: ImageQualityLevel, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setUInt(level.rawValue, key: defaultQualityKey, transaction: transaction)
+
+    private static func _resolvedQuality(tx: SDSAnyReadTransaction) -> ImageQualityLevel {
+        let isHighQuality: Bool = {
+            // All that matters is "did the user choose high quality explicity?". If
+            // they didn't, we always fall back to the current server-provided value
+            // for standard quality. In the past, we stored low/medium values
+            // explicitly, but this was wrong.
+            guard let rawValue = keyValueStore.getUInt(userSelectedHighQualityKey, transaction: tx) else {
+                return false
+            }
+            return ImageQualityLevel(rawValue: rawValue) == .high
+        }()
+        if isHighQuality {
+            return .high
+        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
+        return remoteDefault(localPhoneNumber: localPhoneNumber)
+    }
+
+    public static func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: SDSAnyWriteTransaction) {
+        if isHighQuality {
+            keyValueStore.setUInt(ImageQualityLevel.three.rawValue, key: userSelectedHighQualityKey, transaction: tx)
+        } else {
+            keyValueStore.removeValue(forKey: userSelectedHighQualityKey, transaction: tx)
+        }
     }
 
     public var localizedString: String {
@@ -88,6 +106,10 @@ public enum ImageQualityLevel: UInt {
         case .three:
             return OWSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
         }
+    }
+
+    public static func < (lhs: ImageQualityLevel, rhs: ImageQualityLevel) -> Bool {
+        return lhs.rawValue < rhs.rawValue
     }
 }
 

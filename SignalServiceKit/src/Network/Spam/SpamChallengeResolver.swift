@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
@@ -42,7 +43,9 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.workQueue.async {
                 self.loadChallengesFromDatabase()
-                Logger.info("Loaded \(self.challenges?.count ?? -1) unresolved challenges")
+                if let challengeCount = self.challenges?.count, challengeCount > 0 {
+                    Logger.info("Loaded \(challengeCount) unresolved challenges")
+                }
             }
         }
     }

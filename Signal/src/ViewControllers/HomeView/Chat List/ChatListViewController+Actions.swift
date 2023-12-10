@@ -49,9 +49,9 @@ extension ChatListViewController {
         focusMessageId: String? = nil,
         animated: Bool
     ) {
-        BenchManager.startEvent(title: "Presenting Conversation", eventId: "presenting-conversation-\(thread.uniqueId)")
         conversationSplitViewController?.presentThread(
-            thread, action: action,
+            thread,
+            action: action,
             focusMessageId: focusMessageId,
             animated: animated
         )

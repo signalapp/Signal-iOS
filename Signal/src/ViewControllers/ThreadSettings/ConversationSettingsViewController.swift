@@ -533,7 +533,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         contactsViewHelper.checkEditingAuthorization(
             authorizedBehavior: .pushViewController(on: navigationController, viewController: {
                 guard let contactThread = self.thread as? TSContactThread else { return nil }
-                let result = self.contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true)
+                let result = self.contactsViewHelper.contactViewController(
+                    for: contactThread.contactAddress,
+                    editImmediately: true
+                )
                 result.delegate = self
                 return result
             }),

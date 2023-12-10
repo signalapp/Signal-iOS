@@ -12,8 +12,11 @@ extension SubscriptionManagerImpl {
         public struct BoostConfiguration {
             public let level: UInt
             public let badge: ProfileBadge
-            public let minimumAmounts: [Currency.Code: FiatMoney]
             public let presetAmounts: [Currency.Code: DonationUtilities.Preset]
+            public let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
+
+            /// The maximum donation amount allowed for SEPA debit transfers.
+            public let maximumAmountViaSepa: FiatMoney
         }
 
         public struct GiftConfiguration {
@@ -95,16 +98,17 @@ extension SubscriptionManagerImpl.DonationConfiguration {
     }
 
     /// Parse a service configuration from a response body.
-    static func from(configurationServiceResponse responseBody: Any?) throws -> Self {
+    static func from(configurationServiceResponse responseBody: Any?) throws -> SubscriptionManagerImpl.DonationConfiguration {
         guard let parser = ParamParser(responseObject: responseBody) else {
             throw OWSAssertionError("Missing or invalid response!")
         }
 
         let levels: BadgedLevels = try parseLevels(fromParser: parser)
         let presetsByCurrency: PresetsByCurrency = try parsePresets(fromParser: parser, forLevels: levels)
+        let sepaBoostMaximum = try parseSepaBoostMaximum(fromParser: parser)
 
         let boostConfig: BoostConfiguration = {
-            let minimumAmounts: [Currency.Code: FiatMoney] = presetsByCurrency.mapValues { $0.boost.minimum }
+            let minimumAmountsByCurrency: [Currency.Code: FiatMoney] = presetsByCurrency.mapValues { $0.boost.minimum }
             let presetAmounts: [Currency.Code: DonationUtilities.Preset] = presetsByCurrency.reduce(
                 into: [:], { partialResult, kv in
                     let (code, presets) = kv
@@ -115,11 +119,12 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                 }
             )
 
-            return .init(
+            return BoostConfiguration(
                 level: levels.boost.value,
                 badge: levels.boost.badge,
-                minimumAmounts: minimumAmounts,
-                presetAmounts: presetAmounts
+                presetAmounts: presetAmounts,
+                minimumAmountsByCurrency: minimumAmountsByCurrency,
+                maximumAmountViaSepa: sepaBoostMaximum
             )
         }()
 
@@ -128,7 +133,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                 $0.gift.preset
             }
 
-            return .init(
+            return GiftConfiguration(
                 level: levels.gift.value,
                 badge: levels.gift.badge,
                 presetAmount: presetAmounts
@@ -147,7 +152,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                     return amountForLevel
                 }
 
-                return .init(
+                return SubscriptionLevel(
                     level: level.value,
                     name: level.name,
                     badge: level.badge,
@@ -159,7 +164,7 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                 .map(makeSubscriptionLevel)
                 .sorted()
 
-            return .init(levels: subscriptionLevels)
+            return SubscriptionConfiguration(levels: subscriptionLevels)
         }()
 
         let paymentMethodsConfig: PaymentMethodsConfiguration = {
@@ -168,10 +173,10 @@ extension SubscriptionManagerImpl.DonationConfiguration {
                     presets.supportedPaymentMethods
                 }
 
-            return .init(supportedPaymentMethodsByCurrency: supportedPaymentMethodsByCurrency)
+            return PaymentMethodsConfiguration(supportedPaymentMethodsByCurrency: supportedPaymentMethodsByCurrency)
         }()
 
-        return .init(
+        return SubscriptionManagerImpl.DonationConfiguration(
             boost: boostConfig,
             gift: giftConfig,
             subscription: subscriptionConfig,
@@ -250,6 +255,21 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
             subscription: Array(subscriptionLevels.values)
         )
     }
+}
+
+// MARK: - SEPA maximum boost
+
+private extension SubscriptionManagerImpl.DonationConfiguration {
+    static func parseSepaBoostMaximum(
+        fromParser parser: ParamParser
+    ) throws -> FiatMoney {
+        let sepaMaxEurosInt: Int = try parser.required(key: "sepaMaximumEuros")
+        return FiatMoney(currencyCode: .euro, value: Decimal(sepaMaxEurosInt))
+    }
+}
+
+private extension Currency.Code {
+    static let euro: Currency.Code = "EUR"
 }
 
 // MARK: - Parse presets
@@ -476,7 +496,7 @@ private extension SubscriptionManagerImpl.DonationConfiguration {
             case "SEPA_DEBIT":
                 result.formUnion([.sepa])
             case "IDEAL":
-                break // TODO: Implement iDEAL payments
+                result.formUnion([.ideal])
             default:
                 Logger.warn("Unrecognized payment string: \(methodString)")
             }

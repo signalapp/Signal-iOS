@@ -70,7 +70,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     ) throws -> Set<SignalRecipient> {
         var registeredRecipients = Set<SignalRecipient>()
 
-        try db.enumerateWithTimeBatchedWriteTx(discoveryResults) { discoveryResult, tx in
+        try TimeGatedBatch.enumerateObjects(discoveryResults, db: db) { discoveryResult, tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 throw OWSAssertionError("Not registered.")
             }
@@ -94,7 +94,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         }
 
         let undiscoverablePhoneNumbers = requestedPhoneNumbers.subtracting(discoveryResults.lazy.map { $0.e164 })
-        db.enumerateWithTimeBatchedWriteTx(undiscoverablePhoneNumbers) { phoneNumber, tx in
+        TimeGatedBatch.enumerateObjects(undiscoverablePhoneNumbers, db: db) { phoneNumber, tx in
             // It's possible we have an undiscoverable phone number that already has an
             // ACI or PNI in a number of scenarios, such as (but not exclusive to) the
             // following:

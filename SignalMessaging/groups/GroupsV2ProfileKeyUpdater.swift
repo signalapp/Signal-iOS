@@ -147,8 +147,6 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.tryToUpdate(groupId: groupId)
             }.done(on: DispatchQueue.global() ) { _ in
-                Logger.verbose("Updated profile key in group.")
-
                 self.didSucceed(groupId: groupId)
             }.catch(on: DispatchQueue.global() ) { error in
                 Logger.warn("Failed: \(error).")
@@ -170,11 +168,10 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     // If the update is no longer necessary, skip it.
                     self.markAsComplete(groupId: groupId)
                 case is OWSHTTPError:
-                    if let statusCode = error.httpStatusCode,
-                       400 <= statusCode && statusCode <= 599 {
+                    if let statusCode = error.httpStatusCode, 400 <= statusCode && statusCode <= 599 {
                         // If a non-recoverable error occurs (e.g. we've been kicked
                         // out of the group), give up.
-                        Logger.info("Failed: \(statusCode)")
+                        Logger.warn("Failed: \(statusCode)")
                         self.markAsComplete(groupId: groupId)
                     } else {
                         // Retry later.
@@ -249,7 +246,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] redundant change A") }
                     throw GroupsV2Error.redundantChange
                 }
-                guard !groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
+                guard groupV2Snapshot.profileKeys[localAci] != profileKeyData else {
                     // Group state already has our current key.
                     if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] redundant change B") }
                     throw GroupsV2Error.redundantChange
@@ -259,7 +256,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }
         }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
             if DebugFlags.internalLogging {
-                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localAci), checkedRevision: \(checkedRevision)")
+                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localAci: \(localAci), checkedRevision: \(checkedRevision)")
             } else {
                 Logger.info("Updating profile key for group.")
             }
@@ -311,7 +308,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                         owsFailDebug("Not a full member.")
                         return
                     }
-                    guard groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
+                    guard groupV2Snapshot.profileKeys[localAci] == profileKeyData else {
                         owsFailDebug("Update failed.")
                         self.databaseStorage.write { tx in
                             self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)

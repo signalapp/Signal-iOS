@@ -269,26 +269,22 @@ public class StoryFinder: NSObject {
     }
 
     // The stories should be enumerated in order from "next to expire" to "last to expire".
-    public static func enumerateExpiredStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
+    public static func fetchSomeExpiredStories(now: UInt64, limit: Int, tx: SDSAnyReadTransaction) throws -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.timestamp)) <= \(Date().ows_millisecondsSince1970 - StoryManager.storyLifetimeMillis)
+            WHERE \(StoryMessage.columnName(.timestamp)) <= ?
+            AND \(StoryMessage.columnName(.authorAci)) != ?
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
+            LIMIT \(limit)
         """
-
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
-            while let message = try cursor.next() {
-                var stop: ObjCBool = false
-                block(message, &stop)
-                if stop.boolValue {
-                    return
-                }
-            }
+            return try StoryMessage.fetchAll(tx.unwrapGrdbRead.database, sql: sql, arguments: [
+                now - StoryManager.storyLifetimeMillis,
+                StoryMessage.systemStoryAuthor.serviceIdUppercaseString
+            ])
         } catch {
-            owsFailDebug("error: \(error)")
+            throw error.grdbErrorForLogging
         }
     }
 
@@ -296,13 +292,15 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.authorAci)) != '\(StoryMessage.systemStoryAuthor.serviceIdUppercaseString)'
+            WHERE \(StoryMessage.columnName(.authorAci)) != ?
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
             LIMIT 1
         """
 
         do {
-            return try UInt64.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
+            return try UInt64.fetchOne(transaction.unwrapGrdbRead.database, sql: sql, arguments: [
+                StoryMessage.systemStoryAuthor.serviceIdUppercaseString
+            ])
         } catch {
             owsFailDebug("failed to lookup next story expiration \(error)")
             return nil

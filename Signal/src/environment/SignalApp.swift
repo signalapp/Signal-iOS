@@ -31,9 +31,7 @@ public class SignalApp: NSObject {
 
     private func warmCachesAsync() {
         DispatchQueue.sharedUtility.async {
-            InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmEmojiCache") {
-                Emoji.warmAvailableCache()
-            }
+            Emoji.warmAvailableCache()
         }
     }
 }

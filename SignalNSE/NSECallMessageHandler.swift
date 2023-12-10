@@ -86,7 +86,6 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
             if opaqueMessage.urgency == .handleImmediately,
                let opaqueData = opaqueMessage.data,
-               RemoteConfig.inboundGroupRings,
                isValidOpaqueRing(opaqueCallMessage: opaqueData,
                                  messageAgeSec: messageAgeForRingRtc,
                                  validateGroupRing: validateGroupRing) {
@@ -186,8 +185,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         NSELogger.uncorrelated.info("Received group call update for thread \(groupThread.uniqueId)")
         lightweightGroupCallManager?.peekGroupCallAndUpdateThread(
             groupThread,
-            expectedEraId: updateMessage.eraID,
-            triggerEventTimestamp: serverReceivedTimestamp,
-            completion: completion)
+            peekTrigger: .receivedGroupUpdateMessage(
+                eraId: updateMessage.eraID,
+                messageTimestamp: serverReceivedTimestamp
+            ),
+            completion: completion
+        )
     }
 }

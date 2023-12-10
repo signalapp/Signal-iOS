@@ -43,8 +43,11 @@ extension DonateViewController {
             public let selectedAmount: SelectedAmount
             public let profileBadge: ProfileBadge
 
+            /// The maximum amount a user is allowed to donate via SEPA.
+            public let maximumAmountViaSepa: FiatMoney
+
             fileprivate let presets: [Currency.Code: DonationUtilities.Preset]
-            fileprivate let minimumAmounts: [Currency.Code: FiatMoney]
+            fileprivate let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
             fileprivate let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
             fileprivate let localNumber: String?
@@ -99,7 +102,7 @@ extension DonateViewController {
                 }
 
                 let minimumAmount: FiatMoney
-                if let minimum = minimumAmounts[amount.currencyCode] {
+                if let minimum = minimumAmountsByCurrency[amount.currencyCode] {
                     minimumAmount = minimum
                 } else {
                     // Since this is just a sanity check, don't prevent donation here.
@@ -126,8 +129,9 @@ extension DonateViewController {
                 return OneTimeState(
                     selectedAmount: .nothingSelected(currencyCode: newValue),
                     profileBadge: profileBadge,
+                    maximumAmountViaSepa: maximumAmountViaSepa,
                     presets: presets,
-                    minimumAmounts: minimumAmounts,
+                    minimumAmountsByCurrency: minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
@@ -158,8 +162,9 @@ extension DonateViewController {
                 return OneTimeState(
                     selectedAmount: newValue,
                     profileBadge: profileBadge,
+                    maximumAmountViaSepa: maximumAmountViaSepa,
                     presets: presets,
-                    minimumAmounts: minimumAmounts,
+                    minimumAmountsByCurrency: minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
@@ -476,8 +481,9 @@ extension DonateViewController {
                 return OneTimeState(
                     selectedAmount: OneTimeState.SelectedAmount.nothingSelected(currencyCode: oneTimeDefaultCurrency),
                     profileBadge: oneTimeConfig.badge,
+                    maximumAmountViaSepa: oneTimeConfig.maximumAmountViaSepa,
                     presets: oneTimeConfig.presetAmounts,
-                    minimumAmounts: oneTimeConfig.minimumAmounts,
+                    minimumAmountsByCurrency: oneTimeConfig.minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodsConfig,
                     receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                     localNumber: localNumber

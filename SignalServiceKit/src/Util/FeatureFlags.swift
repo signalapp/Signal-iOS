@@ -86,7 +86,11 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let allowSEPADonations = build.includes(.internal)
+    /// Whether we should send sync messages (and update corresponding
+    /// ``CallRecord`` state) for group call events.
+    public static let groupCallDispositionSyncMessages = build.includes(.dev)
+
+    public static let allowIDEALDonations = build.includes(.dev)
 
     @objc
     public static var notificationServiceExtension: Bool {
@@ -217,9 +221,6 @@ public class DebugFlags: BaseFlags {
     }()
 
     @objc
-    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
-
-    @objc
     public static let aggressiveProfileFetching = TestableFlag(false,
                                                                title: LocalizationNotNeeded("Aggressive profile fetching"),
                                                                details: LocalizationNotNeeded("Client will update profiles aggressively."))
@@ -283,9 +284,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let fastPerfTests = false
-
-    @objc
-    public static let forceDonorBadgeDisplay = build.includes(.internal)
 
     @objc
     public static let forceSubscriptionMegaphone = build.includes(.internal)

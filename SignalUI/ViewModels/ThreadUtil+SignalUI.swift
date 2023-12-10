@@ -56,36 +56,26 @@ public extension ThreadUtil {
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
         transaction readTransaction: SDSAnyReadTransaction
     ) -> TSOutgoingMessage {
-        BenchManager.startEvent(
-            title: "Send Message Milestone: Sending (\(message.timestamp))",
-            eventId: "sendMessageSending-\(message.timestamp)",
-            logInProduction: true
-        )
-        BenchManager.startEvent(
-            title: "Send Message Milestone: Sent (\(message.timestamp))",
-            eventId: "sendMessageSentSent-\(message.timestamp)",
-            logInProduction: true
-        )
-        BenchManager.startEvent(
+        let eventId = "sendMessageMarkedAsSent-\(message.timestamp)"
+        BenchEventStart(
             title: "Send Message Milestone: Marked as Sent (\(message.timestamp))",
-            eventId: "sendMessageMarkedAsSent-\(message.timestamp)",
+            eventId: eventId,
             logInProduction: true
         )
-        BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
-            enqueueSendAsyncWrite { writeTransaction in
-                let outgoingMessagePreparer = insertMessage(writeTransaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: outgoingMessagePreparer,
-                    transaction: writeTransaction
-                )
-                writeTransaction.addSyncCompletion {
-                    benchmarkCompletion()
+        enqueueSendAsyncWrite { writeTransaction in
+            let outgoingMessagePreparer = insertMessage(writeTransaction)
+            let promise = Self.sskJobQueues.messageSenderJobQueue.add(
+                .promise,
+                message: outgoingMessagePreparer,
+                transaction: writeTransaction
+            )
+            if let persistenceCompletion = persistenceCompletion {
+                writeTransaction.addAsyncCompletionOnMain {
+                    persistenceCompletion()
                 }
-                if let persistenceCompletion = persistenceCompletion {
-                    writeTransaction.addAsyncCompletionOnMain {
-                        persistenceCompletion()
-                    }
-                }
+            }
+            _ = promise.done(on: DispatchQueue.global()) {
+                BenchEventComplete(eventId: eventId)
             }
         }
 

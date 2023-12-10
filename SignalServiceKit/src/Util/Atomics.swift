@@ -122,12 +122,7 @@ public final class AtomicValue<T> {
     private let lock: AtomicLock
     private var value: T
 
-    public required convenience init(_ value: T, lock: AtomicLock? = nil) {
-        self.init(value, allowOptionalType: false, lock: lock)
-    }
-
-    fileprivate init(_ value: T, allowOptionalType: Bool, lock: AtomicLock? = nil) {
-        owsAssertDebug(allowOptionalType || Mirror(reflecting: value).displayStyle != .optional)
+    public init(_ value: T, lock: AtomicLock? = nil) {
         self.value = value
         self.lock = lock ?? .shared
     }
@@ -203,7 +198,7 @@ public final class AtomicOptional<T> {
     fileprivate let value: AtomicValue<T?>
 
     public required init(_ value: T?, lock: AtomicLock? = nil) {
-        self.value = AtomicValue(value, allowOptionalType: true, lock: lock)
+        self.value = AtomicValue(value, lock: lock)
     }
 
     public func get() -> T? {

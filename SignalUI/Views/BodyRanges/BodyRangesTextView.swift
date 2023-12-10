@@ -177,6 +177,14 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         editableBody.endEditing()
     }
 
+    public func scrollToBottom() {
+        let length = (editableBody.attributedString.string as NSString).length
+        if length == 0 {
+            return
+        }
+        scrollRangeToVisible(NSRange(location: length - 1, length: 1))
+    }
+
     public func stopTypingMention() {
         state = .notTypingMention
     }

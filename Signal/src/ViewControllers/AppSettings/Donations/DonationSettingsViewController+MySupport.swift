@@ -136,16 +136,30 @@ extension DonationSettingsViewController {
             )
         } else {
             if subscription.isPaymentProcessing {
-                logger.warn("Subscription is processing, but we don't have a receipt credential request error about it yet!")
+                logger.warn("Subscription is processing, but we don't have a receipt credential request error about it!")
             } else if subscription.chargeFailure != nil {
-                logger.warn("Subscription has charge failure, but we don't have a receipt credential request error about it yet!")
+                logger.warn("Subscription has charge failure, but we don't have a receipt credential request error about it!")
             }
 
-            if subscription.active {
+            switch subscription.status {
+            case .active:
                 errorState = nil
-            } else {
-                // Show nothing for an inactive subscription with no associated
-                // receipt credential request errors.
+            case .pastDue:
+                // Don't treat a subscription with a failed renewal as failed
+                // for the purposes of this view – it may yet succeed!
+                errorState = nil
+            case .canceled:
+                logger.warn("Subscription is canceled, but we don't have a receipt credential request error about it!")
+                return nil
+            case
+                    .incomplete,
+                    .incompleteExpired,
+                    .trialing,
+                    .unpaid,
+                    .unknown:
+                // Not sure what's going on here, but we don't want to show a
+                // subscription with an unexpected status.
+                logger.error("Unexpected subscription status: \(subscription.status)")
                 return nil
             }
         }
@@ -219,7 +233,7 @@ extension DonationSettingsViewController {
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        errorMode: .recurringSubscription
+                        preferredDonateMode: .monthly
                     )
                 }
             }
@@ -286,7 +300,7 @@ extension DonationSettingsViewController {
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        errorMode: .oneTimeBoost
+                        preferredDonateMode: .oneTime
                     )
                 }
             }
@@ -301,7 +315,7 @@ extension DonationSettingsViewController {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
             actionSheet = DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
-        case .sepa:
+        case .sepa, .ideal:
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE",
@@ -333,7 +347,7 @@ extension DonationSettingsViewController {
     private func presentDonationFailedActionSheet(
         chargeFailureCode: String?,
         paymentMethod: DonationPaymentMethod?,
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+        preferredDonateMode: DonateViewController.DonateMode
     ) {
         let actionSheetMessage: String = {
             let messageFormat: String = OWSLocalizedString(
@@ -357,16 +371,8 @@ extension DonationSettingsViewController {
             message: actionSheetMessage
         )
 
-        let preferredDonateMode: DonateViewController.DonateMode = {
-            switch errorMode {
-            case .oneTimeBoost: return .oneTime
-            case .recurringSubscription: return .monthly
-            }
-        }()
-
         actionSheet.addAction(showDonateAndClearErrorAction(
             title: .tryAgain,
-            errorMode: errorMode,
             preferredDonateMode: preferredDonateMode
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -402,7 +408,6 @@ extension DonationSettingsViewController {
 
         actionSheet.addAction(showDonateAndClearErrorAction(
             title: .renewSubscription,
-            errorMode: .recurringSubscription,
             preferredDonateMode: .monthly
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -432,13 +437,18 @@ extension DonationSettingsViewController {
 
     private func showDonateAndClearErrorAction(
         title: ShowDonateActionTitle,
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode,
         preferredDonateMode: DonateViewController.DonateMode
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             self.databaseStorage.write { tx in
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
-                    .clearRequestError(errorMode: errorMode, tx: tx.asV2Write)
+                switch preferredDonateMode {
+                case .oneTime:
+                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                        .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
+                case .monthly:
+                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                        .clearRequestErrorForAnyRecurringSubscription(tx: tx.asV2Write)
+                }
             }
 
             // Not ideal, because this makes network requests. However, this

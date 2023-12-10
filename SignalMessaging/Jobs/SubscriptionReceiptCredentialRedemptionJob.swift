@@ -64,6 +64,8 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             subscriberID: Data(), // Unused
             targetSubscriptionLevel: 0, // Unused
             priorSubscriptionLevel: 0, // Unused
+            isNewSubscription: true, // Unused
+            shouldSuppressPaymentAlreadyRedeemed: false, // Unused
             isBoost: true,
             amount: amount.value,
             currencyCode: amount.currencyCode,
@@ -80,6 +82,11 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
     /// `nil`! However, we fetch this from the service, which cannot guarantee a
     /// recognized value (as it is in turn fetched from an external service,
     /// such as Stripe).
+    /// - Parameter isNewSubscription
+    /// `true` if this job represents a new or updated subscription. `false` if
+    /// this job is associated with the renewal of an existing subscription.
+    /// - Parameter shouldSuppressPaymentAlreadyRedeemed
+    /// Whether this job should suppress "payment already redeemed" errors.
     public func addSubscriptionJob(
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod?,
@@ -88,6 +95,8 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
+        isNewSubscription: Bool,
+        shouldSuppressPaymentAlreadyRedeemed: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
@@ -100,6 +109,8 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             subscriberID: subscriberID,
             targetSubscriptionLevel: targetSubscriptionLevel,
             priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
+            isNewSubscription: isNewSubscription,
+            shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
             isBoost: false,
             amount: nil,
             currencyCode: nil,
@@ -131,7 +142,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
         defaultSetup()
     }
 
-    public var isSetup = AtomicBool(false)
+    public let isSetup = AtomicBool(false)
 
     public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         // no special handling
@@ -158,17 +169,21 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
     fileprivate enum PaymentType: CustomStringConvertible {
         /// A one-time payment, or "boost".
         case oneTimeBoost(paymentIntentId: String)
+
         /// A recurring payment, or (an overloaded term) "subscription".
         case recurringSubscription(
             subscriberId: Data,
             targetSubscriptionLevel: UInt,
-            priorSubscriptionLevel: UInt
+            priorSubscriptionLevel: UInt,
+            isNewSubscription: Bool,
+            shouldSuppressPaymentAlreadyRedeemed: Bool
         )
 
         var receiptCredentialResultMode: SubscriptionReceiptCredentialResultStore.Mode {
             switch self {
             case .oneTimeBoost: return .oneTimeBoost
-            case .recurringSubscription: return .recurringSubscription
+            case .recurringSubscription(_, _, _, isNewSubscription: true, _): return .recurringSubscriptionInitiation
+            case .recurringSubscription(_, _, _, isNewSubscription: false, _): return .recurringSubscriptionRenewal
             }
         }
 
@@ -176,7 +191,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             switch self {
             case .oneTimeBoost:
                 return .boost
-            case let .recurringSubscription(_, targetSubscriptionLevel, _):
+            case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
                 return .subscription(subscriptionLevel: targetSubscriptionLevel)
             }
         }
@@ -184,7 +199,8 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         var description: String {
             switch self {
             case .oneTimeBoost: return "one-time"
-            case .recurringSubscription: return "recurring"
+            case .recurringSubscription(_, _, _, isNewSubscription: true, _): return "recurring-initiation"
+            case .recurringSubscription(_, _, _, isNewSubscription: false, _): return "recurring-renewal"
             }
         }
     }
@@ -205,6 +221,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         /// duration since app launch.
         case sepaPaymentStillProcessing(source: PaymentStillProcessingSource)
         case nonSepaPaymentStillProcessing
+        case suppressPaymentAlreadyRedeemed
         case other(errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode)
 
         var isRetryableProvider: Bool {
@@ -217,7 +234,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                 // We don't want to retry these because we don't believe the
                 // payment will process quickly, so there's no point.
                 return false
-            case .other:
+            case .suppressPaymentAlreadyRedeemed, .other:
                 // Any remaining error cases here are fatal.
                 return false
             }
@@ -240,12 +257,12 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             // We'll retry operations for these payment types fairly
             // aggressively, so we need a large retry buffer.
             return 110
-        case .sepa:
-            // We'll only retry operations for SEPA 1x/day, so we limit the
-            // retry buffer. They should always complete within 14 business
-            // days, so this is generous compared to what we should need, but
-            // prevents us from having an indefinite job if for whatever reason
-            // a payment never processes.
+        case .sepa, .ideal:
+            // We'll only retry operations for SEPA 1x/day (including those
+            // fronted by iDEAL), so we limit the retry buffer. They should
+            // always complete within 14 business days, so this is generous
+            // compared to what we should need, but prevents us from having an
+            // indefinite job if for whatever reason a payment never processes.
             return 30
         }
     }
@@ -314,7 +331,9 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             self.paymentType = .recurringSubscription(
                 subscriberId: jobRecord.subscriberID,
                 targetSubscriptionLevel: jobRecord.targetSubscriptionLevel,
-                priorSubscriptionLevel: jobRecord.priorSubscriptionLevel
+                priorSubscriptionLevel: jobRecord.priorSubscriptionLevel,
+                isNewSubscription: jobRecord.isNewSubscription,
+                shouldSuppressPaymentAlreadyRedeemed: jobRecord.shouldSuppressPaymentAlreadyRedeemed
             )
         }
 
@@ -400,7 +419,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             switch self.paymentType {
             case .oneTimeBoost:
                 return SubscriptionManagerImpl.getBoostBadge()
-            case let .recurringSubscription(_, targetSubscriptionLevel, _):
+            case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
                 return SubscriptionManagerImpl.getSubscriptionBadge(
                     subscriptionLevel: targetSubscriptionLevel
                 )
@@ -422,7 +441,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             guard let amount else { owsFail("How did we construct a boost job without an amount?") }
 
             return .value(amount)
-        case let .recurringSubscription(subscriberId, _, _):
+        case let .recurringSubscription(subscriberId, _, _, _, _):
             return SubscriptionManagerImpl
                 .getCurrentSubscriptionStatus(for: subscriberId)
                 .map(on: DispatchQueue.global()) { subscription -> FiatMoney in
@@ -462,7 +481,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                     context: self.receiptCredentialRequestContext,
                     request: self.receiptCredentialRequest
                 )
-            case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel):
+            case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
                 Logger.info("[Donations] Durable job requesting receipt for subscription")
                 return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
                     subscriberId: subscriberId,
@@ -490,6 +509,18 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
 
             let errorCode = knownReceiptCredentialRequestError.errorCode
             let chargeFailureCodeIfPaymentFailed = knownReceiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
+
+            switch (self.paymentType, errorCode) {
+            case (
+                .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true),
+                .paymentIntentRedeemed
+            ):
+                // We got, and want to suppress, a "payment already redeemed"
+                // error.
+                throw ReceiptCredentialOperationError.suppressPaymentAlreadyRedeemed
+            default:
+                break
+            }
 
             self.databaseStorage.write { tx in
                 self.persistErrorCode(
@@ -572,12 +603,6 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                 owsFail("[Donations] How did we succeed a job without learning the amount and badge?")
             }
 
-            switch paymentType {
-            case .oneTimeBoost: break
-            case .recurringSubscription:
-                SubscriptionManagerImpl.setHasEverRedeemedRecurringSubscriptionBadge(tx: tx)
-            }
-
             self.receiptCredentialResultStore.clearRequestError(
                 errorMode: paymentType.receiptCredentialResultMode,
                 tx: tx.asV2Write
@@ -640,6 +665,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         case
                 .sepaPaymentStillProcessing(source: .remoteService),
                 .nonSepaPaymentStillProcessing,
+                .suppressPaymentAlreadyRedeemed,
                 .other:
             break
         }
@@ -675,6 +701,9 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         case .nonSepaPaymentStillProcessing:
             Logger.error("[Donations] Non-SEPA payment still processing, but we're out of retries!")
             persistArtificialPaymentFailure = true
+        case .suppressPaymentAlreadyRedeemed:
+            Logger.warn("[Donations] Suppressing payment-already-redeemed error.")
+            persistArtificialPaymentFailure = false
         case let .other(errorCode):
             Logger.error("[Donations] Failed to redeem receipt credential! \(errorCode)")
             persistArtificialPaymentFailure = false

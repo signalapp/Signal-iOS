@@ -14,7 +14,7 @@ import SignalUI
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
     private var groupCall: GroupCall { call.groupCall }
-    private lazy var callControls = CallControls(call: call, delegate: self)
+    private lazy var callControls = CallControls(call: call, callService: callService, delegate: self)
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
     private var incomingCallControlsConstraint: NSLayoutConstraint?
     private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
@@ -539,11 +539,14 @@ class GroupCallViewController: UIViewController {
         updateSwipeToastView()
     }
 
-    func dismissCall(shouldHangUp: Bool = true) {
+    private func dismissCall(shouldHangUp: Bool = true) {
         if shouldHangUp {
             callService.callUIAdapter.localHangupCall(call)
         }
+        didHangupCall()
+    }
 
+    func didHangupCall() {
         guard !hasDismissed else {
             return
         }
@@ -740,7 +743,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             existingSheet.dismiss(animated: false)
         }
 
-        let startCallString = OWSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+        let startCallString = OWSLocalizedString("CALL_START_BUTTON", comment: "Button to start a call")
         let joinCallString = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
         let continueCallString = OWSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
         let leaveCallString = OWSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")
@@ -862,96 +865,6 @@ extension GroupCallViewController: CallObserver {
     }
 }
 
-extension GroupCallViewController: CallControlsDelegate {
-    func didPressHangup(sender: UIButton) {
-        dismissCall()
-    }
-
-    func didPressAudioSource(sender: UIButton) {
-        if callService.audioService.hasExternalInputs {
-            callService.audioService.presentRoutePicker()
-        } else {
-            sender.isSelected = !sender.isSelected
-            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: sender.isSelected)
-        }
-    }
-
-    func didPressMute(sender: UIButton) {
-        sender.isSelected = !sender.isSelected
-        callService.updateIsLocalAudioMuted(isLocalAudioMuted: sender.isSelected)
-    }
-
-    func didPressVideo(sender: UIButton) {
-        sender.isSelected = !sender.isSelected
-
-        callService.updateIsLocalVideoMuted(isLocalVideoMuted: !sender.isSelected)
-
-        // When turning off video, default speakerphone to on.
-        if !sender.isSelected && !callService.audioService.hasExternalInputs {
-            callControls.audioSourceButton.isSelected = true
-            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: true)
-        }
-    }
-
-    func didPressRing(sender: UIButton) {
-        if call.ringRestrictions.isEmpty {
-            let oldShouldRing = sender.isSelected
-            let newShouldRing = !oldShouldRing
-            sender.isSelected = newShouldRing
-            call.groupCallRingState = newShouldRing ? .shouldRing : .doNotRing
-
-            // Refresh the call header.
-            callHeader.groupCallLocalDeviceStateChanged(call)
-        } else {
-            if call.ringRestrictions.intersects([.notApplicable, .callInProgress]) {
-                owsFailDebug("should not show the ring button at all")
-            } else if call.ringRestrictions.contains(.groupTooLarge) {
-                let toast = ToastController(text: OWSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
-                toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
-            } else {
-                owsAssertDebug(call.ringRestrictions.isEmpty, "unknown ring restriction")
-            }
-        }
-    }
-
-    func didPressFlipCamera(sender: UIButton) {
-        sender.isSelected = !sender.isSelected
-        callService.updateCameraSource(call: call, isUsingFrontCamera: !sender.isSelected)
-    }
-
-    func didPressJoin(sender: UIButton) {
-        guard !call.groupCall.isFull else {
-            let text: String
-            if let maxDevices = call.groupCall.maxDevices {
-                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
-                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
-                )
-                text = String.localizedStringWithFormat(formatString, maxDevices)
-            } else {
-                text = OWSLocalizedString(
-                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
-                )
-            }
-
-            let toastController = ToastController(text: text)
-            // Leave the toast up longer than usual because this message is pretty long.
-            toastController.presentToastView(from: .top,
-                                             of: view,
-                                             inset: view.safeAreaInsets.top + 8,
-                                             dismissAfter: .seconds(8))
-            return
-        }
-
-        presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
-            guard let self = self else { return }
-            if success {
-                self.callService.joinGroupCallIfNecessary(self.call)
-            }
-        }
-    }
-}
-
 extension GroupCallViewController: IncomingCallControlsDelegate {
     func didDeclineIncomingCall() {
         dismissCall()
@@ -965,7 +878,7 @@ extension GroupCallViewController: IncomingCallControlsDelegate {
         callService.updateIsLocalVideoMuted(isLocalVideoMuted: videoMute)
         // When turning off video, default speakerphone to on.
         if videoMute && !callService.audioService.hasExternalInputs {
-            callService.audioService.requestSpeakerphone(call: call.groupCall, isEnabled: true)
+            callService.audioService.requestSpeakerphone(call: call, isEnabled: true)
         }
 
         callService.callUIAdapter.answerCall(call)
@@ -1011,6 +924,56 @@ extension GroupCallViewController: UIScrollViewDelegate {
         }
 
         updateSwipeToastView()
+    }
+}
+
+extension GroupCallViewController: CallControlsDelegate {
+    func didPressRing() {
+        if call.ringRestrictions.isEmpty {
+            // Refresh the call header.
+            callHeader.groupCallLocalDeviceStateChanged(call)
+        } else if call.ringRestrictions.contains(.groupTooLarge) {
+            let toast = ToastController(text: OWSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+            toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+        }
+    }
+
+    func didPressJoin() {
+        guard call.canJoin else {
+            let text: String
+            if let maxDevices = call.groupCall.maxDevices {
+                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                )
+                text = String.localizedStringWithFormat(formatString, maxDevices)
+            } else {
+                text = OWSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                )
+            }
+
+            let toastController = ToastController(text: text)
+            // Leave the toast up longer than usual because this message is pretty long.
+            toastController.presentToastView(
+                from: .top,
+                of: view,
+                inset: view.safeAreaInsets.top + 8,
+                dismissAfter: .seconds(8)
+            )
+            return
+        }
+
+        presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
+            guard let self = self else { return }
+            if success {
+                self.callService.joinGroupCallIfNecessary(self.call)
+            }
+        }
+    }
+
+    func didPressHangup() {
+        didHangupCall()
     }
 }
 

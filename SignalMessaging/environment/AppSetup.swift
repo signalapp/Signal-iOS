@@ -33,7 +33,6 @@ public class AppSetup {
         OWSBackgroundTaskManager.shared().observeNotifications()
 
         let storageCoordinator = StorageCoordinator()
-        Logger.info("hasGrdbFile: \(StorageCoordinator.hasGrdbFile)")
         let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
 
         // AFNetworking (via CFNetworking) spools its attachments in
@@ -132,10 +131,10 @@ public class AppSetup {
         let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
-        let messageManager = OWSMessageManager()
-        let remoteConfigManager = ServiceRemoteConfigManager(
+        let messageReceiver = MessageReceiver()
+        let remoteConfigManager = RemoteConfigManagerImpl(
             appExpiry: appExpiry,
-            db: DependenciesBridge.shared.db,
+            db: dependenciesBridge.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
@@ -176,7 +175,7 @@ public class AppSetup {
             websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(
-            databaseStorage: databaseStorage,
+            db: dependenciesBridge.db,
             dateProvider: { Date() }
         )
 
@@ -195,7 +194,7 @@ public class AppSetup {
             pendingReceiptRecorder: pendingReceiptRecorder,
             profileManager: profileManager,
             networkManager: networkManager,
-            messageManager: messageManager,
+            messageReceiver: messageReceiver,
             blockingManager: blockingManager,
             remoteConfigManager: remoteConfigManager,
             aciSignalProtocolStore: aciSignalProtocolStore,
@@ -343,11 +342,6 @@ extension AppSetup.FinalContinuation {
 
         guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
             return .corruptRegistrationState
-        }
-
-        // Do this after we've finished running database migrations.
-        if DebugFlags.internalLogging {
-            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
         }
 
         return nil

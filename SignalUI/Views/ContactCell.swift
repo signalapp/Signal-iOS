@@ -8,47 +8,46 @@ import Contacts
 import SignalServiceKit
 
 public class ContactCell: UITableViewCell, ReusableTableViewCell {
+
     public static let reuseIdentifier = "ContactCell"
 
-    public static let kSeparatorHInset: CGFloat = CGFloat(kAvatarDiameter) + 16 + 8
+    static private let avatarDiameter: CGFloat = 36
 
-    static let kAvatarSpacing: CGFloat = 6
-    static let kAvatarDiameter: UInt = 40
+    private let contactImageView = AvatarImageView()
+    private lazy var textStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel])
+        stackView.axis = .vertical
+        return stackView
+     }()
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeBody
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadline
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
 
-    let contactImageView: AvatarImageView
-    let textStackView: UIStackView
-    let titleLabel: UILabel
-    var subtitleLabel: UILabel
-
-    var contact: Contact?
-    var showsWhenSelected: Bool = false
+    private var showsWhenSelected: Bool = false
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.contactImageView = AvatarImageView()
-        self.textStackView = UIStackView()
-        self.titleLabel = UILabel()
-        self.titleLabel.font = UIFont.dynamicTypeBody
-        self.subtitleLabel = UILabel()
-        self.subtitleLabel.font = UIFont.dynamicTypeSubheadline
-
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = UITableViewCell.SelectionStyle.none
 
-        textStackView.axis = .vertical
-        textStackView.addArrangedSubview(titleLabel)
-
-        contactImageView.autoSetDimensions(to: CGSize(square: CGFloat(ContactCell.kAvatarDiameter)))
+        contactImageView.autoSetDimensions(to: CGSize(square: CGFloat(ContactCell.avatarDiameter)))
 
         let contentColumns: UIStackView = UIStackView(arrangedSubviews: [contactImageView, textStackView])
         contentColumns.axis = .horizontal
-        contentColumns.spacing = ContactCell.kAvatarSpacing
+        contentColumns.spacing = 12
         contentColumns.alignment = .center
-
-        self.contentView.addSubview(contentColumns)
-        contentColumns.autoPinEdgesToSuperviewMargins()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        contentView.addSubview(contentColumns)
+        contentColumns.autoPinWidthToSuperviewMargins()
+        contentColumns.autoPinHeightToSuperview(withMargin: 7)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -57,7 +56,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
 
     public override func prepareForReuse() {
         accessoryType = .none
-        self.subtitleLabel.removeFromSuperview()
+        subtitleLabel.removeFromSuperview()
     }
 
     public override func setSelected(_ selected: Bool, animated: Bool) {
@@ -67,15 +66,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         }
     }
 
-    @objc
-    private func didChangePreferredContentSize() {
-        self.titleLabel.font = UIFont.dynamicTypeBody
-        self.subtitleLabel.font = UIFont.dynamicTypeSubheadline
-    }
-
     public func configure(contact: Contact, sortOrder: CNContactSortOrder, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
-
-        self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
         let cnContact: CNContact?
@@ -108,7 +99,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
 
             let avatar = databaseStorage.read { transaction in
                 Self.avatarBuilder.avatarImage(personNameComponents: nameComponents,
-                                               diameterPoints: ContactCell.kAvatarDiameter,
+                                               diameterPoints: UInt(ContactCell.avatarDiameter),
                                                transaction: transaction)
             }
             contactImage = avatar
@@ -119,22 +110,22 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
     func updateSubtitle(subtitleType: SubtitleCellValue, contact: Contact) {
         switch subtitleType {
         case .none:
-            assert(self.subtitleLabel.superview == nil)
+            owsAssertBeta(subtitleLabel.superview == nil)
         case .phoneNumber:
-            self.textStackView.addArrangedSubview(self.subtitleLabel)
+            textStackView.addArrangedSubview(subtitleLabel)
 
             if let firstPhoneNumber = contact.userTextPhoneNumbers.first {
-                self.subtitleLabel.text = firstPhoneNumber
+                subtitleLabel.text = firstPhoneNumber
             } else {
-                self.subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE", comment: "table cell subtitle when contact card has no known phone number")
+                subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE", comment: "table cell subtitle when contact card has no known phone number")
             }
         case .email:
-            self.textStackView.addArrangedSubview(self.subtitleLabel)
+            textStackView.addArrangedSubview(subtitleLabel)
 
             if let firstEmail = contact.emails.first {
-                self.subtitleLabel.text = firstEmail
+                subtitleLabel.text = firstEmail
             } else {
-                self.subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
+                subtitleLabel.text = OWSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
             }
         }
     }

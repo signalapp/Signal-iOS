@@ -300,14 +300,14 @@ public class ConversationSearchViewController: UITableViewController {
 
         // If we have an existing CLVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
-        let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.text.hashValue ?? 0)"
+        let cacheKey = "\(configuration.threadViewModel.threadRecord.uniqueId).\(configuration.overrideSnippet?.text.hashValue ?? 0)"
         if useCache {
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
             }
         }
 
-        let cellContentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
+        let cellContentToken = ChatListCell.buildCellContentToken(for: configuration)
         cellContentCache.set(key: cacheKey, value: cellContentToken)
         return cellContentToken
     }
@@ -383,9 +383,8 @@ public class ConversationSearchViewController: UITableViewController {
                 return nil
             }
             return ChatListCell.Configuration(
-                thread: searchResult.thread,
-                lastReloadDate: lastReloadDate,
-                isBlocked: isBlocked(thread: searchResult.thread)
+                threadViewModel: searchResult.thread,
+                lastReloadDate: lastReloadDate
             )
         case .groupThreads:
             guard let searchResult = self.searchResultSet.groupThreads[safe: row] else {
@@ -399,9 +398,8 @@ public class ConversationSearchViewController: UITableViewController {
                 overrideSnippet = nil
             }
             return ChatListCell.Configuration(
-                thread: searchResult.thread,
+                threadViewModel: searchResult.thread,
                 lastReloadDate: lastReloadDate,
-                isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
                 overrideDate: nil
             )
@@ -428,9 +426,8 @@ public class ConversationSearchViewController: UITableViewController {
                 overrideSnippet = nil
             }
             return ChatListCell.Configuration(
-                thread: searchResult.thread,
+                threadViewModel: searchResult.thread,
                 lastReloadDate: lastReloadDate,
-                isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
                 overrideDate: overrideDate
             )
@@ -621,8 +618,6 @@ public class ConversationSearchViewController: UITableViewController {
         }
         return nil
     }
-
-    private func isBlocked(thread: ThreadViewModel) -> Bool { thread.isBlocked }
 }
 
 // MARK: - UIScrollViewDelegate

@@ -20,6 +20,7 @@ extension DonationPaymentDetailsViewController {
         enum ValidForm: Equatable {
             case card(Stripe.PaymentMethod.CreditOrDebitCard)
             case sepa(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.SEPA)
+            case ideal(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.IDEAL)
 
             var stripePaymentMethod: Stripe.PaymentMethod {
                 switch self {
@@ -27,6 +28,8 @@ extension DonationPaymentDetailsViewController {
                     return .creditOrDebitCard(creditOrDebitCard: card)
                 case let .sepa(mandate: mandate, account: sepaAccount):
                     return .bankTransferSEPA(mandate: mandate, account: sepaAccount)
+                case let .ideal(mandate: mandate, account: idealAccount):
+                    return .bankTransferIDEAL(mandate: mandate, account: idealAccount)
                 }
             }
 
@@ -34,6 +37,7 @@ extension DonationPaymentDetailsViewController {
                 switch self {
                 case .card: return .creditOrDebitCard
                 case .sepa: return .sepa
+                case .ideal: return .ideal
                 }
             }
         }
@@ -242,6 +246,29 @@ extension DonationPaymentDetailsViewController {
                 name: name,
                 iban: iban,
                 email: email
+            )
+        ))
+    }
+
+    static func formState(
+        mandate: Stripe.PaymentMethod.Mandate,
+        iDEALBank: Stripe.PaymentMethod.IDEALBank?,
+        name: String,
+        email: String,
+        isEmailFieldFocused: Bool
+    ) -> FormState {
+        if name.count <= 2 || email.isEmpty {
+            return .potentiallyValid
+        }
+        guard let iDEALBank else {
+            return .potentiallyValid
+        }
+        return .fullyValid(.ideal(
+            mandate: mandate,
+            account: .init(
+                name: name,
+                email: email,
+                iDEALBank: iDEALBank
             )
         ))
     }

@@ -418,8 +418,6 @@ class EditManagerTests: SSKBaseTestSwift {
     }
 
     let editPropertyList: [String: EditedMessageValidationType] = [
-        "isSyncMessage": .unchanged,
-        "canSendToLocalAddress": .unchanged,
         "isIncoming": .unchanged,
         "isOutgoing": .unchanged,
         "editState": .changed,
@@ -455,8 +453,6 @@ class EditManagerTests: SSKBaseTestSwift {
     ]
 
     let originalPropetyList: [String: EditedMessageValidationType] = [
-        "isSyncMessage": .unchanged,
-        "canSendToLocalAddress": .unchanged,
         "isIncoming": .unchanged,
         "isOutgoing": .unchanged,
         "editState": .changed,

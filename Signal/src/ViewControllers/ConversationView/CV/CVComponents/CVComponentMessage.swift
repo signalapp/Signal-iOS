@@ -1488,7 +1488,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     isBodyTextAlignedLeft = false
                 default:
                     // This is expected for edge cases: oversize text messages, remotely deleted, etc.
-                    Logger.verbose("Unknown text alignment: \(bodyTextLabelConfig.textAlignment).")
                     return
                 }
 

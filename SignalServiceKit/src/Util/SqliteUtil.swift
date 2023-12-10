@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 /// A bucket for SQLite utilities.
 public enum SqliteUtil {
@@ -188,6 +189,46 @@ public enum SqliteUtil {
             try db.execute(
                 sql: "INSERT INTO \(ftsTableName) (\(ftsTableName)) VALUES ('rebuild')"
             )
+        }
+
+        public enum MergeResult {
+            case workWasPerformed
+            case noop
+        }
+
+        /// Run a [merge command] on an FTS5 table.
+        ///
+        /// - Parameter db: A database connection.
+        /// - Parameter ftsTableName: The virtual FTS5 table to use. This table name must be "safe"
+        ///   according to ``Sqlite.isSafe``. If it's not, a fatal error will be thrown.
+        /// - Parameter numberOfPages: The number of pages to merge in a single batch.
+        /// - Parameter isFirstBatch: If true, some extra pre-work will be performed.
+        /// - Returns: A merge result, indicating whether any work was performed.
+        ///
+        /// [merge command]: https://www.sqlite.org/fts5.html#the_merge_command
+        public static func merge(
+            db: Database,
+            ftsTableName: String,
+            numberOfPages: Int,
+            isFirstBatch: Bool
+        ) throws -> MergeResult {
+            let totalChangesBefore = db.totalChangesCount
+
+            owsAssert(SqliteUtil.isSafe(sqlName: ftsTableName))
+            try db.execute(
+                sql: "INSERT INTO \(ftsTableName) (\(ftsTableName), rank) VALUES ('merge', ?)",
+                arguments: [isFirstBatch ? -numberOfPages : numberOfPages]
+            )
+
+            // From the SQLite docs: "It is possible to tell whether or not the 'merge' command
+            // found any b-trees to merge together by checking the value returned by the
+            // sqlite3_total_changes() API before and after the command is executed. If the
+            // difference between the two values is 2 or greater, then work was performed.
+            // If the difference is less than 2, then the 'merge' command was a no-op."
+            let totalChangesAfter = db.totalChangesCount
+            let wasWorkPerformed = totalChangesAfter - totalChangesBefore >= 2
+
+            return wasWorkPerformed ? .workWasPerformed : .noop
         }
     }
 }

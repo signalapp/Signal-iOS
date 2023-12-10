@@ -57,16 +57,6 @@ public extension OWSRequestFactory {
         return .init(url: .init(string: "v1/profile/identity_check/batch")!, method: HTTPMethod.post.methodName, parameters: ["elements": elements])
     }
 
-    // MARK: - Capabilities
-
-    @nonobjc
-    static func updateLinkedDeviceCapabilitiesRequest(for capabilities: AccountAttributes.Capabilities) -> TSRequest {
-        // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
-        return TSRequest(url: URL(string: "v1/devices/capabilities")!, method: "PUT", parameters: capabilities.requestParameters)
-    }
-
     // MARK: - Devices
 
     static func deviceProvisioningCode() -> TSRequest {
@@ -364,7 +354,6 @@ extension OWSRequestFactory {
     /// TSAccountManager).
     static func registerPrekeysRequest(
         identity: OWSIdentity,
-        identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         prekeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
@@ -378,7 +367,6 @@ extension OWSRequestFactory {
 
         var parameters = [String: Any]()
 
-        parameters["identityKey"] = identityKey.serialize().asData.base64EncodedStringWithoutPadding()
         if let signedPreKeyRecord {
             parameters["signedPreKey"] = signedPreKeyRequestParameters(signedPreKeyRecord)
         }
@@ -409,45 +397,5 @@ extension OWSRequestFactory {
         case .pni:
             return "identity=pni"
         }
-    }
-
-    public static func verifySecondaryDeviceRequest(
-        verificationCode: String,
-        phoneNumber: String,
-        authPassword: String,
-        attributes: AccountAttributes,
-        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
-    ) -> TSRequest {
-        owsAssertDebug(verificationCode.isEmpty.negated)
-        owsAssertDebug(phoneNumber.isEmpty.negated)
-        owsAssertDebug(apnRegistrationId != nil || attributes.isManualMessageFetchEnabled)
-
-        let urlPathComponents = URLPathComponents(
-            ["v1", "devices", "link"]
-        )
-
-        var urlComponents = URLComponents()
-        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
-        let url = urlComponents.url!
-
-        let jsonEncoder = JSONEncoder()
-        let accountAttributesData = try! jsonEncoder.encode(attributes)
-        let accountAttributesDict = try! JSONSerialization.jsonObject(with: accountAttributesData, options: .fragmentsAllowed) as! [String: Any]
-
-        let parameters: [String: Any] = [
-            "verificationCode": verificationCode,
-            "accountAttributes": accountAttributesDict,
-            "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),
-            "pniSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.pni.signedPreKey),
-            "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),
-            "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey)
-        ]
-
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
-        // The "verify code" request handles auth differently.
-        result.authUsername = phoneNumber
-        result.authPassword = authPassword
-        return result
     }
 }

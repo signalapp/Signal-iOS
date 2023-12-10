@@ -36,7 +36,7 @@ public class SSKEnvironment: NSObject {
     public let linkPreviewManagerRef: OWSLinkPreviewManager
     public let pendingReceiptRecorderRef: PendingReceiptRecorder
     public let profileManagerRef: ProfileManagerProtocol
-    public let messageManagerRef: OWSMessageManager
+    public let messageReceiverRef: MessageReceiver
     public let blockingManagerRef: BlockingManager
     public let remoteConfigManagerRef: RemoteConfigManager
     public let udManagerRef: OWSUDManager
@@ -94,7 +94,7 @@ public class SSKEnvironment: NSObject {
         pendingReceiptRecorder: PendingReceiptRecorder,
         profileManager: ProfileManagerProtocol,
         networkManager: NetworkManager,
-        messageManager: OWSMessageManager,
+        messageReceiver: MessageReceiver,
         blockingManager: BlockingManager,
         remoteConfigManager: RemoteConfigManager,
         aciSignalProtocolStore: SignalProtocolStore,
@@ -152,7 +152,7 @@ public class SSKEnvironment: NSObject {
         self.pendingReceiptRecorderRef = pendingReceiptRecorder
         self.profileManagerRef = profileManager
         self.networkManagerRef = networkManager
-        self.messageManagerRef = messageManager
+        self.messageReceiverRef = messageReceiver
         self.blockingManagerRef = blockingManager
         self.remoteConfigManagerRef = remoteConfigManager
         self.aciSignalProtocolStoreRef = aciSignalProtocolStore
@@ -217,30 +217,23 @@ public class SSKEnvironment: NSObject {
     public static let warmCachesNotification = Notification.Name("WarmCachesNotification")
 
     public func warmCaches() {
-        let warmCachesForObject: (String, () -> Void) -> Void = { name, action in
-            InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: name, block: action)
-        }
-        warmCachesForObject("signalProxy", SignalProxy.warmCaches)
-        warmCachesForObject("newTSAccountManager", DependenciesBridge.shared.tsAccountManager.warmCaches)
-        warmCachesForObject("fixLocalRecipient", fixLocalRecipientIfNeeded)
-        warmCachesForObject("signalServiceAddressCache", signalServiceAddressCache.warmCaches)
-        warmCachesForObject("signalService", signalService.warmCaches)
-        warmCachesForObject("remoteConfigManager", remoteConfigManager.warmCaches)
-        warmCachesForObject("blockingManager", blockingManager.warmCaches)
-        warmCachesForObject("profileManager", profileManager.warmCaches)
-        warmCachesForObject("receiptManager", receiptManager.prepareCachedValues)
-        warmCachesForObject("OWSKeyBackupService", DependenciesBridge.shared.svr.warmCaches)
-        warmCachesForObject("PinnedThreadManager", PinnedThreadManager.warmCaches)
-        warmCachesForObject("typingIndicatorsImpl", typingIndicatorsImpl.warmCaches)
-        warmCachesForObject("paymentsHelper", paymentsHelper.warmCaches)
-        warmCachesForObject("paymentsCurrencies", paymentsCurrencies.warmCaches)
-        warmCachesForObject("storyManager", StoryManager.setup)
-        warmCachesForObject("deviceManager", DependenciesBridge.shared.deviceManager.warmCaches)
-        warmCachesForObject("appExpiry") {
-            DependenciesBridge.shared.db.read { tx in
-                self.appExpiryRef.warmCaches(with: tx)
-            }
-        }
+        SignalProxy.warmCaches()
+        DependenciesBridge.shared.tsAccountManager.warmCaches()
+        fixLocalRecipientIfNeeded()
+        signalServiceAddressCache.warmCaches()
+        signalService.warmCaches()
+        remoteConfigManager.warmCaches()
+        blockingManager.warmCaches()
+        profileManager.warmCaches()
+        receiptManager.prepareCachedValues()
+        DependenciesBridge.shared.svr.warmCaches()
+        PinnedThreadManager.warmCaches()
+        typingIndicatorsImpl.warmCaches()
+        paymentsHelper.warmCaches()
+        paymentsCurrencies.warmCaches()
+        StoryManager.setup()
+        DependenciesBridge.shared.deviceManager.warmCaches()
+        DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)
     }

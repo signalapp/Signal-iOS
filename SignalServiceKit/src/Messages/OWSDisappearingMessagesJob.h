@@ -26,9 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 // and continue cleaning in the background.
 - (void)startIfNecessary;
 
-- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)schedulePass;
-
 #ifdef TESTABLE_BUILD
 - (void)syncPassForTests;
 #endif

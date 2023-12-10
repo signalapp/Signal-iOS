@@ -19,6 +19,8 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
     public let subscriberID: Data
     public let targetSubscriptionLevel: UInt
     public let priorSubscriptionLevel: UInt
+    public let isNewSubscription: Bool
+    public let shouldSuppressPaymentAlreadyRedeemed: Bool
 
     public let boostPaymentIntentID: String
 
@@ -34,6 +36,8 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt,
+        isNewSubscription: Bool,
+        shouldSuppressPaymentAlreadyRedeemed: Bool,
         isBoost: Bool,
         amount: Decimal?,
         currencyCode: String?,
@@ -51,6 +55,8 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         self.subscriberID = subscriberID
         self.targetSubscriptionLevel = targetSubscriptionLevel
         self.priorSubscriptionLevel = priorSubscriptionLevel
+        self.isNewSubscription = isNewSubscription
+        self.shouldSuppressPaymentAlreadyRedeemed = shouldSuppressPaymentAlreadyRedeemed
         self.isBoost = isBoost
         self.amount = amount
         self.currencyCode = currencyCode
@@ -79,6 +85,8 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         subscriberID = try container.decode(Data.self, forKey: .subscriberID)
         targetSubscriptionLevel = try container.decode(UInt.self, forKey: .targetSubscriptionLevel)
         priorSubscriptionLevel = try container.decode(UInt.self, forKey: .priorSubscriptionLevel)
+        isNewSubscription = try container.decodeIfPresent(Bool.self, forKey: .isNewSubscription) ?? true
+        shouldSuppressPaymentAlreadyRedeemed = try container.decodeIfPresent(Bool.self, forKey: .shouldSuppressPaymentAlreadyRedeemed) ?? false
 
         boostPaymentIntentID = try container.decode(String.self, forKey: .boostPaymentIntentID)
 
@@ -109,6 +117,8 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         try container.encode(subscriberID, forKey: .subscriberID)
         try container.encode(targetSubscriptionLevel, forKey: .targetSubscriptionLevel)
         try container.encode(priorSubscriptionLevel, forKey: .priorSubscriptionLevel)
+        try container.encode(isNewSubscription, forKey: .isNewSubscription)
+        try container.encode(shouldSuppressPaymentAlreadyRedeemed, forKey: .shouldSuppressPaymentAlreadyRedeemed)
         try container.encode(isBoost, forKey: .isBoost)
         try container.encodeIfPresent(
             LegacySDSSerializer().serializeAsLegacySDSData(property: amount),

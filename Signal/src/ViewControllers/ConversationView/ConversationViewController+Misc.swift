@@ -459,23 +459,21 @@ extension ConversationViewController {
         if !self.isMarkingAsRead && isShowingUnreadMessage {
             self.isMarkingAsRead = true
 
-            BenchManager.benchAsync(title: "marking as read") { benchCompletion in
-                Self.receiptManager.markAsReadLocally(beforeSortId: lastVisibleSortId,
-                                                      thread: self.thread,
-                                                      hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest) {
-                    AssertIsOnMainThread()
-                    self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)
-                    self.isMarkingAsRead = false
+            Self.receiptManager.markAsReadLocally(
+                beforeSortId: lastVisibleSortId,
+                thread: self.thread,
+                hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest
+            ) {
+                AssertIsOnMainThread()
+                self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)
+                self.isMarkingAsRead = false
 
-                    // If -markVisibleMessagesAsRead wasn't invoked on a
-                    // timer, we'd want to double check that the current
-                    // -lastVisibleSortId hasn't incremented since we
-                    // started the read receipt request. But we have a
-                    // timer, so if it has changed, this method will just
-                    // be reinvoked in < 100ms.
-
-                    benchCompletion()
-                }
+                // If -markVisibleMessagesAsRead wasn't invoked on a
+                // timer, we'd want to double check that the current
+                // -lastVisibleSortId hasn't incremented since we
+                // started the read receipt request. But we have a
+                // timer, so if it has changed, this method will just
+                // be reinvoked in < 100ms.
             }
         }
     }

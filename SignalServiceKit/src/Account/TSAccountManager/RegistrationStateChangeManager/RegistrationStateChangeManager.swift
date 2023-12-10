@@ -47,28 +47,6 @@ public protocol RegistrationStateChangeManager {
     )
 
     /**
-     * Called when a secondary device is linked but is not finished provisioning.
-     * This puts the state into ``TSRegistrationState.linkedButUnprovisioned``.
-     * ``didFinishProvisioningSecondary`` completes the process.
-     *
-     * To observe changes related to this method, use ``NSNotification.Name.registrationStateDidChange``
-     * and ``NSNotification.Name.localNumberDidChange``.
-     *
-     * Note that some side effects (generally, those that must happen in the same write transaction)
-     * are triggered internally by this class and don't need separate observation.
-     *
-     * PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
-     */
-    func didLinkSecondary(
-        e164: E164,
-        aci: Aci,
-        pni: Pni?,
-        authToken: String,
-        deviceId: UInt32,
-        tx: DBWriteTransaction
-    )
-
-    /**
      * After linking, secondary devices sync storage service records and do other
      * setup before provisioning is finished, then this is called after its all done.
      * This puts the state into ``TSRegistrationState.provisioned``.
@@ -78,10 +56,16 @@ public protocol RegistrationStateChangeManager {
      * Note that some side effects (generally, those that must happen in the same write transaction)
      * are triggered internally by this class and don't need separate observation.
      *
-     * This is a pretty bad approach and we should stop doing eventually, by letting provisioning
-     * itself internally manage its intermediary state instead of outsourcing state management here.
+     * PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
      */
-    func didFinishProvisioningSecondary(tx: DBWriteTransaction)
+    func didProvisionSecondary(
+        e164: E164,
+        aci: Aci,
+        pni: Pni?,
+        authToken: String,
+        deviceId: UInt32,
+        tx: DBWriteTransaction
+    )
 
     /**
      * Called once change number is complete.

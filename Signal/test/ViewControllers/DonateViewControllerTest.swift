@@ -40,8 +40,9 @@ final class DonateViewControllerTest: SignalBaseTest {
             .init(
                 level: level,
                 badge: badge,
-                minimumAmounts: minimums,
-                presetAmounts: presets
+                presetAmounts: presets,
+                minimumAmountsByCurrency: minimums,
+                maximumAmountViaSepa: FiatMoney(currencyCode: "EUR", value: 10.000)
             )
         }
     }

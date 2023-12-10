@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 /// JobQueue - A durable work queue
 ///
@@ -57,7 +58,7 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     var runningOperations: AtomicArray<DurableOperationType> { get set }
     var jobRecordLabel: String { get }
 
-    var isSetup: AtomicBool { get set }
+    var isSetup: AtomicBool { get }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
 
@@ -126,8 +127,6 @@ public extension JobQueue {
     }
 
     func workStep() {
-        Logger.debug("")
-
         guard isEnabled else { return }
 
         guard isSetup.get() else {
@@ -172,8 +171,6 @@ public extension JobQueue {
 
             transaction.addSyncCompletion {
                 self.runningOperations.append(durableOperation)
-
-                Logger.debug("adding operation: \(durableOperation) with remainingRetries: \(remainingRetries)")
                 operationQueue.addOperation(durableOperation.operation)
             }
         } catch JobError.permanentFailure(let description) {
@@ -181,7 +178,6 @@ public extension JobQueue {
             nextJob.saveAsPermanentlyFailed(transaction: transaction)
         } catch JobError.obsolete(let description) {
             // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
-            Logger.verbose("marking obsolete task as such. description:\(description)")
             nextJob.saveAsObsolete(transaction: transaction)
         } catch {
             owsFailDebug("unexpected error")
@@ -270,16 +266,14 @@ public extension JobQueue {
             if self.requiresInternet {
                 // FIXME: The returned observer token is never unregistered.
                 // In practice all our JobQueues live forever, so this isn't a problem.
-                NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
-                                                       object: nil,
-                                                       queue: nil) { _ in
-
-                                                        if self.reachabilityManager.isReachable {
-                                                            Logger.verbose("isReachable: true")
-                                                            self.becameReachable()
-                                                        } else {
-                                                            Logger.verbose("isReachable: false")
-                                                        }
+                NotificationCenter.default.addObserver(
+                    forName: SSKReachability.owsReachabilityDidChange,
+                    object: nil,
+                    queue: nil
+                ) { _ in
+                    if self.reachabilityManager.isReachable {
+                        self.becameReachable()
+                    }
                 }
             }
 

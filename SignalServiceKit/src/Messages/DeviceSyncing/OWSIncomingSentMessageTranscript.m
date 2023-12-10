@@ -4,7 +4,6 @@
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSMessageManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"

@@ -279,6 +279,8 @@ CREATE
             ,"paypalPaymentId" TEXT
             ,"paypalPaymentToken" TEXT
             ,"paymentMethod" TEXT
+            ,"isNewSubscription" BOOLEAN
+            ,"shouldSuppressPaymentAlreadyRedeemed" BOOLEAN
         )
 ;
 

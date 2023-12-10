@@ -15,18 +15,18 @@ extension ConversationViewController {
             name: WallpaperStore.wallpaperDidChangeNotification,
             object: nil
         )
-        updateWallpaperViewBuilder()
+        updateWallpaperView()
     }
 
     @objc
     private func wallpaperDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
         updateWallpaperViewBuilder()
-        updateConversationStyle()
+        chatColorDidChange() // Changing the wallpaper might change the ChatColor.
     }
 
     func updateWallpaperViewBuilder() {
-        viewState.wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+        viewState.wallpaperViewBuilder = databaseStorage.read { tx in Self.loadWallpaperViewBuilder(for: thread, tx: tx) }
         updateWallpaperView()
     }
 
