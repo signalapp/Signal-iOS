@@ -605,6 +605,13 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     // MARK: iDEAL
 
     private func idealFormSections() -> [OWSTableSection] {
+        let textViewItems: [OWSTableItem]
+        switch self.donationMode {
+        case .oneTime, .gift:
+            textViewItems = [ Self.cell(for: self.nameView) ]
+        case .monthly:
+            textViewItems = [ Self.cell(for: self.nameView), Self.cell(for: self.emailView)]
+        }
         return [
             OWSTableSection(items: [
                 OWSTableItem(customCellBlock: { [weak self] in
@@ -630,10 +637,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                     self?.navigationController?.pushViewController(bankSelectionVC, animated: true)
                 })
             ]),
-            OWSTableSection(items: [
-                Self.cell(for: self.nameView),
-                Self.cell(for: self.emailView),
-            ])
+            OWSTableSection(items: textViewItems)
         ]
     }
 

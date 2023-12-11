@@ -83,7 +83,7 @@ public extension Stripe {
         case applePay(payment: PKPayment)
         case creditOrDebitCard(creditOrDebitCard: CreditOrDebitCard)
         case bankTransferSEPA(mandate: Mandate, account: SEPA)
-        case bankTransferIDEAL(IDEALPaymentType)
+        case bankTransferIDEAL(IDEAL)
 
         public var stripePaymentMethod: OWSRequestFactory.StripePaymentMethod {
             switch self {
@@ -104,7 +104,7 @@ public extension Stripe {
                 return sepaMandate
             case .bankTransferIDEAL(.oneTime):
                 return nil
-            case let .bankTransferIDEAL(.recurring(mandate: idealMandate, account: _)):
+            case let .bankTransferIDEAL(.recurring(mandate: idealMandate, _, _, _)):
                 return idealMandate
             }
         }

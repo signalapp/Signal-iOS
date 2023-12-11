@@ -118,21 +118,27 @@ public struct Stripe: Dependencies {
                 ]
                 return try API.postForm(endpoint: "payment_methods", parameters: parameters)
             }
-        case let .bankTransferIDEAL(paymentType):
-            let idealAccount: Stripe.PaymentMethod.IDEAL = {
-                switch paymentType {
-                case let .oneTime(account: account): return account
-                case let .recurring(mandate: _, account: account): return account
-                }
-            }()
+        case let .bankTransferIDEAL(idealAccount):
             return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
+                let parameters: [String: String] = {
+                    switch idealAccount {
+                    case let .oneTime(name: name, IDEALBank: bank):
+                        return [
+                            "billing_details[name]": name,
+                            "ideal[bank]": bank.rawValue,
+                            "type": "ideal"
+                        ]
+                    case let .recurring(mandate: _, name: name, email: email, IDEALBank: bank):
+                        return [
+                            "billing_details[name]": name,
+                            "billing_details[email]": email,
+                            "ideal[bank]": bank.rawValue,
+                            "type": "ideal"
+                        ]
+                    }
+                }()
+
                 // Step 4: Payment method creation
-                let parameters: [String: String] = [
-                    "billing_details[name]": idealAccount.name,
-                    "billing_details[email]": idealAccount.email,
-                    "ideal[bank]": idealAccount.IDEALBank.rawValue,
-                    "type": "ideal",
-                ]
                 return try API.postForm(endpoint: "payment_methods", parameters: parameters)
             }
         }

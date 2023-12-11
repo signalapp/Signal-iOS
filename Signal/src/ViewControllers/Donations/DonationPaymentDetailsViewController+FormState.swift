@@ -18,14 +18,10 @@ extension DonationPaymentDetailsViewController {
 
     enum FormState: Equatable {
         enum ValidForm: Equatable {
-            enum IDEALFormType: Equatable {
-                case monthly(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.IDEAL)
-                case oneTime(account: Stripe.PaymentMethod.IDEAL)
-            }
 
             case card(Stripe.PaymentMethod.CreditOrDebitCard)
             case sepa(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.SEPA)
-            case ideal(IDEALFormType)
+            case ideal(Stripe.PaymentMethod.IDEAL)
 
             var stripePaymentMethod: Stripe.PaymentMethod {
                 switch self {
@@ -34,12 +30,7 @@ extension DonationPaymentDetailsViewController {
                 case let .sepa(mandate: mandate, account: sepaAccount):
                     return .bankTransferSEPA(mandate: mandate, account: sepaAccount)
                 case let .ideal(type):
-                    switch type {
-                    case let .oneTime(account: account):
-                        return .bankTransferIDEAL(.oneTime(account: account))
-                    case let .monthly(mandate: mandate, account: account):
-                        return .bankTransferIDEAL(.recurring(mandate: mandate, account: account))
-                    }
+                    return .bankTransferIDEAL(type)
                 }
             }
 
@@ -267,30 +258,38 @@ extension DonationPaymentDetailsViewController {
         email: String,
         isEmailFieldFocused: Bool
     ) -> FormState {
-        if name.count <= 2 || email.isEmpty {
+        if name.count <= 2 {
             return .potentiallyValid
         }
+
+        if
+            case .recurring = IDEALPaymentType,
+            email.isEmpty
+        {
+            return .potentiallyValid
+        }
+
         guard let IDEALBank else {
             return .potentiallyValid
         }
+
         switch IDEALPaymentType {
-        case let .recurring(mandate: mandate):
-            return .fullyValid(.ideal(.monthly(
-                mandate: mandate,
-                account: .init(
+        case let .recurring(mandate):
+            return .fullyValid(.ideal(
+                .recurring(
+                    mandate: mandate,
                     name: name,
                     email: email,
                     IDEALBank: IDEALBank
                 )
-            )))
+            ))
         case .oneTime:
-            return .fullyValid(.ideal(.oneTime(
-                account: .init(
+            return .fullyValid(.ideal(
+                .oneTime(
                     name: name,
-                    email: email,
                     IDEALBank: IDEALBank
                 )
-            )))
+            ))
         }
     }
 }
