@@ -83,7 +83,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (MessageSenderJobQueue *)messageSenderJobQueue
 {
-    return SSKEnvironment.shared.sskJobQueues.messageSenderJobQueue;
+    return SSKEnvironment.shared.messageSenderJobQueueRef;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

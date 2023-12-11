@@ -1479,7 +1479,7 @@ public final class MessageReceiver: Dependencies {
 
             let sendBlock = { (transaction: SDSAnyWriteTransaction) in
                 if let resendResponse = resendResponse {
-                    Self.sskJobQueues.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: resendResponse.asPreparer, transaction: transaction)
                 }
             }
 

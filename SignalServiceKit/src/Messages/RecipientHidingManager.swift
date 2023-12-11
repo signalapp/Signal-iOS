@@ -81,7 +81,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     private let profileManager: ProfileManagerProtocol
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
-    private let jobQueues: SSKJobQueues
+    private let messageSenderJobQueue: MessageSenderJobQueue
 
     @objc
     public static let hideListDidChange = Notification.Name("hideListDidChange")
@@ -90,12 +90,12 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
-        jobQueues: SSKJobQueues
+        messageSenderJobQueue: MessageSenderJobQueue
     ) {
         self.profileManager = profileManager
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
-        self.jobQueues = jobQueues
+        self.messageSenderJobQueue = messageSenderJobQueue
     }
 
     public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
@@ -295,7 +295,7 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")
-            self.jobQueues.messageSenderJobQueue.add(
+            self.messageSenderJobQueue.add(
                 message: profileKeyMessage.asPreparer,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )

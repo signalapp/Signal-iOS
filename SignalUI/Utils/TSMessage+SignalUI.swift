@@ -69,7 +69,7 @@ public extension TSMessage {
                             owsFailDebug("Local ACI missing during message deletion.")
                         }
 
-                        Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: tx)
+                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: deleteMessage.asPreparer, transaction: tx)
                     }
                 }
             }

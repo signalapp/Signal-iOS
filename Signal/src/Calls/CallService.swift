@@ -50,7 +50,7 @@ public final class CallService: LightweightGroupCallManager {
         return GroupCallAccessoryMessageHandler(
             databaseStorage: databaseStorage,
             groupCallRecordManager: DependenciesBridge.shared.groupCallRecordManager,
-            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
+            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
         )
     }()
 

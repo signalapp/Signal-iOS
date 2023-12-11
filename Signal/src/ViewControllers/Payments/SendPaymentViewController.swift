@@ -352,7 +352,7 @@ public class SendPaymentViewController: OWSViewController {
                 return
             }
             let interaction = OWSPaymentActivationRequestMessage(thread: thread, transaction: transaction)
-            Self.sskJobQueues.messageSenderJobQueue.add(
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(
                 message: interaction.asPreparer,
                 transaction: transaction
             )

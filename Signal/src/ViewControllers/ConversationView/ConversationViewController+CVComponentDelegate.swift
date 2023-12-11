@@ -763,7 +763,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         let promptBuilder = ResendMessagePromptBuilder(
             databaseStorage: databaseStorage,
-            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
+            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
         )
         dismissKeyBoard()
         self.present(promptBuilder.build(for: message), animated: true)

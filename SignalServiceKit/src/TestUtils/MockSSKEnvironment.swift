@@ -67,6 +67,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let groupsV2 = MockGroupsV2()
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
+        let messageSenderJobQueue = MessageSenderJobQueue()
         let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let networkManager = OWSFakeNetworkManager()
         let notificationsManager = NoopNotificationsManager()
@@ -91,7 +92,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = MockVersionedProfiles()
         let webSocketFactory = WebSocketFactoryMock()
-        let sskJobQueues = SSKJobQueues()
 
         let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
@@ -101,10 +101,10 @@ public class MockSSKEnvironment: SSKEnvironment {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            jobQueues: sskJobQueues,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            messageSenderJobQueue: messageSenderJobQueue,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             notificationsManager: notificationsManager,
@@ -170,6 +170,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(db: dependenciesBridge.db, dateProvider: { Date() })
+        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()
 
         super.init(
             contactsManager: contactsManager,
@@ -224,11 +225,12 @@ public class MockSSKEnvironment: SSKEnvironment {
             subscriptionManager: subscriptionManager,
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
-            sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager,
             callMessageHandler: FakeCallMessageHandler(),
             notificationsManager: notificationsManager,
-            messageSendLog: messageSendLog
+            messageSendLog: messageSendLog,
+            messageSenderJobQueue: messageSenderJobQueue,
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
         )
     }
 

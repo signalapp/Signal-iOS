@@ -188,7 +188,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
             }
         } else {
             databaseStorage.write { transaction in
-                self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
             }
         }
     }

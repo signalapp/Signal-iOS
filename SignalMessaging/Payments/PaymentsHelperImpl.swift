@@ -210,7 +210,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 // Only send out payments activated messages from the originating device.
                 if originatedLocally {
                     let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
-                    Self.sskJobQueues.messageSenderJobQueue.add(
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(
                         message: message.asPreparer,
                         transaction: transaction
                     )
@@ -346,7 +346,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         {
             if DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
                 let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
             }
             return
         }

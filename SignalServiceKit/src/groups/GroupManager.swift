@@ -572,7 +572,7 @@ public class GroupManager: NSObject {
         }
         let newConfiguration = updateResult.newConfiguration
         let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread, transaction: transaction)
-        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
     }
 
     // MARK: - Accept Invites
@@ -629,7 +629,7 @@ public class GroupManager: NSObject {
         waitForMessageProcessing: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
-        sskJobQueues.localUserLeaveGroupJobQueue.add(
+        SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.add(
             threadId: threadId,
             replacementAdminAci: replacementAdminAci,
             waitForMessageProcessing: waitForMessageProcessing,
@@ -932,7 +932,7 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
 
-            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -950,7 +950,7 @@ public class GroupManager: NSObject {
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: tx
             )
-            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
         }
     }
 

@@ -86,7 +86,7 @@ public extension OWSReceiptManager {
                 let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
                 if !readReceiptsToSend.isEmpty {
                     let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: readReceiptsToSend, transaction: transaction)
-                    self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
                 }
                 self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
             }
@@ -95,7 +95,7 @@ public extension OWSReceiptManager {
                 let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
                 if !viewedReceiptsToSend.isEmpty {
                     let message = OWSViewedReceiptsForLinkedDevicesMessage(thread: thread, viewedReceipts: viewedReceiptsToSend, transaction: transaction)
-                    self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
                 }
                 self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
             }
@@ -472,7 +472,7 @@ public extension OWSReceiptManager {
                         let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread,
                                                                              readReceipts: receiptsForMessage,
                                                                              transaction: transaction)
-                        self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
                     }
                 }
                 // Continue until we process a batch and have some quota left.

@@ -282,7 +282,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
                                  transaction: SDSAnyWriteTransaction) throws {
         func send(_ preparer: OutgoingMessagePreparer) {
             preparer.insertMessage(transaction: transaction)
-            self.sskJobQueues.messageSenderJobQueue.add(message: preparer, transaction: transaction)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparer, transaction: transaction)
         }
 
         let thread = try getValidatedThread(transaction: transaction)

@@ -64,7 +64,7 @@ public extension ThreadUtil {
         )
         enqueueSendAsyncWrite { writeTransaction in
             let outgoingMessagePreparer = insertMessage(writeTransaction)
-            let promise = Self.sskJobQueues.messageSenderJobQueue.add(
+            let promise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
                 .promise,
                 message: outgoingMessagePreparer,
                 transaction: writeTransaction

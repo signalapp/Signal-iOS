@@ -75,7 +75,7 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                 + (jobRecord.unsavedMessagesToSend ?? [])
             databaseStorage.write { transaction in
                 for message in messagesToSend {
-                    self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
                 }
             }
         } catch {

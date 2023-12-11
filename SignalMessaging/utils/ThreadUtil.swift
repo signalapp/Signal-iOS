@@ -35,7 +35,7 @@ public final class ThreadUtil: Dependencies {
 
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
-            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
             if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
         }
 
@@ -53,7 +53,7 @@ public final class ThreadUtil: Dependencies {
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
-        let promise = sskJobQueues.messageSenderJobQueue.add(
+        let promise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,
             message: message.asPreparer,
             limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
@@ -158,7 +158,7 @@ public extension ThreadUtil {
             message.anyInsert(transaction: tx)
             message.update(with: messageSticker, transaction: tx)
 
-            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
 
             thread.donateSendMessageIntent(for: message, transaction: tx)
         }

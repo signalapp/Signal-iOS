@@ -539,7 +539,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 let address = SignalServiceAddress(serviceId)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
                 let message = OWSStaticOutgoingMessage(thread: contactThread, plaintextData: plaintextData, transaction: tx)
-                Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
             }
         }
     }

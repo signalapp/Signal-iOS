@@ -1190,7 +1190,7 @@ public class StickerManager: NSObject {
         }
 
         let message = OWSStickerPackSyncMessage(thread: thread, packs: packs, operationType: operationType, transaction: transaction)
-        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
     }
 
     @objc

@@ -160,8 +160,8 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
                                                sendLinkPreviews:sendLinkPreviews
                                                     transaction:transaction];
 
-        [self.sskJobQueues.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer
-                                                transaction:transaction];
+        [SSKEnvironment.shared.messageSenderJobQueueRef addMessage:syncConfigurationMessage.asPreparer
+                                                       transaction:transaction];
     });
 }
 
@@ -237,7 +237,8 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
         OWSSyncFetchLatestMessage *syncFetchLatestMessage =
             [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType transaction:transaction];
 
-        [self.sskJobQueues.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
+        [SSKEnvironment.shared.messageSenderJobQueueRef addMessage:syncFetchLatestMessage.asPreparer
+                                                       transaction:transaction];
     });
 }
 

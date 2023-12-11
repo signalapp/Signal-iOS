@@ -77,11 +77,13 @@ public class SSKEnvironment: NSObject {
     public let subscriptionManagerRef: SubscriptionManager
     public let systemStoryManagerRef: SystemStoryManagerProtocol
     public let remoteMegaphoneFetcherRef: RemoteMegaphoneFetcher
-    public let sskJobQueuesRef: SSKJobQueues
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let callMessageHandlerRef: OWSCallMessageHandler
     public let notificationsManagerRef: NotificationsProtocol
     public let messageSendLogRef: MessageSendLog
+    @objc
+    public let messageSenderJobQueueRef: MessageSenderJobQueue
+    public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -140,11 +142,12 @@ public class SSKEnvironment: NSObject {
         subscriptionManager: SubscriptionManager,
         systemStoryManager: SystemStoryManagerProtocol,
         remoteMegaphoneFetcher: RemoteMegaphoneFetcher,
-        sskJobQueues: SSKJobQueues,
         contactDiscoveryManager: ContactDiscoveryManager,
         callMessageHandler: OWSCallMessageHandler,
         notificationsManager: NotificationsProtocol,
-        messageSendLog: MessageSendLog
+        messageSendLog: MessageSendLog,
+        messageSenderJobQueue: MessageSenderJobQueue,
+        localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue
     ) {
         self.contactsManagerRef = contactsManager
         self.linkPreviewManagerRef = linkPreviewManager
@@ -198,11 +201,12 @@ public class SSKEnvironment: NSObject {
         self.subscriptionManagerRef = subscriptionManager
         self.systemStoryManagerRef = systemStoryManager
         self.remoteMegaphoneFetcherRef = remoteMegaphoneFetcher
-        self.sskJobQueuesRef = sskJobQueues
         self.contactDiscoveryManagerRef = contactDiscoveryManager
         self.callMessageHandlerRef = callMessageHandler
         self.notificationsManagerRef = notificationsManager
         self.messageSendLogRef = messageSendLog
+        self.messageSenderJobQueueRef = messageSenderJobQueue
+        self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {

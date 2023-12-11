@@ -163,7 +163,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         }
         let promptBuilder = ResendMessagePromptBuilder(
             databaseStorage: databaseStorage,
-            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
+            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
         )
         self.present(promptBuilder.build(for: message), animated: true)
     }

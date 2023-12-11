@@ -106,7 +106,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             masterKey: masterKey,
             transaction: tx
         )
-        self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: tx)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncKeysMessage.asPreparer, transaction: tx)
     }
 
     @objc
@@ -228,7 +228,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType, transaction: transaction)
-        sskJobQueues.messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
     }
 
     // MARK: - Contact Sync
@@ -354,7 +354,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         switch mode {
         case .localAddress:
-            sskJobQueues.messageSenderJobQueue.add(
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(
                 mediaMessage: result.message,
                 dataSource: dataSource,
                 contentType: OWSMimeTypeApplicationOctetStream,
@@ -514,7 +514,7 @@ public extension OWSSyncManager {
         }
 
         let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType, transaction: transaction)
-        sskJobQueues.messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncRequestMessage.asPreparer, transaction: transaction)
     }
 }
 

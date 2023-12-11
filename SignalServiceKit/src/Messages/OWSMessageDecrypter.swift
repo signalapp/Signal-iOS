@@ -72,7 +72,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
                     message: nullMessage.asPreparer,
                     transaction: transaction
@@ -113,7 +113,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
                     message: profileKeyMessage.asPreparer,
                     transaction: transaction
@@ -327,7 +327,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             failedEnvelopeGroupId: failedEnvelopeGroupId,
             transaction: transaction
         )
-        sskJobQueues.messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: resendRequest.asPreparer, transaction: transaction)
     }
 
     private func resetSessionIfNecessary(

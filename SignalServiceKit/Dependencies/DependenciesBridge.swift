@@ -121,10 +121,10 @@ public class DependenciesBridge {
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
-        jobQueues: SSKJobQueues,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
+        messageSenderJobQueue: MessageSenderJobQueue,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocolSwift,
@@ -153,10 +153,10 @@ public class DependenciesBridge {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            jobQueues: jobQueues,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            messageSenderJobQueue: messageSenderJobQueue,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             notificationsManager: notificationsManager,
@@ -190,10 +190,10 @@ public class DependenciesBridge {
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2Swift,
-        jobQueues: SSKJobQueues,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
+        messageSenderJobQueue: MessageSenderJobQueue,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocolSwift,
@@ -255,7 +255,7 @@ public class DependenciesBridge {
             aciProtocolStore: aciProtocolStore,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
-            messageSenderJobQueue: jobQueues.messageSenderJobQueue,
+            messageSenderJobQueue: messageSenderJobQueue,
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             pniProtocolStore: pniProtocolStore,
@@ -371,7 +371,7 @@ public class DependenciesBridge {
         do {
             let outgoingSyncMessageManager = CallRecordOutgoingSyncMessageManagerImpl(
                 databaseStorage: databaseStorage,
-                messageSenderJobQueue: jobQueues.messageSenderJobQueue,
+                messageSenderJobQueue: messageSenderJobQueue,
                 recipientDatabaseTable: self.recipientDatabaseTable
             )
 
@@ -516,7 +516,7 @@ public class DependenciesBridge {
             profileManager: profileManager,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager,
-            jobQueues: jobQueues
+            messageSenderJobQueue: messageSenderJobQueue
         )
 
         self.signalProtocolStoreManager = signalProtocolStoreManager

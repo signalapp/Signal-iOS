@@ -413,14 +413,6 @@ public extension NSObject {
         SSKEnvironment.shared.systemStoryManagerRef
     }
 
-    var sskJobQueues: SSKJobQueues {
-        SSKEnvironment.shared.sskJobQueuesRef
-    }
-
-    static var sskJobQueues: SSKJobQueues {
-        SSKEnvironment.shared.sskJobQueuesRef
-    }
-
     @nonobjc
     var contactDiscoveryManager: ContactDiscoveryManager {
         SSKEnvironment.shared.contactDiscoveryManagerRef
@@ -867,14 +859,6 @@ public extension Dependencies {
 
     static var systemStoryManager: SystemStoryManagerProtocol {
         SSKEnvironment.shared.systemStoryManagerRef
-    }
-
-    var sskJobQueues: SSKJobQueues {
-        SSKEnvironment.shared.sskJobQueuesRef
-    }
-
-    static var sskJobQueues: SSKJobQueues {
-        SSKEnvironment.shared.sskJobQueuesRef
     }
 
     var contactDiscoveryManager: ContactDiscoveryManager {

@@ -62,6 +62,7 @@ public class AppSetup {
         let groupsV2 = GroupsV2Impl()
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
+        let messageSenderJobQueue = MessageSenderJobQueue()
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
@@ -83,7 +84,6 @@ public class AppSetup {
         let syncManager = OWSSyncManager(default: ())
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = VersionedProfilesImpl()
-        let sskJobQueues = SSKJobQueues()
 
         let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
@@ -93,10 +93,10 @@ public class AppSetup {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            jobQueues: sskJobQueues,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
+            messageSenderJobQueue: messageSenderJobQueue,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
             notificationsManager: notificationPresenter,
@@ -178,6 +178,7 @@ public class AppSetup {
             db: dependenciesBridge.db,
             dateProvider: { Date() }
         )
+        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()
 
         let smEnvironment = SMEnvironment(
             preferences: preferences,
@@ -240,11 +241,12 @@ public class AppSetup {
             subscriptionManager: subscriptionManager,
             systemStoryManager: systemStoryManager,
             remoteMegaphoneFetcher: remoteMegaphoneFetcher,
-            sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager,
             callMessageHandler: callMessageHandler,
             notificationsManager: notificationPresenter,
-            messageSendLog: messageSendLog
+            messageSendLog: messageSendLog,
+            messageSenderJobQueue: messageSenderJobQueue,
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

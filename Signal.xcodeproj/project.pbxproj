@@ -1433,7 +1433,6 @@
 		D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */; };
 		D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
-		D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B2E291AF63500665298 /* SSKJobQueues.swift */; };
 		D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
@@ -4124,7 +4123,6 @@
 		D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionViewController.swift; sourceTree = "<group>"; };
 		D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixedLogger.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
-		D9668B2E291AF63500665298 /* SSKJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKJobQueues.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
@@ -8412,7 +8410,6 @@
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
-				D9668B2E291AF63500665298 /* SSKJobQueues.swift */,
 			);
 			path = Jobs;
 			sourceTree = "<group>";
@@ -13128,7 +13125,6 @@
 				665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */,
 				F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */,
 				50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */,
-				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,
 				F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */,
 				C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */,
 				F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */,

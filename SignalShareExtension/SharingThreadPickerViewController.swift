@@ -533,7 +533,7 @@ extension SharingThreadPickerViewController {
         var promises = [Promise<Void>]()
         databaseStorage.write { transaction in
             for message in outgoingMessages.get() {
-                promises.append(sskJobQueues.messageSenderJobQueue.add(
+                promises.append(SSKEnvironment.shared.messageSenderJobQueueRef.add(
                     .promise,
                     message: message.asPreparer,
                     transaction: transaction
