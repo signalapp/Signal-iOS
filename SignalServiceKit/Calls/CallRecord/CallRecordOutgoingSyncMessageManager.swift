@@ -211,7 +211,8 @@ private extension OutgoingCallEvent.EventType {
                 .individual(.pending),
                 .individual(.incomingMissed),
                 .group(.generic),
-                .group(.incomingRingingMissed):
+                .group(.ringing),
+                .group(.ringingMissed):
             // Local-only statuses
             return nil
         case
@@ -221,7 +222,7 @@ private extension OutgoingCallEvent.EventType {
             self = .accepted
         case
                 .individual(.notAccepted),
-                .group(.ringingNotAccepted):
+                .group(.ringingDeclined):
             self = .notAccepted
         }
     }

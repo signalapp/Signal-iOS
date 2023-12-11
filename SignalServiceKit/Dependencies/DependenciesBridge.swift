@@ -100,6 +100,7 @@ public class DependenciesBridge {
 
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
+    public let threadStore: ThreadStore
     public let threadReplyInfoStore: ThreadReplyInfoStore
 
     public var tsAccountManager: TSAccountManager
@@ -339,7 +340,7 @@ public class DependenciesBridge {
         self.groupMemberStore = groupMemberStore
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
-        let threadStore = ThreadStoreImpl()
+        self.threadStore = ThreadStoreImpl()
         self.wallpaperStore = WallpaperStore(
             keyValueStoreFactory: self.keyValueStoreFactory,
             notificationScheduler: self.schedulers.main
@@ -358,7 +359,7 @@ public class DependenciesBridge {
             threadAssociatedDataStore: self.threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
             threadReplyInfoStore: self.threadReplyInfoStore,
-            threadStore: threadStore,
+            threadStore: self.threadStore,
             wallpaperStore: self.wallpaperStore
         )
 
@@ -395,7 +396,7 @@ public class DependenciesBridge {
                     notificationPresenter: notificationsManager
                 ),
                 recipientDatabaseTable: self.recipientDatabaseTable,
-                threadStore: threadStore
+                threadStore: self.threadStore
             )
         }
 
@@ -417,7 +418,7 @@ public class DependenciesBridge {
                 threadAssociatedDataStore: self.threadAssociatedDataStore,
                 threadRemover: self.threadRemover,
                 threadReplyInfoStore: self.threadReplyInfoStore,
-                threadStore: threadStore,
+                threadStore: self.threadStore,
                 userProfileStore: userProfileStore,
                 wallpaperStore: self.wallpaperStore
             ),

@@ -108,7 +108,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 )
             }
         case let .group(groupId):
-            guard FeatureFlags.groupCallDispositionSyncMessages else {
+            guard FeatureFlags.groupCallDisposition else {
                 logger.warn("Dropping incoming group call disposition sync message – feature not yet supported!")
                 return
             }
@@ -158,15 +158,15 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                         switch existingCallStatus {
                         case .generic, .joined:
                             return .joined
-                        case .ringingAccepted, .ringingNotAccepted, .incomingRingingMissed:
+                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
                             return .ringingAccepted
                         }
                     case .notAccepted:
                         // We declined on another device. If we joined the call
                         // on this device, we'll prefer that status.
                         switch existingCallStatus {
-                        case .generic, .incomingRingingMissed, .ringingNotAccepted:
-                            return .ringingNotAccepted
+                        case .generic, .ringing, .ringingMissed, .ringingDeclined:
+                            return .ringingDeclined
                         case .joined, .ringingAccepted:
                             return existingCallStatus
                         }
@@ -201,7 +201,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 case (.incoming, .notAccepted):
                     // We only send this combination for ring declines, so we
                     // can assume that's what this was.
-                    groupCallStatus = .ringingNotAccepted
+                    groupCallStatus = .ringingDeclined
                 }
 
                 createGroupCallRecordForIncomingSyncMessage(
@@ -322,6 +322,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
             existingCallRecord: existingCallRecord,
             newCallDirection: existingCallRecord.callDirection,
             newGroupCallStatus: newGroupCallStatus,
+            newGroupCallRingerAci: nil,
             callEventTimestamp: callEventTimestamp,
             shouldSendSyncMessage: false,
             tx: tx
@@ -347,17 +348,11 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
     ) {
         logger.info("Creating group call record and interaction for incoming sync message.")
 
-        let newGroupCallInteraction = OWSGroupCallMessage(
-            joinedMemberAcis: [],
-            creatorAci: nil,
-            thread: groupThread,
-            sentAtTimestamp: callEventTimestamp
+        let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
+            groupThread: groupThread,
+            callEventTimestamp: callEventTimestamp,
+            tx: tx
         )
-        interactionStore.insertInteraction(newGroupCallInteraction, tx: tx)
-
-        guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
-            owsFail("Missing SQLite row ID for just-inserted interaction!")
-        }
 
         _ = groupCallRecordManager.createGroupCallRecord(
             callId: callId,
@@ -367,6 +362,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
             groupThreadRowId: groupThreadRowId,
             callDirection: callDirection,
             groupCallStatus: groupCallStatus,
+            groupCallRingerAci: nil,
             callEventTimestamp: callEventTimestamp,
             shouldSendSyncMessage: false,
             tx: tx

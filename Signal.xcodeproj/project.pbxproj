@@ -1390,6 +1390,8 @@
 		D91A39E32AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */; };
 		D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */; };
 		D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */; };
+		D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */; };
+		D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */; };
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
@@ -4082,6 +4084,7 @@
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
 		D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSYapDatabaseObject+SQLiteRowId.swift"; sourceTree = "<group>"; };
 		D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentProcessor.swift; sourceTree = "<group>"; };
+		D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegateTest.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -4184,6 +4187,7 @@
 		D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JobRecord+Columns.swift"; sourceTree = "<group>"; };
 		D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItem.swift"; sourceTree = "<group>"; };
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
+		D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegate.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
@@ -8361,6 +8365,7 @@
 				D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */,
 				D95A79A72AB125D80013DB00 /* CallRecordStore.swift */,
 				D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */,
+				D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */,
 				D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */,
 				D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */,
 				D979CC212AD3933B006AAC49 /* ThreadStore+CallRecord.swift */,
@@ -8437,6 +8442,7 @@
 				D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */,
 				D979CC562AD5E240006AAC49 /* CallRecordTest.swift */,
 				D979CC5C2AD616A4006AAC49 /* GroupCallRecordManagerTest.swift */,
+				D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */,
 				D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */,
 			);
 			path = CallRecord;
@@ -12702,6 +12708,7 @@
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
 				D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
+				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				F9C5CE77289453B400548EEE /* GroupManager.swift in Sources */,
@@ -13361,6 +13368,7 @@
 				F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */,
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
 				D979CC5E2AD618EA006AAC49 /* GroupCallRecordManagerTest.swift in Sources */,
+				D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */,
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,

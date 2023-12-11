@@ -53,22 +53,29 @@ final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
     func testGroupTransitions() {
         let allowedTransitions: Set<GroupStatusTransition> = [
             [.generic, .joined],
-            [.generic, .incomingRingingMissed],
-            [.generic, .ringingNotAccepted],
+            [.generic, .ringing],
+            [.generic, .ringingMissed],
+            [.generic, .ringingDeclined],
             [.generic, .ringingAccepted],
             [.joined, .ringingAccepted],
-            [.ringingNotAccepted, .ringingAccepted],
-            [.incomingRingingMissed, .ringingNotAccepted],
-            [.incomingRingingMissed, .ringingAccepted],
+            [.ringing, .joined], // This indicates something is wrong, but if something is we don't want this manager to give us trouble.
+            [.ringing, .ringingMissed],
+            [.ringing, .ringingDeclined],
+            [.ringing, .ringingAccepted],
+            [.ringingDeclined, .ringingAccepted],
+            [.ringingMissed, .ringingDeclined],
+            [.ringingMissed, .ringingAccepted],
         ]
 
         for transition in GroupStatusTransition.all {
-            XCTAssertEqual(
-                statusTransitionManager.isStatusTransitionAllowed(
-                    fromGroupCallStatus: transition.from,
-                    toGroupCallStatus: transition.to
-                ),
-                allowedTransitions.contains(transition)
+            let actual = statusTransitionManager.isStatusTransitionAllowed(
+                fromGroupCallStatus: transition.from,
+                toGroupCallStatus: transition.to
+            )
+
+            let expected = allowedTransitions.contains(transition)
+
+            XCTAssertEqual(actual, expected, "Transition \(transition) had unexpected result."
             )
         }
     }

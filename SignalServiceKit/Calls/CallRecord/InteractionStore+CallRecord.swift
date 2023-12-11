@@ -26,6 +26,8 @@ public extension InteractionStore {
         return interaction
     }
 
+    // MARK: - Individual call interactions
+
     /// Update the `callType` of an individual-call interaction.
     func updateIndividualCallInteractionType(
         individualCallInteraction: TSCall,
@@ -35,6 +37,33 @@ public extension InteractionStore {
         updateInteraction(individualCallInteraction, tx: tx) { individualCallInteraction in
             individualCallInteraction.callType = newCallInteractionType
         }
+    }
+
+    // MARK: - Group call interactions
+
+    /// Inserts a group call interaction without any group call membership info.
+    /// - Returns
+    /// The inserted interaction and its SQLite row ID.
+    func insertGroupCallInteraction(
+        joinedMemberAcis: [Aci] = [],
+        creatorAci: Aci? = nil,
+        groupThread: TSGroupThread,
+        callEventTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) -> (OWSGroupCallMessage, Int64) {
+        let groupCallInteraction = OWSGroupCallMessage(
+            joinedMemberAcis: joinedMemberAcis.map { AciObjC($0) },
+            creatorAci: creatorAci.map { AciObjC($0) },
+            thread: groupThread,
+            sentAtTimestamp: callEventTimestamp
+        )
+        insertInteraction(groupCallInteraction, tx: tx)
+
+        guard let interactionRowId = groupCallInteraction.sqliteRowId else {
+            owsFail("Missing SQLite row ID for just-inserted interaction!")
+        }
+
+        return (groupCallInteraction, interactionRowId)
     }
 
     /// Update the joined members and creator of a group call on the associated

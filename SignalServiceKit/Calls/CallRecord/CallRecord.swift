@@ -20,6 +20,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case callType = "type"
         case callDirection = "direction"
         case callStatus = "status"
+        case _groupCallRingerAci = "groupCallRingerAci"
         case callBeganTimestamp = "timestamp"
     }
 
@@ -56,6 +57,46 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public internal(set) var callDirection: CallDirection
     public internal(set) var callStatus: CallStatus
 
+    /// If this record represents a group ring, returns the user that initiated
+    /// the ring.
+    ///
+    /// - Important
+    /// This field is only usable if this record represents a group ring.
+    public internal(set) var groupCallRingerAci: Aci? {
+        get {
+            guard isGroupRing else {
+                CallRecordLogger.shared.error("Requested group call ringer, but this record wasn't a group ring!")
+                return nil
+            }
+
+            return _groupCallRingerAci.map { Aci(fromUUID: $0) }
+        }
+        set {
+            guard let newValue else {
+                CallRecordLogger.shared.error("We should never attempt to clear the group call ringer!")
+                return
+            }
+
+            guard isGroupRing else {
+                CallRecordLogger.shared.error("Set group call ringer, but this record wasn't a group ring!")
+                return
+            }
+
+            _groupCallRingerAci = newValue.rawUUID
+        }
+    }
+    private var _groupCallRingerAci: UUID?
+
+    /// Does this record represent a group ring?
+    private var isGroupRing: Bool {
+        switch callStatus {
+        case .group(.ringing), .group(.ringingAccepted), .group(.ringingDeclined), .group(.ringingMissed):
+            return true
+        case .individual, .group(.generic), .group(.joined):
+            return false
+        }
+    }
+
     /// The timestamp at which we believe the call began.
     ///
     /// For calls we discover on this device, such as by receiving a 1:1 call
@@ -89,6 +130,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         callType: CallType,
         callDirection: CallDirection,
         callStatus: CallStatus,
+        groupCallRingerAci: Aci? = nil,
         callBeganTimestamp: UInt64
     ) {
         self.callIdString = String(callId)
@@ -98,6 +140,10 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         self.callDirection = callDirection
         self.callStatus = callStatus
         self.callBeganTimestamp = callBeganTimestamp
+
+        if let groupCallRingerAci, isGroupRing {
+            self.groupCallRingerAci = groupCallRingerAci
+        }
     }
 
     /// Capture the SQLite row ID for this record, after insertion.
@@ -116,7 +162,7 @@ extension CallRecord {
         // [Calls] TODO: add call links here
     }
 
-    public enum CallDirection: Int, Codable {
+    public enum CallDirection: Int, Codable, CaseIterable {
         case incoming = 0
         case outgoing = 1
     }
@@ -179,30 +225,47 @@ extension CallRecord {
             /// joined.
             case joined = 5
 
+            /// This call involves ringing which is actively occuring. No action
+            /// has yet been taken on the ring, and it has not expired.
+            ///
+            /// - Note
+            /// We do not track the state of outgoing group rings and instead
+            /// record them as accepted when we start the ring. Consequently,
+            /// only incoming rings should be in this state.
+            case ringing = 9
+
             /// This call involved ringing, and the ring was accepted.
             ///
-            /// For an incoming call, indicates we accepted the ring.
             /// - Note
-            /// We do not track the state of outgoing group rings, so outgoing
-            /// calls should not end up in this state.
+            /// We do not track the state of outgoing group rings and instead
+            /// record them as accepted when we start the ring. All outgoing
+            /// group rings will therefore end up in this state.
             case ringingAccepted = 6
 
-            /// This call involved ringing, and the ring was not accepted.
+            /// This call involved ringing, and the ring was declined.
             ///
             /// For an incoming call, indicates we actively declined the ring.
-            /// - Note
-            /// We do not track the state of outgoing group rings, so outgoing
-            /// calls should not end up in this state.
-            case ringingNotAccepted = 7
-
-            /// This was an incoming call that involved ringing, that we missed.
             ///
-            /// An incoming missed call is contrasted with an actively-declined
-            /// one, which would fall under ``ringingNotAccepted`` above.
+            /// - Note
+            /// We do not track the state of outgoing group rings and instead
+            /// record them as accepted when we start the ring. Consequently,
+            /// only incoming rings should be in this state.
+            case ringingDeclined = 7
+
+            /// This call involved ringing, and no action was taken on the ring
+            /// before it expired.
+            ///
+            /// A missed call is contrasted with an actively-declined one, which
+            /// would fall under ``ringingNotAccepted`` above.
             ///
             /// - Note
             /// Calls declined as "busy" use this case.
-            case incomingRingingMissed = 8
+            ///
+            /// - Note
+            /// We do not track the state of outgoing group rings and instead
+            /// record them as accepted when we start the ring. Consequently,
+            /// only incoming rings should be in this state.
+            case ringingMissed = 8
         }
 
         // MARK: Codable

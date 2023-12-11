@@ -117,6 +117,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupThreadRowId: thread1.sqliteRowId!,
                 callDirection: .outgoing,
                 groupCallStatus: .joined,
+                groupCallRingerAci: nil,
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: false,
                 tx: tx
@@ -133,8 +134,9 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallInteractionRowId: interaction2.sqliteRowId!,
                 groupThread: thread2,
                 groupThreadRowId: thread2.sqliteRowId!,
-                callDirection: .outgoing,
-                groupCallStatus: .joined,
+                callDirection: .incoming,
+                groupCallStatus: .ringing,
+                groupCallRingerAci: .randomForTesting(),
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: true,
                 tx: tx
@@ -142,6 +144,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 2)
+        XCTAssertNotNil(mockCallRecordStore.callRecords[1].groupCallRingerAci)
         XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
@@ -347,13 +350,13 @@ final class GroupCallRecordManagerTest: XCTestCase {
 /// This class snoops on those methods so we can verify they're being called.
 private class SnoopingGroupCallRecordManagerImpl: GroupCallRecordManagerImpl {
     var didAskToCreate = false
-    override func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+    override func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
         didAskToCreate = true
         return nil
     }
 
     var didAskToUpdate = false
-    override func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+    override func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, newGroupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         didAskToUpdate = true
         return
     }

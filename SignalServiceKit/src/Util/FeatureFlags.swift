@@ -86,9 +86,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
-    /// Whether we should send sync messages (and update corresponding
-    /// ``CallRecord`` state) for group call events.
-    public static let groupCallDispositionSyncMessages = build.includes(.dev)
+    public static let groupCallDisposition = build.includes(.dev)
 
     public static let allowIDEALDonations = build.includes(.dev)
 

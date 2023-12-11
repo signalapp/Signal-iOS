@@ -247,19 +247,13 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         groupThreadRowId: Int64,
         tx: DBWriteTransaction
     ) -> OWSGroupCallMessage {
-        let newGroupCallInteraction = OWSGroupCallMessage(
-            joinedMemberAcis: joinedMemberAcis.map { AciObjC($0) },
-            creatorAci: creatorAci.map { AciObjC($0) },
-            thread: groupThread,
-            sentAtTimestamp: triggerEventTimestamp
+        let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
+            joinedMemberAcis: joinedMemberAcis,
+            creatorAci: creatorAci,
+            groupThread: groupThread,
+            callEventTimestamp: triggerEventTimestamp,
+            tx: tx
         )
-        interactionStore.insertInteraction(
-            newGroupCallInteraction, tx: tx
-        )
-
-        guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
-            owsFail("Missing SQLite row ID for just-inserted interaction!")
-        }
 
         _ = groupCallRecordManager.createGroupCallRecordForPeek(
             callId: callId,

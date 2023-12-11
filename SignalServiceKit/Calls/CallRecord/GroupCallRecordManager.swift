@@ -19,6 +19,11 @@ public protocol GroupCallRecordManager {
     )
 
     /// Create a group call record with the given parameters.
+    ///
+    /// - Parameter groupCallRingerAci
+    /// The group call ringer for this record, if any. Note that this must only
+    /// be passed if the record will have a ringing status. Otherwise, pass
+    /// `nil`.
     func createGroupCallRecord(
         callId: UInt64,
         groupCallInteraction: OWSGroupCallMessage,
@@ -27,17 +32,25 @@ public protocol GroupCallRecordManager {
         groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        groupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) -> CallRecord?
 
     /// Update an group existing call record with the given parameters.
+    ///
+    /// - Parameter newGroupCallRingerAci
+    /// The new group call ringer for this record, if any. Note that this must
+    /// only be passed if the record is, or is being updated to, a ringing
+    /// ringing status. Otherwise, passing `nil` results in no change to the
+    /// existing group call ringer.
     func updateGroupCallRecord(
         groupThread: TSGroupThread,
         existingCallRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        newGroupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
@@ -80,6 +93,7 @@ public extension GroupCallRecordManager {
             groupThreadRowId: groupThreadRowId,
             callDirection: .incoming,
             groupCallStatus: .generic,
+            groupCallRingerAci: nil,
             callEventTimestamp: groupCallInteraction.timestamp,
             shouldSendSyncMessage: false,
             tx: tx
@@ -116,6 +130,9 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
+        // We never have a group call ringer in this flow.
+        let groupCallRingerAci: Aci? = nil
+
         if let existingCallRecord = callRecordStore.fetch(
             callId: callId,
             threadRowId: groupThreadRowId,
@@ -126,22 +143,17 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 existingCallRecord: existingCallRecord,
                 newCallDirection: callDirection,
                 newGroupCallStatus: groupCallStatus,
+                newGroupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: callEventTimestamp,
                 shouldSendSyncMessage: shouldSendSyncMessage,
                 tx: tx
             )
         } else {
-            let newGroupCallInteraction = OWSGroupCallMessage(
-                joinedMemberAcis: [],
-                creatorAci: nil,
-                thread: groupThread,
-                sentAtTimestamp: callEventTimestamp
+            let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
+                groupThread: groupThread,
+                callEventTimestamp: callEventTimestamp,
+                tx: tx
             )
-            interactionStore.insertInteraction(newGroupCallInteraction, tx: tx)
-
-            guard let interactionRowId = newGroupCallInteraction.sqliteRowId else {
-                owsFail("Missing SQLite row ID for just-inserted interaction!")
-            }
 
             _ = createGroupCallRecord(
                 callId: callId,
@@ -151,6 +163,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 groupThreadRowId: groupThreadRowId,
                 callDirection: callDirection,
                 groupCallStatus: groupCallStatus,
+                groupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: callEventTimestamp,
                 shouldSendSyncMessage: shouldSendSyncMessage,
                 tx: tx
@@ -160,12 +173,13 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
     public func createGroupCallRecord(
         callId: UInt64,
-        groupCallInteraction: OWSGroupCallMessage,
+        groupCallInteraction _: OWSGroupCallMessage,
         groupCallInteractionRowId: Int64,
         groupThread: TSGroupThread,
         groupThreadRowId: Int64,
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        groupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
@@ -177,7 +191,8 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             callType: .groupCall,
             callDirection: callDirection,
             callStatus: .group(groupCallStatus),
-            callBeganTimestamp: groupCallInteraction.timestamp
+            groupCallRingerAci: groupCallRingerAci,
+            callBeganTimestamp: callEventTimestamp
         )
 
         guard callRecordStore.insert(
@@ -201,6 +216,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         existingCallRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
+        newGroupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
@@ -239,6 +255,16 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             newCallStatus: .group(newGroupCallStatus),
             tx: tx
         ) else { return }
+
+        // Important to do this after we update the record status, since we need
+        // the record to be in a "ringing"-related state before setting this.
+        if let newGroupCallRingerAci {
+            guard callRecordStore.updateGroupCallRingerAci(
+                callRecord: existingCallRecord,
+                newGroupCallRingerAci: newGroupCallRingerAci,
+                tx: tx
+            ) else { return }
+        }
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
@@ -283,7 +309,7 @@ class GroupCallRecordStatusTransitionManager {
             case .joined:
                 // User joined a call started without ringing.
                 return true
-            case .ringingAccepted, .ringingNotAccepted, .incomingRingingMissed:
+            case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
                 // This probably indicates a race between us opportunistically
                 // learning about a call (e.g., by peeking), and receiving a
                 // ring for that call. That's fine, but we prefer the
@@ -293,7 +319,7 @@ class GroupCallRecordStatusTransitionManager {
         case .joined:
             switch toGroupCallStatus {
             case .joined: return false
-            case .generic, .ringingNotAccepted, .incomingRingingMissed:
+            case .generic, .ringing, .ringingDeclined, .ringingMissed:
                 // Prefer the fact that we joined somewhere.
                 return false
             case .ringingAccepted:
@@ -302,30 +328,50 @@ class GroupCallRecordStatusTransitionManager {
                 // That's fine, but we prefer the ring-related status.
                 return true
             }
+        case .ringing:
+            switch toGroupCallStatus {
+            case .ringing: return false
+            case .generic:
+                // We know something more specific about the call now.
+                return false
+            case .joined:
+                // This is weird because we should be moving to "ringing
+                // accepted" rather than joined, but if something weird is
+                // happening we should prefer the joined status.
+                fallthrough
+            case .ringingAccepted, .ringingDeclined, .ringingMissed:
+                return true
+            }
         case .ringingAccepted:
             switch toGroupCallStatus {
             case .ringingAccepted: return false
-            case .generic, .joined, .ringingNotAccepted, .incomingRingingMissed:
+            case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed:
                 // Prefer the fact that we accepted the ring somewhere.
                 return false
             }
-        case .ringingNotAccepted:
+        case .ringingDeclined:
             switch toGroupCallStatus {
-            case .ringingNotAccepted: return false
-            case .generic, .joined, .incomingRingingMissed:
+            case .ringingDeclined: return false
+            case .generic, .joined:
                 // Prefer the explicit ring-related status.
+                return false
+            case .ringing, .ringingMissed:
+                // Prefer the more specific status.
                 return false
             case .ringingAccepted:
                 // Prefer the fact that we accepted the ring somewhere.
                 return true
             }
-        case .incomingRingingMissed:
+        case .ringingMissed:
             switch toGroupCallStatus {
-            case .incomingRingingMissed: return false
+            case .ringingMissed: return false
             case .generic, .joined:
                 // Prefer the ring-related status.
                 return false
-            case .ringingAccepted, .ringingNotAccepted:
+            case .ringing:
+                // Prefer the more specific status.
+                return false
+            case .ringingAccepted, .ringingDeclined:
                 // Prefer the explicit ring-related status.
                 return true
             }

@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -223,11 +224,109 @@ final class CallRecordStoreTest: XCTestCase {
             }
         }
     }
+
+    // MARK: -
+
+    func testDecodingStableRowSucceeds() throws {
+        let (interaction1, thread1) = insertThreadAndInteraction()
+        let (interaction2, thread2) = insertThreadAndInteraction()
+        let (interaction3, thread3) = insertThreadAndInteraction()
+
+        try inMemoryDB.write { tx in
+            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
+                INSERT INTO "CallRecord"
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp" )
+                VALUES
+                ( 1, 123, \(interaction1), \(thread1), 0, 0, 0, 1701299999 ),
+                ( 2, 1234, \(interaction2), \(thread2), 2, 1, 6, 1701300000 );
+            """)
+        }
+
+        try inMemoryDB.write { tx in
+            try InMemoryDB.shimOnlyBridge(tx).db.execute(sql: """
+                INSERT INTO "CallRecord"
+                ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "timestamp", "groupCallRingerAci" )
+                VALUES
+                ( 3, 12345, \(interaction3), \(thread3), 2, 0, 8, 1701300001, X'c2459e888a6a474b80fd51a79923fd50' );
+            """)
+        }
+
+        let expectedRecords: [CallRecord] = [
+            .fixture(
+                id: 1,
+                callId: 123,
+                interactionRowId: interaction1,
+                threadRowId: thread1,
+                callType: .audioCall,
+                callDirection: .incoming,
+                callStatus: .individual(.pending),
+                callBeganTimestamp: 1701299999
+            ),
+            .fixture(
+                id: 2,
+                callId: 1234,
+                interactionRowId: interaction2,
+                threadRowId: thread2,
+                callType: .groupCall,
+                callDirection: .outgoing,
+                callStatus: .group(.ringingAccepted),
+                callBeganTimestamp: 1701300000
+            ),
+            .fixture(
+                id: 3,
+                callId: 12345,
+                interactionRowId: interaction3,
+                threadRowId: thread3,
+                callType: .groupCall,
+                callDirection: .incoming,
+                callStatus: .group(.ringingMissed),
+                groupCallRingerAci: Aci(fromUUID: UUID(uuidString: "C2459E88-8A6A-474B-80FD-51A79923FD50")!),
+                callBeganTimestamp: 1701300001
+            ),
+        ]
+
+        try inMemoryDB.read { tx throws in
+            let actualCallRecords = try CallRecord.fetchAll(InMemoryDB.shimOnlyBridge(tx).db)
+            XCTAssertEqual(actualCallRecords.count, expectedRecords.count)
+
+            for (idx, actualCallRecord) in actualCallRecords.enumerated() {
+                XCTAssertTrue(
+                    actualCallRecord.matches(expectedRecords[idx])
+                )
+            }
+        }
+    }
 }
 
 // MARK: - Mocks
 
 private extension CallRecord {
+    static func fixture(
+        id: Int64,
+        callId: UInt64,
+        interactionRowId: Int64,
+        threadRowId: Int64,
+        callType: CallType,
+        callDirection: CallDirection,
+        callStatus: CallStatus,
+        groupCallRingerAci: Aci? = nil,
+        callBeganTimestamp: UInt64
+    ) -> CallRecord {
+        let record = CallRecord(
+            callId: callId,
+            interactionRowId: interactionRowId,
+            threadRowId: threadRowId,
+            callType: callType,
+            callDirection: callDirection,
+            callStatus: callStatus,
+            groupCallRingerAci: groupCallRingerAci,
+            callBeganTimestamp: callBeganTimestamp
+        )
+        record.id = id
+
+        return record
+    }
+
     func matches(
         _ other: CallRecord,
         overridingThreadRowId: Int64? = nil
@@ -240,6 +339,7 @@ private extension CallRecord {
             callType == other.callType,
             callDirection == other.callDirection,
             callStatus == other.callStatus,
+            groupCallRingerAci == other.groupCallRingerAci,
             callBeganTimestamp == other.callBeganTimestamp
         {
             return true

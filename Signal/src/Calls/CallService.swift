@@ -54,6 +54,17 @@ public final class CallService: LightweightGroupCallManager {
         )
     }()
 
+    /// Needs to be lazily initialized, because it uses singletons that are not
+    /// available when this class is initialized.
+    private lazy var groupCallRecordRingUpdateDelegate: GroupCallRecordRingUpdateDelegate = {
+        return GroupCallRecordRingUpdateHandler(
+            callRecordStore: DependenciesBridge.shared.callRecordStore,
+            groupCallRecordManager: DependenciesBridge.shared.groupCallRecordManager,
+            interactionStore: DependenciesBridge.shared.interactionStore,
+            threadStore: DependenciesBridge.shared.threadStore
+        )
+    }()
+
     lazy private(set) var audioService = CallAudioService()
 
     public var earlyRingNextIncomingCall = false
@@ -1452,9 +1463,20 @@ extension CallService: CallManagerDelegate {
         sender: UUID,
         update: RingUpdate
     ) {
-        // [Calls] MARK: Ring updates
-
         let senderAci = Aci(fromUUID: sender)
+
+        if FeatureFlags.groupCallDisposition {
+            /// Let our ``CallRecord`` delegate know we got a ring update.
+            databaseStorage.asyncWrite { tx in
+                self.groupCallRecordRingUpdateDelegate.didReceiveRingUpdate(
+                    groupId: groupId,
+                    ringId: ringId,
+                    ringUpdate: update,
+                    ringUpdateSender: senderAci,
+                    tx: tx.asV2Write
+                )
+            }
+        }
 
         guard update == .requested else {
             if let currentCall = self.currentCall,

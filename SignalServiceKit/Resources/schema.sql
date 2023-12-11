@@ -1486,6 +1486,7 @@ CREATE
         ,"direction" INTEGER NOT NULL
         ,"status" INTEGER NOT NULL
         ,"timestamp" INTEGER NOT NULL
+        ,"groupCallRingerAci" BLOB
 )
 ;
 

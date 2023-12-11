@@ -240,6 +240,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsNewSubscriptionToJobRecords
         case enableFts5SecureDelete
         case addShouldSuppressPaymentAlreadyRedeemedToJobRecords
+        case addGroupCallRingerAciToCallRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2465,6 +2466,14 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.addShouldSuppressPaymentAlreadyRedeemedToJobRecords) { tx in
             try tx.database.alter(table: "model_SSKJobRecord") { table in
                 table.add(column: "shouldSuppressPaymentAlreadyRedeemed", .boolean)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupCallRingerAciToCallRecords) { tx in
+            try tx.database.alter(table: "CallRecord") { table in
+                table.add(column: "groupCallRingerAci", .blob)
             }
 
             return .success(())

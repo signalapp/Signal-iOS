@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 @testable import SignalServiceKit
 
 // MARK: - MockCallRecordStore
@@ -31,6 +33,12 @@ class MockCallRecordStore: CallRecordStore {
     var askedToUpdateRecordDirectionTo: CallRecord.CallDirection?
     func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) -> Bool {
         askedToUpdateRecordDirectionTo = newCallDirection
+        return true
+    }
+
+    var askedToUpdateGroupCallRingerAciTo: Aci?
+    func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) -> Bool {
+        askedToUpdateGroupCallRingerAciTo = newGroupCallRingerAci
         return true
     }
 

@@ -134,7 +134,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
                 tx: tx
             )
 
-            guard FeatureFlags.groupCallDispositionSyncMessages else {
+            guard FeatureFlags.groupCallDisposition else {
                 return
             }
 
@@ -185,7 +185,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
     ) {
         AssertIsOnMainThread()
 
-        guard FeatureFlags.groupCallDispositionSyncMessages else {
+        guard FeatureFlags.groupCallDisposition else {
             return
         }
 
@@ -293,7 +293,7 @@ private extension GroupCallRecordManager {
             groupThread: groupThread,
             groupThreadRowId: groupThreadRowId,
             callDirection: .incoming,
-            groupCallStatus: .ringingNotAccepted,
+            groupCallStatus: .ringingDeclined,
             callEventTimestamp: Date().ows_millisecondsSince1970,
             shouldSendSyncMessage: true,
             tx: tx.asV2Write

@@ -455,6 +455,7 @@ extension ThreadMerger {
         func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool { notImplemented() }
         func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool { notImplemented() }
         func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) -> Bool { notImplemented() }
+        func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) -> Bool { notImplemented() }
         func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) -> Bool { notImplemented() }
         func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? { notImplemented() }
         func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? { notImplemented() }

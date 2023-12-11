@@ -152,18 +152,19 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus
     ) -> (CallRecord, Data) {
         let thread = TSGroupThread.forUnitTest(groupId: groupId)
-        let interaction = OWSGroupCallMessage(
-            joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: .maxRandom
-        )
 
-        mockDB.write { tx in
+        let (_, interactionRowId) = mockDB.write { tx in
             mockThreadStore.insertThread(thread)
-            mockInteractionStore.insertInteraction(interaction, tx: tx)
+            return mockInteractionStore.insertGroupCallInteraction(
+                groupThread: thread,
+                callEventTimestamp: .maxRandom,
+                tx: tx
+            )
         }
 
         let existingCallRecord = CallRecord(
             callId: .maxRandom,
-            interactionRowId: interaction.sqliteRowId!,
+            interactionRowId: interactionRowId,
             threadRowId: thread.sqliteRowId!,
             callType: .groupCall,
             callDirection: callDirection,
@@ -235,11 +236,11 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         }
 
         let (missedCallRecord, missedGroupId) = createGroupCallRecord(
-            groupId: 1, callDirection: .incoming, groupCallStatus: .incomingRingingMissed
+            groupId: 1, callDirection: .incoming, groupCallStatus: .ringingMissed
         )
 
         let (declinedCallRecord, declinedGroupId) = createGroupCallRecord(
-            groupId: 2, callDirection: .incoming, groupCallStatus: .ringingNotAccepted
+            groupId: 2, callDirection: .incoming, groupCallStatus: .ringingDeclined
         )
 
         /// Updating a ringing-missed record makes it ringing-accepted.
@@ -298,7 +299,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         var updateCount = 0
         mockGroupCallRecordManager.updateGroupCallStub = { _, newGroupCallStatus in
             updateCount += 1
-            XCTAssertEqual(newGroupCallStatus, .ringingNotAccepted)
+            XCTAssertEqual(newGroupCallStatus, .ringingDeclined)
         }
 
         let (genericCallRecord, genericGroupId) = createGroupCallRecord(
@@ -306,7 +307,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         )
 
         let (missedCallRecord, missedGroupId) = createGroupCallRecord(
-            groupId: 2, callDirection: .incoming, groupCallStatus: .incomingRingingMissed
+            groupId: 2, callDirection: .incoming, groupCallStatus: .ringingMissed
         )
 
         /// Updating a generic record makes it ringing-declined.
@@ -506,7 +507,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         expectedGroupCallStatus.wrapped = (.incoming, .joined)
         simulateIncoming(direction: .incoming, event: .accepted)
 
-        expectedGroupCallStatus.wrapped = (.incoming, .ringingNotAccepted)
+        expectedGroupCallStatus.wrapped = (.incoming, .ringingDeclined)
         simulateIncoming(direction: .incoming, event: .notAccepted)
 
         XCTAssertEqual(createCount, 3)
@@ -534,7 +535,7 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
         _ direction: CallRecord.CallDirection,
         _ groupCallStatus: CallRecord.CallStatus.GroupCallStatus
     ) -> Void)?
-    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
+    func createGroupCallRecord(callId: UInt64, groupCallInteraction: OWSGroupCallMessage, groupCallInteractionRowId: Int64, groupThread: TSGroupThread, groupThreadRowId: Int64, callDirection: CallRecord.CallDirection, groupCallStatus: CallRecord.CallStatus.GroupCallStatus, groupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord? {
         createGroupCallStub!(callDirection, groupCallStatus)
         XCTAssertFalse(shouldSendSyncMessage)
         return nil
@@ -544,7 +545,7 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
         _ existingCallRecord: CallRecord,
         _ newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
     ) -> Void)?
-    func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+    func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, newGroupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         updateGroupCallStub!(existingCallRecord, newGroupCallStatus)
         XCTAssertFalse(shouldSendSyncMessage)
     }

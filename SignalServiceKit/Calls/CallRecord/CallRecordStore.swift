@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 public protocol CallRecordStore {
@@ -27,6 +28,18 @@ public protocol CallRecordStore {
     func updateDirection(
         callRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
+        tx: DBWriteTransaction
+    ) -> Bool
+
+    /// Update the group call ringer of the given call record.
+    /// - Important
+    /// Note that the group call ringer may only be set for call records
+    /// referring to a ringing group call.
+    /// - Returns
+    /// True if the record was successfully updated. False otherwise.
+    func updateGroupCallRingerAci(
+        callRecord: CallRecord,
+        newGroupCallRingerAci: Aci,
         tx: DBWriteTransaction
     ) -> Bool
 
@@ -90,6 +103,18 @@ class CallRecordStoreImpl: CallRecordStore {
         updateDirection(
             callRecord: callRecord,
             newCallDirection: newCallDirection,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func updateGroupCallRingerAci(
+        callRecord: CallRecord,
+        newGroupCallRingerAci: Aci,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        updateGroupCallRingerAci(
+            callRecord: callRecord,
+            newGroupCallRingerAci: newGroupCallRingerAci,
             db: SDSDB.shimOnlyBridge(tx).database
         )
     }
@@ -172,6 +197,21 @@ class CallRecordStoreImpl: CallRecordStore {
         db: Database
     ) -> Bool {
         callRecord.callDirection = newCallDirection
+        do {
+            try callRecord.update(db)
+            return true
+        } catch let error {
+            owsFailBeta("Failed to update call record: \(error)")
+            return false
+        }
+    }
+
+    func updateGroupCallRingerAci(
+        callRecord: CallRecord,
+        newGroupCallRingerAci: Aci,
+        db: Database
+    ) -> Bool {
+        callRecord.groupCallRingerAci = newGroupCallRingerAci
         do {
             try callRecord.update(db)
             return true
