@@ -12,9 +12,6 @@ import SignalServiceKit
 public class SendGiftBadgeJobQueue: JobQueue {
     public typealias DurableOperationType = SendGiftBadgeOperation
 
-    public static let jobRecordLabel: String = "SendGiftBadge"
-    public var jobRecordLabel: String { Self.jobRecordLabel }
-
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SendGiftBadgeOperation>()
@@ -91,8 +88,7 @@ public class SendGiftBadgeJobQueue: JobQueue {
             paypalPaymentId: paypalApprovalParams?.paymentId,
             paypalPaymentToken: paypalApprovalParams?.paymentToken,
             threadId: thread.uniqueId,
-            messageText: messageText,
-            label: self.jobRecordLabel
+            messageText: messageText
         )
     }
 

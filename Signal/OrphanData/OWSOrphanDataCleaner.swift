@@ -75,13 +75,11 @@ extension OWSOrphanDataCleaner {
         var shouldAbort = false
 
         func findAttachmentIds<JobRecordType: JobRecord>(
-            label: String,
             transaction: SDSAnyReadTransaction,
             jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
         ) {
             do {
                 try JobRecordFinderImpl<JobRecordType>().enumerateJobRecords(
-                    label: label,
                     transaction: transaction.asV2Read,
                     block: { jobRecord, stop in
                         guard isMainAppAndActive() else {
@@ -98,7 +96,6 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: MessageSenderJobQueue.jobRecordLabel,
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) in
                 fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds() ?? []
@@ -110,7 +107,6 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: BroadcastMediaMessageJobRecord.defaultLabel,
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: BroadcastMediaMessageJobRecord) in jobRecord.attachmentIdMap.keys }
         )
@@ -120,7 +116,6 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: IncomingGroupSyncJobRecord.defaultLabel,
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: IncomingGroupSyncJobRecord) in [jobRecord.attachmentId] }
         )
@@ -130,7 +125,6 @@ extension OWSOrphanDataCleaner {
         }
 
         findAttachmentIds(
-            label: IncomingContactSyncJobRecord.defaultLabel,
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) in [jobRecord.attachmentId] }
         )

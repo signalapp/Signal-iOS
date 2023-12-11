@@ -7,8 +7,6 @@ import Foundation
 import GRDB
 
 final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    static let defaultLabel: String = "SSKMessageDecrypt"
-
     override class var jobRecordType: JobRecordType { .legacyMessageDecrypt }
 
     public let envelopeData: Data?
@@ -17,7 +15,6 @@ final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRe
     public init(
         envelopeData: Data?,
         serverDeliveryTimestamp: UInt64,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -26,7 +23,6 @@ final class LegacyMessageDecryptJobRecord: JobRecord, FactoryInitializableFromRe
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status

@@ -13,7 +13,6 @@ public final class SessionResetJobRecord: JobRecord, FactoryInitializableFromRec
 
     init(
         contactThreadId: String,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -21,15 +20,14 @@ public final class SessionResetJobRecord: JobRecord, FactoryInitializableFromRec
         self.contactThreadId = contactThreadId
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
         )
     }
 
-    public convenience init(contactThread: TSContactThread, label: String) {
-        self.init(contactThreadId: contactThread.uniqueId, label: label)
+    public convenience init(contactThread: TSContactThread) {
+        self.init(contactThreadId: contactThread.uniqueId)
     }
 
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {

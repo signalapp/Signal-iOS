@@ -180,7 +180,6 @@ public class MessageProcessor: NSObject {
                 let legacyDecryptJobRecords: [LegacyMessageDecryptJobRecord]
                 do {
                     legacyDecryptJobRecords = try JobRecordFinderImpl<LegacyMessageDecryptJobRecord>().allRecords(
-                        label: LegacyMessageDecryptJobRecord.defaultLabel,
                         status: .ready,
                         transaction: transaction.asV2Read
                     )

@@ -7,8 +7,6 @@ import Foundation
 import GRDB
 
 public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    public static let defaultLabel = "BroadcastMediaMessage"
-
     override class var jobRecordType: JobRecordType { .broadcastMediaMessage }
 
     /// A map from the AttachmentStream's to upload to their corresponding list of visible copies in individual
@@ -32,7 +30,6 @@ public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializab
     public init(
         attachmentIdMap: [String: [String]],
         unsavedMessagesToSend: [TSOutgoingMessage]?,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -41,7 +38,6 @@ public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializab
         self.unsavedMessagesToSend = unsavedMessagesToSend
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status

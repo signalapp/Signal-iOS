@@ -154,7 +154,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 message: messageRecord,
                 removeMessageAfterSending: removeMessageAfterSending,
                 isHighPriority: isHighPriority,
-                label: self.jobRecordLabel,
                 transaction: transaction
             )
             if exclusiveToCurrentProcessIdentifier {
@@ -172,15 +171,9 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = MessageSenderOperation
-    @objc
-    public static let jobRecordLabel: String = "MessageSender"
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { true }
     public var runningOperations = AtomicArray<MessageSenderOperation>()
-
-    public var jobRecordLabel: String {
-        return type(of: self).jobRecordLabel
-    }
 
     @objc
     public func setup() {

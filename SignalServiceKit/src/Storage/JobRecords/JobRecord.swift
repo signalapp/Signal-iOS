@@ -67,6 +67,32 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
     }
 }
 
+extension JobRecord.JobRecordType {
+    var jobRecordLabel: String {
+        // These values are persisted and must not change, even if they're misspelled.
+        switch self {
+        case .broadcastMediaMessage:
+            return "BroadcastMediaMessage"
+        case .incomingContactSync:
+            return "IncomingContactSync"
+        case .deprecated_incomingGroupSync:
+            return "IncomingGroupSync"
+        case .legacyMessageDecrypt:
+            return "SSKMessageDecrypt"
+        case .localUserLeaveGroup:
+            return "LocalUserLeaveGroup"
+        case .messageSender:
+            return "MessageSender"
+        case .subscriptionReceiptCredentialRedemption:
+            return "SubscriptionReceiptCredentailRedemption"
+        case .sendGiftBadge:
+            return "SendGiftBadge"
+        case .sessionReset:
+            return "SessionReset"
+        }
+    }
+}
+
 public class JobRecord: SDSCodableModel {
     public enum Status: Int {
         case unknown = 0
@@ -90,14 +116,13 @@ public class JobRecord: SDSCodableModel {
     private(set) var status: Status
 
     init(
-        label: String,
         exclusiveProcessIdentifier: String?,
         failureCount: UInt,
         status: Status
     ) {
         uniqueId = UUID().uuidString
 
-        self.label = label
+        self.label = Self.jobRecordType.jobRecordLabel
         self.exclusiveProcessIdentifier = exclusiveProcessIdentifier
         self.failureCount = failureCount
         self.status = status

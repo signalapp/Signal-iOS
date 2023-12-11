@@ -7,8 +7,6 @@ import Foundation
 import GRDB
 
 public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    public static let defaultLabel = "IncomingContactSync"
-
     override class var jobRecordType: JobRecordType { .incomingContactSync }
 
     public let attachmentId: String
@@ -17,7 +15,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
     public init(
         attachmentId: String,
         isCompleteContactSync: Bool,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -26,7 +23,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         self.isCompleteContactSync = isCompleteContactSync
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status

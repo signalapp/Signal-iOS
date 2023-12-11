@@ -42,7 +42,6 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         amount: Decimal?,
         currencyCode: String?,
         boostPaymentIntentID: String,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -63,7 +62,6 @@ public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, 
         self.boostPaymentIntentID = boostPaymentIntentID
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status

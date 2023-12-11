@@ -16,7 +16,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
                 message: message,
                 removeMessageAfterSending: false,
                 isHighPriority: false,
-                label: MessageSenderJobQueue.jobRecordLabel,
                 transaction: transaction
             )
 
@@ -35,7 +34,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
                     message: message,
                     removeMessageAfterSending: false,
                     isHighPriority: false,
-                    label: MessageSenderJobQueue.jobRecordLabel,
                     transaction: transaction
                 )
 
@@ -55,7 +53,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
                 message: message,
                 removeMessageAfterSending: false,
                 isHighPriority: false,
-                label: MessageSenderJobQueue.jobRecordLabel,
                 transaction: transaction
             )
 

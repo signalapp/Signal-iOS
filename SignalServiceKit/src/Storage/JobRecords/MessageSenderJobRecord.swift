@@ -23,7 +23,6 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         isMediaMessage: Bool,
         removeMessageAfterSending: Bool,
         isHighPriority: Bool,
-        label: String,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
@@ -36,7 +35,6 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         self.isHighPriority = isHighPriority
 
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status
@@ -47,7 +45,6 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         message: TSOutgoingMessage,
         removeMessageAfterSending: Bool,
         isHighPriority: Bool,
-        label: String,
         transaction: SDSAnyReadTransaction
     ) throws {
         let messageId: String?
@@ -77,8 +74,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             invisibleMessage: invisibleMessage,
             isMediaMessage: isMediaMessage,
             removeMessageAfterSending: removeMessageAfterSending,
-            isHighPriority: isHighPriority,
-            label: label
+            isHighPriority: isHighPriority
         )
     }
 

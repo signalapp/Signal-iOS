@@ -16,7 +16,6 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = IncomingGroupSyncOperation
     public let requiresInternet: Bool = false
     public let isEnabled: Bool = true
-    public let jobRecordLabel: String = IncomingGroupSyncJobRecord.defaultLabel
 
     public var runningOperations = AtomicArray<IncomingGroupSyncOperation>()
     public let isSetup = AtomicBool(false)

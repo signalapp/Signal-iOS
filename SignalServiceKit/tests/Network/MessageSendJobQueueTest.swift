@@ -68,7 +68,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         var readyRecords: [MessageSenderJobRecord] = []
         self.read { tx in
             readyRecords = try! finder.allRecords(
-                label: MessageSenderJobQueue.jobRecordLabel,
                 status: .ready,
                 transaction: tx.asV2Read
             )
@@ -126,7 +125,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         var readyRecords: [MessageSenderJobRecord] = []
         self.read { tx in
             readyRecords = try! finder.allRecords(
-                label: MessageSenderJobQueue.jobRecordLabel,
                 status: .ready,
                 transaction: tx.asV2Read
             )

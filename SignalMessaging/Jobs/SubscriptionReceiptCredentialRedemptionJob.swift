@@ -69,8 +69,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             isBoost: true,
             amount: amount.value,
             currencyCode: amount.currencyCode,
-            boostPaymentIntentID: boostPaymentIntentID,
-            label: jobRecordLabel
+            boostPaymentIntentID: boostPaymentIntentID
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
@@ -114,19 +113,12 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
             isBoost: false,
             amount: nil,
             currencyCode: nil,
-            boostPaymentIntentID: String(), // Unused
-            label: self.jobRecordLabel
+            boostPaymentIntentID: String() // Unused
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     public typealias DurableOperationType = SubscriptionReceiptCredentialRedemptionOperation
-
-    /// The value of this string is persisted, and must not change.
-    public static let jobRecordLabel: String = "SubscriptionReceiptCredentailRedemption"
-    public var jobRecordLabel: String {
-        return type(of: self).jobRecordLabel
-    }
 
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }

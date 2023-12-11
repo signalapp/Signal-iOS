@@ -12,22 +12,18 @@ import GRDB
 /// This class remains to facilitate cleaning up any currently-persisted
 /// records, although it is unlikely any still exist.
 public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    public static let defaultLabel = "IncomingGroupSync"
-
     override class var jobRecordType: JobRecordType { .deprecated_incomingGroupSync }
 
     #if TESTABLE_BUILD
 
     init(
         attachmentId: String,
-        label: String,
         exclusiveProcessIdentifier: String?,
         failureCount: UInt,
         status: Status
     ) {
         self.attachmentId = attachmentId
         super.init(
-            label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
             failureCount: failureCount,
             status: status

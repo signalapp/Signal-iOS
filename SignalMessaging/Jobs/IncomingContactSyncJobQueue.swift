@@ -14,10 +14,6 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = IncomingContactSyncOperation
     public let requiresInternet: Bool = true
     public let isEnabled: Bool = true
-    public static let jobRecordLabel: String = IncomingContactSyncJobRecord.defaultLabel
-    public var jobRecordLabel: String {
-        return type(of: self).jobRecordLabel
-    }
 
     public var runningOperations = AtomicArray<IncomingContactSyncOperation>()
     public let isSetup = AtomicBool(false)
@@ -60,8 +56,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     public func add(attachmentId: String, isComplete: Bool, transaction: SDSAnyWriteTransaction) {
         let jobRecord = IncomingContactSyncJobRecord(
             attachmentId: attachmentId,
-            isCompleteContactSync: isComplete,
-            label: jobRecordLabel
+            isCompleteContactSync: isComplete
         )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }

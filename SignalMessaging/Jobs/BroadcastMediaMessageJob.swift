@@ -9,10 +9,6 @@ public class BroadcastMediaMessageJobQueue: JobQueue {
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { !CurrentAppContext().isNSE }
-    public static let jobRecordLabel: String = BroadcastMediaMessageJobRecord.defaultLabel
-    public var jobRecordLabel: String {
-        return type(of: self).jobRecordLabel
-    }
 
     public var runningOperations = AtomicArray<BroadcastMediaMessageOperation>()
     public let isSetup = AtomicBool(false)
@@ -50,8 +46,7 @@ public class BroadcastMediaMessageJobQueue: JobQueue {
     public func add(attachmentIdMap: [String: [String]], unsavedMessagesToSend: [TSOutgoingMessage], transaction: SDSAnyWriteTransaction) {
         let jobRecord = BroadcastMediaMessageJobRecord(
             attachmentIdMap: attachmentIdMap,
-            unsavedMessagesToSend: unsavedMessagesToSend,
-            label: jobRecordLabel
+            unsavedMessagesToSend: unsavedMessagesToSend
         )
 
         self.add(jobRecord: jobRecord, transaction: transaction)

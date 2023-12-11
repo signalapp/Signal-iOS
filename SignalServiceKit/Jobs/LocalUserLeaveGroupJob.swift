@@ -138,7 +138,6 @@ public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
 
     public var requiresInternet: Bool { true }
     public var isEnabled: Bool { true }
-    public var jobRecordLabel: String { "LocalUserLeaveGroup" }
 
     private let operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -205,8 +204,7 @@ public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
         let jobRecord = LocalUserLeaveGroupJobRecord(
             threadId: threadId,
             replacementAdminAci: replacementAdminAci,
-            waitForMessageProcessing: waitForMessageProcessing,
-            label: jobRecordLabel
+            waitForMessageProcessing: waitForMessageProcessing
         )
 
         self.add(jobRecord: jobRecord, transaction: transaction)

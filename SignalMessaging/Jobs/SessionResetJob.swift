@@ -8,17 +8,13 @@ import SignalServiceKit
 public class SessionResetJobQueue: JobQueue {
 
     public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = SessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
+        let jobRecord = SessionResetJobRecord(contactThread: contactThread)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     // MARK: JobQueue
 
     public typealias DurableOperationType = SessionResetOperation
-    public static let jobRecordLabel: String = "SessionReset"
-    public var jobRecordLabel: String {
-        return type(of: self).jobRecordLabel
-    }
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SessionResetOperation>()
