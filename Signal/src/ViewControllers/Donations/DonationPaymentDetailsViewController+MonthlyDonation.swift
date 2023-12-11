@@ -36,51 +36,46 @@ extension DonationPaymentDetailsViewController {
                 Logger.info("[Donations] Preparing new monthly subscription with card")
 
                 return SubscriptionManagerImpl.prepareNewSubscription(currencyCode: currencyCode)
-            }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, SubscriptionManagerImpl.RecurringSubscriptionPaymentType)> in
                 firstly { () -> Promise<String> in
                     Logger.info("[Donations] Creating Signal payment method for new monthly subscription with card")
 
                     return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
-                }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<String> in
+                }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<SubscriptionManagerImpl.RecurringSubscriptionPaymentType> in
                     Logger.info("[Donations] Authorizing payment for new monthly subscription with card")
 
                     return Stripe.setupNewSubscription(
                         clientSecret: clientSecret,
-                        paymentMethod: validForm.stripePaymentMethod,
-                        show3DS: { redirectUrl in
-                            Logger.info("[Donations] Monthly card donation needs 3DS. Presenting...")
-                            return self.show3DS(for: redirectUrl).asVoid()
+                        paymentMethod: validForm.stripePaymentMethod
+                    ).then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent in
+                        if let redirectToUrl = confirmedIntent.redirectToUrl {
+                            return self.show3DS(for: redirectToUrl)
+                                .map(on: DispatchQueue.sharedUserInitiated) { _ in
+                                    return confirmedIntent
+                                }
+                        } else {
+                            return Promise.value(confirmedIntent)
                         }
-                    )
-                }.map(on: DispatchQueue.sharedUserInitiated) { paymentId -> (Data, String) in
-                    (subscriberId, paymentId)
+                    }.map { confirmedIntent in
+                        switch validForm {
+                        case .card:
+                            return .creditOrDebitCard(paymentMethodId: confirmedIntent.paymentMethodId)
+                        case .sepa:
+                            return .sepa(paymentMethodId: confirmedIntent.paymentMethodId)
+                        case .ideal:
+                            return .ideal(setupIntentId: confirmedIntent.setupIntentId)
+                        }
+                    }
+                }.map(on: DispatchQueue.sharedUserInitiated) { paymentType -> (Data, SubscriptionManagerImpl.RecurringSubscriptionPaymentType) in
+                    (subscriberId, paymentType)
                 }
-            }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
-                Logger.info("[Donations] Finalizing new subscription for card donation")
-
-                return SubscriptionManagerImpl.finalizeNewSubscription(
-                    forSubscriberId: subscriberId,
-                    withPaymentId: paymentId,
-                    usingPaymentProcessor: .stripe,
-                    usingPaymentMethod: .creditOrDebitCard,
-                    subscription: newSubscriptionLevel,
-                    currencyCode: currencyCode
-                ).map(on: DispatchQueue.sharedUserInitiated) { _ in subscriberId }
-            }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId in
-                Logger.info("[Donations] Redeeming monthly receipts for card donation")
-
-                SubscriptionManagerImpl.requestAndRedeemReceipt(
+            }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentType) in
+                return DonationViewsUtil.finalizeAndRedeemSubscription(
                     subscriberId: subscriberId,
-                    subscriptionLevel: newSubscriptionLevel.level,
-                    priorSubscriptionLevel: priorSubscriptionLevel?.level,
-                    paymentProcessor: .stripe,
-                    paymentMethod: validForm.donationPaymentMethod,
-                    isNewSubscription: true,
-                    shouldSuppressPaymentAlreadyRedeemed: false
-                )
-
-                return DonationViewsUtil.waitForSubscriptionJob(
-                    paymentMethod: validForm.donationPaymentMethod
+                    paymentType: paymentType,
+                    newSubscriptionLevel: newSubscriptionLevel,
+                    priorSubscriptionLevel: priorSubscriptionLevel,
+                    currencyCode: currencyCode
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

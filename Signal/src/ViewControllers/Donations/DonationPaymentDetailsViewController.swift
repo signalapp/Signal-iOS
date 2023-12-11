@@ -8,10 +8,15 @@ import SignalMessaging
 import SignalUI
 
 class DonationPaymentDetailsViewController: OWSTableViewController2 {
+    enum IDEALPaymentType {
+        case oneTime
+        case recurring(mandate: Stripe.PaymentMethod.Mandate)
+    }
+
     enum PaymentMethod {
         case card
         case sepa(mandate: Stripe.PaymentMethod.Mandate)
-        case ideal(mandate: Stripe.PaymentMethod.Mandate)
+        case ideal(paymentType: IDEALPaymentType)
 
         fileprivate var stripePaymentMethod: OWSRequestFactory.StripePaymentMethod {
             switch self {
@@ -318,10 +323,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 email: emailView.text,
                 isEmailFieldFocused: emailView.isFirstResponder
             )
-        case let .ideal(mandate: mandate):
+        case let .ideal(paymentType):
             return Self.formState(
-                mandate: mandate,
-                iDEALBank: iDEALBank,
+                IDEALPaymentType: paymentType,
+                IDEALBank: IDEALBank,
                 name: nameView.text,
                 email: emailView.text,
                 isEmailFieldFocused: emailView.isFirstResponder
@@ -603,7 +608,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         return [
             OWSTableSection(items: [
                 OWSTableItem(customCellBlock: { [weak self] in
-                    if let bank = self?.iDEALBank {
+                    if let bank = self?.IDEALBank {
                         return OWSTableItem.buildImageCell(
                             image: bank.image,
                             itemName: bank.displayName,
@@ -634,7 +639,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: Name & Email
 
-    private var iDEALBank: Stripe.PaymentMethod.IDEALBank?
+    private var IDEALBank: Stripe.PaymentMethod.IDEALBank?
 
     private lazy var nameView = FormFieldView(
         title: Self.nameTitle,
@@ -741,9 +746,9 @@ extension DonationPaymentDetailsViewController: CreditOrDebitCardDonationFormVie
 extension DonationPaymentDetailsViewController: DonationPaymentDetailsSelectIdealBankDelegate {
     func viewController(
         _ viewController: DonationPaymentDetailsSelectIdealBankViewController,
-        didSelect iDEALBank: SignalMessaging.Stripe.PaymentMethod.IDEALBank
+        didSelect IDEALBank: SignalMessaging.Stripe.PaymentMethod.IDEALBank
     ) {
-        self.iDEALBank = iDEALBank
+        self.IDEALBank = IDEALBank
         let sections = [donationAmountSection] + formSections()
         contents = OWSTableContents(sections: sections)
         viewController.navigationController?.popViewController(animated: true)

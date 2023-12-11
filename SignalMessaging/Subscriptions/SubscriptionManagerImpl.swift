@@ -372,25 +372,38 @@ public class SubscriptionManagerImpl: NSObject {
     /// given processor.
     public class func finalizeNewSubscription(
         forSubscriberId subscriberId: Data,
-        withPaymentId paymentId: String,
-        usingPaymentProcessor paymentProcessor: DonationPaymentProcessor,
-        usingPaymentMethod paymentMethod: DonationPaymentMethod,
+        paymentType: RecurringSubscriptionPaymentType,
         subscription: SubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
         firstly { () -> Promise<Void> in
             Logger.info("[Donations] Setting default payment method on service")
 
-            return setDefaultPaymentMethod(
-                for: subscriberId,
-                using: paymentProcessor,
-                paymentID: paymentId
-            )
+            switch paymentType {
+            case let .ideal(setupIntentId):
+                return setDefaultIDEALPaymentMethod(
+                    for: subscriberId,
+                    setupIntentId: setupIntentId
+                )
+            case
+                    .applePay(let paymentMethodId),
+                    .creditOrDebitCard(let paymentMethodId),
+                    .paypal(let paymentMethodId),
+                    .sepa(let paymentMethodId):
+                return setDefaultPaymentMethod(
+                    for: subscriberId,
+                    using: paymentType.paymentProcessor,
+                    paymentMethodId: paymentMethodId
+                )
+            }
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Subscription> in
             Logger.info("[Donations] Selecting subscription level on service")
 
             databaseStorage.write { transaction in
-                Self.setMostRecentSubscriptionPaymentMethod(paymentMethod: paymentMethod, transaction: transaction)
+                Self.setMostRecentSubscriptionPaymentMethod(
+                    paymentMethod: paymentType.paymentMethod,
+                    transaction: transaction
+                )
             }
 
             return setSubscription(
@@ -476,14 +489,33 @@ public class SubscriptionManagerImpl: NSObject {
     }
 
     private class func setDefaultPaymentMethod(
-        for subscriberID: Data,
+        for subscriberId: Data,
         using processor: DonationPaymentProcessor,
-        paymentID: String
+        paymentMethodId: String
     ) -> Promise<Void> {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
-            subscriberID: subscriberID,
+            subscriberId: subscriberId,
             processor: processor.rawValue,
-            paymentID: paymentID
+            paymentMethodId: paymentMethodId
+        )
+
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: DispatchQueue.global()) { response in
+            let statusCode = response.responseStatusCode
+            if statusCode != 200 {
+                throw OWSAssertionError("Got bad response code \(statusCode).")
+            }
+        }
+    }
+
+    private class func setDefaultIDEALPaymentMethod(
+        for subscriberId: Data,
+        setupIntentId: String
+    ) -> Promise<Void> {
+        let request = OWSRequestFactory.subscriptionSetDefaultIDEALPaymentMethod(
+            subscriberId: subscriberId,
+            setupIntentId: setupIntentId
         )
 
         return firstly {
@@ -1415,5 +1447,35 @@ extension SubscriptionManagerImpl: SubscriptionManager {
 
     public func setDisplayBadgesOnProfile(_ displayBadgesOnProfile: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
         Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, updateStorageService: updateStorageService, transaction: transaction)
+    }
+}
+
+extension SubscriptionManagerImpl {
+
+    public enum RecurringSubscriptionPaymentType {
+        case applePay(paymentMethodId: String)
+        case creditOrDebitCard(paymentMethodId: String)
+        case paypal(paymentMethodId: String)
+        case sepa(paymentMethodId: String)
+        case ideal(setupIntentId: String)
+
+        public var paymentProcessor: DonationPaymentProcessor {
+            switch self {
+            case .applePay, .ideal, .sepa, .creditOrDebitCard:
+                return .stripe
+            case .paypal:
+                return .braintree
+            }
+        }
+
+        public var paymentMethod: DonationPaymentMethod {
+            switch self {
+            case .applePay: return .applePay
+            case .creditOrDebitCard: return .creditOrDebitCard
+            case .paypal: return .paypal
+            case .sepa: return .sepa
+            case .ideal: return .ideal
+            }
+        }
     }
 }

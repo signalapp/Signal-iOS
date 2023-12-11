@@ -39,7 +39,7 @@ public struct Stripe: Dependencies {
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for paymentMethod: PaymentMethod
-    ) -> Promise<ConfirmedIntent> {
+    ) -> Promise<ConfirmedPaymentIntent> {
         firstly { () -> Promise<PaymentIntent> in
             createBoostPaymentIntent(for: amount, level: level, paymentMethod: paymentMethod.stripePaymentMethod)
         }.then { intent in
@@ -118,13 +118,19 @@ public struct Stripe: Dependencies {
                 ]
                 return try API.postForm(endpoint: "payment_methods", parameters: parameters)
             }
-        case let .bankTransferIDEAL(mandate: _, account: idealAccount):
+        case let .bankTransferIDEAL(paymentType):
+            let idealAccount: Stripe.PaymentMethod.IDEAL = {
+                switch paymentType {
+                case let .oneTime(account: account): return account
+                case let .recurring(mandate: _, account: account): return account
+                }
+            }()
             return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 // Step 4: Payment method creation
                 let parameters: [String: String] = [
                     "billing_details[name]": idealAccount.name,
                     "billing_details[email]": idealAccount.email,
-                    "ideal[bank]": idealAccount.iDEALBank.rawValue,
+                    "ideal[bank]": idealAccount.IDEALBank.rawValue,
                     "type": "ideal",
                 ]
                 return try API.postForm(endpoint: "payment_methods", parameters: parameters)
@@ -145,8 +151,15 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public struct ConfirmedIntent {
-        public let intentId: String
+    public struct ConfirmedPaymentIntent {
+        public let paymentIntentId: String
+        public let paymentMethodId: String
+        public let redirectToUrl: URL?
+    }
+
+    public struct ConfirmedSetupIntent {
+        public let setupIntentId: String
+        public let paymentMethodId: String
         public let redirectToUrl: URL?
     }
 
@@ -157,11 +170,11 @@ public struct Stripe: Dependencies {
         for paymentMethod: PaymentMethod,
         clientSecret: String,
         paymentIntentId: String
-    ) -> Promise<ConfirmedIntent> {
+    ) -> Promise<ConfirmedPaymentIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PaymentMethodID> in
             // Steps 3 and 4: Payment source tokenization and payment method creation
             createPaymentMethod(with: paymentMethod)
-        }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedPaymentIntent> in
             // Step 5: Confirm payment intent
             confirmPaymentIntent(
                 mandate: paymentMethod.mandate,
@@ -179,7 +192,7 @@ public struct Stripe: Dependencies {
         paymentIntentId: String,
         paymentMethodId: PaymentMethodID,
         idempotencyKey: String? = nil
-    ) -> Promise<ConfirmedIntent> {
+    ) -> Promise<ConfirmedPaymentIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             try API.postForm(
                 endpoint: "payment_intents/\(paymentIntentId)/confirm",
@@ -193,27 +206,28 @@ public struct Stripe: Dependencies {
                 ),
                 idempotencyKey: idempotencyKey
             )
-        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedPaymentIntent in
             .init(
-                intentId: paymentIntentId,
+                paymentIntentId: paymentIntentId,
+                paymentMethodId: paymentMethodId,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
-        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedPaymentIntent> in
             throw convertToStripeErrorIfPossible(error)
         }
     }
 
     public static func confirmSetupIntent(
         mandate: PaymentMethod.Mandate?,
-        for paymentIntentID: String,
+        paymentMethodId: String,
         clientSecret: String
-    ) -> Promise<ConfirmedIntent> {
+    ) -> Promise<ConfirmedSetupIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
             return try API.postForm(
                 endpoint: "setup_intents/\(setupIntentId)/confirm",
                 parameters: [
-                    "payment_method": paymentIntentID,
+                    "payment_method": paymentMethodId,
                     "client_secret": clientSecret,
                     "return_url": RETURN_URL_FOR_3DS,
                 ].merging(
@@ -221,12 +235,20 @@ public struct Stripe: Dependencies {
                     uniquingKeysWith: { _, new in new }
                 )
             )
-        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
-            .init(
-                intentId: paymentIntentID,
+        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedSetupIntent in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing responseBodyJson")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Failed to decode JSON response")
+            }
+            let setupIntentId: String = try parser.required(key: "id")
+            return .init(
+                setupIntentId: setupIntentId,
+                paymentMethodId: paymentMethodId,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
-        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedSetupIntent> in
             throw convertToStripeErrorIfPossible(error)
         }
     }

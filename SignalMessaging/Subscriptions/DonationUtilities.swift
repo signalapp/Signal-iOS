@@ -115,9 +115,9 @@ public class DonationUtilities: Dependencies {
         let isIDEALAvailable = {
             guard FeatureFlags.allowIDEALDonations else { return false }
             switch donationMode {
-            case .oneTime:
+            case .oneTime, .monthly:
                 return true
-            case .monthly, .gift:
+            case .gift:
                 return false
             }
         }()

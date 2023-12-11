@@ -46,23 +46,12 @@ extension Stripe {
     /// The new payment ID.
     public static func setupNewSubscription(
         clientSecret: String,
-        paymentMethod: PaymentMethod,
-        show3DS: @escaping (URL) -> Promise<Void>
-    ) -> Promise<String> {
+        paymentMethod: PaymentMethod
+    ) -> Promise<ConfirmedSetupIntent> {
         firstly {
             createPaymentMethod(with: paymentMethod)
-        }.then(on: DispatchQueue.sharedUserInitiated) { paymentId -> Promise<String> in
-            firstly { () -> Promise<ConfirmedIntent> in
-                confirmSetupIntent(mandate: paymentMethod.mandate, for: paymentId, clientSecret: clientSecret)
-            }.then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Void> in
-                if let redirectToUrl = confirmedIntent.redirectToUrl {
-                    return show3DS(redirectToUrl)
-                } else {
-                    return Promise.value(())
-                }
-            }.map(on: DispatchQueue.sharedUserInitiated) {
-                paymentId
-            }
+        }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedSetupIntent> in
+            confirmSetupIntent(mandate: paymentMethod.mandate, paymentMethodId: paymentMethodId, clientSecret: clientSecret)
         }
     }
 }

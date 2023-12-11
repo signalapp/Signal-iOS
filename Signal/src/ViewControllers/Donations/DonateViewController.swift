@@ -359,20 +359,33 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         badge: ProfileBadge?,
         donateMode: DonateMode
     ) {
-        let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
-            guard let self else { return }
-            self.dismiss(animated: true) {
-                self.startManualPaymentDetails(
-                    with: amount,
-                    badge: badge,
-                    donateMode: donateMode,
-                    donationPaymentMethod: .ideal,
-                    viewControllerPaymentMethod: .ideal(mandate: mandate)
-                )
+        // For iDEAL, monthly donations are backed by SEPA transaction, so only
+        // show the mandate UI for this case.
+        switch donateMode {
+        case .monthly:
+            let mandateViewController = BankTransferMandateViewController(bankTransferType: .sepa) { [weak self] mandate in
+                guard let self else { return }
+                self.dismiss(animated: true) {
+                    self.startManualPaymentDetails(
+                        with: amount,
+                        badge: badge,
+                        donateMode: donateMode,
+                        donationPaymentMethod: .ideal,
+                        viewControllerPaymentMethod: .ideal(paymentType: .recurring(mandate: mandate))
+                    )
+                }
             }
+            let navigationController = OWSNavigationController(rootViewController: mandateViewController)
+            self.presentFormSheet(navigationController, animated: true)
+        case .oneTime:
+            self.startManualPaymentDetails(
+                with: amount,
+                badge: badge,
+                donateMode: donateMode,
+                donationPaymentMethod: .ideal,
+                viewControllerPaymentMethod: .ideal(paymentType: .oneTime)
+            )
         }
-        let navigationController = OWSNavigationController(rootViewController: mandateViewController)
-        self.presentFormSheet(navigationController, animated: true)
     }
 
     private func presentChoosePaymentMethodSheet(

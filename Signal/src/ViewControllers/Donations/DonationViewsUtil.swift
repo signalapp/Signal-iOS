@@ -209,6 +209,57 @@ public final class DonationViewsUtil {
         return ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
     }
 
+    public static func createAndRedeemOneTimeDonation(
+        paymentIntentId: String,
+        amount: FiatMoney,
+        paymentMethod: DonationPaymentMethod
+    ) -> Promise<Void> {
+        SubscriptionManagerImpl.requestAndRedeemReceipt(
+            boostPaymentIntentId: paymentIntentId,
+            amount: amount,
+            paymentProcessor: .stripe,
+            paymentMethod: paymentMethod
+        )
+
+        return DonationViewsUtil.waitForSubscriptionJob(
+            paymentMethod: paymentMethod
+        )
+    }
+
+    public static func finalizeAndRedeemSubscription(
+        subscriberId: Data,
+        paymentType: SubscriptionManagerImpl.RecurringSubscriptionPaymentType,
+        newSubscriptionLevel: SubscriptionLevel,
+        priorSubscriptionLevel: SubscriptionLevel?,
+        currencyCode: Currency.Code
+    ) -> Promise<Void> {
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Subscription> in
+            Logger.info("[Donations] Finalizing new subscription for card donation")
+
+            return SubscriptionManagerImpl.finalizeNewSubscription(
+                forSubscriberId: subscriberId,
+                paymentType: paymentType,
+                subscription: newSubscriptionLevel,
+                currencyCode: currencyCode
+            )
+        }.then(on: DispatchQueue.sharedUserInitiated) { _ in
+            Logger.info("[Donations] Redeeming monthly receipts for card donation")
+
+            SubscriptionManagerImpl.requestAndRedeemReceipt(
+                subscriberId: subscriberId,
+                subscriptionLevel: newSubscriptionLevel.level,
+                priorSubscriptionLevel: priorSubscriptionLevel?.level,
+                paymentProcessor: paymentType.paymentProcessor,
+                paymentMethod: paymentType.paymentMethod,
+                isNewSubscription: true,
+                shouldSuppressPaymentAlreadyRedeemed: false
+            )
+            return DonationViewsUtil.waitForSubscriptionJob(
+                paymentMethod: paymentType.paymentMethod
+            )
+        }
+    }
+
     public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
         firstly { () -> Promise<SubscriptionManagerImpl.DonationConfiguration> in
             SubscriptionManagerImpl.fetchDonationConfiguration()

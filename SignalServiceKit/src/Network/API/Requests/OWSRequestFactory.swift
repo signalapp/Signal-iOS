@@ -124,18 +124,38 @@ public extension OWSRequestFactory {
     }
 
     static func subscriptionSetDefaultPaymentMethod(
-        subscriberID: Data,
+        subscriberId: Data,
         processor: String,
-        paymentID: String
+        paymentMethodId: String
     ) -> TSRequest {
         let result = TSRequest(
             url: .init(pathComponents: [
                 "v1",
                 "subscription",
-                subscriberID.asBase64Url,
+                subscriberId.asBase64Url,
                 "default_payment_method",
                 processor,
-                paymentID
+                paymentMethodId
+            ])!,
+            method: "POST",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return result
+    }
+
+    static func subscriptionSetDefaultIDEALPaymentMethod(
+        subscriberId: Data,
+        setupIntentId: String
+    ) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: [
+                "v1",
+                "subscription",
+                subscriberId.asBase64Url,
+                "default_payment_method_for_ideal",
+                setupIntentId
             ])!,
             method: "POST",
             parameters: nil

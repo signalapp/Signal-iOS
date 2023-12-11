@@ -18,9 +18,14 @@ extension DonationPaymentDetailsViewController {
 
     enum FormState: Equatable {
         enum ValidForm: Equatable {
+            enum IDEALFormType: Equatable {
+                case monthly(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.IDEAL)
+                case oneTime(account: Stripe.PaymentMethod.IDEAL)
+            }
+
             case card(Stripe.PaymentMethod.CreditOrDebitCard)
             case sepa(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.SEPA)
-            case ideal(mandate: Stripe.PaymentMethod.Mandate, account: Stripe.PaymentMethod.IDEAL)
+            case ideal(IDEALFormType)
 
             var stripePaymentMethod: Stripe.PaymentMethod {
                 switch self {
@@ -28,8 +33,13 @@ extension DonationPaymentDetailsViewController {
                     return .creditOrDebitCard(creditOrDebitCard: card)
                 case let .sepa(mandate: mandate, account: sepaAccount):
                     return .bankTransferSEPA(mandate: mandate, account: sepaAccount)
-                case let .ideal(mandate: mandate, account: idealAccount):
-                    return .bankTransferIDEAL(mandate: mandate, account: idealAccount)
+                case let .ideal(type):
+                    switch type {
+                    case let .oneTime(account: account):
+                        return .bankTransferIDEAL(.oneTime(account: account))
+                    case let .monthly(mandate: mandate, account: account):
+                        return .bankTransferIDEAL(.recurring(mandate: mandate, account: account))
+                    }
                 }
             }
 
@@ -251,8 +261,8 @@ extension DonationPaymentDetailsViewController {
     }
 
     static func formState(
-        mandate: Stripe.PaymentMethod.Mandate,
-        iDEALBank: Stripe.PaymentMethod.IDEALBank?,
+        IDEALPaymentType: IDEALPaymentType,
+        IDEALBank: Stripe.PaymentMethod.IDEALBank?,
         name: String,
         email: String,
         isEmailFieldFocused: Bool
@@ -260,17 +270,28 @@ extension DonationPaymentDetailsViewController {
         if name.count <= 2 || email.isEmpty {
             return .potentiallyValid
         }
-        guard let iDEALBank else {
+        guard let IDEALBank else {
             return .potentiallyValid
         }
-        return .fullyValid(.ideal(
-            mandate: mandate,
-            account: .init(
-                name: name,
-                email: email,
-                iDEALBank: iDEALBank
-            )
-        ))
+        switch IDEALPaymentType {
+        case let .recurring(mandate: mandate):
+            return .fullyValid(.ideal(.monthly(
+                mandate: mandate,
+                account: .init(
+                    name: name,
+                    email: email,
+                    IDEALBank: IDEALBank
+                )
+            )))
+        case .oneTime:
+            return .fullyValid(.ideal(.oneTime(
+                account: .init(
+                    name: name,
+                    email: email,
+                    IDEALBank: IDEALBank
+                )
+            )))
+        }
     }
 }
 

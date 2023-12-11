@@ -7,15 +7,20 @@ import Foundation
 
 extension Stripe.PaymentMethod {
 
+    public enum IDEALPaymentType {
+        case oneTime(account: IDEAL)
+        case recurring(mandate: Mandate, account: IDEAL)
+    }
+
     public struct IDEAL: Equatable {
         public let name: String
         public let email: String
-        public let iDEALBank: IDEALBank
+        public let IDEALBank: IDEALBank
 
-        public init(name: String, email: String, iDEALBank: IDEALBank) {
+        public init(name: String, email: String, IDEALBank: IDEALBank) {
             self.name = name
             self.email = email
-            self.iDEALBank = iDEALBank
+            self.IDEALBank = IDEALBank
         }
     }
 

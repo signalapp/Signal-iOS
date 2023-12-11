@@ -39,10 +39,10 @@ extension DonateViewController {
             }.map(on: DispatchQueue.sharedUserInitiated) { _ in
                 (subscriberId, authorizationParams.paymentMethodId)
             }
-        }.then(on: DispatchQueue.main) { (subscriberId, paymentId) -> Promise<Void> in
+        }.then(on: DispatchQueue.main) { (subscriberId, paymentMethodId) -> Promise<Void> in
             self.finalizePaypalSubscriptionBehindProgressView(
                 subscriberId: subscriberId,
-                paymentId: paymentId,
+                paymentMethodId: paymentMethodId,
                 monthlyState: monthly,
                 selectedSubscriptionLevel: selectedSubscriptionLevel
             )
@@ -128,7 +128,7 @@ extension DonateViewController {
     /// UI. Must be called on the main thread.
     private func finalizePaypalSubscriptionBehindProgressView(
         subscriberId: Data,
-        paymentId: String,
+        paymentMethodId: String,
         monthlyState monthly: State.MonthlyState,
         selectedSubscriptionLevel: SubscriptionLevel
     ) -> Promise<Void> {
@@ -139,9 +139,7 @@ extension DonateViewController {
 
             return SubscriptionManagerImpl.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
-                withPaymentId: paymentId,
-                usingPaymentProcessor: .braintree,
-                usingPaymentMethod: .paypal,
+                paymentType: .paypal(paymentMethodId: paymentMethodId),
                 subscription: selectedSubscriptionLevel,
                 currencyCode: monthly.selectedCurrencyCode
             )

@@ -30,19 +30,14 @@ extension DonationPaymentDetailsViewController {
                     return self.show3DS(for: redirectUrl)
                 } else {
                     Logger.info("[Donations] One-time card donation did not need 3DS. Continuing")
-                    return Promise.value(confirmedIntent.intentId)
+                    return Promise.value(confirmedIntent.paymentIntentId)
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
                 Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
 
-                SubscriptionManagerImpl.requestAndRedeemReceipt(
-                    boostPaymentIntentId: intentId,
+                return DonationViewsUtil.createAndRedeemOneTimeDonation(
+                    paymentIntentId: intentId,
                     amount: amount,
-                    paymentProcessor: .stripe,
-                    paymentMethod: validForm.donationPaymentMethod
-                )
-
-                return DonationViewsUtil.waitForSubscriptionJob(
                     paymentMethod: validForm.donationPaymentMethod
                 )
             }

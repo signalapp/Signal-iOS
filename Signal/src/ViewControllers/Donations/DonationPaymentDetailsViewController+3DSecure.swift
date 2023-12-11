@@ -18,6 +18,15 @@ extension DonationPaymentDetailsViewController {
 
         let (promise, future) = Promise<String>.pending()
 
+        let queryItemName = {
+            switch self.donationMode {
+            case .monthly:
+                return "setup_intent"
+            case .gift, .oneTime:
+                return "payment_intent"
+            }
+        }()
+
         let session = ASWebAuthenticationSession(
             url: redirectUrl,
             callbackURLScheme: Stripe.SCHEME_FOR_3DS
@@ -31,7 +40,7 @@ extension DonationPaymentDetailsViewController {
                 guard
                     let components = callbackUrl.components,
                     let queryItems = components.queryItems,
-                    let intentQuery = queryItems.first(where: { $0.name == "payment_intent" }),
+                    let intentQuery = queryItems.first(where: { $0.name == queryItemName }),
                     let result = intentQuery.value
                 else {
                     Logger.error("[Donations] Stripe did not give us a payment intent from 3DS")

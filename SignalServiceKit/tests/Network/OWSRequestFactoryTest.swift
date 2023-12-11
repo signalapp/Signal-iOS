@@ -178,9 +178,9 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
     func testSubscriptionSetDefaultPaymentMethod() {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
-            subscriberID: Data([255, 128]),
+            subscriberId: Data([255, 128]),
             processor: "STRIPE",
-            paymentID: "xyz"
+            paymentMethodId: "xyz"
         )
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A/default_payment_method/STRIPE/xyz")

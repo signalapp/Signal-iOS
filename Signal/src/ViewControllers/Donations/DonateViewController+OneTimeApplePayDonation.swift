@@ -47,7 +47,7 @@ extension DonateViewController {
             wrappedCompletion(.init(status: .success, errors: nil))
 
             SubscriptionManagerImpl.requestAndRedeemReceipt(
-                boostPaymentIntentId: confirmedIntent.intentId,
+                boostPaymentIntentId: confirmedIntent.paymentIntentId,
                 amount: amount,
                 paymentProcessor: .stripe,
                 paymentMethod: .applePay
