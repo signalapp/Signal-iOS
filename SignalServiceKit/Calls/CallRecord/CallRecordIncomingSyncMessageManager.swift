@@ -135,48 +135,61 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     return
                 }
 
-                switch incomingSyncMessage.callDirection {
-                case .incoming:
-                    break
-                case .outgoing:
-                    switch incomingSyncMessage.callEvent {
-                    case .accepted:
-                        logger.error("We shouldn't have an existing call record for a sync message about an outgoing, accepted call.")
-                    case .notAccepted:
-                        logger.error("How did we decline an outgoing call?")
-                    }
+                let syncMessageEvent = incomingSyncMessage.callEvent
+                let syncMessageDirection = incomingSyncMessage.callDirection
 
-                    return
-                }
+                var newCallDirection = existingCallRecord.callDirection
+                let newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
 
-                let newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus = {
-                    switch incomingSyncMessage.callEvent {
-                    case .accepted:
+                switch syncMessageEvent {
+                case .accepted:
+                    switch syncMessageDirection {
+                    case .incoming:
                         // We joined on another device. If we knew about ringing
                         // on this device we know the ringing was accepted, and
                         // otherwise it was a non-ringing join.
                         switch existingCallStatus {
                         case .generic, .joined:
-                            return .joined
+                            newGroupCallStatus = .joined
                         case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
-                            return .ringingAccepted
+                            newGroupCallStatus = .ringingAccepted
                         }
-                    case .notAccepted:
+                    case .outgoing:
+                        // We rang a group from another device. It's possible we
+                        // opportunistically learned about that call on this
+                        // device via peek (and maybe joined), but this should
+                        // be the first time we're learning about the ring.
+                        switch existingCallStatus {
+                        case .generic, .joined:
+                            newCallDirection = .outgoing
+                            newGroupCallStatus = .ringingAccepted
+                        case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
+                            logger.error("How did we have a ringing call event for a call we started on another device?")
+                            return
+                        }
+                    }
+                case .notAccepted:
+                    switch syncMessageDirection {
+                    case .incoming:
                         // We declined on another device. If we joined the call
                         // on this device, we'll prefer that status.
                         switch existingCallStatus {
                         case .generic, .ringing, .ringingMissed, .ringingDeclined:
-                            return .ringingDeclined
+                            newGroupCallStatus = .ringingDeclined
                         case .joined, .ringingAccepted:
-                            return existingCallStatus
+                            newGroupCallStatus = existingCallStatus
                         }
+                    case .outgoing:
+                        logger.error("How did we decline our own outgoing call?")
+                        return
                     }
-                }()
+                }
 
                 updateGroupCallRecordForIncomingSyncMessage(
                     existingCallRecord: existingCallRecord,
                     existingCallInteraction: existingCallInteraction,
                     existingGroupThread: groupThread,
+                    newCallDirection: newCallDirection,
                     newGroupCallStatus: newGroupCallStatus,
                     callEventTimestamp: incomingSyncMessage.callTimestamp,
                     syncMessageTimestamp: syncMessageTimestamp,
@@ -310,6 +323,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         existingCallRecord: CallRecord,
         existingCallInteraction: OWSGroupCallMessage,
         existingGroupThread: TSGroupThread,
+        newCallDirection: CallRecord.CallDirection,
         newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
         syncMessageTimestamp: UInt64,
@@ -320,7 +334,7 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         groupCallRecordManager.updateGroupCallRecord(
             groupThread: existingGroupThread,
             existingCallRecord: existingCallRecord,
-            newCallDirection: existingCallRecord.callDirection,
+            newCallDirection: newCallDirection,
             newGroupCallStatus: newGroupCallStatus,
             newGroupCallRingerAci: nil,
             callEventTimestamp: callEventTimestamp,

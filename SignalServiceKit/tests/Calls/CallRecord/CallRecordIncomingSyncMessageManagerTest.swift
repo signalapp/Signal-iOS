@@ -183,7 +183,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     func testUpdatesGroupCall_joined() {
         var updateCount = 0
-        mockGroupCallRecordManager.updateGroupCallStub = { _, newGroupCallStatus in
+        mockGroupCallRecordManager.updateGroupCallStub = { _, _, newGroupCallStatus in
             updateCount += 1
             XCTAssertEqual(newGroupCallStatus, .joined)
         }
@@ -230,7 +230,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     func testUpdatesGroupCall_ringAccepted() {
         var updateCount = 0
-        mockGroupCallRecordManager.updateGroupCallStub = { _, newGroupCallStatus in
+        mockGroupCallRecordManager.updateGroupCallStub = { _, _, newGroupCallStatus in
             updateCount += 1
             XCTAssertEqual(newGroupCallStatus, .ringingAccepted)
         }
@@ -297,7 +297,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     func testUpdatesGroupCall_ringDeclined() {
         var updateCount = 0
-        mockGroupCallRecordManager.updateGroupCallStub = { _, newGroupCallStatus in
+        mockGroupCallRecordManager.updateGroupCallStub = { _, _, newGroupCallStatus in
             updateCount += 1
             XCTAssertEqual(newGroupCallStatus, .ringingDeclined)
         }
@@ -364,7 +364,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     func testUpdatesGroupCall_ringDeclinedSupercededByJoin() {
         var updateCount = 0
-        mockGroupCallRecordManager.updateGroupCallStub = { existingCallRecord, newGroupCallStatus in
+        mockGroupCallRecordManager.updateGroupCallStub = { existingCallRecord, _, newGroupCallStatus in
             guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
                 XCTFail("Missing group call status!")
                 return
@@ -418,26 +418,29 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 2)
     }
 
-    /// We should never receive a sync message for an outgoing call for which
-    /// we already have a call record, because if we have a call record then we
-    /// started the call and are the one sending sync messages.
-    func testUpdatesGroupCall_outgoingIsIgnored() {
-        mockGroupCallRecordManager.updateGroupCallStub = { (_, _) in
-            XCTFail("Should never be updating!")
+    func testUpdatesGroupCall_outgoingAccepted() {
+        var updateCount = 0
+        mockGroupCallRecordManager.updateGroupCallStub = { _, newCallDirection, newGroupCallStatus in
+            updateCount += 1
+            XCTAssertEqual(newCallDirection, .outgoing)
+            XCTAssertEqual(newGroupCallStatus, .ringingAccepted)
         }
 
-        /// We treat all outgoing group rings as accepted because we don't track
-        /// their ring state.
-        let (outgoingCallRecord, outgoingGroupId) = createGroupCallRecord(
-            callDirection: .outgoing, groupCallStatus: .ringingAccepted
+        let (genericCallRecord, genericGroupId) = createGroupCallRecord(
+            groupId: 1, callDirection: .incoming, groupCallStatus: .generic
         )
 
+        let (joinedCallRecord, joinedGroupId) = createGroupCallRecord(
+            groupId: 2, callDirection: .incoming, groupCallStatus: .joined
+        )
+
+        /// Updating a generic record reassigns the direction and status.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: CallRecordIncomingSyncMessageParams(
-                    conversationType: .group(groupId: outgoingGroupId),
-                    callId: outgoingCallRecord.callId,
-                    callTimestamp: outgoingCallRecord.callBeganTimestamp,
+                    conversationType: .group(groupId: genericGroupId),
+                    callId: genericCallRecord.callId,
+                    callTimestamp: genericCallRecord.callBeganTimestamp - 5,
                     callEvent: .accepted,
                     callType: .groupCall,
                     callDirection: .outgoing
@@ -445,12 +448,47 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
                 syncMessageTimestamp: .maxRandom,
                 tx: tx
             )
+        }
 
+        /// Updating a joined record reassigns the direction and status.
+        mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: CallRecordIncomingSyncMessageParams(
-                    conversationType: .group(groupId: outgoingGroupId),
-                    callId: outgoingCallRecord.callId,
-                    callTimestamp: outgoingCallRecord.callBeganTimestamp,
+                    conversationType: .group(groupId: joinedGroupId),
+                    callId: joinedCallRecord.callId,
+                    callTimestamp: joinedCallRecord.callBeganTimestamp - 5,
+                    callEvent: .accepted,
+                    callType: .groupCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+        }
+
+        XCTAssertEqual(updateCount, 2)
+        XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 2)
+    }
+
+    /// We should never receive a sync message for an outgoing, not-accepted
+    /// call. If we do, we should ignore it.
+    func testUpdatesGroupCall_outgoingNotAcceptedIsIgnored() {
+        mockGroupCallRecordManager.updateGroupCallStub = { (_, _, _) in
+            XCTFail("Should never be updating!")
+        }
+
+        /// We treat all outgoing group rings as accepted because we don't track
+        /// their ring state.
+        let (callRecord, groupId) = createGroupCallRecord(
+            callDirection: .incoming, groupCallStatus: .generic
+        )
+
+        mockDB.write { tx in
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .group(groupId: groupId),
+                    callId: callRecord.callId,
+                    callTimestamp: callRecord.callBeganTimestamp - 5,
                     callEvent: .notAccepted,
                     callType: .groupCall,
                     callDirection: .outgoing
@@ -543,10 +581,11 @@ private class MockGroupCallRecordManager: GroupCallRecordManager {
 
     var updateGroupCallStub: ((
         _ existingCallRecord: CallRecord,
+        _ newCallDirection: CallRecord.CallDirection,
         _ newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
     ) -> Void)?
     func updateGroupCallRecord(groupThread: TSGroupThread, existingCallRecord: CallRecord, newCallDirection: CallRecord.CallDirection, newGroupCallStatus: CallRecord.CallStatus.GroupCallStatus, newGroupCallRingerAci: Aci?, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
-        updateGroupCallStub!(existingCallRecord, newGroupCallStatus)
+        updateGroupCallStub!(existingCallRecord, newCallDirection, newGroupCallStatus)
         XCTAssertFalse(shouldSendSyncMessage)
     }
 
