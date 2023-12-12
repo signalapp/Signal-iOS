@@ -738,8 +738,10 @@ extension CVComponentSystemMessage {
                         return "Call ringing!"
                     case .ringingMissed:
                         return "Call ringing missed!"
+                    case .ringingAccepted where callRecord.callDirection == .outgoing:
+                        return "Outgoing call rung!"
                     case .ringingAccepted:
-                        return "Call ringing accepted!"
+                        return "Incoming call ringing accepted!"
                     case .ringingDeclined:
                         return "Call ringing declined!"
                     }
