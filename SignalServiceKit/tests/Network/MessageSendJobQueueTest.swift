@@ -64,7 +64,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             return (message, promise)
         }
 
-        let finder = JobRecordFinderImpl<MessageSenderJobRecord>()
+        let finder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
         var readyRecords: [MessageSenderJobRecord] = []
         self.read { tx in
             readyRecords = try! finder.allRecords(
@@ -121,7 +121,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             return (message, promise)
         }
 
-        let finder = JobRecordFinderImpl<MessageSenderJobRecord>()
+        let finder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
         var readyRecords: [MessageSenderJobRecord] = []
         self.read { tx in
             readyRecords = try! finder.allRecords(

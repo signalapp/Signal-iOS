@@ -627,6 +627,7 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */; };
 		5003BB3F299DA0F10037159B /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */; };
 		5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */; };
 		5003BB43299F034D0037159B /* E164.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB42299F034D0037159B /* E164.swift */; };
@@ -634,6 +635,7 @@
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
 		50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
+		5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */; };
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
@@ -3235,6 +3237,7 @@
 		500049CA28330184006A7466 /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = mr; path = translations/mr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CB28330185006A7466 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nb; path = translations/nb.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunnerTest.swift; sourceTree = "<group>"; };
 		5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
 		5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcherTest.swift; sourceTree = "<group>"; };
 		5003BB42299F034D0037159B /* E164.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E164.swift; sourceTree = "<group>"; };
@@ -3242,6 +3245,7 @@
 		500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2OperationTest.swift; sourceTree = "<group>"; };
 		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
 		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
+		5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunner.swift; sourceTree = "<group>"; };
 		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatColorSettingStore.swift; sourceTree = "<group>"; };
 		500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeObserver.swift; sourceTree = "<group>"; };
@@ -6595,6 +6599,14 @@
 			path = Transitions;
 			sourceTree = "<group>";
 		};
+		5000CA2F2B1F97DC00BB8EFF /* Jobs */ = {
+			isa = PBXGroup;
+			children = (
+				5000CA302B1F97EE00BB8EFF /* JobQueueRunnerTest.swift */,
+			);
+			path = Jobs;
+			sourceTree = "<group>";
+		};
 		500AEE032A4B68D200371F05 /* UISupport */ = {
 			isa = PBXGroup;
 			children = (
@@ -8413,6 +8425,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
+				5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */,
 				D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */,
 				F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */,
 			);
@@ -9140,6 +9153,7 @@
 				F908AA7B28CE628700472E68 /* Fixtures */,
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
 				F94261E2289B1B5400460798 /* Groups */,
+				5000CA2F2B1F97DC00BB8EFF /* Jobs */,
 				F942621C289B1B5500460798 /* Messages */,
 				D9F399B72A9EA1EB001599EC /* Mocks */,
 				F94261CF289B1B5400460798 /* Network */,
@@ -12746,6 +12760,7 @@
 				D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */,
 				50468F2929EE130A00948E02 /* InteractionStore.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
+				5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */,
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
@@ -13374,6 +13389,7 @@
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
+				5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */,
 				D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */,
 				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
 				D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */,

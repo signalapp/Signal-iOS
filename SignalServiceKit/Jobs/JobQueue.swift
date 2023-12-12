@@ -143,7 +143,7 @@ public extension JobQueue {
         let nextJob: JobRecordType?
 
         do {
-            nextJob = try JobRecordFinderImpl().getNextReady(transaction: transaction.asV2Write)
+            nextJob = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).getNextReady(transaction: transaction.asV2Write)
         } catch let error {
             Logger.error("Couldn't start next job: \(error)")
             return
@@ -189,7 +189,7 @@ public extension JobQueue {
         databaseStorage.write { transaction in
             let runningRecords: [JobRecordType]
             do {
-                runningRecords = try JobRecordFinderImpl().allRecords(
+                runningRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).allRecords(
                     status: JobRecord.Status.running,
                     transaction: transaction.asV2Write
                 )
@@ -217,7 +217,7 @@ public extension JobQueue {
         databaseStorage.write { transaction in
             let staleRecords: [JobRecordType]
             do {
-                staleRecords = try JobRecordFinderImpl().staleRecords(transaction: transaction.asV2Write)
+                staleRecords = try JobRecordFinderImpl(db: DependenciesBridge.shared.db).staleRecords(transaction: transaction.asV2Write)
             } catch {
                 Logger.error("Failed to prune stale jobs! \(error)")
                 return
@@ -328,6 +328,24 @@ public extension JobQueue {
 public protocol JobRecordFinder<JobRecordType> {
     associatedtype JobRecordType: JobRecord
 
+    /// Fetches a single JobRecord from the database.
+    ///
+    /// Returns `nil` a JobRecord doesn't exist for `rowId`.
+    func fetchJob(rowId: JobRecord.RowId, tx: DBReadTransaction) throws -> JobRecordType?
+
+    /// Removes a single JobRecord from the database.
+    func removeJob(_ jobRecord: JobRecordType, tx: DBWriteTransaction)
+
+    /// Fetches all runnable jobs.
+    ///
+    /// This method may use multiple transactions, may use write transactions,
+    /// may delete jobs that can't ever be run, etc.
+    ///
+    /// It returns all jobs that can be run.
+    ///
+    /// Conforming types should avoid long-running write transactions.
+    func loadRunnableJobs() async throws -> [JobRecordType]
+
     func enumerateJobRecords(
         transaction: DBReadTransaction,
         block: (JobRecordType, inout Bool) -> Void
@@ -398,8 +416,21 @@ private extension JobRecord {
     }
 }
 
+private enum Constants {
+    /// The number of JobRecords to fetch in a batch.
+    ///
+    /// Most job queues won't ever have more than a few records at the same
+    /// time. Other times, a job queue may build up a huge backlog, and this
+    /// value can help prune it efficiently.
+    static let batchSize = 400
+}
+
 public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecordType: JobRecord {
-    public init() {}
+    private let db: DB
+
+    public init(db: DB) {
+        self.db = db
+    }
 
     private func iterateJobsWith(
         sql: String,
@@ -463,5 +494,96 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
             database: transaction.unwrapGrdbRead.database,
             block: block
         )
+    }
+
+    public func fetchJob(rowId: JobRecord.RowId, tx: DBReadTransaction) throws -> JobRecordType? {
+        do {
+            let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+            return try JobRecordType.fetchOne(db, key: rowId)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
+    public func removeJob(_ jobRecord: JobRecordType, tx: DBWriteTransaction) {
+        jobRecord.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func loadRunnableJobs() async throws -> [JobRecordType] {
+        var allRunnableJobs = [JobRecordType]()
+        var afterRowId: JobRecord.RowId?
+        while true {
+            let (runnableJobs, hasMoreAfterRowId) = try await db.awaitableWrite { tx in
+                try self.fetchAndPruneSomePersistedJobs(afterRowId: afterRowId, tx: tx)
+            }
+            allRunnableJobs.append(contentsOf: runnableJobs)
+            guard let hasMoreAfterRowId else {
+                break
+            }
+            afterRowId = hasMoreAfterRowId
+        }
+        return allRunnableJobs
+    }
+
+    private func fetchAndPruneSomePersistedJobs(
+        afterRowId: JobRecord.RowId?,
+        tx: DBWriteTransaction
+    ) throws -> ([JobRecordType], hasMoreAfterRowId: JobRecord.RowId?) {
+        let (jobs, hasMore) = try fetchSomeJobs(afterRowId: afterRowId, tx: tx)
+        var runnableJobs = [JobRecordType]()
+        for job in jobs {
+            let canRunJob: Bool = {
+                // This property is deprecated. If it's set, it means the job was created
+                // for a prior version of the application, and that version definitely
+                // can't be the current process.
+                guard job.exclusiveProcessIdentifier == nil else {
+                    return false
+                }
+                // If a job has failed or is obsolete, we can remove it. We previously
+                // distinguished `.ready` from `.running`, but now they're treated exactly
+                // the same when we restart existing jobs.
+                switch job.status {
+                case .unknown, .permanentlyFailed, .obsolete:
+                    return false
+                case .ready, .running:
+                    break
+                }
+                return true
+            }()
+            if canRunJob {
+                runnableJobs.append(job)
+            } else {
+                removeJob(job, tx: tx)
+            }
+        }
+        return (runnableJobs, hasMore ? jobs.last!.id! : nil)
+    }
+
+    private func fetchSomeJobs(
+        afterRowId: JobRecord.RowId?,
+        tx: DBReadTransaction
+    ) throws -> ([JobRecordType], hasMore: Bool) {
+        var sql = """
+            SELECT * FROM \(JobRecordType.databaseTableName)
+            WHERE "\(JobRecordType.columnName(.label))" = ?
+        """
+        var arguments: StatementArguments = [JobRecordType.jobRecordType.jobRecordLabel]
+        if let afterRowId {
+            sql += """
+                AND \(JobRecordType.columnName(.id)) > ?
+            """
+            arguments += [afterRowId]
+        }
+        sql += """
+            ORDER BY "\(JobRecordType.columnName(.id))"
+            LIMIT \(Constants.batchSize)
+        """
+        do {
+            let db = SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database
+            let results = try JobRecordType.fetchAll(db, sql: sql, arguments: arguments)
+            return (results, results.count == Constants.batchSize)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
     }
 }

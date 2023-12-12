@@ -79,7 +79,7 @@ extension OWSOrphanDataCleaner {
             jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
         ) {
             do {
-                try JobRecordFinderImpl<JobRecordType>().enumerateJobRecords(
+                try JobRecordFinderImpl<JobRecordType>(db: DependenciesBridge.shared.db).enumerateJobRecords(
                     transaction: transaction.asV2Read,
                     block: { jobRecord, stop in
                         guard isMainAppAndActive() else {

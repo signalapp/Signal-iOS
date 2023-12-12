@@ -179,7 +179,8 @@ public class MessageProcessor: NSObject {
                 // processing immediately when we launch, so that we can drain the old queue.
                 let legacyDecryptJobRecords: [LegacyMessageDecryptJobRecord]
                 do {
-                    legacyDecryptJobRecords = try JobRecordFinderImpl<LegacyMessageDecryptJobRecord>().allRecords(
+                    let jobRecordFinder = JobRecordFinderImpl<LegacyMessageDecryptJobRecord>(db: DependenciesBridge.shared.db)
+                    legacyDecryptJobRecords = try jobRecordFinder.allRecords(
                         status: .ready,
                         transaction: transaction.asV2Read
                     )

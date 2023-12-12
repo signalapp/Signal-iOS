@@ -243,4 +243,8 @@ extension JobRecord {
             throw JobRecordError.illegalStateTransition
         }
     }
+
+    public func addFailure(tx: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: tx) { record in record.failureCount += 1 }
+    }
 }
