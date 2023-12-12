@@ -294,18 +294,18 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                  quoteProtoAuthor:(AciObjC *)quoteProtoAuthor
                                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
+    SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:quoteProtoAuthor];
     if (quotedMessage.isViewOnceMessage) {
         // We construct a quote that does not include any of the quoted message's renderable content.
         NSString *body = OWSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
             @"inbox cell and notification text for an already viewed view-once media message.");
-        return [[TSQuotedMessage alloc]
-                       initWithTimestamp:quotedMessage.timestamp
-                           authorAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:quoteProtoAuthor]
-                                    body:body
-                              bodyRanges:nil
-                              bodySource:TSQuotedMessageContentSourceLocal
-            receivedQuotedAttachmentInfo:nil
-                             isGiftBadge:NO];
+        return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
+                                            authorAddress:authorAddress
+                                                     body:body
+                                               bodyRanges:nil
+                                               bodySource:TSQuotedMessageContentSourceLocal
+                             receivedQuotedAttachmentInfo:nil
+                                              isGiftBadge:NO];
     }
 
     NSString *_Nullable body = nil;
@@ -322,9 +322,17 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         // We need to account for that here.
         body = [@"👤 " stringByAppendingString:quotedMessage.contactShare.name.displayName];
     } else if (quotedMessage.storyReactionEmoji.length > 0) {
-        body = [NSString stringWithFormat:OWSLocalizedString(@"STORY_REACTION_QUOTE_FORMAT",
-                                              @"quote text for a reaction to a story. Embeds {{reaction emoji}}"),
-                         quotedMessage.storyReactionEmoji];
+        NSString *formatString;
+        if (authorAddress.isLocalAddress) {
+            formatString = OWSLocalizedString(@"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
+                @"quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds "
+                @"{{reaction emoji}}");
+        } else {
+            formatString = OWSLocalizedString(@"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
+                @"quote text for a reaction to a story by some other user (the header on the bubble says their name, "
+                @"e.g. \"Bob\"). Embeds {{reaction emoji}}");
+        }
+        body = [NSString stringWithFormat:formatString, quotedMessage.storyReactionEmoji];
     } else if (quotedMessage.giftBadge != nil) {
         isGiftBadge = YES;
     }

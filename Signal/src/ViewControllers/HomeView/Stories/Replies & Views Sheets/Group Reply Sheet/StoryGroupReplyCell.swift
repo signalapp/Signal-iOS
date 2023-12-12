@@ -295,7 +295,13 @@ class StoryGroupReplyCell: UITableViewCell {
                     .color(.ows_gray05)
                 ))
             } else if cellType.isReaction {
-                return .attributedText(OWSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
+                let reactionString: String
+                if item.authorAddress.isLocalAddress {
+                    reactionString = OWSLocalizedString("STORY_REPLY_REACTION_SECOND_PERSON", comment: "Text indicating you reacted to a story (the header on the bubble says \"You\")")
+                } else {
+                    reactionString = OWSLocalizedString("STORY_REPLY_REACTION_THIRD_PERSON", comment: "Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\")")
+                }
+                return .attributedText(reactionString.styled(
                     with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(.natural)

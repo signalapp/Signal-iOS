@@ -7108,17 +7108,11 @@
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "તમારી સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
-/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "એક સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
-
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ની સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "જવાબ આપો";
-
-/* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "જવાબ";

@@ -7108,17 +7108,11 @@
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "あなたのストーリーに %1$@ のリアクションがありました";
 
-/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "ストーリーに%1$@ のリアクションをしました";
-
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ さんのストーリーに%1$@ のリアクションをしました";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "返信";
-
-/* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "ストーリーにリアクションしました";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "返信";

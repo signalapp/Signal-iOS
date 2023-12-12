@@ -7108,17 +7108,11 @@
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "내 스토리에 %1$@ 이모지로 반응했습니다.";
 
-/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "스토리에 %1$@ 이모지로 반응했습니다.";
-
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ 님의 스토리에 %1$@ 이모지로 반응했습니다.";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "답장";
-
-/* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "스토리에 반응했습니다.";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "답장";

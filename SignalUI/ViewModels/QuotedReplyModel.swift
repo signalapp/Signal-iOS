@@ -331,11 +331,20 @@ public class QuotedReplyModel: NSObject {
         if let messageBody = message.body, !messageBody.isEmpty {
             quotedText = messageBody
         } else if let storyReactionEmoji = message.storyReactionEmoji, !storyReactionEmoji.isEmpty {
+            let formatString: String
+            if authorAddress.isLocalAddress {
+                formatString = OWSLocalizedString(
+                    "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
+                    comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}"
+                )
+            } else {
+                formatString = OWSLocalizedString(
+                    "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
+                    comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}"
+                )
+            }
             quotedText = String(
-                format: OWSLocalizedString(
-                    "STORY_REACTION_QUOTE_FORMAT",
-                    comment: "quote text for a reaction to a story. Embeds {{reaction emoji}}"
-                ),
+                format: formatString,
                 storyReactionEmoji
             )
         }
