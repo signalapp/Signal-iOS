@@ -130,7 +130,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
+        let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
 
         Task { [weak self, taskManager, targets] in
             try Task.checkCancellation()
