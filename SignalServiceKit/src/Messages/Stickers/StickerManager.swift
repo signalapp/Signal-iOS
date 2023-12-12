@@ -623,7 +623,7 @@ public class StickerManager: NSObject {
 
         removeFromRecentStickers(stickerInfo, transaction: transaction)
 
-        removeStickerFromEmojiMap(installedSticker, transaction: transaction)
+        removeStickerFromEmojiMap(installedSticker, tx: transaction)
 
         guard let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: false) else {
             owsFailDebug("Could not generate sticker data URL.")
@@ -727,7 +727,7 @@ public class StickerManager: NSObject {
             }
             #endif
 
-            self.addStickerToEmojiMap(installedSticker, transaction: transaction)
+            self.addStickerToEmojiMap(installedSticker, tx: transaction)
             return true
         }
     }
@@ -834,34 +834,25 @@ public class StickerManager: NSObject {
         return allEmoji(inEmojiString: emojiString).first
     }
 
-    private class func addStickerToEmojiMap(_ installedSticker: InstalledSticker,
-                                            transaction: SDSAnyWriteTransaction) {
-
+    private class func addStickerToEmojiMap(_ installedSticker: InstalledSticker, tx: SDSAnyWriteTransaction) {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
         let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
-            emojiMapStore.appendToStringSet(key: emoji,
-                                            value: stickerId,
-                                            transaction: transaction)
+            emojiMapStore.prependToOrderedUniqueArray(key: emoji, value: stickerId, tx: tx)
         }
-
         shared.clearSuggestedStickersCache()
     }
 
-    private class func removeStickerFromEmojiMap(_ installedSticker: InstalledSticker,
-                                                 transaction: SDSAnyWriteTransaction) {
+    private class func removeStickerFromEmojiMap(_ installedSticker: InstalledSticker, tx: SDSAnyWriteTransaction) {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
         let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
-            emojiMapStore.removeFromStringSet(key: emoji,
-                                              value: stickerId,
-                                              transaction: transaction)
+            emojiMapStore.removeFromOrderedUniqueArray(key: emoji, value: stickerId, tx: tx)
         }
-
         shared.clearSuggestedStickersCache()
     }
 
@@ -907,7 +898,7 @@ public class StickerManager: NSObject {
             // Text input contains more than just a single emoji.
             return []
         }
-        let stickerIds = emojiMapStore.stringSet(forKey: emoji, transaction: transaction)
+        let stickerIds = emojiMapStore.orderedUniqueArray(forKey: emoji, tx: transaction)
         return stickerIds.compactMap { (stickerId) in
             guard let installedSticker = InstalledSticker.anyFetch(uniqueId: stickerId, transaction: transaction) else {
                 owsFailDebug("Missing installed sticker.")
@@ -1011,24 +1002,24 @@ public class StickerManager: NSObject {
     private static var kRecentStickersKey: String { "recentStickers" }
     private static let kRecentStickersMaxCount: Int = 25
 
-    @objc
-    public class func stickerWasSent(_ stickerInfo: StickerInfo,
-                                     transaction: SDSAnyWriteTransaction) {
-        guard isStickerInstalled(stickerInfo: stickerInfo) else {
+    public class func stickerWasSent(_ stickerInfo: StickerInfo, transaction: SDSAnyWriteTransaction) {
+        guard isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
             return
         }
-        store.appendToStringSet(key: kRecentStickersKey,
-                                value: stickerInfo.asKey(),
-                                transaction: transaction,
-                                maxCount: kRecentStickersMaxCount)
+        store.prependToOrderedUniqueArray(
+            key: kRecentStickersKey,
+            value: stickerInfo.asKey(),
+            maxCount: kRecentStickersMaxCount,
+            tx: transaction
+        )
         NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
     }
 
-    private class func removeFromRecentStickers(_ stickerInfo: StickerInfo,
-                                                transaction: SDSAnyWriteTransaction) {
-        store.removeFromStringSet(key: kRecentStickersKey,
-                                  value: stickerInfo.asKey(),
-                                  transaction: transaction)
+    private class func removeFromRecentStickers(
+        _ stickerInfo: StickerInfo,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        store.removeFromOrderedUniqueArray(key: kRecentStickersKey, value: stickerInfo.asKey(), tx: transaction)
         NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
     }
 
@@ -1048,7 +1039,7 @@ public class StickerManager: NSObject {
     //
     // Only returns installed stickers.
     private class func recentStickers(transaction: SDSAnyReadTransaction) -> [StickerInfo] {
-        let keys = store.stringSet(forKey: kRecentStickersKey, transaction: transaction)
+        let keys = store.orderedUniqueArray(forKey: kRecentStickersKey, tx: transaction)
         var result = [StickerInfo]()
         for key in keys {
             guard let installedSticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
@@ -1283,49 +1274,44 @@ public class StickerManager: NSObject {
 // These methods are used to maintain a "string set":
 // A set (no duplicates) of strings stored as a list.
 // As a bonus, the set is stored in order of descending recency.
-extension SDSKeyValueStore {
-    func appendToStringSet(key: String,
-                           value: String,
-                           transaction: SDSAnyWriteTransaction,
-                           maxCount: Int? = nil) {
+private extension SDSKeyValueStore {
+    func prependToOrderedUniqueArray(
+        key: String,
+        value: String,
+        maxCount: Int? = nil,
+        tx: SDSAnyWriteTransaction
+    ) {
         // Prepend value to ensure descending order of recency.
-        var stringSet = [value]
-        if let storedValue = getObject(forKey: key, transaction: transaction) as? [String] {
-            stringSet += storedValue.filter {
-                $0 != value
-            }
+        var orderedArray = [value]
+        if let storedValue = getObject(forKey: key, transaction: tx) as? [String] {
+            orderedArray += storedValue.filter { $0 != value }
         }
-        if let maxCount = maxCount {
-            stringSet = Array(stringSet.prefix(maxCount))
+        if let maxCount {
+            orderedArray = Array(orderedArray.prefix(maxCount))
         }
-        setObject(stringSet, key: key, transaction: transaction)
+        setObject(orderedArray, key: key, transaction: tx)
     }
 
-    func removeFromStringSet(key: String,
-                             value: String,
-                             transaction: SDSAnyWriteTransaction) {
-        var stringSet = [String]()
-        if let storedValue = getObject(forKey: key, transaction: transaction) as? [String] {
+    func removeFromOrderedUniqueArray(key: String, value: String, tx: SDSAnyWriteTransaction) {
+        var orderedArray = [String]()
+        if let storedValue = getObject(forKey: key, transaction: tx) as? [String] {
             guard storedValue.contains(value) else {
                 // No work to do.
                 return
             }
-            stringSet += storedValue.filter {
-                $0 != value
-            }
+            orderedArray += storedValue.filter { $0 != value }
         }
-        setObject(stringSet, key: key, transaction: transaction)
+        setObject(orderedArray, key: key, transaction: tx)
     }
 
-    func stringSet(forKey key: String,
-                   transaction: SDSAnyReadTransaction) -> [String] {
-        guard let object = self.getObject(forKey: key, transaction: transaction) else {
+    func orderedUniqueArray(forKey key: String, tx: SDSAnyReadTransaction) -> [String] {
+        guard let object = getObject(forKey: key, transaction: tx) else {
             return []
         }
-        guard let stringSet = object as? [String] else {
+        guard let orderedArray = object as? [String] else {
             owsFailDebug("Value has unexpected type \(type(of: object)).")
             return []
         }
-        return stringSet
+        return orderedArray
     }
 }
