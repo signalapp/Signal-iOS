@@ -49,6 +49,10 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         DependenciesBridge.shared.interactionStore
     }
 
+    private var logger: PrefixedLogger {
+        CallRecordLogger.shared
+    }
+
     private var tsAccountManager: TSAccountManager {
         DependenciesBridge.shared.tsAccountManager
     }
@@ -117,7 +121,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             }()
 
             if shouldUpdateCallModels {
-                Logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
+                self.logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
 
                 return self.databaseStorage.write(.promise) { tx in
                     self.updateGroupCallModelsForPeek(
@@ -130,18 +134,18 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     owsFailDebug("Failed to get database write: \(error)")
                 }
             } else {
-                Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
+                self.logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
                 return Guarantee.value(())
             }
         }.done(on: DispatchQueue.sharedUtility) {
             completion?()
         }.catch(on: DispatchQueue.sharedUtility) { error in
             if error.isNetworkFailureOrTimeout {
-                Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+                self.logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else if !TSConstants.isUsingProductionService {
                 // Staging uses the production credentials, so trying to send a request
                 // with the staging credentials is expected to fail.
-                Logger.warn("Expected failure to fetch PeekInfo for \(thread.uniqueId): \(error)")
+                self.logger.warn("Expected failure to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else {
                 owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             }
@@ -255,6 +259,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             tx: tx
         )
 
+        logger.info("Creating record for group call discovered via peek.")
         _ = groupCallRecordManager.createGroupCallRecordForPeek(
             callId: callId,
             groupCallInteraction: newGroupCallInteraction,
@@ -388,7 +393,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     tx: tx.asV2Write
                 )
             } else {
-                Logger.info("Inserting placeholder group call message with callId: \(callId)")
+                logger.info("Inserting placeholder group call message with callId: \(callId)")
 
                 _ = createModelsForNewGroupCall(
                     callId: callId,
@@ -503,7 +508,7 @@ extension LightweightGroupCallManager: HTTPDelegate {
      */
     public func sendRequest(requestId: UInt32, request: HTTPRequest) {
         AssertIsOnMainThread()
-        Logger.info("sendRequest")
+        logger.info("sendRequest")
 
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
@@ -534,7 +539,7 @@ extension LightweightGroupCallManager: HTTPDelegate {
 
         }.catch(on: DispatchQueue.main) { error in
             if error.isNetworkFailureOrTimeout {
-                Logger.warn("Call manager http request failed \(error)")
+                self.logger.warn("Call manager http request failed \(error)")
             } else {
                 owsFailDebug("Call manager http request failed \(error)")
             }

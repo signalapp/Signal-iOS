@@ -47,6 +47,8 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
+        let syncMessageLogger = logger.suffixed(with: "\(incomingSyncMessage.callDirection), \(incomingSyncMessage.callEvent)")
+
         switch incomingSyncMessage.conversationType {
         case let .individual(contactServiceId):
             guard
@@ -84,6 +86,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     callRecord: existingCallRecord, tx: tx
                 ) else { return }
 
+                syncMessageLogger.info("Updating existing record for individual call sync message.")
                 updateIndividualCallRecordForIncomingSyncMessage(
                     existingCallRecord: existingCallRecord,
                     existingCallInteraction: existingCallInteraction,
@@ -94,6 +97,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     tx: tx
                 )
             } else {
+                syncMessageLogger.info("Creating record for individual call sync message.")
                 createIndividualCallRecordForIncomingSyncMessage(
                     contactThread: contactThread,
                     contactThreadRowId: contactThreadRowId,
@@ -185,6 +189,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     }
                 }
 
+                syncMessageLogger.info("Updating existing record for group call sync message.")
                 updateGroupCallRecordForIncomingSyncMessage(
                     existingCallRecord: existingCallRecord,
                     existingCallInteraction: existingCallInteraction,
@@ -217,6 +222,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     groupCallStatus = .ringingDeclined
                 }
 
+                syncMessageLogger.info("Creating new record for group call sync message.")
                 createGroupCallRecordForIncomingSyncMessage(
                     callId: incomingSyncMessage.callId,
                     groupThread: groupThread,
@@ -244,8 +250,6 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        logger.info("Updating 1:1 call record and interaction from incoming sync message.")
-
         interactionStore.updateIndividualCallInteractionType(
             individualCallInteraction: existingCallInteraction,
             newCallInteractionType: newIndividualCallInteractionType,
@@ -280,8 +284,6 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        logger.info("Creating 1:1 call record and interaction from incoming sync message.")
-
         let newIndividualCallInteraction = TSCall(
             callType: individualCallInteractionType,
             offerType: callType.individualCallOfferType,
@@ -329,8 +331,6 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        logger.info("Updating group call record for incoming sync message.")
-
         groupCallRecordManager.updateGroupCallRecord(
             groupThread: existingGroupThread,
             existingCallRecord: existingCallRecord,
@@ -360,8 +360,6 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        logger.info("Creating group call record and interaction for incoming sync message.")
-
         let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
             groupThread: groupThread,
             callEventTimestamp: callEventTimestamp,

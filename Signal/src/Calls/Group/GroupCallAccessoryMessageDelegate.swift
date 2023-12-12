@@ -220,6 +220,8 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
 }
 
 private extension GroupCallRecordManager {
+    private var logger: PrefixedLogger { CallRecordLogger.shared }
+
     /// Create or update a call record in response to the local device joining
     /// a group call.
     ///
@@ -233,7 +235,7 @@ private extension GroupCallRecordManager {
         tx: SDSAnyWriteTransaction
     ) {
         guard let groupThreadRowId = groupThread.sqliteRowId else {
-            owsFailDebug("Missing SQLite row ID for thread!")
+            logger.error("Missing SQLite row ID for thread!")
             return
         }
 
@@ -243,7 +245,7 @@ private extension GroupCallRecordManager {
 
         switch groupCallRingState {
         case .incomingRing, .incomingRingCancelled:
-            owsFailDebug("Unexpected group call ring state: \(groupCallRingState)!")
+            logger.error("Unexpected group call ring state: \(groupCallRingState)!")
             fallthrough
         case .ringingEnded:
             // Ringing having just ended while joining indicates that we had an
@@ -267,6 +269,7 @@ private extension GroupCallRecordManager {
             callDirection = .outgoing
         }
 
+        logger.info("Creating or updating record for group call join.")
         createOrUpdateCallRecord(
             callId: callId,
             groupThread: groupThread,
@@ -290,10 +293,11 @@ private extension GroupCallRecordManager {
         tx: SDSAnyWriteTransaction
     ) {
         guard let groupThreadRowId = groupThread.sqliteRowId else {
-            owsFailDebug("Missing SQLite row ID for thread!")
+            logger.error("Missing SQLite row ID for thread!")
             return
         }
 
+        logger.info("Creating or updating record for group ring decline.")
         createOrUpdateCallRecord(
             callId: callIdFromRingId(ringId),
             groupThread: groupThread,

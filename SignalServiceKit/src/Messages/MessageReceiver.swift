@@ -588,13 +588,10 @@ public final class MessageReceiver: Dependencies {
                 outgoingPayment, messageTimestamp: request.serverDeliveryTimestamp, transaction: tx
             )
         } else if let callEvent = syncMessage.callEvent {
-            let logger = CallRecordLogger.shared
-            logger.info("Received call event sync message.")
-
             guard let incomingSyncMessageParams = try? CallRecordIncomingSyncMessageParams.parse(
                 callEventProto: callEvent
             ) else {
-                logger.warn("Failed to parse incoming call event protobuf!")
+                CallRecordLogger.shared.warn("Failed to parse incoming call event protobuf!")
                 return
             }
 

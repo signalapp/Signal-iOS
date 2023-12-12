@@ -4,7 +4,7 @@
 //
 
 /// A logger for call record-related events.
-final class CallRecordLogger: PrefixedLogger {
+public final class CallRecordLogger: PrefixedLogger {
     public static let shared = CallRecordLogger()
 
     private init() {

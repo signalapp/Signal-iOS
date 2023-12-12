@@ -55,6 +55,8 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         ringUpdateSender: Aci,
         tx: DBWriteTransaction
     ) {
+        let ringUpdateLogger = logger.suffixed(with: "\(ringUpdate)")
+
         let callId = callIdFromRingId(ringId)
         let callEventTimestamp = Date().ows_millisecondsSince1970
 
@@ -155,6 +157,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 }
             }
 
+            ringUpdateLogger.info("Updating group call record for ring update.")
             groupCallRecordManager.updateGroupCallRecord(
                 groupThread: groupThread,
                 existingCallRecord: existingCallRecord,
@@ -190,6 +193,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 tx: tx
             )
 
+            ringUpdateLogger.info("Creating group call record for ring update.")
             _ = groupCallRecordManager.createGroupCallRecord(
                 callId: callId,
                 groupCallInteraction: newGroupCallInteraction,
