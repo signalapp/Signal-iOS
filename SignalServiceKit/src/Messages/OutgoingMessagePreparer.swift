@@ -121,11 +121,6 @@ public class OutgoingMessagePreparer: NSObject {
         // When we start a message send, all "failed" recipients should be marked as "sending".
         unpreparedMessage.updateAllUnsentRecipientsAsSending(transaction: transaction)
 
-        // Update "Recent Stickers" list to reflect sends.
-        if let messageSticker = unpreparedMessage.messageSticker {
-            StickerManager.stickerWasSent(messageSticker.info, transaction: transaction)
-        }
-
         didCompletePrep = true
         return message
     }

@@ -159,6 +159,7 @@ public extension ThreadUtil {
             message.update(with: messageSticker, transaction: tx)
 
             SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
+            StickerManager.stickerWasSent(messageSticker.info, transaction: tx)
 
             thread.donateSendMessageIntent(for: message, transaction: tx)
         }
