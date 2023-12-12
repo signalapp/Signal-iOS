@@ -1,2 +1,2 @@
-• Silence isn’t always golden, but it does have a new icon. We updated the Camera and Mute buttons in voice and video calls so it’s even easier to see when they are enabled or disabled.
-• There might already be a self-referential German word to describe “German words that are so big they won’t fit on a single line,” but we fixed the “lost cursor” bug that was affecting some long German words on iOS 17.
+• 沉默不一定都是金，但確實有了新面貌。我們更新了語音和視訊通話中的「相機」和「靜音」按鈕，以便清楚看見它們是否啟用或停用。
+• 我們還修復了影響 iOS 17 上一些長德語單詞的錯誤。

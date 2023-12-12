@@ -1,2 +1,2 @@
-• Silence isn’t always golden, but it does have a new icon. We updated the Camera and Mute buttons in voice and video calls so it’s even easier to see when they are enabled or disabled.
-• There might already be a self-referential German word to describe “German words that are so big they won’t fit on a single line,” but we fixed the “lost cursor” bug that was affecting some long German words on iOS 17.
+• खामोशी हमेशा अच्छी नहीं होती, लेकिन इसका एक नया आइकन है। हमने वॉयस और वीडियो कॉल में कैमरा और म्यूट बटन को अपडेट किया है, ताकि यह देखना और भी आसान हो जाए कि वे कब सक्षम या अक्षम होते हैं।
+• "जर्मन शब्द जो इतने बड़े हैं कि वे एक पंक्ति में फिट नहीं होंगे" का वर्णन करने के लिए पहले से ही एक स्व-संदर्भित जर्मन शब्द हो सकता है, लेकिन हमने "लॉस्ट कर्सर" बग को ठीक कर दिया है जो iOS 17 पर कुछ लंबे जर्मन शब्दों को प्रभावित कर रहा था।

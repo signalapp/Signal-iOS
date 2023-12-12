@@ -956,7 +956,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "Auto";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Kleur wissen";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Kleur verwijderen";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Chatkleur";
@@ -1001,13 +1001,13 @@
 "CONFIGURE_REACTIONS" = "Emoji-reactiebalk instellen";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden gewist. De app wordt gesloten nadat dit proces is voltooid.";
+"CONFIRM_DELETE_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden verwijderd. De app wordt gesloten nadat dit proces is voltooid.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Weet je zeker dat je alle gegevens wilt wissen?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden gewist. Je kunt je telefoon altijd opnieuw koppelen, maar daarmee worden de gewiste berichten niet hersteld. De app wordt gesloten nadat dit proces is voltooid.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden verwijderd. Je kunt je telefoon altijd opnieuw koppelen, maar daarmee worden de verwijderde berichten niet hersteld. De app wordt gesloten nadat dit proces is voltooid.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Weet je zeker dat je alle gegevens wilt wissen?";
@@ -1190,7 +1190,7 @@
 "CONTEXT_MENU_COPY" = "Kopiëren";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Wissen";
+"CONTEXT_MENU_DELETE_MESSAGE" = "Verwijderen";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "Info";
@@ -1460,7 +1460,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Jij stuurde:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Alles wissen";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Alles verwijderen";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Meer berichten aan het laden…";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Het verwijderen van je account is mislukt. Controleer of wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens, je profiel en al je berichten gewist.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens, je profiel en al je berichten verwijderd.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Account aan het verwijderen…";
@@ -1679,10 +1679,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Het telefoonnummer dat je hebt ingevuld komt niet overeen met het telefoonnummer van je Signal-account.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Alle berichten in deze chat wissen?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Alle berichten in deze chat verwijderen?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Alle berichten wissen";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Alle berichten verwijderen";
 
 /* 'Delete' button label on the delete contact confirmation action sheet */
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Verwijderen";
@@ -1754,7 +1754,7 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Account & berichten overzetten";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Zet je account en gespreksgeschiedenis over van je oude iOS apparaat";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Zet je account en gespreksgeschiedenis over van je oude iOS-apparaat";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Zet je account en gespreksgeschiedenis over van je oude iPad";
@@ -1763,7 +1763,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Overzetten van een andere iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Overzetten van een ander iOS apparaat";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Overzetten van een ander iOS-apparaat";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Als je doorgaat dan zal de Signal-app worden uitgeschakeld op andere apparaten welke momenteel met hetzelfde telefoonnummer bij Signal zijn geregistreerd.";
@@ -1796,7 +1796,7 @@
 "DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Groter weergeven";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Zet je account over naar een nieuw iOS apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Zet je account over naar een nieuw iOS-apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Account overzetten";
@@ -2732,10 +2732,10 @@
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ en %2$@ krijgen hier een melding van";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal belt naar %1$@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal zal %1$@ bellen";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal belt naar %1$@ en %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal zal %1$@ en %2$@ bellen";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Je neemt deel aan de groepsoproep";
@@ -3761,22 +3761,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Voor iedereen wissen";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Verwijderen voor iedereen";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Dit bericht zal voor iedereen die momenteel aan de chat deelneemt gewist worden, mits ze een recente versie van Signal gebruiken. Ze zullen wel kunnen zien dat je een bericht hebt gewist.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Dit bericht zal voor iedereen die momenteel aan de chat deelneemt verwijderd worden, mits ze een recente versie van Signal gebruiken. Ze zullen wel kunnen zien dat je een bericht hebt verwijderd.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Voor wie wil je dit bericht wissen?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Voor wie wil je dit bericht verwijderen?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Voor mij wissen";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Verwijderen voor mezelf";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Bericht wissen";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Bericht verwijderen";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Geselecteerde berichten wissen";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Geselecteerde berichten verwijderen";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Meer informatie";
@@ -3941,22 +3941,22 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ blokkeren en verwijderen?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Wissen";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Verwijderen";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Deze chat zal op al je eigen apparaten worden gewist.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Deze chat zal op al je eigen apparaten worden verwijderd.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Chat wissen?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Chat verwijderen?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Wissen en verlaten";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Verwijderen en verlaten";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Je zult deze groep verlaten en het gesprek zal op al je eigen apparaten worden gewist.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Je zult deze groep verlaten en het gesprek zal op al je eigen apparaten worden verwijderd.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep wissen en verlaten?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep verwijderen en verlaten?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Overweeg dit gespreksverzoek zorgvuldig, want er is een andere contactpersoon met dezelfde naam.";
@@ -4001,7 +4001,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Doorgaan";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Verwijderen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam, -foto en -omschrijving voor je chatpartner zichtbaar maken om je chat met %1$@ voort te kunnen zetten?";
@@ -4424,7 +4424,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Dat telefoonnummer is ongeldig. Vul een geldig telefoonnummer in om je te registreren.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van je Signal-account door een nieuwe pincode aan te maken. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen meer om je pincode te raden, maar je kunt nog wel gebruik blijven maken van je Signal-account door een nieuwe pincode aan te maken. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lees meer over pincodes";
@@ -4433,7 +4433,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Foutieve pincode";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Je hebt geen pogingen meer, maar je kunt nog steeds proberen toegang te krijgen tot je Signal-account door je telefoonnummer te verifiëren. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Je hebt geen pogingen meer om je pincode te raden, maar je kunt nog steeds proberen toegang te krijgen tot je Signal-account door je telefoonnummer te verifiëren. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Voorwaarden en privacybeleid";
@@ -5006,13 +5006,13 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Pincode uitschakelen";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de pincode uitschakelt dan zul je alle gegevens kwijtraken wanneer je Signal opnieuw registreert, tenzij je de gegevens vanaf een ander iOS apparaat overzet. Zolang de pincode is uitgeschakeld kun je geen registratievergrendeling inschakelen.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de pincode uitschakelt dan zul je alle gegevens kwijtraken wanneer je Signal opnieuw registreert, tenzij je de gegevens vanaf een ander iOS-apparaat overzet. Zolang de pincode is uitgeschakeld kun je geen registratievergrendeling inschakelen.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Waarschuwing";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Zelfs Signals ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam, -foto en -omschrijving, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
+"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profiel, instellingen en contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Meer over PINs";
@@ -5183,10 +5183,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Personen toevoegen";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Aangepast verhaal wissen";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Aangepast verhaal verwijderen";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je \"%1$@\" wilt wissen? Updates gedeeld in dit verhaal worden ook gewist.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je \"%1$@\" wilt verwijderen? Updates gedeeld in dit verhaal worden ook verwijderd.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Verwijderen";
@@ -5252,13 +5252,13 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Gebruikersnaam aanmaken";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Gebruikersnaam wissen";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Dit verwijdert je gebruikersnaam en schakelt je QR-code en link uit. Anderen kunnen \"%1$@\" claimen. Weet je het zeker?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Gebruikersnaam wissen";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Gebruikersnaam bewerken";
@@ -6671,7 +6671,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Herinneringen uitschakelen";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Zorg ervoor dat je je Signal-pincode onthoudt of op een goed beveiligde manier opslaat, want je kunt je pincode niet herstellen. Als je je pincode toch vergeet, dan verlies je mogelijk gegevens bij het opnieuw registrereren van je Signal-account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Zorg ervoor dat je je Signal-pincode onthoudt of op een goed beveiligde manier opslaat, want je kunt je pincode niet herstellen. Als je je pincode toch vergeet, dan verlies je mogelijk gegevens bij het opnieuw registreren van je Signal-account.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Je Signal-pincode bevestigen";
@@ -6680,7 +6680,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Pincode-herinneringen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Zelfs Signals ontwikkelaars kunnen je informatie niet inzien. Je kunt dan je profielnaam en -foto, je instellingen en je contacten herstellen wanneer je Signal opnieuw installeert.";
+"SETTINGS_PINS_FOOTER" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profiel, instellingen en contacten herstellen wanneer je Signal opnieuw installeert. Je pincode kan niet worden hersteld.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
@@ -6725,7 +6725,7 @@
 "SETTINGS_RELINK_BUTTON" = "Opnieuw koppelen";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Opnieuw registreren.";
+"SETTINGS_REREGISTER_BUTTON" = "Opnieuw registreren";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Appvergrendeling-tijdsspanne";
@@ -6746,7 +6746,7 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Bellen";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Vingerscan, gezichtsherkenning of het wachtwoord van je iOS apparaat gebruiken om Signal te ontgrendelen.";
+"SETTINGS_SECURITY_DETAIL" = "Vingerscan, gezichtsherkenning of het wachtwoord van je iOS-apparaat gebruiken om Signal te ontgrendelen.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Gezichtsherkenning gebruiken om Signal te ontgrendelen.";
@@ -6938,13 +6938,13 @@
 "STORIES_COPY_REPLY_ACTION" = "Tekst kopiëren";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Wissen";
+"STORIES_DELETE_REPLY_ACTION" = "Verwijderen";
 
 /* Context menu action to delete the selected story */
-"STORIES_DELETE_STORY_ACTION" = "Wissen";
+"STORIES_DELETE_STORY_ACTION" = "Verwijderen";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Dit verhaal wissen? Het zal ook worden gewist voor iedereen die het al heeft ontvangen.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Dit verhaal verwijderen? Het zal ook worden verwijderd voor iedereen die het al heeft ontvangen.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Verhaal opgeslagen";
@@ -7016,10 +7016,10 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "Verhalen";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Je kunt geen verhalen meer delen of bekijken. Updates die je recent op je verhaal hebt gedeeld, worden ook gewist.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Je kunt geen verhalen meer delen of bekijken. Updates die je recent op je verhaal hebt gedeeld, worden ook verwijderd.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Verhalen uitschakelen en wissen";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Verhalen uitschakelen en verwijderen";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Als je verhalen uitschakelt, kun je niet langer verhalen delen of bekijken.";
@@ -7376,7 +7376,7 @@
 "TEXT_MENU_TRANSLATE" = "Vertalen";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Dit bericht is gewist.";
+"THIS_MESSAGE_WAS_DELETED" = "Dit bericht is verwijderd.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %1$@, %2$@ en nog %3$lu andere groepen";
@@ -7463,7 +7463,7 @@
 "TXT_CANCEL_TITLE" = "Annuleren";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "Wissen";
+"TXT_DELETE_TITLE" = "Verwijderen";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Dearchiveren";
@@ -7712,10 +7712,10 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Je hebt dit bericht al weergegeven.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om er voor te zorgen dat dit bericht wordt gewist nadat het is gezien.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om er voor te zorgen dat dit bericht wordt verwijderd nadat het is gezien.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk gewist zodra ze zijn verzonden.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk verwijderd zodra ze zijn verzonden.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Afbeelding bekijken";
@@ -7823,7 +7823,7 @@
 "YOU" = "Jij";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "Je hebt dit bericht gewist.";
+"YOU_DELETED_THIS_MESSAGE" = "Je hebt dit bericht verwijderd.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt verdwijnende berichten uitgeschakeld.";

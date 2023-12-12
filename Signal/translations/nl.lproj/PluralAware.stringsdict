@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit verwijderen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d bericht wissen?</string>
+			<string>%1$d bericht verwijderen?</string>
 			<key>other</key>
-			<string>%1$d berichten wissen?</string>
+			<string>%1$d berichten verwijderen?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>

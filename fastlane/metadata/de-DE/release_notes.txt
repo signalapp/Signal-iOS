@@ -1,2 +1,2 @@
-• Silence isn’t always golden, but it does have a new icon. We updated the Camera and Mute buttons in voice and video calls so it’s even easier to see when they are enabled or disabled.
-• There might already be a self-referential German word to describe “German words that are so big they won’t fit on a single line,” but we fixed the “lost cursor” bug that was affecting some long German words on iOS 17.
+• Schweigen ist nicht immer Gold, aber dafür gibt's jetzt ein neues Symbol. Wir haben die Schaltflächen »Kamera« und »Stummschaltung« in Sprach- und Videoanrufen aktualisiert, damit du noch besser erkennen kannst, wann sie aktiviert oder deaktiviert sind.
+• Vielleicht gibt es ja bereits ein passendes deutsches Wort für »deutsche Wörter, die so lang sind, dass sie nicht in eine einzelne Zeile passen« – jedenfalls haben wir den »verlorener Eingabezeiger«-Fehler behoben, der unter iOS 17 bei einigen langen deutschen Wörtern auftrat.
