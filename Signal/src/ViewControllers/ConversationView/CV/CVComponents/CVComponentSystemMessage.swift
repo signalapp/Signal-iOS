@@ -618,6 +618,13 @@ extension CVComponentSystemMessage {
         let font = Self.textLabelFont
         let labelText = NSMutableAttributedString()
 
+        func applyParagraphStyling() {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.paragraphSpacing = 12
+            paragraphStyle.alignment = .center
+            labelText.addAttributeToEntireString(.paragraphStyle, value: paragraphStyle)
+        }
+
         if
             let infoMessage = interaction as? TSInfoMessage,
             infoMessage.messageType == .typeGroupUpdate,
@@ -642,10 +649,7 @@ extension CVComponentSystemMessage {
             }
 
             if displayableGroupUpdates.count > 1 {
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.paragraphSpacing = 12
-                paragraphStyle.alignment = .center
-                labelText.addAttributeToEntireString(.paragraphStyle, value: paragraphStyle)
+                applyParagraphStyling()
             }
 
             return labelText
@@ -658,8 +662,11 @@ extension CVComponentSystemMessage {
             labelText.append("  ", attributes: [:])
         }
 
-        let systemMessageText = Self.systemMessageText(forInteraction: interaction,
-                                                       transaction: transaction)
+        let (systemMessageText, isSystemMessageTextMultiline) = Self.systemMessageText(
+            forInteraction: interaction,
+            transaction: transaction
+        )
+
         owsAssertDebug(!systemMessageText.isEmpty)
         labelText.append(systemMessageText)
 
@@ -669,14 +676,19 @@ extension CVComponentSystemMessage {
             labelText.append(DateUtil.formatTimestampAsTime(interaction.timestamp))
         }
 
+        if isSystemMessageTextMultiline {
+            applyParagraphStyling()
+        }
+
         return labelText
     }
 
-    private static func systemMessageText(forInteraction interaction: TSInteraction,
-                                          transaction: SDSAnyReadTransaction) -> String {
-
+    private static func systemMessageText(
+        forInteraction interaction: TSInteraction,
+        transaction: SDSAnyReadTransaction
+    ) -> (String, isMultiline: Bool) {
         if let errorMessage = interaction as? TSErrorMessage {
-            return errorMessage.previewText(transaction: transaction)
+            return (errorMessage.previewText(transaction: transaction), false)
         } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let isVerified = verificationMessage.verificationState == .verified
             let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, transaction: transaction)
@@ -691,16 +703,57 @@ extension CVComponentSystemMessage {
                                                     comment: "Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}.")
                                 : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
                                                     comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}.")))
-            return String(format: format, displayName)
+            return (String(format: format, displayName), false)
         } else if let infoMessage = interaction as? TSInfoMessage {
-            return infoMessage.conversationSystemMessageComponentText(with: transaction)
+            return (infoMessage.conversationSystemMessageComponentText(with: transaction), false)
         } else if let call = interaction as? TSCall {
-            return call.previewText(transaction: transaction)
+            return (call.previewText(transaction: transaction), false)
         } else if let groupCall = interaction as? OWSGroupCallMessage {
-            return groupCall.systemText(with: transaction)
+            let systemText = groupCall.systemText(with: transaction)
+
+            let internalOnlyCallRecordText: String? = {
+                guard FeatureFlags.groupCallDisposition else {
+                    return nil
+                }
+
+                guard
+                    let interactionRowId = groupCall.sqliteRowId,
+                    let callRecord = DependenciesBridge.shared.callRecordStore.fetch(
+                        interactionRowId: interactionRowId,
+                        tx: transaction.asV2Read
+                    )
+                else { return nil }
+
+                switch callRecord.callStatus {
+                case .individual:
+                    owsFailDebug("Group call interaction missing group call status!")
+                    return nil
+                case .group(let groupCallStatus):
+                    switch groupCallStatus {
+                    case .generic:
+                        return "Call started!"
+                    case .joined:
+                        return "Call joined!"
+                    case .ringing:
+                        return "Call ringing!"
+                    case .ringingMissed:
+                        return "Call ringing missed!"
+                    case .ringingAccepted:
+                        return "Call ringing accepted!"
+                    case .ringingDeclined:
+                        return "Call ringing declined!"
+                    }
+                }
+            }()
+
+            if let internalOnlyCallRecordText {
+                return ("\(systemText)\nInternal: \(internalOnlyCallRecordText)", true)
+            } else {
+                return (systemText, false)
+            }
         } else {
             owsFailDebug("Not a system message.")
-            return ""
+            return ("", false)
         }
     }
 

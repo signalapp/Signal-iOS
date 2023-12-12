@@ -86,7 +86,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let groupCallDisposition = build.includes(.dev)
+    public static let groupCallDisposition = build.includes(.internal)
 
     public static let allowIDEALDonations = build.includes(.dev)
 
