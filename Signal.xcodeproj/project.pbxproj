@@ -1170,7 +1170,7 @@
 		8868A08A287F4551000E74A5 /* InteractiveSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */; };
 		8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */; };
 		886A58CA276A760600A1099B /* SubscriptionManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */; };
-		886A58CB276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
+		886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
 		886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */; };
 		886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */; };
@@ -1427,8 +1427,8 @@
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
 		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
-		D958305A2AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */; };
-		D95830602AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */; };
+		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
+		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
 		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
@@ -1463,7 +1463,7 @@
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
-		D995546E2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */; };
+		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
@@ -1489,7 +1489,7 @@
 		D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */; };
 		D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */; };
 		D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */; };
-		D9AE0AD32918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD22918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift */; };
+		D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD22918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift */; };
 		D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD4291877600063488B /* SendGiftBadgeJobRecord.swift */; };
 		D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD629187A700063488B /* SessionResetJobRecord.swift */; };
 		D9AE0AD929187F850063488B /* MessageSenderJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */; };
@@ -3796,7 +3796,7 @@
 		8868A088287F4514000E74A5 /* NewStorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStorySheet.swift; sourceTree = "<group>"; };
 		8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSheetViewController.swift; sourceTree = "<group>"; };
 		886A58C8276A760600A1099B /* SubscriptionManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManagerImpl.swift; sourceTree = "<group>"; };
-		886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
+		886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
 		886CB07B24E78F2200753909 /* Reflection.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Reflection.m4r; sourceTree = "<group>"; };
 		8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewController.swift; sourceTree = "<group>"; };
@@ -4118,8 +4118,8 @@
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
-		D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
-		D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
+		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
+		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
 		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
@@ -4154,7 +4154,7 @@
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
-		D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
+		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
 		D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheetPresenter.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
@@ -4179,7 +4179,7 @@
 		D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingGroupSyncJobRecord.swift; sourceTree = "<group>"; };
-		D9AE0AD22918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
+		D9AE0AD22918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD4291877600063488B /* SendGiftBadgeJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD629187A700063488B /* SessionResetJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionResetJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecord.swift; sourceTree = "<group>"; };
@@ -8315,9 +8315,9 @@
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
 				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
-				D995546D2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift */,
-				D958305F2AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift */,
-				D95830592AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift */,
+				D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */,
+				D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */,
+				D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -8425,10 +8425,10 @@
 				4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */,
+				886A58C9276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift */,
 				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
 				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
 				D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */,
-				886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */,
 			);
 			path = Jobs;
 			sourceTree = "<group>";
@@ -9838,9 +9838,9 @@
 				D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */,
 				D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */,
 				D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */,
+				D9AE0AD22918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift */,
 				D9AE0AD4291877600063488B /* SendGiftBadgeJobRecord.swift */,
 				D9AE0AD629187A700063488B /* SessionResetJobRecord.swift */,
-				D9AE0AD22918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift */,
 			);
 			path = JobRecords;
 			sourceTree = "<group>";
@@ -11762,6 +11762,7 @@
 				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
 				D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
+				886A58CB276A760600A1099B /* ReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */,
 				F962FF4929AD0C7C00AFA397 /* ScrubbingLogFormatter.swift in Sources */,
@@ -11784,7 +11785,6 @@
 				F0038601273F6388000B5ABD /* Stripe.swift in Sources */,
 				D98300B22936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift in Sources */,
 				886A58CA276A760600A1099B /* SubscriptionManagerImpl.swift in Sources */,
-				886A58CB276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */,
 				50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
@@ -13030,6 +13030,10 @@
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
+				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
+				D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */,
+				D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */,
+				D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */,
 				66CD257D2B0C1DAA00139E17 /* RecipientContexts.swift in Sources */,
 				506695E529C29C2F00B6D8D0 /* RecipientDatabaseTable.swift in Sources */,
 				50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */,
@@ -13165,10 +13169,6 @@
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
-				D9AE0AD32918715E0063488B /* SubscriptionReceiptCredentialRedemptionJobRecord.swift in Sources */,
-				D995546E2AF563150001E15C /* SubscriptionReceiptCredentialRedemptionSuccess.swift in Sources */,
-				D95830602AE8931900BB06A4 /* SubscriptionReceiptCredentialRequestError.swift in Sources */,
-				D958305A2AE85E1600BB06A4 /* SubscriptionReceiptCredentialResultStore.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,

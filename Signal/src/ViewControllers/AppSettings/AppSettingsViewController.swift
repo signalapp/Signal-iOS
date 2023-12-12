@@ -51,7 +51,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(subscriptionStateDidChange),
-            name: SubscriptionReceiptCredentialRedemptionOperation.DidSucceedNotification,
+            name: ReceiptCredentialRedemptionOperation.DidSucceedNotification,
             object: nil
         )
 

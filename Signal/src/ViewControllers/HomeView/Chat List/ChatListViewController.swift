@@ -648,8 +648,8 @@ public class ChatListViewController: OWSViewController {
 
     // MARK: Badge Sheets
 
-    var receiptCredentialResultStore: SubscriptionReceiptCredentialResultStore {
-        DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+    var receiptCredentialResultStore: ReceiptCredentialResultStore {
+        DependenciesBridge.shared.receiptCredentialResultStore
     }
 
     @objc
@@ -761,8 +761,8 @@ public class ChatListViewController: OWSViewController {
     /// of days) to process. If one eventually fails, and we find ourselves with
     /// an error for a failed bank payment, we should present a sheet for it.
     private func showBadgeIssueSheetIfNeeded(
-        receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError,
-        errorMode: SubscriptionReceiptCredentialResultStore.Mode
+        receiptCredentialRequestError: ReceiptCredentialRequestError,
+        errorMode: ReceiptCredentialResultStore.Mode
     ) {
         /// Record that we've presented this error. Important to do even for
         /// errors that don't merit presentation – otherwise, as long as this

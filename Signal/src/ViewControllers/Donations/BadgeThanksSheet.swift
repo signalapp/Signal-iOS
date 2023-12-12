@@ -120,7 +120,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private lazy var shouldMakeVisibleAndPrimary = self.initialVisibleBadgeResolver.switchDefault(for: self.badge.id)
 
     convenience init(
-        receiptCredentialRedemptionSuccess: SubscriptionReceiptCredentialRedemptionSuccess
+        receiptCredentialRedemptionSuccess: ReceiptCredentialRedemptionSuccess
     ) {
         let thanksType: ThanksType = {
             switch receiptCredentialRedemptionSuccess.paymentMethod {

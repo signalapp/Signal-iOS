@@ -278,11 +278,11 @@ public class SubscriptionManagerImpl: NSObject {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    public static var subscriptionJobQueue: SubscriptionReceiptCredentialRedemptionJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
+    public static var subscriptionJobQueue: ReceiptCredentialRedemptionJobQueue { smJobQueues.receiptCredentialJobQueue }
 
     /// - Note
     /// This collection name is reused by other subscription-related stores. For
-    /// example, see ``SubscriptionReceiptCredentialResultStore``.
+    /// example, see ``ReceiptCredentialResultStore``.
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
 
     fileprivate static let subscriberIDKey = "subscriberID"
@@ -451,9 +451,9 @@ public class SubscriptionManagerImpl: NSObject {
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                DependenciesBridge.shared.receiptCredentialResultStore
                     .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction.asV2Write)
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                DependenciesBridge.shared.receiptCredentialResultStore
                     .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
             }
 
@@ -634,17 +634,17 @@ public class SubscriptionManagerImpl: NSObject {
 
     /// Represents a known error received during a receipt credential request.
     ///
-    /// Not to be confused with ``SubscriptionReceiptCredentialRequestError``.
+    /// Not to be confused with ``ReceiptCredentialRequestError``.
     public struct KnownReceiptCredentialRequestError: Error {
         /// A code describing this error.
-        public let errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode
+        public let errorCode: ReceiptCredentialRequestError.ErrorCode
 
         /// If this error represents a payment failure, contains a string from
         /// the payment processor describing the payment failure.
         public let chargeFailureCodeIfPaymentFailed: String?
 
         fileprivate init(
-            errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode,
+            errorCode: ReceiptCredentialRequestError.ErrorCode,
             chargeFailureCodeIfPaymentFailed: String? = nil
         ) {
             owsAssert(
@@ -790,7 +790,7 @@ public class SubscriptionManagerImpl: NSObject {
     ) -> Error {
         guard
             let httpStatusCode = error.httpStatusCode,
-            let errorCode = SubscriptionReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
+            let errorCode = ReceiptCredentialRequestError.ErrorCode(rawValue: httpStatusCode)
         else { return error }
 
         if

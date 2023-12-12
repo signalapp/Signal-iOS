@@ -93,7 +93,7 @@ public class DependenciesBridge {
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let socketManager: SocketManager
 
-    public let subscriptionReceiptCredentialResultStore: SubscriptionReceiptCredentialResultStore
+    public let receiptCredentialResultStore: ReceiptCredentialResultStore
 
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
@@ -522,7 +522,7 @@ public class DependenciesBridge {
 
         self.signalProtocolStoreManager = signalProtocolStoreManager
 
-        self.subscriptionReceiptCredentialResultStore = SubscriptionReceiptCredentialResultStoreImpl(
+        self.receiptCredentialResultStore = ReceiptCredentialResultStoreImpl(
             kvStoreFactory: keyValueStoreFactory
         )
 

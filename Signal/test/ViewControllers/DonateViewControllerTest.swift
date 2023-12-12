@@ -232,10 +232,10 @@ final class DonateViewControllerTest: SignalBaseTest {
         recurringProcessingViaSubscription: Bool,
         recurringProcessingViaError: Bool
     ) -> State {
-        let recurringError: SubscriptionReceiptCredentialRequestError? = {
+        let recurringError: ReceiptCredentialRequestError? = {
             guard recurringProcessingViaError else { return nil }
 
-            return SubscriptionReceiptCredentialRequestError(
+            return ReceiptCredentialRequestError(
                 errorCode: .paymentStillProcessing,
                 chargeFailureCodeIfPaymentFailed: nil,
                 badge: MonthlyFixtures.badgeOne,
@@ -256,7 +256,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             subscriberID: Data([1, 2, 3]),
             previousMonthlySubscriptionCurrencyCode: nil,
             previousMonthlySubscriptionPaymentMethod: .applePay,
-            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError(
+            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError(
                 errorCode: .paymentStillProcessing,
                 chargeFailureCodeIfPaymentFailed: nil,
                 badge: OneTimeFixtures.badge,

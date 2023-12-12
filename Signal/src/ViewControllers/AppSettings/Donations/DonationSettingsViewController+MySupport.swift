@@ -61,7 +61,7 @@ extension DonationSettingsViewController {
     func mySupportSection(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
-        oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
+        oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
         hasAnyBadges: Bool
     ) -> OWSTableSection? {
         let section = OWSTableSection(title: OWSLocalizedString(
@@ -124,7 +124,7 @@ extension DonationSettingsViewController {
         subscription: Subscription,
         subscriptionBadge: ProfileBadge?,
         previouslyHadActiveSubscription: Bool,
-        receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
+        receiptCredentialRequestError: ReceiptCredentialRequestError?
     ) -> OWSTableItem? {
         let errorState: MySupportErrorState?
 
@@ -242,7 +242,7 @@ extension DonationSettingsViewController {
 
     private func mySupportOneTimeBoostTableItem(
         boostBadge: ProfileBadge?,
-        receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
+        receiptCredentialRequestError: ReceiptCredentialRequestError?
     ) -> OWSTableItem? {
         guard let receiptCredentialRequestError else {
             // We don't show anything for one-time boosts unless there's an
@@ -443,10 +443,10 @@ extension DonationSettingsViewController {
             self.databaseStorage.write { tx in
                 switch preferredDonateMode {
                 case .oneTime:
-                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    DependenciesBridge.shared.receiptCredentialResultStore
                         .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
                 case .monthly:
-                    DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                    DependenciesBridge.shared.receiptCredentialResultStore
                         .clearRequestErrorForAnyRecurringSubscription(tx: tx.asV2Write)
                 }
             }
@@ -484,7 +484,7 @@ private extension Subscription {
     }
 }
 
-private extension SubscriptionReceiptCredentialRequestError {
+private extension ReceiptCredentialRequestError {
     func mySupportErrorState(
         previouslyHadActiveSubscription: Bool
     ) -> MySupportErrorState {

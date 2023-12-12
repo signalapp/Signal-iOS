@@ -37,7 +37,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         /// Value originally from ``SDSRecordType``.
         case messageSender = 35
         /// Value originally from ``SDSRecordType``.
-        case subscriptionReceiptCredentialRedemption = 71
+        case receiptCredentialRedemption = 71
         /// Value originally from ``SDSRecordType``.
         case sendGiftBadge = 73
         /// Value originally from ``SDSRecordType``.
@@ -60,7 +60,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
-        case .subscriptionReceiptCredentialRedemption: return SubscriptionReceiptCredentialRedemptionJobRecord.self
+        case .receiptCredentialRedemption: return ReceiptCredentialRedemptionJobRecord.self
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
         }
@@ -83,7 +83,7 @@ extension JobRecord.JobRecordType {
             return "LocalUserLeaveGroup"
         case .messageSender:
             return "MessageSender"
-        case .subscriptionReceiptCredentialRedemption:
+        case .receiptCredentialRedemption:
             return "SubscriptionReceiptCredentailRedemption"
         case .sendGiftBadge:
             return "SendGiftBadge"

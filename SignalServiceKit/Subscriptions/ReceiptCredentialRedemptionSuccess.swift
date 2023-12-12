@@ -7,9 +7,9 @@
 /// redemption of that receipt credential.
 ///
 /// These are persisted in the ``SubscriptionReceiptCredentialRequestResultStore``
-/// by the ``SubscriptionReceiptCredentialRedemptionJobQueue``'s
+/// by the ``ReceiptCredentialRedemptionJobQueue``'s
 /// ``SubscriptionReceiptCredentailRedemptionOperation``.
-public struct SubscriptionReceiptCredentialRedemptionSuccess: Codable {
+public struct ReceiptCredentialRedemptionSuccess: Codable {
     public let badgesSnapshotBeforeJob: ProfileBadgesSnapshot
     public let badge: ProfileBadge
     public let paymentMethod: DonationPaymentMethod?

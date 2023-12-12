@@ -49,7 +49,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     enum FinishResult {
         case completedDonation(
             donateSheet: DonateViewController,
-            receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
+            receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
         )
 
         case monthlySubscriptionCancelled(
@@ -238,7 +238,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         let cardDonationMode: DonationPaymentDetailsViewController.DonationMode
-        let receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
+        let receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
         switch donateMode {
         case .oneTime:
             cardDonationMode = .oneTime
@@ -683,7 +683,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     internal func didCompleteDonation(
-        receiptCredentialSuccessMode: SubscriptionReceiptCredentialResultStore.Mode
+        receiptCredentialSuccessMode: ReceiptCredentialResultStore.Mode
     ) {
         onFinished(.completedDonation(
             donateSheet: self,
@@ -768,9 +768,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 SubscriptionManagerImpl.getSubscriberID(transaction: $0),
                 SubscriptionManagerImpl.getSubscriberCurrencyCode(transaction: $0),
                 SubscriptionManagerImpl.getMostRecentSubscriptionPaymentMethod(transaction: $0),
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                DependenciesBridge.shared.receiptCredentialResultStore
                     .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                DependenciesBridge.shared.receiptCredentialResultStore
                     .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read)
             )
         }

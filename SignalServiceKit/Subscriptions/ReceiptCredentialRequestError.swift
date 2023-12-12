@@ -8,9 +8,9 @@ import SignalCoreKit
 /// Represents an error encountered while making a receipt credential request.
 ///
 /// These are persisted in the ``SubscriptionReceiptCredentialRequestResultStore``
-/// by the ``SubscriptionReceiptCredentialRedemptionJobQueue``'s
+/// by the ``ReceiptCredentialRedemptionJobQueue``'s
 /// ``SubscriptionReceiptCredentailRedemptionOperation``.
-public struct SubscriptionReceiptCredentialRequestError: Codable, Equatable {
+public struct ReceiptCredentialRequestError: Codable, Equatable {
     public enum ErrorCode: Int {
         case paymentStillProcessing = 204
         case paymentFailed = 402

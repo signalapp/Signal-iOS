@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public enum _SubscriptionReceiptCredentialResultStore_Mode: CaseIterable {
+public enum _ReceiptCredentialResultStore_Mode: CaseIterable {
     /// Refers to a one-time boost.
     case oneTimeBoost
     /// Refers to a recurring subscription that was started for the first time.
@@ -12,18 +12,18 @@ public enum _SubscriptionReceiptCredentialResultStore_Mode: CaseIterable {
     case recurringSubscriptionRenewal
 }
 
-public protocol SubscriptionReceiptCredentialResultStore {
-    typealias Mode = _SubscriptionReceiptCredentialResultStore_Mode
+public protocol ReceiptCredentialResultStore {
+    typealias Mode = _ReceiptCredentialResultStore_Mode
 
     // MARK: Error persistence
 
     func getRequestError(
         errorMode: Mode,
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRequestError?
+    ) -> ReceiptCredentialRequestError?
 
     func setRequestError(
-        error: SubscriptionReceiptCredentialRequestError,
+        error: ReceiptCredentialRequestError,
         errorMode: Mode,
         tx: DBWriteTransaction
     )
@@ -38,10 +38,10 @@ public protocol SubscriptionReceiptCredentialResultStore {
     func getRedemptionSuccess(
         successMode: Mode,
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRedemptionSuccess?
+    ) -> ReceiptCredentialRedemptionSuccess?
 
     func setRedemptionSuccess(
-        success: SubscriptionReceiptCredentialRedemptionSuccess,
+        success: ReceiptCredentialRedemptionSuccess,
         successMode: Mode,
         tx: DBWriteTransaction
     )
@@ -60,10 +60,10 @@ public protocol SubscriptionReceiptCredentialResultStore {
     func setHasPresentedSuccess(successMode: Mode, tx: DBWriteTransaction)
 }
 
-public extension SubscriptionReceiptCredentialResultStore {
+public extension ReceiptCredentialResultStore {
     func getRequestErrorForAnyRecurringSubscription(
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRequestError? {
+    ) -> ReceiptCredentialRequestError? {
         if let initiationError = getRequestError(
             errorMode: .recurringSubscriptionInitiation, tx: tx
         ) {
@@ -79,7 +79,7 @@ public extension SubscriptionReceiptCredentialResultStore {
 
     func getRedemptionSuccessForAnyRecurringSubscription(
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRedemptionSuccess? {
+    ) -> ReceiptCredentialRedemptionSuccess? {
         if let initiationSuccess = getRedemptionSuccess(
             successMode: .recurringSubscriptionInitiation, tx: tx
         ) {
@@ -104,7 +104,7 @@ public extension SubscriptionReceiptCredentialResultStore {
     }
 }
 
-final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCredentialResultStore {
+final class ReceiptCredentialResultStoreImpl: ReceiptCredentialResultStore {
     /// Uses values taken from ``SubscriptionManagerImpl``, to preserve
     /// compatibility with legacy data stored there.
     ///
@@ -159,8 +159,8 @@ final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCre
     func getRequestError(
         errorMode: Mode,
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRequestError? {
-        if let error: SubscriptionReceiptCredentialRequestError = try? errorKVStore.getCodableValue(
+    ) -> ReceiptCredentialRequestError? {
+        if let error: ReceiptCredentialRequestError = try? errorKVStore.getCodableValue(
             forKey: key(mode: errorMode),
             transaction: tx
         ) {
@@ -169,14 +169,14 @@ final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCre
             let legacyErrorCodeInt = legacyErrorKVStore.getInt(
                 LegacyErrorConstants.recurringSubscriptionKey, transaction: tx
             ),
-            let legacyErrorCode = SubscriptionReceiptCredentialRequestError.ErrorCode(
+            let legacyErrorCode = ReceiptCredentialRequestError.ErrorCode(
                 rawValue: legacyErrorCodeInt
             )
         {
             // See note above – we might have just the error code int, and if so
             // we'll do our best without the rest of the state.
 
-            return SubscriptionReceiptCredentialRequestError(
+            return ReceiptCredentialRequestError(
                 legacyErrorCode: legacyErrorCode
             )
         }
@@ -185,7 +185,7 @@ final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCre
     }
 
     func setRequestError(
-        error: SubscriptionReceiptCredentialRequestError,
+        error: ReceiptCredentialRequestError,
         errorMode: Mode,
         tx: DBWriteTransaction
     ) {
@@ -227,7 +227,7 @@ final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCre
     func getRedemptionSuccess(
         successMode: Mode,
         tx: DBReadTransaction
-    ) -> SubscriptionReceiptCredentialRedemptionSuccess? {
+    ) -> ReceiptCredentialRedemptionSuccess? {
         return try? successKVStore.getCodableValue(
             forKey: key(mode: successMode),
             transaction: tx
@@ -235,7 +235,7 @@ final class SubscriptionReceiptCredentialResultStoreImpl: SubscriptionReceiptCre
     }
 
     func setRedemptionSuccess(
-        success: SubscriptionReceiptCredentialRedemptionSuccess,
+        success: ReceiptCredentialRedemptionSuccess,
         successMode: Mode,
         tx: DBWriteTransaction
     ) {

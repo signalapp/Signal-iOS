@@ -7,24 +7,24 @@ import SignalServiceKit
 
 class BadgeThanksSheetPresenter {
     private struct Deps: Dependencies {
-        static var receiptCredentialResultStore: SubscriptionReceiptCredentialResultStore {
-            DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+        static var receiptCredentialResultStore: ReceiptCredentialResultStore {
+            DependenciesBridge.shared.receiptCredentialResultStore
         }
     }
 
     private let badgeStore: BadgeStore
     private let databaseStorage: SDSDatabaseStorage
-    private let receiptCredentialResultStore: SubscriptionReceiptCredentialResultStore
+    private let receiptCredentialResultStore: ReceiptCredentialResultStore
 
-    private var redemptionSuccess: SubscriptionReceiptCredentialRedemptionSuccess
-    private let successMode: SubscriptionReceiptCredentialResultStore.Mode
+    private var redemptionSuccess: ReceiptCredentialRedemptionSuccess
+    private let successMode: ReceiptCredentialResultStore.Mode
 
     private init(
         badgeStore: BadgeStore,
         databaseStorage: SDSDatabaseStorage,
-        receiptCredentialResultStore: SubscriptionReceiptCredentialResultStore,
-        redemptionSuccess: SubscriptionReceiptCredentialRedemptionSuccess,
-        successMode: SubscriptionReceiptCredentialResultStore.Mode
+        receiptCredentialResultStore: ReceiptCredentialResultStore,
+        redemptionSuccess: ReceiptCredentialRedemptionSuccess,
+        successMode: ReceiptCredentialResultStore.Mode
     ) {
         self.badgeStore = badgeStore
         self.databaseStorage = databaseStorage
@@ -34,7 +34,7 @@ class BadgeThanksSheetPresenter {
     }
 
     static func loadWithSneakyTransaction(
-        successMode: SubscriptionReceiptCredentialResultStore.Mode
+        successMode: ReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter? {
         guard let redemptionSuccess = Deps.databaseStorage.read(block: { tx in
             Deps.receiptCredentialResultStore.getRedemptionSuccess(
@@ -56,8 +56,8 @@ class BadgeThanksSheetPresenter {
     }
 
     static func load(
-        redemptionSuccess: SubscriptionReceiptCredentialRedemptionSuccess,
-        successMode: SubscriptionReceiptCredentialResultStore.Mode
+        redemptionSuccess: ReceiptCredentialRedemptionSuccess,
+        successMode: ReceiptCredentialResultStore.Mode
     ) -> BadgeThanksSheetPresenter {
         return BadgeThanksSheetPresenter(
             badgeStore: Deps.profileManager.badgeStore,

@@ -49,7 +49,7 @@ extension DonateViewController {
             fileprivate let presets: [Currency.Code: DonationUtilities.Preset]
             fileprivate let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
-            fileprivate let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
+            fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
             fileprivate let localNumber: String?
 
             public var amount: FiatMoney? {
@@ -200,7 +200,7 @@ extension DonateViewController {
             public let previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?
 
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
-            fileprivate let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
+            fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
             fileprivate let localNumber: String?
 
             /// Get the currency codes supported by all subscription levels.
@@ -452,8 +452,8 @@ extension DonateViewController {
             subscriberID: Data?,
             previousMonthlySubscriptionCurrencyCode: Currency.Code?,
             previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?,
-            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
-            recurringSubscriptionReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
+            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+            recurringSubscriptionReceiptCredentialRequestError: ReceiptCredentialRequestError?,
             locale: Locale,
             localNumber: String?
         ) -> State {

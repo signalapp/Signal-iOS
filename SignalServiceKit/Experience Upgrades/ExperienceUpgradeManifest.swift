@@ -629,7 +629,7 @@ extension ExperienceUpgradeManifest {
                 // Fail the check if we currently have a badge.
                 return false
             } else if
-                DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+                DependenciesBridge.shared.receiptCredentialResultStore
                     .hasAnyPaymentsStillProcessing(tx: tx.asV2Read)
             {
                 // Fail the check if we have any in-progress payments.
@@ -682,7 +682,7 @@ private extension RemoteMegaphoneModel.Manifest.Action {
     }
 }
 
-private extension SubscriptionReceiptCredentialResultStore {
+private extension ReceiptCredentialResultStore {
     /// Do we have any payments that have been initiated, but are still
     /// in-progress?
     func hasAnyPaymentsStillProcessing(tx: DBReadTransaction) -> Bool {

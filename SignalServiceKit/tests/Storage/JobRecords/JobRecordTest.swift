@@ -22,7 +22,7 @@ class JobRecordTest: XCTestCase {
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
-        case .subscriptionReceiptCredentialRedemption: return SubscriptionReceiptCredentialRedemptionJobRecord.self
+        case .receiptCredentialRedemption: return ReceiptCredentialRedemptionJobRecord.self
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
         }
@@ -327,11 +327,11 @@ extension MessageSenderJobRecord: ValidatableModel {
     }
 }
 
-extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
+extension ReceiptCredentialRedemptionJobRecord: ValidatableModel {
 
-    static let constants: [(SubscriptionReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
+    static let constants: [(ReceiptCredentialRedemptionJobRecord, base64JsonData: Data)] = [
         (
-            SubscriptionReceiptCredentialRedemptionJobRecord(
+            ReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "STRIPE",
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
@@ -353,7 +353,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJ0YXJnZXRTdWJzY3JpcHRpb25MZXZlbCI6MTIsImN1cnJlbmN5Q29kZSI6IkVVUiIsInNob3VsZFN1cHByZXNzUGF5bWVudEFscmVhZHlSZWRlZW1lZCI6dHJ1ZSwicHJpb3JTdWJzY3JpcHRpb25MZXZlbCI6NCwicGF5bWVudE1ldGhvZCI6IlNFUEFfREVCSVQiLCJhbW91bnQiOiJZbkJzYVhOME1ERFVBUUlEQkFVR0J3cFlKSFpsY25OcGIyNVpKR0Z5WTJocGRtVnlWQ1IwYjNCWUpHOWlhbVZqZEhNU0FBR0dvRjhRRDA1VFMyVjVaV1JCY21Ob2FYWmxjdEVJQ1ZSeWIyOTBnQUdqQ3d3YVZTUnVkV3hzMXcwT0R4QVJFaE1VRlJZWEdCY1dWaVJqYkdGemMxdE9VeTV0WVc1MGFYTnpZVnRPVXk1dVpXZGhkR2wyWlZ0T1V5NWxlSEJ2Ym1WdWRGNU9VeTV0WVc1MGFYTnpZUzVpYjFsT1V5NXNaVzVuZEdoYVRsTXVZMjl0Y0dGamRJQUNUeEFRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQWdRQUJBQkNOSWJIQjBlV2lSamJHRnpjMjVoYldWWUpHTnNZWE56WlhOZkVCcE9VMFJsWTJsdFlXeE9kVzFpWlhKUWJHRmpaV2h2YkdSbGNxVWZJQ0VpSTE4UUdrNVRSR1ZqYVcxaGJFNTFiV0psY2xCc1lXTmxhRzlzWkdWeVh4QVBUbE5FWldOcGJXRnNUblZ0WW1WeVdFNVRUblZ0WW1WeVYwNVRWbUZzZFdWWVRsTlBZbXBsWTNRQUNBQVJBQm9BSkFBcEFESUFOd0JKQUV3QVVRQlRBRmNBWFFCc0FITUFmd0NMQUpjQXBnQ3dBTHNBdlFEUUFORUEwd0RWQU5ZQTJ3RG1BTzhCREFFU0FTOEJRUUZLQVZJQUFBQUFBQUFDQVFBQUFBQUFBQUFrQUFBQUFBQUFBQUFBQUFBQUFBQUJXdz09Iiwic3Vic2NyaWJlcklEIjoiZmVlZCIsInJlY2VpcHRDcmVkZW50YWlsUmVxdWVzdCI6ImRlYWQiLCJpc05ld1N1YnNjcmlwdGlvbiI6ZmFsc2UsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6MCwibGFiZWwiOiJTdWJzY3JpcHRpb25SZWNlaXB0Q3JlZGVudGFpbFJlZGVtcHRpb24iLCJzdGF0dXMiOjEsInVuaXF1ZUlkIjoiQjZBMDZFM0YtNTFGNC00NkM1LUEzQjktNThCMUZDNTRFNjkyIiwicmVjb3JkVHlwZSI6NzF9LCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3RDb250ZXh0IjoiYmVlZiIsInJlY2VpcHRDcmVkZW50aWFsUHJlc2VudGF0aW9uIjoiYmFkZSIsImJvb3N0UGF5bWVudEludGVudElEIjoiIiwicGF5bWVudFByb2Nlc3NvciI6IlNUUklQRSIsImlzQm9vc3QiOmZhbHNlfQ==")!
         ),
         (
-            SubscriptionReceiptCredentialRedemptionJobRecord(
+            ReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "STRIPE",
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
@@ -375,7 +375,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJ0YXJnZXRTdWJzY3JpcHRpb25MZXZlbCI6MTIsImN1cnJlbmN5Q29kZSI6IkVVUiIsInNob3VsZFN1cHByZXNzUGF5bWVudEFscmVhZHlSZWRlZW1lZCI6ZmFsc2UsInByaW9yU3Vic2NyaXB0aW9uTGV2ZWwiOjQsInBheW1lbnRNZXRob2QiOiJTRVBBX0RFQklUIiwiYW1vdW50IjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHakN3d2FWU1J1ZFd4czF3ME9EeEFSRWhNVUZSWVhHQmNXVmlSamJHRnpjMXRPVXk1dFlXNTBhWE56WVZ0T1V5NXVaV2RoZEdsMlpWdE9VeTVsZUhCdmJtVnVkRjVPVXk1dFlXNTBhWE56WVM1aWIxbE9VeTVzWlc1bmRHaGFUbE11WTI5dGNHRmpkSUFDVHhBUUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFnUUFCQUJDTkliSEIwZVdpUmpiR0Z6YzI1aGJXVllKR05zWVhOelpYTmZFQnBPVTBSbFkybHRZV3hPZFcxaVpYSlFiR0ZqWldodmJHUmxjcVVmSUNFaUkxOFFHazVUUkdWamFXMWhiRTUxYldKbGNsQnNZV05sYUc5c1pHVnlYeEFQVGxORVpXTnBiV0ZzVG5WdFltVnlXRTVUVG5WdFltVnlWMDVUVm1Gc2RXVllUbE5QWW1wbFkzUUFDQUFSQUJvQUpBQXBBRElBTndCSkFFd0FVUUJUQUZjQVhRQnNBSE1BZndDTEFKY0FwZ0N3QUxzQXZRRFFBTkVBMHdEVkFOWUEyd0RtQU84QkRBRVNBUzhCUVFGS0FWSUFBQUFBQUFBQ0FRQUFBQUFBQUFBa0FBQUFBQUFBQUFBQUFBQUFBQUFCV3c9PSIsInN1YnNjcmliZXJJRCI6ImZlZWQiLCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3QiOiJkZWFkIiwiaXNOZXdTdWJzY3JpcHRpb24iOmZhbHNlLCJzdXBlciI6eyJmYWlsdXJlQ291bnQiOjAsImxhYmVsIjoiU3Vic2NyaXB0aW9uUmVjZWlwdENyZWRlbnRhaWxSZWRlbXB0aW9uIiwic3RhdHVzIjoxLCJ1bmlxdWVJZCI6IjUzMEVBNUQ3LTNGM0MtNDc0MS1CQjdGLTUyMzYzQ0U5MzM0MyIsInJlY29yZFR5cGUiOjcxfSwicmVjZWlwdENyZWRlbnRhaWxSZXF1ZXN0Q29udGV4dCI6ImJlZWYiLCJyZWNlaXB0Q3JlZGVudGlhbFByZXNlbnRhdGlvbiI6ImJhZGUiLCJib29zdFBheW1lbnRJbnRlbnRJRCI6IiIsInBheW1lbnRQcm9jZXNzb3IiOiJTVFJJUEUiLCJpc0Jvb3N0IjpmYWxzZX0=")!
         ),
         (
-            SubscriptionReceiptCredentialRedemptionJobRecord(
+            ReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "STRIPE",
                 paymentMethod: "SEPA_DEBIT",
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
@@ -397,7 +397,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJ0YXJnZXRTdWJzY3JpcHRpb25MZXZlbCI6MTIsImN1cnJlbmN5Q29kZSI6IlVTRCIsInNob3VsZFN1cHByZXNzUGF5bWVudEFscmVhZHlSZWRlZW1lZCI6ZmFsc2UsInByaW9yU3Vic2NyaXB0aW9uTGV2ZWwiOjQsInBheW1lbnRNZXRob2QiOiJTRVBBX0RFQklUIiwiYW1vdW50IjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHakN3d2FWU1J1ZFd4czF3ME9EeEFSRWhNVUZSWVhHQmdaVmlSamJHRnpjMXRPVXk1dFlXNTBhWE56WVZ0T1V5NXVaV2RoZEdsMlpWdE9VeTVsZUhCdmJtVnVkRjVPVXk1dFlXNTBhWE56WVM1aWIxbE9VeTVzWlc1bmRHaGFUbE11WTI5dGNHRmpkSUFDVHhBUWZRQUFBQUFBQUFBQUFBQUFBQUFBQUFnVFwvXC9cL1wvXC9cL1wvXC9cL1wvOFFBUW5TR3h3ZEhsb2tZMnhoYzNOdVlXMWxXQ1JqYkdGemMyVnpYeEFhVGxORVpXTnBiV0ZzVG5WdFltVnlVR3hoWTJWb2IyeGtaWEtsSHlBaElpTmZFQnBPVTBSbFkybHRZV3hPZFcxaVpYSlFiR0ZqWldodmJHUmxjbDhRRDA1VFJHVmphVzFoYkU1MWJXSmxjbGhPVTA1MWJXSmxjbGRPVTFaaGJIVmxXRTVUVDJKcVpXTjBBQWdBRVFBYUFDUUFLUUF5QURjQVNRQk1BRkVBVXdCWEFGMEFiQUJ6QUg4QWl3Q1hBS1lBc0FDN0FMMEEwQURSQU5vQTNBRGRBT0lBN1FEMkFSTUJHUUUyQVVnQlVRRlpBQUFBQUFBQUFnRUFBQUFBQUFBQUpBQUFBQUFBQUFBQUFBQUFBQUFBQVdJPSIsInN1YnNjcmliZXJJRCI6ImZlZWQiLCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3QiOiJkZWFkIiwiaXNOZXdTdWJzY3JpcHRpb24iOnRydWUsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6MCwibGFiZWwiOiJTdWJzY3JpcHRpb25SZWNlaXB0Q3JlZGVudGFpbFJlZGVtcHRpb24iLCJzdGF0dXMiOjMsInVuaXF1ZUlkIjoiNDdCRTFBMkItNEIxMC00NEUzLUJFQ0YtMDI1RjdFODFGMDIxIiwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJiaW5nIiwicmVjb3JkVHlwZSI6NzF9LCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3RDb250ZXh0IjoiYmVlZiIsInJlY2VpcHRDcmVkZW50aWFsUHJlc2VudGF0aW9uIjoiYmFkZSIsImJvb3N0UGF5bWVudEludGVudElEIjoiYmVlcCIsInBheW1lbnRQcm9jZXNzb3IiOiJTVFJJUEUiLCJpc0Jvb3N0Ijp0cnVlfQ==")!
         ),
         (
-            SubscriptionReceiptCredentialRedemptionJobRecord(
+            ReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "bank",
                 paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "beef")!,
@@ -419,7 +419,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
             Data(base64Encoded: "eyJ0YXJnZXRTdWJzY3JpcHRpb25MZXZlbCI6MTIsImN1cnJlbmN5Q29kZSI6InNob29wIiwic2hvdWxkU3VwcHJlc3NQYXltZW50QWxyZWFkeVJlZGVlbWVkIjpmYWxzZSwicHJpb3JTdWJzY3JpcHRpb25MZXZlbCI6NCwiYW1vdW50IjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHakN3d2FWU1J1ZFd4czF3ME9EeEFSRWhNVUZSWVhHQmdaVmlSamJHRnpjMXRPVXk1dFlXNTBhWE56WVZ0T1V5NXVaV2RoZEdsMlpWdE9VeTVsZUhCdmJtVnVkRjVPVXk1dFlXNTBhWE56WVM1aWIxbE9VeTVzWlc1bmRHaGFUbE11WTI5dGNHRmpkSUFDVHhBUWZRQUFBQUFBQUFBQUFBQUFBQUFBQUFnVFwvXC9cL1wvXC9cL1wvXC9cL1wvOFFBUW5TR3h3ZEhsb2tZMnhoYzNOdVlXMWxXQ1JqYkdGemMyVnpYeEFhVGxORVpXTnBiV0ZzVG5WdFltVnlVR3hoWTJWb2IyeGtaWEtsSHlBaElpTmZFQnBPVTBSbFkybHRZV3hPZFcxaVpYSlFiR0ZqWldodmJHUmxjbDhRRDA1VFJHVmphVzFoYkU1MWJXSmxjbGhPVTA1MWJXSmxjbGRPVTFaaGJIVmxXRTVUVDJKcVpXTjBBQWdBRVFBYUFDUUFLUUF5QURjQVNRQk1BRkVBVXdCWEFGMEFiQUJ6QUg4QWl3Q1hBS1lBc0FDN0FMMEEwQURSQU5vQTNBRGRBT0lBN1FEMkFSTUJHUUUyQVVnQlVRRlpBQUFBQUFBQUFnRUFBQUFBQUFBQUpBQUFBQUFBQUFBQUFBQUFBQUFBQVdJPSIsInN1YnNjcmliZXJJRCI6ImZlZWQiLCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3QiOiJkZWFkIiwiaXNOZXdTdWJzY3JpcHRpb24iOnRydWUsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6MCwibGFiZWwiOiJTdWJzY3JpcHRpb25SZWNlaXB0Q3JlZGVudGFpbFJlZGVtcHRpb24iLCJzdGF0dXMiOjMsInVuaXF1ZUlkIjoiRkNCRDNGOEQtRjIzRi00Nzg0LTlGRTQtMEQ5MkJGQUNDMjhGIiwiZXhjbHVzaXZlUHJvY2Vzc0lkZW50aWZpZXIiOiJkYSBib29wIiwicmVjb3JkVHlwZSI6NzF9LCJyZWNlaXB0Q3JlZGVudGFpbFJlcXVlc3RDb250ZXh0IjoiYmVlZiIsInJlY2VpcHRDcmVkZW50aWFsUHJlc2VudGF0aW9uIjoiYmFkZSIsImJvb3N0UGF5bWVudEludGVudElEIjoiZGUiLCJwYXltZW50UHJvY2Vzc29yIjoiYmFuayIsImlzQm9vc3QiOnRydWV9")!
         ),
         (
-            SubscriptionReceiptCredentialRedemptionJobRecord(
+            ReceiptCredentialRedemptionJobRecord(
                 paymentProcessor: "not svb",
                 paymentMethod: nil,
                 receiptCredentialRequestContext: Data(base64Encoded: "feeb")!,
@@ -442,7 +442,7 @@ extension SubscriptionReceiptCredentialRedemptionJobRecord: ValidatableModel {
         )
     ]
 
-    func validate(against: SubscriptionReceiptCredentialRedemptionJobRecord) throws {
+    func validate(against: ReceiptCredentialRedemptionJobRecord) throws {
         guard
             paymentProcessor == against.paymentProcessor,
             receiptCredentialRequestContext == against.receiptCredentialRequestContext,

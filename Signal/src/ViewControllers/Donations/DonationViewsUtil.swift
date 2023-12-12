@@ -398,8 +398,8 @@ extension DonateViewController {
     }
 
     private func presentBadgeCantBeAddedSheet(donateMode: DonateMode) {
-        let receiptCredentialRequestError = SDSDatabaseStorage.shared.read { tx -> SubscriptionReceiptCredentialRequestError? in
-            let resultStore = DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+        let receiptCredentialRequestError = SDSDatabaseStorage.shared.read { tx -> ReceiptCredentialRequestError? in
+            let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
 
             switch donateMode {
             case .oneTime:

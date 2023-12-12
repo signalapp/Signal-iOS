@@ -5,8 +5,8 @@
 
 import SignalCoreKit
 
-public final class SubscriptionReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .subscriptionReceiptCredentialRedemption }
+public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
+    override class var jobRecordType: JobRecordType { .receiptCredentialRedemption }
 
     public let paymentProcessor: String
     public let paymentMethod: String?

@@ -13,7 +13,7 @@ public class SignalMessagingJobQueues: NSObject {
         sessionResetJobQueue = SessionResetJobQueue()
 
         broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
-        subscriptionReceiptCredentialJobQueue = SubscriptionReceiptCredentialRedemptionJobQueue()
+        receiptCredentialJobQueue = ReceiptCredentialRedemptionJobQueue()
         sendGiftBadgeJobQueue = SendGiftBadgeJobQueue()
     }
 
@@ -28,6 +28,6 @@ public class SignalMessagingJobQueues: NSObject {
 
     public let sessionResetJobQueue: SessionResetJobQueue
     public let broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue
-    public let subscriptionReceiptCredentialJobQueue: SubscriptionReceiptCredentialRedemptionJobQueue
+    public let receiptCredentialJobQueue: ReceiptCredentialRedemptionJobQueue
     public let sendGiftBadgeJobQueue: SendGiftBadgeJobQueue
 }

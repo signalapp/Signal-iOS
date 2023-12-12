@@ -32,7 +32,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscription: Subscription,
                 subscriptionLevel: SubscriptionLevel?,
                 previouslyHadActiveSubscription: Bool,
-                receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?
+                receiptCredentialRequestError: ReceiptCredentialRequestError?
             )
         }
 
@@ -40,7 +40,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         case loading
         case loadFinished(
             subscriptionStatus: SubscriptionStatus,
-            oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
+            oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
             profileBadgeLookup: ProfileBadgeLookup,
             hasAnyBadges: Bool,
             hasAnyDonationReceipts: Bool
@@ -129,7 +129,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             oneTimeBoostReceiptCredentialRequestError,
             hasAnyDonationReceipts
         ) = databaseStorage.read { tx in
-            let resultStore = DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+            let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
 
             return (
                 subscriberID: SubscriptionManagerImpl.getSubscriberID(transaction: tx),
@@ -305,7 +305,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func loadFinishedSections(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
-        oneTimeBoostReceiptCredentialRequestError: SubscriptionReceiptCredentialRequestError?,
+        oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
         hasAnyBadges: Bool,
         hasAnyDonationReceipts: Bool
     ) -> [OWSTableSection] {

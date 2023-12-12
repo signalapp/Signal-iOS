@@ -37,13 +37,7 @@ import SignalServiceKit
 /// Some payment types (such as credit cards) usually process immediately, but
 /// others (such as SEPA debit transfers) can take days/weeks to process. During
 /// that time, receipt credential request redemption will fail.
-///
-/// - Note
-/// The term "subscription" is overloaded. It can either refer to a donation,
-/// either one-time or recurring, as in the context of this class name. It can
-/// also refer to a recurring donation, as in "subscriber ID", which is only
-/// relevant for recurring donations. Good luck.
-public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
+public class ReceiptCredentialRedemptionJobQueue: JobQueue {
 
     public func addBoostJob(
         amount: FiatMoney,
@@ -56,7 +50,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
     ) {
         Logger.info("[Donations] Adding a boost job")
 
-        let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
+        let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             paymentMethod: paymentMethod.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
@@ -100,7 +94,7 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
     ) {
         Logger.info("[Donations] Adding a subscription job")
 
-        let jobRecord = SubscriptionReceiptCredentialRedemptionJobRecord(
+        let jobRecord = ReceiptCredentialRedemptionJobRecord(
             paymentProcessor: paymentProcessor.rawValue,
             paymentMethod: paymentMethod?.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
@@ -118,11 +112,11 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
-    public typealias DurableOperationType = SubscriptionReceiptCredentialRedemptionOperation
+    public typealias DurableOperationType = ReceiptCredentialRedemptionOperation
 
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
-    public var runningOperations = AtomicArray<SubscriptionReceiptCredentialRedemptionOperation>()
+    public var runningOperations = AtomicArray<ReceiptCredentialRedemptionOperation>()
 
     public init() {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
@@ -142,20 +136,20 @@ public class SubscriptionReceiptCredentialRedemptionJobQueue: JobQueue {
 
     let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "SubscriptionReceiptCredentialRedemptionJobQueue"
+        operationQueue.name = "ReceiptCredentialRedemptionJobQueue"
         return operationQueue
     }()
 
-    public func operationQueue(jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord) -> OperationQueue {
+    public func operationQueue(jobRecord: ReceiptCredentialRedemptionJobRecord) -> OperationQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentialRedemptionOperation {
-        return try SubscriptionReceiptCredentialRedemptionOperation(jobRecord)
+    public func buildOperation(jobRecord: ReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> ReceiptCredentialRedemptionOperation {
+        return try ReceiptCredentialRedemptionOperation(jobRecord)
     }
 }
 
-public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, DurableOperation {
+public class ReceiptCredentialRedemptionOperation: OWSOperation, DurableOperation {
     /// Represents the type of payment that resulted in this receipt credential
     /// redemption.
     fileprivate enum PaymentType: CustomStringConvertible {
@@ -171,7 +165,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             shouldSuppressPaymentAlreadyRedeemed: Bool
         )
 
-        var receiptCredentialResultMode: SubscriptionReceiptCredentialResultStore.Mode {
+        var receiptCredentialResultMode: ReceiptCredentialResultStore.Mode {
             switch self {
             case .oneTimeBoost: return .oneTimeBoost
             case .recurringSubscription(_, _, _, isNewSubscription: true, _): return .recurringSubscriptionInitiation
@@ -214,7 +208,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         case sepaPaymentStillProcessing(source: PaymentStillProcessingSource)
         case nonSepaPaymentStillProcessing
         case suppressPaymentAlreadyRedeemed
-        case other(errorCode: SubscriptionReceiptCredentialRequestError.ErrorCode)
+        case other(errorCode: ReceiptCredentialRequestError.ErrorCode)
 
         var isRetryableProvider: Bool {
             switch self {
@@ -233,14 +227,14 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
         }
     }
 
-    private var receiptCredentialResultStore: SubscriptionReceiptCredentialResultStore {
-        DependenciesBridge.shared.subscriptionReceiptCredentialResultStore
+    private var receiptCredentialResultStore: ReceiptCredentialResultStore {
+        DependenciesBridge.shared.receiptCredentialResultStore
     }
 
     // MARK: DurableOperation
 
-    public let jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord
-    weak public var durableOperationDelegate: SubscriptionReceiptCredentialRedemptionJobQueue?
+    public let jobRecord: ReceiptCredentialRedemptionJobRecord
+    weak public var durableOperationDelegate: ReceiptCredentialRedemptionJobQueue?
     public var operation: OWSOperation { self }
 
     public var maxRetries: UInt {
@@ -290,7 +284,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
 
     // MARK: Init
 
-    fileprivate init(_ jobRecord: SubscriptionReceiptCredentialRedemptionJobRecord) throws {
+    fileprivate init(_ jobRecord: ReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
 
         self.paymentProcessor = try {
@@ -379,7 +373,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
 
         if
             paymentMethod == .sepa,
-            let priorError = databaseStorage.read(block: { tx -> SubscriptionReceiptCredentialRequestError? in
+            let priorError = databaseStorage.read(block: { tx -> ReceiptCredentialRequestError? in
                 return receiptCredentialResultStore.getRequestError(
                     errorMode: paymentType.receiptCredentialResultMode,
                     tx: tx.asV2Read
@@ -545,15 +539,15 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
     }
 
     private func persistErrorCode(
-        receiptCredentialRequestErrorCode: SubscriptionReceiptCredentialRequestError.ErrorCode,
+        receiptCredentialRequestErrorCode: ReceiptCredentialRequestError.ErrorCode,
         chargeFailureCodeIfPaymentFailed: String?,
         badge: ProfileBadge,
         amount: FiatMoney,
         tx: DBWriteTransaction
     ) {
-        let receiptCredentialRequestError: SubscriptionReceiptCredentialRequestError = {
+        let receiptCredentialRequestError: ReceiptCredentialRequestError = {
             if let paymentMethod = self.paymentMethod {
-                return SubscriptionReceiptCredentialRequestError(
+                return ReceiptCredentialRequestError(
                     errorCode: receiptCredentialRequestErrorCode,
                     chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
                     badge: badge,
@@ -563,7 +557,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
             } else {
                 Logger.warn("[Donations] Building legacy error, job record missing fields!")
 
-                return SubscriptionReceiptCredentialRequestError(
+                return ReceiptCredentialRequestError(
                     legacyErrorCode: receiptCredentialRequestErrorCode
                 )
             }
@@ -600,7 +594,7 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
                 tx: tx.asV2Write
             )
             self.receiptCredentialResultStore.setRedemptionSuccess(
-                success: SubscriptionReceiptCredentialRedemptionSuccess(
+                success: ReceiptCredentialRedemptionSuccess(
                     badgesSnapshotBeforeJob: badgesSnapshotBeforeJob,
                     badge: badge,
                     paymentMethod: paymentMethod
@@ -733,9 +727,9 @@ public class SubscriptionReceiptCredentialRedemptionOperation: OWSOperation, Dur
 
 // MARK: - Notifications
 
-public extension SubscriptionReceiptCredentialRedemptionOperation {
-    static let DidSucceedNotification = NSNotification.Name("SubscriptionReceiptCredentialRedemptionOperation.DidSucceed")
-    static let DidFailNotification = NSNotification.Name("SubscriptionReceiptCredentialRedemptionOperation.DidFail")
+public extension ReceiptCredentialRedemptionOperation {
+    static let DidSucceedNotification = NSNotification.Name("ReceiptCredentialRedemptionOperation.DidSucceed")
+    static let DidFailNotification = NSNotification.Name("ReceiptCredentialRedemptionOperation.DidFail")
 
     func postNotification(name: NSNotification.Name) {
         NotificationCenter.default.postNotificationNameAsync(
