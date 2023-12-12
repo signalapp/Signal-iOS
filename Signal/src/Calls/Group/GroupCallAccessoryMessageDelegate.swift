@@ -242,9 +242,14 @@ private extension GroupCallRecordManager {
         let callDirection: CallRecord.CallDirection
 
         switch groupCallRingState {
-        case .ringingEnded, .incomingRing, .incomingRingCancelled:
+        case .incomingRing, .incomingRingCancelled:
             owsFailDebug("Unexpected group call ring state: \(groupCallRingState)!")
             fallthrough
+        case .ringingEnded:
+            // Ringing having just ended while joining indicates that we had an
+            // incoming ring that we've accepted, which has now ended.
+            groupCallStatus = .ringingAccepted
+            callDirection = .incoming
         case .shouldRing:
             // Confusingly, this is the default value for a call's ring state,
             // even if we're joining a call someone else started. So, we need to
@@ -255,8 +260,9 @@ private extension GroupCallRecordManager {
             groupCallStatus = .joined
             callDirection = .incoming
         case .ringing:
-            // We don't track the state of outgoing rings, so we'll just
-            // treat it as accepted.
+            // Being in a currently-ringing call while joining indicates that we
+            // are the one doing the ringing. We don't track the state of
+            // outgoing rings, so we'll just treat it as accepted.
             groupCallStatus = .ringingAccepted
             callDirection = .outgoing
         }
