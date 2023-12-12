@@ -97,8 +97,8 @@ public extension ThreadUtil {
             return builder.build(transaction: tx)
         }
 
-        DispatchQueue.global().async {
-            guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
+        enqueueSendAsyncWrite { tx in
+            guard let stickerMetadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
                 owsFailDebug("Could not find sticker file.")
                 return
             }
@@ -114,8 +114,9 @@ public extension ThreadUtil {
                 stickerType: stickerMetadata.stickerType,
                 emoji: stickerMetadata.firstEmoji
             )
-            enqueueMessage(message, stickerDraft: stickerDraft, thread: thread)
+            self.enqueueMessage(message, stickerDraft: stickerDraft, thread: thread, tx: tx)
         }
+
         return message
     }
 
@@ -140,29 +141,35 @@ public extension ThreadUtil {
             emoji: stickerMetadata.firstEmoji
         )
 
-        enqueueMessage(message, stickerDraft: stickerDraft, thread: thread)
+        enqueueSendAsyncWrite { tx in
+            self.enqueueMessage(message, stickerDraft: stickerDraft, thread: thread, tx: tx)
+        }
 
         return message
     }
 
-    private class func enqueueMessage(_ message: TSOutgoingMessage, stickerDraft: MessageStickerDraft, thread: TSThread) {
-        AssertIsOnMainThread()
-        enqueueSendAsyncWrite { tx in
-            let messageSticker: MessageSticker
-            do {
-                messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
-            } catch {
-                return owsFailDebug("Couldn't send sticker: \(error)")
-            }
+    private class func enqueueMessage(
+        _ message: TSOutgoingMessage,
+        stickerDraft: MessageStickerDraft,
+        thread: TSThread,
+        tx: SDSAnyWriteTransaction
+    ) {
+        AssertNotOnMainThread()
 
-            message.anyInsert(transaction: tx)
-            message.update(with: messageSticker, transaction: tx)
-
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
-            StickerManager.stickerWasSent(messageSticker.info, transaction: tx)
-
-            thread.donateSendMessageIntent(for: message, transaction: tx)
+        let messageSticker: MessageSticker
+        do {
+            messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
+        } catch {
+            return owsFailDebug("Couldn't send sticker: \(error)")
         }
+
+        message.anyInsert(transaction: tx)
+        message.update(with: messageSticker, transaction: tx)
+
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
+        StickerManager.stickerWasSent(messageSticker.info, transaction: tx)
+
+        thread.donateSendMessageIntent(for: message, transaction: tx)
     }
 }
 
