@@ -6,16 +6,14 @@
 import Foundation
 
 extension PreKey {
-    public enum Manager {
-        public enum Shims {
-            public typealias IdentityManager = _PreKeyManager_IdentityManagerShim
-            public typealias MessageProcessor = _PreKeyManager_MessageProcessorShim
-        }
+    public enum Shims {
+        public typealias IdentityManager = _PreKeyManager_IdentityManagerShim
+        public typealias MessageProcessor = _PreKeyManager_MessageProcessorShim
+    }
 
-        public enum Wrappers {
-            public typealias IdentityManager = _PreKeyManager_IdentityManagerWrapper
-            public typealias MessageProcessor = _PreKeyManager_MessageProcessorWrapper
-        }
+    public enum Wrappers {
+        public typealias IdentityManager = _PreKeyManager_IdentityManagerWrapper
+        public typealias MessageProcessor = _PreKeyManager_MessageProcessorWrapper
     }
 }
 
@@ -24,6 +22,14 @@ extension PreKey {
 public protocol _PreKeyManager_IdentityManagerShim {
 
     func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
+
+    func generateNewIdentityKeyPair() -> ECKeyPair
+
+    func store(
+        keyPair: ECKeyPair?,
+        for identity: OWSIdentity,
+        tx: DBWriteTransaction
+    )
 }
 
 public class _PreKeyManager_IdentityManagerWrapper: _PreKeyManager_IdentityManagerShim {
@@ -35,6 +41,14 @@ public class _PreKeyManager_IdentityManagerWrapper: _PreKeyManager_IdentityManag
     public func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
         identityManager.identityKeyPair(for: identity, tx: tx)
     }
+
+    public func generateNewIdentityKeyPair() -> ECKeyPair {
+        identityManager.generateNewIdentityKeyPair()
+    }
+
+    public func store(keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
+        identityManager.setIdentityKeyPair(keyPair, for: identity, tx: tx)
+    }
 }
 
 // MARK: - MessageProcessor
@@ -43,7 +57,7 @@ public protocol _PreKeyManager_MessageProcessorShim {
     func fetchingAndProcessingCompletePromise() -> Promise<Void>
 }
 
-public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Manager.Shims.MessageProcessor {
+public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Shims.MessageProcessor {
     private let messageProcessor: MessageProcessor
     public init(messageProcessor: MessageProcessor) {
         self.messageProcessor = messageProcessor

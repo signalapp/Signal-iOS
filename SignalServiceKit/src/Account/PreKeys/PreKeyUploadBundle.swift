@@ -13,6 +13,20 @@ public protocol PreKeyUploadBundle {
     func getPqPreKeyRecords() -> [KyberPreKeyRecord]?
 }
 
+extension PreKeyUploadBundle {
+    func isEmpty() -> Bool {
+        if
+            getPreKeyRecords() == nil,
+            getSignedPreKey() == nil,
+            getLastResortPreKey() == nil,
+            getPqPreKeyRecords() == nil
+        {
+            return true
+        }
+        return false
+    }
+}
+
 public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
     public let identity: OWSIdentity
     public let signedPreKey: SignedPreKeyRecord?

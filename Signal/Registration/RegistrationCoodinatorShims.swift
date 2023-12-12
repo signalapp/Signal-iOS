@@ -18,6 +18,7 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
+        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
@@ -30,6 +31,7 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
+        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
@@ -203,6 +205,60 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
     public func markRegistrationLockEnabled(_ tx: DBWriteTransaction) {
         manager.markRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - PreKeyManager
+
+// Unfortunately this shim needs to exist because of tests; Promise.wrapAsync starts a Task,
+// which is unavoidably asynchronous, which does not play nice with TestScheduler and general
+// synchronous, single-threaded test setups. To avoid this, we need to push down the
+// Promise.wrapAsync call into the shim, so that we can avoid the call entirely in tests.
+public protocol _RegistrationCoordinator_PreKeyManagerShim {
+
+    func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles>
+
+    func finalizeRegistrationPreKeys(
+        _ prekeyBundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool
+    ) -> Promise<Void>
+
+    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void>
+}
+
+public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
+
+    private let preKeyManager: PreKeyManager
+
+    public init(_ preKeyManager: PreKeyManager) {
+        self.preKeyManager = preKeyManager
+    }
+
+    public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+        let preKeyManager = self.preKeyManager
+        return Promise.wrapAsync {
+            return try await preKeyManager.createPreKeysForRegistration().value
+        }
+    }
+
+    public func finalizeRegistrationPreKeys(
+        _ prekeyBundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool
+    ) -> Promise<Void> {
+        let preKeyManager = self.preKeyManager
+        return Promise.wrapAsync {
+            return try await preKeyManager.finalizeRegistrationPreKeys(
+                prekeyBundles,
+                uploadDidSucceed: uploadDidSucceed
+            ).value
+        }
+    }
+
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+        let preKeyManager = self.preKeyManager
+        return Promise.wrapAsync {
+            return try await preKeyManager.rotateOneTimePreKeysForRegistration(auth: auth).value
+        }
     }
 }
 

@@ -149,22 +149,22 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 
 // MARK: - PreKeyManager
 
-public class _RegistrationCoordinator_PreKeyManagerMock: MockPreKeyManager {
+public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinator_PreKeyManagerShim {
     public var createPreKeysMock: (() -> Promise<RegistrationPreKeyUploadBundles>)?
 
-    override public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+    public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
         return createPreKeysMock!()
     }
 
     public var finalizePreKeysMock: ((_ didSucceed: Bool) -> Promise<Void>)?
 
-    override public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Promise<Void> {
+    public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Promise<Void> {
         return finalizePreKeysMock!(uploadDidSucceed)
     }
 
     public var rotateOneTimePreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
 
-    override public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
         return rotateOneTimePreKeysMock!(auth)
     }
 }

@@ -11,43 +11,47 @@ internal class MockPreKeyManager: PreKeyManager {
     func refreshPreKeysDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
 
-    func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+    func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
-        return .value(.init(
-            aci: .init(
-                identity: .aci,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
-            ),
-            pni: .init(
-                identity: .pni,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+        return Task {
+            .init(
+                aci: .init(
+                    identity: .aci,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                ),
+                pni: .init(
+                    identity: .pni,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                )
             )
-        ))
+        }
     }
 
     func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
         pniIdentityKeyPair: ECKeyPair
-    ) -> Promise<RegistrationPreKeyUploadBundles> {
+    ) async -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
-        return .value(.init(
-            aci: .init(
-                identity: .aci,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
-            ),
-            pni: .init(
-                identity: .pni,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+        return Task {
+            .init(
+                aci: .init(
+                    identity: .aci,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                ),
+                pni: .init(
+                    identity: .pni,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+                )
             )
-        ))
+        }
     }
 
     public var didFinalizeRegistrationPrekeys = false
@@ -55,17 +59,17 @@ internal class MockPreKeyManager: PreKeyManager {
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool
-    ) -> Promise<Void> {
+    ) async -> Task<Void, Error> {
         didFinalizeRegistrationPrekeys = true
-        return .value(())
+        return Task {}
     }
 
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
-        return .value(())
+    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async -> Task<Void, Error> {
+        return Task {}
     }
 
-    func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
-    func rotateSignedPreKeys() -> SignalCoreKit.Promise<Void> { Promise.value(()) }
+    func createOrRotatePNIPreKeys(auth: ChatServiceAuth) async -> Task<Void, Error> { Task {} }
+    func rotateSignedPreKeys() async -> Task<Void, Error> { Task {} }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
 
     func generateLastResortKyberPreKey(signedBy signingKeyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {

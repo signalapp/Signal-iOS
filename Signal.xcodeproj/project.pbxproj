@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -776,6 +776,8 @@
 		6600F39029918CBF00B1EDB7 /* RegistrationStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */; };
 		6600F39629919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */; };
 		6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */; };
+		6605B9862B2112A100E8A68A /* SerialTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */; };
+		6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */; };
 		6605D4F02A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */; };
 		6605D4F82A85A504004DC345 /* OWSIncomingPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4F72A85A504004DC345 /* OWSIncomingPaymentMessage.m */; };
 		6605D4FB2A85ACEA004DC345 /* OWSIncomingPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4FA2A85ACEA004DC345 /* OWSIncomingPaymentMessage+SDS.swift */; };
@@ -852,11 +854,7 @@
 		6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */; };
 		6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */; };
 		6659A02A2A7C121C00066AB7 /* PreKeyManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */; };
-		6659A02C2A7C161400066AB7 /* PreKeyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */; };
-		6659A02F2A7C5B3600066AB7 /* GeneratePreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A02E2A7C5B3600066AB7 /* GeneratePreKeyTask.swift */; };
 		6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */; };
-		6659A0332A7C6C3F00066AB7 /* UploadPreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0322A7C6C3F00066AB7 /* UploadPreKeyTask.swift */; };
-		6659A0352A7C6E0900066AB7 /* PersistPreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */; };
 		6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
 		665C0D5C2ADF538100539A37 /* CloudBackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5B2ADF538100539A37 /* CloudBackupManager.swift */; };
@@ -1349,14 +1347,13 @@
 		C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageFinder.swift */; };
 		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
-		C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyOperation.swift */; };
+		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
 		C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
-		C19AFAB82A6598D800FE3ECF /* PreKeyOperation+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */; };
 		C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */; };
@@ -1369,7 +1366,7 @@
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
 		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */; };
-		C1ED5CA12A72E3D5009AD3FC /* PreKeyTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTasks.swift */; };
+		C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */; };
 		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -3388,6 +3385,8 @@
 		6600F38F29918CBF00B1EDB7 /* RegistrationStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStep.swift; sourceTree = "<group>"; };
 		6600F39529919ECC00B1EDB7 /* RegistrationCoodinatorShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoodinatorShims.swift; sourceTree = "<group>"; };
 		6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerMock.swift; sourceTree = "<group>"; };
+		6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialTaskQueue.swift; sourceTree = "<group>"; };
+		6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialTaskQueueTest.swift; sourceTree = "<group>"; };
 		6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
 		6605D4F62A85A4D9004DC345 /* OWSIncomingPaymentMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIncomingPaymentMessage.h; sourceTree = "<group>"; };
 		6605D4F72A85A504004DC345 /* OWSIncomingPaymentMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingPaymentMessage.m; sourceTree = "<group>"; };
@@ -3466,11 +3465,7 @@
 		6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrekeyManagerImpl.swift; sourceTree = "<group>"; };
 		6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPreKeyManager.swift; sourceTree = "<group>"; };
 		6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreKeyManager+Shims.swift"; sourceTree = "<group>"; };
-		6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyOperationFactory.swift; sourceTree = "<group>"; };
-		6659A02E2A7C5B3600066AB7 /* GeneratePreKeyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratePreKeyTask.swift; sourceTree = "<group>"; };
 		6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyUploadBundle.swift; sourceTree = "<group>"; };
-		6659A0322A7C6C3F00066AB7 /* UploadPreKeyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPreKeyTask.swift; sourceTree = "<group>"; };
-		6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistPreKeyTask.swift; sourceTree = "<group>"; };
 		6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningPermissionsViewController.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
 		665C0D5B2ADF538100539A37 /* CloudBackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupManager.swift; sourceTree = "<group>"; };
@@ -4041,7 +4036,7 @@
 		C167387429E8397B0068EA92 /* EditMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageFinder.swift; sourceTree = "<group>"; };
 		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
-		C17345BA2A5E000300C6426D /* PreKeyOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyOperation.swift; sourceTree = "<group>"; };
+		C17345BA2A5E000300C6426D /* PreKeyTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTarget.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
@@ -4049,7 +4044,6 @@
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
-		C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreKeyOperation+Shims.swift"; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalPreKeyStore.swift; sourceTree = "<group>"; };
 		C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSignedPreKeyStore.swift; sourceTree = "<group>"; };
@@ -4063,7 +4057,7 @@
 		C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTestMocks.swift; sourceTree = "<group>"; };
 		C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditSyncMessage.swift; sourceTree = "<group>"; };
 		C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProtocolStoreMocks.swift; sourceTree = "<group>"; };
-		C1ED5CA02A72E3D5009AD3FC /* PreKeyTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTasks.swift; sourceTree = "<group>"; };
+		C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskManager.swift; sourceTree = "<group>"; };
 		C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalPerformanceTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAA04E8D62A697EE833BC729 /* Pods-SignalPerformanceTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6979,18 +6973,13 @@
 		6659A0242A7C112700066AB7 /* PreKeys */ = {
 			isa = PBXGroup;
 			children = (
-				6659A02E2A7C5B3600066AB7 /* GeneratePreKeyTask.swift */,
 				6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */,
-				6659A0342A7C6E0900066AB7 /* PersistPreKeyTask.swift */,
 				6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */,
 				F9C5C9C2289453B100548EEE /* PreKeyManager.swift */,
 				6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */,
-				C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */,
-				C17345BA2A5E000300C6426D /* PreKeyOperation.swift */,
-				6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */,
-				C1ED5CA02A72E3D5009AD3FC /* PreKeyTasks.swift */,
+				C17345BA2A5E000300C6426D /* PreKeyTarget.swift */,
+				C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */,
 				6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */,
-				6659A0322A7C6C3F00066AB7 /* UploadPreKeyTask.swift */,
 			);
 			path = PreKeys;
 			sourceTree = "<group>";
@@ -8856,6 +8845,7 @@
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
+				6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */,
 				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
 				F9CAC77E29199B9200EEC1DE /* StringTest.swift */,
 				F94261EB289B1B5400460798 /* TSMessageStorageTests.m */,
@@ -10129,6 +10119,7 @@
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
+				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
 				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB71289453B200548EEE /* SSKAsserts.h */,
@@ -12712,7 +12703,6 @@
 				F9C5CD59289453B300548EEE /* FullTextSearchFinder.swift in Sources */,
 				F9D3122D298C60E1004ED3D9 /* FullTextSearchFinderForObjC.swift in Sources */,
 				F9C5CDEC289453B400548EEE /* FunctionalUtil.m in Sources */,
-				6659A02F2A7C5B3600066AB7 /* GeneratePreKeyTask.swift in Sources */,
 				F9C5CDB1289453B400548EEE /* GiphyAPI.swift in Sources */,
 				F9C5CDB2289453B400548EEE /* GiphyAsset.swift in Sources */,
 				F9C5CDB0289453B400548EEE /* GiphyDownloader.swift in Sources */,
@@ -12999,7 +12989,6 @@
 				F9C5CD78289453B300548EEE /* PendingReadReceiptRecord.swift in Sources */,
 				F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */,
 				F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */,
-				6659A0352A7C6E0900066AB7 /* PersistPreKeyTask.swift in Sources */,
 				F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */,
 				5033D46329D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift in Sources */,
 				664657312AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift in Sources */,
@@ -13021,11 +13010,9 @@
 				6659A02A2A7C121C00066AB7 /* PreKeyManager+Shims.swift in Sources */,
 				F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */,
 				6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */,
-				C19AFAB82A6598D800FE3ECF /* PreKeyOperation+Shims.swift in Sources */,
-				C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */,
-				6659A02C2A7C161400066AB7 /* PreKeyOperationFactory.swift in Sources */,
 				F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */,
-				C1ED5CA12A72E3D5009AD3FC /* PreKeyTasks.swift in Sources */,
+				C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */,
+				C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */,
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
@@ -13109,6 +13096,7 @@
 				F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */,
 				D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */,
 				F9C5CE4C289453B400548EEE /* Sequence+OWS.swift in Sources */,
+				6605B9862B2112A100E8A68A /* SerialTaskQueue.swift in Sources */,
 				50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */,
 				507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */,
 				F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */,
@@ -13305,7 +13293,6 @@
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
-				6659A0332A7C6C3F00066AB7 /* UploadPreKeyTask.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
 				D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */,
 				D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */,
@@ -13461,6 +13448,7 @@
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
 				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
+				6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,

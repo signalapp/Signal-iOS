@@ -473,25 +473,16 @@ public class DependenciesBridge {
             tsAccountManager: tsAccountManager
         )
 
-        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
-            context: .init(
-                dateProvider: dateProvider,
-                db: db,
-                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
-                linkedDevicePniKeyManager: linkedDevicePniKeyManager,
-                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-                protocolStoreManager: signalProtocolStoreManager,
-                schedulers: schedulers,
-                serviceClient: accountServiceClient,
-                tsAccountManager: tsAccountManager
-            )
-        )
         self.preKeyManager = PreKeyManagerImpl(
+            dateProvider: dateProvider,
             db: db,
-            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
-            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-            preKeyOperationFactory: preKeyOperationFactory,
-            protocolStoreManager: signalProtocolStoreManager
+            identityManager: PreKey.Wrappers.IdentityManager(identityManager),
+            linkedDevicePniKeyManager: linkedDevicePniKeyManager,
+            messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            protocolStoreManager: signalProtocolStoreManager,
+            serviceClient: accountServiceClient,
+            tsAccountManager: tsAccountManager
+
         )
 
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(

@@ -582,7 +582,7 @@ public class MessageSender: Dependencies {
                 // Only try to update the signed prekey; updating it is sufficient to
                 // re-enable message sending.
                 return Task {
-                    try await self.preKeyManager.rotateSignedPreKeys().awaitable()
+                    try await self.preKeyManager.rotateSignedPreKeys().value
                     self.pendingPreKeyRotation.set(nil)
                 }
             }

@@ -126,7 +126,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     aciIdentityKeyPair: provisionMessage.aciIdentityKeyPair,
                     pniIdentityKeyPair: provisionMessage.pniIdentityKeyPair
                 )
-                .awaitable()
+                .value
         } catch {
             return .genericError(error)
         }
@@ -154,17 +154,17 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         case .genericError(let error):
             try? await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: false)
-                .awaitable()
+                .value
             return .genericError(error)
         case .obsoleteLinkedDevice:
             try? await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: false)
-                .awaitable()
+                .value
             return .obsoleteLinkedDeviceError
         case .deviceLimitExceeded(let error):
             try? await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: false)
-                .awaitable()
+                .value
             return .deviceLimitExceededError(error)
         case .success(let response):
             verifyDeviceResponse = response
@@ -172,7 +172,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         if pni != verifyDeviceResponse.pni {
             try? await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: false)
-                .awaitable()
+                .value
             return .genericError(OWSAssertionError("PNI from primary is out of sync with the server!"))
         }
 
@@ -221,10 +221,10 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         do {
             try await self.preKeyManager
                 .finalizeRegistrationPreKeys(prekeyBundles, uploadDidSucceed: true)
-                .awaitable()
+                .value
             try await self.preKeyManager
                 .rotateOneTimePreKeysForRegistration(auth: authedDevice.authedAccount.chatServiceAuth)
-                .awaitable()
+                .value
         } catch {
             return .genericError(error)
         }

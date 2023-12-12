@@ -177,8 +177,8 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 return .value(())
             }
 
-            return firstly(on: self.schedulers.sync) { () -> Promise<Void> in
-                return self.preKeyManager.createOrRotatePNIPreKeys(auth: .implicit())
+            return Promise.wrapAsync {
+                return try await self.preKeyManager.createOrRotatePNIPreKeys(auth: .implicit()).value
             }.map(on: self.schedulers.global()) {
                 self.logger.info("Successfully created PNI keys!")
 
