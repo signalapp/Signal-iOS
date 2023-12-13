@@ -10,21 +10,21 @@ public protocol CloudBackupChatArchiver: CloudBackupProtoArchiver {
 
     typealias ChatId = CloudBackup.ChatId
 
-    typealias ArchiveFramesResult = CloudBackup.ArchiveFramesResult<ChatId>
+    typealias ArchiveMultiFrameResult = CloudBackup.ArchiveMultiFrameResult<ChatId>
 
     /// Archive all ``TSThread``s (they map to ``BackupProtoChat``).
     ///
-    /// - Returns: ``ArchiveFramesResult.success`` if all frames were written without error, or either
+    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
-    /// How to handle ``ArchiveFramesResult.partialSuccess`` is up to the caller,
+    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
     /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
-    /// ``ArchiveFramesResult.completeFailure``, on the other hand, will stop the entire backup,
+    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveChats(
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult
+    ) -> ArchiveMultiFrameResult
 
     typealias RestoreFrameResult = CloudBackup.RestoreFrameResult<ChatId>
 
@@ -59,28 +59,23 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult {
+    ) -> ArchiveMultiFrameResult {
         var completeFailureError: Error?
-        var partialErrors = [ArchiveFramesResult.Error]()
+        var partialErrors = [ArchiveMultiFrameResult.Error]()
 
         // TODO: clean up this shim, and just index non-story threads to begin with.
         threadFetcher.enumerateAll(tx: tx) { thread, stop in
-            let result: ArchiveFramesResult
+            let result: ArchiveMultiFrameResult
             if let thread = thread as? TSContactThread {
-                result = self.archiveThread(
+                result = self.archiveContactThread(
                     thread,
-                    recipientId: self.recipientID(
-                        for: thread,
-                        recipientContext: context.recipientContext
-                    ),
                     stream: stream,
                     context: context,
                     tx: tx
                 )
             } else if let thread = thread as? TSGroupThread {
-                result = self.archiveThread(
+                result = self.archiveGroupThread(
                     thread,
-                    recipientId: context.recipientContext[.group(thread.groupId)],
                     stream: stream,
                     context: context,
                     tx: tx
@@ -111,46 +106,87 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         }
     }
 
-    private func recipientID(
-        for thread: TSContactThread,
-        recipientContext: CloudBackup.RecipientArchivingContext
-    ) -> CloudBackup.RecipientId? {
+    private func archiveContactThread(
+        _ thread: TSContactThread,
+        stream: CloudBackupProtoOutputStream,
+        context: CloudBackup.ChatArchivingContext,
+        tx: DBReadTransaction
+    ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
+        let chatId = context.assignChatId(to: thread.uniqueIdentifier)
+
         let contactServiceId = thread.contactUUID.map { try? ServiceId.parseFrom(serviceIdString: $0) }
+        let recipientAddress: CloudBackup.RecipientArchivingContext.Address
         if
-            let aci = contactServiceId as? Aci,
-            let recipientId = recipientContext[.contactAci(aci)]
+            let aci = contactServiceId as? Aci
         {
-            return recipientId
+            recipientAddress = .contactAci(aci)
         } else if
-            let pni = contactServiceId as? Pni,
-            let recipientId = recipientContext[.contactPni(pni)]
+            let pni = contactServiceId as? Pni
         {
-            return recipientId
+            recipientAddress = .contactPni(pni)
         } else if
             let phoneNumber = thread.contactPhoneNumber,
-            let e164 = E164(phoneNumber),
-            let recipientId = recipientContext[.contactE164(e164)]
+            let e164 = E164(phoneNumber)
         {
-            return recipientId
+            recipientAddress = .contactE164(e164)
         } else {
-            return nil
+            return .partialSuccess([.init(
+                objectId: chatId,
+                error: .contactThreadMissingAddress
+            )])
         }
+
+        guard let recipientId = context.recipientContext[recipientAddress] else {
+            return .partialSuccess([.init(
+                objectId: chatId,
+                error: .referencedIdMissing(.recipient(recipientAddress))
+            )])
+        }
+
+        return archiveThread(
+            thread,
+            chatId: chatId,
+            recipientId: recipientId,
+            stream: stream,
+            context: context,
+            tx: tx
+        )
+    }
+
+    private func archiveGroupThread(
+        _ thread: TSGroupThread,
+        stream: CloudBackupProtoOutputStream,
+        context: CloudBackup.ChatArchivingContext,
+        tx: DBReadTransaction
+    ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
+        let chatId = context.assignChatId(to: thread.uniqueIdentifier)
+
+        let recipientAddress = CloudBackup.RecipientArchivingContext.Address.group(thread.groupId)
+        guard let recipientId = context.recipientContext[recipientAddress] else {
+            return .partialSuccess([.init(
+                objectId: chatId,
+                error: .referencedIdMissing(.recipient(recipientAddress))
+            )])
+        }
+
+        return archiveThread(
+            thread,
+            chatId: chatId,
+            recipientId: recipientId,
+            stream: stream,
+            context: context,
+            tx: tx
+        )
     }
 
     private func archiveThread<T: TSThread>(
         _ thread: T,
-        recipientId: CloudBackup.RecipientId?,
+        chatId: ChatId,
+        recipientId: CloudBackup.RecipientId,
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> CloudBackupChatArchiver.ArchiveFramesResult {
-        let chatId = context.assignChatId(to: thread.uniqueIdentifier)
-
-        guard let recipientId else {
-            // Treat this as a partial, non catatrophic failure, since its just this frame.
-            return .partialSuccess([.init(objectId: chatId, error: .referencedIdMissing)])
-        }
-
+    ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
         let threadAssociatedData = threadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
 
         // TODO: actually use the pinned thread order, instead of just
@@ -200,7 +236,10 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         let thread: TSThread
         switch context.recipientContext[chat.recipientId] {
         case .none:
-            return .failure(chat.chatId, .identifierNotFound)
+            return .failure(
+                chat.chatId,
+                [.identifierNotFound(.recipient(chat.recipientId))]
+            )
         case .noteToSelf:
             // TODO: handle note to self chat, create the tsThread
             return .success
@@ -208,7 +247,10 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
             guard let groupThread = threadFetcher.fetch(groupId: groupId, tx: tx) else {
-                return .failure(chat.chatId, .referencedDatabaseObjectNotFound)
+                return .failure(
+                    chat.chatId,
+                    [.referencedDatabaseObjectNotFound(.groupThread(groupId: groupId))]
+                )
             }
             thread = groupThread
         case let .contact(aci, pni, e164):

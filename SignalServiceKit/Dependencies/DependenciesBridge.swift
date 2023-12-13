@@ -575,9 +575,13 @@ public class DependenciesBridge {
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
             ),
+            chatItemArchiver: CloudBackupChatItemArchiverImp(
+                dateProvider: dateProvider,
+                interactionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
+                threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+            ),
             dateProvider: dateProvider,
             db: db,
-            dmConfigurationStore: disappearingMessagesConfigurationStore,
             recipientArchiver: CloudBackupRecipientArchiverImpl(
                 blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
                 groupsV2: groupsV2,
@@ -589,9 +593,7 @@ public class DependenciesBridge {
                 tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
             ),
             streamProvider: CloudBackupProtoStreamProviderImpl(),
-            tsAccountManager: tsAccountManager,
-            tsInteractionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
-            tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+            tsAccountManager: tsAccountManager
         )
 
         self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)

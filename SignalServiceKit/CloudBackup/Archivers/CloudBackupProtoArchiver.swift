@@ -7,21 +7,35 @@ import Foundation
 
 extension CloudBackup {
     public enum ArchiveFrameError: Error {
+        public enum ReferencedProtoIdType {
+            case recipient(RecipientArchivingContext.Address)
+            case thread(ThreadUniqueId)
+        }
+
         case protoSerializationError(Error)
         case fileIOError(Error)
 
         /// The object we are archiving references another object that should have an id assigned
         /// in the proto, but does not.
         /// e.g. we try to archive a message to a recipient aci, but that aci has no ``CloudBackup.RecipientId``.
-        case referencedIdMissing
+        case referencedIdMissing(ReferencedProtoIdType)
 
         /// An error generating the master key for a group, causing the group to be skipped.
         case groupMasterKeyError(Error)
+
+        /// A contact thread has an invalid or missing address information, causing the
+        /// thread to be skipped.
+        case contactThreadMissingAddress
+
+        /// A message has an invalid or missing address information, causing the
+        /// message to be skipped.
+        /// (author for incoming messages, recipient(s) for outgoing messages)
+        case invalidMessageAddress
     }
 
-    /// Note the plural; covers the archiving of multiple frames, typically
+    /// Note the "multi"; covers the archiving of multiple frames, typically
     /// batched by type.
-    public enum ArchiveFramesResult<AppIdType> {
+    public enum ArchiveMultiFrameResult<AppIdType> {
         public struct Error {
             public let objectId: AppIdType
             public let error: ArchiveFrameError
@@ -37,13 +51,24 @@ extension CloudBackup {
     }
 
     public enum RestoringFrameError: Error {
-        case identifierNotFound
+        public enum ReferencedProtoId {
+            case recipient(RecipientId)
+            case chat(ChatId)
+        }
+
+        public enum ReferencedDBObjectId {
+            case thread(ThreadUniqueId)
+            case groupThread(groupId: Data)
+        }
+
+        /// Some identifier being referenced was not present earlier in the backup file.
+        case identifierNotFound(ReferencedProtoId)
         /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
         case invalidProtoData
         /// The object being inserted depended on another object that should have been created
         /// earlier but was not.
         /// e.g. a message being inserted needs a TSThread to have been created from the chat.
-        case referencedDatabaseObjectNotFound
+        case referencedDatabaseObjectNotFound(ReferencedDBObjectId)
         case databaseInsertionFailed(Error)
         /// The contents of the frame are not recognized by any archiver and were ignored.
         case unknownFrameType
@@ -51,7 +76,15 @@ extension CloudBackup {
 
     public enum RestoreFrameResult<ProtoIdType> {
         case success
-        case failure(ProtoIdType, RestoringFrameError)
+        /// We managed to restore some part of the frame, meaning it is represented in our database.
+        /// For example, we restored a message but dropped some invalid recipients.
+        /// Generally restoration of other frames can proceed, but the caller can determine
+        /// whether to stop or not based on the specific error(s).
+        case partialRestore(ProtoIdType, [RestoringFrameError])
+        /// Failure to restore the given frame.
+        /// Generally restoration of other frames can proceed, but the caller can determine
+        /// whether to stop or not based on the specific error(s).
+        case failure(ProtoIdType, [RestoringFrameError])
     }
 }
 
@@ -95,7 +128,7 @@ extension CloudBackup.ArchiveFrameError {
 
     func asArchiveFramesError<AppIdType>(
         objectId: AppIdType
-    ) -> CloudBackup.ArchiveFramesResult<AppIdType>.Error {
+    ) -> CloudBackup.ArchiveMultiFrameResult<AppIdType>.Error {
         return .init(objectId: objectId, error: self)
     }
 

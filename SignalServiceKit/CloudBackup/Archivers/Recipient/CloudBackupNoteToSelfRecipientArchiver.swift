@@ -14,7 +14,7 @@ public class CloudBackupNoteToSelfRecipientArchiver: CloudBackupRecipientDestina
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult {
+    ) -> ArchiveMultiFrameResult {
         let recipientId = context.assignRecipientId(to: .noteToSelf)
         let selfRecipientBuilder = BackupProtoSelfRecipient.builder()
         let recipientBuilder = BackupProtoRecipient.builder(id: recipientId.value)

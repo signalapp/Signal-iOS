@@ -40,8 +40,8 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult {
-        var errors = [ArchiveFramesResult.Error]()
+    ) -> ArchiveMultiFrameResult {
+        var errors = [ArchiveMultiFrameResult.Error]()
 
         do {
             try tsThreadFetcher.enumerateAllGroupThreads(tx: tx) { groupThread in
@@ -69,7 +69,7 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         _ groupThread: TSGroupThread,
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
-        errors: inout [ArchiveFramesResult.Error],
+        errors: inout [ArchiveMultiFrameResult.Error],
         tx: DBReadTransaction
     ) {
         guard
@@ -134,16 +134,14 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         let masterKey = groupProto.masterKey
 
         guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-            owsFailDebug("Invalid master key.")
-            return .failure(recipient.recipientId, .invalidProtoData)
+            return .failure(recipient.recipientId, [.invalidProtoData])
         }
 
         let groupContextInfo: GroupV2ContextInfo
         do {
             groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
         } catch {
-            owsFailDebug("Invalid master key.")
-            return .failure(recipient.recipientId, .invalidProtoData)
+            return .failure(recipient.recipientId, [.invalidProtoData])
         }
         let groupId = groupContextInfo.groupId
 
@@ -155,7 +153,7 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         // For now, assume this is called from the debug UI after we have synced
         // with storage service and have all the groups locally.
         guard let localThread = tsThreadFetcher.fetch(groupId: groupId, tx: tx) else {
-            return .failure(recipient.recipientId, .databaseInsertionFailed(OWSAssertionError("Unimplemented")))
+            return .failure(recipient.recipientId, [.databaseInsertionFailed(OWSAssertionError("Unimplemented"))])
         }
         let localStorySendMode = localThread.storyViewMode.storageServiceMode
         switch (groupProto.storySendMode, localThread.storyViewMode) {

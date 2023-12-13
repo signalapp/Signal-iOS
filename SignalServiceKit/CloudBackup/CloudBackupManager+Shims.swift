@@ -245,7 +245,10 @@ public class _CloudBackup_StoryFinderWrapper: _CloudBackup_StoryFinderShim {
 
 public protocol _CloudBackup_TSInteractionShim {
 
-    func enumerateAllTextOnlyMessages(tx: DBReadTransaction, block: @escaping (TSMessage) -> Void)
+    func enumerateAllInteractions(
+        tx: DBReadTransaction,
+        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+    ) throws
 
     func insert(_ message: TSIncomingMessage, tx: DBWriteTransaction)
 
@@ -253,7 +256,7 @@ public protocol _CloudBackup_TSInteractionShim {
 
     func update(
         _ message: TSOutgoingMessage,
-        withRecipient recipient: ServiceId,
+        withRecipient recipient: SignalServiceAddress,
         status: BackupProtoSendStatusStatus,
         timestamp: UInt64,
         wasSentByUD: Bool,
@@ -265,39 +268,20 @@ public class _CloudBackup_TSInteractionWrapper: _CloudBackup_TSInteractionShim {
 
     public init() {}
 
-    public func enumerateAllTextOnlyMessages(tx: DBReadTransaction, block: @escaping (TSMessage) -> Void) {
-        let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
-
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE (
-                \(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-                OR \(interactionColumn: .recordType) IS \(SDSRecordType.incomingMessage.rawValue)
-            )
-            AND (
-                \(interactionColumn: .attachmentIds) IS NULL
-                OR \(interactionColumn: .attachmentIds) == ?
-            )
-        """
-        let arguments: StatementArguments = [emptyArraySerializedData]
+    public func enumerateAllInteractions(
+        tx: DBReadTransaction,
+        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+    ) throws {
         let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: arguments,
             transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
         )
 
-        do {
-            while let interaction = try cursor.next() {
-                guard let message = interaction as? TSMessage else {
-                    owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                    continue
-                }
-
-                block(message)
+        var stop = false
+        while let interaction = try cursor.next() {
+            block(interaction, &stop)
+            if stop {
+                break
             }
-        } catch {
-            owsFailDebug("Failed to enumerate messages!")
         }
     }
 
@@ -313,14 +297,13 @@ public class _CloudBackup_TSInteractionWrapper: _CloudBackup_TSInteractionShim {
 
     public func update(
         _ message: TSOutgoingMessage,
-        withRecipient recipient: ServiceId,
+        withRecipient address: SignalServiceAddress,
         status: BackupProtoSendStatusStatus,
         timestamp: UInt64,
         wasSentByUD: Bool,
         tx: DBWriteTransaction
     ) {
         let tx = SDSDB.shimOnlyBridge(tx)
-        let address = SignalServiceAddress(serviceIdObjC: .wrapValue(recipient))
         switch status {
         case .failed:
             message.update(
@@ -334,7 +317,7 @@ public class _CloudBackup_TSInteractionWrapper: _CloudBackup_TSInteractionShim {
             return
         case .sent:
             message.update(
-                withSentRecipient: ServiceIdObjC.wrapValue(recipient),
+                withSentRecipientAddress: address,
                 wasSentByUD: wasSentByUD,
                 transaction: tx
             )

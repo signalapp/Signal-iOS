@@ -13,21 +13,21 @@ public protocol CloudBackupRecipientArchiver: CloudBackupProtoArchiver {
 
     typealias RecipientId = CloudBackup.RecipientId
 
-    typealias ArchiveFramesResult = CloudBackup.ArchiveFramesResult<RecipientId>
+    typealias ArchiveMultiFrameResult = CloudBackup.ArchiveMultiFrameResult<RecipientId>
 
     /// Archive all recipients.
     ///
-    /// - Returns: ``ArchiveFramesResult.success`` if all frames were written without error, or either
+    /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
-    /// How to handle ``ArchiveFramesResult.partialSuccess`` is up to the caller,
+    /// How to handle ``ArchiveMultiFrameResult.partialSuccess`` is up to the caller,
     /// but typically an error will be shown to the user, but the backup will be allowed to proceed.
-    /// ``ArchiveFramesResult.completeFailure``, on the other hand, will stop the entire backup,
+    /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveRecipients(
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult
+    ) -> ArchiveMultiFrameResult
 
     typealias RestoreFrameResult = CloudBackup.RestoreFrameResult<RecipientId>
 
@@ -99,8 +99,8 @@ internal class CloudBackupRecipientArchiverImpl: CloudBackupRecipientArchiver {
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult {
-        var partialErrors = [ArchiveFramesResult.Error]()
+    ) -> ArchiveMultiFrameResult {
+        var partialErrors = [ArchiveMultiFrameResult.Error]()
         for archiver in destinationArchivers {
             let archiverResults = archiver.archiveRecipients(
                 stream: stream,
@@ -130,6 +130,6 @@ internal class CloudBackupRecipientArchiverImpl: CloudBackupRecipientArchiver {
             }
             return archiver.restore(recipient, context: context, tx: tx)
         }
-        return .failure(recipient.recipientId, .unknownFrameType)
+        return .failure(recipient.recipientId, [.unknownFrameType])
     }
 }

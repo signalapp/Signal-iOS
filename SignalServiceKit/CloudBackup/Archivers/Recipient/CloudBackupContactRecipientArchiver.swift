@@ -41,11 +41,11 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> ArchiveFramesResult {
+    ) -> ArchiveMultiFrameResult {
         let whitelistedAddresses = Set(profileManager.allWhitelistedRegisteredAddresses(tx: tx))
         let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
 
-        var errors = [ArchiveFramesResult.Error]()
+        var errors = [ArchiveMultiFrameResult.Error]()
 
         signalRecipientFetcher.enumerateAll(tx: tx) { recipient in
             let recipientAddress: ArchivingAddress
@@ -145,7 +145,7 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         let e164: E164? = E164(contactProto.e164)
         guard aci != nil || pni != nil || e164 != nil else {
             // Need at least one identifier!
-            return .failure(recipientProto.recipientId, .invalidProtoData)
+            return .failure(recipientProto.recipientId, [.invalidProtoData])
         }
         context[recipientProto.recipientId] = .contact(aci: aci, pni: pni, e164: e164)
 
@@ -170,7 +170,7 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
             do {
                 try signalRecipientFetcher.insert(recipient, tx: tx)
             } catch let error {
-                return .failure(recipientProto.recipientId, .databaseInsertionFailed(error))
+                return .failure(recipientProto.recipientId, [.databaseInsertionFailed(error)])
             }
         }
 
@@ -187,7 +187,7 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
             do {
                 try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
             } catch let error {
-                return .failure(recipientProto.recipientId, .databaseInsertionFailed(error))
+                return .failure(recipientProto.recipientId, [.databaseInsertionFailed(error)])
             }
         }
 

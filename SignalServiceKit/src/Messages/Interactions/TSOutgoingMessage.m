@@ -670,6 +670,15 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(transaction);
 
     SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
+    [self updateWithSentRecipientAddress:recipientAddress wasSentByUD:wasSentByUD transaction:transaction];
+}
+
+- (void)updateWithSentRecipientAddress:(SignalServiceAddress *)recipientAddress
+                           wasSentByUD:(BOOL)wasSentByUD
+                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(recipientAddress);
+    OWSAssertDebug(transaction);
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 TSOutgoingMessageRecipientState *_Nullable recipientState

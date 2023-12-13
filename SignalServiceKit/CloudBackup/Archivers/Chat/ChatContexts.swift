@@ -113,7 +113,7 @@ extension TSThread {
     }
 }
 
-extension TSMessage {
+extension TSInteraction {
 
     public var uniqueThreadIdentifier: CloudBackup.ThreadUniqueId {
         return .init(self.uniqueThreadId)

@@ -291,6 +291,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
+// This method is used to record a successful send to one recipient.
+- (void)updateWithSentRecipientAddress:(SignalServiceAddress *)recipientAddress
+                           wasSentByUD:(BOOL)wasSentByUD
+                           transaction:(SDSAnyWriteTransaction *)transaction;
+
 // This method is used to record a skipped send to one recipient.
 - (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
                        transaction:(SDSAnyWriteTransaction *)transaction;
