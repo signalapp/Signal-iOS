@@ -117,7 +117,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
         view.addSubview(instructionsWrapperView)
         view.addSubview(uploadPhotoButton)
 
-        scanViewController.view.autoPinEdgesToSuperviewSafeArea()
+        scanViewController.view.autoPinEdgesToSuperviewEdges()
         instructionsWrapperView.autoPinEdges(toSuperviewSafeAreaExcludingEdge: .bottom)
 
         uploadPhotoButton.autoSetDimensions(to: .square(52))
