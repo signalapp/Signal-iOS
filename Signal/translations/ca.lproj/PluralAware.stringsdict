@@ -781,6 +781,22 @@
 			<string>%1$d de seleccionats</string>
 		</dict>
 	</dict>
+	<key>MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d reaction with %2$@.</string>
+			<key>other</key>
+			<string>%1$d reactions with %2$@.</string>
+		</dict>
+	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -907,6 +923,22 @@
 			<string>%1$d espectador</string>
 			<key>other</key>
 			<string>%1$d espectadors</string>
+		</dict>
+	</dict>
+	<key>OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d additional reaction.</string>
+			<key>other</key>
+			<string>%1$d additional reactions.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

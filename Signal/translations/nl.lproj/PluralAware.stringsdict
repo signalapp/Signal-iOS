@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chat gebruikt. Wil je dit verwijderen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d chats gebruikt. Wil je het voor alle chats verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -143,7 +143,7 @@
 			<key>one</key>
 			<string>Deze chat zal alleen op dit apparaat worden verwijderd.</string>
 			<key>other</key>
-			<string>Deze chats zullen alleen op dit apparaat worden verwijderen.</string>
+			<string>Deze chats zullen alleen op dit apparaat worden verwijderd.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d bericht wissen?</string>
+			<string>%1$d bericht verwijderen?</string>
 			<key>other</key>
-			<string>%1$d berichten wissen?</string>
+			<string>%1$d berichten verwijderen?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -781,6 +781,22 @@
 			<string>%1$d geselecteerd</string>
 		</dict>
 	</dict>
+	<key>MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d reaction with %2$@.</string>
+			<key>other</key>
+			<string>%1$d reactions with %2$@.</string>
+		</dict>
+	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -907,6 +923,22 @@
 			<string>%1$d kijker</string>
 			<key>other</key>
 			<string>%1$d kijkers</string>
+		</dict>
+	</dict>
+	<key>OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d additional reaction.</string>
+			<key>other</key>
+			<string>%1$d additional reactions.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

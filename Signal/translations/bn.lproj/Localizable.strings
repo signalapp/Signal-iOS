@@ -25,6 +25,9 @@
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "স্টিকার";
 
+/* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker similar to %1$@";
+
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "ভয়েস মেসেজ";
 
@@ -1098,9 +1101,6 @@
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "ভুল কন্ট্যাক্ট।";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "কোন পরিচিতি ক্ষেত্র নির্বাচিত হয়নি।";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "আপনার কন্টাক্টে Signal-এর অ্যাক্সেস প্রয়োজন। iOS সেটিংসে যান এবং কন্টাক্ট চালু করুন। আপনার কন্টাক্টগুলো এনক্রিপ্ট অবস্থায় আছে এবং সেগুলো Signal পরিষেবায় দৃশ্যমান নয়।";
@@ -7108,11 +7108,23 @@
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "আপনার স্টোরিতে %1$@ রিঅ্যাক্ট করেছেন";
 
+/* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reacted %1$@ to a story";
+
+/* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Reacted %1$@ to a story";
+
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@-এর স্টোরিতে %1$@ রিঅ্যাক্ট করেছেন";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "প্রত্যুত্তর";
+
+/* Text indicating you reacted to a story (the header on the bubble says \"You\") */
+"STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+
+/* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
+"STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "প্রত্যুত্তর";
@@ -7728,6 +7740,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal ডেস্কটপ থেকে সেটাপ শেষ করুন।";
+
+/* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Gradient with %1$@ and %2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "কন্ট্যাক্টের নাম";

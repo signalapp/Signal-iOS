@@ -25,6 +25,9 @@
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Наліпка";
 
+/* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker similar to %1$@";
+
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Голосове повідомлення";
 
@@ -1098,9 +1101,6 @@
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Недійсний контакт.";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Не вибрано жодних даних контакту.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal необхідно мати доступ до ваших контактів. Перейдіть у параметри iOS і надайте дозвіл. Ваші контакти зашифровані. Сервіс Signal їх не бачить.";
@@ -7108,11 +7108,23 @@
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Реакція на вашу сторі: %1$@";
 
+/* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reacted %1$@ to a story";
+
+/* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Reacted %1$@ to a story";
+
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Реакція на сторі користувача %2$@: %1$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Відповісти";
+
+/* Text indicating you reacted to a story (the header on the bubble says \"You\") */
+"STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+
+/* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
+"STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Відповісти";
@@ -7728,6 +7740,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завершити установку Signal на настільному комп’ютері";
+
+/* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Gradient with %1$@ and %2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Ім'я контакту";
