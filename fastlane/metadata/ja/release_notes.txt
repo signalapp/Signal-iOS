@@ -1,2 +1,2 @@
-• Silence isn’t always golden, but it does have a new icon. We updated the Camera and Mute buttons in voice and video calls so it’s even easier to see when they are enabled or disabled.
-• There might already be a self-referential German word to describe “German words that are so big they won’t fit on a single line,” but we fixed the “lost cursor” bug that was affecting some long German words on iOS 17.
+• We fixed a bug that caused muted chats that were marked as unread to still appear in the unread total on the Signal icon even when that setting was disabled. Now the badge count consistently ignores any conversations that you choose to consistently ignore.
+• This update also enables VoiceOver support for message reactions, stickers, and wallpaper color selections.
