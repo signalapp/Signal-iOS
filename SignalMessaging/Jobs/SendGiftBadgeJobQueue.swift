@@ -255,6 +255,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
                 paymentIntentClientSecret: paymentIntentClientSecret,
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId,
+                callbackURL: nil,
                 idempotencyKey: jobRecord.uniqueId
             ).map { _ in paymentIntentId }
         case let .forBraintree(paypalApprovalParams):

@@ -17,6 +17,7 @@ extension DonationPaymentDetailsViewController {
         subscriberID existingSubscriberId: Data?
     ) {
         let currencyCode = self.donationAmount.currencyCode
+        let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
 
         Logger.info("[Donations] Starting monthly card donation")
 
@@ -47,8 +48,28 @@ extension DonationPaymentDetailsViewController {
                     return Stripe.setupNewSubscription(
                         clientSecret: clientSecret,
                         paymentMethod: validForm.stripePaymentMethod
-                    ).then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent in
+                    ).then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Stripe.ConfirmedSetupIntent> in
                         if let redirectToUrl = confirmedIntent.redirectToUrl {
+                            if case .ideal = validForm.donationPaymentMethod {
+                                Logger.info("[Donations] Subscription requires iDEAL authentication. Presenting...")
+                                let confirmedDonation = PendingMonthlyIDEALDonation(
+                                    subscriberId: subscriberId,
+                                    clientSecret: clientSecret,
+                                    setupIntentId: confirmedIntent.setupIntentId,
+                                    newSubscriptionLevel: newSubscriptionLevel,
+                                    oldSubscriptionLevel: priorSubscriptionLevel,
+                                    amount: self.donationAmount
+                                )
+                                self.databaseStorage.write { tx in
+                                    do {
+                                        try donationStore.setPendingSubscription(donation: confirmedDonation, tx: tx.asV2Write)
+                                    } catch {
+                                        owsFailDebug("[Donations] Failed to persist pending iDEAL subscription.")
+                                    }
+                                }
+                            } else {
+                                Logger.info("[Donations] Subscription requires 3DS authentication. Presenting...")
+                            }
                             return self.show3DS(for: redirectToUrl)
                                 .map(on: DispatchQueue.sharedUserInitiated) { _ in
                                     return confirmedIntent
@@ -70,12 +91,13 @@ extension DonationPaymentDetailsViewController {
                     (subscriberId, paymentType)
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentType) in
-                return DonationViewsUtil.finalizeAndRedeemSubscription(
+                return DonationViewsUtil.completeMonthlyDonations(
                     subscriberId: subscriberId,
                     paymentType: paymentType,
                     newSubscriptionLevel: newSubscriptionLevel,
                     priorSubscriptionLevel: priorSubscriptionLevel,
-                    currencyCode: currencyCode
+                    currencyCode: currencyCode,
+                    databaseStorage: self.databaseStorage
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

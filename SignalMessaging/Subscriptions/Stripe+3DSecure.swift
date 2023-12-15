@@ -10,6 +10,8 @@ extension Stripe {
     public static let SCHEME_FOR_3DS = "sgnlpay"
     static let RETURN_URL_FOR_3DS = "\(SCHEME_FOR_3DS)://3ds"
 
+    static let RETURN_URL_FOR_IDEAL = "https://signaldonations.org/ideal"
+
     /// Parse the redirect URL from a Stripe response. See [Stripe's docs][0].
     ///
     /// [0]: https://stripe.com/docs/api/payment_intents/object#payment_intent_object-next_action-redirect_to_url-return_url

@@ -93,6 +93,7 @@ public class DependenciesBridge {
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let socketManager: SocketManager
 
+    public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
     public let receiptCredentialResultStore: ReceiptCredentialResultStore
 
     public let svr: SecureValueRecovery
@@ -598,5 +599,6 @@ public class DependenciesBridge {
         )
 
         self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
+        self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
     }
 }

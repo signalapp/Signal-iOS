@@ -33,6 +33,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     let paymentMethod: PaymentMethod
     let onFinished: (Error?) -> Void
     var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
+    var threeDSecureAuthenticationFuture: Future<String>?
 
     public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     public override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }

@@ -1377,6 +1377,8 @@
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
 		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */; };
 		C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */; };
+		C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */; };
+		C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */; };
 		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -4078,6 +4080,8 @@
 		C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditSyncMessage.swift; sourceTree = "<group>"; };
 		C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProtocolStoreMocks.swift; sourceTree = "<group>"; };
 		C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskManager.swift; sourceTree = "<group>"; };
+		C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLevel.swift; sourceTree = "<group>"; };
+		C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPendingDonationStore.swift; sourceTree = "<group>"; };
 		C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalPerformanceTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAA04E8D62A697EE833BC729 /* Pods-SignalPerformanceTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -8352,10 +8356,12 @@
 			children = (
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */,
+				C1FB9B742B16498C00D51A3B /* ExternalPendingDonationStore.swift */,
 				D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */,
 				D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */,
 				D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */,
 				D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */,
+				C1FB9B722B16495D00D51A3B /* SubscriptionLevel.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -12732,6 +12738,7 @@
 				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
 				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
 				D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */,
+				C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
 				D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */,
 				F9C5CC86289453B300548EEE /* FailedAttachmentDownloadsJob.swift in Sources */,
@@ -13219,6 +13226,7 @@
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
+				C1FB9B732B16495D00D51A3B /* SubscriptionLevel.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,

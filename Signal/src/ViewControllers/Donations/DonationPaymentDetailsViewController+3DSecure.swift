@@ -30,11 +30,7 @@ extension DonationPaymentDetailsViewController {
         let session = ASWebAuthenticationSession(
             url: redirectUrl,
             callbackURLScheme: Stripe.SCHEME_FOR_3DS
-        ) { [weak self] (callbackUrl: URL?, error: Error?) -> Void in
-            defer {
-                self?.threeDSecureAuthenticationSession = nil
-            }
-
+        ) { (callbackUrl: URL?, error: Error?) -> Void in
             switch ASWebAuthenticationSession.resultify(callbackUrl: callbackUrl, error: error) {
             case let .success(callbackUrl):
                 guard
@@ -64,8 +60,32 @@ extension DonationPaymentDetailsViewController {
 
         // Keep a reference so we can cancel it when this view deallocates.
         threeDSecureAuthenticationSession = session
+        threeDSecureAuthenticationFuture = future
 
-        return promise
+        return promise.ensure { [weak self] in
+            self?.threeDSecureAuthenticationSession = nil
+            self?.threeDSecureAuthenticationFuture = nil
+        }
+    }
+
+    /// Expose a way to externally call back into the 3DSecure flow with the necessary information. This
+    /// method presumes the necessary actions have been taken in the 3DSecure flow to authenticate with
+    /// the Stripe backend before continuing. Otherwise, the transaction will eventually fail as unauthed.
+    /// The main consumer of this endpoint is from a 3rd party banking app deep-linking back into the app
+    /// after external authentication, allowing the in-app flow to continue from where it left off.
+    /// - Returns:
+    /// `true` or `false` depending on if the donation was able to continue with an existing donation flow.
+    public func completeExternal3DS(success: Bool, intentID: String) -> Bool {
+        guard let future = threeDSecureAuthenticationFuture else { return false }
+        defer {
+            threeDSecureAuthenticationFuture = nil
+        }
+        if !success {
+            future.reject(OWSUnretryableError())
+        } else {
+            future.resolve(intentID)
+        }
+        return true
     }
 }
 

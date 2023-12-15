@@ -186,7 +186,8 @@ public struct Stripe: Dependencies {
                 mandate: paymentMethod.mandate,
                 paymentIntentClientSecret: clientSecret,
                 paymentIntentId: paymentIntentId,
-                paymentMethodId: paymentMethodId
+                paymentMethodId: paymentMethodId,
+                callbackURL: paymentMethod.callbackURL
             )
         }
     }
@@ -197,6 +198,7 @@ public struct Stripe: Dependencies {
         paymentIntentClientSecret: String,
         paymentIntentId: String,
         paymentMethodId: PaymentMethodID,
+        callbackURL: String? = nil,
         idempotencyKey: String? = nil
     ) -> Promise<ConfirmedPaymentIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
@@ -205,7 +207,7 @@ public struct Stripe: Dependencies {
                 parameters: [
                     "payment_method": paymentMethodId,
                     "client_secret": paymentIntentClientSecret,
-                    "return_url": RETURN_URL_FOR_3DS,
+                    "return_url": callbackURL ?? RETURN_URL_FOR_3DS,
                 ].merging(
                     mandate?.parameters ?? [:],
                     uniquingKeysWith: { _, new in new }
@@ -226,7 +228,8 @@ public struct Stripe: Dependencies {
     public static func confirmSetupIntent(
         mandate: PaymentMethod.Mandate?,
         paymentMethodId: String,
-        clientSecret: String
+        clientSecret: String,
+        callbackURL: String?
     ) -> Promise<ConfirmedSetupIntent> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
@@ -235,7 +238,7 @@ public struct Stripe: Dependencies {
                 parameters: [
                     "payment_method": paymentMethodId,
                     "client_secret": clientSecret,
-                    "return_url": RETURN_URL_FOR_3DS,
+                    "return_url": callbackURL ?? RETURN_URL_FOR_3DS,
                 ].merging(
                     mandate?.parameters ?? [:],
                     uniquingKeysWith: { _, new in new }
@@ -435,4 +438,73 @@ public extension Stripe {
     static let preferredCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
+}
+
+// MARK: - Callbacks
+
+public extension Stripe {
+
+    static func isStripeIDEALCallback(_ url: URL) -> Bool {
+        url.scheme == "https" &&
+        url.host == "signaldonations.org" &&
+        url.path == "/ideal" &&
+        url.user == nil &&
+        url.password == nil &&
+        url.port == nil
+    }
+
+    enum IDEALCallbackType {
+        case oneTime(didSucceed: Bool, paymentIntentId: String)
+        case monthly(didSucceed: Bool, clientSecret: String, setupIntentId: String)
+    }
+
+    static func parseStripeIDEALCallback(_ url: URL) -> IDEALCallbackType?{
+        guard
+            isStripeIDEALCallback(url),
+            let components = URLComponents(string: url.absoluteString),
+            let queryItems = components.queryItems
+        else {
+            owsFailDebug("Invalid URL.")
+            return nil
+        }
+
+        /// This is more of an optimization to allow failing fast if the payment was known to be declined.
+        /// However, success is assumed and only the 'failed' state is checked here to guard against the
+        /// possibility of these strings changing and causing a missing 'success' to result in a false failure.
+        /// In the case that the 'failed' string changes, the app will still show the user the failed state, but it
+        /// will happend later on in the donation processing flow vs. happening here.
+        var redirectSuccess = true
+        if
+            let resultItem = queryItems.first(where: { $0.name == "redirect_status" }),
+            let resultString = resultItem.value,
+            resultString == "failed"
+        {
+            redirectSuccess = false
+        }
+
+        if
+            let intentItem = queryItems.first(where: { $0.name == "payment_intent" }),
+            let paymentIntentId = intentItem.value
+        {
+            return .oneTime(
+                didSucceed: redirectSuccess,
+                paymentIntentId: paymentIntentId
+            )
+        }
+
+        if
+            let clientSecretItem = queryItems.first(where: { $0.name == "setup_intent_client_secret" }),
+            let clientSecret = clientSecretItem.value,
+            let intentItem = queryItems.first(where: { $0.name == "setup_intent" }),
+            let setupIntentId = intentItem.value
+        {
+            return .monthly(
+                didSucceed: redirectSuccess,
+                clientSecret: clientSecret,
+                setupIntentId: setupIntentId
+            )
+        }
+
+        return nil
+    }
 }

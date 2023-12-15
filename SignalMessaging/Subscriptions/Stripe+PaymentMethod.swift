@@ -108,5 +108,18 @@ public extension Stripe {
                 return idealMandate
             }
         }
+
+        var callbackURL: String? {
+            switch self {
+            case .applePay:
+                return nil
+            case .bankTransferSEPA:
+                return nil
+            case .creditOrDebitCard:
+                return RETURN_URL_FOR_3DS
+            case .bankTransferIDEAL:
+                return RETURN_URL_FOR_IDEAL
+            }
+        }
     }
 }

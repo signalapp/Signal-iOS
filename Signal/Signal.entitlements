@@ -10,6 +10,7 @@
 		<string>applinks:signal.tube</string>
 		<string>applinks:signal.group</string>
 		<string>applinks:signal.me</string>
+		<string>applinks:signaldonations.org</string>
 	</array>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>

@@ -26,7 +26,25 @@ extension DonationPaymentDetailsViewController {
                 )
             }.then(on: DispatchQueue.main) { confirmedIntent in
                 if let redirectUrl = confirmedIntent.redirectToUrl {
-                    Logger.info("[Donations] One-time card donation needed 3DS. Presenting...")
+                    if case .ideal = validForm.donationPaymentMethod {
+                        Logger.info("[Donations] One-time iDEAL donation requires authentication. Presenting...")
+                        let donation = PendingOneTimeIDEALDonation(
+                            paymentIntentId: confirmedIntent.paymentIntentId,
+                            amount: amount
+                        )
+                        self.databaseStorage.write { transaction in
+                            do {
+                                try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
+                                    donation: donation,
+                                    tx: transaction.asV2Write
+                                )
+                            } catch {
+                                owsFailDebug("[Donations] Failed to persist pending One-time iDEAL donation")
+                            }
+                        }
+                    } else {
+                        Logger.info("[Donations] One-time card donation needed 3DS. Presenting...")
+                    }
                     return self.show3DS(for: redirectUrl)
                 } else {
                     Logger.info("[Donations] One-time card donation did not need 3DS. Continuing")
@@ -35,10 +53,11 @@ extension DonationPaymentDetailsViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
                 Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
 
-                return DonationViewsUtil.createAndRedeemOneTimeDonation(
+                return DonationViewsUtil.completeOneTimeDonation(
                     paymentIntentId: intentId,
                     amount: amount,
-                    paymentMethod: validForm.donationPaymentMethod
+                    paymentMethod: validForm.donationPaymentMethod,
+                    databaseStorage: self.databaseStorage
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in

@@ -51,7 +51,13 @@ extension Stripe {
         firstly {
             createPaymentMethod(with: paymentMethod)
         }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedSetupIntent> in
-            confirmSetupIntent(mandate: paymentMethod.mandate, paymentMethodId: paymentMethodId, clientSecret: clientSecret)
+            // Pass in the correct callback URL
+            confirmSetupIntent(
+                mandate: paymentMethod.mandate,
+                paymentMethodId: paymentMethodId,
+                clientSecret: clientSecret,
+                callbackURL: paymentMethod.callbackURL
+            )
         }
     }
 }

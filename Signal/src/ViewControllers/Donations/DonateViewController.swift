@@ -265,7 +265,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             paymentMethod: viewControllerPaymentMethod
         ) { [weak self] error in
             guard let self else { return }
-
             if let error {
                 self.didFailDonation(
                     error: error,
@@ -716,7 +715,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
             navigationController?.popToViewController(self, animated: true) {
                 self.loadAndUpdateState().done { [weak self] in
-                    self?.presentErrorSheet(
+                    guard let self else { return }
+                    DonationViewsUtil.presentErrorSheet(
+                        from: self,
                         error: error,
                         mode: mode,
                         badge: badge,
@@ -725,7 +726,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 }
             }
         } else {
-            presentErrorSheet(
+            DonationViewsUtil.presentErrorSheet(
+                from: self,
                 error: error,
                 mode: mode,
                 badge: badge,

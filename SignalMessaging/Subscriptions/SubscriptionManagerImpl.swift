@@ -48,35 +48,6 @@ public enum GiftBadgeIds: String {
     }
 }
 
-public class SubscriptionLevel: Comparable, Equatable {
-    public let level: UInt
-    public let name: String
-    public let badge: ProfileBadge
-    public let amounts: [Currency.Code: FiatMoney]
-
-    public init(
-        level: UInt,
-        name: String,
-        badge: ProfileBadge,
-        amounts: [Currency.Code: FiatMoney]
-    ) {
-        self.level = level
-        self.name = name
-        self.badge = badge
-        self.amounts = amounts
-    }
-
-    // MARK: Comparable
-
-    public static func < (lhs: SubscriptionLevel, rhs: SubscriptionLevel) -> Bool {
-        return lhs.level < rhs.level
-    }
-
-    public static func == (lhs: SubscriptionLevel, rhs: SubscriptionLevel) -> Bool {
-        return lhs.level == rhs.level
-    }
-}
-
 /// Represents a *recurring* subscription, associated with a subscriber ID and
 /// fetched from the service using that ID.
 public struct Subscription: Equatable {
