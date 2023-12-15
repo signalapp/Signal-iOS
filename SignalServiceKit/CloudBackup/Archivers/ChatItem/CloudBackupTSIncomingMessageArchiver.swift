@@ -103,6 +103,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             directionalDetails: directionalDetails,
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
+            isSealedSender: message.wasReceivedByUD.negated,
             type: type
         )
         if partialErrors.isEmpty {
@@ -118,8 +119,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
         let incomingMessageProtoBuilder = BackupProtoChatItemIncomingMessageDetails.builder(
             dateReceived: message.receivedAtTimestamp,
             dateServerSent: message.serverDeliveryTimestamp,
-            read: message.wasRead,
-            sealedSender: message.wasReceivedByUD.negated
+            read: message.wasRead
         )
         do {
             let incomingMessageProto = try incomingMessageProtoBuilder.build()
@@ -206,7 +206,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,
             serverGuid: nil,
-            wasReceivedByUD: incomingDetails.sealedSender.negated,
+            wasReceivedByUD: chatItem.sealedSender.negated,
             isViewOnceMessage: false,
             storyAuthorAci: nil,
             storyTimestamp: nil,

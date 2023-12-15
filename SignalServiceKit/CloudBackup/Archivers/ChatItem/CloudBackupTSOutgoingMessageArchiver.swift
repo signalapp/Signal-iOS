@@ -37,16 +37,19 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
         var partialErrors = [CloudBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
 
+        let wasAnySendSealedSender: Bool
         let directionalDetails: Details.DirectionalDetails
         switch buildOutgoingMessageDetails(message, recipientContext: context.recipientContext) {
         case .success(let details):
-            directionalDetails = details
+            directionalDetails = details.details
+            wasAnySendSealedSender = details.wasAnySendSealedSender
         case .isPastRevision:
             return .isPastRevision
         case .notYetImplemented:
             return .notYetImplemented
         case let .partialFailure(details, errors):
-            directionalDetails = details
+            directionalDetails = details.details
+            wasAnySendSealedSender = details.wasAnySendSealedSender
             partialErrors.append(contentsOf: errors)
         case .messageFailure(let errors):
             partialErrors.append(contentsOf: errors)
@@ -91,6 +94,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             directionalDetails: directionalDetails,
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
+            isSealedSender: wasAnySendSealedSender,
             type: type
         )
         if partialErrors.isEmpty {
@@ -100,12 +104,18 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
         }
     }
 
+    struct OutgoingMessageDetails {
+        let details: Details.DirectionalDetails
+        let wasAnySendSealedSender: Bool
+    }
+
     private func buildOutgoingMessageDetails(
         _ message: TSOutgoingMessage,
         recipientContext: CloudBackup.RecipientArchivingContext
-    ) -> CloudBackup.ArchiveInteractionResult<Details.DirectionalDetails> {
+    ) -> CloudBackup.ArchiveInteractionResult<OutgoingMessageDetails> {
         var perRecipientErrors = [CloudBackup.ArchiveInteractionResult<Details.DirectionalDetails>.Error]()
 
+        var wasAnySendSealedSender = false
         let outgoingMessageProtoBuilder = BackupProtoChatItemOutgoingMessageDetails.builder()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
@@ -161,7 +171,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                 networkFailure: isNetworkFailure,
                 identityKeyMismatch: isIdentityKeyMismatchFailure,
                 sealedSender: sendState.wasSentByUD.negated,
-                timestamp: statusTimestamp
+                lastStatusUpdateTimestamp: statusTimestamp
             )
             sendStatusBuilder.setDeliveryStatus(protoDeliveryStatus)
             do {
@@ -171,6 +181,10 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                 perRecipientErrors.append(
                     .init(objectId: message.chatItemId, error: .protoSerializationError(error))
                 )
+            }
+
+            if sendState.wasSentByUD.negated {
+                wasAnySendSealedSender = true
             }
         }
 
@@ -185,9 +199,18 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
         }
 
         if perRecipientErrors.isEmpty {
-            return .success(.outgoing(outgoingMessageProto))
+            return .success(.init(
+                details: .outgoing(outgoingMessageProto),
+                wasAnySendSealedSender: wasAnySendSealedSender
+            ))
         } else {
-            return .partialFailure(.outgoing(outgoingMessageProto), perRecipientErrors)
+            return .partialFailure(
+                .init(
+                    details: .outgoing(outgoingMessageProto),
+                    wasAnySendSealedSender: wasAnySendSealedSender
+                ),
+                perRecipientErrors
+            )
         }
     }
 
@@ -267,7 +290,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             bodyRanges: messageBody?.ranges,
             attachmentIds: nil,
             expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
-            expireStartedAt: chatItem.expireStartMs,
+            expireStartedAt: chatItem.expireStartDate,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
             quotedMessage: nil,
@@ -339,7 +362,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                     withDeliveredRecipient: recipientAddress,
                     // TODO: eliminate device id as a required field
                     deviceId: 1,
-                    deliveryTimestamp: sendStatus.timestamp,
+                    deliveryTimestamp: sendStatus.lastStatusUpdateTimestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     tx: tx
                 )
@@ -349,7 +372,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                     withReadRecipient: recipientAddress,
                     // TODO: eliminate device id as a required field
                     deviceId: 1,
-                    readTimestamp: sendStatus.timestamp,
+                    readTimestamp: sendStatus.lastStatusUpdateTimestamp,
                     tx: tx
                 )
             case .viewed:
@@ -358,7 +381,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                     withViewedRecipient: recipientAddress,
                     // TODO: eliminate device id as a required field
                     deviceId: 1,
-                    viewedTimestamp: sendStatus.timestamp,
+                    viewedTimestamp: sendStatus.lastStatusUpdateTimestamp,
                     tx: tx
                 )
             case .skipped:

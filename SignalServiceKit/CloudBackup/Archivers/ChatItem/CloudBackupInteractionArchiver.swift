@@ -32,7 +32,7 @@ extension CloudBackup {
         case voice(BackupProtoVoiceMessage)
         case sticker(BackupProtoStickerMessage)
         case remotelyDeleted(BackupProtoRemoteDeletedMessage)
-        case chatUpdate(BackupProtoUpdateMessage)
+        case chatUpdate(BackupProtoChatUpdateMessage)
 
         init?(_ chatItem: BackupProtoChatItem) {
             if let standardMessage = chatItem.standardMessage {
@@ -71,6 +71,7 @@ extension CloudBackup {
         let revisions: [BackupProtoChatItem] = []
         // TODO: sms
         let isSms: Bool = false
+        let isSealedSender: Bool
         let type: ChatItemMessageType
     }
 

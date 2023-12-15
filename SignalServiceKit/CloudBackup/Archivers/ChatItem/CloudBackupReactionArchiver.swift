@@ -52,8 +52,7 @@ internal class CloudBackupReactionArchiver: CloudBackupProtoArchiver {
                 emoji: reaction.emoji,
                 authorID: authorId.value,
                 sentTimestamp: reaction.sentAtTimestamp,
-                // TODO: this should be sort order; have to update backup proto.
-                receivedTimestamp: reaction.sortOrder
+                sortOrder: reaction.sortOrder
             )
 
             do {
@@ -112,8 +111,7 @@ internal class CloudBackupReactionArchiver: CloudBackupProtoArchiver {
                 emoji: reaction.emoji,
                 reactor: reactorAci,
                 sentAtTimestamp: reaction.sentTimestamp,
-                // TODO: update the proto spec
-                sortOrder: reaction.receivedTimestamp,
+                sortOrder: reaction.sortOrder,
                 tx: tx
             )
         }

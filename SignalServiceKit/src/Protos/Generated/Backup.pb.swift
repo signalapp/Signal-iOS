@@ -414,14 +414,14 @@ struct BackupProtos_AccountData {
     mutating func clearLinkPreviews() {_uniqueStorage()._linkPreviews = nil}
 
     /// @required
-    var unlistedPhoneeumber: Bool {
-      get {return _storage._unlistedPhoneeumber ?? false}
-      set {_uniqueStorage()._unlistedPhoneeumber = newValue}
+    var notDiscoverableByPhoneNumber: Bool {
+      get {return _storage._notDiscoverableByPhoneNumber ?? false}
+      set {_uniqueStorage()._notDiscoverableByPhoneNumber = newValue}
     }
-    /// Returns true if `unlistedPhoneeumber` has been explicitly set.
-    var hasUnlistedPhoneeumber: Bool {return _storage._unlistedPhoneeumber != nil}
-    /// Clears the value of `unlistedPhoneeumber`. Subsequent reads from it will return its default value.
-    mutating func clearUnlistedPhoneeumber() {_uniqueStorage()._unlistedPhoneeumber = nil}
+    /// Returns true if `notDiscoverableByPhoneNumber` has been explicitly set.
+    var hasNotDiscoverableByPhoneNumber: Bool {return _storage._notDiscoverableByPhoneNumber != nil}
+    /// Clears the value of `notDiscoverableByPhoneNumber`. Subsequent reads from it will return its default value.
+    mutating func clearNotDiscoverableByPhoneNumber() {_uniqueStorage()._notDiscoverableByPhoneNumber = nil}
 
     /// @required
     var preferContactAvatars: Bool {
@@ -1464,15 +1464,25 @@ struct BackupProtos_ChatItem {
   /// Clears the value of `dateSent`. Subsequent reads from it will return its default value.
   mutating func clearDateSent() {_uniqueStorage()._dateSent = nil}
 
-  /// timestamp of when expiration timer started ticking down
-  var expireStartMs: UInt64 {
-    get {return _storage._expireStartMs ?? 0}
-    set {_uniqueStorage()._expireStartMs = newValue}
+  /// @required
+  var sealedSender: Bool {
+    get {return _storage._sealedSender ?? false}
+    set {_uniqueStorage()._sealedSender = newValue}
   }
-  /// Returns true if `expireStartMs` has been explicitly set.
-  var hasExpireStartMs: Bool {return _storage._expireStartMs != nil}
-  /// Clears the value of `expireStartMs`. Subsequent reads from it will return its default value.
-  mutating func clearExpireStartMs() {_uniqueStorage()._expireStartMs = nil}
+  /// Returns true if `sealedSender` has been explicitly set.
+  var hasSealedSender: Bool {return _storage._sealedSender != nil}
+  /// Clears the value of `sealedSender`. Subsequent reads from it will return its default value.
+  mutating func clearSealedSender() {_uniqueStorage()._sealedSender = nil}
+
+  /// timestamp of when expiration timer started ticking down
+  var expireStartDate: UInt64 {
+    get {return _storage._expireStartDate ?? 0}
+    set {_uniqueStorage()._expireStartDate = newValue}
+  }
+  /// Returns true if `expireStartDate` has been explicitly set.
+  var hasExpireStartDate: Bool {return _storage._expireStartDate != nil}
+  /// Clears the value of `expireStartDate`. Subsequent reads from it will return its default value.
+  mutating func clearExpireStartDate() {_uniqueStorage()._expireStartDate = nil}
 
   /// how long timer of message is (ms)
   var expiresInMs: UInt64 {
@@ -1567,8 +1577,8 @@ struct BackupProtos_ChatItem {
   mutating func clearRemoteDeletedMessage() {_uniqueStorage()._remoteDeletedMessage = nil}
 
   /// }
-  var updateMessage: BackupProtos_UpdateMessage {
-    get {return _storage._updateMessage ?? BackupProtos_UpdateMessage()}
+  var updateMessage: BackupProtos_ChatUpdateMessage {
+    get {return _storage._updateMessage ?? BackupProtos_ChatUpdateMessage()}
     set {_uniqueStorage()._updateMessage = newValue}
   }
   /// Returns true if `updateMessage` has been explicitly set.
@@ -1613,16 +1623,6 @@ struct BackupProtos_ChatItem {
     /// Clears the value of `read`. Subsequent reads from it will return its default value.
     mutating func clearRead() {self._read = nil}
 
-    /// @required
-    var sealedSender: Bool {
-      get {return _sealedSender ?? false}
-      set {_sealedSender = newValue}
-    }
-    /// Returns true if `sealedSender` has been explicitly set.
-    var hasSealedSender: Bool {return self._sealedSender != nil}
-    /// Clears the value of `sealedSender`. Subsequent reads from it will return its default value.
-    mutating func clearSealedSender() {self._sealedSender = nil}
-
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1630,7 +1630,6 @@ struct BackupProtos_ChatItem {
     fileprivate var _dateReceived: UInt64? = nil
     fileprivate var _dateServerSent: UInt64? = nil
     fileprivate var _read: Bool? = nil
-    fileprivate var _sealedSender: Bool? = nil
   }
 
   struct OutgoingMessageDetails {
@@ -1705,14 +1704,14 @@ struct BackupProtos_SendStatus {
   mutating func clearSealedSender() {self._sealedSender = nil}
 
   /// @required
-  var timestamp: UInt64 {
-    get {return _timestamp ?? 0}
-    set {_timestamp = newValue}
+  var lastStatusUpdateTimestamp: UInt64 {
+    get {return _lastStatusUpdateTimestamp ?? 0}
+    set {_lastStatusUpdateTimestamp = newValue}
   }
-  /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
-  /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-  mutating func clearTimestamp() {self._timestamp = nil}
+  /// Returns true if `lastStatusUpdateTimestamp` has been explicitly set.
+  var hasLastStatusUpdateTimestamp: Bool {return self._lastStatusUpdateTimestamp != nil}
+  /// Clears the value of `lastStatusUpdateTimestamp`. Subsequent reads from it will return its default value.
+  mutating func clearLastStatusUpdateTimestamp() {self._lastStatusUpdateTimestamp = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1769,7 +1768,7 @@ struct BackupProtos_SendStatus {
   fileprivate var _networkFailure: Bool? = nil
   fileprivate var _identityKeyMismatch: Bool? = nil
   fileprivate var _sealedSender: Bool? = nil
-  fileprivate var _timestamp: UInt64? = nil
+  fileprivate var _lastStatusUpdateTimestamp: UInt64? = nil
 }
 
 #if swift(>=4.2)
@@ -2410,39 +2409,6 @@ struct BackupProtos_RemoteDeletedMessage {
   init() {}
 }
 
-struct BackupProtos_ScheduledMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  /// @required
-  var message: BackupProtos_ChatItem {
-    get {return _message ?? BackupProtos_ChatItem()}
-    set {_message = newValue}
-  }
-  /// Returns true if `message` has been explicitly set.
-  var hasMessage: Bool {return self._message != nil}
-  /// Clears the value of `message`. Subsequent reads from it will return its default value.
-  mutating func clearMessage() {self._message = nil}
-
-  /// @required
-  var scheduledTime: UInt64 {
-    get {return _scheduledTime ?? 0}
-    set {_scheduledTime = newValue}
-  }
-  /// Returns true if `scheduledTime` has been explicitly set.
-  var hasScheduledTime: Bool {return self._scheduledTime != nil}
-  /// Clears the value of `scheduledTime`. Subsequent reads from it will return its default value.
-  mutating func clearScheduledTime() {self._scheduledTime = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _message: BackupProtos_ChatItem? = nil
-  fileprivate var _scheduledTime: UInt64? = nil
-}
-
 struct BackupProtos_Sticker {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2530,6 +2496,7 @@ struct BackupProtos_LinkPreview {
   /// Clears the value of `image`. Subsequent reads from it will return its default value.
   mutating func clearImage() {self._image = nil}
 
+  /// 'description' collides with NSObject.description
   var descriptionText: String {
     get {return _descriptionText ?? String()}
     set {_descriptionText = newValue}
@@ -2583,7 +2550,6 @@ struct BackupProtos_FilePointer {
   /// Clears the value of `attachmentLocator`. Subsequent reads from it will return its default value.
   mutating func clearAttachmentLocator() {_uniqueStorage()._attachmentLocator = nil}
 
-  /// }
   var legacyAttachmentLocator: BackupProtos_FilePointer.LegacyAttachmentLocator {
     get {return _storage._legacyAttachmentLocator ?? BackupProtos_FilePointer.LegacyAttachmentLocator()}
     set {_uniqueStorage()._legacyAttachmentLocator = newValue}
@@ -2592,6 +2558,16 @@ struct BackupProtos_FilePointer {
   var hasLegacyAttachmentLocator: Bool {return _storage._legacyAttachmentLocator != nil}
   /// Clears the value of `legacyAttachmentLocator`. Subsequent reads from it will return its default value.
   mutating func clearLegacyAttachmentLocator() {_uniqueStorage()._legacyAttachmentLocator = nil}
+
+  /// }
+  var undownloadedBackupLocator: BackupProtos_FilePointer.UndownloadedBackupLocator {
+    get {return _storage._undownloadedBackupLocator ?? BackupProtos_FilePointer.UndownloadedBackupLocator()}
+    set {_uniqueStorage()._undownloadedBackupLocator = newValue}
+  }
+  /// Returns true if `undownloadedBackupLocator` has been explicitly set.
+  var hasUndownloadedBackupLocator: Bool {return _storage._undownloadedBackupLocator != nil}
+  /// Clears the value of `undownloadedBackupLocator`. Subsequent reads from it will return its default value.
+  mutating func clearUndownloadedBackupLocator() {_uniqueStorage()._undownloadedBackupLocator = nil}
 
   var key: Data {
     get {return _storage._key ?? Data()}
@@ -2611,6 +2587,8 @@ struct BackupProtos_FilePointer {
   /// Clears the value of `contentType`. Subsequent reads from it will return its default value.
   mutating func clearContentType() {_uniqueStorage()._contentType = nil}
 
+  /// Size of fullsize decrypted media blob in bytes.
+  /// Can be ignored if unset/unavailable.
   var size: UInt32 {
     get {return _storage._size ?? 0}
     set {_uniqueStorage()._size = newValue}
@@ -2619,15 +2597,6 @@ struct BackupProtos_FilePointer {
   var hasSize: Bool {return _storage._size != nil}
   /// Clears the value of `size`. Subsequent reads from it will return its default value.
   mutating func clearSize() {_uniqueStorage()._size = nil}
-
-  var digest: Data {
-    get {return _storage._digest ?? Data()}
-    set {_uniqueStorage()._digest = newValue}
-  }
-  /// Returns true if `digest` has been explicitly set.
-  var hasDigest: Bool {return _storage._digest != nil}
-  /// Clears the value of `digest`. Subsequent reads from it will return its default value.
-  mutating func clearDigest() {_uniqueStorage()._digest = nil}
 
   var incrementalMac: Data {
     get {return _storage._incrementalMac ?? Data()}
@@ -2814,9 +2783,69 @@ struct BackupProtos_FilePointer {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
+    var cdnID: UInt64 {
+      get {return _cdnID ?? 0}
+      set {_cdnID = newValue}
+    }
+    /// Returns true if `cdnID` has been explicitly set.
+    var hasCdnID: Bool {return self._cdnID != nil}
+    /// Clears the value of `cdnID`. Subsequent reads from it will return its default value.
+    mutating func clearCdnID() {self._cdnID = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
+
+    fileprivate var _cdnID: UInt64? = nil
+  }
+
+  /// An attachment that was backed up without being downloaded.
+  /// Its MediaName should be generated as “{sender_aci}_{cdn_attachment_key}”,
+  /// but should eventually transition to a BackupLocator with mediaName
+  /// being the content hash once it is downloaded.
+  struct UndownloadedBackupLocator {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var senderAci: Data {
+      get {return _senderAci ?? Data()}
+      set {_senderAci = newValue}
+    }
+    /// Returns true if `senderAci` has been explicitly set.
+    var hasSenderAci: Bool {return self._senderAci != nil}
+    /// Clears the value of `senderAci`. Subsequent reads from it will return its default value.
+    mutating func clearSenderAci() {self._senderAci = nil}
+
+    /// @required
+    var cdnKey: String {
+      get {return _cdnKey ?? String()}
+      set {_cdnKey = newValue}
+    }
+    /// Returns true if `cdnKey` has been explicitly set.
+    var hasCdnKey: Bool {return self._cdnKey != nil}
+    /// Clears the value of `cdnKey`. Subsequent reads from it will return its default value.
+    mutating func clearCdnKey() {self._cdnKey = nil}
+
+    /// @required
+    var cdnNumber: UInt32 {
+      get {return _cdnNumber ?? 0}
+      set {_cdnNumber = newValue}
+    }
+    /// Returns true if `cdnNumber` has been explicitly set.
+    var hasCdnNumber: Bool {return self._cdnNumber != nil}
+    /// Clears the value of `cdnNumber`. Subsequent reads from it will return its default value.
+    mutating func clearCdnNumber() {self._cdnNumber = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _senderAci: Data? = nil
+    fileprivate var _cdnKey: String? = nil
+    fileprivate var _cdnNumber: UInt32? = nil
   }
 
   init() {}
@@ -3101,7 +3130,6 @@ struct BackupProtos_Reaction {
   /// Clears the value of `sentTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearSentTimestamp() {self._sentTimestamp = nil}
 
-  /// @required
   var receivedTimestamp: UInt64 {
     get {return _receivedTimestamp ?? 0}
     set {_receivedTimestamp = newValue}
@@ -3111,6 +3139,16 @@ struct BackupProtos_Reaction {
   /// Clears the value of `receivedTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearReceivedTimestamp() {self._receivedTimestamp = nil}
 
+  /// @required
+  var sortOrder: UInt64 {
+    get {return _sortOrder ?? 0}
+    set {_sortOrder = newValue}
+  }
+  /// Returns true if `sortOrder` has been explicitly set.
+  var hasSortOrder: Bool {return self._sortOrder != nil}
+  /// Clears the value of `sortOrder`. Subsequent reads from it will return its default value.
+  mutating func clearSortOrder() {self._sortOrder = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -3119,16 +3157,17 @@ struct BackupProtos_Reaction {
   fileprivate var _authorID: UInt64? = nil
   fileprivate var _sentTimestamp: UInt64? = nil
   fileprivate var _receivedTimestamp: UInt64? = nil
+  fileprivate var _sortOrder: UInt64? = nil
 }
 
-struct BackupProtos_UpdateMessage {
+struct BackupProtos_ChatUpdateMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// oneof update {
-  var simpleUpdate: BackupProtos_SimpleUpdate {
-    get {return _simpleUpdate ?? BackupProtos_SimpleUpdate()}
+  var simpleUpdate: BackupProtos_SimpleChatUpdate {
+    get {return _simpleUpdate ?? BackupProtos_SimpleChatUpdate()}
     set {_simpleUpdate = newValue}
   }
   /// Returns true if `simpleUpdate` has been explicitly set.
@@ -3136,8 +3175,8 @@ struct BackupProtos_UpdateMessage {
   /// Clears the value of `simpleUpdate`. Subsequent reads from it will return its default value.
   mutating func clearSimpleUpdate() {self._simpleUpdate = nil}
 
-  var groupDescription: BackupProtos_GroupDescriptionUpdate {
-    get {return _groupDescription ?? BackupProtos_GroupDescriptionUpdate()}
+  var groupDescription: BackupProtos_GroupDescriptionChatUpdate {
+    get {return _groupDescription ?? BackupProtos_GroupDescriptionChatUpdate()}
     set {_groupDescription = newValue}
   }
   /// Returns true if `groupDescription` has been explicitly set.
@@ -3145,8 +3184,8 @@ struct BackupProtos_UpdateMessage {
   /// Clears the value of `groupDescription`. Subsequent reads from it will return its default value.
   mutating func clearGroupDescription() {self._groupDescription = nil}
 
-  var expirationTimerChange: BackupProtos_ExpirationTimerChange {
-    get {return _expirationTimerChange ?? BackupProtos_ExpirationTimerChange()}
+  var expirationTimerChange: BackupProtos_ExpirationTimerChatUpdate {
+    get {return _expirationTimerChange ?? BackupProtos_ExpirationTimerChatUpdate()}
     set {_expirationTimerChange = newValue}
   }
   /// Returns true if `expirationTimerChange` has been explicitly set.
@@ -3154,8 +3193,8 @@ struct BackupProtos_UpdateMessage {
   /// Clears the value of `expirationTimerChange`. Subsequent reads from it will return its default value.
   mutating func clearExpirationTimerChange() {self._expirationTimerChange = nil}
 
-  var profileChange: BackupProtos_ProfileChange {
-    get {return _profileChange ?? BackupProtos_ProfileChange()}
+  var profileChange: BackupProtos_ProfileChangeChatUpdate {
+    get {return _profileChange ?? BackupProtos_ProfileChangeChatUpdate()}
     set {_profileChange = newValue}
   }
   /// Returns true if `profileChange` has been explicitly set.
@@ -3163,8 +3202,8 @@ struct BackupProtos_UpdateMessage {
   /// Clears the value of `profileChange`. Subsequent reads from it will return its default value.
   mutating func clearProfileChange() {self._profileChange = nil}
 
-  var threadMerge: BackupProtos_ThreadMergeEvent {
-    get {return _threadMerge ?? BackupProtos_ThreadMergeEvent()}
+  var threadMerge: BackupProtos_ThreadMergeChatUpdate {
+    get {return _threadMerge ?? BackupProtos_ThreadMergeChatUpdate()}
     set {_threadMerge = newValue}
   }
   /// Returns true if `threadMerge` has been explicitly set.
@@ -3172,8 +3211,8 @@ struct BackupProtos_UpdateMessage {
   /// Clears the value of `threadMerge`. Subsequent reads from it will return its default value.
   mutating func clearThreadMerge() {self._threadMerge = nil}
 
-  var sessionSwitchover: BackupProtos_SessionSwitchoverEvent {
-    get {return _sessionSwitchover ?? BackupProtos_SessionSwitchoverEvent()}
+  var sessionSwitchover: BackupProtos_SessionSwitchoverChatUpdate {
+    get {return _sessionSwitchover ?? BackupProtos_SessionSwitchoverChatUpdate()}
     set {_sessionSwitchover = newValue}
   }
   /// Returns true if `sessionSwitchover` has been explicitly set.
@@ -3182,8 +3221,8 @@ struct BackupProtos_UpdateMessage {
   mutating func clearSessionSwitchover() {self._sessionSwitchover = nil}
 
   /// }
-  var callingMessage: BackupProtos_CallingMessage {
-    get {return _callingMessage ?? BackupProtos_CallingMessage()}
+  var callingMessage: BackupProtos_CallChatUpdate {
+    get {return _callingMessage ?? BackupProtos_CallChatUpdate()}
     set {_callingMessage = newValue}
   }
   /// Returns true if `callingMessage` has been explicitly set.
@@ -3195,16 +3234,16 @@ struct BackupProtos_UpdateMessage {
 
   init() {}
 
-  fileprivate var _simpleUpdate: BackupProtos_SimpleUpdate? = nil
-  fileprivate var _groupDescription: BackupProtos_GroupDescriptionUpdate? = nil
-  fileprivate var _expirationTimerChange: BackupProtos_ExpirationTimerChange? = nil
-  fileprivate var _profileChange: BackupProtos_ProfileChange? = nil
-  fileprivate var _threadMerge: BackupProtos_ThreadMergeEvent? = nil
-  fileprivate var _sessionSwitchover: BackupProtos_SessionSwitchoverEvent? = nil
-  fileprivate var _callingMessage: BackupProtos_CallingMessage? = nil
+  fileprivate var _simpleUpdate: BackupProtos_SimpleChatUpdate? = nil
+  fileprivate var _groupDescription: BackupProtos_GroupDescriptionChatUpdate? = nil
+  fileprivate var _expirationTimerChange: BackupProtos_ExpirationTimerChatUpdate? = nil
+  fileprivate var _profileChange: BackupProtos_ProfileChangeChatUpdate? = nil
+  fileprivate var _threadMerge: BackupProtos_ThreadMergeChatUpdate? = nil
+  fileprivate var _sessionSwitchover: BackupProtos_SessionSwitchoverChatUpdate? = nil
+  fileprivate var _callingMessage: BackupProtos_CallChatUpdate? = nil
 }
 
-struct BackupProtos_CallingMessage {
+struct BackupProtos_CallChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3219,8 +3258,8 @@ struct BackupProtos_CallingMessage {
   /// Clears the value of `callID`. Subsequent reads from it will return its default value.
   mutating func clearCallID() {self._callID = nil}
 
-  var callMessage: BackupProtos_CallMessage {
-    get {return _callMessage ?? BackupProtos_CallMessage()}
+  var callMessage: BackupProtos_IndividualCallChatUpdate {
+    get {return _callMessage ?? BackupProtos_IndividualCallChatUpdate()}
     set {_callMessage = newValue}
   }
   /// Returns true if `callMessage` has been explicitly set.
@@ -3229,8 +3268,8 @@ struct BackupProtos_CallingMessage {
   mutating func clearCallMessage() {self._callMessage = nil}
 
   /// }
-  var groupCall: BackupProtos_GroupCallMessage {
-    get {return _groupCall ?? BackupProtos_GroupCallMessage()}
+  var groupCall: BackupProtos_GroupCallChatUpdate {
+    get {return _groupCall ?? BackupProtos_GroupCallChatUpdate()}
     set {_groupCall = newValue}
   }
   /// Returns true if `groupCall` has been explicitly set.
@@ -3243,11 +3282,11 @@ struct BackupProtos_CallingMessage {
   init() {}
 
   fileprivate var _callID: UInt64? = nil
-  fileprivate var _callMessage: BackupProtos_CallMessage? = nil
-  fileprivate var _groupCall: BackupProtos_GroupCallMessage? = nil
+  fileprivate var _callMessage: BackupProtos_IndividualCallChatUpdate? = nil
+  fileprivate var _groupCall: BackupProtos_GroupCallChatUpdate? = nil
 }
 
-struct BackupProtos_CallMessage {
+struct BackupProtos_IndividualCallChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3300,13 +3339,13 @@ struct BackupProtos_CallMessage {
 
 #if swift(>=4.2)
 
-extension BackupProtos_CallMessage.TypeEnum: CaseIterable {
+extension BackupProtos_IndividualCallChatUpdate.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
 #endif  // swift(>=4.2)
 
-struct BackupProtos_GroupCallMessage {
+struct BackupProtos_GroupCallChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3341,12 +3380,12 @@ struct BackupProtos_GroupCallMessage {
   fileprivate var _startedCallTimestamp: UInt64? = nil
 }
 
-struct BackupProtos_SimpleUpdate {
+struct BackupProtos_SimpleChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var type: BackupProtos_SimpleUpdate.TypeEnum {
+  var type: BackupProtos_SimpleChatUpdate.TypeEnum {
     get {return _type ?? .unknown}
     set {_type = newValue}
   }
@@ -3417,18 +3456,18 @@ struct BackupProtos_SimpleUpdate {
 
   init() {}
 
-  fileprivate var _type: BackupProtos_SimpleUpdate.TypeEnum? = nil
+  fileprivate var _type: BackupProtos_SimpleChatUpdate.TypeEnum? = nil
 }
 
 #if swift(>=4.2)
 
-extension BackupProtos_SimpleUpdate.TypeEnum: CaseIterable {
+extension BackupProtos_SimpleChatUpdate.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
 #endif  // swift(>=4.2)
 
-struct BackupProtos_GroupDescriptionUpdate {
+struct BackupProtos_GroupDescriptionChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3450,7 +3489,7 @@ struct BackupProtos_GroupDescriptionUpdate {
   fileprivate var _newDescription: String? = nil
 }
 
-struct BackupProtos_ExpirationTimerChange {
+struct BackupProtos_ExpirationTimerChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3472,7 +3511,7 @@ struct BackupProtos_ExpirationTimerChange {
   fileprivate var _expiresInMs: UInt32? = nil
 }
 
-struct BackupProtos_ProfileChange {
+struct BackupProtos_ProfileChangeChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3505,7 +3544,7 @@ struct BackupProtos_ProfileChange {
   fileprivate var _newName: String? = nil
 }
 
-struct BackupProtos_ThreadMergeEvent {
+struct BackupProtos_ThreadMergeChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3527,7 +3566,7 @@ struct BackupProtos_ThreadMergeEvent {
   fileprivate var _previousE164: UInt64? = nil
 }
 
-struct BackupProtos_SessionSwitchoverEvent {
+struct BackupProtos_SessionSwitchoverChatUpdate {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3683,7 +3722,6 @@ extension BackupProtos_DocumentMessage: @unchecked Sendable {}
 extension BackupProtos_VoiceMessage: @unchecked Sendable {}
 extension BackupProtos_StickerMessage: @unchecked Sendable {}
 extension BackupProtos_RemoteDeletedMessage: @unchecked Sendable {}
-extension BackupProtos_ScheduledMessage: @unchecked Sendable {}
 extension BackupProtos_Sticker: @unchecked Sendable {}
 extension BackupProtos_LinkPreview: @unchecked Sendable {}
 extension BackupProtos_FilePointer: @unchecked Sendable {}
@@ -3691,24 +3729,25 @@ extension BackupProtos_FilePointer.Flags: @unchecked Sendable {}
 extension BackupProtos_FilePointer.BackupLocator: @unchecked Sendable {}
 extension BackupProtos_FilePointer.AttachmentLocator: @unchecked Sendable {}
 extension BackupProtos_FilePointer.LegacyAttachmentLocator: @unchecked Sendable {}
+extension BackupProtos_FilePointer.UndownloadedBackupLocator: @unchecked Sendable {}
 extension BackupProtos_Quote: @unchecked Sendable {}
 extension BackupProtos_Quote.TypeEnum: @unchecked Sendable {}
 extension BackupProtos_Quote.QuotedAttachment: @unchecked Sendable {}
 extension BackupProtos_BodyRange: @unchecked Sendable {}
 extension BackupProtos_BodyRange.Style: @unchecked Sendable {}
 extension BackupProtos_Reaction: @unchecked Sendable {}
-extension BackupProtos_UpdateMessage: @unchecked Sendable {}
-extension BackupProtos_CallingMessage: @unchecked Sendable {}
-extension BackupProtos_CallMessage: @unchecked Sendable {}
-extension BackupProtos_CallMessage.TypeEnum: @unchecked Sendable {}
-extension BackupProtos_GroupCallMessage: @unchecked Sendable {}
-extension BackupProtos_SimpleUpdate: @unchecked Sendable {}
-extension BackupProtos_SimpleUpdate.TypeEnum: @unchecked Sendable {}
-extension BackupProtos_GroupDescriptionUpdate: @unchecked Sendable {}
-extension BackupProtos_ExpirationTimerChange: @unchecked Sendable {}
-extension BackupProtos_ProfileChange: @unchecked Sendable {}
-extension BackupProtos_ThreadMergeEvent: @unchecked Sendable {}
-extension BackupProtos_SessionSwitchoverEvent: @unchecked Sendable {}
+extension BackupProtos_ChatUpdateMessage: @unchecked Sendable {}
+extension BackupProtos_CallChatUpdate: @unchecked Sendable {}
+extension BackupProtos_IndividualCallChatUpdate: @unchecked Sendable {}
+extension BackupProtos_IndividualCallChatUpdate.TypeEnum: @unchecked Sendable {}
+extension BackupProtos_GroupCallChatUpdate: @unchecked Sendable {}
+extension BackupProtos_SimpleChatUpdate: @unchecked Sendable {}
+extension BackupProtos_SimpleChatUpdate.TypeEnum: @unchecked Sendable {}
+extension BackupProtos_GroupDescriptionChatUpdate: @unchecked Sendable {}
+extension BackupProtos_ExpirationTimerChatUpdate: @unchecked Sendable {}
+extension BackupProtos_ProfileChangeChatUpdate: @unchecked Sendable {}
+extension BackupProtos_ThreadMergeChatUpdate: @unchecked Sendable {}
+extension BackupProtos_SessionSwitchoverChatUpdate: @unchecked Sendable {}
 extension BackupProtos_StickerPack: @unchecked Sendable {}
 extension BackupProtos_StickerPackSticker: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
@@ -4035,7 +4074,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
     3: .same(proto: "typingIndicators"),
     4: .same(proto: "noteToSelfMarkedUnread"),
     5: .same(proto: "linkPreviews"),
-    6: .same(proto: "unlistedPhoneeumber"),
+    6: .same(proto: "notDiscoverableByPhoneNumber"),
     7: .same(proto: "preferContactAvatars"),
     8: .same(proto: "universalExpireTimer"),
     9: .same(proto: "preferredReactionEmoji"),
@@ -4056,7 +4095,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
     var _typingIndicators: Bool? = nil
     var _noteToSelfMarkedUnread: Bool? = nil
     var _linkPreviews: Bool? = nil
-    var _unlistedPhoneeumber: Bool? = nil
+    var _notDiscoverableByPhoneNumber: Bool? = nil
     var _preferContactAvatars: Bool? = nil
     var _universalExpireTimer: UInt32? = nil
     var _preferredReactionEmoji: [String] = []
@@ -4080,7 +4119,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
       _typingIndicators = source._typingIndicators
       _noteToSelfMarkedUnread = source._noteToSelfMarkedUnread
       _linkPreviews = source._linkPreviews
-      _unlistedPhoneeumber = source._unlistedPhoneeumber
+      _notDiscoverableByPhoneNumber = source._notDiscoverableByPhoneNumber
       _preferContactAvatars = source._preferContactAvatars
       _universalExpireTimer = source._universalExpireTimer
       _preferredReactionEmoji = source._preferredReactionEmoji
@@ -4116,7 +4155,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
         case 3: try { try decoder.decodeSingularBoolField(value: &_storage._typingIndicators) }()
         case 4: try { try decoder.decodeSingularBoolField(value: &_storage._noteToSelfMarkedUnread) }()
         case 5: try { try decoder.decodeSingularBoolField(value: &_storage._linkPreviews) }()
-        case 6: try { try decoder.decodeSingularBoolField(value: &_storage._unlistedPhoneeumber) }()
+        case 6: try { try decoder.decodeSingularBoolField(value: &_storage._notDiscoverableByPhoneNumber) }()
         case 7: try { try decoder.decodeSingularBoolField(value: &_storage._preferContactAvatars) }()
         case 8: try { try decoder.decodeSingularUInt32Field(value: &_storage._universalExpireTimer) }()
         case 9: try { try decoder.decodeRepeatedStringField(value: &_storage._preferredReactionEmoji) }()
@@ -4156,7 +4195,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
       try { if let v = _storage._linkPreviews {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 5)
       } }()
-      try { if let v = _storage._unlistedPhoneeumber {
+      try { if let v = _storage._notDiscoverableByPhoneNumber {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
       } }()
       try { if let v = _storage._preferContactAvatars {
@@ -4209,7 +4248,7 @@ extension BackupProtos_AccountData.AccountSettings: SwiftProtobuf.Message, Swift
         if _storage._typingIndicators != rhs_storage._typingIndicators {return false}
         if _storage._noteToSelfMarkedUnread != rhs_storage._noteToSelfMarkedUnread {return false}
         if _storage._linkPreviews != rhs_storage._linkPreviews {return false}
-        if _storage._unlistedPhoneeumber != rhs_storage._unlistedPhoneeumber {return false}
+        if _storage._notDiscoverableByPhoneNumber != rhs_storage._notDiscoverableByPhoneNumber {return false}
         if _storage._preferContactAvatars != rhs_storage._preferContactAvatars {return false}
         if _storage._universalExpireTimer != rhs_storage._universalExpireTimer {return false}
         if _storage._preferredReactionEmoji != rhs_storage._preferredReactionEmoji {return false}
@@ -4883,25 +4922,27 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     1: .same(proto: "chatId"),
     2: .same(proto: "authorId"),
     3: .same(proto: "dateSent"),
-    4: .same(proto: "expireStartMs"),
-    5: .same(proto: "expiresInMs"),
-    6: .same(proto: "revisions"),
-    7: .same(proto: "sms"),
-    8: .same(proto: "incoming"),
-    9: .same(proto: "outgoing"),
-    10: .same(proto: "standardMessage"),
-    11: .same(proto: "contactMessage"),
-    12: .same(proto: "voiceMessage"),
-    13: .same(proto: "stickerMessage"),
-    14: .same(proto: "remoteDeletedMessage"),
-    15: .same(proto: "updateMessage"),
+    4: .same(proto: "sealedSender"),
+    5: .same(proto: "expireStartDate"),
+    6: .same(proto: "expiresInMs"),
+    7: .same(proto: "revisions"),
+    8: .same(proto: "sms"),
+    10: .same(proto: "incoming"),
+    12: .same(proto: "outgoing"),
+    13: .same(proto: "standardMessage"),
+    14: .same(proto: "contactMessage"),
+    15: .same(proto: "voiceMessage"),
+    16: .same(proto: "stickerMessage"),
+    17: .same(proto: "remoteDeletedMessage"),
+    18: .same(proto: "updateMessage"),
   ]
 
   fileprivate class _StorageClass {
     var _chatID: UInt64? = nil
     var _authorID: UInt64? = nil
     var _dateSent: UInt64? = nil
-    var _expireStartMs: UInt64? = nil
+    var _sealedSender: Bool? = nil
+    var _expireStartDate: UInt64? = nil
     var _expiresInMs: UInt64? = nil
     var _revisions: [BackupProtos_ChatItem] = []
     var _sms: Bool? = nil
@@ -4912,7 +4953,7 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _voiceMessage: BackupProtos_VoiceMessage? = nil
     var _stickerMessage: BackupProtos_StickerMessage? = nil
     var _remoteDeletedMessage: BackupProtos_RemoteDeletedMessage? = nil
-    var _updateMessage: BackupProtos_UpdateMessage? = nil
+    var _updateMessage: BackupProtos_ChatUpdateMessage? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4922,7 +4963,8 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       _chatID = source._chatID
       _authorID = source._authorID
       _dateSent = source._dateSent
-      _expireStartMs = source._expireStartMs
+      _sealedSender = source._sealedSender
+      _expireStartDate = source._expireStartDate
       _expiresInMs = source._expiresInMs
       _revisions = source._revisions
       _sms = source._sms
@@ -4955,18 +4997,19 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 1: try { try decoder.decodeSingularUInt64Field(value: &_storage._chatID) }()
         case 2: try { try decoder.decodeSingularUInt64Field(value: &_storage._authorID) }()
         case 3: try { try decoder.decodeSingularUInt64Field(value: &_storage._dateSent) }()
-        case 4: try { try decoder.decodeSingularUInt64Field(value: &_storage._expireStartMs) }()
-        case 5: try { try decoder.decodeSingularUInt64Field(value: &_storage._expiresInMs) }()
-        case 6: try { try decoder.decodeRepeatedMessageField(value: &_storage._revisions) }()
-        case 7: try { try decoder.decodeSingularBoolField(value: &_storage._sms) }()
-        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._incoming) }()
-        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._outgoing) }()
-        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._standardMessage) }()
-        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._contactMessage) }()
-        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._voiceMessage) }()
-        case 13: try { try decoder.decodeSingularMessageField(value: &_storage._stickerMessage) }()
-        case 14: try { try decoder.decodeSingularMessageField(value: &_storage._remoteDeletedMessage) }()
-        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._updateMessage) }()
+        case 4: try { try decoder.decodeSingularBoolField(value: &_storage._sealedSender) }()
+        case 5: try { try decoder.decodeSingularUInt64Field(value: &_storage._expireStartDate) }()
+        case 6: try { try decoder.decodeSingularUInt64Field(value: &_storage._expiresInMs) }()
+        case 7: try { try decoder.decodeRepeatedMessageField(value: &_storage._revisions) }()
+        case 8: try { try decoder.decodeSingularBoolField(value: &_storage._sms) }()
+        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._incoming) }()
+        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._outgoing) }()
+        case 13: try { try decoder.decodeSingularMessageField(value: &_storage._standardMessage) }()
+        case 14: try { try decoder.decodeSingularMessageField(value: &_storage._contactMessage) }()
+        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._voiceMessage) }()
+        case 16: try { try decoder.decodeSingularMessageField(value: &_storage._stickerMessage) }()
+        case 17: try { try decoder.decodeSingularMessageField(value: &_storage._remoteDeletedMessage) }()
+        case 18: try { try decoder.decodeSingularMessageField(value: &_storage._updateMessage) }()
         default: break
         }
       }
@@ -4988,41 +5031,44 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       try { if let v = _storage._dateSent {
         try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
       } }()
-      try { if let v = _storage._expireStartMs {
-        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
+      try { if let v = _storage._sealedSender {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
       } }()
-      try { if let v = _storage._expiresInMs {
+      try { if let v = _storage._expireStartDate {
         try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
       } }()
+      try { if let v = _storage._expiresInMs {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+      } }()
       if !_storage._revisions.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._revisions, fieldNumber: 6)
+        try visitor.visitRepeatedMessageField(value: _storage._revisions, fieldNumber: 7)
       }
       try { if let v = _storage._sms {
-        try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
       } }()
       try { if let v = _storage._incoming {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-      } }()
-      try { if let v = _storage._outgoing {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-      } }()
-      try { if let v = _storage._standardMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
       } }()
-      try { if let v = _storage._contactMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-      } }()
-      try { if let v = _storage._voiceMessage {
+      try { if let v = _storage._outgoing {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
       } }()
-      try { if let v = _storage._stickerMessage {
+      try { if let v = _storage._standardMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
       } }()
-      try { if let v = _storage._remoteDeletedMessage {
+      try { if let v = _storage._contactMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
       } }()
-      try { if let v = _storage._updateMessage {
+      try { if let v = _storage._voiceMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._stickerMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+      } }()
+      try { if let v = _storage._remoteDeletedMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+      } }()
+      try { if let v = _storage._updateMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
       } }()
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -5036,7 +5082,8 @@ extension BackupProtos_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         if _storage._chatID != rhs_storage._chatID {return false}
         if _storage._authorID != rhs_storage._authorID {return false}
         if _storage._dateSent != rhs_storage._dateSent {return false}
-        if _storage._expireStartMs != rhs_storage._expireStartMs {return false}
+        if _storage._sealedSender != rhs_storage._sealedSender {return false}
+        if _storage._expireStartDate != rhs_storage._expireStartDate {return false}
         if _storage._expiresInMs != rhs_storage._expiresInMs {return false}
         if _storage._revisions != rhs_storage._revisions {return false}
         if _storage._sms != rhs_storage._sms {return false}
@@ -5063,7 +5110,6 @@ extension BackupProtos_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, S
     1: .same(proto: "dateReceived"),
     2: .same(proto: "dateServerSent"),
     3: .same(proto: "read"),
-    4: .same(proto: "sealedSender"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5075,7 +5121,6 @@ extension BackupProtos_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, S
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self._dateReceived) }()
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._dateServerSent) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self._read) }()
-      case 4: try { try decoder.decodeSingularBoolField(value: &self._sealedSender) }()
       default: break
       }
     }
@@ -5095,9 +5140,6 @@ extension BackupProtos_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, S
     try { if let v = self._read {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
     } }()
-    try { if let v = self._sealedSender {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5105,7 +5147,6 @@ extension BackupProtos_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, S
     if lhs._dateReceived != rhs._dateReceived {return false}
     if lhs._dateServerSent != rhs._dateServerSent {return false}
     if lhs._read != rhs._read {return false}
-    if lhs._sealedSender != rhs._sealedSender {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5151,7 +5192,7 @@ extension BackupProtos_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._Message
     3: .same(proto: "networkFailure"),
     4: .same(proto: "identityKeyMismatch"),
     5: .same(proto: "sealedSender"),
-    6: .same(proto: "timestamp"),
+    6: .same(proto: "lastStatusUpdateTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5165,7 +5206,7 @@ extension BackupProtos_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._Message
       case 3: try { try decoder.decodeSingularBoolField(value: &self._networkFailure) }()
       case 4: try { try decoder.decodeSingularBoolField(value: &self._identityKeyMismatch) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self._sealedSender) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._lastStatusUpdateTimestamp) }()
       default: break
       }
     }
@@ -5191,7 +5232,7 @@ extension BackupProtos_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._Message
     try { if let v = self._sealedSender {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 5)
     } }()
-    try { if let v = self._timestamp {
+    try { if let v = self._lastStatusUpdateTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
     } }()
     try unknownFields.traverse(visitor: &visitor)
@@ -5203,7 +5244,7 @@ extension BackupProtos_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._Message
     if lhs._networkFailure != rhs._networkFailure {return false}
     if lhs._identityKeyMismatch != rhs._identityKeyMismatch {return false}
     if lhs._sealedSender != rhs._sealedSender {return false}
-    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._lastStatusUpdateTimestamp != rhs._lastStatusUpdateTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5902,48 +5943,6 @@ extension BackupProtos_RemoteDeletedMessage: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension BackupProtos_ScheduledMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ScheduledMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "message"),
-    2: .same(proto: "scheduledTime"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._message) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._scheduledTime) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._message {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._scheduledTime {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: BackupProtos_ScheduledMessage, rhs: BackupProtos_ScheduledMessage) -> Bool {
-    if lhs._message != rhs._message {return false}
-    if lhs._scheduledTime != rhs._scheduledTime {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension BackupProtos_Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Sticker"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -6064,10 +6063,10 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
     1: .same(proto: "backupLocator"),
     2: .same(proto: "attachmentLocator"),
     3: .same(proto: "legacyAttachmentLocator"),
-    4: .same(proto: "key"),
-    5: .same(proto: "contentType"),
-    6: .same(proto: "size"),
-    7: .same(proto: "digest"),
+    4: .same(proto: "undownloadedBackupLocator"),
+    5: .same(proto: "key"),
+    6: .same(proto: "contentType"),
+    7: .same(proto: "size"),
     8: .same(proto: "incrementalMac"),
     9: .same(proto: "incrementalMacChunkSize"),
     10: .same(proto: "fileName"),
@@ -6082,10 +6081,10 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
     var _backupLocator: BackupProtos_FilePointer.BackupLocator? = nil
     var _attachmentLocator: BackupProtos_FilePointer.AttachmentLocator? = nil
     var _legacyAttachmentLocator: BackupProtos_FilePointer.LegacyAttachmentLocator? = nil
+    var _undownloadedBackupLocator: BackupProtos_FilePointer.UndownloadedBackupLocator? = nil
     var _key: Data? = nil
     var _contentType: String? = nil
     var _size: UInt32? = nil
-    var _digest: Data? = nil
     var _incrementalMac: Data? = nil
     var _incrementalMacChunkSize: Data? = nil
     var _fileName: String? = nil
@@ -6103,10 +6102,10 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
       _backupLocator = source._backupLocator
       _attachmentLocator = source._attachmentLocator
       _legacyAttachmentLocator = source._legacyAttachmentLocator
+      _undownloadedBackupLocator = source._undownloadedBackupLocator
       _key = source._key
       _contentType = source._contentType
       _size = source._size
-      _digest = source._digest
       _incrementalMac = source._incrementalMac
       _incrementalMacChunkSize = source._incrementalMacChunkSize
       _fileName = source._fileName
@@ -6136,10 +6135,10 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._backupLocator) }()
         case 2: try { try decoder.decodeSingularMessageField(value: &_storage._attachmentLocator) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._legacyAttachmentLocator) }()
-        case 4: try { try decoder.decodeSingularBytesField(value: &_storage._key) }()
-        case 5: try { try decoder.decodeSingularStringField(value: &_storage._contentType) }()
-        case 6: try { try decoder.decodeSingularUInt32Field(value: &_storage._size) }()
-        case 7: try { try decoder.decodeSingularBytesField(value: &_storage._digest) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._undownloadedBackupLocator) }()
+        case 5: try { try decoder.decodeSingularBytesField(value: &_storage._key) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._contentType) }()
+        case 7: try { try decoder.decodeSingularUInt32Field(value: &_storage._size) }()
         case 8: try { try decoder.decodeSingularBytesField(value: &_storage._incrementalMac) }()
         case 9: try { try decoder.decodeSingularBytesField(value: &_storage._incrementalMacChunkSize) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._fileName) }()
@@ -6169,17 +6168,17 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
       try { if let v = _storage._legacyAttachmentLocator {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       } }()
+      try { if let v = _storage._undownloadedBackupLocator {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      } }()
       try { if let v = _storage._key {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
       } }()
       try { if let v = _storage._contentType {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+        try visitor.visitSingularStringField(value: v, fieldNumber: 6)
       } }()
       try { if let v = _storage._size {
-        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 6)
-      } }()
-      try { if let v = _storage._digest {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 7)
       } }()
       try { if let v = _storage._incrementalMac {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
@@ -6217,10 +6216,10 @@ extension BackupProtos_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Messag
         if _storage._backupLocator != rhs_storage._backupLocator {return false}
         if _storage._attachmentLocator != rhs_storage._attachmentLocator {return false}
         if _storage._legacyAttachmentLocator != rhs_storage._legacyAttachmentLocator {return false}
+        if _storage._undownloadedBackupLocator != rhs_storage._undownloadedBackupLocator {return false}
         if _storage._key != rhs_storage._key {return false}
         if _storage._contentType != rhs_storage._contentType {return false}
         if _storage._size != rhs_storage._size {return false}
-        if _storage._digest != rhs_storage._digest {return false}
         if _storage._incrementalMac != rhs_storage._incrementalMac {return false}
         if _storage._incrementalMacChunkSize != rhs_storage._incrementalMacChunkSize {return false}
         if _storage._fileName != rhs_storage._fileName {return false}
@@ -6338,18 +6337,83 @@ extension BackupProtos_FilePointer.AttachmentLocator: SwiftProtobuf.Message, Swi
 
 extension BackupProtos_FilePointer.LegacyAttachmentLocator: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = BackupProtos_FilePointer.protoMessageName + ".LegacyAttachmentLocator"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "cdnId"),
+  ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let _ = try decoder.nextFieldNumber() {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularFixed64Field(value: &self._cdnID) }()
+      default: break
+      }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._cdnID {
+      try visitor.visitSingularFixed64Field(value: v, fieldNumber: 1)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BackupProtos_FilePointer.LegacyAttachmentLocator, rhs: BackupProtos_FilePointer.LegacyAttachmentLocator) -> Bool {
+    if lhs._cdnID != rhs._cdnID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProtos_FilePointer.UndownloadedBackupLocator: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = BackupProtos_FilePointer.protoMessageName + ".UndownloadedBackupLocator"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "senderAci"),
+    2: .same(proto: "cdnKey"),
+    3: .same(proto: "cdnNumber"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._senderAci) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._cdnKey) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._cdnNumber) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._senderAci {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._cdnKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._cdnNumber {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: BackupProtos_FilePointer.UndownloadedBackupLocator, rhs: BackupProtos_FilePointer.UndownloadedBackupLocator) -> Bool {
+    if lhs._senderAci != rhs._senderAci {return false}
+    if lhs._cdnKey != rhs._cdnKey {return false}
+    if lhs._cdnNumber != rhs._cdnNumber {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6549,6 +6613,7 @@ extension BackupProtos_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     2: .same(proto: "authorId"),
     3: .same(proto: "sentTimestamp"),
     4: .same(proto: "receivedTimestamp"),
+    5: .same(proto: "sortOrder"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6561,6 +6626,7 @@ extension BackupProtos_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._authorID) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self._receivedTimestamp) }()
+      case 5: try { try decoder.decodeSingularUInt64Field(value: &self._sortOrder) }()
       default: break
       }
     }
@@ -6583,6 +6649,9 @@ extension BackupProtos_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     try { if let v = self._receivedTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._sortOrder {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6591,13 +6660,14 @@ extension BackupProtos_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if lhs._authorID != rhs._authorID {return false}
     if lhs._sentTimestamp != rhs._sentTimestamp {return false}
     if lhs._receivedTimestamp != rhs._receivedTimestamp {return false}
+    if lhs._sortOrder != rhs._sortOrder {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_UpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".UpdateMessage"
+extension BackupProtos_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ChatUpdateMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "simpleUpdate"),
     2: .same(proto: "groupDescription"),
@@ -6655,7 +6725,7 @@ extension BackupProtos_UpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_UpdateMessage, rhs: BackupProtos_UpdateMessage) -> Bool {
+  static func ==(lhs: BackupProtos_ChatUpdateMessage, rhs: BackupProtos_ChatUpdateMessage) -> Bool {
     if lhs._simpleUpdate != rhs._simpleUpdate {return false}
     if lhs._groupDescription != rhs._groupDescription {return false}
     if lhs._expirationTimerChange != rhs._expirationTimerChange {return false}
@@ -6668,8 +6738,8 @@ extension BackupProtos_UpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension BackupProtos_CallingMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CallingMessage"
+extension BackupProtos_CallChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".CallChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "callId"),
     2: .same(proto: "callMessage"),
@@ -6707,7 +6777,7 @@ extension BackupProtos_CallingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_CallingMessage, rhs: BackupProtos_CallingMessage) -> Bool {
+  static func ==(lhs: BackupProtos_CallChatUpdate, rhs: BackupProtos_CallChatUpdate) -> Bool {
     if lhs._callID != rhs._callID {return false}
     if lhs._callMessage != rhs._callMessage {return false}
     if lhs._groupCall != rhs._groupCall {return false}
@@ -6716,8 +6786,8 @@ extension BackupProtos_CallingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CallMessage"
+extension BackupProtos_IndividualCallChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".IndividualCallChatUpdate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6729,13 +6799,13 @@ extension BackupProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_CallMessage, rhs: BackupProtos_CallMessage) -> Bool {
+  static func ==(lhs: BackupProtos_IndividualCallChatUpdate, rhs: BackupProtos_IndividualCallChatUpdate) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_CallMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+extension BackupProtos_IndividualCallChatUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "INCOMING_AUDIO_CALL"),
@@ -6747,8 +6817,8 @@ extension BackupProtos_CallMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   ]
 }
 
-extension BackupProtos_GroupCallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GroupCallMessage"
+extension BackupProtos_GroupCallChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupCallChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "startedCallAci"),
     2: .same(proto: "startedCallTimestamp"),
@@ -6786,7 +6856,7 @@ extension BackupProtos_GroupCallMessage: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_GroupCallMessage, rhs: BackupProtos_GroupCallMessage) -> Bool {
+  static func ==(lhs: BackupProtos_GroupCallChatUpdate, rhs: BackupProtos_GroupCallChatUpdate) -> Bool {
     if lhs._startedCallAci != rhs._startedCallAci {return false}
     if lhs._startedCallTimestamp != rhs._startedCallTimestamp {return false}
     if lhs.inCallAcis != rhs.inCallAcis {return false}
@@ -6795,8 +6865,8 @@ extension BackupProtos_GroupCallMessage: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProtos_SimpleUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SimpleUpdate"
+extension BackupProtos_SimpleChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SimpleChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
   ]
@@ -6824,14 +6894,14 @@ extension BackupProtos_SimpleUpdate: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_SimpleUpdate, rhs: BackupProtos_SimpleUpdate) -> Bool {
+  static func ==(lhs: BackupProtos_SimpleChatUpdate, rhs: BackupProtos_SimpleChatUpdate) -> Bool {
     if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_SimpleUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+extension BackupProtos_SimpleChatUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "JOINED_SIGNAL"),
@@ -6848,8 +6918,8 @@ extension BackupProtos_SimpleUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding 
   ]
 }
 
-extension BackupProtos_GroupDescriptionUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GroupDescriptionUpdate"
+extension BackupProtos_GroupDescriptionChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupDescriptionChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "newDescription"),
   ]
@@ -6877,15 +6947,15 @@ extension BackupProtos_GroupDescriptionUpdate: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_GroupDescriptionUpdate, rhs: BackupProtos_GroupDescriptionUpdate) -> Bool {
+  static func ==(lhs: BackupProtos_GroupDescriptionChatUpdate, rhs: BackupProtos_GroupDescriptionChatUpdate) -> Bool {
     if lhs._newDescription != rhs._newDescription {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_ExpirationTimerChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ExpirationTimerChange"
+extension BackupProtos_ExpirationTimerChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ExpirationTimerChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "expiresInMs"),
   ]
@@ -6913,15 +6983,15 @@ extension BackupProtos_ExpirationTimerChange: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_ExpirationTimerChange, rhs: BackupProtos_ExpirationTimerChange) -> Bool {
+  static func ==(lhs: BackupProtos_ExpirationTimerChatUpdate, rhs: BackupProtos_ExpirationTimerChatUpdate) -> Bool {
     if lhs._expiresInMs != rhs._expiresInMs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_ProfileChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ProfileChange"
+extension BackupProtos_ProfileChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ProfileChangeChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "previousName"),
     2: .same(proto: "newName"),
@@ -6954,7 +7024,7 @@ extension BackupProtos_ProfileChange: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_ProfileChange, rhs: BackupProtos_ProfileChange) -> Bool {
+  static func ==(lhs: BackupProtos_ProfileChangeChatUpdate, rhs: BackupProtos_ProfileChangeChatUpdate) -> Bool {
     if lhs._previousName != rhs._previousName {return false}
     if lhs._newName != rhs._newName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -6962,8 +7032,8 @@ extension BackupProtos_ProfileChange: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension BackupProtos_ThreadMergeEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ThreadMergeEvent"
+extension BackupProtos_ThreadMergeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ThreadMergeChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "previousE164"),
   ]
@@ -6991,15 +7061,15 @@ extension BackupProtos_ThreadMergeEvent: SwiftProtobuf.Message, SwiftProtobuf._M
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_ThreadMergeEvent, rhs: BackupProtos_ThreadMergeEvent) -> Bool {
+  static func ==(lhs: BackupProtos_ThreadMergeChatUpdate, rhs: BackupProtos_ThreadMergeChatUpdate) -> Bool {
     if lhs._previousE164 != rhs._previousE164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension BackupProtos_SessionSwitchoverEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SessionSwitchoverEvent"
+extension BackupProtos_SessionSwitchoverChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SessionSwitchoverChatUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "e164"),
   ]
@@ -7027,7 +7097,7 @@ extension BackupProtos_SessionSwitchoverEvent: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: BackupProtos_SessionSwitchoverEvent, rhs: BackupProtos_SessionSwitchoverEvent) -> Bool {
+  static func ==(lhs: BackupProtos_SessionSwitchoverChatUpdate, rhs: BackupProtos_SessionSwitchoverChatUpdate) -> Bool {
     if lhs._e164 != rhs._e164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

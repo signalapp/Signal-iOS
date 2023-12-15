@@ -66,7 +66,7 @@ message AccountData {
     // @required
     optional bool linkPreviews = 5;
     // @required
-    optional bool unlistedPhoneeumber = 6;
+    optional bool notDiscoverableByPhoneNumber = 6;
     // @required
     optional bool preferContactAvatars = 7;
     // @required
@@ -100,7 +100,7 @@ message AccountData {
   // @required
   optional string familyName = 5;
   // @required
-  optional string avatarPath = 6;
+  optional string avatarPath = 6; // "Url" ommitted due to autocapitalization conflict in swift code.
   // @required
   optional bytes subscriberId = 7;
   // @required
@@ -271,8 +271,6 @@ message ChatItem {
     optional uint64 dateServerSent = 2;
     // @required
     optional bool read = 3;
-    // @required
-    optional bool sealedSender = 4;
   }
 
   message OutgoingMessageDetails {
@@ -285,24 +283,26 @@ message ChatItem {
   optional uint64 authorId = 2; // recipient id
   // @required
   optional uint64 dateSent = 3;
-  optional uint64 expireStartMs = 4; // timestamp of when expiration timer started ticking down
-  optional uint64 expiresInMs = 5; // how long timer of message is (ms)
-  repeated ChatItem revisions = 6; // ordered from oldest to newest
   // @required
-  optional bool sms = 7;
+  optional bool sealedSender = 4;
+  optional uint64 expireStartDate = 5; // timestamp of when expiration timer started ticking down
+  optional uint64 expiresInMs = 6; // how long timer of message is (ms)
+  repeated ChatItem revisions = 7; // ordered from oldest to newest
+  // @required
+  optional bool sms = 8;
 
   // oneof directionalDetails {
-    optional IncomingMessageDetails incoming = 8;
-    optional OutgoingMessageDetails outgoing = 9;
+    optional IncomingMessageDetails incoming = 10;
+    optional OutgoingMessageDetails outgoing = 12;
   // }
 
   // oneof item {
-    optional StandardMessage standardMessage = 10;
-    optional ContactMessage contactMessage = 11;
-    optional VoiceMessage voiceMessage = 12;
-    optional StickerMessage stickerMessage = 13;
-    optional RemoteDeletedMessage remoteDeletedMessage = 14;
-    optional UpdateMessage updateMessage = 15;
+    optional StandardMessage standardMessage = 13;
+    optional ContactMessage contactMessage = 14;
+    optional VoiceMessage voiceMessage = 15;
+    optional StickerMessage stickerMessage = 16;
+    optional RemoteDeletedMessage remoteDeletedMessage = 17;
+    optional ChatUpdateMessage updateMessage = 18;
   // }
 }
 
@@ -327,7 +327,7 @@ message SendStatus {
   // @required
   optional bool sealedSender = 5;
   // @required
-  optional uint64 timestamp = 6;
+  optional uint64 lastStatusUpdateTimestamp = 6; // the time the status was last updated -- if from a receipt, it should be the sentTime of the receipt
 }
 
 message Text {
@@ -445,13 +445,6 @@ message StickerMessage {
 message RemoteDeletedMessage {
 }
 
-message ScheduledMessage {
-  // @required
-  optional ChatItem message = 1;
-  // @required
-  optional uint64 scheduledTime = 2;
-}
-
 message Sticker {
   // @required
   optional bytes packId = 1;
@@ -467,7 +460,7 @@ message LinkPreview {
   optional string url = 1;
   optional string title = 2;
   optional FilePointer image = 3;
-  optional string descriptionText = 4;
+  optional string descriptionText = 4; // 'description' collides with NSObject.description
   optional uint64 date = 5;
 }
 
@@ -489,6 +482,21 @@ message FilePointer {
   }
 
   message LegacyAttachmentLocator {
+    // @required
+    optional fixed64 cdnId = 1;
+  }
+
+  // An attachment that was backed up without being downloaded.
+  // Its MediaName should be generated as “{sender_aci}_{cdn_attachment_key}”,
+  // but should eventually transition to a BackupLocator with mediaName
+  // being the content hash once it is downloaded.
+  message UndownloadedBackupLocator {
+    // @required
+    optional bytes senderAci = 1;
+    // @required
+    optional string cdnKey = 2;
+    // @required
+    optional uint32 cdnNumber = 3;
   }
 
   enum Flags {
@@ -501,12 +509,14 @@ message FilePointer {
     optional BackupLocator backupLocator = 1;
     optional AttachmentLocator attachmentLocator= 2;
     optional LegacyAttachmentLocator legacyAttachmentLocator = 3;
+    optional UndownloadedBackupLocator undownloadedBackupLocator = 4;
   // }
 
-  optional bytes key = 4;
-  optional string contentType = 5;
-  optional uint32 size = 6;
-  optional bytes digest = 7;
+  optional bytes key = 5;
+  optional string contentType = 6;
+  // Size of fullsize decrypted media blob in bytes.
+  // Can be ignored if unset/unavailable.
+  optional uint32 size = 7;
   optional bytes incrementalMac = 8;
   optional bytes incrementalMacChunkSize = 9;
   optional string fileName = 10;
@@ -565,31 +575,32 @@ message Reaction {
   optional uint64 authorId = 2;
   // @required
   optional uint64 sentTimestamp = 3;
-  // @required
   optional uint64 receivedTimestamp = 4;
+  // @required
+  optional uint64 sortOrder = 5; // A higher sort order means that a reaction is more recent
 }
 
-message UpdateMessage {
+message ChatUpdateMessage {
   // oneof update {
-    optional SimpleUpdate simpleUpdate = 1;
-    optional GroupDescriptionUpdate groupDescription = 2;
-    optional ExpirationTimerChange expirationTimerChange = 3;
-    optional ProfileChange profileChange = 4;
-    optional ThreadMergeEvent threadMerge = 5;
-    optional SessionSwitchoverEvent sessionSwitchover = 6;
-    optional CallingMessage callingMessage = 7;
+    optional SimpleChatUpdate simpleUpdate = 1;
+    optional GroupDescriptionChatUpdate groupDescription = 2;
+    optional ExpirationTimerChatUpdate expirationTimerChange = 3;
+    optional ProfileChangeChatUpdate profileChange = 4;
+    optional ThreadMergeChatUpdate threadMerge = 5;
+    optional SessionSwitchoverChatUpdate sessionSwitchover = 6;
+    optional CallChatUpdate callingMessage = 7;
   // }
 }
 
-message CallingMessage {
+message CallChatUpdate {
   // oneof call {
     optional uint64 callId = 1; // maps to id of Call from call log
-    optional CallMessage callMessage = 2;
-    optional GroupCallMessage groupCall = 3;
+    optional IndividualCallChatUpdate callMessage = 2;
+    optional GroupCallChatUpdate groupCall = 3;
   // }
 }
 
-message CallMessage {
+message IndividualCallChatUpdate {
   enum Type {
     UNKNOWN = 0;
     INCOMING_AUDIO_CALL = 1;
@@ -601,7 +612,7 @@ message CallMessage {
   }
 }
 
-message GroupCallMessage {
+message GroupCallChatUpdate {
   // @required
   optional bytes startedCallAci = 1;
   // @required
@@ -609,7 +620,7 @@ message GroupCallMessage {
   repeated bytes inCallAcis = 3;
 }
 
-message SimpleUpdate {
+message SimpleChatUpdate {
   enum Type {
     UNKNOWN = 0;
     JOINED_SIGNAL = 1;
@@ -628,29 +639,29 @@ message SimpleUpdate {
   optional Type type = 1;
 }
 
-message GroupDescriptionUpdate {
+message GroupDescriptionChatUpdate {
   // @required
   optional string newDescription = 1;
 }
 
-message ExpirationTimerChange {
+message ExpirationTimerChatUpdate {
   // @required
   optional uint32 expiresInMs = 1;
 }
 
-message ProfileChange {
+message ProfileChangeChatUpdate {
   // @required
   optional string previousName = 1;
   // @required
   optional string newName = 2;
 }
 
-message ThreadMergeEvent {
+message ThreadMergeChatUpdate {
   // @required
   optional uint64 previousE164 = 1;
 }
 
-message SessionSwitchoverEvent {
+message SessionSwitchoverChatUpdate {
   // @required
   optional uint64 e164 = 1;
 }

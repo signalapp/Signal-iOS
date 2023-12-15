@@ -159,6 +159,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
             chatID: chatId.value,
             authorID: details.author.value,
             dateSent: interaction.timestamp,
+            sealedSender: details.isSealedSender,
             sms: details.isSms
         )
 
@@ -178,7 +179,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         if let expireStartDate = details.expireStartDate {
-            chatItemBuilder.setExpireStartMs(expireStartDate)
+            chatItemBuilder.setExpireStartDate(expireStartDate)
         }
         if let expiresInMs = details.expiresInMs {
             chatItemBuilder.setExpiresInMs(expiresInMs)
