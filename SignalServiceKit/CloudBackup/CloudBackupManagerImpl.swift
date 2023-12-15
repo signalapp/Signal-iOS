@@ -150,6 +150,10 @@ public class CloudBackupManagerImpl: CloudBackupManager {
     }
 
     private func _importBackup(_ fileUrl: URL, tx: DBWriteTransaction) throws {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            throw OWSAssertionError("No local identifiers!")
+        }
+
         let stream: CloudBackupProtoInputStream
         switch streamProvider.openInputFileStream(fileURL: fileUrl) {
         case .success(let streamResult):
@@ -179,7 +183,7 @@ public class CloudBackupManagerImpl: CloudBackupManager {
 
         Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
 
-        let recipientContext = CloudBackup.RecipientRestoringContext()
+        let recipientContext = CloudBackup.RecipientRestoringContext(localIdentifiers: localIdentifiers)
         let chatContext = CloudBackup.ChatRestoringContext(
             recipientContext: recipientContext
         )
@@ -275,6 +279,9 @@ public class CloudBackupManagerImpl: CloudBackupManager {
                 }
             case .unknownFrameType:
                 throw OWSAssertionError("Found unrecognized frame type with id: \(id)")
+            case .unimplemented:
+                // Ignore unimplemented errors.
+                break
             }
         }
     }

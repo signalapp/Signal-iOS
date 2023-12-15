@@ -10,19 +10,26 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
 
     private let dateProvider: DateProvider
     private let interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+    private let reactionStore: ReactionStore
     private let threadFetcher: CloudBackup.Shims.TSThreadFetcher
 
     public init(
         dateProvider: @escaping DateProvider,
         interactionFetcher: CloudBackup.Shims.TSInteractionFetcher,
+        reactionStore: ReactionStore,
         threadFetcher: CloudBackup.Shims.TSThreadFetcher
     ) {
         self.dateProvider = dateProvider
         self.interactionFetcher = interactionFetcher
+        self.reactionStore = reactionStore
         self.threadFetcher = threadFetcher
     }
 
-    private lazy var contentsArchiver = CloudBackupTSMessageContentsArchiver()
+    private lazy var reactionArchiver = CloudBackupReactionArchiver(reactionStore: reactionStore)
+
+    private lazy var contentsArchiver = CloudBackupTSMessageContentsArchiver(
+        reactionArchiver: reactionArchiver
+    )
 
     private lazy var interactionArchivers: [CloudBackupInteractionArchiver] = [
         CloudBackupTSIncomingMessageArchiver(
@@ -97,7 +104,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
 
         guard let chatId = context[interaction.uniqueThreadIdentifier] else {
             partialErrors.append(.init(
-                objectId: interaction.timestamp,
+                objectId: interaction.chatItemId,
                 error: .referencedIdMissing(.thread(interaction.uniqueThreadIdentifier))
             ))
             return .partialSuccess(partialErrors)
@@ -187,7 +194,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         if let error {
-            partialErrors.append(.init(objectId: interaction.timestamp, error: error))
+            partialErrors.append(.init(objectId: interaction.chatItemId, error: error))
             return .partialSuccess(partialErrors)
         } else if partialErrors.isEmpty {
             return .success
@@ -211,23 +218,32 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         guard let threadUniqueId = context[chatItem.chatId] else {
-            return .failure(chatItem.dateSent, [.identifierNotFound(.chat(chatItem.chatId))])
+            return .failure(chatItem.id, [.identifierNotFound(.chat(chatItem.chatId))])
         }
 
         guard
             let thread = threadFetcher.fetch(threadUniqueId: threadUniqueId.value, tx: tx)
         else {
             return .failure(
-                chatItem.dateSent,
+                chatItem.id,
                 [.referencedDatabaseObjectNotFound(.thread(threadUniqueId))]
             )
         }
 
-        return archiver.restoreChatItem(
+        let result = archiver.restoreChatItem(
             chatItem,
             thread: thread,
             context: context,
             tx: tx
         )
+
+        switch result {
+        case .success:
+            return .success
+        case .partialRestore(_, let errors):
+            return .partialRestore(chatItem.id, errors)
+        case .messageFailure(let errors):
+            return .failure(chatItem.id, errors)
+        }
     }
 }

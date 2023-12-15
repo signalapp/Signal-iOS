@@ -11,7 +11,7 @@ public class InteractionReactionState: NSObject {
     struct EmojiCount {
         let emoji: String
         let count: Int
-        let lastReceivedAtTimestamp: UInt64
+        let highestSortOrder: UInt64
     }
 
     let reactionsByEmoji: [Emoji: [OWSReaction]]
@@ -59,19 +59,21 @@ public class InteractionReactionState: NSObject {
                 emojiToRender = mostRecentEmoji
             }
 
-            let lastReceivedAtTimestamp = (reactions.map { $0.receivedAtTimestamp }.max()
-                                                ?? mostRecentReaction.receivedAtTimestamp)
+            let highestSortOrder =
+                (reactions.map { $0.sortOrder }.max() ?? mostRecentReaction.sortOrder)
 
-            return EmojiCount(emoji: emojiToRender,
-                              count: reactions.count,
-                              lastReceivedAtTimestamp: lastReceivedAtTimestamp)
+            return EmojiCount(
+                emoji: emojiToRender,
+                count: reactions.count,
+                highestSortOrder: highestSortOrder
+            )
         }.sorted { (lhs: EmojiCount, rhs: EmojiCount) in
             if lhs.count != rhs.count {
                 // Sort more common reactions (higher counter) first.
                 return lhs.count > rhs.count
-            } else if lhs.lastReceivedAtTimestamp != rhs.lastReceivedAtTimestamp {
+            } else if lhs.highestSortOrder != rhs.highestSortOrder {
                 // Sort reactions received in descending order of when we received them.
-                return lhs.lastReceivedAtTimestamp > rhs.lastReceivedAtTimestamp
+                return lhs.highestSortOrder > rhs.highestSortOrder
             } else {
                 // Ensure stability of sort by comparing emoji.
                 return lhs.emoji > rhs.emoji

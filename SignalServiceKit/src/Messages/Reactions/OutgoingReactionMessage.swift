@@ -73,7 +73,7 @@ extension OWSOutgoingReactionMessage {
                 for: localAci,
                 emoji: previousReaction.emoji,
                 sentAtTimestamp: previousReaction.sentAtTimestamp,
-                receivedAtTimestamp: previousReaction.receivedAtTimestamp,
+                sortOrder: previousReaction.sortOrder,
                 tx: tx
             )
         } else {

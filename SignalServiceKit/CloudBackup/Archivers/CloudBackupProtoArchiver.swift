@@ -31,6 +31,10 @@ extension CloudBackup {
         /// message to be skipped.
         /// (author for incoming messages, recipient(s) for outgoing messages)
         case invalidMessageAddress
+
+        /// A reaction has an invalid or missing author address information, causing the
+        /// reaction to be skipped.
+        case invalidReactionAddress
     }
 
     /// Note the "multi"; covers the archiving of multiple frames, typically
@@ -72,6 +76,8 @@ extension CloudBackup {
         case databaseInsertionFailed(Error)
         /// The contents of the frame are not recognized by any archiver and were ignored.
         case unknownFrameType
+        // TODO: remove once all known types are handled.
+        case unimplemented
     }
 
     public enum RestoreFrameResult<ProtoIdType> {

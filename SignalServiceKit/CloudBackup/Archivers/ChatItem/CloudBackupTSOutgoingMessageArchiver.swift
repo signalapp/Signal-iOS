@@ -59,7 +59,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
         guard let author = context.recipientContext[.noteToSelf] else {
             partialErrors.append(.init(
-                objectId: interaction.timestamp,
+                objectId: interaction.chatItemId,
                 error: .referencedIdMissing(.recipient(.noteToSelf))
             ))
             return .messageFailure(partialErrors)
@@ -67,6 +67,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
         let contentsResult = contentsArchiver.archiveMessageContents(
             message,
+            context: context.recipientContext,
             tx: tx
         )
         let type: CloudBackup.ChatItemMessageType
@@ -114,14 +115,14 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = self.recipientAddress(from: address) else {
                 perRecipientErrors.append(.init(
-                    objectId: message.timestamp,
+                    objectId: message.chatItemId,
                     error: .invalidMessageAddress
                 ))
                 continue
             }
             guard let recipientId = recipientContext[recipientAddress] else {
                 perRecipientErrors.append(.init(
-                    objectId: message.timestamp,
+                    objectId: message.chatItemId,
                     error: .referencedIdMissing(.recipient(recipientAddress))
                 ))
                 continue
@@ -172,7 +173,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                 outgoingMessageProtoBuilder.addSendStatus(sendStatus)
             } catch let error {
                 perRecipientErrors.append(
-                    .init(objectId: message.timestamp, error: .protoSerializationError(error))
+                    .init(objectId: message.chatItemId, error: .protoSerializationError(error))
                 )
             }
         }
@@ -182,7 +183,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             outgoingMessageProto = try outgoingMessageProtoBuilder.build()
         } catch let error {
             return .messageFailure(
-                [.init(objectId: message.timestamp, error: .protoSerializationError(error))]
+                [.init(objectId: message.chatItemId, error: .protoSerializationError(error))]
                 + perRecipientErrors
             )
         }
@@ -227,49 +228,37 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
         thread: TSThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult {
+    ) -> CloudBackup.RestoreInteractionResult<Void> {
         guard let outgoingDetails = chatItem.outgoing else {
             // Should be impossible.
-            return .failure(chatItem.dateSent, [.invalidProtoData])
+            return .messageFailure([.invalidProtoData])
         }
 
         guard let messageType = chatItem.messageType else {
             // Unrecognized item type!
-            return .failure(chatItem.dateSent, [.unknownFrameType])
-        }
-
-        switch messageType {
-        case .standard:
-            break
-        case .contact:
-            // Unsupported, report success and skip.
-            return .success
-        case .voice:
-            // Unsupported, report success and skip.
-            return .success
-        case .sticker:
-            // Unsupported, report success and skip.
-            return .success
-        case .remotelyDeleted:
-            // Unsupported, report success and skip.
-            return .success
-        case .chatUpdate:
-            // Unsupported, report success and skip.
-            return .success
+            return .messageFailure([.unknownFrameType])
         }
 
         var partialErrors = [CloudBackup.RestoringFrameError]()
 
-        let (messageBody, bodyResult) = contentsArchiver.restoreMessageBody(messageType)
-        switch bodyResult {
-        case .success:
-            break
-        case .partialRestore(_, let errors):
+        let contentsResult = contentsArchiver.restoreContents(
+            messageType,
+            tx: tx
+        )
+
+        let contents: CloudBackup.RestoredMessageContents
+        switch contentsResult {
+        case .success(let value):
+            contents = value
+        case .partialRestore(let value, let errors):
+            contents = value
             partialErrors.append(contentsOf: errors)
-        case .failure(_, let errors):
+        case .messageFailure(let errors):
             partialErrors.append(contentsOf: errors)
-            return .failure(chatItem.dateSent, partialErrors)
+            return .messageFailure(partialErrors)
         }
+
+        let messageBody = contents.body
 
         // TODO: this is going to determine the recipients _from the current thread state_.
         // thats not correct; the message may have been sent before the current set
@@ -301,8 +290,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
         let message = interactionFetcher.insertMessageWithBuilder(messageBuilder, tx: tx)
 
-        var recipientErrors = [CloudBackup.RestoringFrameError]()
-
+        var didSucceedAtLeastOneRecipient = false
         for sendStatus in outgoingDetails.sendStatus {
             // TODO: ideally we don't use addresses in here at all, their
             // caching properties are problematic.
@@ -312,34 +300,56 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                 recipientAddress = SignalServiceAddress(serviceId: aci ?? pni, e164: e164)
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
-                recipientErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
+                partialErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
                 continue
             default:
                 // Recipients can only be contacts.
-                recipientErrors.append(.invalidProtoData)
+                partialErrors.append(.invalidProtoData)
                 continue
             }
 
-            if let deliveryStatus = sendStatus.deliveryStatus {
-                interactionFetcher.update(
-                    message,
-                    withRecipient: recipientAddress,
-                    status: deliveryStatus,
-                    timestamp: sendStatus.timestamp,
-                    wasSentByUD: sendStatus.sealedSender.negated,
-                    tx: tx
-                )
+            guard let deliveryStatus = sendStatus.deliveryStatus else {
+                // Need a status!
+                partialErrors.append(.invalidProtoData)
+                continue
             }
+
+            didSucceedAtLeastOneRecipient = true
+            interactionFetcher.update(
+                message,
+                withRecipient: recipientAddress,
+                status: deliveryStatus,
+                timestamp: sendStatus.timestamp,
+                wasSentByUD: sendStatus.sealedSender.negated,
+                tx: tx
+            )
         }
-        partialErrors.append(contentsOf: recipientErrors)
+
+        guard didSucceedAtLeastOneRecipient else {
+            // If every recipient failed, don't count this as a success at all.
+            return .messageFailure(partialErrors)
+        }
+
+        let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
+            message: message,
+            restoredContents: contents,
+            context: context,
+            tx: tx
+        )
+        switch downstreamObjectsResult {
+        case .success:
+            break
+        case .partialRestore(_, let errors):
+            partialErrors.append(contentsOf: errors)
+        case .messageFailure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return .messageFailure(partialErrors)
+        }
 
         if partialErrors.isEmpty {
-            return .success
-        } else if recipientErrors.count == outgoingDetails.sendStatus.count {
-            // If every recipient failed, don't count this as a success at all.
-            return .failure(chatItem.dateSent, partialErrors)
+            return .success(())
         } else {
-            return .partialRestore(chatItem.dateSent, partialErrors)
+            return .partialRestore((), partialErrors)
         }
     }
 }

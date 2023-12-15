@@ -75,9 +75,13 @@ extension CloudBackup {
             case group(GroupId)
         }
 
+        internal let localIdentifiers: LocalIdentifiers
+
         private let map = SharedMap<RecipientId, Address>()
 
-        internal init() {}
+        internal init(localIdentifiers: LocalIdentifiers) {
+            self.localIdentifiers = localIdentifiers
+        }
 
         internal subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
@@ -101,6 +105,13 @@ extension BackupProtoChat {
 }
 
 extension BackupProtoChatItem {
+
+    public var authorRecipientId: CloudBackup.RecipientId {
+        return .init(authorID)
+    }
+}
+
+extension BackupProtoReaction {
 
     public var authorRecipientId: CloudBackup.RecipientId {
         return .init(authorID)

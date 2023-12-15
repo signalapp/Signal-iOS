@@ -578,6 +578,7 @@ public class DependenciesBridge {
             chatItemArchiver: CloudBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
                 interactionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
+                reactionStore: ReactionStoreImpl(),
                 threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
             ),
             dateProvider: dateProvider,

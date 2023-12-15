@@ -107,6 +107,23 @@ public extension TSMessage {
         receivedAtTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) -> OWSReaction? {
+        return self.recordReaction(
+            for: reactor,
+            emoji: emoji,
+            sentAtTimestamp: sentAtTimestamp,
+            sortOrder: receivedAtTimestamp,
+            tx: tx
+        )
+    }
+
+    @discardableResult
+    func recordReaction(
+        for reactor: Aci,
+        emoji: String,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSReaction? {
         Logger.info("")
 
         guard !wasRemotelyDeleted else {

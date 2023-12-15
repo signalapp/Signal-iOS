@@ -68,17 +68,18 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             authorAddress = .contactE164(authorE164)
         } else {
             // This is an invalid message.
-            return .messageFailure([.init(objectId: message.timestamp, error: .invalidMessageAddress)])
+            return .messageFailure([.init(objectId: message.chatItemId, error: .invalidMessageAddress)])
         }
         guard let author = context.recipientContext[authorAddress] else {
             return .messageFailure([.init(
-                objectId: message.timestamp,
+                objectId: message.chatItemId,
                 error: .referencedIdMissing(.recipient(authorAddress))
             )])
         }
 
         let contentsResult = contentsArchiver.archiveMessageContents(
             message,
+            context: context.recipientContext,
             tx: tx
         )
         let type: CloudBackup.ChatItemMessageType
@@ -128,7 +129,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             let incomingMessageProto = try incomingMessageProtoBuilder.build()
             return .success(.incoming(incomingMessageProto))
         } catch let error {
-            return .messageFailure([.init(objectId: message.timestamp, error: .protoSerializationError(error))])
+            return .messageFailure([.init(objectId: message.chatItemId, error: .protoSerializationError(error))])
         }
     }
 
@@ -145,10 +146,10 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
         thread: TSThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult {
+    ) -> CloudBackup.RestoreInteractionResult<Void> {
         guard let incomingDetails = chatItem.incoming else {
             // Should be impossible.
-            return .failure(chatItem.dateSent, [.invalidProtoData])
+            return .messageFailure([.invalidProtoData])
         }
 
         let authorAci: Aci
@@ -160,46 +161,34 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             authorAci = aci
         default:
             // Messages can only come from Acis.
-            return .failure(chatItem.dateSent, [.invalidProtoData])
+            return .messageFailure([.invalidProtoData])
         }
 
         guard let messageType = chatItem.messageType else {
             // Unrecognized item type!
-            return .failure(chatItem.dateSent, [.unknownFrameType])
-        }
-
-        switch messageType {
-        case .standard:
-            break
-        case .contact:
-            // Unsupported, report success and skip.
-            return .success
-        case .voice:
-            // Unsupported, report success and skip.
-            return .success
-        case .sticker:
-            // Unsupported, report success and skip.
-            return .success
-        case .remotelyDeleted:
-            // Unsupported, report success and skip.
-            return .success
-        case .chatUpdate:
-            // Unsupported, report success and skip.
-            return .success
+            return .messageFailure([.unknownFrameType])
         }
 
         var partialErrors = [CloudBackup.RestoringFrameError]()
 
-        let (messageBody, bodyResult) = contentsArchiver.restoreMessageBody(messageType)
-        switch bodyResult {
-        case .success:
-            break
-        case .partialRestore(_, let errors):
+        let contentsResult = contentsArchiver.restoreContents(
+            messageType,
+            tx: tx
+        )
+
+        let contents: CloudBackup.RestoredMessageContents
+        switch contentsResult {
+        case .success(let value):
+            contents = value
+        case .partialRestore(let value, let errors):
+            contents = value
             partialErrors.append(contentsOf: errors)
-        case .failure(_, let errors):
+        case .messageFailure(let errors):
             partialErrors.append(contentsOf: errors)
-            return .failure(chatItem.dateSent, partialErrors)
+            return .messageFailure(partialErrors)
         }
+
+        let messageBody = contents.body
 
         let messageBuilder = TSIncomingMessageBuilder.builder(
             thread: thread,
@@ -232,10 +221,26 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
         let message = messageBuilder.build()
         interactionFetcher.insert(message, tx: tx)
 
-        if partialErrors.isEmpty {
-            return .success
-        } else {
-            return .partialRestore(chatItem.dateSent, partialErrors)
+        let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
+            message: message,
+            restoredContents: contents,
+            context: context,
+            tx: tx
+        )
+        switch downstreamObjectsResult {
+        case .success:
+            break
+        case .partialRestore(_, let errors):
+            partialErrors.append(contentsOf: errors)
+        case .messageFailure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return .messageFailure(partialErrors)
         }
+
+        if !partialErrors.isEmpty {
+            return .partialRestore((), partialErrors)
+        }
+
+        return .success(())
     }
 }

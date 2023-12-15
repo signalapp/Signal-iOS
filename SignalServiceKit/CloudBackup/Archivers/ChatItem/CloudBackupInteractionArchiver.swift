@@ -7,8 +7,24 @@ import Foundation
 
 extension CloudBackup {
 
-    /// We use the timestamp (``BackupProtoChatItem.dateSent``) to identify chat items.
-    public typealias ChatItemId = UInt64
+    public struct ChatItemId: ExpressibleByIntegerLiteral, Hashable {
+
+        public typealias IntegerLiteralType = UInt64
+
+        internal let value: UInt64
+
+        public init(integerLiteral value: UInt64) {
+            self.value = value
+        }
+
+        fileprivate init(_ value: UInt64) {
+            self.value = value
+        }
+
+        public init(interaction: TSInteraction) {
+            self.value = interaction.timestamp
+        }
+    }
 
     internal enum ChatItemMessageType {
         case standard(BackupProtoStandardMessage)
@@ -85,6 +101,16 @@ extension CloudBackup {
         /// Catastrophic failure, which should stop _all_ message archiving.
         case completeFailure(Swift.Error)
     }
+
+    internal enum RestoreInteractionResult<Component> {
+        case success(Component)
+        /// Some portion of the interaction failed to restore, but we can still restore the rest of it.
+        /// e.g. a reaction failed to parse, so we just drop that reaction.
+        case partialRestore(Component, [RestoringFrameError])
+        /// The entire message failed and should be skipped.
+        /// Other messages are unaffected.
+        case messageFailure([RestoringFrameError])
+    }
 }
 
 internal protocol CloudBackupInteractionArchiver: CloudBackupProtoArchiver {
@@ -99,8 +125,6 @@ internal protocol CloudBackupInteractionArchiver: CloudBackupProtoArchiver {
         tx: DBReadTransaction
     ) -> CloudBackup.ArchiveInteractionResult<Details>
 
-    typealias RestoreFrameResult = CloudBackup.RestoreFrameResult<CloudBackup.ChatItemId>
-
     static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool
 
     func restoreChatItem(
@@ -108,12 +132,23 @@ internal protocol CloudBackupInteractionArchiver: CloudBackupProtoArchiver {
         thread: TSThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult
+    ) -> CloudBackup.RestoreInteractionResult<Void>
 }
 
 extension BackupProtoChatItem {
 
+    var id: CloudBackup.ChatItemId {
+        return .init(self.dateSent)
+    }
+
     var messageType: CloudBackup.ChatItemMessageType? {
         return .init(self)
+    }
+}
+
+extension TSInteraction {
+
+    var chatItemId: CloudBackup.ChatItemId {
+        return .init(interaction: self)
     }
 }

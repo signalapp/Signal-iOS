@@ -20,7 +20,8 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         case emoji
         case reactorE164
         case reactorUUID
-        case receivedAtTimestamp
+        // See context on ``sortOrder`` below.
+        case sortOrder = "receivedAtTimestamp"
         case sentAtTimestamp
         case uniqueMessageId
         case read
@@ -38,13 +39,26 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public let reactorAci: Aci?
     public let reactorPhoneNumber: String?
     public let sentAtTimestamp: UInt64
-    public let receivedAtTimestamp: UInt64
+    /// Higher values mean more recent, i.e. should be rendered first in reaction lists.
+    ///
+    /// Historically, this would be the received timestamp (on the local device). However, the timestamp
+    /// information is unavailable when restoring from a backup; that just has a sortOrder which makes
+    /// no guarantees except that it can be used for sorting reactions for display.
+    /// Locally, we can continue to write timestamps into here since they have the same sorting property
+    /// as any other sortOrder value, and put those timestamps into our own backups as the "sortOrder".
+    /// One edge case: restore a message with reactions and get a new reaction. Now we mix backup sortOrder
+    /// values with local timestamp values. This should be fine; nobody will put any value into sortOrder
+    /// larger than the current timestamp, anyway.
+    public let sortOrder: UInt64
     public private(set) var read: Bool
 
     public var reactor: SignalServiceAddress {
         SignalServiceAddress(serviceId: reactorAci, phoneNumber: reactorPhoneNumber)
     }
 
+    /// Note that we initialize with a receivedAtTimestamp, but should make no assumptions
+    /// that the sortOrder is always a timestamp at read time. Backups use sortOrders that
+    /// may not be timestamps.
     public required init(
         uniqueMessageId: String,
         emoji: String,
@@ -58,8 +72,24 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         self.reactorAci = reactor
         self.reactorPhoneNumber = nil
         self.sentAtTimestamp = sentAtTimestamp
-        self.receivedAtTimestamp = receivedAtTimestamp
+        self.sortOrder = receivedAtTimestamp
         self.read = false
+    }
+
+    public static func fromRestoredBackup(
+        uniqueMessageId: String,
+        emoji: String,
+        reactor: Aci,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64
+    ) -> Self {
+        return Self.init(
+            uniqueMessageId: uniqueMessageId,
+            emoji: emoji,
+            reactor: reactor,
+            sentAtTimestamp: sentAtTimestamp,
+            receivedAtTimestamp: sortOrder
+        )
     }
 
     public func markAsRead(transaction: SDSAnyWriteTransaction) {
@@ -98,7 +128,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         reactorPhoneNumber = (reactorAci != nil) ? nil : try container.decodeIfPresent(String.self, forKey: .reactorE164)
 
         sentAtTimestamp = try container.decode(UInt64.self, forKey: .sentAtTimestamp)
-        receivedAtTimestamp = try container.decode(UInt64.self, forKey: .receivedAtTimestamp)
+        sortOrder = try container.decode(UInt64.self, forKey: .sortOrder)
         read = try container.decode(Bool.self, forKey: .read)
     }
 
@@ -120,7 +150,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         }
 
         try container.encode(sentAtTimestamp, forKey: .sentAtTimestamp)
-        try container.encode(receivedAtTimestamp, forKey: .receivedAtTimestamp)
+        try container.encode(sortOrder, forKey: .sortOrder)
         try container.encode(read, forKey: .read)
     }
 
@@ -143,7 +173,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         }
 
         coder.encode(NSNumber(value: sentAtTimestamp), forKey: CodingKeys.sentAtTimestamp.rawValue)
-        coder.encode(NSNumber(value: receivedAtTimestamp), forKey: CodingKeys.receivedAtTimestamp.rawValue)
+        coder.encode(NSNumber(value: sortOrder), forKey: CodingKeys.sortOrder.rawValue)
         coder.encode(NSNumber(value: read), forKey: CodingKeys.read.rawValue)
     }
 
@@ -181,11 +211,11 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         }
         self.sentAtTimestamp = sentAtTimestamp
 
-        guard let receivedAtTimestamp = coder.decodeObject(of: NSNumber.self, forKey: CodingKeys.receivedAtTimestamp.rawValue)?.uint64Value else {
-            owsFailDebug("Missing receivedAtTimestamp")
+        guard let sortOrder = coder.decodeObject(of: NSNumber.self, forKey: CodingKeys.sortOrder.rawValue)?.uint64Value else {
+            owsFailDebug("Missing sortOrder")
             return nil
         }
-        self.receivedAtTimestamp = receivedAtTimestamp
+        self.sortOrder = sortOrder
 
         guard let read = coder.decodeObject(of: NSNumber.self, forKey: CodingKeys.read.rawValue)?.boolValue else {
             owsFailDebug("Missing read")

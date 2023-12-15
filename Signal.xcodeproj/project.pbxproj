@@ -778,6 +778,8 @@
 		6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */; };
 		6605B9862B2112A100E8A68A /* SerialTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */; };
 		6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */; };
+		6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B97F2B194A7900E8A68A /* ReactionStore.swift */; };
+		6605B9822B19547C00E8A68A /* CloudBackupReactionArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605B9812B19547C00E8A68A /* CloudBackupReactionArchiver.swift */; };
 		6605D4F02A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */; };
 		6605D4F82A85A504004DC345 /* OWSIncomingPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4F72A85A504004DC345 /* OWSIncomingPaymentMessage.m */; };
 		6605D4FB2A85ACEA004DC345 /* OWSIncomingPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D4FA2A85ACEA004DC345 /* OWSIncomingPaymentMessage+SDS.swift */; };
@@ -3393,6 +3395,8 @@
 		6603AC2C29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerMock.swift; sourceTree = "<group>"; };
 		6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialTaskQueue.swift; sourceTree = "<group>"; };
 		6605B9892B211BD500E8A68A /* SerialTaskQueueTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialTaskQueueTest.swift; sourceTree = "<group>"; };
+		6605B97F2B194A7900E8A68A /* ReactionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionStore.swift; sourceTree = "<group>"; };
+		6605B9812B19547C00E8A68A /* CloudBackupReactionArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupReactionArchiver.swift; sourceTree = "<group>"; };
 		6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
 		6605D4F62A85A4D9004DC345 /* OWSIncomingPaymentMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIncomingPaymentMessage.h; sourceTree = "<group>"; };
 		6605D4F72A85A504004DC345 /* OWSIncomingPaymentMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSIncomingPaymentMessage.m; sourceTree = "<group>"; };
@@ -7240,6 +7244,7 @@
 				66CD25672B06960F00139E17 /* CloudBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* CloudBackupChatItemArchiverImpl.swift */,
 				66CD258C2B0EB3A700139E17 /* CloudBackupInteractionArchiver.swift */,
+				6605B9812B19547C00E8A68A /* CloudBackupReactionArchiver.swift */,
 				66CD258E2B0EB4AC00139E17 /* CloudBackupTSIncomingMessageArchiver.swift */,
 				66CD25922B0EC55100139E17 /* CloudBackupTSMessageContentsArchiver.swift */,
 				66CD25942B0EC5EC00139E17 /* CloudBackupTSOutgoingMessageArchiver.swift */,
@@ -9444,6 +9449,7 @@
 				F9C5C94A289453B100548EEE /* OWSReaction.swift */,
 				F9C5C94C289453B100548EEE /* ReactionFinder.swift */,
 				F9C5C94D289453B100548EEE /* ReactionManager.swift */,
+				6605B97F2B194A7900E8A68A /* ReactionStore.swift */,
 			);
 			path = Reactions;
 			sourceTree = "<group>";
@@ -12636,6 +12642,7 @@
 				66CD25752B0807BC00139E17 /* CloudBackupProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* CloudBackupProtoOutputStream.swift in Sources */,
 				665C0D622AE0552900539A37 /* CloudBackupProtoStreamProvider.swift in Sources */,
+				6605B9822B19547C00E8A68A /* CloudBackupReactionArchiver.swift in Sources */,
 				66CD25622B06948900139E17 /* CloudBackupRecipientArchiver.swift in Sources */,
 				66CD25702B06E29B00139E17 /* CloudBackupRecipientDestinationArchiver.swift in Sources */,
 				66CD256A2B06963200139E17 /* CloudBackupStickerPackArchiver.swift in Sources */,
@@ -13055,6 +13062,7 @@
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
+				6605B9802B194A7900E8A68A /* ReactionStore.swift in Sources */,
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
 				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */,
