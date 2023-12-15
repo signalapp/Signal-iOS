@@ -806,6 +806,8 @@
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
+		6619A1952B27C7F3004B38FE /* SignalRecipientStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1942B27C7F3004B38FE /* SignalRecipientStore.swift */; };
+		6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1962B27CA5F004B38FE /* StoryStore.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -3424,6 +3426,8 @@
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
+		6619A1942B27C7F3004B38FE /* SignalRecipientStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalRecipientStore.swift; sourceTree = "<group>"; };
+		6619A1962B27CA5F004B38FE /* StoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryStore.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -6927,6 +6931,16 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
+		6619A1932B27C7A1004B38FE /* SignalRecipient */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5C9E1289453B100548EEE /* SignalRecipient.swift */,
+				F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */,
+				6619A1942B27C7F3004B38FE /* SignalRecipientStore.swift */,
+			);
+			path = SignalRecipient;
+			sourceTree = "<group>";
+		};
 		662C44142A1D20EB001F83E2 /* SVR2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -9477,6 +9491,7 @@
 				F9C5C969289453B100548EEE /* StoryManager.swift */,
 				F9C5C96A289453B100548EEE /* StoryMessage.swift */,
 				6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */,
+				6619A1962B27CA5F004B38FE /* StoryStore.swift */,
 				669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */,
 				669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */,
 				669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */,
@@ -9582,6 +9597,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9D5289453B100548EEE /* Discovery */,
+				6619A1932B27C7A1004B38FE /* SignalRecipient */,
 				F9C5C9E3289453B100548EEE /* Threads */,
 				50D2FC7C2AEB134C002E4589 /* AuthorMergeHelper.swift */,
 				500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */,
@@ -9610,8 +9626,6 @@
 				F9C5C9DE289453B100548EEE /* SignalAccount.swift */,
 				F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */,
 				50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */,
-				F9C5C9E1289453B100548EEE /* SignalRecipient.swift */,
-				F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */,
 				F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */,
 				66586D4029009C0000DDA9B9 /* TextAttachment.swift */,
 				F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */,
@@ -13153,6 +13167,7 @@
 				88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */,
 				F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */,
 				F9C5CCE0289453B300548EEE /* SignalRecipientFinder.swift in Sources */,
+				6619A1952B27C7F3004B38FE /* SignalRecipientStore.swift in Sources */,
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,
 				F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */,
@@ -13200,6 +13215,7 @@
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,
 				F9C5CC58289453B300548EEE /* StoryMessage.swift in Sources */,
 				6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */,
+				6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */,
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,

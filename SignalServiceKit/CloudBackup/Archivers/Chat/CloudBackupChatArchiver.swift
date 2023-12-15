@@ -43,14 +43,14 @@ public protocol CloudBackupChatArchiver: CloudBackupProtoArchiver {
 public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
 
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let threadFetcher: CloudBackup.Shims.TSThreadFetcher
+    private let threadStore: ThreadStore
 
     public init(
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        threadFetcher: CloudBackup.Shims.TSThreadFetcher
+        threadStore: ThreadStore
     ) {
         self.dmConfigurationStore = dmConfigurationStore
-        self.threadFetcher = threadFetcher
+        self.threadStore = threadStore
     }
 
     // MARK: - Archiving
@@ -63,8 +63,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         var completeFailureError: Error?
         var partialErrors = [ArchiveMultiFrameResult.Error]()
 
-        // TODO: clean up this shim, and just index non-story threads to begin with.
-        threadFetcher.enumerateAll(tx: tx) { thread, stop in
+        func archiveThread(_ thread: TSThread, stop: inout Bool) {
             let result: ArchiveMultiFrameResult
             if let thread = thread as? TSContactThread {
                 result = self.archiveContactThread(
@@ -81,8 +80,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
                     tx: tx
                 )
             } else {
-                // Skip other threads.
-                // TODO: skip other threads at the SQL level, debug assert here.
+                owsFailDebug("Got invalid thread when iterating!")
                 return
             }
 
@@ -91,10 +89,17 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
                 break
             case .completeFailure(let error):
                 completeFailureError = error
-                stop.pointee = true
+                stop = true
             case .partialSuccess(let errors):
                 partialErrors.append(contentsOf: errors)
             }
+        }
+
+        do {
+            try threadStore.enumerateNonStoryThreads(tx: tx, block: archiveThread(_:stop:))
+        } catch let error {
+            owsFailDebug("Unable to enumerate all threads!")
+            return .completeFailure(error)
         }
 
         if let completeFailureError {
@@ -187,12 +192,12 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
-        let threadAssociatedData = threadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
+        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
 
-        // TODO: actually use the pinned thread order, instead of just
-        // assigning in the order we see them in the db table.
+        // TODO: actually use the pinned thread order.
         let thisThreadPinnedOrder: UInt32
-        if threadFetcher.isThreadPinned(thread) {
+        let isThreadPinned = false
+        if isThreadPinned {
             context.pinnedThreadOrder += 1
             thisThreadPinnedOrder = context.pinnedThreadOrder
         } else {
@@ -246,7 +251,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
-            guard let groupThread = threadFetcher.fetch(groupId: groupId, tx: tx) else {
+            guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
                 return .failure(
                     chat.chatId,
                     [.referencedDatabaseObjectNotFound(.groupThread(groupId: groupId))]
@@ -255,7 +260,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
             thread = groupThread
         case let .contact(aci, pni, e164):
             let address = SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: e164?.stringValue)
-            thread = threadFetcher.getOrCreateContactThread(with: address, tx: tx)
+            thread = threadStore.getOrCreateContactThread(with: address, tx: tx)
         }
 
         context[chat.chatId] = thread.uniqueIdentifier
@@ -280,19 +285,21 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         }
 
         if associatedDataNeedsUpdate {
-            let threadAssociatedData = threadFetcher.fetchOrDefaultThreadAssociatedData(for: thread, tx: tx)
-            threadFetcher.updateAssociatedData(
+            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
+            threadStore.updateAssociatedData(
                 threadAssociatedData,
                 isArchived: isArchived,
                 isMarkedUnread: isMarkedUnread,
                 mutedUntilTimestamp: mutedUntilTimestamp,
+                updateStorageService: false,
                 tx: tx
             )
         }
         // TODO: recover pinned chat ordering
         if chat.pinnedOrder != 0 {
             do {
-                try threadFetcher.pinThread(thread, tx: tx)
+                // TODO: reimplement thread pinning.
+                // try threadFetcher.pinThread(thread, tx: tx)
             } catch {
                 // TODO: how could this fail, and what should we do? Ignore for now.
             }

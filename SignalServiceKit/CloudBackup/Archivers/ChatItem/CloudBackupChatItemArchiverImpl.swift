@@ -9,20 +9,20 @@ import LibSignalClient
 public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
 
     private let dateProvider: DateProvider
-    private let interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+    private let interactionStore: InteractionStore
     private let reactionStore: ReactionStore
-    private let threadFetcher: CloudBackup.Shims.TSThreadFetcher
+    private let threadStore: ThreadStore
 
     public init(
         dateProvider: @escaping DateProvider,
-        interactionFetcher: CloudBackup.Shims.TSInteractionFetcher,
+        interactionStore: InteractionStore,
         reactionStore: ReactionStore,
-        threadFetcher: CloudBackup.Shims.TSThreadFetcher
+        threadStore: ThreadStore
     ) {
         self.dateProvider = dateProvider
-        self.interactionFetcher = interactionFetcher
+        self.interactionStore = interactionStore
         self.reactionStore = reactionStore
-        self.threadFetcher = threadFetcher
+        self.threadStore = threadStore
     }
 
     private lazy var reactionArchiver = CloudBackupReactionArchiver(reactionStore: reactionStore)
@@ -34,11 +34,11 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
     private lazy var interactionArchivers: [CloudBackupInteractionArchiver] = [
         CloudBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            interactionFetcher: interactionFetcher
+            interactionStore: interactionStore
         ),
         CloudBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            interactionFetcher: interactionFetcher
+            interactionStore: interactionStore
         )
         // TODO: need for info messages. not story messages, those are skipped.
         // are there other message types? what about e.g. payment messages?
@@ -75,7 +75,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         do {
-            try interactionFetcher.enumerateAllInteractions(
+            try interactionStore.enumerateAllInteractions(
                 tx: tx,
                 block: archiveInteraction(_:stop:)
             )
@@ -130,7 +130,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         case .success(let deets):
             details = deets
 
-        case .isPastRevision, .isStoryMessage, .notYetImplemented:
+        case .isPastRevision, .notYetImplemented:
             // Skip! Say it succeeded so we ignore it.
             return .success
 
@@ -222,7 +222,7 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         guard
-            let thread = threadFetcher.fetch(threadUniqueId: threadUniqueId.value, tx: tx)
+            let thread = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
         else {
             return .failure(
                 chatItem.id,

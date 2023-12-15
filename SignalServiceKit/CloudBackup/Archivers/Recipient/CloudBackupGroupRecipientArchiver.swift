@@ -19,19 +19,19 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
 
     private let groupsV2: GroupsV2
     private let profileManager: CloudBackup.Shims.ProfileManager
-    private let storyFinder: CloudBackup.Shims.StoryFinder
-    private let tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
+    private let storyStore: StoryStore
+    private let threadStore: ThreadStore
 
     public init(
         groupsV2: GroupsV2,
         profileManager: CloudBackup.Shims.ProfileManager,
-        storyFinder: CloudBackup.Shims.StoryFinder,
-        tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
+        storyStore: StoryStore,
+        threadStore: ThreadStore
     ) {
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
-        self.storyFinder = storyFinder
-        self.tsThreadFetcher = tsThreadFetcher
+        self.storyStore = storyStore
+        self.threadStore = threadStore
     }
 
     private typealias GroupId = CloudBackup.RecipientArchivingContext.Address.GroupId
@@ -44,7 +44,7 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         var errors = [ArchiveMultiFrameResult.Error]()
 
         do {
-            try tsThreadFetcher.enumerateAllGroupThreads(tx: tx) { groupThread in
+            try threadStore.enumerateGroupThreads(tx: tx) { groupThread, _ in
                 self.archiveGroupThread(
                     groupThread,
                     stream: stream,
@@ -91,12 +91,12 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
             return
         }
 
-        // TODO: instead of doing per-thread fetches, we should bulk load
-        // some of these fetched fields into memory to avoid db round trips.
+        let storyContext = storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
+
         let groupBuilder = BackupProtoGroup.builder(
             masterKey: groupMasterKey,
             whitelisted: self.profileManager.isThread(inProfileWhitelist: groupThread, tx: tx),
-            hideStory: self.storyFinder.isStoryHidden(forGroupThread: groupThread, tx: tx) ?? false
+            hideStory: storyContext.isHidden
         )
         switch groupThread.storyViewMode {
         case .disabled:
@@ -152,7 +152,7 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
         // before it can be triggered from here (and waited on).
         // For now, assume this is called from the debug UI after we have synced
         // with storage service and have all the groups locally.
-        guard let localThread = tsThreadFetcher.fetch(groupId: groupId, tx: tx) else {
+        guard let localThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
             return .failure(recipient.recipientId, [.databaseInsertionFailed(OWSAssertionError("Unimplemented"))])
         }
         let localStorySendMode = localThread.storyViewMode.storageServiceMode
@@ -161,9 +161,9 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
             // Nothing to change.
             break
         case (.disabled, _):
-            tsThreadFetcher.updateWithStorySendEnabled(false, groupThread: localThread, tx: tx)
+            threadStore.update(groupThread: localThread, withStorySendEnabled: false, updateStorageService: false, tx: tx)
         case (.enabled, _):
-            tsThreadFetcher.updateWithStorySendEnabled(true, groupThread: localThread, tx: tx)
+            threadStore.update(groupThread: localThread, withStorySendEnabled: true, updateStorageService: false, tx: tx)
         }
         let groupThread = localThread
 
@@ -173,9 +173,10 @@ public class CloudBackupGroupRecipientArchiver: CloudBackupRecipientDestinationA
             profileManager.addToWhitelist(groupThread, tx: tx)
         }
 
+        // We only need to actively hide, since unhidden is the default.
         if groupProto.hideStory {
-            let storyContext = storyFinder.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
-            storyFinder.setStoryContextHidden(storyContext, tx: tx)
+            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
+            storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }
 
         return .success

@@ -30,7 +30,7 @@ public class ThreadFinder: Dependencies {
     /// Enumerates group threads in "last interaction" order.
     public func enumerateGroupThreads(
         transaction: SDSAnyReadTransaction,
-        block: (TSGroupThread) -> Void
+        block: (TSGroupThread, _ stop: inout Bool) -> Void
     ) throws {
         let sql = """
             SELECT *
@@ -39,13 +39,44 @@ public class ThreadFinder: Dependencies {
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
-        try ThreadRecord.fetchCursor(
+        var stop = false
+        let cursor = try ThreadRecord.fetchCursor(
             transaction.unwrapGrdbRead.database,
             sql: sql
-        ).forEach { threadRecord in
+        )
+        while let threadRecord = try cursor.next() {
             let thread = try TSThread.fromRecord(threadRecord)
-            guard let groupThread = thread as? TSGroupThread else { return }
-            block(groupThread)
+            guard let groupThread = thread as? TSGroupThread else { continue }
+            block(groupThread, &stop)
+            if stop {
+                return
+            }
+        }
+    }
+
+    /// Enumerates all non-story threads in arbitrary order.
+    public func enumerateNonStoryThreads(
+        transaction: SDSAnyReadTransaction,
+        block: (TSThread, _ stop: inout Bool) -> Void
+    ) throws {
+        let sql = """
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .recordType) IS NOT ?
+        """
+
+        var stop = false
+        let cursor = try ThreadRecord.fetchCursor(
+            transaction.unwrapGrdbRead.database,
+            sql: sql,
+            arguments: [SDSRecordType.privateStoryThread]
+        )
+        while let threadRecord = try cursor.next() {
+            let thread = try TSThread.fromRecord(threadRecord)
+            block(thread, &stop)
+            if stop {
+                return
+            }
         }
     }
 

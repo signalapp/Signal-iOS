@@ -15,23 +15,23 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
     private let blockingManager: CloudBackup.Shims.BlockingManager
     private let profileManager: CloudBackup.Shims.ProfileManager
     private let recipientHidingManager: RecipientHidingManager
-    private let signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher
-    private let storyFinder: CloudBackup.Shims.StoryFinder
+    private let recipientStore: SignalRecipientStore
+    private let storyStore: StoryStore
     private let tsAccountManager: TSAccountManager
 
     public init(
         blockingManager: CloudBackup.Shims.BlockingManager,
         profileManager: CloudBackup.Shims.ProfileManager,
         recipientHidingManager: RecipientHidingManager,
-        signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher,
-        storyFinder: CloudBackup.Shims.StoryFinder,
+        recipientStore: SignalRecipientStore,
+        storyStore: StoryStore,
         tsAccountManager: TSAccountManager
     ) {
         self.blockingManager = blockingManager
         self.profileManager = profileManager
         self.recipientHidingManager = recipientHidingManager
-        self.signalRecipientFetcher = signalRecipientFetcher
-        self.storyFinder = storyFinder
+        self.recipientStore = recipientStore
+        self.storyStore = storyStore
         self.tsAccountManager = tsAccountManager
     }
 
@@ -47,7 +47,7 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
 
         var errors = [ArchiveMultiFrameResult.Error]()
 
-        signalRecipientFetcher.enumerateAll(tx: tx) { recipient in
+        recipientStore.enumerateAll(tx: tx) { recipient in
             let recipientAddress: ArchivingAddress
             if let aci = recipient.aci {
                 recipientAddress = .contactAci(aci)
@@ -74,14 +74,14 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
                 )
             }
 
-            // TODO: instead of doing per-recipient fetches, we should bulk load
-            // some of these fetched fields into memory to avoid db round trips.
+            let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
+
             let contactBuilder = BackupProtoContact.builder(
                 blocked: blockedAddresses.contains(recipient.address),
                 hidden: self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx),
                 unregisteredTimestamp: unregisteredAtTimestamp,
                 profileSharing: whitelistedAddresses.contains(recipient.address),
-                hideStory: recipient.aci.map { self.storyFinder.isStoryHidden(forAci: $0, tx: tx) ?? false } ?? false
+                hideStory: storyContext?.isHidden ?? false
             )
 
             contactBuilder.setRegistered(recipient.isRegistered ? .registered : .notRegistered)
@@ -159,16 +159,16 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         )
 
         // TODO: remove this check; we should be starting with an empty database.
-        if let existingRecipient = signalRecipientFetcher.recipient(for: recipient.address, tx: tx) {
+        if let existingRecipient = recipientStore.recipient(for: recipient.address, tx: tx) {
             recipient = existingRecipient
             if isRegistered == true, !recipient.isRegistered {
-                signalRecipientFetcher.markAsRegisteredAndSave(recipient, tx: tx)
+                recipientStore.markAsRegisteredAndSave(recipient, tx: tx)
             } else if isRegistered == false, recipient.isRegistered, let unregisteredTimestamp {
-                signalRecipientFetcher.markAsUnregisteredAndSave(recipient, at: unregisteredTimestamp, tx: tx)
+                recipientStore.markAsUnregisteredAndSave(recipient, at: unregisteredTimestamp, tx: tx)
             }
         } else {
             do {
-                try signalRecipientFetcher.insert(recipient, tx: tx)
+                try recipientStore.insert(recipient, tx: tx)
             } catch let error {
                 return .failure(recipientProto.recipientId, [.databaseInsertionFailed(error)])
             }
@@ -191,9 +191,10 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
             }
         }
 
+        // We only need to active hide, since unhidden is the default.
         if contactProto.hideStory, let aci {
-            let storyContext = storyFinder.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
-            storyFinder.setStoryContextHidden(storyContext, tx: tx)
+            let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
+            storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }
 
         profileManager.setProfileGivenName(

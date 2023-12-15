@@ -49,29 +49,29 @@ internal class CloudBackupRecipientArchiverImpl: CloudBackupRecipientArchiver {
     private let groupsV2: GroupsV2
     private let profileManager: CloudBackup.Shims.ProfileManager
     private let recipientHidingManager: RecipientHidingManager
-    private let signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher
-    private let storyFinder: CloudBackup.Shims.StoryFinder
+    private let recipientStore: SignalRecipientStore
+    private let storyStore: StoryStore
+    private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
-    private let tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
 
     public init(
         blockingManager: CloudBackup.Shims.BlockingManager,
         groupsV2: GroupsV2,
         profileManager: CloudBackup.Shims.ProfileManager,
         recipientHidingManager: RecipientHidingManager,
-        signalRecipientFetcher: CloudBackup.Shims.SignalRecipientFetcher,
-        storyFinder: CloudBackup.Shims.StoryFinder,
-        tsAccountManager: TSAccountManager,
-        tsThreadFetcher: CloudBackup.Shims.TSThreadFetcher
+        recipientStore: SignalRecipientStore,
+        storyStore: StoryStore,
+        threadStore: ThreadStore,
+        tsAccountManager: TSAccountManager
     ) {
         self.blockingManager = blockingManager
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
         self.recipientHidingManager = recipientHidingManager
-        self.signalRecipientFetcher = signalRecipientFetcher
-        self.storyFinder = storyFinder
+        self.recipientStore = recipientStore
+        self.storyStore = storyStore
+        self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
-        self.tsThreadFetcher = tsThreadFetcher
     }
 
     private lazy var destinationArchivers: [CloudBackupRecipientDestinationArchiver] = [
@@ -79,15 +79,15 @@ internal class CloudBackupRecipientArchiverImpl: CloudBackupRecipientArchiver {
             blockingManager: blockingManager,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
-            signalRecipientFetcher: signalRecipientFetcher,
-            storyFinder: storyFinder,
+            recipientStore: recipientStore,
+            storyStore: storyStore,
             tsAccountManager: tsAccountManager
         ),
         CloudBackupGroupRecipientArchiver(
             groupsV2: groupsV2,
             profileManager: profileManager,
-            storyFinder: storyFinder,
-            tsThreadFetcher: tsThreadFetcher
+            storyStore: storyStore,
+            threadStore: threadStore
         ),
         CloudBackupNoteToSelfRecipientArchiver()
         // TODO: add missing archivers:

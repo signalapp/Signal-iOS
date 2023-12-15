@@ -573,13 +573,13 @@ public class DependenciesBridge {
         self.cloudBackupManager = CloudBackupManagerImpl(
             chatArchiver: CloudBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
-                threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+                threadStore: ThreadStoreImpl()
             ),
             chatItemArchiver: CloudBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
-                interactionFetcher: CloudBackup.Wrappers.TSInteractionFetcher(),
+                interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),
-                threadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+                threadStore: ThreadStoreImpl()
             ),
             dateProvider: dateProvider,
             db: db,
@@ -588,10 +588,10 @@ public class DependenciesBridge {
                 groupsV2: groupsV2,
                 profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
                 recipientHidingManager: recipientHidingManager,
-                signalRecipientFetcher: CloudBackup.Wrappers.SignalRecipientFetcher(),
-                storyFinder: CloudBackup.Wrappers.StoryFinder(),
-                tsAccountManager: tsAccountManager,
-                tsThreadFetcher: CloudBackup.Wrappers.TSThreadFetcher()
+                recipientStore: SignalRecipientStoreImpl(),
+                storyStore: StoryStoreImpl(),
+                threadStore: ThreadStoreImpl(),
+                tsAccountManager: tsAccountManager
             ),
             streamProvider: CloudBackupProtoStreamProviderImpl(),
             tsAccountManager: tsAccountManager

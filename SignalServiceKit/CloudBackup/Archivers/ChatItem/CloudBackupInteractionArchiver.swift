@@ -84,9 +84,6 @@ extension CloudBackup {
         /// This is a past revision that was since edited; can be safely skipped, as its
         /// contents will be represented in the latest revision.
         case isPastRevision
-        // TODO: we should just not interate over story messages down in the SQL query.
-        // we don't back these up cuz they expire within 24 hours anyway.
-        case isStoryMessage
         // TODO: remove this once we flesh out implementation for all interactions.
         case notYetImplemented
 

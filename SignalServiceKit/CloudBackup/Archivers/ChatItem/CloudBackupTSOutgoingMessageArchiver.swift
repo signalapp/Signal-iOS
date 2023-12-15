@@ -9,14 +9,14 @@ import LibSignalClient
 internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchiver {
 
     private let contentsArchiver: CloudBackupTSMessageContentsArchiver
-    private let interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+    private let interactionStore: InteractionStore
 
     internal init(
         contentsArchiver: CloudBackupTSMessageContentsArchiver,
-        interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+        interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
-        self.interactionFetcher = interactionFetcher
+        self.interactionStore = interactionStore
     }
 
     // MARK: - Archiving
@@ -43,8 +43,6 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             directionalDetails = details
         case .isPastRevision:
             return .isPastRevision
-        case .isStoryMessage:
-            return .isStoryMessage
         case .notYetImplemented:
             return .notYetImplemented
         case let .partialFailure(details, errors):
@@ -76,8 +74,6 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             type = component
         case .isPastRevision:
             return .isPastRevision
-        case .isStoryMessage:
-            return .isStoryMessage
         case .notYetImplemented:
             return .notYetImplemented
         case let .partialFailure(component, errors):
@@ -288,7 +284,8 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             giftBadge: nil
         )
 
-        let message = interactionFetcher.insertMessageWithBuilder(messageBuilder, tx: tx)
+        let message = interactionStore.buildOutgoingMessage(builder: messageBuilder, tx: tx)
+        interactionStore.insertInteraction(message, tx: tx)
 
         var didSucceedAtLeastOneRecipient = false
         for sendStatus in outgoingDetails.sendStatus {
@@ -315,14 +312,62 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             }
 
             didSucceedAtLeastOneRecipient = true
-            interactionFetcher.update(
-                message,
-                withRecipient: recipientAddress,
-                status: deliveryStatus,
-                timestamp: sendStatus.timestamp,
-                wasSentByUD: sendStatus.sealedSender.negated,
-                tx: tx
-            )
+            switch deliveryStatus {
+            case .unknown:
+                break
+            case .pending:
+                // This is the default, no need to update.
+                break
+            case .failed:
+                interactionStore.update(
+                    message,
+                    withFailedRecipient: recipientAddress,
+                    // TODO: can we use a more descriptive error?
+                    error: OWSUnretryableMessageSenderError(),
+                    tx: tx
+                )
+            case .sent:
+                interactionStore.update(
+                    message,
+                    withSentRecipientAddress: recipientAddress,
+                    wasSentByUD: sendStatus.sealedSender.negated,
+                    tx: tx
+                )
+            case .delivered:
+                interactionStore.update(
+                    message,
+                    withDeliveredRecipient: recipientAddress,
+                    // TODO: eliminate device id as a required field
+                    deviceId: 1,
+                    deliveryTimestamp: sendStatus.timestamp,
+                    context: PassthroughDeliveryReceiptContext(),
+                    tx: tx
+                )
+            case .read:
+                interactionStore.update(
+                    message,
+                    withReadRecipient: recipientAddress,
+                    // TODO: eliminate device id as a required field
+                    deviceId: 1,
+                    readTimestamp: sendStatus.timestamp,
+                    tx: tx
+                )
+            case .viewed:
+                interactionStore.update(
+                    message,
+                    withViewedRecipient: recipientAddress,
+                    // TODO: eliminate device id as a required field
+                    deviceId: 1,
+                    viewedTimestamp: sendStatus.timestamp,
+                    tx: tx
+                )
+            case .skipped:
+                interactionStore.update(
+                    message,
+                    withSkippedRecipient: recipientAddress,
+                    tx: tx
+                )
+            }
         }
 
         guard didSucceedAtLeastOneRecipient else {

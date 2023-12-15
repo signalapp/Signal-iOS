@@ -9,14 +9,14 @@ import LibSignalClient
 internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchiver {
 
     private let contentsArchiver: CloudBackupTSMessageContentsArchiver
-    private let interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+    private let interactionStore: InteractionStore
 
     internal init(
         contentsArchiver: CloudBackupTSMessageContentsArchiver,
-        interactionFetcher: CloudBackup.Shims.TSInteractionFetcher
+        interactionStore: InteractionStore
     ) {
         self.contentsArchiver = contentsArchiver
-        self.interactionFetcher = interactionFetcher
+        self.interactionStore = interactionStore
     }
 
     // MARK: - Archiving
@@ -43,8 +43,6 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             directionalDetails = details
         case .isPastRevision:
             return .isPastRevision
-        case .isStoryMessage:
-            return .isStoryMessage
         case .notYetImplemented:
             return .notYetImplemented
         case let .partialFailure(details, errors):
@@ -88,8 +86,6 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             type = component
         case .isPastRevision:
             return .isPastRevision
-        case .isStoryMessage:
-            return .isStoryMessage
         case .notYetImplemented:
             return .notYetImplemented
         case let .partialFailure(component, errors):
@@ -219,7 +215,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             paymentNotification: nil
         )
         let message = messageBuilder.build()
-        interactionFetcher.insert(message, tx: tx)
+        interactionStore.insertInteraction(message, tx: tx)
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
             message: message,

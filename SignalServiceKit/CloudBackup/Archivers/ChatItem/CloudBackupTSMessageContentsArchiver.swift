@@ -128,8 +128,6 @@ internal class CloudBackupTSMessageContentsArchiver: CloudBackupProtoArchiver {
             reactions = values
         case .isPastRevision:
             return .isPastRevision
-        case .isStoryMessage:
-            return .isStoryMessage
         case .notYetImplemented:
             return .notYetImplemented
         case .partialFailure(let values, let errors):
