@@ -279,8 +279,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL messageFound = NO;
     for (TSOutgoingMessage *message in messages) {
-        if (!message.isFromLinkedDevice) {
-            // isFromLinkedDevice isn't always set for very old linked messages, but:
+        if (!message.wasNotCreatedLocally) {
+            // wasNotCreatedLocally isn't always set for very old linked messages, but:
             //
             // a) We should never receive a "sent update" for a very old message.
             // b) It's safe to discard suspicious "sent updates."

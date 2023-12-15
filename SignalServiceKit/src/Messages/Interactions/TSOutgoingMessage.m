@@ -91,7 +91,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 @property (atomic) BOOL hasSyncedTranscript;
 @property (atomic, nullable) NSString *customMessage;
 @property (atomic, nullable) NSString *mostRecentFailureText;
-@property (atomic) BOOL isFromLinkedDevice;
+@property (atomic) BOOL wasNotCreatedLocally;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 @property (nonatomic, readonly) NSUInteger outgoingMessageSchemaVersion;
 
@@ -144,13 +144,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-              isFromLinkedDevice:(BOOL)isFromLinkedDevice
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
+            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -187,13 +187,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _groupMetaMessage = groupMetaMessage;
     _hasLegacyMessageState = hasLegacyMessageState;
     _hasSyncedTranscript = hasSyncedTranscript;
-    _isFromLinkedDevice = isFromLinkedDevice;
     _isVoiceMessage = isVoiceMessage;
     _legacyMessageState = legacyMessageState;
     _legacyWasDelivered = legacyWasDelivered;
     _mostRecentFailureText = mostRecentFailureText;
     _recipientAddressStates = recipientAddressStates;
     _storedMessageState = storedMessageState;
+    _wasNotCreatedLocally = wasNotCreatedLocally;
 
     return self;
 }
@@ -825,7 +825,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                               }
 
                                               if (!isSentUpdate) {
-                                                  [message setIsFromLinkedDevice:YES];
+                                                  [message setWasNotCreatedLocally:YES];
                                               }
                                           }];
 }

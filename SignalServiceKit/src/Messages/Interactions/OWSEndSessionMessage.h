@@ -43,7 +43,7 @@ NS_SWIFT_NAME(EndSessionMessage)
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-              isFromLinkedDevice:(BOOL)isFromLinkedDevice
+            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered

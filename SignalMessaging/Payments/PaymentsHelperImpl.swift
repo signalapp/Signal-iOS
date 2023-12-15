@@ -468,7 +468,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 guard memoMessage == nil else {
                     throw OWSAssertionError("Invalid payment sync message: unexpected memoMessage.")
                 }
-                paymentType = .outgoingDefragmentationFromLinkedDevice
+                paymentType = .outgoingDefragmentationNotFromLocalDevice
             } else {
                 // Possible outgoing payment.
                 guard recipientAci != nil else {
@@ -477,7 +477,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                     throw OWSAssertionError("Invalid payment sync message: invalid paymentAmount.")
                 }
-                paymentType = .outgoingPaymentFromLinkedDevice
+                paymentType = .outgoingPaymentNotFromLocalDevice
             }
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
@@ -504,7 +504,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             // If we inserted without error, its new (no duplicates) so we should
             // insert the outgoing message in chat.
             if
-                paymentType == .outgoingPaymentFromLinkedDevice,
+                paymentType == .outgoingPaymentNotFromLocalDevice,
                 let recipientAci,
                 recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
             {

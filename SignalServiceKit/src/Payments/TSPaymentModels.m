@@ -24,8 +24,8 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
     switch (value) {
         case TSPaymentTypeIncomingPayment:
             return @"IncomingPayment";
-        case TSPaymentTypeOutgoingPaymentFromLinkedDevice:
-            return @"OutgoingPaymentFromLinkedDevice";
+        case TSPaymentTypeOutgoingPaymentNotFromLocalDevice:
+            return @"OutgoingPaymentNotFromLocalDevice";
         case TSPaymentTypeOutgoingPayment:
             return @"OutgoingPayment";
         case TSPaymentTypeIncomingUnidentified:
@@ -36,8 +36,8 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
             return @"OutgoingTransfer";
         case TSPaymentTypeOutgoingDefragmentation:
             return @"OutgoingDefragmentation";
-        case TSPaymentTypeOutgoingDefragmentationFromLinkedDevice:
-            return @"OutgoingDefragmentationFromLinkedDevice";
+        case TSPaymentTypeOutgoingDefragmentationNotFromLocalDevice:
+            return @"OutgoingDefragmentationNotFromLocalDevice";
         default:
             OWSCFailDebug(@"Unknown value: %d", (int)value);
             return @"Unknown";

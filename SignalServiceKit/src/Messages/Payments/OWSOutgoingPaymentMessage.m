@@ -72,13 +72,13 @@ NS_ASSUME_NONNULL_BEGIN
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-              isFromLinkedDevice:(BOOL)isFromLinkedDevice
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
+            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally
              paymentCancellation:(nullable NSData *)paymentCancellation
              paymentNotification:(nullable TSPaymentNotification *)paymentNotification
                   paymentRequest:(nullable NSData *)paymentRequest
@@ -113,13 +113,13 @@ NS_ASSUME_NONNULL_BEGIN
                   groupMetaMessage:groupMetaMessage
              hasLegacyMessageState:hasLegacyMessageState
                hasSyncedTranscript:hasSyncedTranscript
-                isFromLinkedDevice:isFromLinkedDevice
                     isVoiceMessage:isVoiceMessage
                 legacyMessageState:legacyMessageState
                 legacyWasDelivered:legacyWasDelivered
              mostRecentFailureText:mostRecentFailureText
             recipientAddressStates:recipientAddressStates
-                storedMessageState:storedMessageState];
+                storedMessageState:storedMessageState
+              wasNotCreatedLocally:wasNotCreatedLocally];
 
     if (!self) {
         return self;

@@ -431,7 +431,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
     }
 
     public var shouldHaveMCTransaction: Bool {
-        canHaveMCTransaction && !isFromLinkedDevice
+        canHaveMCTransaction && !wasNotCreatedLocally
     }
 
     public var shouldHaveMCReceipt: Bool {
@@ -492,8 +492,8 @@ extension TSPaymentModel: TSPaymentBaseModel {
         paymentType.isDefragmentation
     }
 
-    public var isFromLinkedDevice: Bool {
-        paymentType.isFromLinkedDevice
+    public var wasNotCreatedLocally: Bool {
+        paymentType.wasNotCreatedLocally
     }
 
     public var hasMCLedgerBlockIndex: Bool {
@@ -656,11 +656,11 @@ extension TSPaymentType {
              .incomingUnidentified:
             return true
         case .outgoingPayment,
-             .outgoingPaymentFromLinkedDevice,
+             .outgoingPaymentNotFromLocalDevice,
              .outgoingUnidentified,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationFromLinkedDevice:
+             .outgoingDefragmentationNotFromLocalDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -672,13 +672,13 @@ extension TSPaymentType {
         switch self {
         case .incomingPayment,
              .outgoingPayment,
-             .outgoingPaymentFromLinkedDevice:
+             .outgoingPaymentNotFromLocalDevice:
             return true
         case .incomingUnidentified,
              .outgoingUnidentified,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationFromLinkedDevice:
+             .outgoingDefragmentationNotFromLocalDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -693,10 +693,10 @@ extension TSPaymentType {
             return true
         case .incomingPayment,
              .outgoingPayment,
-             .outgoingPaymentFromLinkedDevice,
+             .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationFromLinkedDevice:
+             .outgoingDefragmentationNotFromLocalDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -707,11 +707,11 @@ extension TSPaymentType {
     public var isDefragmentation: Bool {
         switch self {
         case .outgoingDefragmentation,
-             .outgoingDefragmentationFromLinkedDevice:
+             .outgoingDefragmentationNotFromLocalDevice:
             return true
         case .incomingPayment,
              .outgoingPayment,
-             .outgoingPaymentFromLinkedDevice,
+             .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .incomingUnidentified,
              .outgoingUnidentified:
@@ -722,10 +722,10 @@ extension TSPaymentType {
         }
     }
 
-    public var isFromLinkedDevice: Bool {
+    public var wasNotCreatedLocally: Bool {
         switch self {
-        case .outgoingPaymentFromLinkedDevice,
-             .outgoingDefragmentationFromLinkedDevice:
+        case .outgoingPaymentNotFromLocalDevice,
+             .outgoingDefragmentationNotFromLocalDevice:
             return true
         case .incomingPayment,
              .outgoingPayment,

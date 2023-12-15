@@ -54,7 +54,7 @@ public struct InteractionRecord: SDSRecord {
     public let groupMetaMessage: TSGroupMetaMessage?
     public let hasLegacyMessageState: Bool?
     public let hasSyncedTranscript: Bool?
-    public let isFromLinkedDevice: Bool?
+    public let wasNotCreatedLocally: Bool?
     public let isLocalChange: Bool?
     public let isViewOnceComplete: Bool?
     public let isViewOnceMessage: Bool?
@@ -129,7 +129,7 @@ public struct InteractionRecord: SDSRecord {
         case groupMetaMessage
         case hasLegacyMessageState
         case hasSyncedTranscript
-        case isFromLinkedDevice
+        case wasNotCreatedLocally
         case isLocalChange
         case isViewOnceComplete
         case isViewOnceMessage
@@ -225,7 +225,7 @@ public extension InteractionRecord {
         groupMetaMessage = row[23]
         hasLegacyMessageState = row[24]
         hasSyncedTranscript = row[25]
-        isFromLinkedDevice = row[26]
+        wasNotCreatedLocally = row[26]
         isLocalChange = row[27]
         isViewOnceComplete = row[28]
         isViewOnceMessage = row[29]
@@ -698,7 +698,6 @@ extension TSInteraction {
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
-            let isFromLinkedDevice: Bool = try SDSDeserialization.required(record.isFromLinkedDevice, name: "isFromLinkedDevice")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
                throw SDSError.missingRequiredField
@@ -710,6 +709,7 @@ extension TSInteraction {
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
                throw SDSError.missingRequiredField
             }
+            let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
             let paymentCancellation: Data? = SDSDeserialization.optionalData(record.paymentCancellation, name: "paymentCancellation")
             let paymentNotificationSerialized: Data? = record.paymentNotification
             let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
@@ -745,13 +745,13 @@ extension TSInteraction {
                                              groupMetaMessage: groupMetaMessage,
                                              hasLegacyMessageState: hasLegacyMessageState,
                                              hasSyncedTranscript: hasSyncedTranscript,
-                                             isFromLinkedDevice: isFromLinkedDevice,
                                              isVoiceMessage: isVoiceMessage,
                                              legacyMessageState: legacyMessageState,
                                              legacyWasDelivered: legacyWasDelivered,
                                              mostRecentFailureText: mostRecentFailureText,
                                              recipientAddressStates: recipientAddressStates,
                                              storedMessageState: storedMessageState,
+                                             wasNotCreatedLocally: wasNotCreatedLocally,
                                              paymentCancellation: paymentCancellation,
                                              paymentNotification: paymentNotification,
                                              paymentRequest: paymentRequest)
@@ -798,7 +798,6 @@ extension TSInteraction {
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
-            let isFromLinkedDevice: Bool = try SDSDeserialization.required(record.isFromLinkedDevice, name: "isFromLinkedDevice")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
                throw SDSError.missingRequiredField
@@ -810,6 +809,7 @@ extension TSInteraction {
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
                throw SDSError.missingRequiredField
             }
+            let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
             return OWSPaymentActivationRequestFinishedMessage(grdbId: recordId,
                                                               uniqueId: uniqueId,
@@ -841,13 +841,13 @@ extension TSInteraction {
                                                               groupMetaMessage: groupMetaMessage,
                                                               hasLegacyMessageState: hasLegacyMessageState,
                                                               hasSyncedTranscript: hasSyncedTranscript,
-                                                              isFromLinkedDevice: isFromLinkedDevice,
                                                               isVoiceMessage: isVoiceMessage,
                                                               legacyMessageState: legacyMessageState,
                                                               legacyWasDelivered: legacyWasDelivered,
                                                               mostRecentFailureText: mostRecentFailureText,
                                                               recipientAddressStates: recipientAddressStates,
-                                                              storedMessageState: storedMessageState)
+                                                              storedMessageState: storedMessageState,
+                                                              wasNotCreatedLocally: wasNotCreatedLocally)
 
         case .paymentActivationRequestMessage:
 
@@ -891,7 +891,6 @@ extension TSInteraction {
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
-            let isFromLinkedDevice: Bool = try SDSDeserialization.required(record.isFromLinkedDevice, name: "isFromLinkedDevice")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
                throw SDSError.missingRequiredField
@@ -903,6 +902,7 @@ extension TSInteraction {
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
                throw SDSError.missingRequiredField
             }
+            let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
             return OWSPaymentActivationRequestMessage(grdbId: recordId,
                                                       uniqueId: uniqueId,
@@ -934,13 +934,13 @@ extension TSInteraction {
                                                       groupMetaMessage: groupMetaMessage,
                                                       hasLegacyMessageState: hasLegacyMessageState,
                                                       hasSyncedTranscript: hasSyncedTranscript,
-                                                      isFromLinkedDevice: isFromLinkedDevice,
                                                       isVoiceMessage: isVoiceMessage,
                                                       legacyMessageState: legacyMessageState,
                                                       legacyWasDelivered: legacyWasDelivered,
                                                       mostRecentFailureText: mostRecentFailureText,
                                                       recipientAddressStates: recipientAddressStates,
-                                                      storedMessageState: storedMessageState)
+                                                      storedMessageState: storedMessageState,
+                                                      wasNotCreatedLocally: wasNotCreatedLocally)
 
         case .recoverableDecryptionPlaceholder:
 
@@ -1895,7 +1895,6 @@ extension TSInteraction {
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
-            let isFromLinkedDevice: Bool = try SDSDeserialization.required(record.isFromLinkedDevice, name: "isFromLinkedDevice")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
                throw SDSError.missingRequiredField
@@ -1907,6 +1906,7 @@ extension TSInteraction {
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
                throw SDSError.missingRequiredField
             }
+            let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
             return TSOutgoingMessage(grdbId: recordId,
                                      uniqueId: uniqueId,
@@ -1938,13 +1938,13 @@ extension TSInteraction {
                                      groupMetaMessage: groupMetaMessage,
                                      hasLegacyMessageState: hasLegacyMessageState,
                                      hasSyncedTranscript: hasSyncedTranscript,
-                                     isFromLinkedDevice: isFromLinkedDevice,
                                      isVoiceMessage: isVoiceMessage,
                                      legacyMessageState: legacyMessageState,
                                      legacyWasDelivered: legacyWasDelivered,
                                      mostRecentFailureText: mostRecentFailureText,
                                      recipientAddressStates: recipientAddressStates,
-                                     storedMessageState: storedMessageState)
+                                     storedMessageState: storedMessageState,
+                                     wasNotCreatedLocally: wasNotCreatedLocally)
 
         case .unreadIndicatorInteraction:
 
@@ -2202,7 +2202,6 @@ extension TSInteraction: DeepCopyable {
             let groupMetaMessage: TSGroupMetaMessage = modelToCopy.groupMetaMessage
             let hasLegacyMessageState: Bool = modelToCopy.hasLegacyMessageState
             let hasSyncedTranscript: Bool = modelToCopy.hasSyncedTranscript
-            let isFromLinkedDevice: Bool = modelToCopy.isFromLinkedDevice
             let isVoiceMessage: Bool = modelToCopy.isVoiceMessage
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
@@ -2221,6 +2220,7 @@ extension TSInteraction: DeepCopyable {
                recipientAddressStates = nil
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
+            let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
 
             return OWSPaymentActivationRequestMessage(grdbId: id,
                                                       uniqueId: uniqueId,
@@ -2252,13 +2252,13 @@ extension TSInteraction: DeepCopyable {
                                                       groupMetaMessage: groupMetaMessage,
                                                       hasLegacyMessageState: hasLegacyMessageState,
                                                       hasSyncedTranscript: hasSyncedTranscript,
-                                                      isFromLinkedDevice: isFromLinkedDevice,
                                                       isVoiceMessage: isVoiceMessage,
                                                       legacyMessageState: legacyMessageState,
                                                       legacyWasDelivered: legacyWasDelivered,
                                                       mostRecentFailureText: mostRecentFailureText,
                                                       recipientAddressStates: recipientAddressStates,
-                                                      storedMessageState: storedMessageState)
+                                                      storedMessageState: storedMessageState,
+                                                      wasNotCreatedLocally: wasNotCreatedLocally)
         }
 
         if let modelToCopy = self as? OWSPaymentActivationRequestFinishedMessage {
@@ -2366,7 +2366,6 @@ extension TSInteraction: DeepCopyable {
             let groupMetaMessage: TSGroupMetaMessage = modelToCopy.groupMetaMessage
             let hasLegacyMessageState: Bool = modelToCopy.hasLegacyMessageState
             let hasSyncedTranscript: Bool = modelToCopy.hasSyncedTranscript
-            let isFromLinkedDevice: Bool = modelToCopy.isFromLinkedDevice
             let isVoiceMessage: Bool = modelToCopy.isVoiceMessage
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
@@ -2385,6 +2384,7 @@ extension TSInteraction: DeepCopyable {
                recipientAddressStates = nil
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
+            let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
 
             return OWSPaymentActivationRequestFinishedMessage(grdbId: id,
                                                               uniqueId: uniqueId,
@@ -2416,13 +2416,13 @@ extension TSInteraction: DeepCopyable {
                                                               groupMetaMessage: groupMetaMessage,
                                                               hasLegacyMessageState: hasLegacyMessageState,
                                                               hasSyncedTranscript: hasSyncedTranscript,
-                                                              isFromLinkedDevice: isFromLinkedDevice,
                                                               isVoiceMessage: isVoiceMessage,
                                                               legacyMessageState: legacyMessageState,
                                                               legacyWasDelivered: legacyWasDelivered,
                                                               mostRecentFailureText: mostRecentFailureText,
                                                               recipientAddressStates: recipientAddressStates,
-                                                              storedMessageState: storedMessageState)
+                                                              storedMessageState: storedMessageState,
+                                                              wasNotCreatedLocally: wasNotCreatedLocally)
         }
 
         if let modelToCopy = self as? OWSOutgoingPaymentMessage {
@@ -2530,7 +2530,6 @@ extension TSInteraction: DeepCopyable {
             let groupMetaMessage: TSGroupMetaMessage = modelToCopy.groupMetaMessage
             let hasLegacyMessageState: Bool = modelToCopy.hasLegacyMessageState
             let hasSyncedTranscript: Bool = modelToCopy.hasSyncedTranscript
-            let isFromLinkedDevice: Bool = modelToCopy.isFromLinkedDevice
             let isVoiceMessage: Bool = modelToCopy.isVoiceMessage
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
@@ -2549,6 +2548,7 @@ extension TSInteraction: DeepCopyable {
                recipientAddressStates = nil
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
+            let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
             let paymentCancellation: Data? = modelToCopy.paymentCancellation
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -2595,13 +2595,13 @@ extension TSInteraction: DeepCopyable {
                                              groupMetaMessage: groupMetaMessage,
                                              hasLegacyMessageState: hasLegacyMessageState,
                                              hasSyncedTranscript: hasSyncedTranscript,
-                                             isFromLinkedDevice: isFromLinkedDevice,
                                              isVoiceMessage: isVoiceMessage,
                                              legacyMessageState: legacyMessageState,
                                              legacyWasDelivered: legacyWasDelivered,
                                              mostRecentFailureText: mostRecentFailureText,
                                              recipientAddressStates: recipientAddressStates,
                                              storedMessageState: storedMessageState,
+                                             wasNotCreatedLocally: wasNotCreatedLocally,
                                              paymentCancellation: paymentCancellation,
                                              paymentNotification: paymentNotification,
                                              paymentRequest: paymentRequest)
@@ -2712,7 +2712,6 @@ extension TSInteraction: DeepCopyable {
             let groupMetaMessage: TSGroupMetaMessage = modelToCopy.groupMetaMessage
             let hasLegacyMessageState: Bool = modelToCopy.hasLegacyMessageState
             let hasSyncedTranscript: Bool = modelToCopy.hasSyncedTranscript
-            let isFromLinkedDevice: Bool = modelToCopy.isFromLinkedDevice
             let isVoiceMessage: Bool = modelToCopy.isVoiceMessage
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
@@ -2731,6 +2730,7 @@ extension TSInteraction: DeepCopyable {
                recipientAddressStates = nil
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
+            let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
 
             return TSOutgoingMessage(grdbId: id,
                                      uniqueId: uniqueId,
@@ -2762,13 +2762,13 @@ extension TSInteraction: DeepCopyable {
                                      groupMetaMessage: groupMetaMessage,
                                      hasLegacyMessageState: hasLegacyMessageState,
                                      hasSyncedTranscript: hasSyncedTranscript,
-                                     isFromLinkedDevice: isFromLinkedDevice,
                                      isVoiceMessage: isVoiceMessage,
                                      legacyMessageState: legacyMessageState,
                                      legacyWasDelivered: legacyWasDelivered,
                                      mostRecentFailureText: mostRecentFailureText,
                                      recipientAddressStates: recipientAddressStates,
-                                     storedMessageState: storedMessageState)
+                                     storedMessageState: storedMessageState,
+                                     wasNotCreatedLocally: wasNotCreatedLocally)
         }
 
         if let modelToCopy = self as? OWSVerificationStateChangeMessage {
@@ -5338,7 +5338,7 @@ extension TSInteractionSerializer {
     static var groupMetaMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true) }
     static var hasLegacyMessageStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true) }
     static var hasSyncedTranscriptColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true) }
-    static var isFromLinkedDeviceColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true) }
+    static var wasNotCreatedLocallyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "wasNotCreatedLocally", columnType: .int, isOptional: true) }
     static var isLocalChangeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true) }
     static var isViewOnceCompleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true) }
     static var isViewOnceMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true) }
@@ -5416,7 +5416,7 @@ extension TSInteractionSerializer {
         groupMetaMessageColumn,
         hasLegacyMessageStateColumn,
         hasSyncedTranscriptColumn,
-        isFromLinkedDeviceColumn,
+        wasNotCreatedLocallyColumn,
         isLocalChangeColumn,
         isViewOnceCompleteColumn,
         isViewOnceMessageColumn,
@@ -5891,7 +5891,7 @@ class TSInteractionSerializer: SDSSerializer {
         let groupMetaMessage: TSGroupMetaMessage? = nil
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
-        let isFromLinkedDevice: Bool? = nil
+        let wasNotCreatedLocally: Bool? = nil
         let isLocalChange: Bool? = nil
         let isViewOnceComplete: Bool? = nil
         let isViewOnceMessage: Bool? = nil
@@ -5939,7 +5939,7 @@ class TSInteractionSerializer: SDSSerializer {
         let giftBadge: Data? = nil
         let editState: TSEditState? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState)
     }
 }
 

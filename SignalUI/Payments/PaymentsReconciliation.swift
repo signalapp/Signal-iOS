@@ -616,10 +616,10 @@ public class PaymentsReconciliation: Dependencies {
             paymentType = .incomingUnidentified
             paymentState = .incomingComplete
         case .outgoingPayment,
-             .outgoingPaymentFromLinkedDevice,
+             .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationFromLinkedDevice:
+             .outgoingDefragmentationNotFromLocalDevice:
             paymentType = .outgoingUnidentified
             paymentState = .outgoingComplete
         @unknown default:

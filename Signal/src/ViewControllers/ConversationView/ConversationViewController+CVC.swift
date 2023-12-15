@@ -423,7 +423,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     }
 
                     if let outgoingMessage = renderItem.interaction as? TSOutgoingMessage,
-                       !outgoingMessage.isFromLinkedDevice,
+                       !outgoingMessage.wasNotCreatedLocally,
                        wasJustInserted {
                         // Whenever we send an outgoing message from the local device,
                         // auto-scroll to the bottom of the conversation, regardless

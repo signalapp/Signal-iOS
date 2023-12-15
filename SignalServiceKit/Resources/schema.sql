@@ -80,7 +80,7 @@ CREATE
             ,"groupMetaMessage" INTEGER
             ,"hasLegacyMessageState" INTEGER
             ,"hasSyncedTranscript" INTEGER
-            ,"isFromLinkedDevice" INTEGER
+            ,"wasNotCreatedLocally" INTEGER
             ,"isLocalChange" INTEGER
             ,"isViewOnceComplete" INTEGER
             ,"isViewOnceMessage" INTEGER

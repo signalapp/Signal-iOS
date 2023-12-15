@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-              isFromLinkedDevice:(BOOL)isFromLinkedDevice
+            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
@@ -116,13 +116,13 @@ NS_ASSUME_NONNULL_BEGIN
                     groupMetaMessage:groupMetaMessage
                hasLegacyMessageState:hasLegacyMessageState
                  hasSyncedTranscript:hasSyncedTranscript
-                  isFromLinkedDevice:isFromLinkedDevice
                       isVoiceMessage:isVoiceMessage
                   legacyMessageState:legacyMessageState
                   legacyWasDelivered:legacyWasDelivered
                mostRecentFailureText:mostRecentFailureText
               recipientAddressStates:recipientAddressStates
-                  storedMessageState:storedMessageState];
+                  storedMessageState:storedMessageState
+                wasNotCreatedLocally:wasNotCreatedLocally];
 
     return self;
 }

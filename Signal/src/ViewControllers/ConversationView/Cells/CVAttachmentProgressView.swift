@@ -402,9 +402,9 @@ public class CVAttachmentProgressView: ManualLayoutView {
         if let attachmentStream = attachment as? TSAttachmentStream {
             if let outgoingMessage = interaction as? TSOutgoingMessage {
                 let hasSendFailed = outgoingMessage.messageState == .failed
-                let isFromLinkedDevice = outgoingMessage.isFromLinkedDevice
+                let wasNotCreatedLocally = outgoingMessage.wasNotCreatedLocally
                 guard !attachmentStream.isUploaded,
-                        !isFromLinkedDevice,
+                        !wasNotCreatedLocally,
                         !hasSendFailed else {
                     return .none
                 }

@@ -83,8 +83,8 @@ extension CVNode {
         interaction as? TSOutgoingMessage != nil
     }
 
-    var isFromLinkedDevice: Bool {
-        (interaction as? TSOutgoingMessage)?.isFromLinkedDevice == true
+    var wasNotCreatedLocally: Bool {
+        (interaction as? TSOutgoingMessage)?.wasNotCreatedLocally == true
     }
 
     var wasRemotelyDeleted: Bool {
