@@ -289,7 +289,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         return OWSTableItem(
             customCellBlock: {
                 return OWSTableItem.buildCell(
-                    icon: .qrCode,
+                    icon: .qrCodeLight,
                     itemName: OWSLocalizedString(
                         "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE",
                         comment: "Title for a table cell that lets the user manage their username link and QR code."
@@ -346,7 +346,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         return OWSTableItem(
             customCellBlock: { [weak self] in
                 return OWSTableItem.buildCell(
-                    icon: .qrCode,
+                    icon: .qrCodeLight,
                     itemName: OWSLocalizedString(
                         "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE",
                         comment: "Title for a table cell that lets the user manage their username link and QR code."

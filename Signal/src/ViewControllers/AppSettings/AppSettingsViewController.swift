@@ -491,6 +491,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         }
 
         usernameLinkButton.bounds = CGRect(origin: .zero, size: .square(36))
+        usernameLinkButton.imageView?.autoSetDimensions(to: .square(20))
 
         return usernameLinkButton
     }
