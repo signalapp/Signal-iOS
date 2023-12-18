@@ -13,7 +13,10 @@ extension BadgeGiftingConfirmationViewController {
     func startPaypal() {
         Logger.info("[Gifting] Starting PayPal...")
 
-        var hasCharged = false
+        // This variable doesn't actually do anything because `startJob` will
+        // always throw a `SendGiftError` and there aren't any other throwable
+        // things that come after it.
+        var mightHaveBeenCharged = false
 
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Void in
             try self.databaseStorage.read { transaction in
@@ -47,6 +50,7 @@ extension BadgeGiftingConfirmationViewController {
                 }
         }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<Void> in
             guard let self else { throw SendGiftError.userCanceledBeforeChargeCompleted }
+            mightHaveBeenCharged = true
             return DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: DonationViewsUtil.Gifts.startJob(
@@ -55,8 +59,7 @@ extension BadgeGiftingConfirmationViewController {
                     thread: self.thread,
                     messageText: self.messageText,
                     databaseStorage: self.databaseStorage,
-                    blockingManager: self.blockingManager,
-                    onChargeSucceeded: { hasCharged = true }
+                    blockingManager: self.blockingManager
                 )
             )
         }.done(on: DispatchQueue.main) { [weak self] in
@@ -68,7 +71,7 @@ extension BadgeGiftingConfirmationViewController {
                 sendGiftError = error
             } else {
                 owsFailDebug("[Gifting] Expected a SendGiftError but got \(error)")
-                sendGiftError = hasCharged ? .failedAndUserMaybeCharged : .failedAndUserNotCharged
+                sendGiftError = mightHaveBeenCharged ? .failedAndUserMaybeCharged : .failedAndUserNotCharged
             }
             DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: sendGiftError)
         }

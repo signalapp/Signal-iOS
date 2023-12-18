@@ -133,23 +133,22 @@ extension DonationViewsUtil {
             return (needsUserInteraction: needsUserInteraction, promise: promise)
         }
 
-        /// Start the gifting job and set up listeners. Throws if the recipient is blocked.
+        /// Runs the gifting job.
         ///
-        /// Durably enqueues a job to (1) do the charge (2) redeem the receipt credential (3)
-        /// enqueue a gift badge message (and optionally a text message) to the reipient.
+        /// Durably enqueues a job to (1) do the charge (2) redeem the receipt
+        /// credential (3) enqueue a gift badge message (and optionally a text
+        /// message) to the reipient.
         ///
-        /// `onChargeSucceeded` will be called when the charge succeeds, but before the message is
-        /// sent. May be useful for the UI.
+        /// Before attempting the job, we double-check that the recipient isn't
+        /// blocked. This isn't required from a correctness perspective -- the job
+        /// will triple-check that the recipient isn't blocked. However, once we
+        /// attempt the job, we have to report a "might have been charged" error, so
+        /// it's good to double-check before issuing a charge.
         ///
-        /// The happy path is two steps: payment method is charged, then the job finishes.
-        ///
-        /// The valid sad paths are:
-        ///
-        /// 1. We started charging the card but we don't know whether it succeeded before the job
-        ///    failed
-        /// 2. The card is "definitively" charged, but then the job fails
-        ///
-        /// There are some invalid sad paths that we try to handle, but those indicate Signal bugs.
+        /// The `onChargeSucceeded` block will be called when the charge succeeds
+        /// but before the message is sent. This may be useful for the UI. However,
+        /// note that the block isn't invoked until *after* the charge succeeds, so
+        /// the charge may succeed even if the block hasn't yet been invoked.
         static func startJob(
             amount: FiatMoney,
             preparedPayment: PreparedGiftPayment,
@@ -166,79 +165,22 @@ extension DonationViewsUtil {
                 thread: thread,
                 messageText: messageText
             )
-            let jobId = jobRecord.uniqueId
-
-            let (promise, future) = Promise<Void>.pending()
-
-            var hasCharged = false
-
-            let observer = NotificationCenter.default.addObserver(
-                forName: SendGiftBadgeJobQueue.JobEventNotification,
-                object: nil,
-                queue: .main
-            ) { notification in
-                guard
-                    let userInfo = notification.userInfo,
-                    let notificationJobId = userInfo["jobId"] as? String,
-                    let rawJobEvent = userInfo["jobEvent"] as? Int,
-                    let jobEvent = SendGiftBadgeJobQueue.JobEvent(rawValue: rawJobEvent)
-                else {
-                    owsFail("[Gifting] Received a gift badge job event with invalid user data")
-                }
-                guard notificationJobId == jobId else {
-                    // This can happen if:
-                    //
-                    // 1. The user enqueues a "send gift badge" job
-                    // 2. The app terminates before it can complete (e.g., due to a crash)
-                    // 3. Before the job finishes, the user restarts the app and tries to gift another badge
-                    //
-                    // This is unusual and may indicate a bug, so we log, but we don't error/crash
-                    // because it can happen under "normal" circumstances.
-                    Logger.warn("[Gifting] Received an event for a different badge gifting job.")
-                    return
-                }
-
-                switch jobEvent {
-                case .jobFailed:
-                    future.reject(SendGiftError.failedAndUserMaybeCharged)
-                case .chargeSucceeded:
-                    guard !hasCharged else {
-                        // This job event can be emitted twice if the job fails (e.g., due to
-                        // network) after the payment method is charged, and then it's restarted.
-                        // That's unusual, but isn't necessarily a bug.
-                        Logger.warn("[Gifting] Received a \"charge succeeded\" event more than once")
-                        break
-                    }
-                    hasCharged = true
-                    onChargeSucceeded()
-                case .jobSucceeded:
-                    future.resolve(())
-                }
-            }
-
-            do {
-                try databaseStorage.write { transaction in
-                    // We should already have checked this earlier, but it's possible that the state
-                    // has changed on another device. We'll also check this inside the job before
-                    // running it.
-                    let contactAddress = thread.contactAddress
-                    if blockingManager.isAddressBlocked(contactAddress, transaction: transaction) {
+            return Promise.wrapAsync {
+                let chargePromise: Promise<Void>
+                let completionPromise: Promise<Void>
+                (chargePromise, completionPromise) = try await databaseStorage.awaitableWrite { tx in
+                    if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
                         throw SendGiftError.recipientIsBlocked
                     }
-
-                    DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, transaction: transaction)
+                    return DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, tx: tx)
                 }
-            } catch {
-                future.reject(error)
-            }
-
-            return promise.then(on: DispatchQueue.sharedUserInitiated) {
-                owsAssertDebug(hasCharged, "[Gifting] Expected \"charge succeeded\" event")
-                NotificationCenter.default.removeObserver(observer)
-                return Promise.value(())
-            }.recover(on: DispatchQueue.sharedUserInitiated) { error in
-                NotificationCenter.default.removeObserver(observer)
-                throw error
+                do {
+                    try await chargePromise.awaitable()
+                    await MainActor.run { onChargeSucceeded() }
+                    try await completionPromise.awaitable()
+                } catch {
+                    throw SendGiftError.failedAndUserMaybeCharged
+                }
             }
         }
 
