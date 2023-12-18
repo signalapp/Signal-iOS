@@ -59,7 +59,7 @@ extension DonationViewsUtil {
         DispatchQueue.sharedUserInitiated.async {
             observers.append(
                 nc.addObserver(
-                    forName: ReceiptCredentialRedemptionOperation.DidSucceedNotification,
+                    forName: ReceiptCredentialRedemptionJob.didSucceedNotification,
                     object: nil,
                     queue: nil
                 ) { _ in
@@ -69,7 +69,7 @@ extension DonationViewsUtil {
 
             observers.append(
                 nc.addObserver(
-                    forName: ReceiptCredentialRedemptionOperation.DidFailNotification,
+                    forName: ReceiptCredentialRedemptionJob.didFailNotification,
                     object: nil,
                     queue: nil
                 ) { _ in

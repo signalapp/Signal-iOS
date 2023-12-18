@@ -313,7 +313,7 @@ public final class DonationViewsUtil {
         currencyCode: Currency.Code
     ) -> Promise<Void> {
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Subscription> in
-            Logger.info("[Donations] Finalizing new subscription for card donation")
+            Logger.info("[Donations] Finalizing new subscription")
 
             return SubscriptionManagerImpl.finalizeNewSubscription(
                 forSubscriberId: subscriberId,
@@ -322,7 +322,7 @@ public final class DonationViewsUtil {
                 currencyCode: currencyCode
             )
         }.then(on: DispatchQueue.sharedUserInitiated) { _ in
-            Logger.info("[Donations] Redeeming monthly receipts for card donation")
+            Logger.info("[Donations] Redeeming monthly receipts")
 
             SubscriptionManagerImpl.requestAndRedeemReceipt(
                 subscriberId: subscriberId,

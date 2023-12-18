@@ -9,35 +9,57 @@ import SignalServiceKit
 
 /// Manages "donation receipt credential" redemption.
 ///
-/// Donation payments are handled differently depending on the payment method.
-/// Ultimately, however, all payments are "confirmed" – this means the user has
-/// authorized the payment. Once that happens, we end up with a "payment intent
-/// ID" as well as a "receipt credential request/context".
+/// Donation payments are handled differently depending on the payment
+/// method. Ultimately, however, all payments are "confirmed" – this means
+/// the user has authorized the payment. Once that happens, we end up with a
+/// "payment intent ID" as well as a "receipt credential request/context".
 ///
-/// At this point, we're in a zero-knowledge world – neither the payment intent
-/// ID nor the receipt credential request are associated with our account.
+/// At this point, we're in a zero-knowledge world – neither the payment
+/// intent ID nor the receipt credential request are associated with our
+/// account.
 ///
-/// We take the payment intent ID and receipt credential request, and send them
-/// (unauthenticated) to Signal servers. If the payment in question has been
-/// "processed" (per the relevant payment processor, such as Stripe), the server
-/// returns us a value that we can combine with our receipt credential request
-/// context to create a zero-knowledge "receipt credential".
+/// We take the payment intent ID and receipt credential request, and send
+/// them (unauthenticated) to Signal servers. If the payment in question has
+/// been "processed" (per the relevant payment processor, such as Stripe),
+/// the server returns us a value that we can combine with our receipt
+/// credential request context to create a zero-knowledge "receipt
+/// credential".
 ///
-/// Note that if the payment has not processed successfully we instead receive
-/// an error, which can tell us the status of the payment and how to proceed.
-/// For example, the payment may have failed to process, or may still be pending
-/// but not have affirmatively failed – we want to respond differently to those
-/// scenarios.
+/// Note that if the payment has not processed successfully, we instead
+/// receive an error which can tell us the status of the payment and how to
+/// proceed. For example, the payment may have failed to process, or may
+/// still be pending but not have affirmatively failed – we want to respond
+/// differently to those scenarios.
 ///
-/// *Finally*, we make an authenticated request to send a presentation for the
-/// ZK receipt credential to the service – thereby proving that we have made a
-/// donation – which assigns a badge to our account.
+/// *Finally*, we make an authenticated request to send a presentation for
+/// the ZK receipt credential to the service – thereby proving that we have
+/// made a donation – which assigns a badge to our account.
 ///
 /// - Note
-/// Some payment types (such as credit cards) usually process immediately, but
-/// others (such as SEPA debit transfers) can take days/weeks to process. During
-/// that time, receipt credential request redemption will fail.
-public class ReceiptCredentialRedemptionJobQueue: JobQueue {
+/// Some payment types (such as credit cards) usually process immediately,
+/// but others (such as SEPA debit transfers) can take days/weeks to
+/// process. During that time, receipt credential request redemption will
+/// fail.
+public class ReceiptCredentialRedemptionJobQueue {
+    private let jobQueueRunner: JobQueueRunner<
+        JobRecordFinderImpl<ReceiptCredentialRedemptionJobRecord>,
+        ReceiptCredentialRedemptionJobRunnerFactory
+    >
+
+    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobQueueRunner = JobQueueRunner(
+            canExecuteJobsConcurrently: true,
+            db: db,
+            jobFinder: JobRecordFinderImpl(db: db),
+            jobRunnerFactory: ReceiptCredentialRedemptionJobRunnerFactory()
+        )
+        self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
+    }
+
+    func start(appContext: AppContext) {
+        guard appContext.isMainApp else { return }
+        jobQueueRunner.start(shouldRestartExistingJobs: true)
+    }
 
     public func addBoostJob(
         amount: FiatMoney,
@@ -65,7 +87,7 @@ public class ReceiptCredentialRedemptionJobQueue: JobQueue {
             currencyCode: amount.currencyCode,
             boostPaymentIntentID: boostPaymentIntentID
         )
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        add(jobRecord: jobRecord, tx: transaction)
     }
 
     /// Add a new redemption job for a recurring payment.
@@ -75,9 +97,11 @@ public class ReceiptCredentialRedemptionJobQueue: JobQueue {
     /// `nil`! However, we fetch this from the service, which cannot guarantee a
     /// recognized value (as it is in turn fetched from an external service,
     /// such as Stripe).
+    ///
     /// - Parameter isNewSubscription
     /// `true` if this job represents a new or updated subscription. `false` if
     /// this job is associated with the renewal of an existing subscription.
+    ///
     /// - Parameter shouldSuppressPaymentAlreadyRedeemed
     /// Whether this job should suppress "payment already redeemed" errors.
     public func addSubscriptionJob(
@@ -109,52 +133,25 @@ public class ReceiptCredentialRedemptionJobQueue: JobQueue {
             currencyCode: nil,
             boostPaymentIntentID: String() // Unused
         )
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        add(jobRecord: jobRecord, tx: transaction)
     }
 
-    public typealias DurableOperationType = ReceiptCredentialRedemptionOperation
-
-    public let requiresInternet: Bool = true
-    public var isEnabled: Bool { CurrentAppContext().isMainApp }
-    public var runningOperations = AtomicArray<ReceiptCredentialRedemptionOperation>()
-
-    public init() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.setup()
-        }
-    }
-
-    public func setup() {
-        defaultSetup()
-    }
-
-    public let isSetup = AtomicBool(false)
-
-    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
-        // no special handling
-    }
-
-    let operationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "ReceiptCredentialRedemptionJobQueue"
-        return operationQueue
-    }()
-
-    public func operationQueue(jobRecord: ReceiptCredentialRedemptionJobRecord) -> OperationQueue {
-        return self.operationQueue
-    }
-
-    public func buildOperation(jobRecord: ReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> ReceiptCredentialRedemptionOperation {
-        return try ReceiptCredentialRedemptionOperation(jobRecord)
+    private func add(jobRecord: ReceiptCredentialRedemptionJobRecord, tx: SDSAnyWriteTransaction) {
+        jobRecord.anyInsert(transaction: tx)
+        tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
     }
 }
 
-public class ReceiptCredentialRedemptionOperation: OWSOperation, DurableOperation {
+private class ReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
+    func buildRunner() -> ReceiptCredentialRedemptionJobRunner { ReceiptCredentialRedemptionJobRunner() }
+}
+
+private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
     /// Represents the type of payment that resulted in this receipt credential
     /// redemption.
-    fileprivate enum PaymentType: CustomStringConvertible {
+    enum PaymentType: CustomStringConvertible {
         /// A one-time payment, or "boost".
-        case oneTimeBoost(paymentIntentId: String)
+        case oneTimeBoost(paymentIntentId: String, amount: FiatMoney)
 
         /// A recurring payment, or (an overloaded term) "subscription".
         case recurringSubscription(
@@ -191,130 +188,123 @@ public class ReceiptCredentialRedemptionOperation: OWSOperation, DurableOperatio
         }
     }
 
-    private enum ReceiptCredentialOperationError: Error, IsRetryableProvider {
-        /// The source that told us a payment was still processing.
-        enum PaymentStillProcessingSource {
-            case localState
-            case remoteService
-        }
-
-        /// A SEPA payment is still processing.
-        ///
-        /// We want to separate out this case to facilitate a bespoke retry
-        /// behavior. Normally, durable job operations run on launch, and then
-        /// have a delayed retry queued in-memory. However, we instead want SEPA
-        /// payment retries to occur once per *absolute* duration, rather than
-        /// duration since app launch.
-        case sepaPaymentStillProcessing(source: PaymentStillProcessingSource)
-        case nonSepaPaymentStillProcessing
-        case suppressPaymentAlreadyRedeemed
-        case other(errorCode: ReceiptCredentialRequestError.ErrorCode)
-
-        var isRetryableProvider: Bool {
-            switch self {
-            case .nonSepaPaymentStillProcessing:
-                // We want to retry these because we believe the payment will
-                // process quickly.
-                return true
-            case  .sepaPaymentStillProcessing:
-                // We don't want to retry these because we don't believe the
-                // payment will process quickly, so there's no point.
-                return false
-            case .suppressPaymentAlreadyRedeemed, .other:
-                // Any remaining error cases here are fatal.
-                return false
-            }
-        }
-    }
-
     private var receiptCredentialResultStore: ReceiptCredentialResultStore {
         DependenciesBridge.shared.receiptCredentialResultStore
     }
 
-    // MARK: DurableOperation
+    // MARK: - Retries
 
-    public let jobRecord: ReceiptCredentialRedemptionJobRecord
-    weak public var durableOperationDelegate: ReceiptCredentialRedemptionJobQueue?
-    public var operation: OWSOperation { self }
+    private enum Constants {
+        /// Defines the time between retries for SEPA and iDEAL.
+        static let sepaRetryInterval = TSConstants.isUsingProductionService ? kDayInterval : kMinuteInterval
+    }
 
-    public var maxRetries: UInt {
+    private enum RetryInterval {
+        case exponential
+        case sepa
+    }
+
+    private func stillProcessingRetryParameters(paymentMethod: DonationPaymentMethod?) -> (RetryInterval, maxRetries: UInt) {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
-            // We'll retry operations for these payment types fairly
-            // aggressively, so we need a large retry buffer.
-            return 110
+            // We'll retry operations for these payment types fairly aggressively, so
+            // we need a large retry buffer.
+            return (.exponential, 110)
         case .sepa, .ideal:
-            // We'll only retry operations for SEPA 1x/day (including those
-            // fronted by iDEAL), so we limit the retry buffer. They should
-            // always complete within 14 business days, so this is generous
-            // compared to what we should need, but prevents us from having an
-            // indefinite job if for whatever reason a payment never processes.
-            return 30
+            // We'll only retry operations for SEPA 1x/day (including those fronted by
+            // iDEAL), so we limit the retry buffer. They should always complete within
+            // 14 business days, so this is generous compared to what we should need,
+            // but prevents us from having an indefinite job if for whatever reason a
+            // payment never processes.
+            return (.sepa, 30)
         }
     }
 
-    // MARK: Job state
+    var transientFailureCount: UInt = 0
 
-    private let paymentProcessor: DonationPaymentProcessor
-    private let paymentMethod: DonationPaymentMethod?
-    private let receiptCredentialRequest: ReceiptCredentialRequest
-    private let receiptCredentialRequestContext: ReceiptCredentialRequestContext
-    private var receiptCredentialPresentation: ReceiptCredentialPresentation?
+    private func triggerExponentialRetry(jobRecord: JobRecord) -> TimeInterval {
+        // If this operation just started, but we've tried in the past and have
+        // persisted failures on the job record, we'll respect those and start with
+        // a longer retry. Otherwise, as this operation continues to retry it'll
+        // get a longer retry from its local error count.
+        transientFailureCount += 1
+        return OWSOperation.retryIntervalForExponentialBackoff(
+            failureCount: max(jobRecord.failureCount, transientFailureCount)
+        )
+    }
 
-    private let paymentType: PaymentType
+    private func timeIntervalSince(_ timestampMs: UInt64) -> TimeInterval {
+        return Date().timeIntervalSince(Date(millisecondsSince1970: timestampMs))
+    }
 
-    /// For one-time payments, this should always be present.
-    ///
-    /// For recurring payments, this will be absent until the job runs, which
-    /// should populate it.
-    private var amount: FiatMoney?
+    private func sepaRetryDelay(configuration: Configuration) -> TimeInterval? {
+        guard configuration.paymentMethod == .sepa else {
+            return nil
+        }
+        let priorError = databaseStorage.read(block: { tx -> ReceiptCredentialRequestError? in
+            return receiptCredentialResultStore.getRequestError(
+                errorMode: configuration.paymentType.receiptCredentialResultMode,
+                tx: tx.asV2Read
+            )
+        })
+        guard let priorError, priorError.errorCode == .paymentStillProcessing else {
+            return nil
+        }
+        let delay = Constants.sepaRetryInterval - timeIntervalSince(priorError.timestampMs)
+        guard delay > 0 else {
+            return nil
+        }
+        owsAssertDebug(priorError.paymentMethod == .sepa)
+        return delay
+    }
 
-    /// In order to properly show the "you have a new badge" UI after this job
-    /// succeeds, we need to know what badges we had beforehand.
-    private let badgesSnapshotBeforeJob: ProfileBadgesSnapshot
+    // MARK: - Parsing
 
-    /// In order to show UI after this job completes, we need to know what badge
-    /// we were trying to redeem.
-    ///
-    /// - Important
-    /// This property starts `nil`, and is populated when the job runs. It is
-    /// guaranteed to be present when the job completes with either success or
-    /// a known operation error.
-    private var badge: ProfileBadge?
+    private struct Configuration {
+        var paymentMethod: DonationPaymentMethod?
+        var paymentProcessor: DonationPaymentProcessor
+        var paymentType: PaymentType
+        var receiptCredentialRequest: ReceiptCredentialRequest
+        var receiptCredentialRequestContext: ReceiptCredentialRequestContext
+        var receiptCredentialPresentation: ReceiptCredentialPresentation?
+    }
 
-    // MARK: Init
+    private func parseJobRecord(_ jobRecord: ReceiptCredentialRedemptionJobRecord) throws -> Configuration {
+        guard let paymentProcessor = DonationPaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
+            throw OWSGenericError("Unexpected payment processor in job record! \(jobRecord.paymentProcessor)")
+        }
 
-    fileprivate init(_ jobRecord: ReceiptCredentialRedemptionJobRecord) throws {
-        self.jobRecord = jobRecord
-
-        self.paymentProcessor = try {
-            guard let paymentProcessor = DonationPaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
-                throw JobError.permanentFailure(description: "Unexpected payment processor in job record! \(jobRecord.paymentProcessor)")
-            }
-
-            return paymentProcessor
-        }()
-
-        self.paymentMethod = try jobRecord.paymentMethod.map { paymentMethodString in
+        let paymentMethod: DonationPaymentMethod? = try jobRecord.paymentMethod.map { paymentMethodString in
             guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
-                throw JobError.permanentFailure(description: "[Donations] Unexpected payment method in job record! \(paymentMethodString)")
+                throw OWSGenericError("[Donations] Unexpected payment method in job record! \(paymentMethodString)")
             }
-
             return paymentMethod
         }
 
+        let receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
+            contents: [UInt8](jobRecord.receiptCredentialRequestContext)
+        )
+        let receiptCredentialRequest = try ReceiptCredentialRequest(
+            contents: [UInt8](jobRecord.receiptCredentialRequest)
+        )
+        let receiptCredentialPresentation = try jobRecord.receiptCredentialPresentation.map {
+            try ReceiptCredentialPresentation(contents: [UInt8]($0))
+        }
+
+        let paymentType: PaymentType
         if jobRecord.isBoost {
             guard
                 let value = jobRecord.amount.map({ $0 as Decimal }),
                 let currencyCode = jobRecord.currencyCode
             else {
-                throw JobError.permanentFailure(description: "[Donations] Boost job record missing amount!")
+                throw OWSGenericError("[Donations] Boost job record missing amount!")
             }
-
-            self.paymentType = .oneTimeBoost(paymentIntentId: jobRecord.boostPaymentIntentID)
-            self.amount = FiatMoney(currencyCode: currencyCode, value: value)
+            paymentType = .oneTimeBoost(
+                paymentIntentId: jobRecord.boostPaymentIntentID,
+                amount: FiatMoney(currencyCode: currencyCode, value: value)
+            )
         } else {
-            self.paymentType = .recurringSubscription(
+            paymentType = .recurringSubscription(
                 subscriberId: jobRecord.subscriberID,
                 targetSubscriptionLevel: jobRecord.targetSubscriptionLevel,
                 priorSubscriptionLevel: jobRecord.priorSubscriptionLevel,
@@ -323,232 +313,243 @@ public class ReceiptCredentialRedemptionOperation: OWSOperation, DurableOperatio
             )
         }
 
-        self.receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
-            contents: [UInt8](jobRecord.receiptCredentialRequestContext)
+        return Configuration(
+            paymentMethod: paymentMethod,
+            paymentProcessor: paymentProcessor,
+            paymentType: paymentType,
+            receiptCredentialRequest: receiptCredentialRequest,
+            receiptCredentialRequestContext: receiptCredentialRequestContext,
+            receiptCredentialPresentation: receiptCredentialPresentation
         )
-        self.receiptCredentialRequest = try ReceiptCredentialRequest(
-            contents: [UInt8](jobRecord.receiptCredentialRequest)
-        )
-        self.receiptCredentialPresentation = try jobRecord.receiptCredentialPresentation.map {
-            try ReceiptCredentialPresentation(contents: [UInt8]($0))
-        }
-
-        self.badgesSnapshotBeforeJob = .current()
     }
 
-    override public func run() {
-        Logger.info("[Donations] Running job for \(paymentType).")
+    // MARK: - Running
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<ProfileBadge> in
-            return self.loadBadge()
-        }.then(on: DispatchQueue.global()) { badge -> Promise<(ProfileBadge, FiatMoney)> in
-            return self.getAmount().map(on: SyncScheduler()) { amount in
-                (badge, amount)
+    func runJobAttempt(_ jobRecord: ReceiptCredentialRedemptionJobRecord) async -> JobAttemptResult {
+        do {
+            return try await _runJobAttempt(jobRecord)
+        } catch {
+            if error.isRetryable {
+                // In practice, the only retryable errors are network failures.
+                owsAssertDebug(error.isNetworkFailureOrTimeout)
+                return .retryAfter(triggerExponentialRetry(jobRecord: jobRecord))
             }
-        }.then(on: DispatchQueue.global()) { (badge, amount) -> Promise<ReceiptCredentialPresentation> in
-            return self.getReceiptCredentialPresentation(
-                badge: badge,
-                amount: amount
-            )
-        }.then(on: DispatchQueue.global()) { presentation -> Promise<Void> in
-            return SubscriptionManagerImpl.redeemReceiptCredentialPresentation(
-                receiptCredentialPresentation: presentation
-            )
-        }.done(on: DispatchQueue.global()) {
-            Logger.info("[Donations] Successfully redeemed receipt credential presentation")
-            self.reportSuccess()
-        }.catch(on: DispatchQueue.global()) { error in
-            self.reportError(error)
-        }
-    }
-
-    /// Before running the operation, determine if we even need to.
-    ///
-    /// We should not bother retrying a SEPA job if we attempted within the last
-    /// day and learned that the payment was, at the time, still processing.
-    override public func checkForPreconditionError() -> Error? {
-        func timeIntervalSince(_ timestampMs: UInt64) -> TimeInterval {
-            return Date().timeIntervalSince(Date(millisecondsSince1970: timestampMs))
-        }
-
-        if
-            paymentMethod == .sepa,
-            let priorError = databaseStorage.read(block: { tx -> ReceiptCredentialRequestError? in
-                return receiptCredentialResultStore.getRequestError(
-                    errorMode: paymentType.receiptCredentialResultMode,
-                    tx: tx.asV2Read
-                )
-            }),
-            priorError.errorCode == .paymentStillProcessing,
-            timeIntervalSince(priorError.timestampMs) < kDayInterval
-        {
-            // If we are a SEPA job being retried, and we got a "still
-            // processing" error less than a day ago, we should assume nothing
-            // has changed and short-circuit.
-            owsAssertDebug(priorError.paymentMethod == .sepa)
-
-            return ReceiptCredentialOperationError.sepaPaymentStillProcessing(
-                source: .localState
-            )
-        }
-
-        return super.checkForPreconditionError()
-    }
-
-    /// Once this promise resolves, `self.badge` is guaranteed to be populated.
-    private func loadBadge() -> Promise<ProfileBadge> {
-        if let badge = self.badge {
-            return .value(badge)
-        }
-
-        return firstly(on: DispatchQueue.global()) { () -> Promise<ProfileBadge> in
-            switch self.paymentType {
-            case .oneTimeBoost:
-                return SubscriptionManagerImpl.getBoostBadge()
-            case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
-                return SubscriptionManagerImpl.getSubscriptionBadge(
-                    subscriptionLevel: targetSubscriptionLevel
-                )
+            Logger.warn("[Donations] Job encountered unexpected terminal error")
+            return await databaseStorage.awaitableWrite { tx in
+                jobRecord.anyRemove(transaction: tx)
+                return .finished(.failure(error))
             }
-        }.map(on: SyncScheduler()) { badge -> ProfileBadge in
-            self.badge = badge
-            return badge
         }
     }
 
-    /// Once this promise resolves, `self.amount` is guaranteed to be populated.
-    private func getAmount() -> Promise<FiatMoney> {
-        if let amount = self.amount {
-            return .value(amount)
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {
+        switch result.ranSuccessfullyOrError {
+        case .success:
+            Logger.info("[Donations] Redemption job succeeded")
+            ReceiptCredentialRedemptionJob.postNotification(name: ReceiptCredentialRedemptionJob.didSucceedNotification)
+        case .failure:
+            ReceiptCredentialRedemptionJob.postNotification(name: ReceiptCredentialRedemptionJob.didFailNotification)
+        }
+    }
+
+    private func _runJobAttempt(_ jobRecord: ReceiptCredentialRedemptionJobRecord) async throws -> JobAttemptResult {
+        // First, load a bunch of state that *could* fail. If it does, the
+        // operation can't ever succeed, so we throw it away.
+        let configuration = try parseJobRecord(jobRecord)
+
+        Logger.info("[Donations] Running job for \(configuration.paymentType).")
+
+        // When the app relaunches, we'll try to restart all pending redemption
+        // jobs. If one is for SEPA, and if that job hit a "still processing" error
+        // in the past 24 hours, don't check again until 24 hours after the error.
+        if let retryDelay = sepaRetryDelay(configuration: configuration) {
+            return .retryAfter(retryDelay, canRetryEarly: false)
         }
 
-        switch paymentType {
-        case .oneTimeBoost:
-            guard let amount else { owsFail("How did we construct a boost job without an amount?") }
+        // In order to properly show the "you have a new badge" UI after this job
+        // succeeds, we need to know what badges we had beforehand.
+        let badgesSnapshotBeforeJob: ProfileBadgesSnapshot = .current()
 
-            return .value(amount)
-        case let .recurringSubscription(subscriberId, _, _, _, _):
-            return SubscriptionManagerImpl
-                .getCurrentSubscriptionStatus(for: subscriberId)
-                .map(on: DispatchQueue.global()) { subscription -> FiatMoney in
-                    guard let subscription else {
-                        throw OWSAssertionError("Missing subscription")
+        let badge: ProfileBadge
+        if let cachedBadge {
+            badge = cachedBadge
+        } else {
+            badge = try await loadBadge(paymentType: configuration.paymentType)
+            cachedBadge = badge
+        }
+
+        let amount: FiatMoney
+        if let cachedAmount {
+            amount = cachedAmount
+        } else {
+            amount = try await loadAmount(paymentType: configuration.paymentType)
+            cachedAmount = amount
+        }
+
+        let receiptCredentialPresentation: ReceiptCredentialPresentation
+        if let persistedReceiptCredentialPresentation = configuration.receiptCredentialPresentation {
+            Logger.info("[Donations] Using persisted receipt credential presentation")
+            receiptCredentialPresentation = persistedReceiptCredentialPresentation
+        } else {
+            Logger.info("[Donations] Creating new receipt credential presentation")
+            do {
+                receiptCredentialPresentation = try await fetchReceiptCredentialPresentation(
+                    jobRecord: jobRecord,
+                    configuration: configuration,
+                    badge: badge,
+                    amount: amount
+                )
+            } catch let error as SubscriptionManagerImpl.KnownReceiptCredentialRequestError {
+                let errorCode = error.errorCode
+                let chargeFailureCodeIfPaymentFailed = error.chargeFailureCodeIfPaymentFailed
+                let paymentMethod = configuration.paymentMethod
+                let paymentType = configuration.paymentType
+
+                return await databaseStorage.awaitableWrite { tx in
+                    if
+                        errorCode == .paymentIntentRedeemed,
+                        case .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true) = paymentType
+                    {
+                        Logger.warn("[Donations] Suppressing payment-already-redeemed error.")
+                        jobRecord.anyRemove(transaction: tx)
+                        return .finished(.success(()))
                     }
 
-                    Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
+                    self.persistErrorCode(
+                        errorCode: errorCode,
+                        chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
+                        configuration: configuration,
+                        badge: badge,
+                        amount: amount,
+                        tx: tx.asV2Write
+                    )
 
-                    self.amount = subscription.amount
-                    return subscription.amount
+                    if errorCode == .paymentStillProcessing {
+                        let (retryInterval, maxRetries) = self.stillProcessingRetryParameters(paymentMethod: paymentMethod)
+                        if jobRecord.failureCount < maxRetries {
+                            Logger.warn("[Donations] Payment still processing; scheduling retry…")
+                            jobRecord.addFailure(tx: tx)
+                            switch retryInterval {
+                            case .exponential:
+                                return .retryAfter(self.triggerExponentialRetry(jobRecord: jobRecord))
+                            case .sepa:
+                                return .retryAfter(Constants.sepaRetryInterval, canRetryEarly: false)
+                            }
+                        }
+                    }
+
+                    Logger.warn("[Donations] Couldn't fetch credential; aborting: \(errorCode)")
+                    jobRecord.anyRemove(transaction: tx)
+                    return .finished(.failure(error))
                 }
+            }
+        }
+
+        try await SubscriptionManagerImpl.redeemReceiptCredentialPresentation(
+            receiptCredentialPresentation: receiptCredentialPresentation
+        ).awaitable()
+
+        return await databaseStorage.awaitableWrite { tx in
+            self.receiptCredentialResultStore.clearRequestError(
+                errorMode: configuration.paymentType.receiptCredentialResultMode,
+                tx: tx.asV2Write
+            )
+            self.receiptCredentialResultStore.setRedemptionSuccess(
+                success: ReceiptCredentialRedemptionSuccess(
+                    badgesSnapshotBeforeJob: badgesSnapshotBeforeJob,
+                    badge: badge,
+                    paymentMethod: configuration.paymentMethod
+                ),
+                successMode: configuration.paymentType.receiptCredentialResultMode,
+                tx: tx.asV2Write
+            )
+
+            DonationReceipt(
+                receiptType: configuration.paymentType.donationReceiptType,
+                timestamp: Date(),
+                amount: amount
+            ).anyInsert(transaction: tx)
+
+            jobRecord.anyRemove(transaction: tx)
+            return .finished(.success(()))
         }
     }
 
-    private func getReceiptCredentialPresentation(
+    var cachedBadge: ProfileBadge?
+
+    private func loadBadge(paymentType: PaymentType) async throws -> ProfileBadge {
+        switch paymentType {
+        case .oneTimeBoost:
+            return try await SubscriptionManagerImpl.getBoostBadge().awaitable()
+        case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
+            return try await SubscriptionManagerImpl.getSubscriptionBadge(
+                subscriptionLevel: targetSubscriptionLevel
+            ).awaitable()
+        }
+    }
+
+    var cachedAmount: FiatMoney?
+
+    private func loadAmount(paymentType: PaymentType) async throws -> FiatMoney {
+        switch paymentType {
+        case .oneTimeBoost(paymentIntentId: _, amount: let amount):
+            return amount
+        case let .recurringSubscription(subscriberId, _, _, _, _):
+            let subscription = try await SubscriptionManagerImpl.getCurrentSubscriptionStatus(for: subscriberId).awaitable()
+            guard let subscription else {
+                throw OWSAssertionError("Missing subscription")
+            }
+            Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
+            return subscription.amount
+        }
+    }
+
+    private func fetchReceiptCredentialPresentation(
+        jobRecord: ReceiptCredentialRedemptionJobRecord,
+        configuration: Configuration,
         badge: ProfileBadge,
         amount: FiatMoney
-    ) -> Promise<ReceiptCredentialPresentation> {
-        // We already have a receiptCredentialPresentation, lets use it
-        if let receiptCredentialPresentation = self.receiptCredentialPresentation {
-            Logger.info("[Donations] Using persisted receipt credential presentation")
-            return Promise.value(receiptCredentialPresentation)
+    ) async throws -> ReceiptCredentialPresentation {
+        let receiptCredentialPresentation: ReceiptCredentialPresentation
+        switch configuration.paymentType {
+        case let .oneTimeBoost(paymentIntentId: paymentIntentId, amount: _):
+            Logger.info("[Donations] Durable job requesting receipt for boost")
+            receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+                boostPaymentIntentId: paymentIntentId,
+                expectedBadgeLevel: .boostBadge,
+                paymentProcessor: configuration.paymentProcessor,
+                context: configuration.receiptCredentialRequestContext,
+                request: configuration.receiptCredentialRequest
+            ).awaitable()
+
+        case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
+            Logger.info("[Donations] Durable job requesting receipt for subscription")
+            receiptCredentialPresentation = try await SubscriptionManagerImpl.requestReceiptCredentialPresentation(
+                subscriberId: subscriberId,
+                targetSubscriptionLevel: targetSubscriptionLevel,
+                priorSubscriptionLevel: priorSubscriptionLevel,
+                context: configuration.receiptCredentialRequestContext,
+                request: configuration.receiptCredentialRequest
+            ).awaitable()
         }
-
-        return firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
-            Logger.info("[Donations] Creating new receipt credential presentation")
-
-            // Create a new receipt credential presentation
-            switch self.paymentType {
-            case let .oneTimeBoost(paymentIntentId):
-                Logger.info("[Donations] Durable job requesting receipt for boost")
-                return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
-                    boostPaymentIntentId: paymentIntentId,
-                    expectedBadgeLevel: .boostBadge,
-                    paymentProcessor: self.paymentProcessor,
-                    context: self.receiptCredentialRequestContext,
-                    request: self.receiptCredentialRequest
-                )
-            case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
-                Logger.info("[Donations] Durable job requesting receipt for subscription")
-                return try SubscriptionManagerImpl.requestReceiptCredentialPresentation(
-                    subscriberId: subscriberId,
-                    targetSubscriptionLevel: targetSubscriptionLevel,
-                    priorSubscriptionLevel: priorSubscriptionLevel,
-                    context: self.receiptCredentialRequestContext,
-                    request: self.receiptCredentialRequest
-                )
-            }
-        }.map(on: DispatchQueue.global()) { newReceiptCredentialPresentation -> ReceiptCredentialPresentation in
-            Logger.info("[Donations] Storing receipt credential presentation in case the job fails")
-
-            self.databaseStorage.write { tx in
-                self.jobRecord.update(
-                    withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
-                    transaction: tx
-                )
-            }
-
-            return newReceiptCredentialPresentation
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ReceiptCredentialPresentation> in
-            guard let knownReceiptCredentialRequestError = error as? SubscriptionManagerImpl.KnownReceiptCredentialRequestError else {
-                throw error
-            }
-
-            let errorCode = knownReceiptCredentialRequestError.errorCode
-            let chargeFailureCodeIfPaymentFailed = knownReceiptCredentialRequestError.chargeFailureCodeIfPaymentFailed
-
-            switch (self.paymentType, errorCode) {
-            case (
-                .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true),
-                .paymentIntentRedeemed
-            ):
-                // We got, and want to suppress, a "payment already redeemed"
-                // error.
-                throw ReceiptCredentialOperationError.suppressPaymentAlreadyRedeemed
-            default:
-                break
-            }
-
-            self.databaseStorage.write { tx in
-                self.persistErrorCode(
-                    receiptCredentialRequestErrorCode: errorCode,
-                    chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
-                    badge: badge,
-                    amount: amount,
-                    tx: tx.asV2Write
-                )
-            }
-
-            switch errorCode {
-            case .paymentStillProcessing where self.paymentMethod == .sepa:
-                throw ReceiptCredentialOperationError.sepaPaymentStillProcessing(
-                    source: .remoteService
-                )
-            case .paymentStillProcessing:
-                throw ReceiptCredentialOperationError.nonSepaPaymentStillProcessing
-            case
-                    .paymentFailed,
-                    .localValidationFailed,
-                    .serverValidationFailed,
-                    .paymentNotFound,
-                    .paymentIntentRedeemed:
-                throw ReceiptCredentialOperationError.other(
-                    errorCode: errorCode
-                )
-            }
+        await databaseStorage.awaitableWrite { tx in
+            jobRecord.setReceiptCredentialPresentation(receiptCredentialPresentation.serialize().asData, tx: tx)
         }
+        return receiptCredentialPresentation
     }
 
     private func persistErrorCode(
-        receiptCredentialRequestErrorCode: ReceiptCredentialRequestError.ErrorCode,
+        errorCode: ReceiptCredentialRequestError.ErrorCode,
         chargeFailureCodeIfPaymentFailed: String?,
+        configuration: Configuration,
         badge: ProfileBadge,
         amount: FiatMoney,
         tx: DBWriteTransaction
     ) {
         let receiptCredentialRequestError: ReceiptCredentialRequestError = {
-            if let paymentMethod = self.paymentMethod {
+            if let paymentMethod = configuration.paymentMethod {
                 return ReceiptCredentialRequestError(
-                    errorCode: receiptCredentialRequestErrorCode,
+                    errorCode: errorCode,
                     chargeFailureCodeIfPaymentFailed: chargeFailureCodeIfPaymentFailed,
                     badge: badge,
                     amount: amount,
@@ -556,184 +557,25 @@ public class ReceiptCredentialRedemptionOperation: OWSOperation, DurableOperatio
                 )
             } else {
                 Logger.warn("[Donations] Building legacy error, job record missing fields!")
-
-                return ReceiptCredentialRequestError(
-                    legacyErrorCode: receiptCredentialRequestErrorCode
-                )
+                return ReceiptCredentialRequestError(legacyErrorCode: errorCode)
             }
         }()
 
         receiptCredentialResultStore.setRequestError(
             error: receiptCredentialRequestError,
-            errorMode: self.paymentType.receiptCredentialResultMode,
+            errorMode: configuration.paymentType.receiptCredentialResultMode,
             tx: tx
         )
-    }
-
-    override public func didSucceed() {
-        Logger.info("[Donations] Redemption job succeeded")
-
-        self.databaseStorage.write { tx in
-            defer {
-                self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
-            }
-
-            tx.addAsyncCompletionOffMain {
-                self.postNotification(name: Self.DidSucceedNotification)
-            }
-
-            guard
-                let amount = self.amount,
-                let badge = self.badge
-            else {
-                owsFail("[Donations] How did we succeed a job without learning the amount and badge?")
-            }
-
-            self.receiptCredentialResultStore.clearRequestError(
-                errorMode: paymentType.receiptCredentialResultMode,
-                tx: tx.asV2Write
-            )
-            self.receiptCredentialResultStore.setRedemptionSuccess(
-                success: ReceiptCredentialRedemptionSuccess(
-                    badgesSnapshotBeforeJob: badgesSnapshotBeforeJob,
-                    badge: badge,
-                    paymentMethod: paymentMethod
-                ),
-                successMode: paymentType.receiptCredentialResultMode,
-                tx: tx.asV2Write
-            )
-
-            DonationReceipt(
-                receiptType: paymentType.donationReceiptType,
-                timestamp: Date(),
-                amount: amount
-            ).anyInsert(transaction: tx)
-        }
-    }
-
-    /// The interval to wait between operation-level retries.
-    ///
-    /// In practice, the only errors that are retryable at the operation level
-    /// are network errors and "payment processing" for non-bank payments.
-    ///
-    /// The former do not increment our job record's failure count, but will
-    /// increment the operation-local error count. Correspondingly, to prevent
-    /// network errors from causing infinitely-instantly-retrying requests,
-    /// we'll use both the operation-local error count and job record failure
-    /// count to determine our retry interval.
-    override public func retryInterval() -> TimeInterval {
-        /// If this operation just started, but we've tried in the past and have
-        /// persisted failures on the job record, we'll respect those and start
-        /// with a longer retry. Otherwise, as this operation continues to retry
-        /// it'll get a longer retry from its local error count.
-        let failureCountForRetry = max(jobRecord.failureCount, self.errorCount)
-
-        return OWSOperation.retryIntervalForExponentialBackoff(
-            failureCount: failureCountForRetry
-        )
-    }
-
-    override public func didReportError(_ error: Error) {
-        guard let operationError = error as? ReceiptCredentialOperationError else {
-            owsAssertDebug(error.isNetworkFailureOrTimeout)
-            Logger.warn("[Donations] Silently ignoring non-operation error.")
-            return
-        }
-
-        switch operationError {
-        case .sepaPaymentStillProcessing(.localState):
-            // We shouldn't be coming through this codepath, because the only
-            // place we create local still-processing errors should go straight
-            // to `didFail`. If we do get here, because something changed, we
-            // shouldn't count these against our failure count.
-            owsFailDebug("We shouldn't be sending local-state short-circuits through this codepath!")
-            return
-        case
-                .sepaPaymentStillProcessing(source: .remoteService),
-                .nonSepaPaymentStillProcessing,
-                .suppressPaymentAlreadyRedeemed,
-                .other:
-            break
-        }
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(
-                self, didReportError: operationError, transaction: transaction
-            )
-        }
-    }
-
-    /// We get here if we have a non-retryable error, or if we've run out of
-    /// retries.
-    override public func didFail(error: Error) {
-        guard let operationError = error as? ReceiptCredentialOperationError else {
-            owsAssertDebug(error.isNetworkFailureOrTimeout)
-            Logger.warn("[Donations] Silently ignoring non-operation error.")
-            return
-        }
-
-        let persistArtificialPaymentFailure: Bool
-
-        switch operationError {
-        case .sepaPaymentStillProcessing(.localState):
-            Logger.warn("[Donations] Silently ignoring SEPA payment still processing short-circuit.")
-            return
-        case .sepaPaymentStillProcessing(.remoteService) where remainingRetries > 0:
-            Logger.warn("[Donations] Silently ignoring SEPA payment still processing error, we have retries remaining.")
-            return
-        case .sepaPaymentStillProcessing(.remoteService):
-            Logger.error("[Donations] SEPA payment still processing on the service, but we're out of retries!")
-            persistArtificialPaymentFailure = true
-        case .nonSepaPaymentStillProcessing:
-            Logger.error("[Donations] Non-SEPA payment still processing, but we're out of retries!")
-            persistArtificialPaymentFailure = true
-        case .suppressPaymentAlreadyRedeemed:
-            Logger.warn("[Donations] Suppressing payment-already-redeemed error.")
-            persistArtificialPaymentFailure = false
-        case let .other(errorCode):
-            Logger.error("[Donations] Failed to redeem receipt credential! \(errorCode)")
-            persistArtificialPaymentFailure = false
-        }
-
-        guard
-            let amount = self.amount,
-            let badge = self.badge
-        else {
-            owsFail("How did we get a operation error by interacting with the service, without an amount and badge?")
-        }
-
-        self.databaseStorage.write { tx in
-            tx.addAsyncCompletionOffMain {
-                self.postNotification(name: Self.DidFailNotification)
-            }
-
-            if persistArtificialPaymentFailure {
-                // No charge failure, because this is an artificial failure.
-                self.persistErrorCode(
-                    receiptCredentialRequestErrorCode: .paymentFailed,
-                    chargeFailureCodeIfPaymentFailed: nil,
-                    badge: badge,
-                    amount: amount,
-                    tx: tx.asV2Write
-                )
-            }
-
-            self.durableOperationDelegate?.durableOperation(
-                self, didFailWithError: operationError, transaction: tx
-            )
-        }
     }
 }
 
 // MARK: - Notifications
 
-public extension ReceiptCredentialRedemptionOperation {
-    static let DidSucceedNotification = NSNotification.Name("ReceiptCredentialRedemptionOperation.DidSucceed")
-    static let DidFailNotification = NSNotification.Name("ReceiptCredentialRedemptionOperation.DidFail")
+public enum ReceiptCredentialRedemptionJob {
+    public static let didSucceedNotification = NSNotification.Name("ReceiptCredentialRedemptionJob.DidSucceed")
+    public static let didFailNotification = NSNotification.Name("ReceiptCredentialRedemptionJob.DidFail")
 
-    func postNotification(name: NSNotification.Name) {
-        NotificationCenter.default.postNotificationNameAsync(
-            name, object: nil, userInfo: nil
-        )
+    fileprivate static func postNotification(name: NSNotification.Name) {
+        NotificationCenter.default.postNotificationNameAsync(name, object: nil, userInfo: nil)
     }
 }

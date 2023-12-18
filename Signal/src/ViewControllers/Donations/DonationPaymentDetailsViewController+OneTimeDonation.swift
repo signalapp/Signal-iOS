@@ -43,15 +43,15 @@ extension DonationPaymentDetailsViewController {
                             }
                         }
                     } else {
-                        Logger.info("[Donations] One-time card donation needed 3DS. Presenting...")
+                        Logger.info("[Donations] One-time donation needed 3DS. Presenting...")
                     }
                     return self.show3DS(for: redirectUrl)
                 } else {
-                    Logger.info("[Donations] One-time card donation did not need 3DS. Continuing")
+                    Logger.info("[Donations] One-time donation did not need 3DS. Continuing")
                     return Promise.value(confirmedIntent.paymentIntentId)
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
-                Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
+                Logger.info("[Donations] Creating and redeeming one-time boost receipt")
 
                 return DonationViewsUtil.completeOneTimeDonation(
                     paymentIntentId: intentId,
@@ -61,10 +61,10 @@ extension DonationPaymentDetailsViewController {
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in
-            Logger.info("[Donations] One-time card donation finished")
+            Logger.info("[Donations] One-time donation finished")
             self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
-            Logger.warn("[Donations] One-time card donation failed")
+            Logger.warn("[Donations] One-time donation UX dismissing w/error (might not be fatal)")
             self?.onFinished(error)
         }
     }

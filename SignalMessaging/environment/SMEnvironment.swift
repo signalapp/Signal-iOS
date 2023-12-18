@@ -53,6 +53,7 @@ public class SMEnvironment {
     func didLoadDatabase() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.receiptCredentialJobQueue.start(appContext: CurrentAppContext())
         }
     }
 }

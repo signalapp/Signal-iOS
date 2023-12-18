@@ -249,7 +249,7 @@ public class SubscriptionManagerImpl: NSObject {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    public static var subscriptionJobQueue: ReceiptCredentialRedemptionJobQueue { smJobQueues.receiptCredentialJobQueue }
+    public static var jobQueue: ReceiptCredentialRedemptionJobQueue { smJobQueues.receiptCredentialJobQueue }
 
     /// - Note
     /// This collection name is reused by other subscription-related stores. For
@@ -552,7 +552,7 @@ public class SubscriptionManagerImpl: NSObject {
         let request = generateReceiptRequest()
 
         databaseStorage.asyncWrite { transaction in
-            self.subscriptionJobQueue.addSubscriptionJob(
+            self.jobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
                 paymentMethod: paymentMethod,
                 receiptCredentialRequestContext: request.context.serialize().asData,
@@ -576,7 +576,7 @@ public class SubscriptionManagerImpl: NSObject {
         let request = generateReceiptRequest()
 
         databaseStorage.asyncWrite { transaction in
-            self.subscriptionJobQueue.addBoostJob(
+            self.jobQueue.addBoostJob(
                 amount: amount,
                 paymentProcessor: paymentProcessor,
                 paymentMethod: paymentMethod,

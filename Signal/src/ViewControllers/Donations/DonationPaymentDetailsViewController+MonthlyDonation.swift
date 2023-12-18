@@ -19,7 +19,7 @@ extension DonationPaymentDetailsViewController {
         let currencyCode = self.donationAmount.currencyCode
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
 
-        Logger.info("[Donations] Starting monthly card donation")
+        Logger.info("[Donations] Starting monthly donation")
 
         DonationViewsUtil.wrapPromiseInProgressView(
             from: self,
@@ -34,16 +34,16 @@ extension DonationPaymentDetailsViewController {
                     return Promise.value(())
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
-                Logger.info("[Donations] Preparing new monthly subscription with card")
+                Logger.info("[Donations] Preparing new monthly subscription")
 
                 return SubscriptionManagerImpl.prepareNewSubscription(currencyCode: currencyCode)
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, SubscriptionManagerImpl.RecurringSubscriptionPaymentType)> in
                 firstly { () -> Promise<String> in
-                    Logger.info("[Donations] Creating Signal payment method for new monthly subscription with card")
+                    Logger.info("[Donations] Creating Signal payment method for new monthly subscription")
 
                     return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
                 }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<SubscriptionManagerImpl.RecurringSubscriptionPaymentType> in
-                    Logger.info("[Donations] Authorizing payment for new monthly subscription with card")
+                    Logger.info("[Donations] Authorizing payment for new monthly subscription")
 
                     return Stripe.setupNewSubscription(
                         clientSecret: clientSecret,
@@ -101,10 +101,10 @@ extension DonationPaymentDetailsViewController {
                 )
             }
         ).done(on: DispatchQueue.main) { [weak self] in
-            Logger.info("[Donations] Monthly card donation finished")
+            Logger.info("[Donations] Monthly donation finished")
             self?.onFinished(nil)
         }.catch(on: DispatchQueue.main) { [weak self] error in
-            Logger.info("[Donations] Monthly card donation failed")
+            Logger.info("[Donations] Monthly donation UX dismissing w/error (might not be fatal)")
             self?.onFinished(error)
         }
     }

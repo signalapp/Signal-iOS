@@ -128,9 +128,9 @@ public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryIniti
 
     // MARK: Update
 
-    public func update(withReceiptCredentialPresentation presentation: Data, transaction: SDSAnyWriteTransaction) {
-        anyUpdate(transaction: transaction) { record in
-            record.receiptCredentialPresentation = presentation
+    public func setReceiptCredentialPresentation(_ receiptCredentialPresentation: Data, tx: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: tx) { record in
+            record.receiptCredentialPresentation = receiptCredentialPresentation
         }
     }
 }
