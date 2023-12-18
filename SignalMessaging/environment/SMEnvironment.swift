@@ -55,6 +55,7 @@ public class SMEnvironment {
             self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.receiptCredentialJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: CurrentAppContext())
+            self.smJobQueuesRef.sessionResetJobQueue.start(appContext: CurrentAppContext())
         }
     }
 }

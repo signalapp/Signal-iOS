@@ -5,164 +5,106 @@
 
 import SignalServiceKit
 
-public class SessionResetJobQueue: JobQueue {
+public class SessionResetJobQueue {
+    private let jobQueueRunner: JobQueueRunner<JobRecordFinderImpl<SessionResetJobRecord>, SessionResetJobRunnerFactory>
 
-    public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
+    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobQueueRunner = JobQueueRunner(
+            canExecuteJobsConcurrently: true,
+            db: db,
+            jobFinder: JobRecordFinderImpl(db: db),
+            jobRunnerFactory: SessionResetJobRunnerFactory()
+        )
+        self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
+    }
+
+    func start(appContext: AppContext) {
+        guard appContext.isMainApp else { return }
+        jobQueueRunner.start(shouldRestartExistingJobs: true)
+    }
+
+    public func add(contactThread: TSContactThread, transaction tx: SDSAnyWriteTransaction) {
         let jobRecord = SessionResetJobRecord(contactThread: contactThread)
-        self.add(jobRecord: jobRecord, transaction: transaction)
-    }
-
-    // MARK: JobQueue
-
-    public typealias DurableOperationType = SessionResetOperation
-    public let requiresInternet: Bool = true
-    public var isEnabled: Bool { CurrentAppContext().isMainApp }
-    public var runningOperations = AtomicArray<SessionResetOperation>()
-
-    public init() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.setup()
-        }
-    }
-
-    public func setup() {
-        defaultSetup()
-    }
-
-    public let isSetup = AtomicBool(false)
-
-    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
-        // no special handling
-    }
-
-    let operationQueue: OperationQueue = {
-        // no need to serialize the operation queuing, since sending will ultimately be serialized by MessageSender
-        let operationQueue = OperationQueue()
-        operationQueue.name = "SessionResetJobQueue"
-        return operationQueue
-    }()
-
-    public func operationQueue(jobRecord: SessionResetJobRecord) -> OperationQueue {
-        return self.operationQueue
-    }
-
-    public func buildOperation(jobRecord: SessionResetJobRecord, transaction: SDSAnyReadTransaction) throws -> SessionResetOperation {
-        guard let contactThread = TSThread.anyFetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
-            throw JobError.obsolete(description: "thread for session reset no longer exists")
-        }
-
-        return SessionResetOperation(contactThread: contactThread, jobRecord: jobRecord)
+        jobRecord.anyInsert(transaction: tx)
+        tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
     }
 }
 
-public class SessionResetOperation: OWSOperation, DurableOperation {
+private class SessionResetJobRunnerFactory: JobRunnerFactory {
+    func buildRunner() -> SessionResetJobRunner { SessionResetJobRunner() }
+}
 
-    // MARK: DurableOperation
-
-    public let jobRecord: SessionResetJobRecord
-    weak public var durableOperationDelegate: SessionResetJobQueue?
-
-    public var operation: OWSOperation { return self }
-
-    public let maxRetries: UInt = 10
-
-    // MARK: 
-
-    let contactThread: TSContactThread
-    var recipientAddress: SignalServiceAddress {
-        return contactThread.contactAddress
+private class SessionResetJobRunner: JobRunner, Dependencies {
+    private enum Constants {
+        static let maxRetries: UInt = 10
     }
 
-    public required init(contactThread: TSContactThread, jobRecord: SessionResetJobRecord) {
-        self.contactThread = contactThread
-        self.jobRecord = jobRecord
-    }
+    private var hasArchivedAllSessions = false
 
-    // MARK: 
-
-    var firstAttempt = true
-
-    override public func run() {
-        assert(self.durableOperationDelegate != nil)
-
-        if firstAttempt {
-            self.databaseStorage.write { transaction in
-                Logger.info("archiving sessions for recipient: \(self.recipientAddress)")
-                DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
-                    for: self.recipientAddress,
-                    tx: transaction.asV2Write
+    func runJobAttempt(_ jobRecord: SessionResetJobRecord) async -> JobAttemptResult {
+        do {
+            try await _runJobAttempt(jobRecord)
+            return .finished(.success(()))
+        } catch {
+            return await databaseStorage.awaitableWrite { tx in
+                let result = JobAttemptResult.performDefaultErrorHandler(
+                    error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx.asV2Write
                 )
+                if case .finished(.failure) = result {
+                    // Even though this is the failure handler - which means probably the
+                    // recipient didn't receive the message - there's a chance that our send
+                    // did succeed and the server just timed out our response or something.
+                    // Since the cost of sending a future message using a session the recipient
+                    // doesn't have is so high, we archive the session just in case.
+                    Logger.warn("Terminal failure: \(error.userErrorDescription)")
+                    if let contactThread = try? self.fetchThread(jobRecord: jobRecord, tx: tx) {
+                        self.archiveAllSessions(for: contactThread, tx: tx)
+                    }
+                }
+                return result
             }
-            firstAttempt = false
         }
+    }
 
-        firstly(on: DispatchQueue.global()) {
-            self.databaseStorage.write { transaction -> Promise<Void> in
-                let endSessionMessage = EndSessionMessage(thread: self.contactThread, transaction: transaction)
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
 
-                return ThreadUtil.enqueueMessagePromise(
-                    message: endSessionMessage,
-                    isHighPriority: true,
-                    transaction: transaction
-                )
+    private func _runJobAttempt(_ jobRecord: SessionResetJobRecord) async throws {
+        let endSessionMessagePromise = try await databaseStorage.awaitableWrite { tx in
+            let contactThread = try self.fetchThread(jobRecord: jobRecord, tx: tx)
+            if !self.hasArchivedAllSessions {
+                self.archiveAllSessions(for: contactThread, tx: tx)
             }
-        }.done(on: DispatchQueue.global()) {
-            Logger.info("successfully sent EndSessionMessage.")
-            self.databaseStorage.write { transaction in
-                // Archive the just-created session since the recipient should delete their corresponding
-                // session upon receiving and decrypting our EndSession message.
-                // Otherwise if we send another message before them, they won't have the session to decrypt it.
-                DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
-                    for: self.recipientAddress,
-                    tx: transaction.asV2Write
-                )
+            let endSessionMessage = EndSessionMessage(thread: contactThread, transaction: tx)
+            return ThreadUtil.enqueueMessagePromise(message: endSessionMessage, isHighPriority: true, transaction: tx)
+        }
+        self.hasArchivedAllSessions = true
 
-                let message = TSInfoMessage(thread: self.contactThread,
-                                            messageType: TSInfoMessageType.typeSessionDidEnd)
-                message.anyInsert(transaction: transaction)
-            }
-            self.reportSuccess()
-        }.catch { error in
-            Logger.error("sending error: \(error.userErrorDescription)")
-            self.reportError(withUndefinedRetry: error)
+        try await endSessionMessagePromise.awaitable()
+
+        Logger.info("successfully sent EndSessionMessage.")
+        try await databaseStorage.awaitableWrite { tx in
+            let contactThread = try self.fetchThread(jobRecord: jobRecord, tx: tx)
+            // Archive the just-created session since the recipient should delete their
+            // corresponding session upon receiving and decrypting our EndSession
+            // message. Otherwise if we send another message before them, they won't
+            // have the session to decrypt it.
+            self.archiveAllSessions(for: contactThread, tx: tx)
+            let message = TSInfoMessage(thread: contactThread, messageType: TSInfoMessageType.typeSessionDidEnd)
+            message.anyInsert(transaction: tx)
+            jobRecord.anyRemove(transaction: tx)
         }
     }
 
-    override public func didSucceed() {
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+    private func fetchThread(jobRecord: SessionResetJobRecord, tx: SDSAnyReadTransaction) throws -> TSContactThread {
+        let threadId = jobRecord.contactThreadId
+        guard let contactThread = TSContactThread.anyFetchContactThread(uniqueId: threadId, transaction: tx) else {
+            throw OWSGenericError("thread for session reset no longer exists")
         }
+        return contactThread
     }
 
-    override public func didReportError(_ error: Error) {
-        Logger.debug("remainingRetries: \(self.remainingRetries)")
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
-        }
-    }
-
-    override public func retryInterval() -> TimeInterval {
-        return OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
-    }
-
-    override public func didFail(error: Error) {
-        Logger.error("failed to send EndSessionMessage with error: \(error.userErrorDescription)")
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
-
-            // Even though this is the failure handler - which means probably the recipient didn't receive the message
-            // there's a chance that our send did succeed and the server just timed out our response or something.
-            // Since the cost of sending a future message using a session the recipient doesn't have is so high,
-            // we archive the session just in case.
-            //
-            // Archive the just-created session since the recipient should delete their corresponding
-            // session upon receiving and decrypting our EndSession message.
-            // Otherwise if we send another message before them, they won't have the session to decrypt it.
-            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
-                for: self.recipientAddress,
-                tx: transaction.asV2Write
-            )
-        }
+    private func archiveAllSessions(for contactThread: TSContactThread, tx: SDSAnyWriteTransaction) {
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: tx.asV2Write)
     }
 }

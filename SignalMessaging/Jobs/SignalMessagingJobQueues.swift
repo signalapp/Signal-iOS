@@ -11,7 +11,7 @@ public class SignalMessagingJobQueues: NSObject {
     public init(db: DB, reachabilityManager: SSKReachabilityManager) {
         incomingContactSyncJobQueue = IncomingContactSyncJobQueue(db: db, reachabilityManager: reachabilityManager)
         incomingGroupSyncJobQueue = IncomingGroupSyncJobQueue()
-        sessionResetJobQueue = SessionResetJobQueue()
+        sessionResetJobQueue = SessionResetJobQueue(db: db, reachabilityManager: reachabilityManager)
         broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
         receiptCredentialJobQueue = ReceiptCredentialRedemptionJobQueue(db: db, reachabilityManager: reachabilityManager)
         sendGiftBadgeJobQueue = SendGiftBadgeJobQueue(db: db, reachabilityManager: reachabilityManager)
