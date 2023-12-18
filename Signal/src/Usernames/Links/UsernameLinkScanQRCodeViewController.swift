@@ -42,13 +42,13 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
     // MARK: - Views
 
     private lazy var scanViewController = {
-        // Because we're overlaying things onto the scan view, the centered mask
-        // window looks a little off. Shifting it up by 16pt looks cleaner and
-        // matches the designs better.
-        let scanMaskWindowOffset = CGPoint(x: 0, y: -16)
+        // Because we're overlaying things onto the scan view, the centered
+        // viewfinder frame looks a little off. Shifting it up by 16pt looks
+        // cleaner and matches the designs better.
+        let scanFrameWindowOffset = CGPoint(x: 0, y: -16)
 
         let scanViewController = QRCodeScanViewController(
-            appearance: .masked(maskWindowOffset: scanMaskWindowOffset)
+            appearance: .framed(offset: scanFrameWindowOffset)
         )
 
         scanViewController.delegate = self

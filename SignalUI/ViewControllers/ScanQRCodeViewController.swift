@@ -56,12 +56,12 @@ public protocol QRCodeScanDelegate: AnyObject {
 public class QRCodeScanViewController: OWSViewController {
 
     public enum Appearance {
-        case masked(maskWindowOffset: CGPoint = .zero)
+        case framed(offset: CGPoint = .zero)
         case unadorned
 
         fileprivate var backgroundColor: UIColor {
             switch self {
-            case .masked:
+            case .framed:
                 return .ows_black
             case .unadorned:
                 return .clear
@@ -165,6 +165,8 @@ public class QRCodeScanViewController: OWSViewController {
 
     private func stopScanning() {
         scanner = nil
+        viewfinderAnimator?.stopAnimation(true)
+        viewfinderAnimator = nil
     }
 
     @objc
@@ -184,6 +186,36 @@ public class QRCodeScanViewController: OWSViewController {
                 self.delegate?.qrCodeScanViewDismiss(self)
             }
         }
+    }
+
+    private var viewfinderAnimator: UIViewPropertyAnimator?
+
+    /// Continuously animates the viewfinder, updating `viewfinderAnimator` with the latest animator.
+    ///
+    /// - Important:
+    ///
+    /// Stop the animation (stored in `viewfinderAnimator`) when the view disappears.
+    ///
+    /// - Parameters:
+    ///   - frame: The viewfinder frame to animate.
+    ///   - isReversed: `false` if the viewfinder frame should enlarge,
+    ///   `true` if it should shrink.
+    private func animateViewfinder(frame: UIView, isReversed: Bool = false) {
+        guard view.window != nil else { return }
+        let animator = UIViewPropertyAnimator(
+            duration: 0.35,
+            springDamping: 1,
+            springResponse: 0.35
+        )
+        animator.addAnimations {
+            frame.transform = isReversed ? .identity : .scale(1.1)
+        }
+        animator.addCompletion { [weak self] _ in
+            self?.animateViewfinder(frame: frame, isReversed: !isReversed)
+        }
+        // Play every 1 second, so subtract the animation duration from 1 second
+        animator.startAnimation(afterDelay: 1 - 0.35)
+        viewfinderAnimator = animator
     }
 
     private func startScanning() {
@@ -211,37 +243,37 @@ public class QRCodeScanViewController: OWSViewController {
         switch appearance {
         case .unadorned:
             break
-        case let .masked(maskWindowOffset):
-            let maskingView = BezierPathView { layer, bounds in
-                // Add a mask with a rounded-rectangular window.
-                let rectSize: CGSize = .square(232)
-                let rectOrigin: CGPoint = {
-                    let unadjusted = (bounds.size - rectSize).asPoint * 0.5
-                    return unadjusted + maskWindowOffset
-                }()
+        case let .framed(offset):
+            let shouldAnimateScale = !UIAccessibility.isReduceMotionEnabled
 
-                let rect = CGRect(
-                    origin: rectOrigin,
-                    size: rectSize
-                )
+            let viewfinder = UIImage(named: "qr_viewfinder")
+            let frame = UIImageView(image: viewfinder)
+            self.view.addSubview(frame)
+            frame.autoHCenterInSuperview()
+            frame.centerYAnchor.constraint(
+                equalTo: self.view.safeAreaLayoutGuide.centerYAnchor,
+                constant: offset.y
+            ).isActive = true
 
-                let path = UIBezierPath(rect: bounds)
-                let rectPath = UIBezierPath(
-                    roundedRect: rect,
-                    cornerRadius: 32
-                )
-
-                path.append(rectPath)
-                path.usesEvenOddFillRule = true
-
-                layer.path = path.cgPath
-                layer.fillRule = .evenOdd
-                layer.fillColor = UIColor.black.cgColor
-                layer.opacity = 0.4
+            frame.layer.opacity = 0
+            if shouldAnimateScale {
+                frame.transform = .scale(1.2)
+            }
+            let entranceAnimator = UIViewPropertyAnimator(
+                duration: 0.3,
+                springDamping: 1,
+                springResponse: 0.3
+            )
+            entranceAnimator.addAnimations {
+                frame.layer.opacity = 1
+                frame.transform = .identity
             }
 
-            self.view.addSubview(maskingView)
-            maskingView.autoPinEdgesToSuperviewEdges()
+            entranceAnimator.startAnimation()
+
+            if shouldAnimateScale {
+                animateViewfinder(frame: frame)
+            }
         }
 
         firstly {

@@ -30,7 +30,7 @@ class LinkDeviceViewController: OWSViewController {
         return label
     }()
 
-    private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .masked())
+    private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed())
 
     override func viewDidLoad() {
         super.viewDidLoad()

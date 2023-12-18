@@ -121,6 +121,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     // MARK: QR Code
 
+    private var qrCodeView: UIView?
+
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
@@ -432,7 +434,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         let topSection = OWSTableSection(items: [
             .itemWrappingView(
                 viewBlock: { [weak self] in
-                    return self?.buildQRCodeView()
+                    self?.qrCodeView = self?.buildQRCodeView()
+                    return self?.qrCodeView
                 },
                 margins: UIEdgeInsets(top: 32, leading: 48, bottom: 12, trailing: 48)
             ),
@@ -503,6 +506,20 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             // If we have no username link to start, immediately kick off a
             // reset.
             resetUsernameLink(shouldReloadTableContents: false)
+        }
+
+        if let qrCodeView {
+            qrCodeView.layer.opacity = 0
+            if !UIAccessibility.isReduceMotionEnabled {
+                qrCodeView.transform = .scale(0.9)
+            }
+
+            let animator = UIViewPropertyAnimator(duration: 0.35, springDamping: 1, springResponse: 0.35)
+            animator.addAnimations {
+                qrCodeView.layer.opacity = 1
+                qrCodeView.transform = .identity
+            }
+            animator.startAnimation()
         }
     }
 
