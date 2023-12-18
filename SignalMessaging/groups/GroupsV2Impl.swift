@@ -17,13 +17,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            let didReset = self.verifyServerPublicParams()
-
-            // We don't need to ensure the local profile commitment
-            // if we've just reset the zkgroup state, since that
-            // have the same effect.
-            guard !didReset,
-                  DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
 
@@ -32,65 +26,13 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             }.catch { error in
                 Logger.warn("Local profile update failed with error: \(error)")
             }
-
         }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Self.enqueueRestoreGroupPass(account: .implicit())
         }
 
         observeNotifications()
-    }
-
-    // MARK: -
-
-    private let serviceStore = SDSKeyValueStore(collection: "GroupsV2Impl.serviceStore")
-
-    // Returns true IFF zkgroups-related state is reset.
-    private func verifyServerPublicParams() -> Bool {
-        let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
-        let lastServerPublicParamsKey = "lastServerPublicParamsKey"
-        let lastZKgroupVersionCounterKey = "lastZKgroupVersionCounterKey"
-        // This _does not_ conform to the public version number of the
-        // zkgroup library.  Instead it's a counter we should bump
-        // every time there are breaking changes zkgroup library, e.g.
-        // changes to data formats.
-        let zkgroupVersionCounter: Int = 4
-
-        let shouldReset = databaseStorage.read { transaction -> Bool in
-            guard serverPublicParamsBase64 == self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction) else {
-                Logger.info("Server public params have changed.")
-                return true
-            }
-            guard zkgroupVersionCounter == self.serviceStore.getInt(lastZKgroupVersionCounterKey, transaction: transaction) else {
-                Logger.info("ZKGroup library has changed.")
-                return true
-            }
-            return false
-        }
-        guard shouldReset else {
-            // Nothing to be done; server public params haven't changed.
-            return false
-        }
-
-        Logger.info("Resetting zkgroup-related state.")
-
-        databaseStorage.write { transaction in
-            self.clearTemporalCredentials(transaction: transaction)
-            self.versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
-            self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
-            self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
-        }
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                Logger.info("Re-uploading local profile due to zkgroup update.")
-                firstly {
-                    self.reuploadLocalProfilePromise()
-                }.catch { error in
-                    Logger.warn("Error: \(error)")
-                }
-            }
-        }
-        return true
     }
 
     // MARK: - Notifications

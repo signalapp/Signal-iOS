@@ -264,6 +264,7 @@ public class AppSetup {
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
+            dependenciesBridge: dependenciesBridge,
             smEnvironment: smEnvironment,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask
@@ -280,17 +281,20 @@ public class AppSetup {
 extension AppSetup {
     public class DatabaseContinuation {
         private let appContext: AppContext
+        private let dependenciesBridge: DependenciesBridge
         private let smEnvironment: SMEnvironment
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
         fileprivate init(
             appContext: AppContext,
+            dependenciesBridge: DependenciesBridge,
             smEnvironment: SMEnvironment,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask
         ) {
             self.appContext = appContext
+            self.dependenciesBridge = dependenciesBridge
             self.smEnvironment = smEnvironment
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
@@ -316,7 +320,10 @@ extension AppSetup.DatabaseContinuation {
                 self.sskEnvironment.warmCaches()
                 self.smEnvironment.didLoadDatabase()
                 self.backgroundTask.end()
-                future.resolve(AppSetup.FinalContinuation(sskEnvironment: self.sskEnvironment))
+                future.resolve(AppSetup.FinalContinuation(
+                    dependenciesBridge: self.dependenciesBridge,
+                    sskEnvironment: self.sskEnvironment
+                ))
             }
         }
         return guarantee
@@ -337,9 +344,11 @@ extension AppSetup.DatabaseContinuation {
 
 extension AppSetup {
     public class FinalContinuation {
+        private let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
 
-        fileprivate init(sskEnvironment: SSKEnvironment) {
+        fileprivate init(dependenciesBridge: DependenciesBridge, sskEnvironment: SSKEnvironment) {
+            self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
         }
     }
@@ -352,6 +361,14 @@ extension AppSetup.FinalContinuation {
 
     public func finish(willResumeInProgressRegistration: Bool) -> SetupError? {
         AssertIsOnMainThread()
+
+        ZkParamsMigrator(
+            db: dependenciesBridge.db,
+            keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
+            groupsV2: sskEnvironment.groupsV2Ref,
+            tsAccountManager: dependenciesBridge.tsAccountManager,
+            versionedProfiles: sskEnvironment.versionedProfilesRef
+        ).migrateIfNeeded()
 
         guard setUpLocalIdentifiers(willResumeInProgressRegistration: willResumeInProgressRegistration) else {
             return .corruptRegistrationState

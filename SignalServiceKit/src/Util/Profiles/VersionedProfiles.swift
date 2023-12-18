@@ -80,7 +80,12 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
                                           transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
-    public func clearProfileKeyCredentials(tx: DBWriteTransaction) {}
+
+    var didClearProfileKeyCredentials = false
+
+    public func clearProfileKeyCredentials(tx: DBWriteTransaction) {
+        didClearProfileKeyCredentials = true
+    }
 
     public func versionedProfileRequest(
         for aci: Aci,

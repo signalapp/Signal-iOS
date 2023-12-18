@@ -696,8 +696,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         // Do nothing.
     }
 
+    var didClearTemporalCredentials = false
+
     public func clearTemporalCredentials(tx: DBWriteTransaction) {
-        // Do nothing.
+        didClearTemporalCredentials = true
     }
 
     public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {

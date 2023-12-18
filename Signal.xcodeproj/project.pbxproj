@@ -650,6 +650,8 @@
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
+		5013365F2B2BC2EF004119F1 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
+		501336612B2BCA20004119F1 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
@@ -3267,6 +3269,8 @@
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
+		5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigrator.swift; sourceTree = "<group>"; };
+		501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigratorTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
@@ -6475,6 +6479,7 @@
 				D9C2D779299B0B8700D79715 /* Usernames */,
 				34480B471FD0A60200BC14EF /* utils */,
 				503AECCC29B2B86200642F66 /* VoiceMessage */,
+				5013365D2B2BC2CD004119F1 /* ZkParams */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -6642,6 +6647,14 @@
 				F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */,
 			);
 			path = OrphanData;
+			sourceTree = "<group>";
+		};
+		5013365D2B2BC2CD004119F1 /* ZkParams */ = {
+			isa = PBXGroup;
+			children = (
+				5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */,
+			);
+			path = ZkParams;
 			sourceTree = "<group>";
 		};
 		501AD1C22AF17A0B001B796A /* Curve25519 */ = {
@@ -10280,6 +10293,7 @@
 				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
+				501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -11845,6 +11859,7 @@
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
 				503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */,
 				3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */,
+				5013365F2B2BC2EF004119F1 /* ZkParamsMigrator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12582,6 +12597,7 @@
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,
 				17E6049028A17BD300127680 /* ZkGroupIntegrationTest.swift in Sources */,
+				501336612B2BCA20004119F1 /* ZkParamsMigratorTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
