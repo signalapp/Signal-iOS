@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalCoreKit
 import SignalUI
 
@@ -142,6 +143,71 @@ class UsernameLinkTooltipView: TooltipView {
 
     override var tailDirection: TooltipView.TailDirection {
         .up
+    }
+
+    override func setupRelationshipWithSuperview(
+        superview: UIView,
+        tailReferenceView: UIView,
+        widthReferenceView: UIView
+    ) {
+        self.layer.opacity = .zero
+        if !UIAccessibility.isReduceMotionEnabled {
+            self.transform = .scale(0)
+        }
+
+        super.setupRelationshipWithSuperview(
+            superview: superview,
+            tailReferenceView: tailReferenceView,
+            widthReferenceView: widthReferenceView
+        )
+
+        let animator = self.transitionAnimator()
+        animator.addAnimations {
+            self.layer.opacity = 1
+            self.transform = .identity
+        }
+        // Add a half-second delay for the view controller push transition.
+        animator.startAnimation(afterDelay: 0.5)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let offset = self.bounds.height / -2
+        self.layer.anchorPoint.y = 0
+
+        if verticalConstraint?.constant != offset {
+            verticalConstraint?.constant = offset
+        }
+    }
+
+    // MARK: Animation
+
+    override func removeFromSuperview() {
+        guard CurrentAppContext().isAppForegroundAndActive() else {
+            return super.removeFromSuperview()
+        }
+
+        let animator = self.transitionAnimator()
+        animator.addAnimations {
+            if !UIAccessibility.isReduceMotionEnabled {
+                // Views can't animate to a size of 0
+                self.transform = .scale(.ulpOfOne)
+            }
+            self.layer.opacity = .zero
+        }
+        animator.addCompletion { _ in
+            super.removeFromSuperview()
+        }
+        animator.startAnimation()
+    }
+
+    private func transitionAnimator() -> UIViewPropertyAnimator {
+        UIViewPropertyAnimator(
+            duration: 0.35,
+            springDamping: 0.8,
+            springResponse: 0.35
+        )
     }
 
     // MARK: - Events
