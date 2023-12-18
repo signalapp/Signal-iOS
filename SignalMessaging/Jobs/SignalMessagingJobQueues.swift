@@ -4,11 +4,12 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public class SignalMessagingJobQueues: NSObject {
 
-    public override init() {
-        incomingContactSyncJobQueue = IncomingContactSyncJobQueue()
+    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        incomingContactSyncJobQueue = IncomingContactSyncJobQueue(db: db, reachabilityManager: reachabilityManager)
         incomingGroupSyncJobQueue = IncomingGroupSyncJobQueue()
         sessionResetJobQueue = SessionResetJobQueue()
 

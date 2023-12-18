@@ -128,7 +128,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         updateToken()
 
-        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: nil)
+        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self)
 
         scheduleWakeupRequestIfNecessary()
     }

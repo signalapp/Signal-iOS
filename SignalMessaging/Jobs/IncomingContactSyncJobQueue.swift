@@ -6,155 +6,107 @@
 import SignalServiceKit
 
 public extension Notification.Name {
-    static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
+    static let incomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
 
-public class IncomingContactSyncJobQueue: NSObject, JobQueue {
+public class IncomingContactSyncJobQueue: NSObject {
+    public enum Constants {
+        public static let insertedThreads = "insertedThreads"
+    }
 
-    public typealias DurableOperationType = IncomingContactSyncOperation
-    public let requiresInternet: Bool = true
-    public let isEnabled: Bool = true
+    private let jobQueueRunner: JobQueueRunner<
+        JobRecordFinderImpl<IncomingContactSyncJobRecord>,
+        IncomingContactSyncJobRunnerFactory
+    >
 
-    public var runningOperations = AtomicArray<IncomingContactSyncOperation>()
-    public let isSetup = AtomicBool(false)
-
-    public override init() {
+    init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobQueueRunner = JobQueueRunner(
+            canExecuteJobsConcurrently: false,
+            db: db,
+            jobFinder: JobRecordFinderImpl(db: db),
+            jobRunnerFactory: IncomingContactSyncJobRunnerFactory()
+        )
         super.init()
-
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setup()
-        }
+        self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
-    public func setup() {
-        defaultSetup()
-    }
-
-    public func didMarkAsReady(oldJobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyWriteTransaction) {
-        // no special handling
-    }
-
-    let defaultQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "IncomingContactSyncJobQueue"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
-    public func operationQueue(jobRecord: IncomingContactSyncJobRecord) -> OperationQueue {
-        return defaultQueue
-    }
-
-    public func buildOperation(jobRecord: IncomingContactSyncJobRecord, transaction: SDSAnyReadTransaction) throws -> IncomingContactSyncOperation {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
-            throw OWSAssertionError("Not registered.")
-        }
-        return IncomingContactSyncOperation(jobRecord: jobRecord, localIdentifiers: localIdentifiers)
+    func start(appContext: AppContext) {
+        jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
     @objc
-    public func add(attachmentId: String, isComplete: Bool, transaction: SDSAnyWriteTransaction) {
+    public func add(attachmentId: String, isComplete: Bool, transaction tx: SDSAnyWriteTransaction) {
         let jobRecord = IncomingContactSyncJobRecord(
             attachmentId: attachmentId,
             isCompleteContactSync: isComplete
         )
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        jobRecord.anyInsert(transaction: tx)
+        tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
     }
 }
 
-public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = IncomingContactSyncJobRecord
-    public typealias DurableOperationDelegateType = IncomingContactSyncJobQueue
-    public weak var durableOperationDelegate: IncomingContactSyncJobQueue?
-    public let jobRecord: IncomingContactSyncJobRecord
-    public var operation: OWSOperation { return self }
-    public let maxRetries: UInt = 4
+private class IncomingContactSyncJobRunnerFactory: JobRunnerFactory {
+    func buildRunner() -> IncomingContactSyncJobRunner { return IncomingContactSyncJobRunner() }
+}
 
-    public var newThreads: [(threadId: String, sortOrder: UInt32)] = []
-
-    // MARK: -
-
-    private let localIdentifiers: LocalIdentifiers
-
-    init(jobRecord: IncomingContactSyncJobRecord, localIdentifiers: LocalIdentifiers) {
-        self.jobRecord = jobRecord
-        self.localIdentifiers = localIdentifiers
+private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
+    private enum Constants {
+        static let maxRetries: UInt = 4
     }
 
-    // MARK: - Durable Operation Overrides
-
-    enum IncomingContactSyncError: Error {
-        case malformed(_ description: String)
+    func runJobAttempt(_ jobRecord: IncomingContactSyncJobRecord) async -> JobAttemptResult {
+        return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
+            jobRecord: jobRecord,
+            retryLimit: Constants.maxRetries,
+            db: DependenciesBridge.shared.db,
+            block: { try await _runJob(jobRecord) }
+        )
     }
 
-    public override func run() {
-        firstly { () -> Promise<TSAttachmentStream> in
-            try self.getAttachmentStream()
-        }.done(on: DispatchQueue.global()) { attachmentStream in
-            self.newThreads = []
-            try self.process(attachmentStream: attachmentStream)
-            self.databaseStorage.write { transaction in
-                guard let attachmentStream = TSAttachmentStream.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction) else {
-                    owsFailDebug("attachmentStream was unexpectedly nil")
-                    return
-                }
-                attachmentStream.anyRemove(transaction: transaction)
-            }
-            self.reportSuccess()
-        }.catch { error in
-            self.reportError(withUndefinedRetry: error)
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
+
+    private func _runJob(_ jobRecord: IncomingContactSyncJobRecord) async throws {
+        let attachmentId = jobRecord.attachmentId
+        let attachmentStream = try await getAttachmentStream(attachmentId: attachmentId)
+        let insertedThreads = try await firstly(on: DispatchQueue.global()) {
+            try self.processAttachmentStream(attachmentStream, isComplete: jobRecord.isCompleteContactSync)
+        }.awaitable()
+        await databaseStorage.awaitableWrite { tx in
+            TSAttachmentStream.anyFetch(uniqueId: attachmentId, transaction: tx)?.anyRemove(transaction: tx)
+            jobRecord.anyRemove(transaction: tx)
         }
-    }
-
-    public override func didSucceed() {
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
-        }
-        // add user info for thread ordering
-        NotificationCenter.default.post(name: .IncomingContactSyncDidComplete, object: self)
-    }
-
-    public override func didReportError(_ error: Error) {
-        Logger.debug("remainingRetries: \(self.remainingRetries)")
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
-        }
-    }
-
-    public override func didFail(error: Error) {
-        Logger.error("failed with error: \(error)")
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
-        }
+        NotificationCenter.default.post(name: .incomingContactSyncDidComplete, object: self, userInfo: [
+            IncomingContactSyncJobQueue.Constants.insertedThreads: insertedThreads
+        ])
     }
 
     // MARK: - Private
 
-    private func getAttachmentStream() throws -> Promise<TSAttachmentStream> {
-        Logger.debug("attachmentId: \(jobRecord.attachmentId)")
-
+    private func getAttachmentStream(attachmentId: String) async throws -> TSAttachmentStream {
         guard let attachment = (databaseStorage.read { transaction in
-            return TSAttachment.anyFetch(uniqueId: self.jobRecord.attachmentId, transaction: transaction)
+            return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
         }) else {
             throw OWSAssertionError("missing attachment")
         }
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return self.attachmentDownloads.enqueueHeadlessDownloadPromise(attachmentPointer: attachmentPointer)
+            return try await attachmentDownloads.enqueueHeadlessDownloadPromise(attachmentPointer: attachmentPointer).awaitable()
         case let attachmentStream as TSAttachmentStream:
-            return Promise.value(attachmentStream)
+            return attachmentStream
         default:
             throw OWSAssertionError("unexpected attachment type: \(attachment)")
         }
     }
 
-    private func process(attachmentStream: TSAttachmentStream) throws {
+    private func processAttachmentStream(
+        _ attachmentStream: TSAttachmentStream,
+        isComplete: Bool
+    ) throws -> [(threadUniqueId: String, sortOrder: UInt32)] {
         guard let fileUrl = attachmentStream.originalMediaURL else {
             throw OWSAssertionError("fileUrl was unexpectedly nil")
         }
+        var insertedThreads = [(threadUniqueId: String, sortOrder: UInt32)]()
         try Data(contentsOf: fileUrl, options: .mappedIfSafe).withUnsafeBytes { bufferPtr in
             if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {
                 let pointer = baseAddress.assumingMemoryBound(to: UInt8.self)
@@ -164,10 +116,14 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 // We use batching to avoid long-running write transactions
                 // and to place an upper bound on memory usage.
                 var allSignalServiceAddresses = [SignalServiceAddress]()
-                while try processBatch(contactStream: contactStream, processedAddresses: &allSignalServiceAddresses) {}
+                while try processBatch(
+                    contactStream: contactStream,
+                    insertedThreads: &insertedThreads,
+                    processedAddresses: &allSignalServiceAddresses
+                ) {}
 
-                if jobRecord.isCompleteContactSync {
-                    pruneContacts(exceptThoseReceivedFromCompleteSync: allSignalServiceAddresses)
+                if isComplete {
+                    try pruneContacts(exceptThoseReceivedFromCompleteSync: allSignalServiceAddresses)
                 }
 
                 databaseStorage.write { transaction in
@@ -179,22 +135,27 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 }
             }
         }
+        return insertedThreads
     }
 
     // Returns false when there are no more contacts to process.
-    private func processBatch(contactStream: ContactsInputStream, processedAddresses: inout [SignalServiceAddress]) throws -> Bool {
+    private func processBatch(
+        contactStream: ContactsInputStream,
+        insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
+        processedAddresses: inout [SignalServiceAddress]
+    ) throws -> Bool {
         try autoreleasepool {
             // We use batching to avoid long-running write transactions.
-            guard let contacts = try Self.buildBatch(contactStream: contactStream) else {
+            guard let contactBatch = try Self.buildBatch(contactStream: contactStream) else {
                 return false
             }
-            guard !contacts.isEmpty else {
+            guard !contactBatch.isEmpty else {
                 owsFailDebug("Empty batch.")
                 return false
             }
-            try databaseStorage.write { transaction in
-                for contact in contacts {
-                    let contactAddress = try self.process(contactDetails: contact, transaction: transaction)
+            try databaseStorage.write { tx in
+                for contact in contactBatch {
+                    let contactAddress = try processContactDetails(contact, insertedThreads: &insertedThreads, tx: tx)
                     processedAddresses.append(contactAddress)
                 }
             }
@@ -214,8 +175,17 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         return contacts
     }
 
-    private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws -> SignalServiceAddress {
+    private func processContactDetails(
+        _ contactDetails: ContactDetails,
+        insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
+        tx: SDSAnyWriteTransaction
+    ) throws -> SignalServiceAddress {
         Logger.debug("contactDetails: \(contactDetails)")
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            throw OWSGenericError("Not registered.")
+        }
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipientMerger = DependenciesBridge.shared.recipientMerger
@@ -226,13 +196,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 localIdentifiers: localIdentifiers,
                 aci: aci,
                 phoneNumber: contactDetails.phoneNumber,
-                tx: transaction.asV2Write
+                tx: tx.asV2Write
             )
             // Mark as registered only if we have a UUID (we always do in this branch).
             // If we don't have a UUID, contacts can't be registered.
-            recipient.markAsRegisteredAndSave(tx: transaction)
+            recipient.markAsRegisteredAndSave(tx: tx)
         } else if let phoneNumber = contactDetails.phoneNumber {
-            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
         } else {
             throw OWSAssertionError("No identifier in ContactDetails.")
         }
@@ -241,7 +211,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         let contactThread: TSContactThread
         let isNewThread: Bool
-        if let existingThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
+        if let existingThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             contactThread = existingThread
             isNewThread = false
         } else {
@@ -253,9 +223,9 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         if isNewThread {
-            contactThread.anyInsert(transaction: transaction)
+            contactThread.anyInsert(transaction: tx)
             let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
-            newThreads.append((threadId: contactThread.uniqueId, sortOrder: inboxSortOrder))
+            insertedThreads.append((threadUniqueId: contactThread.uniqueId, sortOrder: inboxSortOrder))
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
@@ -264,7 +234,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: nil,
             localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
-            transaction: transaction
+            transaction: tx
         )
 
         return address
@@ -282,12 +252,17 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     /// StorageService, so this job continues to fulfill that role. In the
     /// future, if you're removing this method, you should first ensure that
     /// periodic full syncs of contact details happen with StorageService.
-    private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) {
-        // Every contact sync includes your own address. However, we shouldn't
-        // create a SignalAccount for your own address. (If you're a primary, this
-        // is handled by ContactsMaps.phoneNumbers(…).)
-        let setOfAddresses = Set(addresses.lazy.filter { !self.localIdentifiers.contains(address: $0) })
-        self.databaseStorage.write { transaction in
+    private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) throws {
+        try self.databaseStorage.write { transaction in
+            // Every contact sync includes your own address. However, we shouldn't
+            // create a SignalAccount for your own address. (If you're a primary, this
+            // is handled by ContactsMaps.phoneNumbers(…).)
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+                throw OWSGenericError("Not registered.")
+            }
+            let setOfAddresses = Set(addresses.lazy.filter { !localIdentifiers.contains(address: $0) })
+
             // Rather than collecting SignalAccount objects, collect their unique IDs.
             // This operation can run in the memory-constrainted NSE, so trade off a
             // bit of speed to save memory.

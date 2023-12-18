@@ -63,7 +63,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             )
 
             return Promise.when(fulfilled: [
-                NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
+                NotificationCenter.default.observe(once: .incomingContactSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
@@ -465,23 +465,14 @@ public extension OWSSyncManager {
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
         }
 
-        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
-            NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
+        let notificationsPromise: Promise<([(threadUniqueId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
+            NotificationCenter.default.observe(once: .incomingContactSyncDidComplete).map { $0.insertedThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
             NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
         )
 
-        return notificationsPromise.map { (newContactThreads, _, _) -> [String] in
-            var newThreads: [String: UInt32] = [:]
-
-            for newThread in newContactThreads {
-                assert(newThreads[newThread.threadId] == nil)
-                newThreads[newThread.threadId] = newThread.sortOrder
-            }
-
-            return newThreads.sorted { (lhs: (key: String, value: UInt32), rhs: (key: String, value: UInt32)) -> Bool in
-                lhs.value < rhs.value
-            }.map { $0.key }
+        return notificationsPromise.map { (insertedThreads, _, _) -> [String] in
+            return insertedThreads.sorted(by: { $0.sortOrder < $1.sortOrder }).map({ $0.threadUniqueId })
         }
     }
 
@@ -521,13 +512,7 @@ public extension OWSSyncManager {
 // MARK: -
 
 private extension Notification {
-    var newThreads: [(threadId: String, sortOrder: UInt32)] {
-        switch self.object {
-        case let contactSync as IncomingContactSyncOperation:
-            return contactSync.newThreads
-        default:
-            owsFailDebug("unexpected object: \(String(describing: self.object))")
-            return []
-        }
+    var insertedThreads: [(threadUniqueId: String, sortOrder: UInt32)] {
+        return userInfo?[IncomingContactSyncJobQueue.Constants.insertedThreads] as! [(threadUniqueId: String, sortOrder: UInt32)]
     }
 }

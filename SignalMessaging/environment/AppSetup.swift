@@ -72,6 +72,7 @@ public class AppSetup {
             recipientIdFinder: recipientIdFinder
         )
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
+        let reachabilityManager = SSKReachabilityManagerImpl()
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
@@ -123,7 +124,10 @@ public class AppSetup {
         let preferences = Preferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
-        let smJobQueues = SignalMessagingJobQueues()
+        let smJobQueues = SignalMessagingJobQueues(
+            db: dependenciesBridge.db,
+            reachabilityManager: reachabilityManager
+        )
 
         // MARK: SSK environment properties
 
@@ -143,7 +147,6 @@ public class AppSetup {
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
-        let reachabilityManager = SSKReachabilityManagerImpl()
         let typingIndicators = TypingIndicatorsImpl()
         let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
@@ -258,6 +261,7 @@ public class AppSetup {
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,
+            smEnvironment: smEnvironment,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask
         )
@@ -273,15 +277,18 @@ public class AppSetup {
 extension AppSetup {
     public class DatabaseContinuation {
         private let appContext: AppContext
+        private let smEnvironment: SMEnvironment
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
         fileprivate init(
             appContext: AppContext,
+            smEnvironment: SMEnvironment,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask
         ) {
             self.appContext = appContext
+            self.smEnvironment = smEnvironment
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
         }
@@ -304,6 +311,7 @@ extension AppSetup.DatabaseContinuation {
             }
             databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
                 self.sskEnvironment.warmCaches()
+                self.smEnvironment.didLoadDatabase()
                 self.backgroundTask.end()
                 future.resolve(AppSetup.FinalContinuation(sskEnvironment: self.sskEnvironment))
             }

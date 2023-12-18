@@ -49,4 +49,10 @@ public class SMEnvironment {
 
         SwiftSingletons.register(self)
     }
+
+    func didLoadDatabase() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
+        }
+    }
 }
