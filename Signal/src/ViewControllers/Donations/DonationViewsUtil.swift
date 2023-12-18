@@ -293,16 +293,13 @@ public final class DonationViewsUtil {
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) -> Promise<Void> {
-        SubscriptionManagerImpl.requestAndRedeemReceipt(
+        let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
             boostPaymentIntentId: paymentIntentId,
             amount: amount,
             paymentProcessor: .stripe,
             paymentMethod: paymentMethod
         )
-
-        return DonationViewsUtil.waitForSubscriptionJob(
-            paymentMethod: paymentMethod
-        )
+        return DonationViewsUtil.waitForRedemptionJob(redemptionJob, paymentMethod: paymentMethod)
     }
 
     public static func finalizeAndRedeemSubscription(
@@ -324,7 +321,7 @@ public final class DonationViewsUtil {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ in
             Logger.info("[Donations] Redeeming monthly receipts")
 
-            SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: newSubscriptionLevel.level,
                 priorSubscriptionLevel: priorSubscriptionLevel?.level,
@@ -333,9 +330,7 @@ public final class DonationViewsUtil {
                 isNewSubscription: true,
                 shouldSuppressPaymentAlreadyRedeemed: false
             )
-            return DonationViewsUtil.waitForSubscriptionJob(
-                paymentMethod: paymentType.paymentMethod
-            )
+            return DonationViewsUtil.waitForRedemptionJob(redemptionJob, paymentMethod: paymentType.paymentMethod)
         }
     }
 

@@ -45,13 +45,15 @@ public class ReceiptCredentialRedemptionJobQueue {
         JobRecordFinderImpl<ReceiptCredentialRedemptionJobRecord>,
         ReceiptCredentialRedemptionJobRunnerFactory
     >
+    private let jobRunnerFactory: ReceiptCredentialRedemptionJobRunnerFactory
 
     public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobRunnerFactory = ReceiptCredentialRedemptionJobRunnerFactory()
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: true,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: ReceiptCredentialRedemptionJobRunnerFactory()
+            jobRunnerFactory: self.jobRunnerFactory
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -68,6 +70,7 @@ public class ReceiptCredentialRedemptionJobQueue {
         receiptCredentialRequestContext: Data,
         receiptCredentialRequest: Data,
         boostPaymentIntentID: String,
+        future: Future<Void>,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a boost job")
@@ -87,7 +90,7 @@ public class ReceiptCredentialRedemptionJobQueue {
             currencyCode: amount.currencyCode,
             boostPaymentIntentID: boostPaymentIntentID
         )
-        add(jobRecord: jobRecord, tx: transaction)
+        add(jobRecord: jobRecord, future: future, tx: transaction)
     }
 
     /// Add a new redemption job for a recurring payment.
@@ -114,6 +117,7 @@ public class ReceiptCredentialRedemptionJobQueue {
         priorSubscriptionLevel: UInt?,
         isNewSubscription: Bool,
         shouldSuppressPaymentAlreadyRedeemed: Bool,
+        future: Future<Void>,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("[Donations] Adding a subscription job")
@@ -133,20 +137,32 @@ public class ReceiptCredentialRedemptionJobQueue {
             currencyCode: nil,
             boostPaymentIntentID: String() // Unused
         )
-        add(jobRecord: jobRecord, tx: transaction)
+        add(jobRecord: jobRecord, future: future, tx: transaction)
     }
 
-    private func add(jobRecord: ReceiptCredentialRedemptionJobRecord, tx: SDSAnyWriteTransaction) {
+    private func add(jobRecord: ReceiptCredentialRedemptionJobRecord, future: Future<Void>, tx: SDSAnyWriteTransaction) {
         jobRecord.anyInsert(transaction: tx)
-        tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
+        tx.addSyncCompletion {
+            self.jobQueueRunner.addPersistedJob(jobRecord, runner: self.jobRunnerFactory.buildRunner(future: future))
+        }
     }
 }
 
 private class ReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
-    func buildRunner() -> ReceiptCredentialRedemptionJobRunner { ReceiptCredentialRedemptionJobRunner() }
+    func buildRunner() -> ReceiptCredentialRedemptionJobRunner { buildRunner(future: nil) }
+
+    func buildRunner(future: Future<Void>?) -> ReceiptCredentialRedemptionJobRunner {
+        return ReceiptCredentialRedemptionJobRunner(future: future)
+    }
 }
 
 private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
+    private let future: Future<Void>?
+
+    init(future: Future<Void>?) {
+        self.future = future
+    }
+
     /// Represents the type of payment that resulted in this receipt credential
     /// redemption.
     enum PaymentType: CustomStringConvertible {
@@ -347,8 +363,10 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
         case .success:
             Logger.info("[Donations] Redemption job succeeded")
             ReceiptCredentialRedemptionJob.postNotification(name: ReceiptCredentialRedemptionJob.didSucceedNotification)
-        case .failure:
+            future?.resolve(())
+        case .failure(let error):
             ReceiptCredentialRedemptionJob.postNotification(name: ReceiptCredentialRedemptionJob.didFailNotification)
+            future?.reject(error)
         }
     }
 

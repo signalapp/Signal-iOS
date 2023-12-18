@@ -531,7 +531,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     )
                 }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
                     // Treat updates like new subscriptions
-                    SubscriptionManagerImpl.requestAndRedeemReceipt(
+                    let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
                         subscriberId: subscriberID,
                         subscriptionLevel: selectedSubscriptionLevel.level,
                         priorSubscriptionLevel: currentSubscription.level,
@@ -541,7 +541,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         shouldSuppressPaymentAlreadyRedeemed: false
                     )
 
-                    return DonationViewsUtil.waitForSubscriptionJob(
+                    return DonationViewsUtil.waitForRedemptionJob(
+                        redemptionJob,
                         paymentMethod: subscription.paymentMethod
                     )
                 }

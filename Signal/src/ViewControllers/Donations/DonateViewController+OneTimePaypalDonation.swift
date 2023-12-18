@@ -83,16 +83,14 @@ extension DonateViewController {
                 approvalParams: approvalParams
             )
         }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in
-            SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionJob = SubscriptionManagerImpl.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .braintree,
                 paymentMethod: .paypal
             )
 
-            return DonationViewsUtil.waitForSubscriptionJob(
-                paymentMethod: .paypal
-            )
+            return DonationViewsUtil.waitForRedemptionJob(redemptionJob, paymentMethod: .paypal)
         }
     }
 }

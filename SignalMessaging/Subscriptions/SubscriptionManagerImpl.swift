@@ -548,9 +548,9 @@ public class SubscriptionManagerImpl: NSObject {
         paymentMethod: DonationPaymentMethod?,
         isNewSubscription: Bool,
         shouldSuppressPaymentAlreadyRedeemed: Bool
-    ) {
+    ) -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
         let request = generateReceiptRequest()
-
         databaseStorage.asyncWrite { transaction in
             self.jobQueue.addSubscriptionJob(
                 paymentProcessor: paymentProcessor,
@@ -562,9 +562,11 @@ public class SubscriptionManagerImpl: NSObject {
                 priorSubscriptionLevel: priorSubscriptionLevel,
                 isNewSubscription: isNewSubscription,
                 shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
+                future: future,
                 transaction: transaction
             )
         }
+        return promise
     }
 
     public class func requestAndRedeemReceipt(
@@ -572,9 +574,9 @@ public class SubscriptionManagerImpl: NSObject {
         amount: FiatMoney,
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod
-    ) {
+    ) -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
         let request = generateReceiptRequest()
-
         databaseStorage.asyncWrite { transaction in
             self.jobQueue.addBoostJob(
                 amount: amount,
@@ -583,9 +585,11 @@ public class SubscriptionManagerImpl: NSObject {
                 receiptCredentialRequestContext: request.context.serialize().asData,
                 receiptCredentialRequest: request.request.serialize().asData,
                 boostPaymentIntentID: boostPaymentIntentId,
+                future: future,
                 transaction: transaction
             )
         }
+        return promise
     }
 
     public class func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {

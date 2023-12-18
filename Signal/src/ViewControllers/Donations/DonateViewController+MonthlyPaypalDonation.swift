@@ -146,7 +146,7 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
             Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
 
-            SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionPromise = SubscriptionManagerImpl.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
@@ -156,9 +156,7 @@ extension DonateViewController {
                 shouldSuppressPaymentAlreadyRedeemed: false
             )
 
-            return DonationViewsUtil.waitForSubscriptionJob(
-                paymentMethod: .paypal
-            )
+            return DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .paypal)
         }
 
         return DonationViewsUtil.wrapPromiseInProgressView(

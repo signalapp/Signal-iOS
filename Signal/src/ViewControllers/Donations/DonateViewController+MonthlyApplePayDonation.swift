@@ -74,7 +74,7 @@ extension DonateViewController {
 
             Logger.info("[Donations] Redeeming monthly receipt for Apple Pay donation")
 
-            SubscriptionManagerImpl.requestAndRedeemReceipt(
+            let redemptionPromise = SubscriptionManagerImpl.requestAndRedeemReceipt(
                 subscriberId: subscriberID,
                 subscriptionLevel: selectedSubscriptionLevel.level,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
@@ -86,9 +86,7 @@ extension DonateViewController {
 
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
-                promise: DonationViewsUtil.waitForSubscriptionJob(
-                    paymentMethod: .applePay
-                )
+                promise: DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: .applePay)
             ).done(on: DispatchQueue.main) {
                 Logger.info("[Donations] Monthly card donation finished")
 
