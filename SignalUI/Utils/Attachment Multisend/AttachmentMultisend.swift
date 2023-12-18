@@ -312,19 +312,21 @@ public class AttachmentMultisend: Dependencies {
     ) throws -> Promise<[TSThread]> {
         messagesReadyToSend(preparedSend.messages)
 
-        let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: preparedSend.attachmentIdMap) + preparedSend.unsavedMessages
+        return Promise.wrapAsync {
+            let messageSendPromises = try await BroadcastMediaUploader.uploadAttachments(
+                attachmentIdMap: preparedSend.attachmentIdMap,
+                sendMessages: { uploadedMessages, tx in
+                    let outgoingMessages = uploadedMessages + preparedSend.unsavedMessages
+                    return outgoingMessages.map { message in
+                        ThreadUtil.enqueueMessagePromise(message: message, transaction: tx)
+                    }
+                }
+            )
 
-        var messageSendPromises = [Promise<Void>]()
-        databaseStorage.write { transaction in
-            for message in outgoingMessages {
-                messageSendPromises.append(ThreadUtil.enqueueMessagePromise(
-                    message: message,
-                    transaction: transaction
-                ))
-            }
+            try await Promise.when(fulfilled: messageSendPromises).awaitable()
+
+            return preparedSend.threads
         }
-
-        return Promise.when(fulfilled: messageSendPromises).map { preparedSend.threads }
     }
 }
 

@@ -5,42 +5,25 @@
 
 import SignalServiceKit
 
-public class BroadcastMediaMessageJobQueue: JobQueue {
-    public typealias DurableOperationType = BroadcastMediaMessageOperation
-    public let requiresInternet: Bool = true
-    public var isEnabled: Bool { !CurrentAppContext().isNSE }
+public class BroadcastMediaMessageJobQueue {
+    private let jobQueueRunner: JobQueueRunner<
+        JobRecordFinderImpl<BroadcastMediaMessageJobRecord>,
+        BroadcastMediaMessageJobRunnerFactory
+    >
 
-    public var runningOperations = AtomicArray<BroadcastMediaMessageOperation>()
-    public let isSetup = AtomicBool(false)
-
-    public init() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setup()
-        }
+    public init(db: DB, reachabilityManager: SSKReachabilityManager) {
+        self.jobQueueRunner = JobQueueRunner(
+            canExecuteJobsConcurrently: false,
+            db: db,
+            jobFinder: JobRecordFinderImpl(db: db),
+            jobRunnerFactory: BroadcastMediaMessageJobRunnerFactory()
+        )
+        self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 
-    public func setup() {
-        defaultSetup()
-    }
-
-    public func didMarkAsReady(oldJobRecord: BroadcastMediaMessageJobRecord, transaction: SDSAnyWriteTransaction) {
-        // no special handling
-    }
-
-    let defaultQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "BroadcastMediaMessageJobQueue"
-        // TODO - stream uploads from file and raise this limit.
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
-    public func operationQueue(jobRecord: BroadcastMediaMessageJobRecord) -> OperationQueue {
-        return defaultQueue
-    }
-
-    public func buildOperation(jobRecord: BroadcastMediaMessageJobRecord, transaction: SDSAnyReadTransaction) throws -> BroadcastMediaMessageOperation {
-        return BroadcastMediaMessageOperation(jobRecord: jobRecord)
+    func start(appContext: AppContext) {
+        if appContext.isNSE { return }
+        jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
     public func add(attachmentIdMap: [String: [String]], unsavedMessagesToSend: [TSOutgoingMessage], transaction: SDSAnyWriteTransaction) {
@@ -48,73 +31,51 @@ public class BroadcastMediaMessageJobQueue: JobQueue {
             attachmentIdMap: attachmentIdMap,
             unsavedMessagesToSend: unsavedMessagesToSend
         )
-
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        jobRecord.anyInsert(transaction: transaction)
+        transaction.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
     }
 }
 
-public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
-    public typealias JobRecordType = BroadcastMediaMessageJobRecord
-    public typealias DurableOperationDelegateType = BroadcastMediaMessageJobQueue
-    public weak var durableOperationDelegate: BroadcastMediaMessageJobQueue?
-    public let jobRecord: BroadcastMediaMessageJobRecord
-    public var operation: OWSOperation { return self }
-    public let maxRetries: UInt = 4
+private class BroadcastMediaMessageJobRunnerFactory: JobRunnerFactory {
+    func buildRunner() -> BroadcastMediaMessageJobRunner { BroadcastMediaMessageJobRunner() }
+}
 
-    // MARK: -
-
-    init(jobRecord: BroadcastMediaMessageJobRecord) {
-        self.jobRecord = jobRecord
+private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
+    private enum Constants {
+        static let maxRetries: UInt = 4
     }
 
-    // MARK: -
+    func runJobAttempt(_ jobRecord: BroadcastMediaMessageJobRecord) async -> JobAttemptResult {
+        return await .executeBlockWithDefaultErrorHandler(
+            jobRecord: jobRecord,
+            retryLimit: Constants.maxRetries,
+            db: DependenciesBridge.shared.db,
+            block: { try await _runJobAttempt(jobRecord) }
+        )
+    }
 
-    public override func run() {
-        do {
-            let messagesToSend = try BroadcastMediaUploader.upload(attachmentIdMap: jobRecord.attachmentIdMap)
-                + (jobRecord.unsavedMessagesToSend ?? [])
-            databaseStorage.write { transaction in
-                for message in messagesToSend {
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: transaction)
+    func didFinishJob(_ jobRecordId: JobRecord.RowId, result: JobResult) async {}
+
+    private func _runJobAttempt(_ jobRecord: BroadcastMediaMessageJobRecord) async throws {
+        try await BroadcastMediaUploader.uploadAttachments(
+            attachmentIdMap: jobRecord.attachmentIdMap,
+            sendMessages: { uploadedMessages, tx in
+                for message in uploadedMessages + (jobRecord.unsavedMessagesToSend ?? []) {
+                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
                 }
+                jobRecord.anyRemove(transaction: tx)
             }
-        } catch {
-            reportError(withUndefinedRetry: error)
-        }
-
-        reportSuccess()
-    }
-
-    // MARK: -
-
-    public override func didSucceed() {
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
-        }
-    }
-
-    public override func didReportError(_ error: Error) {
-        Logger.debug("remainingRetries: \(self.remainingRetries)")
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
-        }
-    }
-
-    public override func didFail(error: Error) {
-        Logger.error("failed with error: \(error)")
-
-        self.databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
-        }
+        )
     }
 }
 
 // MARK: -
 
 public enum BroadcastMediaUploader: Dependencies {
-
-    public static func upload(attachmentIdMap: [String: [String]]) throws -> [TSOutgoingMessage] {
+    public static func uploadAttachments<T>(
+        attachmentIdMap: [String: [String]],
+        sendMessages: @escaping (_ messages: [TSOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T
+    ) async throws -> T {
         let observer = NotificationCenter.default.addObserver(
             forName: .attachmentUploadProgress,
             object: nil,
@@ -149,38 +110,32 @@ public enum BroadcastMediaUploader: Dependencies {
         }
         defer { NotificationCenter.default.removeObserver(observer) }
 
-        let uploadOperations = attachmentIdMap.keys.map { (attachmentId) -> OWSUploadOperation in
-
-            let messageIds: [String] = {
-                guard let correspondingAttachmentIds = attachmentIdMap[attachmentId] else {
-                    owsFailDebug("correspondingAttachments was unexpectedly nil")
-                    return []
-                }
-                var result = [String]()
-                Self.databaseStorage.read { transaction in
-                    for attachmentId in correspondingAttachmentIds {
-                        guard let correspondingAttachment = TSAttachmentStream.anyFetchAttachmentStream(
-                            uniqueId: attachmentId,
-                            transaction: transaction
-                        ) else {
-                            Logger.warn("correspondingAttachment is missing. User has since deleted?")
-                            continue
-                        }
-                        if let albumMessageId = correspondingAttachment.albumMessageId {
-                            result.append(albumMessageId)
-                        }
+        let uploadOperations: [OWSUploadOperation] = databaseStorage.read { tx in
+            return attachmentIdMap.map { (attachmentId, correspondingAttachmentIds) in
+                let messageIds: [String] = correspondingAttachmentIds.compactMap { correspondingId in
+                    let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: correspondingId, transaction: tx)
+                    guard let attachment else {
+                        Logger.warn("correspondingAttachment is missing. User has since deleted?")
+                        return nil
                     }
+                    guard let messageId = attachment.albumMessageId else {
+                        return nil
+                    }
+                    return messageId
                 }
-                return result
-            }()
-
-            // This is only used for media attachments, so we can always use v3.
-            return OWSUploadOperation(attachmentId: attachmentId,
-                                      messageIds: messageIds,
-                                        canUseV3: true)
+                // This is only used for media attachments, so we can always use v3.
+                return OWSUploadOperation(attachmentId: attachmentId, messageIds: messageIds, canUseV3: true)
+            }
         }
 
-        OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: true)
+        Logger.info("Starting \(uploadOperations.count) uploads")
+
+        try? await withCheckedThrowingContinuation { continuation in
+            let waitingOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation, asyncBlock: {})
+            uploadOperations.forEach { waitingOperation.addDependency($0) }
+            OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: false)
+            OWSUploadOperation.uploadQueue.addOperation(waitingOperation)
+        }
         if let error = (uploadOperations.compactMap { $0.failingError }).first { throw error }
 
         let uploadedAttachments: [TSAttachmentStream] = uploadOperations.compactMap { operation in
@@ -188,12 +143,12 @@ public enum BroadcastMediaUploader: Dependencies {
                 owsFailDebug("completedUpload was unexpectedly nil")
                 return nil
             }
-
             return completedUpload
         }
 
-        var messagesToSend = [TSOutgoingMessage]()
-        SDSDatabaseStorage.shared.write { transaction in
+        Logger.info("Completed \(uploadedAttachments.count) uploads")
+
+        return await databaseStorage.awaitableWrite { transaction in
             var messageIdsToSend: Set<String> = Set()
 
             // The attachments we've uploaded don't appear in any thread. Once they're
@@ -210,11 +165,13 @@ public enum BroadcastMediaUploader: Dependencies {
                 let cdnKey = uploadedAttachment.cdnKey
                 let cdnNumber = uploadedAttachment.cdnNumber
                 let uploadTimestamp = uploadedAttachment.uploadTimestamp
-                guard let encryptionKey = uploadedAttachment.encryptionKey,
+                guard
+                    let encryptionKey = uploadedAttachment.encryptionKey,
                     let digest = uploadedAttachment.digest,
-                    (serverId > 0 || !cdnKey.isEmpty) else {
-                        owsFailDebug("uploaded attachment was incomplete")
-                        continue
+                    (serverId > 0 || !cdnKey.isEmpty)
+                else {
+                    owsFailDebug("uploaded attachment was incomplete")
+                    continue
                 }
                 if uploadTimestamp < 1 {
                     owsFailDebug("Missing uploadTimestamp.")
@@ -228,13 +185,15 @@ public enum BroadcastMediaUploader: Dependencies {
                         Logger.warn("correspondingAttachment is missing. User has since deleted?")
                         continue
                     }
-                    correspondingAttachment.updateAsUploaded(withEncryptionKey: encryptionKey,
-                                                             digest: digest,
-                                                             serverId: serverId,
-                                                             cdnKey: cdnKey,
-                                                             cdnNumber: cdnNumber,
-                                                             uploadTimestamp: uploadTimestamp,
-                                                             transaction: transaction)
+                    correspondingAttachment.updateAsUploaded(
+                        withEncryptionKey: encryptionKey,
+                        digest: digest,
+                        serverId: serverId,
+                        cdnKey: cdnKey,
+                        cdnNumber: cdnNumber,
+                        uploadTimestamp: uploadTimestamp,
+                        transaction: transaction
+                    )
 
                     uploadedAttachment.blurHash.map { blurHash in
                         correspondingAttachment.update(withBlurHash: blurHash, transaction: transaction)
@@ -247,7 +206,7 @@ public enum BroadcastMediaUploader: Dependencies {
                 }
             }
 
-            messagesToSend = messageIdsToSend.compactMap { messageId in
+            let messagesToSend: [TSOutgoingMessage] = messageIdsToSend.compactMap { messageId in
                 guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(
                         uniqueId: messageId,
                         transaction: transaction
@@ -276,8 +235,8 @@ public enum BroadcastMediaUploader: Dependencies {
 #endif
 
             // TODO: should we delete the orphaned attachments from the DB and disk here, now that we're done with them?
-        }
 
-        return messagesToSend
+            return sendMessages(messagesToSend, transaction)
+        }
     }
 }

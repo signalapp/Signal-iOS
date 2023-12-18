@@ -19,16 +19,16 @@ import Foundation
 /// `AwaitableBlockOperation` that runs its block synchronously, and you
 /// could have an `AsyncBlockOperation` that runs an async block but doesn't
 /// allow the caller to wait for it to finish.
-final class AwaitableAsyncBlockOperation: OWSOperation {
+public final class AwaitableAsyncBlockOperation: OWSOperation {
     private let completionContinuation: CheckedContinuation<Void, Error>
     private let asyncBlock: () async throws -> Void
 
-    init(completionContinuation: CheckedContinuation<Void, Error>, asyncBlock: @escaping () async throws -> Void) {
+    public init(completionContinuation: CheckedContinuation<Void, Error>, asyncBlock: @escaping () async throws -> Void) {
         self.completionContinuation = completionContinuation
         self.asyncBlock = asyncBlock
     }
 
-    override func run() {
+    public override func run() {
         Task {
             do {
                 try await self.asyncBlock()
@@ -39,11 +39,11 @@ final class AwaitableAsyncBlockOperation: OWSOperation {
         }
     }
 
-    override func didSucceed() {
+    public override func didSucceed() {
         completionContinuation.resume(returning: ())
     }
 
-    override func didFail(error: Error) {
+    public override func didFail(error: Error) {
         completionContinuation.resume(throwing: error)
     }
 }
