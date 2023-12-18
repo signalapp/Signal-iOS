@@ -609,31 +609,13 @@ public class GroupManager: NSObject {
         groupThread: TSGroupThread,
         replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
-        guard groupThread.isGroupV2Thread else {
-            owsFail("[GV1] Mutations on V1 groups should be impossible!")
-        }
-
-        return localLeaveGroupV2OrDeclineInvite(
-            groupThreadId: groupThread.uniqueId,
+        return SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.addJob(
+            groupThread: groupThread,
             replacementAdminAci: replacementAdminAci,
             waitForMessageProcessing: waitForMessageProcessing,
-            transaction: transaction
-        )
-    }
-
-    private static func localLeaveGroupV2OrDeclineInvite(
-        groupThreadId threadId: String,
-        replacementAdminAci: Aci?,
-        waitForMessageProcessing: Bool,
-        transaction: SDSAnyWriteTransaction
-    ) -> Promise<TSGroupThread> {
-        SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.add(
-            threadId: threadId,
-            replacementAdminAci: replacementAdminAci,
-            waitForMessageProcessing: waitForMessageProcessing,
-            transaction: transaction
+            tx: tx
         )
     }
 
@@ -650,10 +632,7 @@ public class GroupManager: NSObject {
         transaction.addAsyncCompletionOffMain {
             firstly {
                 databaseStorage.write(.promise) { transaction in
-                    self.localLeaveGroupOrDeclineInvite(
-                        groupThread: groupThread,
-                        transaction: transaction
-                    ).asVoid()
+                    self.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: transaction).asVoid()
                 }
             }.done { _ in
                 success?()

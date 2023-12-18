@@ -30,7 +30,7 @@ public extension GroupManager {
                         groupThread: groupThread,
                         replacementAdminAci: replacementAdminAci,
                         waitForMessageProcessing: true,
-                        transaction: transaction
+                        tx: transaction
                     ).asVoid()
                 }
             }.done(on: DispatchQueue.main) { _ in

@@ -128,10 +128,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 )
             }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 self.databaseStorage.write { transaction in
-                    GroupManager.localLeaveGroupOrDeclineInvite(
-                        groupThread: groupThread,
-                        transaction: transaction
-                    )
+                    GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: transaction)
                 }
             }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 guard let missingLocalUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {

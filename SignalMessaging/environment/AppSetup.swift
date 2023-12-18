@@ -181,7 +181,10 @@ public class AppSetup {
             db: dependenciesBridge.db,
             dateProvider: { Date() }
         )
-        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()
+        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue(
+            db: dependenciesBridge.db,
+            reachabilityManager: reachabilityManager
+        )
 
         let smEnvironment = SMEnvironment(
             preferences: preferences,

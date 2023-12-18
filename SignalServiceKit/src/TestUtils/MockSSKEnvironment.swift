@@ -170,7 +170,10 @@ public class MockSSKEnvironment: SSKEnvironment {
             websocketFactory: webSocketFactory
         )
         let messageSendLog = MessageSendLog(db: dependenciesBridge.db, dateProvider: { Date() })
-        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()
+        let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue(
+            db: dependenciesBridge.db,
+            reachabilityManager: reachabilityManager
+        )
 
         super.init(
             contactsManager: contactsManager,

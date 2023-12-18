@@ -718,7 +718,7 @@ private extension GroupV2UpdatesImpl {
                 _ = GroupManager.localLeaveGroupOrDeclineInvite(
                     groupThread: groupThread,
                     waitForMessageProcessing: true,
-                    transaction: transaction
+                    tx: transaction
                 )
             } else if
                 let profileKey = profileKeysByAci[localIdentifiers.aci],

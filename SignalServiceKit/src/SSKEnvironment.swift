@@ -239,6 +239,10 @@ public class SSKEnvironment: NSObject {
         DependenciesBridge.shared.deviceManager.warmCaches()
         DependenciesBridge.shared.db.read { tx in appExpiryRef.warmCaches(with: tx) }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
+        }
+
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)
     }
 
