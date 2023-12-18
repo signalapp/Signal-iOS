@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct PendingOneTimeIDEALDonation: Codable {
+public struct PendingOneTimeIDEALDonation: Codable, Equatable {
     public let amount: FiatMoney
     public let paymentIntentId: String
     public let createDate: Date
@@ -20,7 +20,7 @@ public struct PendingOneTimeIDEALDonation: Codable {
     }
 }
 
-public struct PendingMonthlyIDEALDonation: Codable {
+public struct PendingMonthlyIDEALDonation: Codable, Equatable {
     public let subscriberId: Data
     public let clientSecret: String
     public let setupIntentId: String

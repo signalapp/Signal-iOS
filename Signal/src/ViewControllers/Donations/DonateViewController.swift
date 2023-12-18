@@ -484,6 +484,17 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             )
             let currencyString = DonationUtilities.format(money: minimumAmount)
             showError(String(format: format, currencyString))
+        case .awaitingIDEALAuthorization:
+            // Not pending, but awaiting approval
+            let title = OWSLocalizedString(
+                "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING",
+                comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment."
+            )
+            let message = OWSLocalizedString(
+                "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION",
+                comment: "Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval."
+            )
+            showError(title: title, message)
         case let .canContinue(amount, supportedPaymentMethods):
             presentChoosePaymentMethodSheet(
                 amount: amount,
@@ -765,7 +776,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             previousSubscriberCurrencyCode,
             previousSubscriberPaymentMethod,
             oneTimeBoostReceiptCredentialRequestError,
-            recurringSubscriptionReceiptCredentialRequestError
+            recurringSubscriptionReceiptCredentialRequestError,
+            pendingIDEALOneTimeDonation,
+            pendingIDEALSubscription
         ) = databaseStorage.read {
             (
                 SubscriptionManagerImpl.getSubscriberID(transaction: $0),
@@ -774,7 +787,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 DependenciesBridge.shared.receiptCredentialResultStore
                     .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
                 DependenciesBridge.shared.receiptCredentialResultStore
-                    .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read)
+                    .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read),
+                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingOneTimeDonation(tx: $0.asV2Read),
+                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: $0.asV2Read)
             )
         }
 
@@ -815,6 +830,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 previousMonthlySubscriptionPaymentMethod: previousSubscriberPaymentMethod,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                 recurringSubscriptionReceiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
+                pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
+                pendingIDEALSubscription: pendingIDEALSubscription,
                 locale: Locale.current,
                 localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
             )
@@ -1333,9 +1350,40 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             return false
         }
 
+        func doomedButton(title: String, message: String, isEnabled: Bool) -> OWSButton {
+            let doomedContinueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
+                self?.showError(title: title, message)
+            }
+
+            doomedContinueButton.backgroundColor = .ows_accentBlue
+            doomedContinueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+            doomedContinueButton.isEnabled = isEnabled
+
+            return doomedContinueButton
+        }
+
         var buttons = [OWSButton]()
 
-        if let paymentProcessingMethod = monthly.paymentProcessingWithPaymentMethod {
+        if nil != self.databaseStorage.read(block: { tx in
+            DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: tx.asV2Read)
+        }) {
+            let title = OWSLocalizedString(
+                "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION",
+                comment: "Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization."
+            )
+
+            let message = OWSLocalizedString(
+                "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION",
+                comment: "Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization."
+            )
+
+            let doomedContinueButton = doomedButton(
+                title: title,
+                message: message,
+                isEnabled: true
+            )
+            buttons.append(doomedContinueButton)
+        } else if let paymentProcessingMethod = monthly.paymentProcessingWithPaymentMethod {
             let title: String
             let message: String
 
@@ -1360,14 +1408,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 )
             }
 
-            let doomedContinueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
-                self?.showError(title: title, message)
-            }
-
-            doomedContinueButton.backgroundColor = .ows_accentBlue
-            doomedContinueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
-            doomedContinueButton.isEnabled = isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
-
+            let doomedContinueButton = doomedButton(
+                title: title,
+                message: message,
+                isEnabled: isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
+            )
             buttons.append(doomedContinueButton)
         } else if
             let currentSubscription = monthly.currentSubscription,

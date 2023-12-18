@@ -6,6 +6,12 @@
 import Foundation
 
 extension Stripe {
+    public enum RedirectAuthorizationError: Error {
+        case cancelled
+        case denied
+        case invalidCallback
+    }
+
     // These values are somewhat arbitrary.
     public static let SCHEME_FOR_3DS = "sgnlpay"
     static let RETURN_URL_FOR_3DS = "\(SCHEME_FOR_3DS)://3ds"

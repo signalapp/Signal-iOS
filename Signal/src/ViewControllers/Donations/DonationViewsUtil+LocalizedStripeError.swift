@@ -191,4 +191,24 @@ extension DonationViewsUtil {
 
         return (message, actions)
     }
+
+    public static func localizedDonationFailureForPaymentAuthorizationRedirect(error: Stripe.RedirectAuthorizationError) -> String? {
+        switch error {
+        case .cancelled:
+            return OWSLocalizedString(
+                "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE",
+                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment."
+            )
+        case .denied:
+            return OWSLocalizedString(
+                "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE",
+                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment."
+            )
+        case .invalidCallback:
+            return OWSLocalizedString(
+                "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE",
+                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format."
+            )
+        }
+    }
 }

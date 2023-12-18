@@ -183,6 +183,8 @@ final class DonateViewControllerTest: SignalBaseTest {
             previousMonthlySubscriptionPaymentMethod: nil,
             oneTimeBoostReceiptCredentialRequestError: nil,
             recurringSubscriptionReceiptCredentialRequestError: nil,
+            pendingIDEALOneTimeDonation: nil,
+            pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -199,6 +201,8 @@ final class DonateViewControllerTest: SignalBaseTest {
             previousMonthlySubscriptionPaymentMethod: .applePay,
             oneTimeBoostReceiptCredentialRequestError: nil,
             recurringSubscriptionReceiptCredentialRequestError: nil,
+            pendingIDEALOneTimeDonation: nil,
+            pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -223,6 +227,8 @@ final class DonateViewControllerTest: SignalBaseTest {
             previousMonthlySubscriptionPaymentMethod: .applePay,
             oneTimeBoostReceiptCredentialRequestError: nil,
             recurringSubscriptionReceiptCredentialRequestError: nil,
+            pendingIDEALOneTimeDonation: nil,
+            pendingIDEALSubscription: nil,
             locale: locale,
             localNumber: Self.localNumber
         )
@@ -264,6 +270,8 @@ final class DonateViewControllerTest: SignalBaseTest {
                 paymentMethod: .sepa
             ),
             recurringSubscriptionReceiptCredentialRequestError: recurringError,
+            pendingIDEALOneTimeDonation: nil,
+            pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -501,7 +509,7 @@ final class DonateViewControllerTest: SignalBaseTest {
         switch oneTimeProcessing.oneTime!.paymentRequest {
         case let .alreadyHasPaymentProcessing(paymentMethod):
             XCTAssertEqual(paymentMethod, .sepa)
-        case .noAmountSelected, .amountIsTooSmall, .canContinue:
+        case .noAmountSelected, .amountIsTooSmall, .canContinue, .awaitingIDEALAuthorization:
             XCTFail("Should be payment processing!")
         }
 

@@ -40,14 +40,14 @@ extension DonationPaymentDetailsViewController {
                     let result = intentQuery.value
                 else {
                     Logger.error("[Donations] Stripe did not give us a payment intent from 3DS")
-                    future.reject(DonationJobError.assertion)
+                    future.reject(Stripe.RedirectAuthorizationError.invalidCallback)
                     return
                 }
 
                 future.resolve(result)
             case let .failure(error):
-                Logger.warn("[Donations] 3DS error: \(error)")
-                future.reject(DonationJobError.assertion)
+                Logger.warn("[Donations] Payment authorization redirect error: \(error)")
+                future.reject(Stripe.RedirectAuthorizationError.cancelled)
             }
         }
 
@@ -81,7 +81,7 @@ extension DonationPaymentDetailsViewController {
             threeDSecureAuthenticationFuture = nil
         }
         if !success {
-            future.reject(OWSUnretryableError())
+            future.reject(Stripe.RedirectAuthorizationError.denied)
         } else {
             future.resolve(intentID)
         }

@@ -17,6 +17,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
             case noSubscription
 
+            case pendingSubscription(PendingMonthlyIDEALDonation)
+
             /// The user has a subscription, which may be active or inactive.
             ///
             /// Both active and inactive subscriptions may be in a "processing"
@@ -42,6 +44,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             subscriptionStatus: SubscriptionStatus,
             oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
             profileBadgeLookup: ProfileBadgeLookup,
+            pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
             hasAnyBadges: Bool,
             hasAnyDonationReceipts: Bool
         )
@@ -80,6 +83,15 @@ class DonationSettingsViewController: OWSTableViewController2 {
         )
     }
 
+    public var showExpirationSheet: Bool
+
+    /// This view can display sheets to the user on first appearance.  However there are  scenarios
+    /// (eg. deep links) where suppressing any dialogs may be wanted.  This boolean allows for that.
+    init(showExpirationSheet: Bool = true) {
+        self.showExpirationSheet = showExpirationSheet
+        super.init()
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUpAvatarView()
@@ -88,13 +100,109 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadAndUpdateState()
+        _ = loadAndUpdateState()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        showGiftBadgeExpirationSheetIfNeeded()
+        if showExpirationSheet {
+            if !showPendingIDEALAuthorizationSheetIfNeeded() {
+                showGiftBadgeExpirationSheetIfNeeded()
+            }
+            // viewDidAppear can be called multiple times, and we don't want
+            // Record that an intial attempt was made to show a sheet and
+            // don't try again after that. 
+            showExpirationSheet = false
+        }
+    }
+
+    /// Check if there is a pending iDEAL payment awaiting authorization.  If so, check how old the
+    /// payment is and display a message that either it still needs external authorization or the payment
+    /// failed and can be tried again.
+    private func showPendingIDEALAuthorizationSheetIfNeeded() -> Bool {
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+        let expiration = kDayInterval
+
+        func showError(title: String, message: String) {
+            let actionSheet = ActionSheetController(
+                title: title,
+                message: message
+            )
+
+            actionSheet.addAction(.init(
+                title: CommonStrings.okayButton,
+                style: .cancel,
+                handler: nil
+            ))
+
+            presentActionSheet(actionSheet)
+        }
+
+        let (pendingOneTime, pendingSubscription) = databaseStorage.read { tx in
+            let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx.asV2Read)
+            let subscription = idealStore.getPendingSubscription(tx: tx.asV2Read)
+            return (oneTimeDonation, subscription)
+        }
+
+        if let pendingOneTime {
+            if abs(pendingOneTime.createDate.timeIntervalSinceNow) > expiration {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment failed."
+                )
+                let message = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed."
+                )
+                showError(title: title, message: message)
+
+                // cleanup
+                databaseStorage.write { tx in
+                    idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                }
+            } else {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let messageFormat = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let message = String(format: messageFormat, DonationUtilities.format(money: pendingOneTime.amount))
+                showError(title: title, message: message)
+            }
+            return true
+        } else if let pendingSubscription {
+            if abs(pendingSubscription.createDate.timeIntervalSinceNow) > expiration {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment failed."
+                )
+                let message = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed."
+                )
+                showError(title: title, message: message)
+                databaseStorage.write { tx in
+                    idealStore.clearPendingSubscription(tx: tx.asV2Write)
+                }
+            } else {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let messageFormat = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}."
+                )
+                let message = String(format: messageFormat, DonationUtilities.format(money: pendingSubscription.amount))
+                showError(title: title, message: message)
+            }
+            return true
+        }
+        return false
     }
 
     @objc
@@ -122,12 +230,15 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private func loadState() -> Guarantee<State> {
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let (
             subscriberID,
             hasEverRedeemedRecurringSubscriptionBadge,
             recurringSubscriptionReceiptCredentialRequestError,
             oneTimeBoostReceiptCredentialRequestError,
-            hasAnyDonationReceipts
+            hasAnyDonationReceipts,
+            pendingIDEALOneTimeDonation,
+            pendingIDEALSubscription
         ) = databaseStorage.read { tx in
             let resultStore = DependenciesBridge.shared.receiptCredentialResultStore
 
@@ -136,7 +247,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx.asV2Read) != nil,
                 recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx.asV2Read),
                 oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read),
-                hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx)
+                hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx),
+                idealStore.getPendingOneTimeDonation(tx: tx.asV2Read),
+                idealStore.getPendingSubscription(tx: tx.asV2Read)
             )
         }
 
@@ -152,7 +265,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     let result: State = .loadFinished(
                         subscriptionStatus: {
                             guard let currentSubscription else {
-                                return .noSubscription
+                                if let pendingIDEALSubscription {
+                                    return .pendingSubscription(pendingIDEALSubscription)
+                                } else {
+                                    return .noSubscription
+                                }
                             }
 
                             return .hasSubscription(
@@ -167,10 +284,23 @@ class DonationSettingsViewController: OWSTableViewController2 {
                         }(),
                         oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                         profileBadgeLookup: profileBadgeLookup,
+                        pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                         hasAnyBadges: hasAnyBadges,
                         hasAnyDonationReceipts: hasAnyDonationReceipts
                     )
-                    return Guarantee.value(result)
+                    if let pendingIDEALSubscription {
+                        // Serialized badges lose their assets, so ensure they've
+                        // been populated before returning.
+                        return OWSProfileManager.shared.badgeStore.populateAssetsOnBadge(
+                            pendingIDEALSubscription.newSubscriptionLevel.badge
+                        ).then { _ -> Guarantee<State> in
+                            Guarantee.value(result)
+                        }.recover { _ in
+                            Guarantee.value(result)
+                        }
+                    } else {
+                        return Guarantee.value(result)
+                    }
                 }
             }.recover { error -> Guarantee<State> in
                 Logger.warn("[Donations] \(error)")
@@ -179,6 +309,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     subscriptionStatus: .loadFailed,
                     oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                     profileBadgeLookup: profileBadgeLookup,
+                    pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                     hasAnyBadges: hasAnyBadges,
                     hasAnyDonationReceipts: hasAnyDonationReceipts
                 )
@@ -244,6 +375,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             subscriptionStatus,
             oneTimeBoostReceiptCredentialRequestError,
             profileBadgeLookup,
+            pendingOneTimeDonation,
             hasAnyBadges,
             hasAnyDonationReceipts
         ):
@@ -251,6 +383,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscriptionStatus: subscriptionStatus,
                 profileBadgeLookup: profileBadgeLookup,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                pendingOneTimeDonation: pendingOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
                 hasAnyDonationReceipts: hasAnyDonationReceipts
             )
@@ -306,6 +439,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
         oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+        pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
         hasAnyBadges: Bool,
         hasAnyDonationReceipts: Bool
     ) -> [OWSTableSection] {
@@ -314,6 +448,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscriptionStatus: subscriptionStatus,
                 profileBadgeLookup: profileBadgeLookup,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                pendingOneTimeDonation: pendingOneTimeDonation,
                 hasAnyBadges: hasAnyBadges
             ),
             otherWaysToDonateSection(),
@@ -384,7 +519,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         let shouldShowSubscriptionFaqLink: Bool = {
             if hasAnyDonationReceipts { return true }
             switch subscriptionStatus {
-            case .loadFailed, .hasSubscription: return true
+            case .loadFailed, .hasSubscription, .pendingSubscription: return true
             case .noSubscription: return false
             }
         }()

@@ -35,6 +35,7 @@ extension DonateViewController {
 
             enum OneTimePaymentRequest: Equatable {
                 case alreadyHasPaymentProcessing(paymentMethod: DonationPaymentMethod)
+                case awaitingIDEALAuthorization
                 case noAmountSelected
                 case amountIsTooSmall(minimumAmount: FiatMoney)
                 case canContinue(amount: FiatMoney, supportedPaymentMethods: Set<DonationPaymentMethod>)
@@ -50,6 +51,8 @@ extension DonateViewController {
             fileprivate let minimumAmountsByCurrency: [Currency.Code: FiatMoney]
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
             fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
+            fileprivate let pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?
+
             fileprivate let localNumber: String?
 
             public var amount: FiatMoney? {
@@ -85,6 +88,10 @@ extension DonateViewController {
             }
 
             public var paymentRequest: OneTimePaymentRequest {
+                if let pendingIDEALOneTimeDonation {
+                    return .awaitingIDEALAuthorization
+                }
+
                 if
                     let receiptCredentialRequestError,
                     case .paymentStillProcessing = receiptCredentialRequestError.errorCode
@@ -134,6 +141,7 @@ extension DonateViewController {
                     minimumAmountsByCurrency: minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
+                    pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
                     localNumber: localNumber
                 )
             }
@@ -167,6 +175,7 @@ extension DonateViewController {
                     minimumAmountsByCurrency: minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
+                    pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
                     localNumber: localNumber
                 )
             }
@@ -198,6 +207,7 @@ extension DonateViewController {
             public let currentSubscription: Subscription?
             public let subscriberID: Data?
             public let previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?
+            public let pendingIDEALSubscription: PendingMonthlyIDEALDonation?
 
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
             fileprivate let receiptCredentialRequestError: ReceiptCredentialRequestError?
@@ -293,6 +303,7 @@ extension DonateViewController {
                     currentSubscription: currentSubscription,
                     subscriberID: subscriberID,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
+                    pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
@@ -308,6 +319,7 @@ extension DonateViewController {
                     currentSubscription: currentSubscription,
                     subscriberID: subscriberID,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
+                    pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     localNumber: localNumber
@@ -454,6 +466,8 @@ extension DonateViewController {
             previousMonthlySubscriptionPaymentMethod: DonationPaymentMethod?,
             oneTimeBoostReceiptCredentialRequestError: ReceiptCredentialRequestError?,
             recurringSubscriptionReceiptCredentialRequestError: ReceiptCredentialRequestError?,
+            pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?,
+            pendingIDEALSubscription: PendingMonthlyIDEALDonation?,
             locale: Locale,
             localNumber: String?
         ) -> State {
@@ -486,6 +500,7 @@ extension DonateViewController {
                     minimumAmountsByCurrency: oneTimeConfig.minimumAmountsByCurrency,
                     paymentMethodConfiguration: paymentMethodsConfig,
                     receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+                    pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
                     localNumber: localNumber
                 )
             }()
@@ -533,6 +548,7 @@ extension DonateViewController {
                     currentSubscription: currentMonthlySubscription,
                     subscriberID: subscriberID,
                     previousMonthlySubscriptionPaymentMethod: previousMonthlySubscriptionPaymentMethod,
+                    pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodsConfig,
                     receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
                     localNumber: localNumber

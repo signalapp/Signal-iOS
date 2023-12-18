@@ -233,14 +233,14 @@ public final class DonationViewsUtil {
                 priorSubscriptionLevel: priorSubscriptionLevel,
                 currencyCode: currencyCode
             )
-        }.done(on: DispatchQueue.main) {
-            onFinished?(nil, badge, paymentMethod)
-        }.catch(on: DispatchQueue.main) { error in
-            onFinished?(error, badge, paymentMethod)
         }.ensure {
             databaseStorage.write { tx in
                 pendingStore.clearPendingSubscription(tx: tx.asV2Write)
             }
+        }.done(on: DispatchQueue.main) {
+            onFinished?(nil, badge, paymentMethod)
+        }.catch(on: DispatchQueue.main) { error in
+            onFinished?(error, badge, paymentMethod)
         }
     }
 
@@ -474,6 +474,13 @@ public final class DonationViewsUtil {
                 forDonationChargeErrorCode: stripeError.code,
                 using: paymentMethod
             )
+        } else if let redirectError = error as? Stripe.RedirectAuthorizationError {
+            DonationViewsUtil.presentRedirectAuthErrorSheet(
+                from: viewController,
+                donateMode: donateMode,
+                paymentMethod: paymentMethod,
+                error: redirectError
+            )
         } else {
             presentBadgeCantBeAddedSheet(
                 from: viewController,
@@ -482,7 +489,40 @@ public final class DonationViewsUtil {
         }
     }
 
-    static private func presentDonationErrorSheet(
+    private static func presentRedirectAuthErrorSheet(
+        from viewController: UIViewController,
+        donateMode: DonateViewController.DonateMode,
+        paymentMethod: DonationPaymentMethod?,
+        error: Stripe.RedirectAuthorizationError
+    ) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE",
+                comment: "Action sheet title for Error Authorizing Payment sheet"
+            ),
+            message: DonationViewsUtil.localizedDonationFailureForPaymentAuthorizationRedirect(error: error)
+        )
+
+        actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel, handler: { _ in
+            switch paymentMethod {
+            case .ideal:
+                let idealDonationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+                viewController.databaseStorage.write { tx in
+                    switch donateMode {
+                    case .oneTime:
+                        idealDonationStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                    case .monthly:
+                        idealDonationStore.clearPendingSubscription(tx: tx.asV2Write)
+                    }
+                }
+            case .applePay, .creditOrDebitCard, .paypal, .sepa, .none:
+                break
+            }
+        }))
+        viewController.presentActionSheet(actionSheet)
+    }
+
+    private static func presentDonationErrorSheet(
         from viewController: UIViewController,
         forDonationChargeErrorCode chargeErrorCode: String,
         using paymentMethod: DonationPaymentMethod?
@@ -514,7 +554,7 @@ public final class DonationViewsUtil {
         viewController.presentActionSheet(actionSheet)
     }
 
-    static private func presentStillProcessingSheet(
+    private static func presentStillProcessingSheet(
         from viewController: UIViewController,
         badge: ProfileBadge,
         paymentMethod: DonationPaymentMethod?,
@@ -545,7 +585,7 @@ public final class DonationViewsUtil {
         }
     }
 
-    static private func presentBadgeCantBeAddedSheet(
+    private static func presentBadgeCantBeAddedSheet(
         from viewController: UIViewController,
         donateMode: DonateViewController.DonateMode
     ) {
