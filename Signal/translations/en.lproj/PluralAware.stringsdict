@@ -584,7 +584,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation to the group were revoked for %d person.</string>
+			<string>Invitation to the group was revoked for %d person.</string>
 			<key>other</key>
 			<string>Invitations to the group were revoked for %d people.</string>
 		</dict>
