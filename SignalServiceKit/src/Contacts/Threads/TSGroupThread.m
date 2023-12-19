@@ -81,11 +81,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 // --- CODE GENERATION MARKER
 
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueueRef;
-}
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];

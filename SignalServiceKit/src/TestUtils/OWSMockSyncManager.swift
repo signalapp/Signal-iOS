@@ -4,16 +4,12 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 #if TESTABLE_BUILD
 
 @objc
 public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
-    public typealias MockBlock = () -> Void
-
-    @objc
-    public var syncGroupsHook: MockBlock?
-
     @objc
     public func sendConfigurationSyncMessage() {
         Logger.info("")
@@ -104,15 +100,6 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
 
         return AnyPromise()
-    }
-
-    @objc
-    public func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion) {
-        Logger.info("")
-
-        syncGroupsHook?()
-
-        completion()
     }
 }
 

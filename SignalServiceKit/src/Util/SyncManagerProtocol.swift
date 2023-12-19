@@ -12,16 +12,9 @@ public protocol SyncManagerProtocol: SyncManagerProtocolObjc, SyncManagerProtoco
 
 @objc
 public protocol SyncManagerProtocolObjc {
-    func sendConfigurationSyncMessage()
-
-    typealias Completion = () -> Void
-
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
 
-    func sendFetchLatestProfileSyncMessage()
-    func sendFetchLatestStorageManifestSyncMessage()
-    func sendFetchLatestSubscriptionStatusSyncMessage()
 }
 
 // MARK: -
@@ -31,9 +24,15 @@ public protocol SyncManagerProtocolSwift {
     func sendAllSyncRequestMessagesIfNecessary() -> AnyPromise
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
 
+    func sendConfigurationSyncMessage()
+
     func syncLocalContact() -> AnyPromise
     func syncAllContacts() -> AnyPromise
     func syncAllContactsIfFullSyncRequested() -> AnyPromise
+
+    func sendFetchLatestProfileSyncMessage()
+    func sendFetchLatestStorageManifestSyncMessage()
+    func sendFetchLatestSubscriptionStatusSyncMessage()
 
     func sendKeysSyncMessage()
     func sendKeysSyncMessage(tx: SDSAnyWriteTransaction)

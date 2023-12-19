@@ -231,6 +231,44 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
     }
 
+    // MARK: - Configuration Sync
+
+    public func sendConfigurationSyncMessage() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task { await self.databaseStorage.awaitableWrite(block: self._sendConfigurationSyncMessage(tx:)) }
+        }
+    }
+
+    private func _sendConfigurationSyncMessage(tx: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
+            return
+        }
+
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+
+        let linkPreviews = SSKPreferences.areLinkPreviewsEnabled(transaction: tx)
+        let readReceipts = receiptManager.areReadReceiptsEnabled(transaction: tx)
+        let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
+        let typingIndicators = typingIndicatorsImpl.areTypingIndicatorsEnabled()
+
+        let configurationSyncMessage = OWSSyncConfigurationMessage(
+            thread: thread,
+            readReceiptsEnabled: readReceipts,
+            showUnidentifiedDeliveryIndicators: sealedSenderIndicators,
+            showTypingIndicators: typingIndicators,
+            sendLinkPreviews: linkPreviews,
+            transaction: tx
+        )
+
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: configurationSyncMessage.asPreparer, transaction: tx)
+    }
+
     // MARK: - Contact Sync
 
     public func syncLocalContact() -> AnyPromise {
@@ -446,6 +484,34 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         if storedRequestId == requestId {
             Self.keyValueStore().removeValue(forKey: Constants.fullSyncRequestIdKey, transaction: tx)
         }
+    }
+
+    // MARK: - Fetch Latest
+
+    public func sendFetchLatestProfileSyncMessage() { sendFetchLatestSyncMessage(type: .localProfile) }
+
+    public func sendFetchLatestStorageManifestSyncMessage() { sendFetchLatestSyncMessage(type: .storageManifest) }
+
+    public func sendFetchLatestSubscriptionStatusSyncMessage() { sendFetchLatestSyncMessage(type: .subscriptionStatus) }
+
+    private func sendFetchLatestSyncMessage(type: OWSSyncFetchType) {
+        Task { await self.databaseStorage.awaitableWrite { tx in self._sendFetchLatestSyncMessage(type: type, tx: tx) } }
+    }
+
+    private func _sendFetchLatestSyncMessage(type: OWSSyncFetchType, tx: SDSAnyWriteTransaction) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
+            owsFailDebug("Tried to send sync message before registration.")
+            return
+        }
+
+        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+
+        let fetchLatestSyncMessage = OWSSyncFetchLatestMessage(thread: thread, fetchType: type, transaction: tx)
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: fetchLatestSyncMessage.asPreparer, transaction: tx)
     }
 }
 

@@ -120,51 +120,6 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
 
 #pragma mark - Methods
 
-- (void)sendConfigurationSyncMessage {
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
-            return;
-        }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendConfigurationSyncMessage_AppReady];
-        });
-    });
-}
-
-- (void)sendConfigurationSyncMessage_AppReady {
-    OWSLogInfo(@"");
-
-    if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
-        return;
-    }
-
-    BOOL areReadReceiptsEnabled = self.receiptManager.areReadReceiptsEnabled;
-    BOOL showUnidentifiedDeliveryIndicators = self.preferences.shouldShowUnidentifiedDeliveryIndicators;
-    BOOL showTypingIndicators = self.typingIndicatorsImpl.areTypingIndicatorsEnabled;
-
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        TSThread *_Nullable thread = [TSContactThread getOrCreateLocalThreadWithTransaction:transaction];
-        if (thread == nil) {
-            OWSFailDebug(@"Missing thread.");
-            return;
-        }
-
-        BOOL sendLinkPreviews = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
-
-        OWSSyncConfigurationMessage *syncConfigurationMessage =
-            [[OWSSyncConfigurationMessage alloc] initWithThread:thread
-                                            readReceiptsEnabled:areReadReceiptsEnabled
-                             showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
-                                           showTypingIndicators:showTypingIndicators
-                                               sendLinkPreviews:sendLinkPreviews
-                                                    transaction:transaction];
-
-        [SSKEnvironment.shared.messageSenderJobQueueRef addMessage:syncConfigurationMessage.asPreparer
-                                                       transaction:transaction];
-    });
-}
-
 - (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (syncMessage.hasReadReceipts) {
@@ -199,47 +154,6 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
     [self.smJobQueues.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId
                                                            isComplete:syncMessage.isComplete
                                                           transaction:transaction];
-}
-
-#pragma mark - Fetch Latest
-
-- (void)sendFetchLatestProfileSyncMessage
-{
-    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_LocalProfile];
-}
-
-- (void)sendFetchLatestStorageManifestSyncMessage
-{
-    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
-}
-
-- (void)sendFetchLatestSubscriptionStatusSyncMessage
-{
-    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_SubscriptionStatus];
-}
-
-- (void)sendFetchLatestSyncMessageWithType:(OWSSyncFetchType)fetchType
-{
-    OWSLogInfo(@"");
-
-    if (![TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
-        OWSFailDebug(@"Unexpectedly tried to send sync message before registration.");
-        return;
-    }
-
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        TSThread *_Nullable thread = [TSContactThread getOrCreateLocalThreadWithTransaction:transaction];
-        if (thread == nil) {
-            OWSFailDebug(@"Missing thread.");
-            return;
-        }
-
-        OWSSyncFetchLatestMessage *syncFetchLatestMessage =
-            [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType transaction:transaction];
-
-        [SSKEnvironment.shared.messageSenderJobQueueRef addMessage:syncFetchLatestMessage.asPreparer
-                                                       transaction:transaction];
-    });
 }
 
 @end
