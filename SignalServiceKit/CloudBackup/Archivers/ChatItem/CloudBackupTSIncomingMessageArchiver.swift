@@ -55,16 +55,13 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             return .completeFailure(error)
         }
 
-        let authorAddress: CloudBackup.RecipientArchivingContext.Address
-        if
-            let authorAci = Aci.parseFrom(aciString: message.authorUUID)
-        {
-            authorAddress = .contactAci(authorAci)
-        } else if
-            let authorE164 = E164(message.authorPhoneNumber)
-        {
-            authorAddress = .contactE164(authorE164)
-        } else {
+        guard
+            let authorAddress = CloudBackup.ContactAddress(
+                // Incoming message authors are always Acis, not Pnis
+                aci: Aci.parseFrom(aciString: message.authorUUID),
+                e164: E164(message.authorPhoneNumber)
+            )?.asArchivingAddress()
+        else {
             // This is an invalid message.
             return .messageFailure([.init(objectId: message.chatItemId, error: .invalidMessageAddress)])
         }
@@ -148,15 +145,19 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             return .messageFailure([.invalidProtoData])
         }
 
-        let authorAci: Aci
+        let authorAci: Aci?
+        let authorE164: E164?
         switch context.recipientContext[chatItem.authorRecipientId] {
-        case .contact(let aci, _, _):
-            guard let aci else {
+        case .contact(let address):
+            authorAci = address.aci
+            authorE164 = address.e164
+            if authorAci == nil && authorE164 == nil {
+                // Don't accept pni-only addresses. An incoming
+                // message can only come from an aci, or if its
+                // a legacy message, possibly from an e164.
                 fallthrough
             }
-            authorAci = aci
         default:
-            // Messages can only come from Acis.
             return .messageFailure([.invalidProtoData])
         }
 
@@ -189,7 +190,8 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
         let messageBuilder = TSIncomingMessageBuilder.builder(
             thread: thread.thread,
             timestamp: incomingDetails.dateReceived,
-            authorAci: .init(authorAci),
+            authorAci: authorAci,
+            authorE164: authorE164,
             messageBody: messageBody?.text,
             bodyRanges: messageBody?.ranges,
             attachmentIds: nil,

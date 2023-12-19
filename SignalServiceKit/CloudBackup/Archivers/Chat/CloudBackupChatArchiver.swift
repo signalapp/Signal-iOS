@@ -119,22 +119,13 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
     ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: CloudBackup.ChatThread.contact(thread).uniqueId)
 
-        let contactServiceId = thread.contactUUID.map { try? ServiceId.parseFrom(serviceIdString: $0) }
-        let recipientAddress: CloudBackup.RecipientArchivingContext.Address
-        if
-            let aci = contactServiceId as? Aci
-        {
-            recipientAddress = .contactAci(aci)
-        } else if
-            let pni = contactServiceId as? Pni
-        {
-            recipientAddress = .contactPni(pni)
-        } else if
-            let phoneNumber = thread.contactPhoneNumber,
-            let e164 = E164(phoneNumber)
-        {
-            recipientAddress = .contactE164(e164)
-        } else {
+        let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+        guard
+            let recipientAddress = CloudBackup.ContactAddress(
+                serviceId: contactServiceId,
+                e164: E164(thread.contactPhoneNumber)
+            )?.asArchivingAddress()
+        else {
             return .partialSuccess([.init(
                 objectId: chatId,
                 error: .contactThreadMissingAddress
@@ -261,9 +252,8 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
                 )
             }
             thread = .groupV2(groupThread)
-        case let .contact(aci, pni, e164):
-            let address = SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: e164?.stringValue)
-            let contactThread = threadStore.getOrCreateContactThread(with: address, tx: tx)
+        case .contact(let address):
+            let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: tx)
             thread = .contact(contactThread)
         }
 

@@ -818,6 +818,7 @@
 		6619A1C52B2BA05C004B38FE /* SentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C42B2BA05C004B38FE /* SentMessageTranscript.swift */; };
 		6619A1C72B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C62B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift */; };
 		6619A1C92B2CC536004B38FE /* RestoredSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C82B2CC536004B38FE /* RestoredSentMessageTranscript.swift */; };
+		6619A1CB2B2D176E004B38FE /* CloudBackupContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CA2B2D176E004B38FE /* CloudBackupContactAddress.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -3445,6 +3446,7 @@
 		6619A1C42B2BA05C004B38FE /* SentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentMessageTranscript.swift; sourceTree = "<group>"; };
 		6619A1C62B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSIncomingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		6619A1C82B2CC536004B38FE /* RestoredSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoredSentMessageTranscript.swift; sourceTree = "<group>"; };
+		6619A1CA2B2D176E004B38FE /* CloudBackupContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupContactAddress.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -7260,6 +7262,7 @@
 		66CD255A2B06884700139E17 /* Recipient */ = {
 			isa = PBXGroup;
 			children = (
+				6619A1CA2B2D176E004B38FE /* CloudBackupContactAddress.swift */,
 				66CD256D2B06E14F00139E17 /* CloudBackupContactRecipientArchiver.swift */,
 				66CD257A2B08374600139E17 /* CloudBackupGroupRecipientArchiver.swift */,
 				66CD25782B0832A400139E17 /* CloudBackupNoteToSelfRecipientArchiver.swift */,
@@ -12683,6 +12686,7 @@
 				66CD25682B06960F00139E17 /* CloudBackupChatItemArchiver.swift in Sources */,
 				66CD25892B0EA39200139E17 /* CloudBackupChatItemArchiverImpl.swift in Sources */,
 				66CD25912B0EC20800139E17 /* CloudBackupConstants.swift in Sources */,
+				6619A1CB2B2D176E004B38FE /* CloudBackupContactAddress.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* CloudBackupContactRecipientArchiver.swift in Sources */,
 				66CD257B2B08374600139E17 /* CloudBackupGroupRecipientArchiver.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* CloudBackupInteractionArchiver.swift in Sources */,

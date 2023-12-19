@@ -29,12 +29,12 @@ internal class CloudBackupReactionArchiver: CloudBackupProtoArchiver {
         var reactionProtos = [BackupProtoReaction]()
 
         for reaction in reactions {
-            let authorAddress: CloudBackup.RecipientArchivingContext.Address
-            if let aci = reaction.reactorAci {
-                authorAddress = .contactAci(aci)
-            } else if let e164 = E164(reaction.reactorPhoneNumber) {
-                authorAddress = .contactE164(e164)
-            } else {
+            guard
+                let authorAddress = CloudBackup.ContactAddress(
+                    aci: reaction.reactorAci,
+                    e164: E164(reaction.reactorPhoneNumber)
+                )?.asArchivingAddress()
+            else {
                 // Skip this reaction.
                 errors.append(.init(objectId: message.chatItemId, error: .invalidReactionAddress))
                 continue
@@ -86,17 +86,39 @@ internal class CloudBackupReactionArchiver: CloudBackupProtoArchiver {
         for reaction in reactions {
             let reactorAddress = context[reaction.authorRecipientId]
 
-            let reactorAci: Aci
             switch reactorAddress {
             case .noteToSelf:
-                reactorAci = context.localIdentifiers.aci
-            case .contact(let aci, _, _):
-                guard let aci else {
-                    // Referencing a non-aci author is invalid.
+                reactionStore.createReactionFromRestoredBackup(
+                    uniqueMessageId: message.uniqueId,
+                    emoji: reaction.emoji,
+                    reactorAci: context.localIdentifiers.aci,
+                    sentAtTimestamp: reaction.sentTimestamp,
+                    sortOrder: reaction.sortOrder,
+                    tx: tx
+                )
+            case .contact(let address):
+                if let aci = address.aci {
+                    reactionStore.createReactionFromRestoredBackup(
+                        uniqueMessageId: message.uniqueId,
+                        emoji: reaction.emoji,
+                        reactorAci: aci,
+                        sentAtTimestamp: reaction.sentTimestamp,
+                        sortOrder: reaction.sortOrder,
+                        tx: tx
+                    )
+                } else if let e164 = address.e164 {
+                    reactionStore.createReactionFromRestoredBackup(
+                        uniqueMessageId: message.uniqueId,
+                        emoji: reaction.emoji,
+                        reactorE164: e164,
+                        sentAtTimestamp: reaction.sentTimestamp,
+                        sortOrder: reaction.sortOrder,
+                        tx: tx
+                    )
+                } else {
                     reactionErrors.append(.invalidProtoData)
                     continue
                 }
-                reactorAci = aci
             case .group:
                 // Referencing a group as the author is invalid.
                 reactionErrors.append(.invalidProtoData)
@@ -106,14 +128,6 @@ internal class CloudBackupReactionArchiver: CloudBackupProtoArchiver {
                 continue
             }
 
-            reactionStore.createReactionfromRestoredBackup(
-                uniqueMessageId: message.uniqueId,
-                emoji: reaction.emoji,
-                reactor: reactorAci,
-                sentAtTimestamp: reaction.sentTimestamp,
-                sortOrder: reaction.sortOrder,
-                tx: tx
-            )
         }
 
         if reactionErrors.isEmpty {

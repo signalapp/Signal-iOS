@@ -59,36 +59,72 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     /// Note that we initialize with a receivedAtTimestamp, but should make no assumptions
     /// that the sortOrder is always a timestamp at read time. Backups use sortOrders that
     /// may not be timestamps.
-    public required init(
+    public convenience init(
         uniqueMessageId: String,
         emoji: String,
         reactor: Aci,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64
     ) {
+        self.init(
+            uniqueMessageId: uniqueMessageId,
+            emoji: emoji,
+            reactorAci: reactor,
+            reactorPhoneNumber: nil,
+            sentAtTimestamp: sentAtTimestamp,
+            sortOrder: receivedAtTimestamp
+        )
+    }
+
+    private init(
+        uniqueMessageId: String,
+        emoji: String,
+        reactorAci: Aci?,
+        reactorPhoneNumber: String?,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64
+    ) {
         self.uniqueId = UUID().uuidString
         self.uniqueMessageId = uniqueMessageId
         self.emoji = emoji
-        self.reactorAci = reactor
-        self.reactorPhoneNumber = nil
+        self.reactorAci = reactorAci
+        self.reactorPhoneNumber = reactorPhoneNumber
         self.sentAtTimestamp = sentAtTimestamp
-        self.sortOrder = receivedAtTimestamp
+        self.sortOrder = sortOrder
         self.read = false
     }
 
     public static func fromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
-        reactor: Aci,
+        reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64
     ) -> Self {
         return Self.init(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
-            reactor: reactor,
+            reactorAci: reactorAci,
+            reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            receivedAtTimestamp: sortOrder
+            sortOrder: sortOrder
+        )
+    }
+
+    public static func fromRestoredBackup(
+        uniqueMessageId: String,
+        emoji: String,
+        reactorE164: E164,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64
+    ) -> OWSReaction {
+        return .init(
+            uniqueMessageId: uniqueMessageId,
+            emoji: emoji,
+            reactorAci: nil,
+            reactorPhoneNumber: reactorE164.stringValue,
+            sentAtTimestamp: sentAtTimestamp,
+            sortOrder: sortOrder
         )
     }
 

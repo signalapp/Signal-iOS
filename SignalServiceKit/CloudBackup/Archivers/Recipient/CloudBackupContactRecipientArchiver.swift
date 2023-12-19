@@ -48,14 +48,13 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         var errors = [ArchiveMultiFrameResult.Error]()
 
         recipientStore.enumerateAll(tx: tx) { recipient in
-            let recipientAddress: ArchivingAddress
-            if let aci = recipient.aci {
-                recipientAddress = .contactAci(aci)
-            } else if let pni = recipient.pni {
-                recipientAddress = .contactPni(pni)
-            } else if let e164 = E164(recipient.phoneNumber) {
-                recipientAddress = .contactE164(e164)
-            } else {
+            guard
+                let recipientAddress = CloudBackup.ContactAddress(
+                    aci: recipient.aci,
+                    pni: recipient.pni,
+                    e164: E164(recipient.phoneNumber)
+                )?.asArchivingAddress()
+            else {
                 // Skip but don't add to the list of errors.
                 Logger.warn("Skipping empty recipient")
                 return
@@ -140,20 +139,17 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
             unregisteredTimestamp = contactProto.unregisteredTimestamp
         }
 
-        let aci: Aci? = contactProto.aci.map(UUID.from(data:))?.map(\.0).map(Aci.init(fromUUID:))
-        let pni: Pni? = contactProto.pni.map(UUID.from(data:))?.map(\.0).map(Pni.init(fromUUID:))
-        let e164: E164? = E164(contactProto.e164)
-        guard aci != nil || pni != nil || e164 != nil else {
+        guard let address = contactProto.address else {
             // Need at least one identifier!
             return .failure(recipientProto.recipientId, [.invalidProtoData])
         }
-        context[recipientProto.recipientId] = .contact(aci: aci, pni: pni, e164: e164)
+        context[recipientProto.recipientId] = .contact(address)
 
         // TODO: make this a real method.
         var recipient = SignalRecipient.proofOfConcept_forBackup(
-            aci: aci,
-            pni: pni,
-            phoneNumber: e164,
+            aci: address.aci,
+            pni: address.pni,
+            phoneNumber: address.e164,
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )
@@ -192,7 +188,7 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         }
 
         // We only need to active hide, since unhidden is the default.
-        if contactProto.hideStory, let aci {
+        if contactProto.hideStory, let aci = address.aci {
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
             storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }

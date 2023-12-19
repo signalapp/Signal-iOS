@@ -75,12 +75,12 @@ extension CloudBackup {
 
         public let recipientContext: RecipientArchivingContext
 
-        private var currentChatId: ChatId = 0
+        private var currentChatId: ChatId = 1
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
         /// The order of pinned threads is represented by an "order" value on the ``BackupProtoChat``.
         /// TODO: assigning this sequentially right now, which isn't correct. Investigate doing this correctly.
-        var pinnedThreadOrder: UInt32 = 0
+        var pinnedThreadOrder: UInt32 = 1
 
         internal init(recipientContext: RecipientArchivingContext) {
             self.recipientContext = recipientContext

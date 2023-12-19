@@ -277,6 +277,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             thread: thread,
             timestamp: timestampBuilder(),
             authorAci: authorAciBuilder(thread),
+            authorE164: nil,
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
             attachmentIds: attachmentIdsBuilder(),

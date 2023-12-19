@@ -122,7 +122,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
         let outgoingMessageProtoBuilder = BackupProtoChatItemOutgoingMessageDetails.builder()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
-            guard let recipientAddress = self.recipientAddress(from: address) else {
+            guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
                 perRecipientErrors.append(.init(
                     objectId: message.chatItemId,
                     error: .invalidMessageAddress
@@ -214,26 +214,6 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
                 ),
                 perRecipientErrors
             )
-        }
-    }
-
-    private func recipientAddress(
-        from recipientAddress: SignalServiceAddress
-    ) -> CloudBackup.RecipientArchivingContext.Address? {
-        if
-            let aci = recipientAddress.aci
-        {
-            return .contactAci(aci)
-        } else if
-            let pni = recipientAddress.serviceId as? Pni
-        {
-            return .contactPni(pni)
-        } else if
-            let e164 = recipientAddress.e164
-        {
-            return .contactE164(e164)
-        } else {
-            return nil
         }
     }
 

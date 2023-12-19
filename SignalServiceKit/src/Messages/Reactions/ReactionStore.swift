@@ -36,10 +36,18 @@ public protocol ReactionStore {
     ) -> [String]
 
     /// Create a new reaction from a backup.
-    func createReactionfromRestoredBackup(
+    func createReactionFromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
-        reactor: Aci,
+        reactorAci: Aci,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64,
+        tx: DBWriteTransaction
+    )
+    func createReactionFromRestoredBackup(
+        uniqueMessageId: String,
+        emoji: String,
+        reactorE164: E164,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         tx: DBWriteTransaction
@@ -77,10 +85,10 @@ public class ReactionStoreImpl: ReactionStore {
             .allUniqueIds(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
     }
 
-    public func createReactionfromRestoredBackup(
+    public func createReactionFromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
-        reactor: Aci,
+        reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         tx: DBWriteTransaction
@@ -88,7 +96,24 @@ public class ReactionStoreImpl: ReactionStore {
         OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
-            reactor: reactor,
+            reactorAci: reactorAci,
+            sentAtTimestamp: sentAtTimestamp,
+            sortOrder: sortOrder
+        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func createReactionFromRestoredBackup(
+        uniqueMessageId: String,
+        emoji: String,
+        reactorE164: E164,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        OWSReaction.fromRestoredBackup(
+            uniqueMessageId: uniqueMessageId,
+            emoji: emoji,
+            reactorE164: reactorE164,
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder
         ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
@@ -126,10 +151,10 @@ open class MockReactionStore: ReactionStore {
         return reactions.compactMap { $0.uniqueMessageId == messageId ? $0.uniqueId : nil }
     }
 
-    public func createReactionfromRestoredBackup(
+    public func createReactionFromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
-        reactor: Aci,
+        reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         tx: DBWriteTransaction
@@ -137,7 +162,24 @@ open class MockReactionStore: ReactionStore {
         reactions.append(OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
-            reactor: reactor,
+            reactorAci: reactorAci,
+            sentAtTimestamp: sentAtTimestamp,
+            sortOrder: sortOrder
+        ))
+    }
+
+    public func createReactionFromRestoredBackup(
+        uniqueMessageId: String,
+        emoji: String,
+        reactorE164: E164,
+        sentAtTimestamp: UInt64,
+        sortOrder: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        reactions.append(OWSReaction.fromRestoredBackup(
+            uniqueMessageId: uniqueMessageId,
+            emoji: emoji,
+            reactorE164: reactorE164,
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder
         ))

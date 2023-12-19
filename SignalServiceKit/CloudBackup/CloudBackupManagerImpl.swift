@@ -286,30 +286,3 @@ public class CloudBackupManagerImpl: CloudBackupManager {
         }
     }
 }
-
-fileprivate extension CloudBackup.RecipientArchivingContext {
-
-    subscript(address: SignalServiceAddress) -> CloudBackup.RecipientId? {
-        // swiftlint:disable:next implicit_getter
-        get {
-            if
-                let aci = address.serviceId as? Aci,
-                let id = self[.contactAci(aci)]
-            {
-                return id
-            } else if
-                let pni = address.serviceId as? Pni,
-                let id = self[.contactPni(pni)]
-            {
-                return id
-            } else if
-                let e164 = address.e164,
-                let id = self[.contactE164(e164)]
-            {
-                return id
-            } else {
-                return nil
-            }
-        }
-    }
-}

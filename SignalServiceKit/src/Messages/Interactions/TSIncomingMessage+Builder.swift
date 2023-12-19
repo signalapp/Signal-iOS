@@ -15,6 +15,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var authorAci: AciObjC?
     @objc
+    public var authorE164: E164ObjC?
+    @objc
     public var serverTimestamp: NSNumber?
     @objc
     public var serverDeliveryTimestamp: UInt64 = 0
@@ -29,6 +31,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
                          authorAci: Aci? = nil,
+                         authorE164: E164? = nil,
                          messageBody: String? = nil,
                          bodyRanges: MessageBodyRanges? = nil,
                          attachmentIds: [String]? = nil,
@@ -72,6 +75,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    giftBadge: giftBadge)
 
         self.authorAci = authorAci.map { AciObjC($0) }
+        self.authorE164 = authorE164.map { E164ObjC($0) }
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.serverGuid = serverGuid
@@ -97,6 +101,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
                               authorAci: Aci?,
+                              authorE164: E164?,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,
                               attachmentIds: [String]?,
@@ -119,6 +124,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAci: authorAci,
+                                        authorE164: authorE164,
                                         messageBody: messageBody,
                                         bodyRanges: bodyRanges,
                                         attachmentIds: attachmentIds,

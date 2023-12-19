@@ -24,7 +24,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     // Not applicable
     var requiredProtocolVersion: UInt32? { nil }
 
-    let recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]
+    let recipientStates: [CloudBackup.InteropAddress: TSOutgoingMessageRecipientState]
 
     internal static func from(
         chatItem: BackupProtoChatItem,
@@ -71,15 +71,12 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
         var partialErrors = [CloudBackup.RestoringFrameError]()
 
-        var recipientStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]()
+        var recipientStates = [CloudBackup.InteropAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
-            // TODO: ideally we don't use addresses in here at all, their
-            // caching properties are problematic.
-            let recipientAddress: SignalServiceAddress
+            let recipientAddress: CloudBackup.InteropAddress
             switch context.recipientContext[chatItem.authorRecipientId] {
-            case .contact(let aci, let pni, let e164):
-
-                recipientAddress = SignalServiceAddress(serviceId: aci ?? pni, e164: e164)
+            case .contact(let address):
+                recipientAddress = address.asInteropAddress()
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
                 partialErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
@@ -119,7 +116,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         for sendStatus: BackupProtoSendStatus,
         partialErrors: inout [CloudBackup.RestoringFrameError]
     ) -> TSOutgoingMessageRecipientState? {
-        guard var recipientState = TSOutgoingMessageRecipientState() else {
+        guard let recipientState = TSOutgoingMessageRecipientState() else {
             partialErrors.append(.databaseInsertionFailed(OWSAssertionError("Unable to create recipient state!")))
             return nil
         }
@@ -173,7 +170,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     private init(
         messageParams: SentMessageTranscriptType.Message,
         timestamp: UInt64,
-        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]
+        recipientStates: [CloudBackup.InteropAddress: TSOutgoingMessageRecipientState]
     ) {
         self.messageParams = messageParams
         self.timestamp = timestamp

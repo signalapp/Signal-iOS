@@ -987,6 +987,7 @@ public final class MessageReceiver: Dependencies {
             thread: thread,
             timestamp: envelope.timestamp,
             authorAci: envelope.sourceAci,
+            authorE164: nil,
             messageBody: body,
             bodyRanges: bodyRanges,
             attachmentIds: [],

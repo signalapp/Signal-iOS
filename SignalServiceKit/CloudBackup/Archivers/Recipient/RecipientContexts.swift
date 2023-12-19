@@ -33,20 +33,22 @@ extension CloudBackup {
      * using the contact's Aci/Pni/e164, from the map this context keeps.
      */
     public class RecipientArchivingContext {
-        public enum Address: Hashable {
+        public enum Address {
             public typealias GroupId = Data
 
             case noteToSelf
-            case contactAci(Aci)
-            case contactPni(Pni)
-            case contactE164(E164)
+            case contact(ContactAddress)
             case group(GroupId)
         }
 
         internal let localIdentifiers: LocalIdentifiers
 
-        private var currentRecipientId: RecipientId = 0
-        private let map = SharedMap<Address, RecipientId>()
+        private var currentRecipientId: RecipientId = 1
+        private var noteToSelfId: RecipientId?
+        private let groupIdMap = SharedMap<Address.GroupId, RecipientId>()
+        private let contactAciMap = SharedMap<Aci, RecipientId>()
+        private let contactPniMap = SharedMap<Pni, RecipientId>()
+        private let contactE164ap = SharedMap<E164, RecipientId>()
 
         internal init(localIdentifiers: LocalIdentifiers) {
             self.localIdentifiers = localIdentifiers
@@ -56,13 +58,47 @@ extension CloudBackup {
             defer {
                 currentRecipientId = RecipientId(currentRecipientId.value + 1)
             }
-            map[address] = currentRecipientId
+            switch address {
+            case .noteToSelf:
+                noteToSelfId = currentRecipientId
+            case .group(let groupId):
+                groupIdMap[groupId] = currentRecipientId
+            case .contact(let contactAddress):
+                // Create mappings for every identifier we know about
+                if let aci = contactAddress.aci {
+                    contactAciMap[aci] = currentRecipientId
+                }
+                if let pni = contactAddress.pni {
+                    contactPniMap[pni] = currentRecipientId
+                }
+                if let e164 = contactAddress.e164 {
+                    contactE164ap[e164] = currentRecipientId
+                }
+            }
             return currentRecipientId
         }
 
         internal subscript(_ address: Address) -> RecipientId? {
             // swiftlint:disable:next implicit_getter
-            get { map[address] }
+            get {
+                switch address {
+                case .noteToSelf:
+                    return noteToSelfId
+                case .group(let groupId):
+                    return groupIdMap[groupId]
+                case .contact(let contactAddress):
+                    // Go down identifiers in priority order, return the first we have.
+                    if let aci = contactAddress.aci {
+                        return contactAciMap[aci]
+                    } else if let e164 = contactAddress.e164 {
+                        return contactE164ap[e164]
+                    } else if let pni = contactAddress.pni {
+                        return contactPniMap[pni]
+                    } else {
+                        return nil
+                    }
+                }
+            }
         }
     }
 
@@ -71,7 +107,7 @@ extension CloudBackup {
             public typealias GroupId = RecipientArchivingContext.Address.GroupId
 
             case noteToSelf
-            case contact(aci: Aci?, pni: Pni?, e164: E164?)
+            case contact(ContactAddress)
             case group(GroupId)
         }
 
