@@ -96,6 +96,8 @@ public class DependenciesBridge {
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
     public let receiptCredentialResultStore: ReceiptCredentialResultStore
 
+    public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
+
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
 
@@ -119,9 +121,11 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
+        earlyMessageManager: EarlyMessageManager,
         groupsV2: GroupsV2Swift,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
@@ -132,6 +136,7 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocolSwift,
         ows2FAManager: OWS2FAManager,
         paymentsEvents: PaymentsEvents,
+        paymentsHelper: PaymentsHelper,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -151,9 +156,11 @@ public class DependenciesBridge {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            earlyMessageManager: earlyMessageManager,
             groupsV2: groupsV2,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
@@ -164,6 +171,7 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             paymentsEvents: paymentsEvents,
+            paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             receiptManager: receiptManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -188,9 +196,11 @@ public class DependenciesBridge {
         accountServiceClient: AccountServiceClient,
         appContext: AppContext,
         appVersion: AppVersion,
+        attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
+        earlyMessageManager: EarlyMessageManager,
         groupsV2: GroupsV2Swift,
         keyValueStoreFactory: KeyValueStoreFactory,
         messageProcessor: MessageProcessor,
@@ -201,6 +211,7 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocolSwift,
         ows2FAManager: OWS2FAManager,
         paymentsEvents: PaymentsEvents,
+        paymentsHelper: PaymentsHelper,
         profileManager: ProfileManagerProtocol,
         receiptManager: OWSReceiptManager,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -600,5 +611,18 @@ public class DependenciesBridge {
 
         self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
+
+        self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
+            attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
+            attachmentStore: AttachmentStoreImpl(),
+            disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
+            earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
+            groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
+            interactionStore: InteractionStoreImpl(),
+            paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
+            signalProtocolStoreManager: signalProtocolStoreManager,
+            tsAccountManager: tsAccountManager,
+            viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
+        )
     }
 }

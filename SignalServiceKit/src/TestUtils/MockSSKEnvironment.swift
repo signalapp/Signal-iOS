@@ -62,8 +62,10 @@ public class MockSSKEnvironment: SSKEnvironment {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
+        let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
         let dateProvider = Date.provider
+        let earlyMessageManager = EarlyMessageManager()
         let groupsV2 = MockGroupsV2()
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
@@ -73,6 +75,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
         let paymentsEvents = PaymentsEventsNoop()
+        let paymentsHelper = MockPaymentsHelper()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -97,9 +100,11 @@ public class MockSSKEnvironment: SSKEnvironment {
             accountServiceClient: accountServiceClient,
             appContext: TestAppContext(),
             appVersion: AppVersionImpl.shared,
+            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            earlyMessageManager: earlyMessageManager,
             groupsV2: groupsV2,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
@@ -110,6 +115,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             paymentsEvents: paymentsEvents,
+            paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             receiptManager: receiptManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -139,7 +145,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = MockSSKReachabilityManager()
         let typingIndicators = TypingIndicatorsImpl()
-        let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
         let groupV2Updates = MockGroupV2Updates()
@@ -149,9 +154,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             reachabilityManager: reachabilityManager,
             tsAccountManager: dependenciesBridge.tsAccountManager
         )
-        let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
-        let paymentsHelper = MockPaymentsHelper()
         let paymentsCurrencies = MockPaymentsCurrencies()
         let mobileCoinHelper = MobileCoinHelperMock()
         let spamChallengeResolver = SpamChallengeResolver()

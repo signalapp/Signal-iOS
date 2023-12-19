@@ -57,8 +57,10 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
+        let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
         let dateProvider = Date.provider
+        let earlyMessageManager = EarlyMessageManager()
         let groupsV2 = GroupsV2Impl()
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
@@ -66,6 +68,7 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
+        let paymentsHelper = PaymentsHelperImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -90,9 +93,11 @@ public class AppSetup {
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
+            attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            earlyMessageManager: earlyMessageManager,
             groupsV2: groupsV2,
             keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: messageProcessor,
@@ -103,6 +108,7 @@ public class AppSetup {
             notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
             paymentsEvents: paymentsEvents,
+            paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             receiptManager: receiptManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -148,7 +154,6 @@ public class AppSetup {
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let typingIndicators = TypingIndicatorsImpl()
-        let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
         let groupV2Updates = GroupV2UpdatesImpl()
@@ -158,9 +163,7 @@ public class AppSetup {
             reachabilityManager: reachabilityManager,
             tsAccountManager: dependenciesBridge.tsAccountManager
         )
-        let earlyMessageManager = EarlyMessageManager()
         let messagePipelineSupervisor = MessagePipelineSupervisor()
-        let paymentsHelper = PaymentsHelperImpl()
         let paymentsCurrencies = PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()
         let phoneNumberUtil = PhoneNumberUtil()

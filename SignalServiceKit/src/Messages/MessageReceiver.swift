@@ -388,8 +388,10 @@ public final class MessageReceiver: Dependencies {
                     return
                 }
 
-                guard let transcript = OWSIncomingSentMessageTranscript(
-                    proto: sent, serverTimestamp: decryptedEnvelope.serverTimestamp, transaction: tx
+                guard let transcript = OWSIncomingSentMessageTranscript.from(
+                    sentProto: sent,
+                    serverTimestamp: decryptedEnvelope.serverTimestamp,
+                    tx: tx.asV2Write
                 ) else {
                     owsFailDebug("Couldn't parse transcript.")
                     return
@@ -416,7 +418,7 @@ public final class MessageReceiver: Dependencies {
                 }
 
                 if let reaction = dataMessage.reaction {
-                    guard let thread = transcript.thread else {
+                    guard let thread = transcript.threadForDataMessage else {
                         owsFailDebug("Could not process reaction from sync transcript.")
                         return
                     }
@@ -449,7 +451,7 @@ public final class MessageReceiver: Dependencies {
                     let result = TSMessage.tryToRemotelyDeleteMessage(
                         fromAuthor: decryptedEnvelope.sourceAci,
                         sentAtTimestamp: delete.targetSentTimestamp,
-                        threadUniqueId: transcript.thread?.uniqueId,
+                        threadUniqueId: transcript.threadForDataMessage?.uniqueId,
                         serverTimestamp: decryptedEnvelope.serverTimestamp,
                         transaction: tx
                     )
@@ -482,7 +484,15 @@ public final class MessageReceiver: Dependencies {
                         Logger.warn("Received GroupCallUpdate for unknown groupId")
                     }
                 } else {
-                    OWSRecordTranscriptJob.processIncomingSentMessageTranscript(transcript, transaction: tx)
+                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                        owsFailDebug("Missing local identifiers!")
+                        return
+                    }
+                    DependenciesBridge.shared.sentMessageTranscriptReceiver.process(
+                        transcript,
+                        localIdentifiers: localIdentifiers,
+                        tx: tx.asV2Write
+                    )
                 }
             } else if sent.isStoryTranscript {
                 do {
@@ -1525,16 +1535,16 @@ public final class MessageReceiver: Dependencies {
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
 
-        guard let transcript = OWSIncomingSentMessageTranscript(
-            proto: sentMessage,
+        guard let transcript = OWSIncomingSentMessageTranscript.from(
+            sentProto: sentMessage,
             serverTimestamp: decryptedEnvelope.serverTimestamp,
-            transaction: tx
+            tx: tx.asV2Write
         ) else {
             Logger.warn("Missing edit transcript.")
             return .invalidEdit
         }
 
-        guard let thread = transcript.thread else {
+        guard let thread = transcript.threadForDataMessage else {
             Logger.warn("Missing edit message thread.")
             return .invalidEdit
         }
@@ -1565,8 +1575,8 @@ public final class MessageReceiver: Dependencies {
 
         if let msg = message as? TSOutgoingMessage {
             msg.updateWithWasSentFromLinkedDevice(
-                withUDRecipients: transcript.udRecipients,
-                nonUdRecipients: transcript.nonUdRecipients,
+                withUDRecipients: transcript.udRecipients.map(ServiceIdObjC.wrapValue(_:)),
+                nonUdRecipients: transcript.nonUdRecipients.map(ServiceIdObjC.wrapValue(_:)),
                 isSentUpdate: false,
                 transaction: tx
             )

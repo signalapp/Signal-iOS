@@ -61,7 +61,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/OWSIdentity.h>
 #import <SignalServiceKit/OWSIncomingPaymentMessage.h>
-#import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageContentJob.h>
@@ -88,7 +87,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
-#import <SignalServiceKit/OWSRecordTranscriptJob.h>
 #import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>

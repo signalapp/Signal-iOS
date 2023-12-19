@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol InteractionStore {
     /// Fetch the interaction with the given SQLite row ID, if one exists.
@@ -11,6 +12,18 @@ public protocol InteractionStore {
         rowId interactionRowId: Int64,
         tx: DBReadTransaction
     ) -> TSInteraction?
+
+    func findMessage(
+        withTimestamp timestamp: UInt64,
+        threadId: String,
+        author: SignalServiceAddress,
+        tx: DBReadTransaction
+    ) -> TSMessage?
+
+    func interactions(
+        withTimestamp timestamp: UInt64,
+        tx: DBReadTransaction
+    ) throws -> [TSInteraction]
 
     /// Insert the given interaction to the databse.
     func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
@@ -30,7 +43,27 @@ public protocol InteractionStore {
         block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
     ) throws
 
+    func insertOrReplacePlaceholder(
+        for interaction: TSInteraction,
+        from sender: SignalServiceAddress,
+        tx: DBWriteTransaction
+    )
+
+    func updateAttachmentIds(
+        _ attachmentIds: [String],
+        for outgoingMessage: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    )
+
     // MARK: - TSOutgoingMessage state updates
+
+    func updateWithWasSentFromLinkedDevice(
+        _ message: TSOutgoingMessage,
+        udRecipients: [ServiceId],
+        nonUdRecipients: [ServiceId],
+        isSentUpdate: Bool,
+        tx: DBWriteTransaction
+    )
 
     func update(
         _ message: TSOutgoingMessage,
@@ -91,6 +124,24 @@ public class InteractionStoreImpl: InteractionStore {
         )
     }
 
+    public func findMessage(
+        withTimestamp timestamp: UInt64,
+        threadId: String,
+        author: SignalServiceAddress,
+        tx: DBReadTransaction
+    ) -> TSMessage? {
+        return InteractionFinder.findMessage(
+            withTimestamp: timestamp,
+            threadId: threadId,
+            author: author,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func interactions(withTimestamp timestamp: UInt64, tx: DBReadTransaction) throws -> [TSInteraction] {
+        return try InteractionFinder.interactions(withTimestamp: timestamp, filter: { _ in true }, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
     public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -131,7 +182,40 @@ public class InteractionStoreImpl: InteractionStore {
         }
     }
 
+    public func insertOrReplacePlaceholder(
+        for interaction: TSInteraction,
+        from sender: SignalServiceAddress,
+        tx: DBWriteTransaction
+    ) {
+        interaction.insertOrReplacePlaceholder(from: sender, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func updateAttachmentIds(
+        _ attachmentIds: [String],
+        for outgoingMessage: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) {
+        outgoingMessage.anyUpdateOutgoingMessage(transaction: SDSDB.shimOnlyBridge(tx)) {
+            $0.attachmentIds = attachmentIds
+        }
+    }
+
     // MARK: - TSOutgoingMessage state updates
+
+    public func updateWithWasSentFromLinkedDevice(
+        _ message: TSOutgoingMessage,
+        udRecipients: [ServiceId],
+        nonUdRecipients: [ServiceId],
+        isSentUpdate: Bool,
+        tx: DBWriteTransaction
+    ) {
+        message.updateWithWasSentFromLinkedDevice(
+            withUDRecipients: udRecipients.map(ServiceIdObjC.wrapValue),
+            nonUdRecipients: nonUdRecipients.map(ServiceIdObjC.wrapValue),
+            isSentUpdate: isSentUpdate,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
 
     public func update(
         _ message: TSOutgoingMessage,
@@ -214,6 +298,39 @@ open class MockInteractionStore: InteractionStore {
         return insertedInteractions.first(where: { $0.sqliteRowId == interactionRowId })
     }
 
+    public func findMessage(
+        withTimestamp timestamp: UInt64,
+        threadId: String,
+        author: SignalServiceAddress,
+        tx: DBReadTransaction
+    ) -> TSMessage? {
+        return insertedInteractions
+            .lazy
+            .filter { $0.uniqueThreadId == threadId }
+            .compactMap { $0 as? TSMessage }
+            .filter { message in
+                if
+                    let incomingMessage = message as? TSIncomingMessage,
+                    incomingMessage.authorAddress.isEqualToAddress(author)
+                {
+                    return true
+                }
+
+                if
+                    message is TSOutgoingMessage,
+                    author.isLocalAddress
+                {
+                    return true
+                }
+                return false
+            }
+            .first
+    }
+
+    public func interactions(withTimestamp timestamp: UInt64, tx: DBReadTransaction) throws -> [TSInteraction] {
+        return insertedInteractions.filter { $0.timestamp == timestamp }
+    }
+
     open func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         interaction.updateRowId(.random(in: 0...Int64.max))
         insertedInteractions.append(interaction)
@@ -245,7 +362,33 @@ open class MockInteractionStore: InteractionStore {
         }
     }
 
+    open func insertOrReplacePlaceholder(
+        for interaction: TSInteraction,
+        from sender: SignalServiceAddress,
+        tx: DBWriteTransaction
+    ) {
+        // Do nothing
+    }
+
+    public func updateAttachmentIds(
+        _ attachmentIds: [String],
+        for outgoingMessage: TSOutgoingMessage,
+        tx: DBWriteTransaction
+    ) {
+        // Do nothing
+    }
+
     // MARK: - TSOutgoingMessage state updates
+
+    open func updateWithWasSentFromLinkedDevice(
+        _ message: TSOutgoingMessage,
+        udRecipients: [ServiceId],
+        nonUdRecipients: [ServiceId],
+        isSentUpdate: Bool,
+        tx: DBWriteTransaction
+    ) {
+        // Unimplemented
+    }
 
     open func update(
         _ message: TSOutgoingMessage,
