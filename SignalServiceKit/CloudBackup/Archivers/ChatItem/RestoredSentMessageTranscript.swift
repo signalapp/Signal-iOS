@@ -159,8 +159,13 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             return recipientState
         case .failed:
             recipientState.state = .failed
-            // TODO: can we use a more descriptive error?
-            recipientState.errorCode = NSNumber(value: ((OWSUnretryableMessageSenderError() as Error) as NSError).code)
+            if sendStatus.identityKeyMismatch {
+                // We want to explicitly represent identity key errors.
+                // Other types we don't really care about.
+                recipientState.errorCode = NSNumber(value: UntrustedIdentityError.errorCode)
+            } else {
+                recipientState.errorCode = NSNumber(value: OWSErrorCode.genericFailure.rawValue)
+            }
             return recipientState
         }
     }
