@@ -277,7 +277,6 @@ public class IncomingMessageFactory: NSObject, Factory {
             thread: thread,
             timestamp: timestampBuilder(),
             authorAci: authorAciBuilder(thread),
-            sourceDeviceId: sourceDeviceIdBuilder(),
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
             attachmentIds: attachmentIdsBuilder(),
@@ -340,10 +339,6 @@ public class IncomingMessageFactory: NSObject, Factory {
                 return CommonGenerator.address()
             }
         }().aci!
-    }
-
-    public var sourceDeviceIdBuilder: () -> UInt32 = {
-        return 1
     }
 
     public var attachmentIdsBuilder: () -> [String] = {

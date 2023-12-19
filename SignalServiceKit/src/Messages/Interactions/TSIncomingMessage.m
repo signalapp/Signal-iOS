@@ -63,7 +63,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     }
 
     _authorUUID = incomingMessageBuilder.authorAci.serviceIdUppercaseString;
-    _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
+    _deprecated_sourceDeviceId = 1;
     _read = incomingMessageBuilder.read;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
     _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
@@ -109,11 +109,11 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
+       deprecated_sourceDeviceId:(unsigned int)deprecated_sourceDeviceId
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                       serverGuid:(nullable NSString *)serverGuid
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-                  sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
@@ -153,11 +153,11 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     } else if (authorPhoneNumber != nil) {
         _authorPhoneNumber = authorPhoneNumber;
     }
+    _deprecated_sourceDeviceId = deprecated_sourceDeviceId;
     _read = read;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _serverGuid = serverGuid;
     _serverTimestamp = serverTimestamp;
-    _sourceDeviceId = sourceDeviceId;
     _viewed = viewed;
     _wasReceivedByUD = wasReceivedByUD;
 

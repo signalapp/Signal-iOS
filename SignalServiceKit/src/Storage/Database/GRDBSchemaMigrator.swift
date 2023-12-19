@@ -242,6 +242,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addShouldSuppressPaymentAlreadyRedeemedToJobRecords
         case addGroupCallRingerAciToCallRecords
         case renameIsFromLinkedDevice
+        case renameAndDeprecateSourceDeviceId
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -301,7 +302,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 62
+    public static let grdbSchemaVersionLatest: UInt = 63
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2483,6 +2484,13 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.renameIsFromLinkedDevice) { tx in
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.rename(column: "isFromLinkedDevice", to: "wasNotCreatedLocally")
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.renameAndDeprecateSourceDeviceId) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { table in
+                table.rename(column: "sourceDeviceId", to: "deprecated_sourceDeviceId")
             }
             return .success(())
         }

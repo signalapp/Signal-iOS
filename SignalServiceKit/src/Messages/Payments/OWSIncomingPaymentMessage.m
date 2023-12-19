@@ -63,11 +63,11 @@ NS_ASSUME_NONNULL_BEGIN
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
+       deprecated_sourceDeviceId:(unsigned int)deprecated_sourceDeviceId
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                       serverGuid:(nullable NSString *)serverGuid
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-                  sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
              paymentCancellation:(nullable NSData *)paymentCancellation
@@ -102,11 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
                 wasRemotelyDeleted:wasRemotelyDeleted
                  authorPhoneNumber:authorPhoneNumber
                         authorUUID:authorUUID
+         deprecated_sourceDeviceId:deprecated_sourceDeviceId
                               read:read
            serverDeliveryTimestamp:serverDeliveryTimestamp
                         serverGuid:serverGuid
                    serverTimestamp:serverTimestamp
-                    sourceDeviceId:sourceDeviceId
                             viewed:viewed
                    wasReceivedByUD:wasReceivedByUD];
 

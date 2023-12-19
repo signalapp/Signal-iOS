@@ -56,7 +56,6 @@ public class InteractionFinder: NSObject {
     public class func existsIncomingMessage(
         timestamp: UInt64,
         sourceAci: Aci,
-        sourceDeviceId: UInt32,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
@@ -71,14 +70,12 @@ public class InteractionFinder: NSObject {
                         AND \(interactionColumn: .authorPhoneNumber) = ?
                     )
                 )
-                AND \(interactionColumn: .sourceDeviceId) = ?
             )
         """
         let arguments: StatementArguments = [
             timestamp,
             sourceAci.serviceIdUppercaseString,
-            SignalServiceAddress(sourceAci).phoneNumber,
-            sourceDeviceId
+            SignalServiceAddress(sourceAci).phoneNumber
         ]
         do {
             return try Bool.fetchOne(

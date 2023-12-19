@@ -201,7 +201,6 @@ private class MockIncomingMessage: TSIncomingMessage {
         let builder = TSIncomingMessageBuilder(
             thread: thread,
             authorAci: thread.contactAddress.aci!,
-            sourceDeviceId: 1,
             messageBody: messageBody
         )
         super.init(incomingMessageWithBuilder: builder)

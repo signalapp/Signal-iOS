@@ -190,8 +190,6 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
             thread: thread.thread,
             timestamp: incomingDetails.dateReceived,
             authorAci: .init(authorAci),
-            // TODO: this needs to be added to the proto
-            sourceDeviceId: 1,
             messageBody: messageBody?.text,
             bodyRanges: messageBody?.ranges,
             attachmentIds: nil,

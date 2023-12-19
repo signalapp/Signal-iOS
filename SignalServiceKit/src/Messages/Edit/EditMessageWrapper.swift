@@ -103,7 +103,6 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             thread: thread,
             timestamp: message.timestamp,
             authorAci: authorAci,
-            sourceDeviceId: message.sourceDeviceId,
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
             attachmentIds: message.attachmentIds,

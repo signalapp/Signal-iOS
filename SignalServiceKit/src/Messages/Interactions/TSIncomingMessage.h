@@ -90,21 +90,26 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
+       deprecated_sourceDeviceId:(unsigned int)deprecated_sourceDeviceId
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                       serverGuid:(nullable NSString *)serverGuid
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-                  sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:authorPhoneNumber:authorUUID:read:serverDeliveryTimestamp:serverGuid:serverTimestamp:sourceDeviceId:viewed:wasReceivedByUD:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:authorPhoneNumber:authorUUID:deprecated_sourceDeviceId:read:serverDeliveryTimestamp:serverGuid:serverTimestamp:viewed:wasReceivedByUD:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-// This will be 0 for messages created before we were tracking sourceDeviceId
-@property (nonatomic, readonly) UInt32 sourceDeviceId;
+/// This field should always be ignored. In the beginning, we did not
+/// store this value and so all rows would be 0. Then we started
+/// storing it, but we never should have. Then we stopped.
+/// In other words, DONT USE IT.
+/// Kept only so sds codegen outputs code with backwards compatibility with our sql
+/// table without needing to migrate or reindex TSInteraction.
+@property (nonatomic, readonly) UInt32 deprecated_sourceDeviceId;
 
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly, nullable) NSString *authorPhoneNumber;

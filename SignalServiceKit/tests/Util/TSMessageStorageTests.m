@@ -72,7 +72,6 @@
             [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
         incomingMessageBuilder.timestamp = timestamp;
         incomingMessageBuilder.authorAci = [self otherAci];
-        incomingMessageBuilder.sourceDeviceId = 1;
         TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
         [newMessage anyInsertWithTransaction:transaction];
@@ -103,7 +102,6 @@
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
             incomingMessageBuilder.authorAci = [self otherAci];
-            incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
             [messages addObject:newMessage];
@@ -156,7 +154,6 @@
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
             incomingMessageBuilder.authorAci = (AciObjC *)authorAddress.serviceIdObjC;
-            incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];
             [messages addObject:newMessage];

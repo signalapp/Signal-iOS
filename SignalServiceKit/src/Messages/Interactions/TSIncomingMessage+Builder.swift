@@ -15,8 +15,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var authorAci: AciObjC?
     @objc
-    public var sourceDeviceId: UInt32 = OWSDevice.primaryDeviceId
-    @objc
     public var serverTimestamp: NSNumber?
     @objc
     public var serverDeliveryTimestamp: UInt64 = 0
@@ -31,7 +29,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
                          authorAci: Aci? = nil,
-                         sourceDeviceId: UInt32 = 0,
                          messageBody: String? = nil,
                          bodyRanges: MessageBodyRanges? = nil,
                          attachmentIds: [String]? = nil,
@@ -75,7 +72,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    giftBadge: giftBadge)
 
         self.authorAci = authorAci.map { AciObjC($0) }
-        self.sourceDeviceId = sourceDeviceId
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.serverGuid = serverGuid
@@ -101,7 +97,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
                               authorAci: Aci?,
-                              sourceDeviceId: UInt32,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,
                               attachmentIds: [String]?,
@@ -124,7 +119,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAci: authorAci,
-                                        sourceDeviceId: sourceDeviceId,
                                         messageBody: messageBody,
                                         bodyRanges: bodyRanges,
                                         attachmentIds: attachmentIds,

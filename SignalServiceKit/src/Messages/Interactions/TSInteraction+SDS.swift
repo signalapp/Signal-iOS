@@ -74,7 +74,7 @@ public struct InteractionRecord: SDSRecord {
     public let recipientAddressStates: Data?
     public let sender: Data?
     public let serverTimestamp: UInt64?
-    public let sourceDeviceId: UInt32?
+    public let deprecated_sourceDeviceId: UInt32?
     public let storedMessageState: TSOutgoingMessageState?
     public let storedShouldStartExpireTimer: Bool?
     public let unregisteredAddress: Data?
@@ -149,7 +149,7 @@ public struct InteractionRecord: SDSRecord {
         case recipientAddressStates
         case sender
         case serverTimestamp
-        case sourceDeviceId
+        case deprecated_sourceDeviceId
         case storedMessageState
         case storedShouldStartExpireTimer
         case unregisteredAddress
@@ -245,7 +245,7 @@ public extension InteractionRecord {
         recipientAddressStates = row[43]
         sender = row[44]
         serverTimestamp = row[45]
-        sourceDeviceId = row[46]
+        deprecated_sourceDeviceId = row[46]
         storedMessageState = row[47]
         storedShouldStartExpireTimer = row[48]
         unregisteredAddress = row[49]
@@ -605,11 +605,11 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
+            let deprecated_sourceDeviceId: UInt32 = try SDSDeserialization.required(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId")
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverGuid: String? = record.serverGuid
             let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
-            let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let viewed: Bool = try SDSDeserialization.required(record.viewed, name: "viewed")
             let wasReceivedByUD: Bool = try SDSDeserialization.required(record.wasReceivedByUD, name: "wasReceivedByUD")
             let paymentCancellation: Data? = SDSDeserialization.optionalData(record.paymentCancellation, name: "paymentCancellation")
@@ -645,11 +645,11 @@ extension TSInteraction {
                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                              authorPhoneNumber: authorPhoneNumber,
                                              authorUUID: authorUUID,
+                                             deprecated_sourceDeviceId: deprecated_sourceDeviceId,
                                              read: read,
                                              serverDeliveryTimestamp: serverDeliveryTimestamp,
                                              serverGuid: serverGuid,
                                              serverTimestamp: serverTimestamp,
-                                             sourceDeviceId: sourceDeviceId,
                                              viewed: viewed,
                                              wasReceivedByUD: wasReceivedByUD,
                                              paymentCancellation: paymentCancellation,
@@ -1409,11 +1409,11 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
+            let deprecated_sourceDeviceId: UInt32 = try SDSDeserialization.required(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId")
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverGuid: String? = record.serverGuid
             let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
-            let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let viewed: Bool = try SDSDeserialization.required(record.viewed, name: "viewed")
             let wasReceivedByUD: Bool = try SDSDeserialization.required(record.wasReceivedByUD, name: "wasReceivedByUD")
 
@@ -1445,11 +1445,11 @@ extension TSInteraction {
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
+                                     deprecated_sourceDeviceId: deprecated_sourceDeviceId,
                                      read: read,
                                      serverDeliveryTimestamp: serverDeliveryTimestamp,
                                      serverGuid: serverGuid,
                                      serverTimestamp: serverTimestamp,
-                                     sourceDeviceId: sourceDeviceId,
                                      viewed: viewed,
                                      wasReceivedByUD: wasReceivedByUD)
 
@@ -3890,11 +3890,11 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
+            let deprecated_sourceDeviceId: UInt32 = modelToCopy.deprecated_sourceDeviceId
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverGuid: String? = modelToCopy.serverGuid
             let serverTimestamp: NSNumber? = modelToCopy.serverTimestamp
-            let sourceDeviceId: UInt32 = modelToCopy.sourceDeviceId
             let viewed: Bool = modelToCopy.wasViewed
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
             let paymentCancellation: Data? = modelToCopy.paymentCancellation
@@ -3941,11 +3941,11 @@ extension TSInteraction: DeepCopyable {
                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                              authorPhoneNumber: authorPhoneNumber,
                                              authorUUID: authorUUID,
+                                             deprecated_sourceDeviceId: deprecated_sourceDeviceId,
                                              read: read,
                                              serverDeliveryTimestamp: serverDeliveryTimestamp,
                                              serverGuid: serverGuid,
                                              serverTimestamp: serverTimestamp,
-                                             sourceDeviceId: sourceDeviceId,
                                              viewed: viewed,
                                              wasReceivedByUD: wasReceivedByUD,
                                              paymentCancellation: paymentCancellation,
@@ -4056,11 +4056,11 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
+            let deprecated_sourceDeviceId: UInt32 = modelToCopy.deprecated_sourceDeviceId
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverGuid: String? = modelToCopy.serverGuid
             let serverTimestamp: NSNumber? = modelToCopy.serverTimestamp
-            let sourceDeviceId: UInt32 = modelToCopy.sourceDeviceId
             let viewed: Bool = modelToCopy.wasViewed
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
 
@@ -4092,11 +4092,11 @@ extension TSInteraction: DeepCopyable {
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
+                                     deprecated_sourceDeviceId: deprecated_sourceDeviceId,
                                      read: read,
                                      serverDeliveryTimestamp: serverDeliveryTimestamp,
                                      serverGuid: serverGuid,
                                      serverTimestamp: serverTimestamp,
-                                     sourceDeviceId: sourceDeviceId,
                                      viewed: viewed,
                                      wasReceivedByUD: wasReceivedByUD)
         }
@@ -5358,7 +5358,7 @@ extension TSInteractionSerializer {
     static var recipientAddressStatesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true) }
     static var senderColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true) }
     static var serverTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true) }
-    static var sourceDeviceIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true) }
+    static var deprecated_sourceDeviceIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "deprecated_sourceDeviceId", columnType: .int64, isOptional: true) }
     static var storedMessageStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true) }
     static var storedShouldStartExpireTimerColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true) }
     static var unregisteredAddressColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true) }
@@ -5436,7 +5436,7 @@ extension TSInteractionSerializer {
         recipientAddressStatesColumn,
         senderColumn,
         serverTimestampColumn,
-        sourceDeviceIdColumn,
+        deprecated_sourceDeviceIdColumn,
         storedMessageStateColumn,
         storedShouldStartExpireTimerColumn,
         unregisteredAddressColumn,
@@ -5911,7 +5911,7 @@ class TSInteractionSerializer: SDSSerializer {
         let recipientAddressStates: Data? = nil
         let sender: Data? = nil
         let serverTimestamp: UInt64? = nil
-        let sourceDeviceId: UInt32? = nil
+        let deprecated_sourceDeviceId: UInt32? = nil
         let storedMessageState: TSOutgoingMessageState? = nil
         let storedShouldStartExpireTimer: Bool? = nil
         let unregisteredAddress: Data? = nil
@@ -5939,7 +5939,7 @@ class TSInteractionSerializer: SDSSerializer {
         let giftBadge: Data? = nil
         let editState: TSEditState? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, deprecated_sourceDeviceId: deprecated_sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState)
     }
 }
 

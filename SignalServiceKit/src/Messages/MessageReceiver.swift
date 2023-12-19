@@ -987,7 +987,6 @@ public final class MessageReceiver: Dependencies {
             thread: thread,
             timestamp: envelope.timestamp,
             authorAci: envelope.sourceAci,
-            sourceDeviceId: envelope.sourceDeviceId,
             messageBody: body,
             bodyRanges: bodyRanges,
             attachmentIds: [],
@@ -2128,7 +2127,6 @@ class MessageReceiverRequest {
         return InteractionFinder.existsIncomingMessage(
             timestamp: decryptedEnvelope.timestamp,
             sourceAci: decryptedEnvelope.sourceAci,
-            sourceDeviceId: decryptedEnvelope.sourceDeviceId,
             transaction: tx
         )
     }

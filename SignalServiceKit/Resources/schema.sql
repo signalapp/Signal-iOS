@@ -100,7 +100,7 @@ CREATE
             ,"recipientAddressStates" BLOB
             ,"sender" BLOB
             ,"serverTimestamp" INTEGER
-            ,"sourceDeviceId" INTEGER
+            ,"deprecated_sourceDeviceId" INTEGER
             ,"storedMessageState" INTEGER
             ,"storedShouldStartExpireTimer" INTEGER
             ,"unregisteredAddress" BLOB
@@ -547,7 +547,7 @@ CREATE
 CREATE
     INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
         ON "model_TSInteraction"("timestamp"
-    ,"sourceDeviceId"
+    ,"deprecated_sourceDeviceId"
     ,"authorUUID"
 )
 ;
@@ -555,7 +555,7 @@ CREATE
 CREATE
     INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"
         ON "model_TSInteraction"("timestamp"
-    ,"sourceDeviceId"
+    ,"deprecated_sourceDeviceId"
     ,"authorPhoneNumber"
 )
 ;
