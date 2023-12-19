@@ -15,8 +15,9 @@ open class SentMessageTranscriptReceiverMock: SentMessageTranscriptReceiver {
         _: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) {
+    ) -> Result<TSOutgoingMessage?, Error> {
         // Do nothing
+        return .success(nil)
     }
 }
 

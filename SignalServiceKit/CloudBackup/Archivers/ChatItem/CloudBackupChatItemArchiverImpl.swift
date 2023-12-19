@@ -11,17 +11,20 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
     private let dateProvider: DateProvider
     private let interactionStore: InteractionStore
     private let reactionStore: ReactionStore
+    private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     private let threadStore: ThreadStore
 
     public init(
         dateProvider: @escaping DateProvider,
         interactionStore: InteractionStore,
         reactionStore: ReactionStore,
+        sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
     ) {
         self.dateProvider = dateProvider
         self.interactionStore = interactionStore
         self.reactionStore = reactionStore
+        self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.threadStore = threadStore
     }
 
@@ -38,7 +41,8 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         ),
         CloudBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
+            sentMessageTranscriptReceiver: sentMessageTranscriptReceiver
         )
         // TODO: need for info messages. not story messages, those are skipped.
         // are there other message types? what about e.g. payment messages?
@@ -223,11 +227,23 @@ public class CloudBackupChatItemArchiverImp: CloudBackupChatItemArchiver {
         }
 
         guard
-            let thread = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
+            let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
         else {
             return .failure(
                 chatItem.id,
                 [.referencedDatabaseObjectNotFound(.thread(threadUniqueId))]
+            )
+        }
+
+        let thread: CloudBackup.ChatThread
+        if let contactThread = threadRaw as? TSContactThread {
+            thread = .contact(contactThread)
+        } else if let groupThread = threadRaw as? TSGroupThread, groupThread.isGroupV2Thread {
+            thread = .groupV2(groupThread)
+        } else {
+            return .failure(
+                chatItem.id,
+                [.invalidProtoData]
             )
         }
 

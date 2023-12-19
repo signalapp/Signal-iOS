@@ -47,7 +47,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         _ transcript: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) {
+    ) -> Result<TSOutgoingMessage?, Error> {
 
         func validateTimestampInt64() -> Bool {
             guard SDS.fitsInInt64(transcript.timestamp) else {
@@ -66,12 +66,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 // This transcript is invalid, discard it.
                 return false
             }
-            guard transcript.timestamp == transcript.dataMessageTimestamp else {
-                Logger.verbose("Transcript timestamps do not match: \(transcript.timestamp) != \(transcript.dataMessageTimestamp)")
-                owsFailDebug("Transcript timestamps do not match, discarding message.")
-                // This transcript is invalid, discard it.
-                return false
-            }
             return true
         }
 
@@ -80,10 +74,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // "Recipient updates" are processed completely separately in order
             // to avoid resurrecting threads or messages.
             // No timestamp validation
-            self.processRecipientUpdate(transcript, groupThread: groupThread, tx: tx)
-            return
+            return self.processRecipientUpdate(transcript, groupThread: groupThread, tx: tx)
         case .endSessionUpdate(let thread):
-            guard validateTimestampInt64() else { return }
+            guard validateTimestampInt64() else {
+                return .failure(OWSAssertionError("Timestamp validation failed"))
+            }
             Logger.info("EndSession was sent to recipient: \(thread.contactAddress)")
             self.archiveSessions(for: thread.contactAddress, tx: tx)
 
@@ -91,41 +86,50 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             interactionStore.insertInteraction(infoMessage, tx: tx)
 
             // Don't continue processing lest we print a bubble for the session reset.
-            return
-        case .paymentNotification(let target, let paymentNotification):
-            Logger.info("Recording payment notification from sync transcript in thread: \(target.threadUniqueId) timestamp: \(transcript.timestamp)")
-            guard validateTimestampValue() else { return }
-            guard validateProtocolVersion(for: transcript, thread: target.thread, tx: tx) else { return }
+            return .success(nil)
+        case .paymentNotification(let paymentNotification):
+            Logger.info("Recording payment notification from sync transcript in thread: \(paymentNotification.target.threadUniqueId) timestamp: \(transcript.timestamp)")
+            guard validateTimestampValue() else {
+                return .failure(OWSAssertionError("Timestamp validation failed"))
+            }
+            guard validateProtocolVersion(for: transcript, thread: paymentNotification.target.thread, tx: tx) else {
+                return .failure(OWSAssertionError("Protocol version validation failed"))
+            }
 
-            let messageTimestamp = transcript.serverTimestamp > 0 ? transcript.serverTimestamp : transcript.timestamp
+            let messageTimestamp = paymentNotification.serverTimestamp
             owsAssertDebug(messageTimestamp > 0)
 
             self.paymentsHelper.processReceivedTranscriptPaymentNotification(
-                thread: target.thread,
-                paymentNotification: paymentNotification,
+                thread: paymentNotification.target.thread,
+                paymentNotification: paymentNotification.notification,
                 messageTimestamp: messageTimestamp,
                 tx: tx
             )
-            return
+            return .success(nil)
 
         case .expirationTimerUpdate(let target):
             Logger.info("Recording expiration timer update transcript in thread: \(target.threadUniqueId) timestamp: \(transcript.timestamp)")
-            guard validateTimestampValue() else { return }
-            guard validateProtocolVersion(for: transcript, thread: target.thread, tx: tx) else { return }
+            guard validateTimestampValue() else {
+                return .failure(OWSAssertionError("Timestamp validation failed"))
+            }
+            guard validateProtocolVersion(for: transcript, thread: target.thread, tx: tx) else {
+                return .failure(OWSAssertionError("Protocol version validation failed"))
+            }
 
             updateDisappearingMessageTokenIfNecessary(target: target, localIdentifiers: localIdentifiers, tx: tx)
-            return
+            return .success(nil)
 
         case .message(let messageParams):
             Logger.info("Recording transcript in thread: \(messageParams.target.threadUniqueId) timestamp: \(transcript.timestamp)")
-            guard validateTimestampValue() else { return }
-            self.process(
+            guard validateTimestampValue() else {
+                return .failure(OWSAssertionError("Timestamp validation failed"))
+            }
+            return self.process(
                 messageParams: messageParams,
                 transcript: transcript,
                 localIdentifiers: localIdentifiers,
                 tx: tx
-            )
-            return
+            ).map { $0 }
         }
     }
 
@@ -134,8 +138,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         transcript: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) {
-        guard validateProtocolVersion(for: transcript, thread: messageParams.target.thread, tx: tx) else { return }
+    ) -> Result<TSOutgoingMessage, Error> {
+        guard validateProtocolVersion(for: transcript, thread: messageParams.target.thread, tx: tx) else {
+            return .failure(OWSAssertionError("Protocol version validation failed"))
+        }
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
@@ -183,7 +189,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             case .contact:
                 Logger.warn("Ignoring message transcript for empty message.")
             }
-            return
+            return .failure(OWSAssertionError("Empty message transcript"))
         }
 
         let existingFailedMessage = interactionStore.findMessage(
@@ -216,10 +222,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         }
         owsAssertDebug(outgoingMessage.hasRenderableContent())
 
-        interactionStore.updateWithWasSentFromLinkedDevice(
+        interactionStore.updateRecipientsFromNonLocalDevice(
             outgoingMessage,
-            udRecipients: transcript.udRecipients,
-            nonUdRecipients: transcript.nonUdRecipients,
+            recipientStates: transcript.recipientStates,
             isSentUpdate: false,
             tx: tx
         )
@@ -242,6 +247,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         } else {
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewMessage(outgoingMessage, tx: tx)
         }
+
+        return .success(outgoingMessage)
     }
 
     private func validateProtocolVersion(
@@ -291,30 +298,23 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         _ transcript: SentMessageTranscript,
         groupThread: TSGroupThread,
         tx: DBWriteTransaction
-    ) {
+    ) -> Result<TSOutgoingMessage?, Error> {
 
-        if
-            transcript.udRecipients.isEmpty,
-            transcript.nonUdRecipients.isEmpty
-        {
-            owsFailDebug("Ignoring empty 'recipient update' transcript.")
-            return
+        if transcript.recipientStates.isEmpty {
+            return .failure(OWSAssertionError("Ignoring empty 'recipient update' transcript."))
         }
 
         let timestamp = transcript.timestamp
         if timestamp < 1 {
-            owsFailDebug("'recipient update' transcript has invalid timestamp.")
-            return
+            return .failure(OWSAssertionError("'recipient update' transcript has invalid timestamp."))
         }
         if !SDS.fitsInInt64(timestamp) {
-            owsFailDebug("Invalid timestamp.")
-            return
+            return .failure(OWSAssertionError("Invalid timestamp."))
         }
 
         let groupId = groupThread.groupId
         if groupId.isEmpty {
-            owsFailDebug("'recipient update' transcript has invalid groupId.")
-            return
+            return .failure(OWSAssertionError("'recipient update' transcript has invalid groupId."))
         }
 
         let messages: [TSOutgoingMessage]
@@ -323,17 +323,16 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 .interactions(withTimestamp: timestamp, tx: tx)
                 .compactMap { $0 as? TSOutgoingMessage }
         } catch {
-            owsFailDebug("Error loading interactions: \(error)")
-            return
+            return .failure(OWSAssertionError("Error loading interactions: \(error)"))
         }
 
         if messages.isEmpty {
             // This message may have disappeared.
             Logger.error("No matching message with timestamp: \(timestamp)")
-            return
+            return .success(nil)
         }
 
-        var messageFound = false
+        var messageFound: TSOutgoingMessage?
         for message in messages {
             guard message.wasNotCreatedLocally else {
                 // wasNotCreatedLocally isn't always set for very old linked messages, but:
@@ -346,23 +345,27 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 continue
             }
 
-            Logger.info("Processing 'recipient update' transcript in thread: \(groupThread.uniqueId), timestamp: \(timestamp), nonUdRecipientIds: \(transcript.nonUdRecipients), udRecipientIds: \(transcript.udRecipients)")
+            Logger.info("Processing 'recipient update' transcript in thread: \(groupThread.uniqueId), timestamp: \(timestamp), recipientIds: \(transcript.recipientStates.keys)")
 
-            interactionStore.updateWithWasSentFromLinkedDevice(
+            interactionStore.updateRecipientsFromNonLocalDevice(
                 message,
-                udRecipients: transcript.udRecipients,
-                nonUdRecipients: transcript.nonUdRecipients,
+                recipientStates: transcript.recipientStates,
                 isSentUpdate: true,
                 tx: tx
             )
 
-            messageFound = true
+            // In theory more than one message could be found.
+            // In practice, this should never happen, as we functionally
+            // use timestamps as unique identifiers.
+            messageFound = message
         }
 
-        if (!messageFound) {
+        if messageFound == nil {
             // This message may have disappeared.
             Logger.error("No matching message with timestamp: \(timestamp)")
         }
+
+        return .success(messageFound)
     }
 
     private func archiveSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {

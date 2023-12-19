@@ -235,9 +235,8 @@ public class ReactionManager: NSObject {
             if let incomingMessage = message as? TSIncomingMessage {
                 notificationsManager.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
             } else if let outgoingMessage = message as? TSOutgoingMessage {
-                outgoingMessage.updateWithWasSentFromLinkedDevice(
-                    withUDRecipients: sentTranscript?.udRecipients.map(ServiceIdObjC.wrapValue(_:)),
-                    nonUdRecipients: sentTranscript?.nonUdRecipients.map(ServiceIdObjC.wrapValue(_:)),
+                outgoingMessage.updateRecipientsFromNonLocalDevice(
+                    sentTranscript?.recipientStates ?? [:],
                     isSentUpdate: false,
                     transaction: transaction
                 )

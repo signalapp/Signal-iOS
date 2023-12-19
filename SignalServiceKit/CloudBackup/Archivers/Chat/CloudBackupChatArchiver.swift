@@ -72,8 +72,8 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
                     context: context,
                     tx: tx
                 )
-            } else if let thread = thread as? TSGroupThread {
-                result = self.archiveGroupThread(
+            } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
+                result = self.archiveGroupV2Thread(
                     thread,
                     stream: stream,
                     context: context,
@@ -117,7 +117,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: thread.uniqueIdentifier)
+        let chatId = context.assignChatId(to: CloudBackup.ChatThread.contact(thread).uniqueId)
 
         let contactServiceId = thread.contactUUID.map { try? ServiceId.parseFrom(serviceIdString: $0) }
         let recipientAddress: CloudBackup.RecipientArchivingContext.Address
@@ -158,13 +158,13 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         )
     }
 
-    private func archiveGroupThread(
+    private func archiveGroupV2Thread(
         _ thread: TSGroupThread,
         stream: CloudBackupProtoOutputStream,
         context: CloudBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> CloudBackupChatArchiver.ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: thread.uniqueIdentifier)
+        let chatId = context.assignChatId(to: CloudBackup.ChatThread.groupV2(thread).uniqueId)
 
         let recipientAddress = CloudBackup.RecipientArchivingContext.Address.group(thread.groupId)
         guard let recipientId = context.recipientContext[recipientAddress] else {
@@ -238,7 +238,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        let thread: TSThread
+        let thread: CloudBackup.ChatThread
         switch context.recipientContext[chat.recipientId] {
         case .none:
             return .failure(
@@ -251,19 +251,23 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
-            guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
+            guard
+                let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx),
+                groupThread.isGroupV2Thread
+            else {
                 return .failure(
                     chat.chatId,
                     [.referencedDatabaseObjectNotFound(.groupThread(groupId: groupId))]
                 )
             }
-            thread = groupThread
+            thread = .groupV2(groupThread)
         case let .contact(aci, pni, e164):
             let address = SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: e164?.stringValue)
-            thread = threadStore.getOrCreateContactThread(with: address, tx: tx)
+            let contactThread = threadStore.getOrCreateContactThread(with: address, tx: tx)
+            thread = .contact(contactThread)
         }
 
-        context[chat.chatId] = thread.uniqueIdentifier
+        context[chat.chatId] = thread.uniqueId
 
         var associatedDataNeedsUpdate = false
         var isArchived: Bool?
@@ -285,7 +289,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         }
 
         if associatedDataNeedsUpdate {
-            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
+            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.thread, tx: tx)
             threadStore.updateAssociatedData(
                 threadAssociatedData,
                 isArchived: isArchived,
@@ -308,7 +312,7 @@ public class CloudBackupChatArchiverImpl: CloudBackupChatArchiver {
         if chat.expirationTimerMs != 0 {
             dmConfigurationStore.set(
                 token: .init(isEnabled: true, durationSeconds: UInt32(chat.expirationTimerMs / 1000)),
-                for: .thread(thread),
+                for: .thread(thread.thread),
                 tx: tx
             )
         }

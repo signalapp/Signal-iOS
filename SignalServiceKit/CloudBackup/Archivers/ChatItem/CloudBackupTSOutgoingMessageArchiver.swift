@@ -10,13 +10,16 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
     private let contentsArchiver: CloudBackupTSMessageContentsArchiver
     private let interactionStore: InteractionStore
+    private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
 
     internal init(
         contentsArchiver: CloudBackupTSMessageContentsArchiver,
-        interactionStore: InteractionStore
+        interactionStore: InteractionStore,
+        sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     ) {
         self.contentsArchiver = contentsArchiver
         self.interactionStore = interactionStore
+        self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
     }
 
     // MARK: - Archiving
@@ -244,7 +247,7 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
 
     func restoreChatItem(
         _ chatItem: BackupProtoChatItem,
-        thread: TSThread,
+        thread: CloudBackup.ChatThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> CloudBackup.RestoreInteractionResult<Void> {
@@ -277,124 +280,40 @@ internal class CloudBackupTSOutgoingMessageArchiver: CloudBackupInteractionArchi
             return .messageFailure(partialErrors)
         }
 
-        let messageBody = contents.body
-
-        // TODO: this is going to determine the recipients _from the current thread state_.
-        // thats not correct; the message may have been sent before the current set
-        // of recipients came to be. We need to explicitly pass the recipient states
-        // into this initializer instead.
-        let messageBuilder = TSOutgoingMessageBuilder.builder(
-            thread: thread,
-            timestamp: chatItem.dateSent,
-            messageBody: messageBody?.text,
-            bodyRanges: messageBody?.ranges,
-            attachmentIds: nil,
-            expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
-            expireStartedAt: chatItem.expireStartDate,
-            isVoiceMessage: false,
-            groupMetaMessage: .unspecified,
-            quotedMessage: nil,
-            contactShare: nil,
-            linkPreview: nil,
-            messageSticker: nil,
-            isViewOnceMessage: false,
-            changeActionsProtoData: nil,
-            additionalRecipients: nil,
-            skippedRecipients: nil,
-            storyAuthorAci: nil,
-            storyTimestamp: nil,
-            storyReactionEmoji: nil,
-            giftBadge: nil
+        let transcriptResult = RestoredSentMessageTranscript.from(
+            chatItem: chatItem,
+            contents: contents,
+            outgoingDetails: outgoingDetails,
+            context: context,
+            thread: thread
         )
 
-        let message = interactionStore.buildOutgoingMessage(builder: messageBuilder, tx: tx)
-        interactionStore.insertInteraction(message, tx: tx)
-
-        var didSucceedAtLeastOneRecipient = false
-        for sendStatus in outgoingDetails.sendStatus {
-            // TODO: ideally we don't use addresses in here at all, their
-            // caching properties are problematic.
-            let recipientAddress: SignalServiceAddress
-            switch context.recipientContext[chatItem.authorRecipientId] {
-            case .contact(let aci, let pni, let e164):
-                recipientAddress = SignalServiceAddress(serviceId: aci ?? pni, e164: e164)
-            case .none:
-                // Missing recipient! Fail this one recipient but keep going.
-                partialErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
-                continue
-            default:
-                // Recipients can only be contacts.
-                partialErrors.append(.invalidProtoData)
-                continue
-            }
-
-            guard let deliveryStatus = sendStatus.deliveryStatus else {
-                // Need a status!
-                partialErrors.append(.invalidProtoData)
-                continue
-            }
-
-            didSucceedAtLeastOneRecipient = true
-            switch deliveryStatus {
-            case .unknown:
-                break
-            case .pending:
-                // This is the default, no need to update.
-                break
-            case .failed:
-                interactionStore.update(
-                    message,
-                    withFailedRecipient: recipientAddress,
-                    // TODO: can we use a more descriptive error?
-                    error: OWSUnretryableMessageSenderError(),
-                    tx: tx
-                )
-            case .sent:
-                interactionStore.update(
-                    message,
-                    withSentRecipientAddress: recipientAddress,
-                    wasSentByUD: sendStatus.sealedSender.negated,
-                    tx: tx
-                )
-            case .delivered:
-                interactionStore.update(
-                    message,
-                    withDeliveredRecipient: recipientAddress,
-                    // TODO: eliminate device id as a required field
-                    deviceId: 1,
-                    deliveryTimestamp: sendStatus.lastStatusUpdateTimestamp,
-                    context: PassthroughDeliveryReceiptContext(),
-                    tx: tx
-                )
-            case .read:
-                interactionStore.update(
-                    message,
-                    withReadRecipient: recipientAddress,
-                    // TODO: eliminate device id as a required field
-                    deviceId: 1,
-                    readTimestamp: sendStatus.lastStatusUpdateTimestamp,
-                    tx: tx
-                )
-            case .viewed:
-                interactionStore.update(
-                    message,
-                    withViewedRecipient: recipientAddress,
-                    // TODO: eliminate device id as a required field
-                    deviceId: 1,
-                    viewedTimestamp: sendStatus.lastStatusUpdateTimestamp,
-                    tx: tx
-                )
-            case .skipped:
-                interactionStore.update(
-                    message,
-                    withSkippedRecipient: recipientAddress,
-                    tx: tx
-                )
-            }
+        let transcript: RestoredSentMessageTranscript
+        switch transcriptResult {
+        case .success(let value):
+            transcript = value
+        case .partialRestore(let value, let errors):
+            transcript = value
+            partialErrors.append(contentsOf: errors)
+        case .messageFailure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return .messageFailure(partialErrors)
         }
 
-        guard didSucceedAtLeastOneRecipient else {
-            // If every recipient failed, don't count this as a success at all.
+        let messageResult = sentMessageTranscriptReceiver.process(
+            transcript,
+            localIdentifiers: context.recipientContext.localIdentifiers,
+            tx: tx
+        )
+        let message: TSOutgoingMessage
+        switch messageResult {
+        case .success(let outgoingMessage):
+            guard let outgoingMessage else {
+                return .messageFailure(partialErrors)
+            }
+            message = outgoingMessage
+        case .failure(let error):
+            partialErrors.append(.databaseInsertionFailed(error))
             return .messageFailure(partialErrors)
         }
 

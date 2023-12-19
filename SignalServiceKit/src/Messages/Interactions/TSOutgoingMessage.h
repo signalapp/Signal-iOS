@@ -91,7 +91,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 // This property should only be set if state == .failed or state == .sending (with a prior failure)
 @property (atomic, nullable) NSNumber *errorCode;
 
-@property (atomic, readonly) BOOL wasSentByUD;
+@property (atomic, readwrite) BOOL wasSentByUD;
 
 @end
 
@@ -328,10 +328,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
-                                             isSentUpdate:(BOOL)isSentUpdate
-                                              transaction:(SDSAnyWriteTransaction *)transaction;
+/// Updates recipients based on information from either a linked device outgoing message transcript, or a restored
+/// message backup.
+/// - parameter isSentUpdate: If false, treats this as message creation, overwriting all existing recipient state.
+///      Otherwise, treats this as a sent update, only adding or updating recipients, never removing.
+- (void)updateRecipientsFromNonLocalDevice:
+            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientStates
+                              isSentUpdate:(BOOL)isSentUpdate
+                               transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateRecipientsFromNonLocalDevice(_:isSentUpdate:transaction:));
 
 - (void)updateWithRecipientAddressStates:
             (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates

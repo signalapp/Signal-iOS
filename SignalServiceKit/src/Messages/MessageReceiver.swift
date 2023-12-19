@@ -1574,9 +1574,8 @@ public final class MessageReceiver: Dependencies {
         }
 
         if let msg = message as? TSOutgoingMessage {
-            msg.updateWithWasSentFromLinkedDevice(
-                withUDRecipients: transcript.udRecipients.map(ServiceIdObjC.wrapValue(_:)),
-                nonUdRecipients: transcript.nonUdRecipients.map(ServiceIdObjC.wrapValue(_:)),
+            msg.updateRecipientsFromNonLocalDevice(
+                transcript.recipientStates,
                 isSentUpdate: false,
                 transaction: tx
             )

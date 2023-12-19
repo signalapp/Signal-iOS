@@ -582,6 +582,19 @@ public class DependenciesBridge {
             tsAccountManager: tsAccountManager
         )
 
+        self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
+            attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
+            attachmentStore: AttachmentStoreImpl(),
+            disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
+            earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
+            groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
+            interactionStore: InteractionStoreImpl(),
+            paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
+            signalProtocolStoreManager: signalProtocolStoreManager,
+            tsAccountManager: tsAccountManager,
+            viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
+        )
+
         self.cloudBackupManager = CloudBackupManagerImpl(
             chatArchiver: CloudBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
@@ -591,6 +604,7 @@ public class DependenciesBridge {
                 dateProvider: dateProvider,
                 interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),
+                sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: ThreadStoreImpl()
             ),
             dateProvider: dateProvider,
@@ -611,18 +625,5 @@ public class DependenciesBridge {
 
         self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
-
-        self.sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
-            attachmentDownloads: SentMessageTranscriptReceiverImpl.Wrappers.AttachmentDownloads(attachmentDownloads),
-            attachmentStore: AttachmentStoreImpl(),
-            disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
-            earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
-            groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
-            interactionStore: InteractionStoreImpl(),
-            paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
-            signalProtocolStoreManager: signalProtocolStoreManager,
-            tsAccountManager: tsAccountManager,
-            viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
-        )
     }
 }

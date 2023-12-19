@@ -8,6 +8,10 @@ import LibSignalClient
 
 extension CloudBackup {
 
+}
+
+extension CloudBackup {
+
     public struct ChatId: ExpressibleByIntegerLiteral, Hashable {
 
         public typealias IntegerLiteralType = UInt64
@@ -20,6 +24,27 @@ extension CloudBackup {
 
         fileprivate init(_ value: UInt64) {
             self.value = value
+        }
+    }
+
+    /// Chats only exist for group (v2) and contact threads, not story threads.
+    public enum ChatThread {
+        /// Note: covers note to self as well.
+        case contact(TSContactThread)
+        /// Instantiators are expected to validate the group is gv2.
+        case groupV2(TSGroupThread)
+
+        public var thread: TSThread {
+            switch self {
+            case .contact(let thread):
+                return thread
+            case .groupV2(let thread):
+                return thread
+            }
+        }
+
+        public var uniqueId: CloudBackup.ThreadUniqueId {
+            return .init(self.thread.uniqueId)
         }
     }
 
@@ -103,13 +128,6 @@ extension BackupProtoChatItem {
 
     public var chatId: CloudBackup.ChatId {
         return .init(chatID)
-    }
-}
-
-extension TSThread {
-
-    public var uniqueIdentifier: CloudBackup.ThreadUniqueId {
-        return .init(self.uniqueId)
     }
 }
 

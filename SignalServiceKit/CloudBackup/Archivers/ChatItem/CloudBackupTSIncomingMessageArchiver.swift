@@ -139,7 +139,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
 
     func restoreChatItem(
         _ chatItem: BackupProtoChatItem,
-        thread: TSThread,
+        thread: CloudBackup.ChatThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> CloudBackup.RestoreInteractionResult<Void> {
@@ -187,7 +187,7 @@ internal class CloudBackupTSIncomingMessageArchiver: CloudBackupInteractionArchi
         let messageBody = contents.body
 
         let messageBuilder = TSIncomingMessageBuilder.builder(
-            thread: thread,
+            thread: thread.thread,
             timestamp: incomingDetails.dateReceived,
             authorAci: .init(authorAci),
             // TODO: this needs to be added to the proto

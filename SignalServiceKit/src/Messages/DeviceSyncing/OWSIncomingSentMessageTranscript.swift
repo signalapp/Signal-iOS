@@ -13,13 +13,8 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
     public var requiredProtocolVersion: UInt32?
 
     public let timestamp: UInt64
-    public let dataMessageTimestamp: UInt64
-    public let serverTimestamp: UInt64
 
-    // If either nonUdRecipients or udRecipients is nil, this is either a
-    // legacy transcript or it reflects a legacy sync message.
-    public let nonUdRecipients: [ServiceId]
-    public let udRecipients: [ServiceId]
+    public let recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]
 
     public static func from(
         sentProto: SSKProtoSyncMessageSent,
@@ -129,7 +124,21 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             guard let paymentModels = TSPaymentModels.parsePaymentProtos(dataMessage: dataMessage, thread: target.thread) else {
                 return nil
             }
-            type = .paymentNotification(target, paymentModels.notification)
+            let paymentServerTimestamp: UInt64
+            if serverTimestamp > 0 {
+                paymentServerTimestamp = serverTimestamp
+            } else {
+                // We fall back to the sent timestamp, even though this is called a server timestamp.
+                // This was done historically and behavior is maintained.
+                paymentServerTimestamp = sentProto.timestamp
+            }
+            owsAssertDebug(paymentServerTimestamp > 0)
+            let paymentNotification = SentMessageTranscriptType.PaymentNotification(
+                target: target,
+                serverTimestamp: paymentServerTimestamp,
+                notification: paymentModels.notification
+            )
+            type = .paymentNotification(paymentNotification)
         } else {
             guard let target = getTarget(
                 recipientAddress: recipientAddress,
@@ -151,8 +160,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             type = .message(messageParams)
         }
 
-        var nonUdRecipients = [ServiceId]()
-        var udRecipients = [ServiceId]()
+        var recipientStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]()
         for statusProto in sentProto.unidentifiedStatus {
             guard
                 let serviceIdString = statusProto.destinationServiceID,
@@ -163,21 +171,43 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
                 continue
             }
 
-            if statusProto.unidentified {
-                udRecipients.append(serviceId)
-            } else {
-                nonUdRecipients.append(serviceId)
-            }
+            var recipientState: TSOutgoingMessageRecipientState = TSOutgoingMessageRecipientState()
+            recipientState.state = .sent
+            recipientState.wasSentByUD = statusProto.unidentified
+            recipientStates[.init(serviceId: serviceId, e164: nil)] = recipientState
+        }
+
+        guard validateTimestampsMatch(type: type, sentProto: sentProto, dataMessage: dataMessage) else {
+            return nil
         }
 
         return .init(
             type: type,
             timestamp: sentProto.timestamp,
-            dataMessageTimestamp: dataMessage.timestamp,
-            serverTimestamp: serverTimestamp,
-            nonUdRecipients: nonUdRecipients,
-            udRecipients: udRecipients
+            recipientStates: recipientStates
         )
+    }
+
+    private static func validateTimestampsMatch(
+        type: SentMessageTranscriptType,
+        sentProto: SSKProtoSyncMessageSent,
+        dataMessage: SSKProtoDataMessage
+    ) -> Bool {
+        switch type {
+        case .message, .expirationTimerUpdate, .paymentNotification:
+            // We only validate these types
+            break
+        case .recipientUpdate, .endSessionUpdate:
+            // Don't validate these types, as was done historically.
+            return true
+        }
+        guard sentProto.timestamp == dataMessage.timestamp else {
+            Logger.verbose("Transcript timestamps do not match: \(sentProto.timestamp) != \(dataMessage.timestamp)")
+            owsFailDebug("Transcript timestamps do not match, discarding message.")
+            // This transcript is invalid, discard it.
+            return false
+        }
+        return true
     }
 
     private static func parseMessageParams(
@@ -321,17 +351,11 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         type: SentMessageTranscriptType,
         requiredProtocolVersion: UInt32? = nil,
         timestamp: UInt64,
-        dataMessageTimestamp: UInt64,
-        serverTimestamp: UInt64,
-        nonUdRecipients: [ServiceId],
-        udRecipients: [ServiceId]
+        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]
     ) {
         self.type = type
         self.requiredProtocolVersion = requiredProtocolVersion
         self.timestamp = timestamp
-        self.dataMessageTimestamp = dataMessageTimestamp
-        self.serverTimestamp = serverTimestamp
-        self.nonUdRecipients = nonUdRecipients
-        self.udRecipients = udRecipients
+        self.recipientStates = recipientStates
     }
 }

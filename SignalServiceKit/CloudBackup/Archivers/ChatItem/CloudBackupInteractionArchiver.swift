@@ -127,7 +127,7 @@ internal protocol CloudBackupInteractionArchiver: CloudBackupProtoArchiver {
 
     func restoreChatItem(
         _ chatItem: BackupProtoChatItem,
-        thread: TSThread,
+        thread: CloudBackup.ChatThread,
         context: CloudBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> CloudBackup.RestoreInteractionResult<Void>

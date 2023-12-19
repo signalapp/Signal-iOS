@@ -52,11 +52,17 @@ public enum SentMessageTranscriptType {
         public let storyAuthorAci: Aci?
     }
 
+    public struct PaymentNotification {
+        public let target: SentMessageTranscriptTarget
+        public let serverTimestamp: UInt64
+        public let notification: TSPaymentNotification
+    }
+
     case message(Message)
     case recipientUpdate(TSGroupThread)
     case expirationTimerUpdate(SentMessageTranscriptTarget)
     case endSessionUpdate(TSContactThread)
-    case paymentNotification(SentMessageTranscriptTarget, TSPaymentNotification)
+    case paymentNotification(PaymentNotification)
 }
 
 /// A transcript for a message that has already been sent, and which came in either
@@ -66,14 +72,10 @@ public protocol SentMessageTranscript {
     var type: SentMessageTranscriptType { get }
 
     var timestamp: UInt64 { get }
-    var dataMessageTimestamp: UInt64 { get }
-    var serverTimestamp: UInt64 { get }
 
     var requiredProtocolVersion: UInt32? { get }
 
-    // TODO: generalize to include recipient states (not just "sent")
-    var udRecipients: [ServiceId] { get }
-    var nonUdRecipients: [ServiceId] { get }
+    var recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState] { get }
 }
 
 extension SentMessageTranscript {
@@ -84,8 +86,8 @@ extension SentMessageTranscript {
             return nil
         case .message(let messageParams):
             return messageParams.target.thread
-        case .paymentNotification(let target, _):
-            return target.thread
+        case .paymentNotification(let notification):
+            return notification.target.thread
         case .recipientUpdate(let thread):
             return thread
         }

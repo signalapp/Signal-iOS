@@ -72,8 +72,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 @interface TSOutgoingMessageRecipientState ()
 
-@property (atomic) BOOL wasSentByUD;
-
 @end
 
 #pragma mark -
@@ -744,54 +742,20 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
-                                             isSentUpdate:(BOOL)isSentUpdate
-                                              transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateRecipientsFromNonLocalDevice:
+            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientStates
+                              isSentUpdate:(BOOL)isSentUpdate
+                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     [self
         anyUpdateOutgoingMessageWithTransaction:transaction
                                           block:^(TSOutgoingMessage *message) {
-                                              if (udRecipients.count > 0 || nonUdRecipients.count > 0) {
+                                              if (recipientStates.count > 0) {
                                                   // If we have specific recipient info from the transcript,
                                                   // build a new recipient state map.
-                                                  NSMutableDictionary<SignalServiceAddress *,
-                                                      TSOutgoingMessageRecipientState *> *recipientAddressStates
-                                                      = [NSMutableDictionary new];
-                                                  for (ServiceIdObjC *serviceId in udRecipients) {
-                                                      SignalServiceAddress *recipientAddress =
-                                                          [[SignalServiceAddress alloc]
-                                                              initWithServiceIdObjC:serviceId];
-                                                      if (recipientAddressStates[recipientAddress]) {
-                                                          OWSFailDebug(@"recipient appears more than once in recipient "
-                                                                       @"lists: %@",
-                                                              recipientAddress);
-                                                          continue;
-                                                      }
-                                                      TSOutgoingMessageRecipientState *recipientState =
-                                                          [TSOutgoingMessageRecipientState new];
-                                                      recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                      recipientState.wasSentByUD = YES;
-                                                      recipientAddressStates[recipientAddress] = recipientState;
-                                                  }
-                                                  for (ServiceIdObjC *serviceId in nonUdRecipients) {
-                                                      SignalServiceAddress *recipientAddress =
-                                                          [[SignalServiceAddress alloc]
-                                                              initWithServiceIdObjC:serviceId];
-                                                      if (recipientAddressStates[recipientAddress]) {
-                                                          OWSFailDebug(@"recipient appears more than once in recipient "
-                                                                       @"lists: %@",
-                                                              recipientAddress);
-                                                          continue;
-                                                      }
-                                                      TSOutgoingMessageRecipientState *recipientState =
-                                                          [TSOutgoingMessageRecipientState new];
-                                                      recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                      recipientState.wasSentByUD = NO;
-                                                      recipientAddressStates[recipientAddress] = recipientState;
-                                                  }
+
 
                                                   if (isSentUpdate) {
                                                       // If this is a "sent update", make sure that:
@@ -806,11 +770,15 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       //
                                                       // Therefore we retain all existing entries in the recipient state
                                                       // map.
+                                                      NSMutableDictionary<SignalServiceAddress *,
+                                                          TSOutgoingMessageRecipientState *> *recipientAddressStates
+                                                          = recipientStates.mutableCopy;
                                                       [recipientAddressStates
                                                           addEntriesFromDictionary:self.recipientAddressStates];
+                                                      [message setRecipientAddressStates:recipientAddressStates];
+                                                  } else {
+                                                      [message setRecipientAddressStates:recipientStates];
                                                   }
-
-                                                  [message setRecipientAddressStates:recipientAddressStates];
                                               } else {
                                                   // Otherwise assume this is a legacy message before UD was introduced,
                                                   // and mark any "sending" recipient as "sent".  Note that this will

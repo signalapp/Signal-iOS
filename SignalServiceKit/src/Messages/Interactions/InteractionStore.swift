@@ -57,56 +57,10 @@ public protocol InteractionStore {
 
     // MARK: - TSOutgoingMessage state updates
 
-    func updateWithWasSentFromLinkedDevice(
+    func updateRecipientsFromNonLocalDevice(
         _ message: TSOutgoingMessage,
-        udRecipients: [ServiceId],
-        nonUdRecipients: [ServiceId],
+        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
         isSentUpdate: Bool,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withFailedRecipient: SignalServiceAddress,
-        error: Error,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withSentRecipientAddress: SignalServiceAddress,
-        wasSentByUD: Bool,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withDeliveredRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        deliveryTimestamp: UInt64,
-        context: DeliveryReceiptContext,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withReadRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        readTimestamp: UInt64,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withViewedRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        viewedTimestamp: UInt64,
-        tx: DBWriteTransaction
-    )
-
-    func update(
-        _ message: TSOutgoingMessage,
-        withSkippedRecipient: SignalServiceAddress,
         tx: DBWriteTransaction
     )
 }
@@ -202,87 +156,17 @@ public class InteractionStoreImpl: InteractionStore {
 
     // MARK: - TSOutgoingMessage state updates
 
-    public func updateWithWasSentFromLinkedDevice(
+    public func updateRecipientsFromNonLocalDevice(
         _ message: TSOutgoingMessage,
-        udRecipients: [ServiceId],
-        nonUdRecipients: [ServiceId],
+        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
         isSentUpdate: Bool,
         tx: DBWriteTransaction
     ) {
-        message.updateWithWasSentFromLinkedDevice(
-            withUDRecipients: udRecipients.map(ServiceIdObjC.wrapValue),
-            nonUdRecipients: nonUdRecipients.map(ServiceIdObjC.wrapValue),
+        message.updateRecipientsFromNonLocalDevice(
+            recipientStates,
             isSentUpdate: isSentUpdate,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withFailedRecipient: SignalServiceAddress,
-        error: Error,
-        tx: DBWriteTransaction
-    ) {
-        message.update(withFailedRecipient: withFailedRecipient, error: error, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withSentRecipientAddress: SignalServiceAddress,
-        wasSentByUD: Bool,
-        tx: DBWriteTransaction
-    ) {
-        message.update(withSentRecipientAddress: withSentRecipientAddress, wasSentByUD: wasSentByUD, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withDeliveredRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        deliveryTimestamp: UInt64,
-        context: DeliveryReceiptContext,
-        tx: DBWriteTransaction
-    ) {
-        message.update(
-            withDeliveredRecipient: withDeliveredRecipient,
-            deviceId: deviceId,
-            deliveryTimestamp: deliveryTimestamp,
-            context: context,
-            tx: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withReadRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        readTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        message.update(withReadRecipient: withReadRecipient, deviceId: deviceId, readTimestamp: readTimestamp, tx: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withViewedRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        viewedTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        message.update(
-            withViewedRecipient: withViewedRecipient,
-            deviceId: deviceId,
-            viewedTimestamp: viewedTimestamp,
-            tx: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func update(
-        _ message: TSOutgoingMessage,
-        withSkippedRecipient: SignalServiceAddress,
-        tx: DBWriteTransaction
-    ) {
-        message.update(withSkippedRecipient: withSkippedRecipient, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -380,68 +264,10 @@ open class MockInteractionStore: InteractionStore {
 
     // MARK: - TSOutgoingMessage state updates
 
-    open func updateWithWasSentFromLinkedDevice(
+    open func updateRecipientsFromNonLocalDevice(
         _ message: TSOutgoingMessage,
-        udRecipients: [ServiceId],
-        nonUdRecipients: [ServiceId],
+        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
         isSentUpdate: Bool,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withFailedRecipient: SignalServiceAddress,
-        error: Error,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withSentRecipientAddress: SignalServiceAddress,
-        wasSentByUD: Bool,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withDeliveredRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        deliveryTimestamp: UInt64,
-        context: DeliveryReceiptContext,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withReadRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        readTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withViewedRecipient: SignalServiceAddress,
-        deviceId: UInt32,
-        viewedTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        // Unimplemented
-    }
-
-    open func update(
-        _ message: TSOutgoingMessage,
-        withSkippedRecipient: SignalServiceAddress,
         tx: DBWriteTransaction
     ) {
         // Unimplemented
