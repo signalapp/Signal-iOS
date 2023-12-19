@@ -1,2 +1,2 @@
-• We fixed a bug that caused muted chats that were marked as unread to still appear in the unread total on the Signal icon even when that setting was disabled. Now the badge count consistently ignores any conversations that you choose to consistently ignore.
-• This update also enables VoiceOver support for message reactions, stickers, and wallpaper color selections.
+• Korjasimme mykistettyihin keskusteluihin ja lukemattomien viestien laskuriin liittyvän virheen Signal-kuvakkeessa.
+• Päivitys ottaa käyttöön myös VoiceOver-tuen viestireaktioille, tarroille ja taustakuvan värivalinnoille.

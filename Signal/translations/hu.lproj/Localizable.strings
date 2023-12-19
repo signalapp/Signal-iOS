@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Matrica";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker similar to %1$@";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "A(z) %1$@ jelhez hasonló matrica";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Hangüzenet";
@@ -7109,10 +7109,10 @@
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Így reagált a Történetedre: %1$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Így reagált egy történetre: %1$@";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Így reagált egy történetre: %1$@";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Így reagált %1$@ Történetére: %1$@";
@@ -7121,10 +7121,10 @@
 "STORY_REPLY_BUTTON" = "Válasz";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "Reagált a történetre";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "Reagált a történetre";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Válasz";
@@ -7742,7 +7742,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Fejezd be a telepítést a Signal Desktop -ban.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
-"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Gradient with %1$@ and %2$@";
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Átmenet %1$@ és %2$@ színnel";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontakt név";

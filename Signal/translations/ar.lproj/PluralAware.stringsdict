@@ -1184,17 +1184,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d تفاعلات مع %2$@.</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%1$d تفاعل مع %2$@.</string>
 			<key>two</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d تفاعلان مع %2$@.</string>
 			<key>few</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d تفاعلات مع %2$@.</string>
 			<key>many</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d تفاعلا مع %2$@.</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d تفاعل مع %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1400,17 +1400,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d تفاعل إضافي.</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d تفاعل إضافي.</string>
 			<key>two</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d تفاعلان إضافيان.</string>
 			<key>few</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d تفاعلات إضافية.</string>
 			<key>many</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d تفاعلاً إضافيًا.</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d تفاعل إضافي.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

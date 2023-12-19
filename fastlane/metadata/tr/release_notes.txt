@@ -1,2 +1,2 @@
-• We fixed a bug that caused muted chats that were marked as unread to still appear in the unread total on the Signal icon even when that setting was disabled. Now the badge count consistently ignores any conversations that you choose to consistently ignore.
-• This update also enables VoiceOver support for message reactions, stickers, and wallpaper color selections.
+• Sessiz sohbetlerle ilgili bir hatayı ve Signal simgesindeki okunmamış mesaj sayacı ile ilgili bir hatayı düzelttik. Artık rozet sayısı, sürekli görmezden gelmeyi seçtiğin konuşmaları sürekli yok sayıyor.
+• Bu güncelleme; mesaj tepkileri, çıkartmalar ve duvar kağıdı renk seçimleri için VoiceOver desteğini de etkinleştirir.

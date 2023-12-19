@@ -1086,15 +1086,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%1$d fhreagairt amháin le %2$@.</string>
 			<key>two</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d fhreagairt le %2$@.</string>
 			<key>few</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d fhreagairt le %2$@.</string>
 			<key>many</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d bhfreagairt le %2$@.</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d freagairt le %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1284,15 +1284,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d fhreagairt amháin sa bhreis.</string>
 			<key>two</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d fhreagairt sa bhreis.</string>
 			<key>few</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d fhreagairt sa bhreis.</string>
 			<key>many</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d bhfreagairt sa bhreis.</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d freagairt sa bhreis.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

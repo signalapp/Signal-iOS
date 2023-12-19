@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "מדבקה";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker similar to %1$@";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "סטיקר שנראה כמו %1$@";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "הודעה קולית";
@@ -1514,7 +1514,7 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "הגדרת מטבע";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "שיפוע";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "גרדיאנט";
 
 /* Title for the 'hue' section in the chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "גוון";
@@ -1529,7 +1529,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "צבע מותאם אישית";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "גרור את השינוי אל כיוון השיפוע";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "יש לגרור כדי לשנות את כיוון שינוי הצבע בגרדיאנט";
 
 /* Button to run the database integrity check */
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "הרץ";
@@ -7109,10 +7109,10 @@
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "הגיב/ה %1$@ לסטורי שלך";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "הגבת %1$@ לסטורי";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "הגיב/ה %1$@ לסטורי";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
 "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "הגיב/ה %1$@ לסטורי של %2$@";
@@ -7121,10 +7121,10 @@
 "STORY_REPLY_BUTTON" = "השב";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "הגבת לסטורי";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "הגיב/ה לסטורי";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "השב";
@@ -7742,7 +7742,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "השלם התקנה ב־Signal שולחן עבודה.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
-"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Gradient with %1$@ and %2$@";
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "מעבר צבע הדרגתי עם %1$@ ו%2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "שם איש קשר";

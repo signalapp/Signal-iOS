@@ -1,2 +1,2 @@
-• We fixed a bug that caused muted chats that were marked as unread to still appear in the unread total on the Signal icon even when that setting was disabled. Now the badge count consistently ignores any conversations that you choose to consistently ignore.
-• This update also enables VoiceOver support for message reactions, stickers, and wallpaper color selections.
+• Wir haben einen Fehler behoben, durch den als ungelesen markierte, stummgeschaltete Chats im Signal-Symbol weiterhin als ungelesen angezeigt wurden, auch wenn diese Einstellung deaktiviert war. Jetzt ignoriert der Zähler für ungelesene Nachrichten konsequent alle Unterhaltungen, die du ebenfalls lieber ignorieren möchtest.
+• Dieses Update ermöglicht außerdem VoiceOver-Unterstützung für Nachrichtenreaktionen, Sticker und die Auswahl der Hintergrundfarbe.

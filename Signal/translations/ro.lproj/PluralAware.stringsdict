@@ -890,11 +890,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%1$d reacție cu %2$@.</string>
 			<key>few</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d reacții cu %2$@.</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d de reacții cu %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1052,11 +1052,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d reacție suplimentară.</string>
 			<key>few</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d reacții suplimentare.</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d de reacții suplimentare.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

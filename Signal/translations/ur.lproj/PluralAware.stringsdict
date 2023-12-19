@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%2$@ کے ساتھ %1$d کا ری ایکشن۔</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%2$@ کے ساتھ %1$d کا ری ایکشنز۔</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d اضافی ری ایکشن۔</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d اضافی ری ایکشنز۔</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
