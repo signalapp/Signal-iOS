@@ -145,11 +145,8 @@ public class CloudBackupContactRecipientArchiver: CloudBackupRecipientDestinatio
         }
         context[recipientProto.recipientId] = .contact(address)
 
-        // TODO: make this a real method.
-        var recipient = SignalRecipient.proofOfConcept_forBackup(
-            aci: address.aci,
-            pni: address.pni,
-            phoneNumber: address.e164,
+        var recipient = SignalRecipient.fromBackup(
+            address,
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )

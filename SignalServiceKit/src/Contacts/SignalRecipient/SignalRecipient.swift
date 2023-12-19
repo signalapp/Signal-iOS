@@ -79,20 +79,34 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         )
     }
 
-    public static func proofOfConcept_forBackup(
-        aci: Aci?,
-        pni: Pni?,
-        phoneNumber: E164?,
+    public static func fromBackup(
+        _ backupContact: CloudBackup.ContactAddress,
         isRegistered: Bool?,
         unregisteredAtTimestamp: UInt64?
     ) -> Self {
+        let deviceIds: [UInt32]
+        if isRegistered == true {
+            // If we think they are registered, just add the primary device id.
+            // When we try and send a message, the server will tell us about
+            // any other device ids.
+            // ...The server would tell us too if we sent an empty deviceIds array,
+            // so there's not really a material difference.
+            deviceIds = [OWSDevice.primaryDeviceId]
+        } else {
+            // Otherwise (including if we don't know if they're registered),
+            // use an empty device IDs array. This doesn't make any difference,
+            // the server will give us the deviceIds anyway and unregisteredAtTimestamp
+            // is the thing that actually drives unregistered state, but
+            // this is at least a better representation of what we know.
+            deviceIds = []
+        }
         return Self.init(
             id: nil,
             uniqueId: UUID().uuidString,
-            aciString: aci?.serviceIdUppercaseString,
-            pni: pni,
-            phoneNumber: phoneNumber?.stringValue,
-            deviceIds: isRegistered == true ? [OWSDevice.primaryDeviceId] : [],
+            aciString: backupContact.aci?.serviceIdUppercaseString,
+            pni: backupContact.pni,
+            phoneNumber: backupContact.e164?.stringValue,
+            deviceIds: deviceIds,
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
