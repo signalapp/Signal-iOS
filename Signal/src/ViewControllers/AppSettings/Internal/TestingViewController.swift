@@ -71,14 +71,14 @@ class TestingViewController: OWSTableViewController2 {
             }
         }
 
-        if FeatureFlags.cloudBackupFileAlpha {
+        if FeatureFlags.messageBackupFileAlpha {
             let section = OWSTableSection()
             section.footerTitle = "Backup File (pre-pre-pre-alpha)"
             section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Create backup file")) {
-                Self.createCloudBackupProto()
+                Self.createMessageBackupProto()
             })
             section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Import backup file")) { [weak self] in
-                self?.importCloudBackupProto()
+                self?.importMessageBackupProto()
             })
             contents.add(section)
         }
@@ -89,12 +89,12 @@ class TestingViewController: OWSTableViewController2 {
 
 extension TestingViewController {
 
-    private static func createCloudBackupProto() {
+    private static func createMessageBackupProto() {
         let vc = UIApplication.shared.frontmostViewController!
         ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
             Task {
                 do {
-                    let fileUrl = try await DependenciesBridge.shared.cloudBackupManager.createBackup()
+                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup()
                     await MainActor.run {
                         let activityVC = UIActivityViewController(
                             activityItems: [fileUrl],
@@ -115,7 +115,7 @@ extension TestingViewController {
         })
     }
 
-    private func importCloudBackupProto() {
+    private func importMessageBackupProto() {
         let vc = UIApplication.shared.frontmostViewController!
         guard #available(iOS 14.0, *) else {
             return
@@ -137,7 +137,7 @@ extension TestingViewController: UIDocumentPickerDelegate {
         ModalActivityIndicatorViewController.present(fromViewController: vc, canCancel: false, backgroundBlock: { modal in
             Task {
                 do {
-                    try await DependenciesBridge.shared.cloudBackupManager.importBackup(fileUrl: fileUrl)
+                    try await DependenciesBridge.shared.messageBackupManager.importBackup(fileUrl: fileUrl)
                     await MainActor.run {
                         modal.dismiss {
                             let vc = UIApplication.shared.frontmostViewController!

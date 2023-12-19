@@ -122,7 +122,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
-    public static let cloudBackupFileAlpha = build.includes(.internal)
+    public static let messageBackupFileAlpha = build.includes(.internal)
 }
 
 // MARK: -

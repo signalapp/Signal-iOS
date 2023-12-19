@@ -80,7 +80,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     }
 
     public static func fromBackup(
-        _ backupContact: CloudBackup.ContactAddress,
+        _ backupContact: MessageBackup.ContactAddress,
         isRegistered: Bool?,
         unregisteredAtTimestamp: UInt64?
     ) -> Self {

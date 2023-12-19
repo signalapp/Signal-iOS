@@ -51,7 +51,7 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
 
-    public let cloudBackupManager: CloudBackupManager
+    public let messageBackupManager: MessageBackupManager
 
     public let deviceManager: OWSDeviceManager
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
@@ -595,12 +595,12 @@ public class DependenciesBridge {
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
-        self.cloudBackupManager = CloudBackupManagerImpl(
-            chatArchiver: CloudBackupChatArchiverImpl(
+        self.messageBackupManager = MessageBackupManagerImpl(
+            chatArchiver: MessageBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
                 threadStore: ThreadStoreImpl()
             ),
-            chatItemArchiver: CloudBackupChatItemArchiverImp(
+            chatItemArchiver: MessageBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
                 interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),
@@ -609,17 +609,17 @@ public class DependenciesBridge {
             ),
             dateProvider: dateProvider,
             db: db,
-            recipientArchiver: CloudBackupRecipientArchiverImpl(
-                blockingManager: CloudBackup.Wrappers.BlockingManager(blockingManager),
+            recipientArchiver: MessageBackupRecipientArchiverImpl(
+                blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 groupsV2: groupsV2,
-                profileManager: CloudBackup.Wrappers.ProfileManager(profileManager),
+                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientHidingManager: recipientHidingManager,
                 recipientStore: SignalRecipientStoreImpl(),
                 storyStore: StoryStoreImpl(),
                 threadStore: ThreadStoreImpl(),
                 tsAccountManager: tsAccountManager
             ),
-            streamProvider: CloudBackupProtoStreamProviderImpl(),
+            streamProvider: MessageBackupProtoStreamProviderImpl(),
             tsAccountManager: tsAccountManager
         )
 
