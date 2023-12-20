@@ -15,7 +15,7 @@ public class MessageBackupNoteToSelfRecipientArchiver: MessageBackupRecipientDes
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        let recipientId = context.assignRecipientId(to: .noteToSelf)
+        let recipientId = context.assignRecipientId(to: .localAddress)
         let selfRecipientBuilder = BackupProtoSelfRecipient.builder()
         let recipientBuilder = BackupProtoRecipient.builder(id: recipientId.value)
 
@@ -46,7 +46,7 @@ public class MessageBackupNoteToSelfRecipientArchiver: MessageBackupRecipientDes
             owsFail("Invalid proto for class")
         }
 
-        context[recipient.recipientId] = .noteToSelf
+        context[recipient.recipientId] = .localAddress
 
         return .success
     }

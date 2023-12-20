@@ -81,7 +81,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
                 // Missing recipient! Fail this one recipient but keep going.
                 partialErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
                 continue
-            case .noteToSelf, .group:
+            case .localAddress, .group:
                 // Recipients can only be contacts.
                 partialErrors.append(.invalidProtoData)
                 continue

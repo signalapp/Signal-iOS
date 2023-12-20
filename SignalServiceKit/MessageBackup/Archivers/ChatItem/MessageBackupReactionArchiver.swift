@@ -87,7 +87,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
             let reactorAddress = context[reaction.authorRecipientId]
 
             switch reactorAddress {
-            case .noteToSelf:
+            case .localAddress:
                 reactionStore.createReactionFromRestoredBackup(
                     uniqueMessageId: message.uniqueId,
                     emoji: reaction.emoji,

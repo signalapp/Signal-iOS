@@ -61,10 +61,10 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             return .completeFailure(error)
         }
 
-        guard let author = context.recipientContext[.noteToSelf] else {
+        guard let author = context.recipientContext[.localAddress] else {
             partialErrors.append(.init(
                 objectId: interaction.chatItemId,
-                error: .referencedIdMissing(.recipient(.noteToSelf))
+                error: .referencedIdMissing(.recipient(.localAddress))
             ))
             return .messageFailure(partialErrors)
         }

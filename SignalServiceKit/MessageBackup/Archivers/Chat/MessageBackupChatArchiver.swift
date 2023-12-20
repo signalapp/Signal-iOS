@@ -66,12 +66,22 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         func archiveThread(_ thread: TSThread, stop: inout Bool) {
             let result: ArchiveMultiFrameResult
             if let thread = thread as? TSContactThread {
-                result = self.archiveContactThread(
-                    thread,
-                    stream: stream,
-                    context: context,
-                    tx: tx
-                )
+                // Check address directly; isNoteToSelf uses global state.
+                if thread.contactAddress.isEqualToAddress(context.recipientContext.localIdentifiers.aciAddress) {
+                    result = self.archiveNoteToSelfThread(
+                        thread,
+                        stream: stream,
+                        context: context,
+                        tx: tx
+                    )
+                } else {
+                    result = self.archiveContactThread(
+                        thread,
+                        stream: stream,
+                        context: context,
+                        tx: tx
+                    )
+                }
             } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
                 result = self.archiveGroupV2Thread(
                     thread,
@@ -109,6 +119,31 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         } else {
             return .partialSuccess(partialErrors)
         }
+    }
+
+    private func archiveNoteToSelfThread(
+        _ thread: TSContactThread,
+        stream: MessageBackupProtoOutputStream,
+        context: MessageBackup.ChatArchivingContext,
+        tx: DBReadTransaction
+    ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
+        let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
+
+        guard let recipientId = context.recipientContext[.localAddress] else {
+            return .partialSuccess([.init(
+                objectId: chatId,
+                error: .referencedIdMissing(.recipient(.localAddress))
+            )])
+        }
+
+        return archiveThread(
+            thread,
+            chatId: chatId,
+            recipientId: recipientId,
+            stream: stream,
+            context: context,
+            tx: tx
+        )
     }
 
     private func archiveContactThread(
@@ -236,9 +271,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 chat.chatId,
                 [.identifierNotFound(.recipient(chat.recipientId))]
             )
-        case .noteToSelf:
-            // TODO: handle note to self chat, create the tsThread
-            return .success
+        case .localAddress:
+            let noteToSelfThread = threadStore.getOrCreateContactThread(
+                with: context.recipientContext.localIdentifiers.aciAddress,
+                tx: tx
+            )
+            thread = .contact(noteToSelfThread)
         case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.

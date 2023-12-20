@@ -36,7 +36,7 @@ extension MessageBackup {
         public enum Address {
             public typealias GroupId = Data
 
-            case noteToSelf
+            case localAddress
             case contact(ContactAddress)
             case group(GroupId)
         }
@@ -44,7 +44,7 @@ extension MessageBackup {
         internal let localIdentifiers: LocalIdentifiers
 
         private var currentRecipientId: RecipientId = 1
-        private var noteToSelfId: RecipientId?
+        private var localAddressId: RecipientId?
         private let groupIdMap = SharedMap<Address.GroupId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
@@ -59,8 +59,20 @@ extension MessageBackup {
                 currentRecipientId = RecipientId(currentRecipientId.value + 1)
             }
             switch address {
-            case .noteToSelf:
-                noteToSelfId = currentRecipientId
+            case .localAddress:
+                owsAssertDebug(self.localAddressId == nil)
+                let localRecipientId = currentRecipientId
+                localAddressId = localRecipientId
+
+                // Also insert the local identifiers, just in case we try and look
+                // up by .contact enum case instead of .localAddress.
+                contactAciMap[localIdentifiers.aci] = localRecipientId
+                if let pni = localIdentifiers.pni {
+                    contactPniMap[pni] = localRecipientId
+                }
+                if let e164 = E164(localIdentifiers.phoneNumber) {
+                    contactE164ap[e164] = currentRecipientId
+                }
             case .group(let groupId):
                 groupIdMap[groupId] = currentRecipientId
             case .contact(let contactAddress):
@@ -82,8 +94,8 @@ extension MessageBackup {
             // swiftlint:disable:next implicit_getter
             get {
                 switch address {
-                case .noteToSelf:
-                    return noteToSelfId
+                case .localAddress:
+                    return localAddressId
                 case .group(let groupId):
                     return groupIdMap[groupId]
                 case .contact(let contactAddress):
@@ -106,7 +118,7 @@ extension MessageBackup {
         public enum Address {
             public typealias GroupId = RecipientArchivingContext.Address.GroupId
 
-            case noteToSelf
+            case localAddress
             case contact(ContactAddress)
             case group(GroupId)
         }
