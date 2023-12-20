@@ -116,7 +116,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         mediaViewTopConstraint?.constant = yOffset
         mediaViewBottomConstraint?.constant = yOffset
         mediaViewLeadingConstraint?.constant = xOffset
-        mediaViewTrailingConstraint?.constant = xOffset
+        mediaViewTrailingConstraint?.constant = -xOffset
 
         // Find minScale for .scaleAspectFit-style layout.
         let scaleWidth = scrollViewSize.width / mediaSize.width
