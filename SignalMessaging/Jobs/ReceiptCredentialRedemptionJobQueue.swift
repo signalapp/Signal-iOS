@@ -211,7 +211,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
     // MARK: - Retries
 
     private enum Constants {
-        /// Defines the time between retries for SEPA and iDEAL.
+        /// Defines the time between retries for SEPA and recurring iDEAL transactions.
         static let sepaRetryInterval = TSConstants.isUsingProductionService ? kDayInterval : kMinuteInterval
     }
 
@@ -220,19 +220,29 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
         case sepa
     }
 
-    private func stillProcessingRetryParameters(paymentMethod: DonationPaymentMethod?) -> (RetryInterval, maxRetries: UInt) {
+    private func stillProcessingRetryParameters(
+        paymentType: PaymentType,
+        paymentMethod: DonationPaymentMethod?
+    ) -> (RetryInterval, maxRetries: UInt) {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
             // We'll retry operations for these payment types fairly aggressively, so
             // we need a large retry buffer.
             return (.exponential, 110)
-        case .sepa, .ideal:
+        case .sepa:
             // We'll only retry operations for SEPA 1x/day (including those fronted by
             // iDEAL), so we limit the retry buffer. They should always complete within
             // 14 business days, so this is generous compared to what we should need,
             // but prevents us from having an indefinite job if for whatever reason a
             // payment never processes.
             return (.sepa, 30)
+        case .ideal:
+            switch paymentType {
+            case .oneTimeBoost:
+                return (.exponential, 110)
+            case .recurringSubscription:
+                return (.sepa, 30)
+            }
         }
     }
 
@@ -254,9 +264,12 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
     }
 
     private func sepaRetryDelay(configuration: Configuration) -> TimeInterval? {
-        guard configuration.paymentMethod == .sepa else {
-            return nil
-        }
+        let (retryInterval, _) = stillProcessingRetryParameters(
+            paymentType: configuration.paymentType,
+            paymentMethod: configuration.paymentMethod
+        )
+        guard retryInterval == .sepa else { return nil }
+
         let priorError = databaseStorage.read(block: { tx -> ReceiptCredentialRequestError? in
             return receiptCredentialResultStore.getRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
@@ -443,7 +456,10 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
                     )
 
                     if errorCode == .paymentStillProcessing {
-                        let (retryInterval, maxRetries) = self.stillProcessingRetryParameters(paymentMethod: paymentMethod)
+                        let (retryInterval, maxRetries) = self.stillProcessingRetryParameters(
+                            paymentType: paymentType,
+                            paymentMethod: paymentMethod
+                        )
                         if jobRecord.failureCount < maxRetries {
                             Logger.warn("[Donations] Payment still processing; scheduling retry…")
                             jobRecord.addFailure(tx: tx)
