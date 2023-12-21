@@ -322,8 +322,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 }
 
                 let replyInfo: ThreadReplyInfoObjC?
-                if let quotedReply, let aci = quotedReply.authorAddress.aci {
-                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: quotedReply.timestamp, author: aci))
+                if let quotedReply, let aci = quotedReply.authorAddress.aci, let timestamp = quotedReply.timestamp {
+                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: timestamp, author: aci))
                 } else {
                     replyInfo = nil
                 }

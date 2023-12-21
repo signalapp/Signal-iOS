@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 @interface TSQuotedMessage : MTLModel
 
-@property (nonatomic, readonly) uint64_t timestamp;
+@property (nullable, nonatomic, readonly) NSNumber *timestampValue;
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 - (instancetype)init NS_UNAVAILABLE;
 
 // used when sending quoted messages
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
+- (instancetype)initWithTimestamp:(nullable NSNumber *)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
@@ -72,6 +72,15 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
                                          transaction:(SDSAnyWriteTransaction *)transaction;
+
+// used when restoring quoted messages from backups
+// TODO: attachments should be here too, once they are body can be made nullable.
++ (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
+                                          authorAddress:(SignalServiceAddress *)authorAddress
+                                                   body:(NSString *)body
+                                             bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                                             bodySource:(TSQuotedMessageContentSource)bodySource
+                                            isGiftBadge:(BOOL)isGiftBadge;
 
 @end
 

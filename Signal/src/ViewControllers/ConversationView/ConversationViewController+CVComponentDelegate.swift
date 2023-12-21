@@ -272,15 +272,14 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {
         AssertIsOnMainThread()
-        owsAssertDebug(quotedReply.timestamp > 0)
         owsAssertDebug(quotedReply.authorAddress.isValid)
 
         if quotedReply.isStory {
-            guard let quotedStoryAuthorAci = quotedReply.authorAddress.aci else {
+            guard let quotedStoryAuthorAci = quotedReply.authorAddress.aci, let timestamp = quotedReply.timestamp else {
                 return
             }
             guard let quotedStory = databaseStorage.read(
-                block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedStoryAuthorAci, transaction: $0) }
+                block: { StoryFinder.story(timestamp: timestamp, author: quotedStoryAuthorAci, transaction: $0) }
             ) else { return }
 
             let context: StoryContext

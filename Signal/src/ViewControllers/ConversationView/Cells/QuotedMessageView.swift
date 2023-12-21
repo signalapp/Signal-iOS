@@ -26,9 +26,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let isForPreview: Bool
         let quotedAuthorName: String
 
-        var quotedInteractionIdentifier: InteractionSnapshotIdentifier {
+        var quotedInteractionIdentifier: InteractionSnapshotIdentifier? {
+            guard let timestamp = quotedReplyModel.timestamp else {
+                return nil
+            }
             return InteractionSnapshotIdentifier(
-                timestamp: quotedReplyModel.timestamp,
+                timestamp: timestamp,
                 authorAci: quotedReplyModel.authorAddress.aci
             )
         }

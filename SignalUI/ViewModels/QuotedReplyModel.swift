@@ -9,7 +9,7 @@ import SignalServiceKit
 
 public class QuotedReplyModel: NSObject {
 
-    public let timestamp: UInt64
+    public let timestamp: UInt64?
     public let authorAddress: SignalServiceAddress
     public let attachmentStream: TSAttachmentStream?
     public let failedThumbnailAttachmentPointer: TSAttachmentPointer?
@@ -165,7 +165,7 @@ public class QuotedReplyModel: NSObject {
         }
 
         self.init(
-            timestamp: quotedMessage.timestamp,
+            timestamp: quotedMessage.timestampValue?.uint64Value,
             authorAddress: quotedMessage.authorAddress,
             bodySource: quotedMessage.bodySource,
             body: body,
@@ -428,7 +428,7 @@ public class QuotedReplyModel: NSObject {
     public func buildQuotedMessageForSending() -> TSQuotedMessage {
         // Legit usage of senderTimestamp to reference existing message
         return TSQuotedMessage(
-            timestamp: timestamp,
+            timestamp: timestamp.map { NSNumber(value: $0) },
             authorAddress: authorAddress,
             body: body,
             bodyRanges: bodyRanges,
@@ -438,7 +438,7 @@ public class QuotedReplyModel: NSObject {
     }
 
     private init(
-        timestamp: UInt64,
+        timestamp: UInt64?,
         authorAddress: SignalServiceAddress,
         bodySource: TSQuotedMessageContentSource,
         body: String? = nil,

@@ -282,11 +282,18 @@ extension ConversationViewController {
             presentRemotelySourcedQuotedReplyToast()
             return
         }
-        let quotedMessage = databaseStorage.read { transaction in
-            InteractionFinder.findMessage(withTimestamp: quotedReply.timestamp,
-                                          threadId: self.thread.uniqueId,
-                                          author: quotedReply.authorAddress,
-                                          transaction: transaction)
+        let quotedMessage: TSMessage?
+        if let timestamp = quotedReply.timestamp {
+            quotedMessage = databaseStorage.read { transaction in
+                InteractionFinder.findMessage(
+                    withTimestamp: timestamp,
+                    threadId: self.thread.uniqueId,
+                    author: quotedReply.authorAddress,
+                    transaction: transaction
+                )
+            }
+        } else {
+            quotedMessage = nil
         }
         if let quotedMessage {
             if quotedMessage.wasRemotelyDeleted {

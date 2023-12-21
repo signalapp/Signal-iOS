@@ -1092,7 +1092,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
 
-    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
+    if (!quotedMessage.timestampValue) {
+        return nil;
+    }
+    uint64_t timestamp = quotedMessage.timestampValue.unsignedLongLongValue;
+
+    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:timestamp];
 
     if (quotedMessage.authorAddress.aciString) {
         [quoteBuilder setAuthorAci:quotedMessage.authorAddress.aciString];

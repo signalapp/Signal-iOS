@@ -1067,7 +1067,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     var draftReply: ThreadReplyInfo? {
         guard let quotedReply else { return nil }
         guard let aci = quotedReply.authorAddress.aci else { return nil }
-        return ThreadReplyInfo(timestamp: quotedReply.timestamp, author: aci)
+        guard let timestamp = quotedReply.timestamp else { return nil }
+        return ThreadReplyInfo(timestamp: timestamp, author: aci)
     }
 
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview) {

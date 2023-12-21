@@ -136,11 +136,13 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 @end
 
 @interface TSQuotedMessage ()
+@property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, nullable) OWSAttachmentInfo *quotedAttachment;
 @end
 
 @implementation TSQuotedMessage
 
+// Private
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
@@ -149,7 +151,6 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
      receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
                       isGiftBadge:(BOOL)isGiftBadge
 {
-    OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
 
     self = [super init];
@@ -168,14 +169,14 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
+// Public
+- (instancetype)initWithTimestamp:(nullable NSNumber *)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
        quotedAttachmentForSending:(nullable TSAttachmentStream *)attachment
                       isGiftBadge:(BOOL)isGiftBadge
 {
-    OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
 
     self = [super init];
@@ -183,7 +184,12 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         return nil;
     }
 
-    _timestamp = timestamp;
+    if (timestamp) {
+        OWSAssertDebug(timestamp > 0);
+        _timestamp = [timestamp unsignedLongLongValue];
+    } else {
+        _timestamp = 0;
+    }
     _authorAddress = authorAddress;
     _body = body;
     _bodyRanges = bodyRanges;
@@ -272,6 +278,32 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     return quotedMessage;
 }
 
++ (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
+                                          authorAddress:(SignalServiceAddress *)authorAddress
+                                                   body:(NSString *)body
+                                             bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                                             bodySource:(TSQuotedMessageContentSource)bodySource
+                                            isGiftBadge:(BOOL)isGiftBadge
+{
+    OWSAssertDebug(authorAddress.isValid);
+
+    uint64_t rawTimestamp;
+    if (timestamp) {
+        OWSAssertDebug(timestamp > 0);
+        rawTimestamp = [timestamp unsignedLongLongValue];
+    } else {
+        rawTimestamp = 0;
+    }
+
+    return [[TSQuotedMessage alloc] initWithTimestamp:rawTimestamp
+                                        authorAddress:authorAddress
+                                                 body:body
+                                           bodyRanges:bodyRanges
+                                           bodySource:bodySource
+                         receivedQuotedAttachmentInfo:nil
+                                          isGiftBadge:isGiftBadge];
+}
+
 + (nullable TSAttachment *)quotedAttachmentFromOriginalMessage:(TSMessage *)quotedMessage
                                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -284,6 +316,14 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     } else {
         return nil;
     }
+}
+
+- (nullable NSNumber *)getTimestampValue
+{
+    if (_timestamp == 0) {
+        return nil;
+    }
+    return [[NSNumber alloc] initWithUnsignedLongLong:_timestamp];
 }
 
 #pragma mark - Private
@@ -413,7 +453,16 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     // The GiftBadge type has no content/attachments, so don't read those
     // fields if the type is GiftBadge.
     if (proto.hasType && (proto.unwrappedType == SSKProtoDataMessageQuoteTypeGiftBadge)) {
-        return [[TSQuotedMessage alloc] initWithTimestamp:proto.id
+        if (proto.id == 0) {
+            OWSFailDebug(@"quoted message missing id");
+            return nil;
+        }
+        uint64_t timestamp = [proto id];
+        if (![SDS fitsInInt64:timestamp]) {
+            OWSFailDebug(@"Invalid timestamp");
+            return nil;
+        }
+        return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                             authorAddress:quoteAuthorAddress
                                                      body:nil
                                                bodyRanges:nil
