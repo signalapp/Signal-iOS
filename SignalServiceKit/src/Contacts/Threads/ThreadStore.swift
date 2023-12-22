@@ -48,6 +48,13 @@ public protocol ThreadStore {
         updateStorageService: Bool,
         tx: DBWriteTransaction
     )
+
+    func update(
+        thread: TSThread,
+        withMentionNotificationMode: TSThreadMentionNotificationMode,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    )
 }
 
 extension ThreadStore {
@@ -189,6 +196,19 @@ public class ThreadStoreImpl: ThreadStore {
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
+
+    public func update(
+        thread: TSThread,
+        withMentionNotificationMode mode: TSThreadMentionNotificationMode,
+        wasLocallyInitiated: Bool,
+        tx: DBWriteTransaction
+    ) {
+        thread.updateWithMentionNotificationMode(
+            mode,
+            wasLocallyInitiated: wasLocallyInitiated,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
 }
 
 #if TESTABLE_BUILD
@@ -308,6 +328,15 @@ public class MockThreadStore: ThreadStore {
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
+        tx: DBWriteTransaction
+    ) {
+        // Unimplemented
+    }
+
+    public func update(
+        thread: TSThread,
+        withMentionNotificationMode mode: TSThreadMentionNotificationMode,
+        wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
         // Unimplemented

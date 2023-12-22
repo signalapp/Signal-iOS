@@ -233,6 +233,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let expirationTimerSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: tx)
 
+        let dontNotifyForMentionsIfMuted: Bool
+        switch thread.mentionNotificationMode {
+        case .default, .always:
+            dontNotifyForMentionsIfMuted = false
+        case .never:
+            dontNotifyForMentionsIfMuted = true
+        }
+
         let chatBuilder = BackupProtoChat.builder(
             id: chatId.value,
             recipientID: recipientId.value,
@@ -241,8 +249,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             expirationTimerMs: UInt64(expirationTimerSeconds * 1000),
             muteUntilMs: threadAssociatedData.mutedUntilTimestamp,
             markedUnread: threadAssociatedData.isMarkedUnread,
-            // TODO: this is commented out on storageService? ignoring for now.
-            dontNotifyForMentionsIfMuted: false
+            dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted
         )
 
         let error = Self.writeFrameToStream(stream) { frameBuilder in
@@ -302,10 +309,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         var isMarkedUnread: Bool?
         var mutedUntilTimestamp: UInt64?
 
-        // TODO: should probably unarchive if set to false?
         if chat.archived {
-            associatedDataNeedsUpdate = true
+            // Unarchived is the default, no need to set it if archived = false.
             isArchived = true
+            associatedDataNeedsUpdate = true
         }
         if chat.markedUnread {
             associatedDataNeedsUpdate = true
@@ -341,6 +348,17 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             dmConfigurationStore.set(
                 token: .init(isEnabled: true, durationSeconds: UInt32(chat.expirationTimerMs / 1000)),
                 for: .thread(thread.thread),
+                tx: tx
+            )
+        }
+
+        if chat.dontNotifyForMentionsIfMuted {
+            // We only need to set if its not the default.
+            threadStore.update(
+                thread: thread.thread,
+                withMentionNotificationMode: .never,
+                // Don't trigger a storage service update.
+                wasLocallyInitiated: false,
                 tx: tx
             )
         }
