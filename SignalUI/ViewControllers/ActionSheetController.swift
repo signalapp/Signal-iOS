@@ -7,6 +7,10 @@ import BonMot
 import SafariServices
 import SignalServiceKit
 
+public protocol SheetDismissalDelegate: AnyObject {
+    func didDismissPresentedSheet()
+}
+
 @objc
 open class ActionSheetController: OWSViewController {
     private enum Message {
@@ -18,6 +22,8 @@ open class ActionSheetController: OWSViewController {
     private let stackView = UIStackView()
     private let scrollView = UIScrollView()
     private var hasCompletedFirstLayout = false
+
+    public weak var dismissalDelegate: (any SheetDismissalDelegate)?
 
     private(set) public var actions = [ActionSheetAction]() {
         didSet {
@@ -235,6 +241,11 @@ open class ActionSheetController: OWSViewController {
 
         let bottomInset = scrollView.adjustedContentInset.bottom
         scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height + bottomInset)
+    }
+
+    open override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        dismissalDelegate?.didDismissPresentedSheet()
     }
 
     @objc

@@ -257,7 +257,10 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 ShareActivityUtil.present(
                     activityItems: [qrCodeToShare],
                     from: self,
-                    sourceView: actionButton
+                    sourceView: actionButton,
+                    completion: { [weak self] in
+                        self?.setMaxBrightness()
+                    }
                 )
             }
         )
@@ -343,8 +346,10 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
                 switch self.usernameLinkState {
                 case let .available(usernameLink, _):
+                    let shareSheet = UsernameLinkShareSheetViewController(usernameLink: usernameLink)
+                    shareSheet.dismissalDelegate = self
                     self.present(
-                        UsernameLinkShareSheetViewController(usernameLink: usernameLink),
+                        shareSheet,
                         animated: true
                     )
                 case .resetting, .corrupted:
@@ -424,6 +429,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             title: CommonStrings.cancelButton,
             style: .cancel
         ))
+
+        actionSheet.dismissalDelegate = self
 
         OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
@@ -523,6 +530,44 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setMaxBrightness()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        restoreBrightness()
+    }
+
+    private var oldBrightness: CGFloat?
+
+    /// Sets the screen brightness to 100% to make the QR code easier to scan.
+    /// Saves the old brightness in `oldBrightness` to be restored later.
+    /// Called automatically in `present(_:animated:)`.
+    private func setMaxBrightness() {
+        // Only allow this to be called once at a time so it doesn't save a
+        // previously-forced max brightness.
+        guard oldBrightness == nil else { return }
+        oldBrightness = WindowManager.shared.rootWindow.screen.brightness
+        WindowManager.shared.rootWindow.screen.brightness = 1.0
+    }
+
+    /// Restores the brightness to the value saved in `oldBrightness` by
+    /// `setMaxBrightness()` if the brightness is at 100%. Call this any time
+    /// a sheet is dismissed by setting the `SheetDismissalDelegate` of the
+    /// sheet to this view controller and calling `didDismissPresentedSheet()`
+    /// in its `viewDidDisappear(_:)`.
+    private func restoreBrightness() {
+        guard let oldBrightness else { return }
+        let screen = WindowManager.shared.rootWindow.screen
+        // If the brightness was adjusted manually below 100%, just keep that.
+        if screen.brightness >= 1.0 {
+            screen.brightness = oldBrightness
+        }
+        self.oldBrightness = nil
+    }
+
     private func reloadTableContents() {
         self.tableView.reloadData()
     }
@@ -565,9 +610,21 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
             OWSActionSheets.showActionSheet(
                 message: CommonStrings.somethingWentWrongTryAgainLaterError,
-                fromViewController: self
+                fromViewController: self,
+                dismissalDelegate: self
             )
         }
+    }
+
+    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+        restoreBrightness()
+    }
+}
+
+extension UsernameLinkPresentQRCodeViewController: SheetDismissalDelegate {
+    func didDismissPresentedSheet() {
+        setMaxBrightness()
     }
 }
 

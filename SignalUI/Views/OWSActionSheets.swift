@@ -22,10 +22,12 @@ public enum OWSActionSheets {
         message: String? = nil,
         buttonTitle: String? = nil,
         buttonAction: ActionSheetAction.Handler? = nil,
-        fromViewController: UIViewController? = nil
+        fromViewController: UIViewController? = nil,
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
+        actionSheet.dismissalDelegate = dismissalDelegate
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 

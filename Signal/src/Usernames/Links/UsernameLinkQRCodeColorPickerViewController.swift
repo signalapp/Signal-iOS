@@ -7,7 +7,7 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
-protocol UsernameLinkQRCodeColorPickerDelegate: AnyObject {
+protocol UsernameLinkQRCodeColorPickerDelegate: SheetDismissalDelegate {
     func didFinalizeSelectedColor(color: Usernames.QRCodeColor)
 }
 
@@ -164,6 +164,11 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         )
 
         buildTableContents()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        colorPickerDelegate?.didDismissPresentedSheet()
     }
 
     private func buildTableContents() {
