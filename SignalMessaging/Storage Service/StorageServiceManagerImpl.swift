@@ -586,6 +586,7 @@ class StorageServiceOperation: OWSOperation {
             localId: StateUpdater.IdType,
             changeState: State.ChangeState,
             stateUpdater: StateUpdater,
+            needsInterceptForMigration: Bool,
             transaction: SDSAnyReadTransaction
         ) {
             let recordUpdater = stateUpdater.recordUpdater
@@ -624,8 +625,15 @@ class StorageServiceOperation: OWSOperation {
             stateUpdater.setRecordWithUnknownFields(nil, for: localId, in: &state)
 
             // We've deleted the old record. If we don't have a `newRecord`, stop.
-            guard let newRecord else {
+            guard var newRecord else {
                 return
+            }
+
+            if needsInterceptForMigration {
+                newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
+                    record: newRecord,
+                    tx: transaction
+                )
             }
 
             if recordUpdater.unknownFields(for: newRecord) != nil {
@@ -640,6 +648,7 @@ class StorageServiceOperation: OWSOperation {
         func updateRecords<StateUpdater: StorageServiceStateUpdater>(
             state: inout State,
             stateUpdater: StateUpdater,
+            needsInterceptForMigration: Bool,
             transaction: SDSAnyReadTransaction
         ) {
             stateUpdater.resetAndEnumerateChangeStates(in: &state) { mutableState, localId, changeState in
@@ -648,6 +657,7 @@ class StorageServiceOperation: OWSOperation {
                     localId: localId,
                     changeState: changeState,
                     stateUpdater: stateUpdater,
+                    needsInterceptForMigration: needsInterceptForMigration,
                     transaction: transaction
                 )
             }
@@ -658,11 +668,39 @@ class StorageServiceOperation: OWSOperation {
 
             normalizePendingMutations(in: &state, transaction: transaction)
 
-            updateRecords(state: &state, stateUpdater: buildAccountUpdater(), transaction: transaction)
-            updateRecords(state: &state, stateUpdater: buildContactUpdater(), transaction: transaction)
-            updateRecords(state: &state, stateUpdater: buildGroupV1Updater(), transaction: transaction)
-            updateRecords(state: &state, stateUpdater: buildGroupV2Updater(), transaction: transaction)
-            updateRecords(state: &state, stateUpdater: buildStoryDistributionListUpdater(), transaction: transaction)
+            let needsInterceptForMigration =
+                StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
+
+            updateRecords(
+                state: &state,
+                stateUpdater: buildAccountUpdater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildContactUpdater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildGroupV1Updater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildGroupV2Updater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildStoryDistributionListUpdater(),
+                needsInterceptForMigration: needsInterceptForMigration,
+                transaction: transaction
+            )
 
             return state
         }
@@ -711,6 +749,7 @@ class StorageServiceOperation: OWSOperation {
                 // Successfully updated, store our changes.
                 self.databaseStorage.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
+                    StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
                 }
 
                 // Notify our other devices that the storage manifest has changed.
@@ -814,6 +853,9 @@ class StorageServiceOperation: OWSOperation {
         state.manifestVersion = version
 
         databaseStorage.read { transaction in
+            let shouldInterceptForMigration =
+                StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
+
             func createRecord<StateUpdater: StorageServiceStateUpdater>(
                 localId: StateUpdater.IdType,
                 stateUpdater: StateUpdater
@@ -825,9 +867,16 @@ class StorageServiceOperation: OWSOperation {
                     unknownFields: nil,
                     transaction: transaction
                 )
-                guard let newRecord else {
+                guard var newRecord else {
                     return
                 }
+                if shouldInterceptForMigration {
+                    newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
+                        record: newRecord,
+                        tx: transaction
+                    )
+                }
+
                 let storageItem = recordUpdater.buildStorageItem(for: newRecord)
                 stateUpdater.setStorageIdentifier(storageItem.identifier, for: localId, in: &state)
                 allItems.append(storageItem)
@@ -904,6 +953,7 @@ class StorageServiceOperation: OWSOperation {
                 // Successfully updated, store our changes.
                 self.databaseStorage.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
+                    StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
                 }
 
                 return self.reportSuccess()
@@ -1317,17 +1367,43 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private func cleanUpRecordsWithUnknownFields(in state: inout State) {
-        guard state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion4 else {
+        var shouldCleanUpRecordsWithUnknownFields =
+            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion4
+        #if DEBUG
+        // Debug builds don't have proper version numbers but we do want to run
+        // these migrations on them.
+        if !shouldCleanUpRecordsWithUnknownFields {
+            if databaseStorage.read(block: { StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: $0) }) {
+                shouldCleanUpRecordsWithUnknownFields = true
+            }
+        }
+        #endif
+        guard shouldCleanUpRecordsWithUnknownFields else {
             return
         }
         state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion4
+
+        func fetchRecordsWithUnknownFields(
+            stateUpdater: some StorageServiceStateUpdater,
+            tx: SDSAnyWriteTransaction
+        ) -> [any MigrateableStorageServiceRecordType] {
+            return stateUpdater.recordsWithUnknownFields(in: state)
+                .lazy
+                .map(\.1)
+                .compactMap {
+                    $0 as? (any MigrateableStorageServiceRecordType)
+                }
+        }
 
         // For any cached records with unknown fields, optimistically try to merge
         // with our local data to see if we now understand those fields. Note: It's
         // possible and expected that we might understand some of the fields that
         // were previously unknown but not all of them. Even if we can't fully
         // merge any values, we might partially merge all the values.
-        func mergeRecordsWithUnknownFields(stateUpdater: some StorageServiceStateUpdater, tx: SDSAnyWriteTransaction) {
+        func mergeRecordsWithUnknownFields(
+            stateUpdater: some StorageServiceStateUpdater,
+            tx: SDSAnyWriteTransaction
+        ) {
             let recordsWithUnknownFields = stateUpdater.recordsWithUnknownFields(in: state)
             if recordsWithUnknownFields.isEmpty {
                 return
@@ -1354,10 +1430,40 @@ class StorageServiceOperation: OWSOperation {
         }
 
         databaseStorage.write { tx in
-            mergeRecordsWithUnknownFields(stateUpdater: buildAccountUpdater(), tx: tx)
-            mergeRecordsWithUnknownFields(stateUpdater: buildContactUpdater(), tx: tx)
-            mergeRecordsWithUnknownFields(stateUpdater: buildGroupV2Updater(), tx: tx)
-            mergeRecordsWithUnknownFields(stateUpdater: buildStoryDistributionListUpdater(), tx: tx)
+            let stateUpdaters: [any StorageServiceStateUpdater] = [
+                buildAccountUpdater(),
+                buildContactUpdater(),
+                buildGroupV2Updater(),
+                buildStoryDistributionListUpdater()
+            ]
+
+            if StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: tx) {
+                // First accumulate records to run one-time migrations on.
+                var records: [any MigrateableStorageServiceRecordType] = []
+
+                for stateUpdater in stateUpdaters {
+                    records.append(
+                        contentsOf: fetchRecordsWithUnknownFields(
+                            stateUpdater: stateUpdater,
+                            tx: tx
+                        )
+                    )
+                }
+
+                // Note: we run even if there are no records with "unknown fields".
+                // This is because fields with default values (e.g. a bool with false set)
+                // don't show up in the serialized proto at all. Therefore, if there is an
+                // unknown field sent to us with a default value, we won't even know its
+                // there and it won't show up in "records with unknown fields".
+                // But we should still run migrations, which should assume the default
+                // value was set for any records not passed in.
+                StorageServiceUnknownFieldMigrator.runMigrationsForRecordsWithUnknownFields(
+                    records: records,
+                    tx: tx
+                )
+            }
+
+            stateUpdaters.forEach { mergeRecordsWithUnknownFields(stateUpdater: $0, tx: tx) }
             Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
             state.save(transaction: tx)
         }
@@ -1406,6 +1512,15 @@ class StorageServiceOperation: OWSOperation {
         stateUpdater: StateUpdater,
         transaction: SDSAnyWriteTransaction
     ) {
+        var record = record
+        // First apply any migrations
+        if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
+            record = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
+                record: record,
+                tx: transaction
+            )
+        }
+
         let mergeResult = stateUpdater.recordUpdater.mergeRecord(
             record,
             transaction: transaction

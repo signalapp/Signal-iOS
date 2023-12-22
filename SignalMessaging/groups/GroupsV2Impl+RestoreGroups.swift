@@ -192,7 +192,15 @@ public extension GroupsV2Impl {
                 let markAsComplete = {
                     databaseStorage.write { transaction in
                         // Now that the thread exists, re-apply the pending group record from storage service.
-                        if let groupRecord {
+                        if var groupRecord {
+                            // First apply any migrations
+                            if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
+                                groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
+                                    record: groupRecord,
+                                    tx: transaction
+                                )
+                            }
+
                             let recordUpdater = StorageServiceGroupV2RecordUpdater(
                                 authedAccount: account,
                                 blockingManager: blockingManager,
