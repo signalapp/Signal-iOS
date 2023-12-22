@@ -524,7 +524,8 @@ struct StorageServiceProtos_GroupV2Record {
 
   var mutedUntilTimestamp: UInt64 = 0
 
-  ///bool          dontNotifyForMentionsIfMuted = 7;
+  var dontNotifyForMentionsIfMuted: Bool = false
+
   var hideStory: Bool = false
 
   var storySendMode: StorageServiceProtos_GroupV2Record.StorySendMode = .default
@@ -1720,6 +1721,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "archived"),
     5: .same(proto: "markedUnread"),
     6: .same(proto: "mutedUntilTimestamp"),
+    7: .same(proto: "dontNotifyForMentionsIfMuted"),
     8: .same(proto: "hideStory"),
     10: .same(proto: "storySendMode"),
   ]
@@ -1736,6 +1738,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self.dontNotifyForMentionsIfMuted) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       case 10: try { try decoder.decodeSingularEnumField(value: &self.storySendMode) }()
       default: break
@@ -1762,6 +1765,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.mutedUntilTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 6)
     }
+    if self.dontNotifyForMentionsIfMuted != false {
+      try visitor.visitSingularBoolField(value: self.dontNotifyForMentionsIfMuted, fieldNumber: 7)
+    }
     if self.hideStory != false {
       try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 8)
     }
@@ -1778,6 +1784,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.archived != rhs.archived {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
+    if lhs.dontNotifyForMentionsIfMuted != rhs.dontNotifyForMentionsIfMuted {return false}
     if lhs.hideStory != rhs.hideStory {return false}
     if lhs.storySendMode != rhs.storySendMode {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

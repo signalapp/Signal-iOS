@@ -1996,6 +1996,13 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return true
     }
 
+    public var dontNotifyForMentionsIfMuted: Bool {
+        return proto.dontNotifyForMentionsIfMuted
+    }
+    public var hasDontNotifyForMentionsIfMuted: Bool {
+        return true
+    }
+
     public var hideStory: Bool {
         return proto.hideStory
     }
@@ -2089,6 +2096,9 @@ extension StorageServiceProtoGroupV2Record {
         if hasMutedUntilTimestamp {
             builder.setMutedUntilTimestamp(mutedUntilTimestamp)
         }
+        if hasDontNotifyForMentionsIfMuted {
+            builder.setDontNotifyForMentionsIfMuted(dontNotifyForMentionsIfMuted)
+        }
         if hasHideStory {
             builder.setHideStory(hideStory)
         }
@@ -2141,6 +2151,10 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
 
     public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
         proto.mutedUntilTimestamp = valueParam
+    }
+
+    public mutating func setDontNotifyForMentionsIfMuted(_ valueParam: Bool) {
+        proto.dontNotifyForMentionsIfMuted = valueParam
     }
 
     public mutating func setHideStory(_ valueParam: Bool) {

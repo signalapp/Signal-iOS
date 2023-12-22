@@ -162,8 +162,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 #pragma mark - Update With... Methods
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                      wasLocallyInitiated:(bool)wasLocallyInitiated
                               transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithMentionNotificationMode(_:transaction:));
+    NS_SWIFT_NAME(updateWithMentionNotificationMode(_:wasLocallyInitiated:transaction:));
 
 - (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                             transaction:(SDSAnyWriteTransaction *)transaction

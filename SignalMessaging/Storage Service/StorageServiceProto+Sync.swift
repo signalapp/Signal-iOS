@@ -840,6 +840,16 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
 
+        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        switch groupThread?.mentionNotificationMode {
+        case .none, .default:
+            break
+        case .never:
+            builder.setDontNotifyForMentionsIfMuted(true)
+        case .always:
+            builder.setDontNotifyForMentionsIfMuted(false)
+        }
+
         if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId), transaction: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
@@ -897,6 +907,21 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
                 }
             } else {
                 needsUpdate = true
+            }
+
+            // If the group thread doesn't exist, we will create it and reapply this update so the
+            // setting won't be lost. Note this isn't true for contact threads, only group threads,
+            // so TSContactThread metadata needs to live on ThreadAssociatedData so it can be saved
+            // even if the thread doesn't exist. But this field only applies to group threads, so
+            // no need.
+            switch (localThread.mentionNotificationMode, record.dontNotifyForMentionsIfMuted) {
+            case (.default, false), (.never, false):
+                localThread.updateWithMentionNotificationMode(.always, wasLocallyInitiated: false, transaction: transaction)
+            case (.default, true), (.always, true):
+                localThread.updateWithMentionNotificationMode(.never, wasLocallyInitiated: false, transaction: transaction)
+            case (.never, true), (.always, false):
+                // No change
+                break
             }
         } else {
             groupsV2.restoreGroupFromStorageServiceIfNecessary(groupRecord: record, account: authedAccount, transaction: transaction)

@@ -130,7 +130,7 @@ message GroupV2Record {
   bool          archived                     = 4;
   bool          markedUnread                 = 5;
   uint64        mutedUntilTimestamp          = 6;
-//bool          dontNotifyForMentionsIfMuted = 7;
+  bool          dontNotifyForMentionsIfMuted = 7;
   bool          hideStory                    = 8;
   StorySendMode storySendMode                = 10;
 }

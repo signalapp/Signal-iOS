@@ -578,12 +578,17 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 }
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                      wasLocallyInitiated:(bool)wasLocallyInitiated
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.mentionNotificationMode = mentionNotificationMode;
                              }];
+    if (wasLocallyInitiated && self.isGroupV2Thread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self;
+        [self.storageServiceManagerObjc recordPendingUpdatesWithGroupModel:groupThread.groupModel];
+    }
 }
 
 - (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible transaction:(SDSAnyWriteTransaction *)transaction

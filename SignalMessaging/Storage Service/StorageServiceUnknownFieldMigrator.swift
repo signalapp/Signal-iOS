@@ -99,6 +99,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     fileprivate enum MigrationId: UInt, CaseIterable {
         case noOpExample = 0
+        case dontNotifyForMentionsIfMuted = 1
 
         // MARK: - Migration Insertion Point
         // Never, ever, ever insert another migration before an existing one.
@@ -157,6 +158,61 @@ public class StorageServiceUnknownFieldMigrator {
                 // Nothing to intercept for writes in this case
                  */
                 return
+            }
+        )
+
+        migrator.registerMigration(
+            .dontNotifyForMentionsIfMuted,
+            record: StorageServiceProtoGroupV2Record.self,
+            mergeUnknownFields: { records, isPrimaryDevice, tx in
+                // groupId -> dontNotifyForMentionsIfMuted
+                var recordMap = [Data: Bool]()
+                records.forEach {
+                    if let groupId = (try? NSObject.groupsV2.groupV2ContextInfo(forMasterKeyData: $0.masterKey))?.groupId {
+                        recordMap[groupId] = $0.dontNotifyForMentionsIfMuted
+                    }
+                }
+                try? ThreadFinder().enumerateGroupThreads(transaction: tx) { groupThread, _ in
+                    let remoteValue: TSThreadMentionNotificationMode =
+                        (recordMap[groupThread.groupId] ?? false) ? .never : .always
+                    if isPrimaryDevice {
+                        // On primaries, only set if previously unset.
+                        if groupThread.mentionNotificationMode == .default {
+                            groupThread.updateWithMentionNotificationMode(remoteValue, wasLocallyInitiated: false, transaction: tx)
+                        } else {
+                            // Schedule an update so we put up our local state onto storageService.
+                            NSObject.storageServiceManager.recordPendingUpdates(groupModel: groupThread.groupModel)
+                        }
+                    } else {
+                        // On secondaries, take the value from storage service.
+                        groupThread.updateWithMentionNotificationMode(remoteValue, wasLocallyInitiated: false, transaction: tx)
+                    }
+                }
+            },
+            interceptRemoteManifest: { record, recordBuilder, isPrimaryDevice, tx in
+                // when we read a remote group on the primary, override with our local
+                // value so we dont overwrite the local value with the remote's value
+                // until we've had the chance to write ourselves.
+                if isPrimaryDevice {
+                    guard
+                        let groupId = (try? NSObject.groupsV2.groupV2ContextInfo(forMasterKeyData: record.masterKey))?.groupId,
+                        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
+                    else {
+                        return
+                    }
+                    switch groupThread.mentionNotificationMode {
+                    case .default:
+                        // Don't overwrite.
+                        break
+                    case .always:
+                        recordBuilder.setDontNotifyForMentionsIfMuted(false)
+                    case .never:
+                        recordBuilder.setDontNotifyForMentionsIfMuted(true)
+                    }
+                }
+            },
+            interceptLocalManifest: { record, recordBuilder, isPrimaryDevice, tx in
+                // Nothing to do
             }
         )
 
