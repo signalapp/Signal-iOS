@@ -215,7 +215,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
-        let cellSize = collectionViewFlowLayout.itemSize
+        let cellSize: CGSize
+        if hasEverAppeared {
+            cellSize = collectionViewFlowLayout.itemSize
+        } else {
+            cellSize = getLayout().itemSize
+        }
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
 
         reloadData()
@@ -334,7 +339,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         return layout
     }
 
-    private func updateLayout() {
+    private typealias CellLayout = (itemSize: CGSize, remainingSpace: CGFloat)
+
+    private func getLayout() -> CellLayout {
         let containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
 
         let minItemWidth: CGFloat = 100
@@ -344,9 +351,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let availableWidth = max(0, containerWidth - interSpaceWidth)
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
-        let newItemSize = CGSize(square: itemWidth)
+        let itemSize = CGSize(square: itemWidth)
         let remainingSpace = availableWidth - (itemCount * itemWidth)
 
+        return (itemSize, remainingSpace)
+    }
+
+    private func updateLayout() {
+        let (newItemSize, remainingSpace) = getLayout()
         if newItemSize != collectionViewFlowLayout.itemSize {
             collectionViewFlowLayout.itemSize = newItemSize
             // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
