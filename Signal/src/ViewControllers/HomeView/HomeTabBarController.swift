@@ -11,7 +11,8 @@ import SignalUI
 class HomeTabBarController: UITabBarController {
     enum Tabs: Int {
         case chatList = 0
-        case stories = 1
+        case calls = 1
+        case stories = 2
     }
 
     lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
@@ -29,6 +30,14 @@ class HomeTabBarController: UITabBarController {
         title: OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view."),
         image: UIImage(named: "tab-stories"),
         selectedImage: UIImage(named: "tab-stories")
+    )
+
+    lazy var callsListViewController = CallsListViewController()
+    lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
+    lazy var callsListTabBarItem = UITabBarItem(
+        title: OWSLocalizedString("CALLS_LIST_TITLE", comment: "Title for the calls list view."),
+        image: UIImage(systemName: "phone.fill"),
+        selectedImage: UIImage(systemName: "phone.fill")
     )
 
     var selectedTab: Tabs {
@@ -55,19 +64,25 @@ class HomeTabBarController: UITabBarController {
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)
         applyTheme()
 
-        viewControllers = [chatListNavController, storiesNavController]
+        // We read directly from the database here, as the cache may not have been warmed by the time
+        // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
+        // small window where the tab bar is in the wrong state at app launch.
+        let areStoriesEnabled = databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
+
+        self.viewControllers = tabsToShow(
+            areStoriesEnabled: areStoriesEnabled,
+            shouldShowCallsTab: FeatureFlags.shouldShowCallsTab
+        )
 
         chatListNavController.tabBarItem = chatListTabBarItem
         storiesNavController.tabBarItem = storiesTabBarItem
+        callsListNavController.tabBarItem = callsListTabBarItem
 
         AppEnvironment.shared.badgeManager.addObserver(self)
         storyBadgeCountManager.beginObserving(observer: self)
 
-        // We read directly from the database here, as the cache may not have been warmed by the time
-        // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
-        // small window where the tab bar is in the wrong state at app launch.
-        let shouldHideTabBar = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
-        setTabBarHidden(shouldHideTabBar, animated: false)
+        let shouldShowTabBar = areStoriesEnabled || FeatureFlags.shouldShowCallsTab
+        setTabBarHidden(!shouldShowTabBar, animated: false)
     }
 
     @objc
@@ -82,9 +97,24 @@ class HomeTabBarController: UITabBarController {
         tabBar.tintColor = Theme.primaryTextColor
     }
 
+    private func tabsToShow(areStoriesEnabled: Bool, shouldShowCallsTab: Bool) -> [UIViewController] {
+        var tabs = [chatListNavController]
+        if shouldShowCallsTab {
+            tabs.append(callsListNavController)
+        }
+        if areStoriesEnabled {
+            tabs.append(storiesNavController)
+        }
+        return tabs
+    }
+
     @objc
     private func storiesEnabledStateDidChange() {
-        if StoryManager.areStoriesEnabled {
+        if isTabBarEnabled {
+            viewControllers = tabsToShow(
+                areStoriesEnabled: StoryManager.areStoriesEnabled,
+                shouldShowCallsTab: FeatureFlags.shouldShowCallsTab
+            )
             setTabBarHidden(false, animated: false)
         } else {
             if selectedTab == .stories {
@@ -98,6 +128,11 @@ class HomeTabBarController: UITabBarController {
     // MARK: - Hiding the tab bar
 
     private var isTabBarHidden: Bool = false
+
+    // [CallsTab] TODO: Remove once calls tab is enabled globally
+    var isTabBarEnabled: Bool {
+        StoryManager.areStoriesEnabled || FeatureFlags.shouldShowCallsTab
+    }
 
     /// Hides or displays the tab bar, resizing `selectedViewController` to fill the space remaining.
     public func setTabBarHidden(
@@ -205,6 +240,8 @@ extension HomeTabBarController: UITabBarControllerDelegate {
                 tableView = chatListViewController.tableView
             case .stories:
                 tableView = storiesViewController.tableView
+            case .calls:
+                tableView = callsListViewController.tableView
             }
 
             tableView.setContentOffset(CGPoint(x: 0, y: -tableView.safeAreaInsets.top), animated: true)

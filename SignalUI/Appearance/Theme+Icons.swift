@@ -76,6 +76,7 @@ public enum ThemeIcon: UInt {
     case buttonMicrophone
     case buttonVoiceCall
     case buttonVideoCall
+    case buttonNewCall
     case buttonMessage
     case buttonPhotoLibrary
     case buttonCompose
@@ -108,6 +109,8 @@ public enum ThemeIcon: UInt {
     case contextMenuPrivacy
     case contextMenuXCircle
     case contextMenuOpenInChat
+    case contextMenuVoiceCall
+    case contextMenuVideoCall
 
     case composeNewGroupLarge
     case composeFindByPhoneNumberLarge
@@ -126,7 +129,9 @@ public enum ThemeIcon: UInt {
     case memberRemove16
     case photo16
     case phone16
+    case phoneFill16
     case video16
+    case videoFill16
     case profile16
     case safetyNumber16
     case timerDisabled16
@@ -319,6 +324,8 @@ public extension Theme {
             return "phone"
         case .buttonVideoCall:
             return "video"
+        case .buttonNewCall:
+            return "phone-plus"
         case .buttonMessage:
             return "chat"
         case .buttonPhotoLibrary:
@@ -383,6 +390,10 @@ public extension Theme {
             return "x-circle-light"
         case .contextMenuOpenInChat:
             return "arrow-square-upright-light"
+        case .contextMenuVoiceCall:
+            return "phone-light"
+        case .contextMenuVideoCall:
+            return "video-light"
 
             // Empty chat list
         case .composeNewGroupLarge:
@@ -419,8 +430,12 @@ public extension Theme {
             return "photo-compact"
         case .phone16:
             return "phone-compact"
+        case .phoneFill16:
+            return "phone-fill-compact"
         case .video16:
             return "video-compact"
+        case .videoFill16:
+            return "video-fill-compact"
         case .profile16:
             return "person-compact"
         case .safetyNumber16:

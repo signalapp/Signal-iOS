@@ -108,17 +108,6 @@ extension ComposeViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
-        owsFailDebug("This method should not called.")
-        return AnyPromise(Promise.value(()))
-    }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        didDeselectRecipient recipient: PickedRecipient
-    ) {}
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
@@ -132,12 +121,6 @@ extension ComposeViewController: RecipientPickerDelegate {
             return MessageStrings.conversationIsBlocked
         }
     }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
@@ -157,11 +140,7 @@ extension ComposeViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
-
     func recipientPickerNewGroupButtonWasPressed() {
         showNewGroupUI()
     }
-
-    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }

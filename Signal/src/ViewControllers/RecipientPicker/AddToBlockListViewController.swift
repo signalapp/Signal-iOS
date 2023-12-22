@@ -84,12 +84,6 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
-        owsFailDebug("This method should not called.")
-        return AnyPromise(Promise.value(()))
-    }
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
@@ -107,22 +101,4 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
             return MessageStrings.conversationIsBlocked
         }
     }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> ContactCellAccessoryView? { nil }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> NSAttributedString? { nil }
-
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
-
-    func recipientPickerNewGroupButtonWasPressed() {}
-
-    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }

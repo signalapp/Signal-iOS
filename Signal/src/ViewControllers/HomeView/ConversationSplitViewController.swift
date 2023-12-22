@@ -611,18 +611,6 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     }
 }
 
-extension ChatListViewController {
-    var conversationSplitViewController: ConversationSplitViewController? {
-        return splitViewController as? ConversationSplitViewController
-    }
-}
-
-extension StoriesViewController {
-    var conversationSplitViewController: ConversationSplitViewController? {
-        return splitViewController as? ConversationSplitViewController
-    }
-}
-
 extension ConversationViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController

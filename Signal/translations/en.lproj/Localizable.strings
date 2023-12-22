@@ -814,6 +814,9 @@
 /* The generic name used for group calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
+/* Title for the calls list view. */
+"CALLS_LIST_TITLE" = "Calls";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Take a picture and then send it";
 

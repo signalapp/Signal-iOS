@@ -374,12 +374,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> String? { nil }
-
-    public func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
     ) -> ContactCellAccessoryView? {
@@ -432,10 +426,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
         return NSAttributedString(string: bioForDisplay)
     }
-
-    public func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
-
-    public func recipientPickerNewGroupButtonWasPressed() {}
 
     public func recipientPickerCustomHeaderViews() -> [UIView] {
         return [memberBar, memberCountWrapper]

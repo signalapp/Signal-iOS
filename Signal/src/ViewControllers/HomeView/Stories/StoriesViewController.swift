@@ -10,7 +10,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
+class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, HomeTabViewController {
     let tableView = UITableView()
 
     let searchBarBackdropView = UIView()
@@ -284,39 +284,27 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     private func profileDidChange() { updateNavigationBar() }
 
     private func updateNavigationBar() {
-        let contextButton = ContextMenuButton()
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.contextMenu = .init([
-            .init(
-                title: OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
-                image: Theme.iconImage(.contextMenuPrivacy),
-                handler: { [weak self] _ in
-                    self?.showPrivacySettings()
-                }
-            ),
-            .init(
-                title: CommonStrings.openSettingsButton,
-                image: Theme.iconImage(.contextMenuSettings),
-                handler: { [weak self] _ in
-                    self?.showAppSettings()
-                }
-            )
-        ])
-
-        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
-        databaseStorage.read { transaction in
-            avatarView.update(transaction) { config in
-                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
-                    config.dataSource = .address(address)
-                    config.applyConfigurationSynchronously()
-                }
+        navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
+            databaseStorage: databaseStorage,
+            actions: { settingsAction in
+                [
+                    .init(
+                        title: OWSLocalizedString(
+                            "STORY_PRIVACY_TITLE",
+                            comment: "Title for the story privacy settings view"
+                        ),
+                        image: Theme.iconImage(.contextMenuPrivacy),
+                        handler: { [weak self] _ in
+                            self?.showPrivacySettings()
+                        }
+                    ),
+                    settingsAction,
+                ]
+            },
+            showAppSettings: { [weak self] in
+                self?.showAppSettings()
             }
-        }
-
-        contextButton.addSubview(avatarView)
-        avatarView.autoPinEdgesToSuperviewEdges()
-
-        navigationItem.leftBarButtonItem = .init(customView: contextButton)
+        )
 
         let cameraButton = UIBarButtonItem(image: Theme.iconImage(.buttonCamera), style: .plain, target: self, action: #selector(showCameraView))
         cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")

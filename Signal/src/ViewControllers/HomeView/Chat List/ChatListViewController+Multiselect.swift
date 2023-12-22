@@ -89,8 +89,8 @@ extension ChatListViewController {
             }
             if
                 self.chatListMode == .inbox,
-                StoryManager.areStoriesEnabled,
-                let tabController = self.tabBarController as? HomeTabBarController
+                let tabController = self.tabBarController as? HomeTabBarController,
+                tabController.isTabBarEnabled
             {
                 tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
                     animateToolbar()
@@ -199,7 +199,11 @@ extension ChatListViewController {
             } completion: { [weak self] (_) in
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
-                if self?.chatListMode == .inbox, StoryManager.areStoriesEnabled, let tabController = self?.tabBarController as? HomeTabBarController {
+                if
+                    self?.chatListMode == .inbox,
+                    let tabController = self?.tabBarController as? HomeTabBarController,
+                    tabController.isTabBarEnabled
+                {
                     tabController.setTabBarHidden(false, animated: true, duration: 0.1)
                 }
             }

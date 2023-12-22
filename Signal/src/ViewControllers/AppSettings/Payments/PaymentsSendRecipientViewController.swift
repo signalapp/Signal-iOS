@@ -86,29 +86,6 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
-        owsFailDebug("This method should not called.")
-        return AnyPromise(Promise.value(()))
-    }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        didDeselectRecipient recipient: PickedRecipient
-    ) {}
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> String? { nil }
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
-    ) -> ContactCellAccessoryView? { nil }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> NSAttributedString? {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
@@ -126,12 +103,6 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
             return nil
         }
     }
-
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
-
-    func recipientPickerNewGroupButtonWasPressed() {}
-
-    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }
 
 // MARK: -

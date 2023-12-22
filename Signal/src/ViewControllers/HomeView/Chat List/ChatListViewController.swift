@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import StoreKit
 
-public class ChatListViewController: OWSViewController {
+public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: Init
 
@@ -110,8 +110,9 @@ public class ChatListViewController: OWSViewController {
 
         isViewVisible = true
 
-        // Ensure the tabBar is always hidden if stories is disabled or we're in the archive.
-        let shouldHideTabBar = !StoryManager.areStoriesEnabled || chatListMode == .archive
+        // Ensure the tabBar is always hidden if it's disabled or we're in the archive.
+        let isTabBarEnabled = (tabBarController as? HomeTabBarController)?.isTabBarEnabled ?? false
+        let shouldHideTabBar = !isTabBarEnabled || chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
             extendedLayoutIncludesOpaqueBars = true
@@ -361,6 +362,57 @@ public class ChatListViewController: OWSViewController {
         return layerView
     }()
 
+    private func settingsBarButtonItem() -> UIBarButtonItem {
+        let barButtonItem = createSettingsBarButtonItem(
+            databaseStorage: databaseStorage,
+            shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
+            actions: { settingsAction in
+                var contextMenuActions: [ContextMenuAction] = []
+
+                if viewState.settingsButtonCreator.hasInboxChats {
+                    contextMenuActions.append(
+                        ContextMenuAction(
+                            title: OWSLocalizedString(
+                                "HOME_VIEW_TITLE_SELECT_CHATS",
+                                comment: "Title for the 'Select Chats' option in the ChatList."
+                            ),
+                            image: Theme.iconImage(.contextMenuSelect),
+                            attributes: [],
+                            handler: { [weak self] (_) in
+                                self?.willEnterMultiselectMode()
+                            }
+                        )
+                    )
+                }
+
+                contextMenuActions.append(settingsAction)
+
+                if viewState.settingsButtonCreator.hasArchivedChats {
+                    contextMenuActions.append(
+                        ContextMenuAction(
+                            title: OWSLocalizedString(
+                                "HOME_VIEW_TITLE_ARCHIVE",
+                                comment: "Title for the conversation list's 'archive' mode."
+                            ),
+                            image: Theme.iconImage(.contextMenuArchive),
+                            attributes: [],
+                            handler: { [weak self] (_) in
+                                self?.showArchivedConversations(offerMultiSelectMode: true)
+                            }
+                        )
+                    )
+                }
+
+                return contextMenuActions
+            }, showAppSettings: { [weak self] in
+                self?.showAppSettings()
+            }
+        )
+        barButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
+        barButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
+        return barButtonItem
+    }
+
     // MARK: Table View
 
     func reloadTableDataAndResetCellContentCache() {
@@ -447,9 +499,7 @@ public class ChatListViewController: OWSViewController {
         guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         // Settings button.
-        navigationItem.leftBarButtonItem = viewState.settingsButtonCreator.buildButtonWithSneakyTransaction(
-            db: DependenciesBridge.shared.db
-        )
+        navigationItem.leftBarButtonItem = settingsBarButtonItem()
     }
 
     private func updateRightBarButtonItems() {
@@ -1139,20 +1189,8 @@ public class ChatListViewController: OWSViewController {
 // MARK: Settings Button
 
 extension ChatListViewController: ChatListSettingsButtonDelegate {
-    func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
+    func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonState) {
         updateLeftBarButtonItem()
-    }
-
-    func didTapMultiSelect(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
-        willEnterMultiselectMode()
-    }
-
-    func didTapAppSettings(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
-        showAppSettings(mode: .none)
-    }
-
-    func didTapArchived(_ settingsButtonCreator: ChatListSettingsButtonCreator) {
-        showArchivedConversations(offerMultiSelectMode: true)
     }
 }
 

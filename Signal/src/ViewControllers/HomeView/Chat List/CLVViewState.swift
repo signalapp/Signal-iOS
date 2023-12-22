@@ -27,7 +27,7 @@ class CLVViewState {
     let searchBar = OWSSearchBar()
     let searchResultsController = ConversationSearchViewController()
     let reminderViews = CLVReminderViews()
-    let settingsButtonCreator = ChatListSettingsButtonCreator()
+    let settingsButtonCreator = ChatListSettingsButtonState()
     let proxyButtonCreator = ChatListProxyButtonCreator(socketManager: DependenciesBridge.shared.socketManager)
 
     // MARK: - State
