@@ -98,11 +98,8 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             return .genericError(OWSAssertionError("Missing PNI in provisioning message!"))
         }
 
-        // Cycle socket and censorship circumvention state as e164 could be changing.
+        // Update censorship circumvention state as e164 could be changing.
         signalService.updateHasCensoredPhoneNumberDuringProvisioning(phoneNumber)
-        await MainActor.run {
-            self.socketManager.cycleSocket()
-        }
 
         let serverAuthToken = generateServerAuthToken()
 

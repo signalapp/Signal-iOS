@@ -315,10 +315,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             // Device changes can affect the UD access mode for a recipient,
             // so we need to fetch the profile for this user to update UD access mode.
             self.profileManager.fetchProfile(for: self.address, authedAccount: .implicit())
-
-            if self.address.isLocalAddress {
-                DependenciesBridge.shared.socketManager.cycleSocket()
-            }
         }
     }
 

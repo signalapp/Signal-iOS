@@ -268,10 +268,6 @@ public class OWSWebSocket: NSObject {
                                                name: .isSignalProxyReadyDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(deviceListUpdateModifiedDeviceList),
-                                               name: OWSDevicesService.deviceListUpdateModifiedDeviceList,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
                                                name: AppExpiryImpl.AppExpiryDidChange,
                                                object: nil)
@@ -620,7 +616,7 @@ public class OWSWebSocket: NSObject {
     }
 
     // This method is thread-safe.
-    public func cycleSocket() {
+    private func cycleSocket() {
         self.currentWebSocket = nil
 
         applyDesiredSocketState()
@@ -944,15 +940,6 @@ public class OWSWebSocket: NSObject {
         AssertIsOnMainThread()
 
         applyDesiredSocketState()
-    }
-
-    @objc
-    private func deviceListUpdateModifiedDeviceList(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        if webSocketType == .identified {
-            cycleSocket()
-        }
     }
 
     @objc

@@ -72,9 +72,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             OWSTableItem(title: "Fetch system contacts", actionBlock: {
                 SSKEnvironment.shared.contactsManagerImpl.requestSystemContactsOnce()
             }),
-            OWSTableItem(title: "Cycle websockets", actionBlock: {
-                DependenciesBridge.shared.socketManager.cycleSocket()
-            }),
             OWSTableItem(title: "Flag database as corrupted", actionBlock: {
                 DebugUIMisc.showFlagDatabaseAsCorruptedUi()
             }),

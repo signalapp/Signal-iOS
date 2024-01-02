@@ -193,11 +193,6 @@ class LinkDeviceViewController: OWSViewController {
             self.delegate?.expectMoreDevices()
             self.popToLinkedDeviceList()
 
-            // The service implementation of the socket connection caches the linked
-            // device state, so all sync message sends will fail on the socket until it
-            // is cycled.
-            DependenciesBridge.shared.socketManager.cycleSocket()
-
             // Fetch the local profile to determine if all linked devices support UD.
             self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
 

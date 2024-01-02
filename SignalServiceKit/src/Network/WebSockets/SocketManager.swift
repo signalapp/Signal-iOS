@@ -10,7 +10,6 @@ public protocol SocketManager {
     var hasEmptiedInitialQueue: Bool { get }
 
     func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState
-    func cycleSocket()
 
     func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool
     func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse>
@@ -159,14 +158,6 @@ public class SocketManagerImpl: SocketManager {
         }
     }
 
-    public func cycleSocket() {
-        AssertIsOnMainThread()
-
-        for websocket in websockets {
-            websocket.cycleSocket()
-        }
-    }
-
     public var isAnySocketOpen: Bool {
         OWSWebSocketType.allCases.contains { socketState(forType: $0) == .open }
     }
@@ -194,10 +185,6 @@ public class SocketManagerMock: SocketManager {
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
         return  socketStatesPerType[webSocketType] ?? .closed
-    }
-
-    public func cycleSocket() {
-        // Do nothing
     }
 
     public var canMakeRequestsPerType = [OWSWebSocketType: Bool]()
