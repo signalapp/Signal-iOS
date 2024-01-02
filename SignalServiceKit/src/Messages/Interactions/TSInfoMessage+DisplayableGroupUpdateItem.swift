@@ -31,9 +31,9 @@ public enum DisplayableGroupUpdateItem {
     case avatarRemovedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case avatarRemovedByUnknownUser
 
-    case descriptionChangedByLocalUser
-    case descriptionChangedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
-    case descriptionChangedByUnknownUser
+    case descriptionChangedByLocalUser(newDescription: String)
+    case descriptionChangedByOtherUser(newDescription: String, updaterName: String, updaterAddress: SignalServiceAddress)
+    case descriptionChangedByUnknownUser(newDescription: String)
 
     case descriptionRemovedByLocalUser
     case descriptionRemovedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
@@ -322,7 +322,7 @@ public enum DisplayableGroupUpdateItem {
                 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER",
                 comment: "Message indicating that the group's description was changed by the local user.."
             ).attributed
-        case let .descriptionChangedByOtherUser(updaterName, updaterAddress):
+        case let .descriptionChangedByOtherUser(_, updaterName, updaterAddress):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT",

@@ -782,13 +782,10 @@ extension ConversationViewController: CVComponentDelegate {
         showGroupLinkPromotionActionSheet()
     }
 
-    public func didTapViewGroupDescription(groupModel: TSGroupModel?) {
+    public func didTapViewGroupDescription(newGroupDescription: String) {
         AssertIsOnMainThread()
 
         func getGroupModel() -> TSGroupModel? {
-            if let groupModel = groupModel {
-                return groupModel
-            }
             if let groupThread = thread as? TSGroupThread {
                 return groupThread.groupModel
             }
@@ -799,7 +796,11 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        let vc = GroupDescriptionViewController(groupModel: groupModel)
+        let vc = GroupDescriptionViewController(
+            groupModel: groupModel,
+            groupDescriptionCurrent: newGroupDescription,
+            options: []
+        )
         let navigationController = OWSNavigationController(rootViewController: vc)
         self.presentFormSheet(navigationController, animated: true)
     }

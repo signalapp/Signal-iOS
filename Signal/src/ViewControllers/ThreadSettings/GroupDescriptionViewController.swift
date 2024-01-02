@@ -12,6 +12,7 @@ protocol GroupDescriptionViewControllerDelegate: AnyObject {
 
 class GroupDescriptionViewController: OWSTableViewController2 {
     private let helper: GroupAttributesEditorHelper
+    private let providedCurrentDescription: Bool
 
     weak var descriptionDelegate: GroupDescriptionViewControllerDelegate?
 
@@ -24,10 +25,6 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 
     var isEditable: Bool { options.contains(.editable) }
-
-    convenience init(groupModel: TSGroupModel) {
-        self.init(groupModel: groupModel, options: [])
-    }
 
     convenience init(
         groupModel: TSGroupModel,
@@ -51,6 +48,9 @@ class GroupDescriptionViewController: OWSTableViewController2 {
 
         if let groupDescriptionCurrent = groupDescriptionCurrent {
             self.helper.groupDescriptionOriginal = groupDescriptionCurrent
+            providedCurrentDescription = true
+        } else {
+            providedCurrentDescription = false
         }
 
         super.init()
@@ -98,7 +98,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         let remainingGlyphCount = max(0, GroupManager.maxGroupDescriptionGlyphCount - currentGlyphCount)
 
         if !isEditable, let groupName = helper.groupNameCurrent {
-            title = groupName
+            if self.providedCurrentDescription {
+                // don't assume the current group title applies
+                // if a group description was directly provided.
+                title = nil
+            } else {
+                title = groupName
+            }
         } else if isEditable, remainingGlyphCount <= 100 {
             let titleFormat = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT",

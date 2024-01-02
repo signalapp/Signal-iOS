@@ -775,17 +775,18 @@ private struct DiffingGroupUpdateItemBuilder {
         let oldGroupDescription = groupDescription(oldGroupModel)
         let newGroupDescription = groupDescription(newGroupModel)
         if oldGroupDescription != newGroupDescription {
-            if newGroupDescription != nil {
+            if let newGroupDescription {
                 switch updater {
                 case .localUser:
-                    addItem(.descriptionChangedByLocalUser)
+                    addItem(.descriptionChangedByLocalUser(newDescription: newGroupDescription))
                 case let .otherUser(updaterName, updaterAddress):
                     addItem(.descriptionChangedByOtherUser(
+                        newDescription: newGroupDescription,
                         updaterName: updaterName,
                         updaterAddress: updaterAddress
                     ))
                 case .unknown:
-                    addItem(.descriptionChangedByUnknownUser)
+                    addItem(.descriptionChangedByUnknownUser(newDescription: newGroupDescription))
                 }
             } else {
                 switch updater {

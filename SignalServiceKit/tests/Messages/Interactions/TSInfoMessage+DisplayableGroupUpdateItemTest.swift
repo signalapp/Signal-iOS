@@ -34,9 +34,13 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .avatarRemovedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
         .avatarRemovedByUnknownUser,
 
-        .descriptionChangedByLocalUser,
-        .descriptionChangedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
-        .descriptionChangedByUnknownUser,
+        .descriptionChangedByLocalUser(newDescription: "A long time ago in a galaxy far, far away..."),
+        .descriptionChangedByOtherUser(
+            newDescription: "A long time ago in a galaxy far, far away...",
+            updaterName: .otherUser1,
+            updaterAddress: .otherUser1
+        ),
+        .descriptionChangedByUnknownUser(newDescription: "A long time ago in a galaxy far, far away..."),
 
         .descriptionRemovedByLocalUser,
         .descriptionRemovedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),

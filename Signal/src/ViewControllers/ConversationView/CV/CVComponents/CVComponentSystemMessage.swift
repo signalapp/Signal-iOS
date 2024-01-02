@@ -1223,13 +1223,13 @@ extension CVComponentSystemMessage {
                         action: .didTapGroupMigrationLearnMore
                     )
                 case
-                        .descriptionChangedByLocalUser,
-                        .descriptionChangedByOtherUser,
-                        .descriptionChangedByUnknownUser:
+                        .descriptionChangedByLocalUser(let newGroupDescription),
+                        .descriptionChangedByOtherUser(let newGroupDescription, _, _),
+                        .descriptionChangedByUnknownUser(let newGroupDescription):
                     return Action(
                         title: CommonStrings.viewButton,
                         accessibilityIdentifier: "group_description_view",
-                        action: .didTapViewGroupDescription(groupModel: newGroupModel)
+                        action: .didTapViewGroupDescription(newGroupDescription: newGroupDescription)
                     )
                 case let .sequenceOfInviteLinkRequestAndCancels(_, _, _, isTail):
                     guard isTail else { return nil }
