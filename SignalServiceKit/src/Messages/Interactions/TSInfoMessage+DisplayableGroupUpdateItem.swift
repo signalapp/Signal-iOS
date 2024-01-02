@@ -89,6 +89,7 @@ public enum DisplayableGroupUpdateItem {
     case otherUserLeft(userName: String, userAddress: SignalServiceAddress)
     case otherUserRemovedByLocalUser(userName: String, userAddress: SignalServiceAddress)
     case otherUserRemoved(removerName: String, removerAddress: SignalServiceAddress, userName: String, userAddress: SignalServiceAddress)
+    case otherUserRemovedByUnknownUser(userName: String, userAddress: SignalServiceAddress)
 
     case localUserWasInvitedByLocalUser
     case localUserWasInvitedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
@@ -677,6 +678,14 @@ public enum DisplayableGroupUpdateItem {
                     .name(removerName, removerAddress),
                     .name(userName, userAddress)
                 ]
+            )
+        case let .otherUserRemovedByUnknownUser(userName, userAddress):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT",
+                    comment: "Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}."
+                ),
+                groupUpdateFormatArgs: [.name(userName, userAddress)]
             )
         case .localUserWasInvitedByLocalUser:
             return OWSLocalizedString(

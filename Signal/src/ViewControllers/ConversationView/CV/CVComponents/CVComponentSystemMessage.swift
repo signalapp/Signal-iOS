@@ -878,7 +878,8 @@ extension CVComponentSystemMessage {
                 .localUserRemoved,
                 .localUserRemovedByUnknownUser,
                 .otherUserRemovedByLocalUser,
-                .otherUserRemoved:
+                .otherUserRemoved,
+                .otherUserRemovedByUnknownUser:
             return Theme.iconName(.memberRemove16)
         case
                 .unnamedUsersWereInvitedByLocalUser,

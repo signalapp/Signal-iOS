@@ -102,6 +102,7 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .otherUserLeft(userName: .otherUser2, userAddress: .otherUser2),
         .otherUserRemovedByLocalUser(userName: .otherUser2, userAddress: .otherUser2),
         .otherUserRemoved(removerName: .otherUser1, removerAddress: .otherUser1, userName: .otherUser2, userAddress: .otherUser2),
+        .otherUserRemovedByUnknownUser(userName: .otherUser2, userAddress: .otherUser2),
 
         .localUserWasInvitedByLocalUser,
         .localUserWasInvitedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),

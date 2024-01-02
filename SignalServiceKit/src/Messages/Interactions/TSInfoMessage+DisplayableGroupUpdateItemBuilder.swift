@@ -1219,7 +1219,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     ))
                 }
             case .unknown:
-                addItem(.otherUserLeft(
+                addItem(.otherUserRemovedByUnknownUser(
                     userName: userName,
                     userAddress: userAddress
                 ))
