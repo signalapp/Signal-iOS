@@ -213,9 +213,7 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     }
 
     private func updateHasCensoredPhoneNumber(_ localNumber: String?) {
-        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-
-        if let localNumber = localNumber {
+        if let localNumber {
             self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensoredPhoneNumber(localNumber)
         } else {
             self.hasCensoredPhoneNumber = false
