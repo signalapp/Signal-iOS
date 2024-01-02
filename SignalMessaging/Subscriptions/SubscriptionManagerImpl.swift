@@ -1249,8 +1249,6 @@ extension SubscriptionManagerImpl {
 
 extension SubscriptionManagerImpl: SubscriptionManager {
     public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
-        Logger.info("Reconciling badge state.")
-
         // Get current badges
         let currentBadges = profileManagerImpl.localUserProfile().profileBadgeInfo ?? []
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
@@ -1290,22 +1288,34 @@ extension SubscriptionManagerImpl: SubscriptionManager {
         }
 
         let newSubscriberBadgeIds = Set(currentSubscriberBadgeIDs).subtracting(persistedSubscriberBadgeIDs)
-        Logger.info("Learned of \(newSubscriberBadgeIds.count) new subscriber badge ids: \(newSubscriberBadgeIds)")
+        if !newSubscriberBadgeIds.isEmpty {
+            Logger.info("Learned of \(newSubscriberBadgeIds.count) new subscriber badge ids: \(newSubscriberBadgeIds)")
+        }
 
         let expiredSubscriberBadgeIds = Set(persistedSubscriberBadgeIDs).subtracting(currentSubscriberBadgeIDs)
-        Logger.info("Learned of \(expiredSubscriberBadgeIds.count) newly expired subscriber badge ids: \(expiredSubscriberBadgeIds)")
+        if !expiredSubscriberBadgeIds.isEmpty {
+            Logger.info("Learned of \(expiredSubscriberBadgeIds.count) newly expired subscriber badge ids: \(expiredSubscriberBadgeIds)")
+        }
 
         let newBoostBadgeIds = Set(currentBoostBadgeIDs).subtracting(persistedBoostBadgeIDs)
-        Logger.info("Learned of \(newBoostBadgeIds.count) new boost badge ids: \(newBoostBadgeIds)")
+        if !newBoostBadgeIds.isEmpty {
+            Logger.info("Learned of \(newBoostBadgeIds.count) new boost badge ids: \(newBoostBadgeIds)")
+        }
 
         let expiredBoostBadgeIds = Set(persistedBoostBadgeIDs).subtracting(currentBoostBadgeIDs)
-        Logger.info("Learned of \(expiredBoostBadgeIds.count) newly expired boost badge ids: \(expiredBoostBadgeIds)")
+        if !expiredBoostBadgeIds.isEmpty {
+            Logger.info("Learned of \(expiredBoostBadgeIds.count) newly expired boost badge ids: \(expiredBoostBadgeIds)")
+        }
 
         let newGiftBadgeIds = Set(currentGiftBadgeIDs).subtracting(persistedGiftBadgeIDs)
-        Logger.info("Learned of \(newGiftBadgeIds.count) new gift badge ids: \(newGiftBadgeIds)")
+        if !newGiftBadgeIds.isEmpty {
+            Logger.info("Learned of \(newGiftBadgeIds.count) new gift badge ids: \(newGiftBadgeIds)")
+        }
 
         let expiredGiftBadgeIds = Set(persistedGiftBadgeIDs).subtracting(currentGiftBadgeIDs)
-        Logger.info("Learned of \(expiredGiftBadgeIds.count) newly expired gift badge ids: \(expiredGiftBadgeIds)")
+        if !expiredGiftBadgeIds.isEmpty {
+            Logger.info("Learned of \(expiredGiftBadgeIds.count) newly expired gift badge ids: \(expiredGiftBadgeIds)")
+        }
 
         var newExpiringBadgeId: String?
         if let persistedBadgeId = persistedSubscriberBadgeIDs.first, currentSubscriberBadgeIDs.isEmpty {
