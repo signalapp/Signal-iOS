@@ -749,6 +749,10 @@ public extension String {
     static func formatDurationLossless(durationSeconds: UInt32) -> String {
         NSString.formatDurationLossless(durationSeconds: durationSeconds)
     }
+
+    static func formatDurationLossless(durationMs: UInt64) -> String {
+        NSString.formatDurationLossless(durationMs: durationMs)
+    }
 }
 
 // MARK: -
@@ -756,34 +760,41 @@ public extension String {
 @objc
 public extension NSString {
     static func formatDurationLossless(durationSeconds: UInt32) -> String {
-        let secondsPerMinute: UInt32 = 60
-        let secondsPerHour: UInt32 = secondsPerMinute * 60
-        let secondsPerDay: UInt32 = secondsPerHour * 24
-        let secondsPerWeek: UInt32 = secondsPerDay * 7
-        let secondsPerYear: UInt32 = secondsPerDay * 365
+        return formatDurationLossless(durationMs: UInt64(durationSeconds) * 1000)
+    }
+
+    static func formatDurationLossless(durationMs: UInt64) -> String {
+        let mSecondsPerSecond: UInt64 = 1000
+        let mSecondsPerMinute: UInt64 = mSecondsPerSecond * 60
+        let mSecondsPerHour: UInt64 = mSecondsPerMinute * 60
+        let mSecondsPerDay: UInt64 = mSecondsPerHour * 24
+        let mSecondsPerWeek: UInt64 = mSecondsPerDay * 7
+        let mSecondsPerYear: UInt64 = mSecondsPerDay * 365
 
         let dateComponents: DateComponents = {
             var dateComponents = DateComponents()
 
-            var remainingDuration = durationSeconds
+            var remainingDuration = durationMs
 
-            let years = remainingDuration / secondsPerYear
-            remainingDuration -= years * secondsPerYear
+            let years = remainingDuration / mSecondsPerYear
+            remainingDuration -= years * mSecondsPerYear
             dateComponents.year = Int(years)
 
-            let weeks = remainingDuration / secondsPerWeek
-            remainingDuration -= weeks * secondsPerWeek
+            let weeks = remainingDuration / mSecondsPerWeek
+            remainingDuration -= weeks * mSecondsPerWeek
             dateComponents.weekOfYear = Int(weeks)
 
-            let days = remainingDuration / secondsPerDay
-            remainingDuration -= days * secondsPerDay
+            let days = remainingDuration / mSecondsPerDay
+            remainingDuration -= days * mSecondsPerDay
             dateComponents.day = Int(days)
 
-            let minutes = remainingDuration / secondsPerMinute
-            remainingDuration -= minutes * secondsPerMinute
+            let minutes = remainingDuration / mSecondsPerMinute
+            remainingDuration -= minutes * mSecondsPerMinute
             dateComponents.minute = Int(minutes)
 
-            dateComponents.second = Int(remainingDuration)
+            let seconds = remainingDuration / mSecondsPerSecond
+            remainingDuration -= seconds * mSecondsPerSecond
+            dateComponents.second = Int(seconds)
 
             return dateComponents
         }()

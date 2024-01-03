@@ -148,12 +148,12 @@ public enum DisplayableGroupUpdateItem {
     case otherUserRequestCanceledByOtherUser(requesterName: String, requesterAddress: SignalServiceAddress)
     case otherUserRequestRejectedByUnknownUser(requesterName: String, requesterAddress: SignalServiceAddress)
 
-    case disappearingMessagesUpdatedNoOldTokenByLocalUser(duration: String)
-    case disappearingMessagesUpdatedNoOldTokenByUnknownUser(duration: String)
+    case disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs: UInt64)
+    case disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs: UInt64)
 
-    case disappearingMessagesEnabledByLocalUser(duration: String)
-    case disappearingMessagesEnabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, duration: String)
-    case disappearingMessagesEnabledByUnknownUser(duration: String)
+    case disappearingMessagesEnabledByLocalUser(durationMs: UInt64)
+    case disappearingMessagesEnabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, durationMs: UInt64)
+    case disappearingMessagesEnabledByUnknownUser(durationMs: UInt64)
 
     case disappearingMessagesDisabledByLocalUser
     case disappearingMessagesDisabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
@@ -1013,36 +1013,36 @@ public enum DisplayableGroupUpdateItem {
                 ),
                 groupUpdateFormatArgs: [.name(requesterName, requesterAddress)]
             )
-        case let .disappearingMessagesUpdatedNoOldTokenByLocalUser(duration):
+        case let .disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                     comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
                 ),
-                groupUpdateFormatArgs: [.raw(duration)]
+                groupUpdateFormatArgs: [.durationMs(durationMs)]
             )
-        case let .disappearingMessagesUpdatedNoOldTokenByUnknownUser(duration):
+        case let .disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
                     comment: "Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context."
                 ),
-                groupUpdateFormatArgs: [.raw(duration)]
+                groupUpdateFormatArgs: [.durationMs(durationMs)]
             )
-        case let .disappearingMessagesEnabledByLocalUser(duration):
+        case let .disappearingMessagesEnabledByLocalUser(durationMs):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                     comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
                 ),
-                groupUpdateFormatArgs: [.raw(duration)]
+                groupUpdateFormatArgs: [.durationMs(durationMs)]
             )
         case .disappearingMessagesDisabledByLocalUser:
             return OWSLocalizedString(
                 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
                 comment: "Info Message when you disabled disappearing messages."
             ).attributed
-        case let .disappearingMessagesEnabledByOtherUser(updaterName, updaterAddress, duration):
+        case let .disappearingMessagesEnabledByOtherUser(updaterName, updaterAddress, durationMs):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
@@ -1050,7 +1050,7 @@ public enum DisplayableGroupUpdateItem {
                 ),
                 groupUpdateFormatArgs: [
                     .name(updaterName, updaterAddress),
-                    .raw(duration)
+                    .durationMs(durationMs)
                 ]
             )
         case let .disappearingMessagesDisabledByOtherUser(updaterName, updaterAddress):
@@ -1061,13 +1061,13 @@ public enum DisplayableGroupUpdateItem {
                 ),
                 groupUpdateFormatArgs: [.name(updaterName, updaterAddress)]
             )
-        case let .disappearingMessagesEnabledByUnknownUser(duration):
+        case let .disappearingMessagesEnabledByUnknownUser(durationMs):
             return NSAttributedString.make(
                 fromFormat: OWSLocalizedString(
                     "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                     comment: "Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
                 ),
-                groupUpdateFormatArgs: [.raw(duration)]
+                groupUpdateFormatArgs: [.durationMs(durationMs)]
             )
         case .disappearingMessagesDisabledByUnknownUser:
             return OWSLocalizedString(
@@ -1216,12 +1216,15 @@ public enum DisplayableGroupUpdateItem {
 extension DisplayableGroupUpdateItem {
     enum FormatArg {
         case raw(_ value: CVarArg)
+        case durationMs(_ value: UInt64)
         case name(_ string: String, _ address: SignalServiceAddress)
 
         var asAttributedFormatArg: AttributedFormatArg {
             switch self {
             case let .raw(value):
                 return .raw(value)
+            case let .durationMs(value):
+                return .raw(String.formatDurationLossless(durationMs: value))
             case let .name(value, address):
                 return .string(value, attributes: [.addressOfName: address])
             }

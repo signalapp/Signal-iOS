@@ -167,12 +167,12 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .otherUserRequestCanceledByOtherUser(requesterName: .otherUser2, requesterAddress: .otherUser2),
         .otherUserRequestRejectedByUnknownUser(requesterName: .otherUser2, requesterAddress: .otherUser2),
 
-        .disappearingMessagesUpdatedNoOldTokenByLocalUser(duration: .otherUser2),
-        .disappearingMessagesUpdatedNoOldTokenByUnknownUser(duration: .otherUser2),
+        .disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs: 1000),
+        .disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs: 1000),
 
-        .disappearingMessagesEnabledByLocalUser(duration: .otherUser2),
-        .disappearingMessagesEnabledByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, duration: .otherUser2),
-        .disappearingMessagesEnabledByUnknownUser(duration: .otherUser2),
+        .disappearingMessagesEnabledByLocalUser(durationMs: 1000),
+        .disappearingMessagesEnabledByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, durationMs: 1000),
+        .disappearingMessagesEnabledByUnknownUser(durationMs: 1000),
 
         .disappearingMessagesDisabledByLocalUser,
         .disappearingMessagesDisabledByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),

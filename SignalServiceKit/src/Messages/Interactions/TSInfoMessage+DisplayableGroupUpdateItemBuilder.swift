@@ -1841,10 +1841,10 @@ private struct DiffingGroupUpdateItemBuilder {
         }
 
         // This might be zero if DMs are not enabled.
-        let durationString = newToken.durationString
+        let durationMs = UInt64(newToken.durationSeconds * 1000)
 
         if forceUnknownAttribution, newToken.isEnabled {
-            return .disappearingMessagesEnabledByUnknownUser(duration: durationString)
+            return .disappearingMessagesEnabledByUnknownUser(durationMs: durationMs)
         }
 
         guard let oldToken else {
@@ -1852,11 +1852,11 @@ private struct DiffingGroupUpdateItemBuilder {
                 switch updater {
                 case .localUser:
                     return .disappearingMessagesUpdatedNoOldTokenByLocalUser(
-                        duration: durationString
+                        durationMs: durationMs
                     )
                 case .otherUser, .unknown:
                     return .disappearingMessagesUpdatedNoOldTokenByUnknownUser(
-                        duration: durationString
+                        durationMs: durationMs
                     )
                 }
             }
@@ -1872,15 +1872,15 @@ private struct DiffingGroupUpdateItemBuilder {
         if newToken.isEnabled {
             switch updater {
             case .localUser:
-                return .disappearingMessagesEnabledByLocalUser(duration: durationString)
+                return .disappearingMessagesEnabledByLocalUser(durationMs: durationMs)
             case let .otherUser(updaterName, updaterAddress):
                 return .disappearingMessagesEnabledByOtherUser(
                     updaterName: updaterName,
                     updaterAddress: updaterAddress,
-                    duration: durationString
+                    durationMs: durationMs
                 )
             case .unknown:
-                return .disappearingMessagesEnabledByUnknownUser(duration: durationString)
+                return .disappearingMessagesEnabledByUnknownUser(durationMs: durationMs)
             }
         } else {
             switch updater {

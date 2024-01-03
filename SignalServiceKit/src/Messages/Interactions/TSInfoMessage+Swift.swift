@@ -215,7 +215,9 @@ public extension TSInfoMessage {
         updaterName: String?
     ) -> String {
         // This might be zero if DMs are not enabled.
-        let durationString = newToken.durationString
+        let durationString = String.formatDurationLossless(
+            durationSeconds: newToken.durationSeconds
+        )
 
         if wasAddedToExistingGroup {
             assert(newToken.isEnabled)

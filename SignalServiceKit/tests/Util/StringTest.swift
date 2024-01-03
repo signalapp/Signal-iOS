@@ -111,7 +111,7 @@ final class StringTest: XCTestCase {
         let secondsPerWeek: UInt32 = secondsPerDay * 7
         let secondsPerYear: UInt32 = secondsPerDay * 365
 
-        let format = String.formatDurationLossless
+        let format: (UInt32) -> String = String.formatDurationLossless
 
         XCTAssertEqual(format(0), "0 seconds")
         XCTAssertEqual(format(1), "1 second")
