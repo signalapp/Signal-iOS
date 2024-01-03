@@ -697,6 +697,26 @@
 			<string>%1$d учасника</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>До групи запрошено %1$d людину.</string>
+			<key>few</key>
+			<string>До групи запрошено %1$d людей.</string>
+			<key>many</key>
+			<string>До групи запрошено %1$d людей.</string>
+			<key>other</key>
+			<string>До групи запрошено %1$d людини.</string>
+		</dict>
+	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -988,13 +1008,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%1$d реакція %2$@.</string>
 			<key>few</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d реакції %2$@.</string>
 			<key>many</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d реакцій %2$@.</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d реакції %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1168,13 +1188,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d додаткова реакція.</string>
 			<key>few</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d додаткові реакції.</string>
 			<key>many</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d додаткових реакцій.</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d додаткової реакції.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>

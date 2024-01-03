@@ -697,6 +697,26 @@
 			<string>%1$d članova</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d osoba je pozvana u grupu.</string>
+			<key>few</key>
+			<string>%1$d osobe su pozvane u grupu.</string>
+			<key>many</key>
+			<string>%1$d osoba je pozvano u grupu.</string>
+			<key>other</key>
+			<string>%1$d osoba je pozvano u grupu.</string>
+		</dict>
+	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -988,13 +1008,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reaction with %2$@.</string>
+			<string>%1$d reakcija s %2$@.</string>
 			<key>few</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d reakcije s %2$@.</string>
 			<key>many</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d reakcija s %2$@.</string>
 			<key>other</key>
-			<string>%1$d reactions with %2$@.</string>
+			<string>%1$d reakcija s %2$@.</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1168,13 +1188,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d additional reaction.</string>
+			<string>%1$d druga reakcija.</string>
 			<key>few</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d druge reakcije.</string>
 			<key>many</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d drugih reakcija.</string>
 			<key>other</key>
-			<string>%1$d additional reactions.</string>
+			<string>%1$d drugih reakcija.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
