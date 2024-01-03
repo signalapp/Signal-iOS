@@ -44,6 +44,8 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
 
     public let callRecordStore: CallRecordStore
+    public let callRecordQuerier: CallRecordQuerier
+
     public let groupCallRecordManager: GroupCallRecordManager
     public let individualCallRecordManager: IndividualCallRecordManager
     let callRecordIncomingSyncMessageManager: CallRecordIncomingSyncMessageManager
@@ -389,6 +391,8 @@ public class DependenciesBridge {
             )
 
             self.callRecordStore = CallRecordStoreImpl()
+            self.callRecordQuerier = CallRecordQuerierImpl()
+
             self.groupCallRecordManager = GroupCallRecordManagerImpl(
                 callRecordStore: self.callRecordStore,
                 interactionStore: interactionStore,

@@ -123,7 +123,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// as for display.
     public internal(set) var callBeganTimestamp: UInt64
 
-    init(
+    public init(
         callId: UInt64,
         interactionRowId: Int64,
         threadRowId: Int64,

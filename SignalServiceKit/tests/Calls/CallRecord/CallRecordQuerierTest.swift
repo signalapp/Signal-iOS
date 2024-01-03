@@ -319,9 +319,9 @@ private extension DBReadTransaction {
     }
 }
 
-private extension RecordCursor {
-    func drain() -> [Record] {
-        var records = [Record]()
+private extension CallRecordCursor {
+    func drain() -> [CallRecord] {
+        var records = [CallRecord]()
 
         while let next = try! next() {
             records.append(next)
