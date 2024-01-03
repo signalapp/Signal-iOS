@@ -7,6 +7,9 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
+/// Performs SQL operations related to a single ``CallRecord``.
+///
+/// For queries over the ``CallRecord`` table, please see ``CallRecordQuerier``.
 public protocol CallRecordStore {
     /// Insert the given call record.
     /// - Returns
@@ -276,10 +279,12 @@ class CallRecordStoreImpl: CallRecordStore {
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         db: Database
     ) -> CallRecord? {
+        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
+
         do {
-            return try CallRecord.fetchOne(db, fetchRequest(
-                columnArgs: columnArgs,
-                explain: false
+            return try CallRecord.fetchOne(db, SQLRequest(
+                sql: sqlString,
+                arguments: StatementArguments(sqlArgs)
             ))
         } catch let error {
             let columns = columnArgs.map { (column, _) in column }
@@ -288,23 +293,19 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
-    fileprivate func fetchRequest(
-        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
-        explain: Bool
-    ) -> SQLRequest<Row> {
+    fileprivate func compileQuery(
+        columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)]
+    ) -> (sqlString: String, sqlArgs: [DatabaseValueConvertible]) {
         let conditionClauses = columnArgs.map { (column, _) -> String in
             return "\(column.rawValue) = ?"
         }
 
-        let args: [DatabaseValueConvertible] = columnArgs.map { $1 }
-
-        return SQLRequest(
-            sql: """
-                \(explain ? "EXPLAIN QUERY PLAN" : "")
+        return (
+            sqlString: """
                 SELECT * FROM \(CallRecord.databaseTableName)
                 WHERE \(conditionClauses.joined(separator: " AND "))
             """,
-            arguments: StatementArguments(args)
+            sqlArgs: columnArgs.map { $1 }
         )
     }
 }
@@ -320,19 +321,21 @@ private extension SDSAnyReadTransaction {
 final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
     var lastExplanation: String?
 
-    override func fetch(
+    override fileprivate func fetch(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         db: Database
     ) -> CallRecord? {
+        let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
+
         guard
-            let explanationRow = try? Row.fetchOne(db, fetchRequest(
-                columnArgs: columnArgs,
-                explain: true
+            let explanationRow = try? Row.fetchOne(db, SQLRequest(
+                sql: "EXPLAIN QUERY PLAN \(sqlString)",
+                arguments: StatementArguments(sqlArgs)
             )),
-            // This isn't likely to be stable indefinitely, but it appears for
-            // now that the explanation is the fourth item in the row.
             let explanation = explanationRow[3] as? String
         else {
+            // This isn't likely to be stable indefinitely, but it appears for
+            // now that the explanation is the fourth item in the row.
             owsFail("Failed to get explanation for query!")
         }
 

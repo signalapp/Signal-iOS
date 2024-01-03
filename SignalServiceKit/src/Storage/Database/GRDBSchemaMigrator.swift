@@ -243,6 +243,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addGroupCallRingerAciToCallRecords
         case renameIsFromLinkedDevice
         case renameAndDeprecateSourceDeviceId
+        case addCallRecordQueryIndices
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2492,6 +2493,50 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.rename(column: "sourceDeviceId", to: "deprecated_sourceDeviceId")
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addCallRecordQueryIndices) { tx in
+            /// This powers ``CallRecordQuerier/fetchCursor(tx:)``.
+            try tx.database.create(
+                index: "index_call_record_on_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "timestamp",
+                ]
+            )
+
+            /// This powers ``CallRecordQuerier/fetchCursor(callStatus:tx:)``.
+            try tx.database.create(
+                index: "index_call_record_on_status_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "status",
+                    "timestamp",
+                ]
+            )
+
+            /// This powers ``CallRecordQuerier/fetchCursor(threadRowId:tx:)``.
+            try tx.database.create(
+                index: "index_call_record_on_threadRowId_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "threadRowId",
+                    "timestamp",
+                ]
+            )
+
+            /// This powers ``CallRecordQuerier/fetchCursor(threadRowId:callStatus:tx:)``.
+            try tx.database.create(
+                index: "index_call_record_on_threadRowId_and_status_and_timestamp",
+                on: "CallRecord",
+                columns: [
+                    "threadRowId",
+                    "status",
+                    "timestamp",
+                ]
+            )
+
             return .success(())
         }
 

@@ -1496,3 +1496,31 @@ CREATE
     ,"threadRowId"
 )
 ;
+
+CREATE
+    INDEX "index_call_record_on_timestamp"
+        ON "CallRecord"("timestamp"
+)
+;
+
+CREATE
+    INDEX "index_call_record_on_status_and_timestamp"
+        ON "CallRecord"("status"
+    ,"timestamp"
+)
+;
+
+CREATE
+    INDEX "index_call_record_on_threadRowId_and_timestamp"
+        ON "CallRecord"("threadRowId"
+    ,"timestamp"
+)
+;
+
+CREATE
+    INDEX "index_call_record_on_threadRowId_and_status_and_timestamp"
+        ON "CallRecord"("threadRowId"
+    ,"status"
+    ,"timestamp"
+)
+;

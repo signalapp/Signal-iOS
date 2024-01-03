@@ -1429,6 +1429,8 @@
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
+		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
+		D93108062B30F920006A034E /* CallRecordQuerierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108052B30F920006A034E /* CallRecordQuerierTest.swift */; };
 		D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */; };
 		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
 		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
@@ -4142,6 +4144,8 @@
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
+		D93108032B30F7E3006A034E /* CallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordQuerier.swift; sourceTree = "<group>"; };
+		D93108052B30F920006A034E /* CallRecordQuerierTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordQuerierTest.swift; sourceTree = "<group>"; };
 		D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImagePixelMergingTest.swift; sourceTree = "<group>"; };
 		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
 		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
@@ -8462,6 +8466,7 @@
 				D979CC252AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift */,
 				D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */,
 				D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */,
+				D93108032B30F7E3006A034E /* CallRecordQuerier.swift */,
 				D95A79A72AB125D80013DB00 /* CallRecordStore.swift */,
 				D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */,
 				D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */,
@@ -8538,6 +8543,7 @@
 			children = (
 				D979CC4A2AD4DECA006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift */,
 				D979CC4B2AD4DECB006AAC49 /* CallRecordManagerMocks.swift */,
+				D93108052B30F920006A034E /* CallRecordQuerierTest.swift */,
 				D979CC492AD4DECA006AAC49 /* CallRecordStatusTransitionManagerTest.swift */,
 				D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */,
 				D979CC562AD5E240006AAC49 /* CallRecordTest.swift */,
@@ -12690,6 +12696,7 @@
 				D979CC2C2AD3933B006AAC49 /* CallRecordIncomingSyncMessageParams.swift in Sources */,
 				D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */,
 				D979CC292AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift in Sources */,
+				D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */,
 				D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */,
 				17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */,
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
@@ -13459,6 +13466,7 @@
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift in Sources */,
 				D979CC502AD4DECB006AAC49 /* CallRecordManagerMocks.swift in Sources */,
+				D93108062B30F920006A034E /* CallRecordQuerierTest.swift in Sources */,
 				D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */,
 				D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */,
 				D979CC572AD5E240006AAC49 /* CallRecordTest.swift in Sources */,

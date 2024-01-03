@@ -270,7 +270,7 @@ extension CallRecord {
 
         // MARK: Codable
 
-        private var intValue: Int {
+        var intValue: Int {
             switch self {
             case .individual(let individualCallStatus): return individualCallStatus.rawValue
             case .group(let groupCallStatus): return groupCallStatus.rawValue
