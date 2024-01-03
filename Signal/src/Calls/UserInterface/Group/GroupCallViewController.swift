@@ -14,7 +14,16 @@ import SignalUI
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
     private var groupCall: GroupCall { call.groupCall }
-    private lazy var callControls = CallControls(call: call, callService: callService, delegate: self)
+    private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
+        presentingContainerView: callControlsConfirmationToastContainerView
+    )
+    private lazy var callControls = CallControls(
+        call: call,
+        callService: callService,
+        confirmationToastManager: callControlsConfirmationToastManager,
+        delegate: self
+    )
+    private lazy var callControlsConfirmationToastContainerView = UIView()
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
     private var incomingCallControlsConstraint: NSLayoutConstraint?
     private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
@@ -217,6 +226,15 @@ class GroupCallViewController: UIViewController {
         swipeToastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         swipeToastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
+        // Confirmation toasts should sit on top of the `localMemberView` and `videoOverflow`,
+        // so this `addSubview` should remain towards the end of the setup.
+        // 
+        // TODO: The call controls '...' overflow menu (which will include reactions and raise hand
+        // options) will sit on top of these toasts.
+        view.addSubview(callControlsConfirmationToastContainerView)
+        callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
+        callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+
         view.addGestureRecognizer(tapGesture)
 
         updateCallUI()
@@ -382,7 +400,7 @@ class GroupCallViewController: UIViewController {
                 speakerPage.addSubview(speakerView)
                 speakerView.autoPinEdgesToSuperviewEdges()
 
-                view.addSubview(localMemberView)
+                view.insertSubview(localMemberView, belowSubview: callControlsConfirmationToastContainerView)
 
                 if groupCall.remoteDeviceStates.count > 1 {
                     let pipWidth = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio

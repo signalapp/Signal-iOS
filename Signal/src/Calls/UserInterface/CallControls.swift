@@ -102,9 +102,15 @@ class CallControls: UIView {
     init(
         call: SignalCall,
         callService: CallService,
+        confirmationToastManager: CallControlsConfirmationToastManager,
         delegate: CallControlsDelegate
     ) {
-        let viewModel = CallControlsViewModel(call: call, callService: callService, delegate: delegate)
+        let viewModel = CallControlsViewModel(
+            call: call,
+            callService: callService,
+            confirmationToastManager: confirmationToastManager,
+            delegate: delegate
+        )
         self.viewModel = viewModel
         self.delegate = delegate
         super.init(frame: .zero)
@@ -247,10 +253,17 @@ private class CallControlsViewModel {
     private let call: SignalCall
     private let callService: CallService
     private weak var delegate: CallControlsDelegate?
+    private let confirmationToastManager: CallControlsConfirmationToastManager
     fileprivate var refreshView: (() -> Void)?
-    init(call: SignalCall, callService: CallService, delegate: CallControlsDelegate) {
+    init(
+        call: SignalCall,
+        callService: CallService,
+        confirmationToastManager: CallControlsConfirmationToastManager,
+        delegate: CallControlsDelegate
+    ) {
         self.call = call
         self.callService = callService
+        self.confirmationToastManager = confirmationToastManager
         self.delegate = delegate
         call.addObserverAndSyncState(observer: self)
         callService.audioService.delegate = self
@@ -541,14 +554,18 @@ extension CallControlsViewModel {
         if callService.audioService.hasExternalInputs {
             callService.audioService.presentRoutePicker()
         } else {
-            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: !audioSourceButtonIsSelected)
+            let shouldEnableSpeakerphone = !audioSourceButtonIsSelected
+            callService.audioService.requestSpeakerphone(call: self.call, isEnabled: shouldEnableSpeakerphone)
+            confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .speakerphone(isOn: shouldEnableSpeakerphone))
         }
         refreshView?()
     }
 
     @objc
     func didPressMute() {
-        callService.updateIsLocalAudioMuted(isLocalAudioMuted: !muteButtonIsSelected)
+        let shouldMute = !muteButtonIsSelected
+        callService.updateIsLocalAudioMuted(isLocalAudioMuted: shouldMute)
+        confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .mute(isOn: shouldMute))
         refreshView?()
     }
 
@@ -569,8 +586,10 @@ extension CallControlsViewModel {
             switch call.groupCallRingState {
             case .shouldRing:
                 call.groupCallRingState = .doNotRing
+                confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: false))
             case .doNotRing:
                 call.groupCallRingState = .shouldRing
+                confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: true))
             default:
                 owsFailBeta("Ring button should not have been available to press!")
             }

@@ -32,9 +32,14 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     private var callDurationTimer: Timer?
 
+    private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
+        presentingContainerView: callControlsConfirmationToastContainerView
+    )
+    private lazy var callControlsConfirmationToastContainerView = UIView()
     private lazy var callControls = CallControls(
         call: call,
         callService: callService,
+        confirmationToastManager: callControlsConfirmationToastManager,
         delegate: self
     )
 
@@ -275,6 +280,13 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         callControls.autoPinEdge(toSuperviewEdge: .leading)
         callControls.autoPinEdge(toSuperviewEdge: .trailing)
 
+        // Confirmation toasts should sit on top of the `localVideoView`
+        // and most other UI elements, so this `addSubview` should remain towards
+        // the end of the setup.
+        view.addSubview(callControlsConfirmationToastContainerView)
+        callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
+        callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+
         createContactViews()
         createIncomingCallControls()
     }
@@ -512,6 +524,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         guard !localVideoView.isHidden else { return }
 
         view.bringSubviewToFront(localVideoView)
+        view.bringSubviewToFront(callControlsConfirmationToastContainerView)
 
         let pipSize = ReturnToCallViewController.pipSize
         let lastBoundingRect = lastLocalVideoBoundingRect
