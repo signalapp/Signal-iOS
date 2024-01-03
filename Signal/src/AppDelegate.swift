@@ -791,6 +791,23 @@ extension AppDelegate {
         viewController.presentActionSheet(actionSheet)
     }
 
+    public func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        Logger.info("")
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            // We need to respect the in-app notification sound preference. This method, which is called
+            // for modern UNUserNotification users, could be a place to do that, but since we'd still
+            // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+            // notification options here, and rely on the shared logic in NotificationPresenter to
+            // honor notification sound preferences for both modern and legacy users.
+            let options: UNNotificationPresentationOptions = [.alert, .badge, .sound]
+            completionHandler(options)
+        }
+    }
+
     private func terminalErrorViewController() -> UIViewController {
         let storyboard = UIStoryboard(name: "Launch Screen", bundle: nil)
         guard let viewController = storyboard.instantiateInitialViewController() else {
