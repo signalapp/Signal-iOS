@@ -514,30 +514,37 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             // reset.
             resetUsernameLink(shouldReloadTableContents: false)
         }
-
-        if let qrCodeView {
-            qrCodeView.layer.opacity = 0
-            if !UIAccessibility.isReduceMotionEnabled {
-                qrCodeView.transform = .scale(0.9)
-            }
-
-            let animator = UIViewPropertyAnimator(duration: 0.35, springDamping: 1, springResponse: 0.35)
-            animator.addAnimations {
-                qrCodeView.layer.opacity = 1
-                qrCodeView.transform = .identity
-            }
-            animator.startAnimation()
-        }
     }
+
+    private var shouldAnimateQRCode = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setMaxBrightness()
+
+        // Partially swiping down on the sheet and letting go will call
+        // `viewDidAppear` without `viewDidDisappear`, so only animate the QR
+        // code if the view disappeared first.
+        guard shouldAnimateQRCode, let qrCodeView else { return }
+        shouldAnimateQRCode = false
+
+        qrCodeView.layer.opacity = 0
+        if !UIAccessibility.isReduceMotionEnabled {
+            qrCodeView.transform = .scale(0.9)
+        }
+
+        let animator = UIViewPropertyAnimator(duration: 0.35, springDamping: 1, springResponse: 0.35)
+        animator.addAnimations {
+            qrCodeView.layer.opacity = 1
+            qrCodeView.transform = .identity
+        }
+        animator.startAnimation()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         restoreBrightness()
+        shouldAnimateQRCode = true
     }
 
     private var oldBrightness: CGFloat?
