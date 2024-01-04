@@ -49,7 +49,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
         configuration: .background(withIdentifier: "SSKReachabilityManagerImpl"),
-        canUseSignalProxy: true
+        canUseSignalProxy: false
     )
 
     // This property should only be accessed on the main thread.
