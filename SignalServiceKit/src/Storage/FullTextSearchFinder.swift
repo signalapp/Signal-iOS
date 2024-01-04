@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 public enum FullTextSearchFinder {
     public static let matchTag = "match"
@@ -644,7 +645,7 @@ class AnySearchIndexer: Dependencies {
             // the user's self-selected profile name.
             insert(profileManager.fullName(for: account.recipientAddress, transaction: tx))
         }
-        return contactIndexStrings(nameStrings: nameStrings, recipientAddress: account.recipientAddress, transaction: tx)
+        return contactIndexStrings(nameStrings: nameStrings, recipientAddress: account.recipientAddress)
     }
 
     private static let recipientIndexer: SearchIndexer<SignalServiceAddress> = SearchIndexer { recipientAddress, tx in
@@ -667,25 +668,27 @@ class AnySearchIndexer: Dependencies {
             insert(nameComponents.familyName)
             insert(nameComponents.nickname)
         }
-        return contactIndexStrings(nameStrings: nameStrings, recipientAddress: recipientAddress, transaction: tx)
+        return contactIndexStrings(nameStrings: nameStrings, recipientAddress: recipientAddress)
     }
 
-    private static func contactIndexStrings(nameStrings: Set<String>, recipientAddress: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        let nationalNumber: String? = { (recipientId: String?) -> String? in
-            guard let recipientId = recipientId else { return nil }
-
-            guard recipientId != kLocalProfileInvariantPhoneNumber else {
-                return ""
+    private static func contactIndexStrings(nameStrings: Set<String>, recipientAddress: SignalServiceAddress) -> String {
+        let nationalNumber: String? = { (phoneNumberString: String?) -> String? in
+            guard let phoneNumberString = phoneNumberString else {
+                return nil
             }
 
-            guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                owsFailDebug("unexpected unparsable recipientId: \(recipientId)")
-                return ""
+            guard phoneNumberString != kLocalProfileInvariantPhoneNumber else {
+                return nil
+            }
+
+            guard let phoneNumber = PhoneNumber(fromE164: phoneNumberString) else {
+                owsFailDebug("unexpected unparsable recipientId: \(phoneNumberString)")
+                return nil
             }
 
             guard let digitScalars = phoneNumber.nationalNumberFormatted?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFailDebug("unexpected unparsable recipientId: \(recipientId)")
-                return ""
+                owsFailDebug("unexpected unparsable recipientId: \(phoneNumberString)")
+                return nil
             }
 
             return String(String.UnicodeScalarView(digitScalars))
