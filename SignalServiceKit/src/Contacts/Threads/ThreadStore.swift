@@ -35,6 +35,12 @@ public protocol ThreadStore {
         tx: DBWriteTransaction
     )
 
+    func update(
+        _ thread: TSThread,
+        withShouldThreadBeVisible shouldBeVisible: Bool,
+        tx: DBWriteTransaction
+    )
+
     /// Note: does not intert any created default associated data into the db.
     /// (This method only takes a read transaction, so it could not insert even if it wanted to)
     func fetchOrDefaultAssociatedData(for thread: TSThread, tx: DBReadTransaction) -> ThreadAssociatedData
@@ -172,6 +178,14 @@ public class ThreadStoreImpl: ThreadStore {
             transaction: SDSDB.shimOnlyBridge(tx),
             updateStorageService: updateStorageService
         )
+    }
+
+    public func update(
+        _ thread: TSThread,
+        withShouldThreadBeVisible shouldBeVisible: Bool,
+        tx: DBWriteTransaction
+    ) {
+        thread.updateWithShouldThreadBeVisible(shouldBeVisible, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func fetchOrDefaultAssociatedData(for thread: TSThread, tx: DBReadTransaction) -> ThreadAssociatedData {
@@ -312,6 +326,14 @@ public class MockThreadStore: ThreadStore {
         groupThread: TSGroupThread,
         withStorySendEnabled storySendEnabled: Bool,
         updateStorageService: Bool,
+        tx: DBWriteTransaction
+    ) {
+        // Unimplemented
+    }
+
+    public func update(
+        _ thread: TSThread,
+        withShouldThreadBeVisible shouldBeVisible: Bool,
         tx: DBWriteTransaction
     ) {
         // Unimplemented

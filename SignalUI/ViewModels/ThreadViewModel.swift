@@ -19,6 +19,7 @@ public class ThreadViewModel: NSObject {
     public let hasPendingMessageRequest: Bool
     public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     public let isBlocked: Bool
+    public let isPinned: Bool
 
     public var isArchived: Bool { associatedData.isArchived }
     public var isMuted: Bool { associatedData.isMuted }
@@ -79,6 +80,7 @@ public class ThreadViewModel: NSObject {
         }
 
         isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)
+        isPinned = DependenciesBridge.shared.pinnedThreadStore.isThreadPinned(thread, tx: transaction.asV2Read)
     }
 
     override public func isEqual(_ object: Any?) -> Bool {

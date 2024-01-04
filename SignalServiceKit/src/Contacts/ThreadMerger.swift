@@ -13,7 +13,7 @@ final class ThreadMerger {
     private let disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let interactionStore: InteractionStore
-    private let pinnedThreadManager: Shims.PinnedThreadManager
+    private let pinnedThreadManager: PinnedThreadManager
     private let sdsThreadMerger: Shims.SDSThreadMerger
     private let threadAssociatedDataManager: Shims.ThreadAssociatedDataManager
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -28,7 +28,7 @@ final class ThreadMerger {
         disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
-        pinnedThreadManager: Shims.PinnedThreadManager,
+        pinnedThreadManager: PinnedThreadManager,
         sdsThreadMerger: Shims.SDSThreadMerger,
         threadAssociatedDataManager: Shims.ThreadAssociatedDataManager,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -148,7 +148,7 @@ final class ThreadMerger {
     }
 
     private func mergePinnedThreads(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
-        var pinnedThreadIds = pinnedThreadManager.fetchPinnedThreadIds(tx: tx)
+        var pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: tx)
         let pinnedIndexPair = threadPair.map { pinnedThreadIds.firstIndex(of: $0.uniqueId) }
 
         // If the old thread was pinned, unpin it.
@@ -160,7 +160,7 @@ final class ThreadMerger {
                 pinnedThreadIds.insert(threadPair.intoValue.uniqueId, at: fromPinnedIndex)
             }
 
-            pinnedThreadManager.setPinnedThreadIds(pinnedThreadIds, tx: tx)
+            pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: true, tx: tx)
         }
     }
 
@@ -364,31 +364,14 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
 extension ThreadMerger {
     enum Shims {
         typealias DisappearingMessagesConfigurationManager = _ThreadMerger_DisappearingMessagesConfigurationManagerShim
-        typealias PinnedThreadManager = _ThreadMerger_PinnedThreadManagerShim
         typealias ThreadAssociatedDataManager = _ThreadMerger_ThreadAssociatedDataManagerShim
         typealias SDSThreadMerger = _ThreadMerger_SDSThreadMergerShim
     }
 
     enum Wrappers {
         typealias DisappearingMessagesConfigurationManager = _ThreadMerger_DisappearingMessagesConfigurationManagerWrapper
-        typealias PinnedThreadManager = _ThreadMerger_PinnedThreadManagerWrapper
         typealias ThreadAssociatedDataManager = _ThreadMerger_ThreadAssociatedDataManagerWrapper
         typealias SDSThreadMerger = _ThreadMerger_SDSThreadMergerWrapper
-    }
-}
-
-protocol _ThreadMerger_PinnedThreadManagerShim {
-    func fetchPinnedThreadIds(tx: DBReadTransaction) -> [String]
-    func setPinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction)
-}
-
-class _ThreadMerger_PinnedThreadManagerWrapper: _ThreadMerger_PinnedThreadManagerShim {
-    func fetchPinnedThreadIds(tx: DBReadTransaction) -> [String] {
-        return PinnedThreadManager.pinnedThreadIds
-    }
-
-    func setPinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) {
-        PinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -490,7 +473,7 @@ extension ThreadMerger {
             disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
-            pinnedThreadManager: ThreadMerger_MockPinnedThreadManager(),
+            pinnedThreadManager: MockPinnedThreadManager(),
             sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
             threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore),
             threadAssociatedDataStore: threadAssociatedDataStore,
@@ -500,12 +483,6 @@ extension ThreadMerger {
             wallpaperStore: wallpaperStore
         )
     }
-}
-
-class ThreadMerger_MockPinnedThreadManager: ThreadMerger.Shims.PinnedThreadManager {
-    var pinnedThreadIds = [String]()
-    func fetchPinnedThreadIds(tx: DBReadTransaction) -> [String] { pinnedThreadIds }
-    func setPinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) { self.pinnedThreadIds = pinnedThreadIds }
 }
 
 class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Shims.DisappearingMessagesConfigurationManager {

@@ -43,13 +43,16 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
+    private let pinnedThreadManager: PinnedThreadManager
     private let threadStore: ThreadStore
 
     public init(
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
+        pinnedThreadManager: PinnedThreadManager,
         threadStore: ThreadStore
     ) {
         self.dmConfigurationStore = dmConfigurationStore
+        self.pinnedThreadManager = pinnedThreadManager
         self.threadStore = threadStore
     }
 
@@ -220,12 +223,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
         let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
 
-        // TODO: actually use the pinned thread order.
         let thisThreadPinnedOrder: UInt32
+        let pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: tx)
         let isThreadPinned = false
-        if isThreadPinned {
-            context.pinnedThreadOrder += 1
-            thisThreadPinnedOrder = context.pinnedThreadOrder
+        if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.uniqueId) {
+            // Add one so we don't start at 0.
+            thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
         } else {
             // Hardcoded 0 for unpinned.
             thisThreadPinnedOrder = 0
@@ -334,14 +337,13 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 tx: tx
             )
         }
-        // TODO: recover pinned chat ordering
+
         if chat.pinnedOrder != 0 {
-            do {
-                // TODO: reimplement thread pinning.
-                // try threadFetcher.pinThread(thread, tx: tx)
-            } catch {
-                // TODO: how could this fail, and what should we do? Ignore for now.
-            }
+            let newPinnedThreadIds = context.pinnedThreadOrder(
+                newPinnedThreadId: thread.uniqueId,
+                newPinnedThreadIndex: chat.pinnedOrder
+            )
+            pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: tx)
         }
 
         if chat.expirationTimerMs != 0 {

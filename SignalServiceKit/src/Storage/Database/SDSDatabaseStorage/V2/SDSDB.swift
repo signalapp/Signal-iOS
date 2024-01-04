@@ -158,6 +158,25 @@ public class SDSDB: DB {
     public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
         self.databaseStorage.appendDatabaseChangeDelegate(DBChangeDelegateWrapper(dbChangeDelegate))
     }
+
+    // MARK: - Touching
+
+    public func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+        self.databaseStorage.touch(interaction: interaction, shouldReindex: shouldReindex, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
+        self.databaseStorage.touch(
+            thread: thread,
+            shouldReindex: shouldReindex,
+            shouldUpdateChatListUi: shouldUpdateChatListUi,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        self.databaseStorage.touch(storyMessage: storyMessage, transaction: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
 extension SDSAnyWriteTransaction {

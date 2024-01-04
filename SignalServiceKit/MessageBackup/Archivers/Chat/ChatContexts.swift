@@ -78,10 +78,6 @@ extension MessageBackup {
         private var currentChatId: ChatId = 1
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
-        /// The order of pinned threads is represented by an "order" value on the ``BackupProtoChat``.
-        /// TODO: assigning this sequentially right now, which isn't correct. Investigate doing this correctly.
-        var pinnedThreadOrder: UInt32 = 1
-
         internal init(recipientContext: RecipientArchivingContext) {
             self.recipientContext = recipientContext
         }
@@ -105,6 +101,7 @@ extension MessageBackup {
         public let recipientContext: RecipientRestoringContext
 
         private let map = SharedMap<ChatId, ThreadUniqueId>()
+        private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
 
         internal init(recipientContext: RecipientRestoringContext) {
             self.recipientContext = recipientContext
@@ -113,6 +110,29 @@ extension MessageBackup {
         internal subscript(_ chatId: ChatId) -> ThreadUniqueId? {
             get { map[chatId] }
             set(newValue) { map[chatId] = newValue }
+        }
+
+        /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.
+        internal func pinnedThreadOrder(
+            newPinnedThreadId: ThreadUniqueId,
+            newPinnedThreadIndex: UInt32
+        ) -> [ThreadUniqueId] {
+            pinnedThreadIndexMap[newPinnedThreadId] = newPinnedThreadIndex
+            return pinnedThreadIndexMap
+                .keys
+                .lazy
+                .compactMap { (key: ThreadUniqueId) -> (ThreadUniqueId, UInt32)? in
+                    guard let value = self.pinnedThreadIndexMap[key] else {
+                        return nil
+                    }
+                    return (key, value)
+                }
+                .sorted(by: { (lhs, rhs) in
+                    let lhsSortIndex: UInt32 = lhs.1
+                    let rhsSortIndex: UInt32 = rhs.1
+                    return lhsSortIndex < rhsSortIndex
+                })
+                .map(\.0)
         }
     }
 }

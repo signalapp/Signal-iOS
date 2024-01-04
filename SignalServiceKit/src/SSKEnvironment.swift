@@ -231,7 +231,6 @@ public class SSKEnvironment: NSObject {
         profileManager.warmCaches()
         receiptManager.prepareCachedValues()
         DependenciesBridge.shared.svr.warmCaches()
-        PinnedThreadManager.warmCaches()
         typingIndicatorsImpl.warmCaches()
         paymentsHelper.warmCaches()
         paymentsCurrencies.warmCaches()

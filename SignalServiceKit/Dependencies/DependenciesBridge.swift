@@ -38,7 +38,7 @@ public class DependenciesBridge {
     public let db: DB
     public let schedulers: Schedulers
 
-    public var accountAttributesUpdater: AccountAttributesUpdater
+    public let accountAttributesUpdater: AccountAttributesUpdater
 
     public let appExpiry: AppExpiry
     public let authorMergeHelper: AuthorMergeHelper
@@ -78,7 +78,10 @@ public class DependenciesBridge {
 
     public let masterKeySyncManager: MasterKeySyncManager
 
-    public var phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
+    public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
+
+    public let pinnedThreadStore: PinnedThreadStore
+    public let pinnedThreadManager: PinnedThreadManager
 
     public let pniHelloWorldManager: PniHelloWorldManager
     public let preKeyManager: PreKeyManager
@@ -90,7 +93,7 @@ public class DependenciesBridge {
     public let recipientMerger: RecipientMerger
     public let registrationSessionManager: RegistrationSessionManager
 
-    public var registrationStateChangeManager: RegistrationStateChangeManager
+    public let registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let socketManager: SocketManager
@@ -108,7 +111,7 @@ public class DependenciesBridge {
     public let threadStore: ThreadStore
     public let threadReplyInfoStore: ThreadReplyInfoStore
 
-    public var tsAccountManager: TSAccountManager
+    public let tsAccountManager: TSAccountManager
 
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
@@ -416,6 +419,15 @@ public class DependenciesBridge {
             )
         }
 
+        let pinnedThreadStore = PinnedThreadStoreImpl(keyValueStoreFactory: keyValueStoreFactory)
+        self.pinnedThreadStore = pinnedThreadStore
+        self.pinnedThreadManager = PinnedThreadManagerImpl(
+            db: db,
+            pinnedThreadStore: pinnedThreadStore,
+            storageServiceManager: storageServiceManager,
+            threadStore: threadStore
+        )
+
         self.authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: keyValueStoreFactory)
         self.recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
@@ -428,6 +440,7 @@ public class DependenciesBridge {
                 groupMemberUpdater: self.groupMemberUpdater,
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
+                pinnedThreadManager: pinnedThreadManager,
                 profileManager: profileManager,
                 recipientMergeNotifier: RecipientMergeNotifier(scheduler: schedulers.main),
                 signalServiceAddressCache: signalServiceAddressCache,
@@ -602,14 +615,15 @@ public class DependenciesBridge {
         self.messageBackupManager = MessageBackupManagerImpl(
             chatArchiver: MessageBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
-                threadStore: ThreadStoreImpl()
+                pinnedThreadManager: pinnedThreadManager,
+                threadStore: threadStore
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
                 interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
-                threadStore: ThreadStoreImpl()
+                threadStore: threadStore
             ),
             dateProvider: dateProvider,
             db: db,
@@ -620,7 +634,7 @@ public class DependenciesBridge {
                 recipientHidingManager: recipientHidingManager,
                 recipientStore: SignalRecipientStoreImpl(),
                 storyStore: StoryStoreImpl(),
-                threadStore: ThreadStoreImpl(),
+                threadStore: threadStore,
                 tsAccountManager: tsAccountManager
             ),
             streamProvider: MessageBackupProtoStreamProviderImpl(),

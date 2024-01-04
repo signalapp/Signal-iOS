@@ -990,10 +990,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let localIdentifiers: LocalIdentifiers
     private let authedAccount: AuthedAccount
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
+    private let groupsV2: GroupsV2
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let localUsernameManager: LocalUsernameManager
     private let paymentsHelper: PaymentsHelperSwift
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
+    private let pinnedThreadManager: PinnedThreadManager
     private let preferences: Preferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
@@ -1010,10 +1012,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
+        groupsV2: GroupsV2,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         localUsernameManager: LocalUsernameManager,
         paymentsHelper: PaymentsHelperSwift,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
+        pinnedThreadManager: PinnedThreadManager,
         preferences: Preferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
@@ -1029,10 +1033,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
         self.dmConfigurationStore = dmConfigurationStore
+        self.groupsV2 = groupsV2
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.localUsernameManager = localUsernameManager
         self.paymentsHelper = paymentsHelper
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
+        self.pinnedThreadManager = pinnedThreadManager
         self.preferences = preferences
         self.profileManager = profileManager
         self.receiptManager = receiptManager
@@ -1135,7 +1141,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read).orDefault.isNotDiscoverableByPhoneNumber
         )
 
-        let pinnedConversationProtos = PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
+        let pinnedConversationProtos = self.pinnedConversationProtos(transaction: transaction)
         builder.setPinnedConversations(pinnedConversationProtos)
 
         let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
@@ -1352,7 +1358,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         do {
-            try PinnedThreadManager.processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
+            try self.processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
         } catch {
             owsFailDebug("Failed to process pinned conversations \(error)")
             needsUpdate = true
@@ -1535,12 +1541,13 @@ extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
 
 // MARK: -
 
-extension PinnedThreadManager {
-    public class func processPinnedConversationsProto(
+extension StorageServiceAccountRecordUpdater {
+
+    fileprivate func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
         transaction: SDSAnyWriteTransaction
     ) throws {
-        if pinnedConversations.count > maxPinnedThreads {
+        if pinnedConversations.count > PinnedThreads.maxPinnedThreads {
             Logger.warn("Received unexpected number of pinned threads (\(pinnedConversations.count))")
         }
 
@@ -1569,13 +1576,13 @@ extension PinnedThreadManager {
             }
         }
 
-        updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)
+        pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: transaction.asV2Write)
     }
 
-    public class func pinnedConversationProtos(
+    fileprivate func pinnedConversationProtos(
         transaction: SDSAnyReadTransaction
     ) -> [StorageServiceProtoAccountRecordPinnedConversation] {
-        let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
+        let pinnedThreads = pinnedThreadManager.pinnedThreads(tx: transaction.asV2Read)
 
         var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
         for pinnedThread in pinnedThreads {

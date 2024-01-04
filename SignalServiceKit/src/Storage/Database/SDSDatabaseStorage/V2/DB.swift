@@ -90,6 +90,15 @@ public protocol DB {
     // MARK: - Observation
 
     func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate)
+
+    // MARK: - Touching
+
+    func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction)
+
+    /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
+    func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction)
+
+    func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction)
 }
 
 // MARK: - Default arguments
@@ -168,5 +177,11 @@ extension DB {
         block: (DBWriteTransaction) throws -> T
     ) rethrows -> T {
         return try write(file: file, function: function, line: line, block: block)
+    }
+
+    // MARK: - Touching
+
+    public func touch(_ thread: TSThread, shouldReindex: Bool, tx: DBWriteTransaction) {
+        self.touch(thread, shouldReindex: shouldReindex, shouldUpdateChatListUi: true, tx: tx)
     }
 }

@@ -231,6 +231,20 @@ public class MockDB: DB {
     public func appendDbChangeDelegate(_ dbChangeDelegate: DBChangeDelegate) {
         // Do nothing.
     }
+
+    // MARK: - Touching
+
+    public func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
+
+    public func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
+
+    public func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
 }
 
 #endif

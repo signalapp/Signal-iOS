@@ -16,7 +16,7 @@ final class ThreadMergerTest: XCTestCase {
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
-    private var pinnedThreadManager: ThreadMerger_MockPinnedThreadManager!
+    private var pinnedThreadManager: MockPinnedThreadManager!
     private var threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager!
     private var threadAssociatedDataStore: MockThreadAssociatedDataStore!
     private var threadStore: MockThreadStore!
@@ -43,7 +43,7 @@ final class ThreadMergerTest: XCTestCase {
         db = MockDB()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
-        pinnedThreadManager = ThreadMerger_MockPinnedThreadManager()
+        pinnedThreadManager = MockPinnedThreadManager()
         interactionStore = MockInteractionStore()
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadAssociatedDataManager = ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore)

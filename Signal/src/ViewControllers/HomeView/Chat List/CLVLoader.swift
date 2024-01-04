@@ -80,7 +80,7 @@ public class CLVLoader: Dependencies {
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
 
-        let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
+        let pinnedThreadIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadIds(tx: transaction.asV2Read)
 
         func buildRenderState() -> CLVRenderState {
             // Pinned threads are always ordered in the order they were pinned.

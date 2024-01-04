@@ -175,6 +175,18 @@ final class InMemoryDB: DB {
     func remove<T: PersistableRecord>(model record: T) {
         _ = try! write { tx in try record.delete(Self.shimOnlyBridge(tx).db) }
     }
+
+    func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
+
+    func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
+
+    func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        // Do nothing.
+    }
 }
 
 #endif

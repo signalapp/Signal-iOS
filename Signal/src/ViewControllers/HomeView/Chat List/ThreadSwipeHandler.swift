@@ -20,7 +20,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         }
 
         let thread = threadViewModel.threadRecord
-        let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
+        let isThreadPinned = threadViewModel.isPinned
         let pinnedStateAction: UIContextualAction
         if isThreadPinned {
             pinnedStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
@@ -227,7 +227,11 @@ extension ThreadSwipeHandler where Self: UIViewController {
 
         do {
             try databaseStorage.write { transaction in
-                try PinnedThreadManager.pinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
+                try DependenciesBridge.shared.pinnedThreadManager.pinThread(
+                    threadViewModel.threadRecord,
+                    updateStorageService: true,
+                    tx: transaction.asV2Write
+                )
             }
         } catch {
             if case PinnedThreadError.tooManyPinnedThreads = error {
@@ -244,7 +248,11 @@ extension ThreadSwipeHandler where Self: UIViewController {
 
         do {
             try databaseStorage.write { transaction in
-                try PinnedThreadManager.unpinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
+                try DependenciesBridge.shared.pinnedThreadManager.unpinThread(
+                    threadViewModel.threadRecord,
+                    updateStorageService: true,
+                    tx: transaction.asV2Write
+                )
             }
         } catch {
             owsFailDebug("Error: \(error)")

@@ -32,5 +32,9 @@ extension MessageBackup {
             get { map[key] }
             set(value) { map[key] = value }
         }
+
+        public var keys: Dictionary<K, V>.Keys {
+            return map.keys
+        }
     }
 }

@@ -193,7 +193,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 
-    [PinnedThreadManager handleUpdatedThread:self transaction:transaction];
+    [PinnedThreadManagerObjcBridge handleUpdatedThread:self transaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
