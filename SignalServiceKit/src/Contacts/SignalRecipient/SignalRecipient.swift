@@ -310,12 +310,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         removeDevices(deviceIdsToRemove, source: .local)
 
         anyOverwritingUpdate(transaction: tx)
-
-        tx.addAsyncCompletionOnMain {
-            // Device changes can affect the UD access mode for a recipient,
-            // so we need to fetch the profile for this user to update UD access mode.
-            self.profileManager.fetchProfile(for: self.address, authedAccount: .implicit())
-        }
     }
 
     private func addDevices(_ deviceIdsToAdd: some Sequence<UInt32>, source: ModifySource) {

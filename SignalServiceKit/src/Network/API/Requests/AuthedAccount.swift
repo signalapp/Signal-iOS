@@ -118,6 +118,16 @@ public class AuthedAccount: NSObject {
     }
 
     @objc
+    public func localUserAci() -> AciObjC? {
+        switch info {
+        case .implicit:
+            return nil
+        case let .explicit(info):
+            return AciObjC(info.aci)
+        }
+    }
+
+    @objc
     public var chatServiceAuth: ChatServiceAuth {
         switch info {
         case .implicit:

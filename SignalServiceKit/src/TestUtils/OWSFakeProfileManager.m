@@ -228,12 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount
-{
-    // Do nothing.
-}
-
-- (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
+- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly authedAccount:(AuthedAccount *)authedAccount
 {
     // Do nothing.
     return [AnyPromise promiseWithValue:@(1)];

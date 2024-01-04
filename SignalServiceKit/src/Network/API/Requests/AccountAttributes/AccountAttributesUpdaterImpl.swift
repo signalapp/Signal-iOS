@@ -182,8 +182,8 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                 reportedDeviceCapabilities = currentDeviceCapabilities
             }
 
-            // Kick off an async profile fetch (not awaited, returns void)
-            profileManager.fetchLocalUsersProfile(authedAccount: authedAccount)
+            // Kick off an async profile fetch (not awaited)
+            _ = profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: authedAccount)
 
             await db.awaitableWrite { tx in
                 self.kvStore.setString(currentAppVersion4, key: Keys.lastUpdateAppVersion, transaction: tx)

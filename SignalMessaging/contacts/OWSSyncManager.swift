@@ -147,9 +147,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .unknown:
             owsFailDebug("Unknown fetch latest type")
         case .localProfile:
-            DispatchQueue.global().async {
-                self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
-            }
+            profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: .implicit())
         case .storageManifest:
             storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
         case .subscriptionStatus:

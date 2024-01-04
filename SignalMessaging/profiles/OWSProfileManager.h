@@ -81,8 +81,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
-- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount;
-
 #pragma mark - Local Profile Updates
 
 - (void)writeAvatarToDiskWithData:(NSData *)avatarData

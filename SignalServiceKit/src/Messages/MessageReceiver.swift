@@ -1766,7 +1766,6 @@ public final class MessageReceiver: Dependencies {
         if !hasDevice {
             Logger.info("Message received from unknown linked device; refreshing device list: \(deviceId).")
             OWSDevicesService.refreshDevices()
-            profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }
     }
 

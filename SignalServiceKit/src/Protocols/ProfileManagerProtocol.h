@@ -144,11 +144,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(fetchLocalUsersProfile(authedAccount:));
-
-- (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(fetchLocalUsersProfilePromise(authedAccount:));
+- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly
+                                        authedAccount:(AuthedAccount *)authedAccount
+    NS_SWIFT_NAME(fetchLocalUsersProfile(mainAppOnly:authedAccount:));
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 

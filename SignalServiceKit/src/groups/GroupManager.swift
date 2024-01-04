@@ -1469,7 +1469,7 @@ public class GroupManager: NSObject {
             // check if it is simply expired, by asking for a new one (which we
             // would get as part of fetching our local profile).
             if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetch local user profile") }
-            return self.profileManager.fetchLocalUsersProfilePromise(authedAccount: .implicit()).asVoid()
+            return self.profileManager.fetchLocalUsersProfile(mainAppOnly: false, authedAccount: .implicit()).asVoid()
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
                 self.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: transaction)

@@ -544,11 +544,10 @@ public extension OWSProfileManager {
     class func updateStorageServiceIfNecessary() {
         guard
             CurrentAppContext().isMainApp,
-            !CurrentAppContext().isRunningTests,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
         else {
-              return
-          }
+            return
+        }
 
         let hasUpdated = databaseStorage.read { transaction in
             storageServiceStore.getBool(Self.hasUpdatedStorageServiceKey,

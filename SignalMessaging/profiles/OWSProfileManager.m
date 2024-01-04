@@ -99,10 +99,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSSingletonAssert();
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests &&
-            [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
+        if (CurrentAppContext().isMainApp && [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             [self logLocalAvatarStatus];
-            [self fetchLocalUsersProfileWithAuthedAccount:AuthedAccount.implicit];
+            [self fetchLocalUsersProfileWithMainAppOnly:YES authedAccount:AuthedAccount.implicit];
         }
     });
 
@@ -111,10 +110,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             [self rotateLocalProfileKeyIfNecessary];
         }
 
-        if ([TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
-            [self updateProfileOnServiceIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
-            [OWSProfileManager updateStorageServiceIfNecessary];
-        }
+        [self updateProfileOnServiceIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
+        [OWSProfileManager updateStorageServiceIfNecessary];
     });
 
     [self observeNotifications];
@@ -417,40 +414,20 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return data;
 }
 
-- (void)fetchLocalUsersProfileWithAuthedAccount:(AuthedAccount *)authedAccount
-{
-
-    SignalServiceAddress *_Nullable localAddress;
-    SignalServiceAddress *authAddress = [authedAccount localUserAddress];
-    if (authAddress != nil) {
-        localAddress = authAddress;
-    } else {
-        localAddress = [TSAccountManagerObjcBridge localAciAddressWithMaybeTransaction];
-    }
-    if (!localAddress.isValid) {
-        return;
-    }
-    [self fetchProfileForAddress:localAddress authedAccount:authedAccount];
-}
-
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount
 {
     [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES authedAccount:authedAccount];
 }
 
-- (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
+- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly authedAccount:(AuthedAccount *)authedAccount
 {
-    LocalIdentifiersObjC *_Nullable localIdentifiers =
-        [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction];
-    if (!localIdentifiers) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
-    }
-    ServiceIdObjC *localAci = localIdentifiers.aci;
-    if (![localAci isKindOfClass:[AciObjC class]]) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
+    AciObjC *localAci =
+        [authedAccount localUserAci] ?: [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction].aci;
+    if (localAci == nil) {
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing localAci.")];
     }
     return [ProfileFetcherJob fetchProfilePromiseObjcWithServiceId:localAci
-                                                       mainAppOnly:NO
+                                                       mainAppOnly:mainAppOnly
                                                   ignoreThrottling:YES
                                                      authedAccount:authedAccount];
 }
