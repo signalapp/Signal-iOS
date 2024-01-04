@@ -939,7 +939,12 @@ public class OWSWebSocket: NSObject {
     private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        applyDesiredSocketState()
+        guard SignalProxy.isEnabledAndReady else {
+            // When we tear down the relay, everything gets canceled.
+            return
+        }
+        // When we start the relay, we need to reconnect.
+        cycleSocket()
     }
 
     @objc

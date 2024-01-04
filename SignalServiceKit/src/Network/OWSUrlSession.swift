@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class OWSURLSession: NSObject, OWSURLSessionProtocol {
@@ -101,22 +102,16 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         maxResponseSize: Int?,
         canUseSignalProxy: Bool
     ) {
+        if canUseSignalProxy {
+            configuration.connectionProxyDictionary = SignalProxy.connectionProxyDictionary
+        }
+
         self.endpoint = endpoint
         self.configuration = configuration
         self.maxResponseSize = maxResponseSize
         self.canUseSignalProxy = canUseSignalProxy
 
         super.init()
-
-        if canUseSignalProxy {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(isSignalProxyReadyDidChange),
-                name: .isSignalProxyReadyDidChange,
-                object: nil
-            )
-            isSignalProxyReadyDidChange()
-        }
 
         // Ensure this is set so that we don't try to create it in deinit().
         _ = self.delegateBox
@@ -159,12 +154,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             maxResponseSize: maxResponseSize,
             canUseSignalProxy: canUseSignalProxy
         )
-    }
-
-    @objc
-    private func isSignalProxyReadyDidChange() {
-        configuration.connectionProxyDictionary = SignalProxy.connectionProxyDictionary
-        session.getAllTasks { $0.forEach { $0.cancel() } }
     }
 
     // MARK: Tasks
