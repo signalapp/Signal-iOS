@@ -92,6 +92,7 @@ public enum ThemeIcon: UInt {
     case buttonText
     case buttonX
     case buttonRetry
+    case buttonLink
 
     case contextMenuSave
     case contextMenuDelete
@@ -356,6 +357,8 @@ public extension Theme {
             return "x"
         case .buttonRetry:
             return "refresh"
+        case .buttonLink:
+            return "link"
 
             // Context Menus (light version of icons)
         case .contextMenuSave:

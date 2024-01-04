@@ -154,11 +154,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 guard let self else { return }
 
                 UIPasteboard.general.string = self.username
-
-                self.presentToast(text: OWSLocalizedString(
-                    "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
-                    comment: "Text presented in a toast notifying the user that their username was copied to the system clipboard."
-                ))
+                self.showUsernameCopiedToast()
             })
 
             button.setTitle(username, for: .normal)
@@ -200,7 +196,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         return wrapperView
     }
 
-    // MARK: Share and Color buttons
+    // MARK: Action buttons
 
     private func buildActionButton(
         text: String,
@@ -232,6 +228,37 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     }
 
     private func buildActionButtonsView() -> UIView {
+        let usernameLinkButton = buildActionButton(
+            text: OWSLocalizedString(
+                "USERNAME_LINK_SHEET_BUTTON",
+                comment: "Title for a button to open a sheet for copying and sharing your username link."
+            ),
+            icon: .buttonLink,
+            block: { [weak self] _ in
+                guard let self else { return }
+
+                switch self.usernameLinkState {
+                case let .available(usernameLink, _):
+                    let shareSheet = UsernameLinkShareSheetViewController(
+                        usernameLink: usernameLink,
+                        didCopyUsername: { [weak self] in
+                            guard let self else { return }
+                            self.dismiss(animated: true) {
+                                self.showUsernameCopiedToast()
+                            }
+                        }
+                    )
+                    shareSheet.dismissalDelegate = self
+                    self.present(
+                        shareSheet,
+                        animated: true
+                    )
+                case .resetting, .corrupted:
+                    break
+                }
+            }
+        )
+
         let shareQRCodeButton = buildActionButton(
             text: OWSLocalizedString(
                 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON",
@@ -292,71 +319,15 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         )
 
         let stackView = CenteringStackView(centeredSubviews: [
+            usernameLinkButton,
             shareQRCodeButton,
             colorQRCodeButton
         ])
 
         shareQRCodeButton.autoPinWidth(toWidthOf: colorQRCodeButton)
+        usernameLinkButton.autoPinWidth(toWidthOf: colorQRCodeButton)
 
         return stackView
-    }
-
-    // MARK: Link cell
-
-    private func buildLinkTableItem() -> OWSTableItem {
-        return OWSTableItem(
-            customCellBlock: { [weak self] in
-                guard let self else { return UITableViewCell() }
-
-                let title: String?
-                let opacity: CGFloat
-                let selectable: Bool
-
-                switch self.usernameLinkState {
-                case let .available(usernameLink, _):
-                    title = usernameLink.url.absoluteString
-                    opacity = 1
-                    selectable = true
-                case .resetting:
-                    title = OWSLocalizedString(
-                        "USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL",
-                        comment: "A label indicating that the username link is being reset."
-                    )
-                    opacity = 0.5
-                    selectable = false
-                case .corrupted:
-                    title = ""
-                    opacity = 1
-                    selectable = false
-                }
-
-                let cell = OWSTableItem.buildImageCell(
-                    image: UIImage(named: "link"),
-                    itemName: title ?? "",
-                    maxItemNameLines: 1,
-                    accessoryType: .disclosureIndicator
-                )
-
-                cell.contentView.alpha = opacity
-                cell.selectionStyle = selectable ? .default : .none
-                return cell
-            },
-            actionBlock: { [weak self] in
-                guard let self else { return }
-
-                switch self.usernameLinkState {
-                case let .available(usernameLink, _):
-                    let shareSheet = UsernameLinkShareSheetViewController(usernameLink: usernameLink)
-                    shareSheet.dismissalDelegate = self
-                    self.present(
-                        shareSheet,
-                        animated: true
-                    )
-                case .resetting, .corrupted:
-                    break
-                }
-            }
-        )
     }
 
     // MARK: Disclaimer text
@@ -450,18 +421,16 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 viewBlock: { [weak self] in
                     return self?.buildActionButtonsView()
                 },
-                margins: UIEdgeInsets(top: 12, leading: 16, bottom: 24, trailing: 16)
+                margins: UIEdgeInsets(top: 12, leading: 16, bottom: 20, trailing: 16)
             )
         ])
-
-        let linkCellSection = OWSTableSection(items: [buildLinkTableItem()])
 
         let bottomSection = OWSTableSection(items: [
             .itemWrappingView(
                 viewBlock: { [weak self] in
                     self?.buildDisclaimerLabel()
                 },
-                margins: UIEdgeInsets(top: 28, leading: 32, bottom: 12, trailing: 32)
+                margins: UIEdgeInsets(top: 12, leading: 32, bottom: 12, trailing: 32)
             ),
             .itemWrappingView(
                 viewBlock: { [weak self] in
@@ -474,16 +443,12 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         topSection.hasSeparators = false
         topSection.hasBackground = false
 
-        linkCellSection.hasSeparators = false
-        linkCellSection.hasBackground = true
-
         bottomSection.hasSeparators = false
         bottomSection.hasBackground = false
 
         defaultSpacingBetweenSections = 0
         contents = OWSTableContents(sections: [
             topSection,
-            linkCellSection,
             bottomSection
         ])
     }
@@ -621,6 +586,13 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 dismissalDelegate: self
             )
         }
+    }
+
+    private func showUsernameCopiedToast() {
+        self.presentToast(text: OWSLocalizedString(
+            "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
+            comment: "Text presented in a toast notifying the user that their username was copied to the system clipboard."
+        ))
     }
 
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {

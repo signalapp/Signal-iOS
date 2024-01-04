@@ -9,11 +9,16 @@ import SignalUI
 class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
 
     private let usernameLink: Usernames.UsernameLink
+    private let didCopyUsername: (() -> Void)?
 
     weak var dismissalDelegate: (any SheetDismissalDelegate)?
 
-    init(usernameLink: Usernames.UsernameLink) {
+    init(
+        usernameLink: Usernames.UsernameLink,
+        didCopyUsername: (() -> Void)? = nil
+    ) {
         self.usernameLink = usernameLink
+        self.didCopyUsername = didCopyUsername
     }
 
     required init() {
@@ -71,7 +76,7 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
                     guard let self else { return }
 
                     UIPasteboard.general.url = self.usernameLink.url
-                    self.dismiss(animated: true)
+                    self.didCopyUsername?()
                 }
             ),
             .item(
