@@ -212,7 +212,7 @@ class NotificationService: UNNotificationServiceExtension {
                     // Wait until all ACKs are complete.
                     ("Pending messageFetch ack", Self.messageFetcherJob.pendingAcksPromise()),
                     // Wait until all outgoing receipt sends are complete.
-                    ("Pending receipt sends", Self.outgoingReceiptManager.pendingSendsPromise()),
+                    ("Pending receipt sends", SSKEnvironment.shared.receiptSenderRef.pendingSendsPromise()),
                     // Wait until all outgoing messages are sent.
                     ("Pending outgoing message", Self.messageSender.pendingSendsPromise()),
                     // Wait until all sync requests are fulfilled.

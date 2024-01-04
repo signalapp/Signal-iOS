@@ -142,7 +142,10 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
-        let outgoingReceiptManager = OWSOutgoingReceiptManager()
+        let receiptSender = ReceiptSender(
+            kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
         let reachabilityManager = MockSSKReachabilityManager()
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
@@ -196,7 +199,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,
-            outgoingReceiptManager: outgoingReceiptManager,
+            receiptSender: receiptSender,
             reachabilityManager: reachabilityManager,
             syncManager: syncManager,
             typingIndicators: typingIndicators,

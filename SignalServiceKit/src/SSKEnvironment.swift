@@ -45,7 +45,8 @@ public class SSKEnvironment: NSObject {
     public let ows2FAManagerRef: OWS2FAManager
     public let disappearingMessagesJobRef: OWSDisappearingMessagesJob
     public let receiptManagerRef: OWSReceiptManager
-    public let outgoingReceiptManagerRef: OWSOutgoingReceiptManager
+    @objc
+    public let receiptSenderRef: ReceiptSender
     public let reachabilityManagerRef: SSKReachabilityManager
     public let syncManagerRef: SyncManagerProtocol
     public let typingIndicatorsRef: TypingIndicators
@@ -107,7 +108,7 @@ public class SSKEnvironment: NSObject {
         ows2FAManager: OWS2FAManager,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         receiptManager: OWSReceiptManager,
-        outgoingReceiptManager: OWSOutgoingReceiptManager,
+        receiptSender: ReceiptSender,
         reachabilityManager: SSKReachabilityManager,
         syncManager: SyncManagerProtocol,
         typingIndicators: TypingIndicators,
@@ -166,7 +167,7 @@ public class SSKEnvironment: NSObject {
         self.ows2FAManagerRef = ows2FAManager
         self.disappearingMessagesJobRef = disappearingMessagesJob
         self.receiptManagerRef = receiptManager
-        self.outgoingReceiptManagerRef = outgoingReceiptManager
+        self.receiptSenderRef = receiptSender
         self.syncManagerRef = syncManager
         self.reachabilityManagerRef = reachabilityManager
         self.typingIndicatorsRef = typingIndicators

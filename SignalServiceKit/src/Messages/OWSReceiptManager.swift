@@ -241,7 +241,8 @@ public extension OWSReceiptManager {
             return
         }
 
-        self.outgoingReceiptManager.enqueueViewedReceipt(
+        let receiptSender = SSKEnvironment.shared.receiptSenderRef
+        receiptSender.enqueueViewedReceipt(
             for: message.authorAddress,
             timestamp: message.timestamp,
             messageUniqueId: message.uniqueId,

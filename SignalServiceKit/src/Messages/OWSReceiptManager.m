@@ -6,7 +6,6 @@
 #import "OWSReceiptManager.h"
 #import "AppReadiness.h"
 #import "OWSLinkedDeviceReadReceipt.h"
-#import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "TSContactThread.h"
@@ -111,10 +110,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
-                [self.outgoingReceiptManager enqueueReadReceiptFor:message.authorAddress
-                                                         timestamp:message.timestamp
-                                                   messageUniqueId:message.uniqueId
-                                                                tx:transaction];
+                ReceiptSender *receiptSender = SSKEnvironment.shared.receiptSenderRef;
+                [receiptSender enqueueReadReceiptFor:message.authorAddress
+                                           timestamp:message.timestamp
+                                     messageUniqueId:message.uniqueId
+                                                  tx:transaction];
             }
             break;
         }
@@ -156,10 +156,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
-                [self.outgoingReceiptManager enqueueViewedReceiptFor:message.authorAddress
-                                                           timestamp:message.timestamp
-                                                     messageUniqueId:message.uniqueId
-                                                                  tx:transaction];
+                ReceiptSender *receiptSender = SSKEnvironment.shared.receiptSenderRef;
+                [receiptSender enqueueViewedReceiptFor:message.authorAddress
+                                             timestamp:message.timestamp
+                                       messageUniqueId:message.uniqueId
+                                                    tx:transaction];
             }
             break;
         }

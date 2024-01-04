@@ -152,7 +152,10 @@ public class AppSetup {
         let messageDecrypter = OWSMessageDecrypter()
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
-        let outgoingReceiptManager = OWSOutgoingReceiptManager()
+        let receiptSender = ReceiptSender(
+            kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
+            signalServiceAddressCache: signalServiceAddressCache
+        )
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
@@ -215,7 +218,7 @@ public class AppSetup {
             ows2FAManager: ows2FAManager,
             disappearingMessagesJob: disappearingMessagesJob,
             receiptManager: receiptManager,
-            outgoingReceiptManager: outgoingReceiptManager,
+            receiptSender: receiptSender,
             reachabilityManager: reachabilityManager,
             syncManager: syncManager,
             typingIndicators: typingIndicators,

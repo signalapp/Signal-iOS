@@ -156,7 +156,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
                 owsFailDebug("address was invalid")
                 continue
             }
-            outgoingReceiptManager.enqueueReadReceipt(
+            SSKEnvironment.shared.receiptSenderRef.enqueueReadReceipt(
                 for: address,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
@@ -172,7 +172,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
                 owsFailDebug("address was invalid")
                 continue
             }
-            outgoingReceiptManager.enqueueViewedReceipt(
+            SSKEnvironment.shared.receiptSenderRef.enqueueViewedReceipt(
                 for: address,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,

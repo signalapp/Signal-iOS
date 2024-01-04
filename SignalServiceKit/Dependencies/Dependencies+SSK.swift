@@ -289,14 +289,6 @@ public extension NSObject {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
-    final var outgoingReceiptManager: OWSOutgoingReceiptManager {
-        SSKEnvironment.shared.outgoingReceiptManagerRef
-    }
-
-    static var outgoingReceiptManager: OWSOutgoingReceiptManager {
-        SSKEnvironment.shared.outgoingReceiptManagerRef
-    }
-
     final var earlyMessageManager: EarlyMessageManager {
         SSKEnvironment.shared.earlyMessageManagerRef
     }
@@ -723,14 +715,6 @@ public extension Dependencies {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
-    var outgoingReceiptManager: OWSOutgoingReceiptManager {
-        SSKEnvironment.shared.outgoingReceiptManagerRef
-    }
-
-    static var outgoingReceiptManager: OWSOutgoingReceiptManager {
-        SSKEnvironment.shared.outgoingReceiptManagerRef
-    }
-
     var earlyMessageManager: EarlyMessageManager {
         SSKEnvironment.shared.earlyMessageManagerRef
     }
@@ -1054,15 +1038,6 @@ public extension MessageProcessor {
 public extension NetworkManager {
     static var shared: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSOutgoingReceiptManager {
-    static var shared: OWSOutgoingReceiptManager {
-        SSKEnvironment.shared.outgoingReceiptManagerRef
     }
 }
 

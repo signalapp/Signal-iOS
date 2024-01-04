@@ -734,7 +734,8 @@ public final class MessageReceiver: Dependencies {
 
         // Send delivery receipts for "valid data" messages received via UD.
         if request.wasReceivedByUD {
-            outgoingReceiptManager.enqueueDeliveryReceipt(for: envelope, messageUniqueId: message?.uniqueId, tx: tx)
+            let receiptSender = SSKEnvironment.shared.receiptSenderRef
+            receiptSender.enqueueDeliveryReceipt(for: envelope, messageUniqueId: message?.uniqueId, tx: tx)
         }
     }
 
@@ -1624,11 +1625,8 @@ public final class MessageReceiver: Dependencies {
         }
 
         if request.wasReceivedByUD {
-            self.outgoingReceiptManager.enqueueDeliveryReceipt(
-                for: decryptedEnvelope,
-                messageUniqueId: message.uniqueId,
-                tx: tx
-            )
+            let receiptSender = SSKEnvironment.shared.receiptSenderRef
+            receiptSender.enqueueDeliveryReceipt(for: decryptedEnvelope, messageUniqueId: message.uniqueId, tx: tx)
 
             if
                 case let .incomingMessage(incoming) = targetMessage,
