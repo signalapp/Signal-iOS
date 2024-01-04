@@ -26,7 +26,6 @@ public protocol SyncManagerProtocolSwift {
 
     func sendConfigurationSyncMessage()
 
-    func syncLocalContact() -> AnyPromise
     func syncAllContacts() -> AnyPromise
     func syncAllContactsIfFullSyncRequested() -> AnyPromise
 

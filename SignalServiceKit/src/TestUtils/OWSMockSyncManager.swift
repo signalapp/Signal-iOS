@@ -82,13 +82,6 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
     }
 
     @objc
-    public func syncLocalContact() -> AnyPromise {
-        Logger.info("")
-
-        return AnyPromise()
-    }
-
-    @objc
     public func syncAllContacts() -> AnyPromise {
         Logger.info("")
 

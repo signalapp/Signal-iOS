@@ -9,6 +9,9 @@ import SignalCoreKit
 @objc(OWSSyncContactsMessage)
 public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
+    /// Deprecated. It's always true for new instances, but it might be false
+    /// for jobs enqueued by prior versions of the application. (These would be
+    /// safe to drop, but they're also harmless to send.)
     @objc // for Mantle
     private(set) public var isFullSync = false
 

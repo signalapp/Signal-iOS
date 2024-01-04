@@ -269,11 +269,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Contact Sync
 
-    public func syncLocalContact() -> AnyPromise {
-        owsAssertDebug(canSendContactSyncMessage())
-        return AnyPromise(syncContacts(mode: .localAddress))
-    }
-
     public func syncAllContacts() -> AnyPromise {
         owsAssertDebug(canSendContactSyncMessage())
         return AnyPromise(syncContacts(mode: .allSignalAccounts))
@@ -291,7 +286,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private enum ContactSyncMode {
-        case localAddress
         case allSignalAccounts
         case allSignalAccountsIfChanged
         case allSignalAccountsIfFullSyncRequested
@@ -388,39 +382,25 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let dataSource = try DataSourcePath.dataSource(with: result.syncFileUrl, shouldDeleteOnDeallocation: true)
 
-        switch mode {
-        case .localAddress:
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                mediaMessage: result.message,
-                dataSource: dataSource,
-                contentType: OWSMimeTypeApplicationOctetStream,
-                sourceFilename: nil,
-                caption: nil,
-                albumMessageId: nil,
-                isTemporaryAttachment: true
-            )
-            return .value(())
-        case .allSignalAccounts, .allSignalAccountsIfChanged, .allSignalAccountsIfFullSyncRequested:
-            if debounce {
-                self.isRequestInFlight = true
-            }
-            return Promise.wrapAsync {
-                defer {
-                    if debounce {
-                        Self.contactSyncQueue.async {
-                            self.isRequestInFlight = false
-                        }
+        if debounce {
+            self.isRequestInFlight = true
+        }
+        return Promise.wrapAsync {
+            defer {
+                if debounce {
+                    Self.contactSyncQueue.async {
+                        self.isRequestInFlight = false
                     }
                 }
-                try await self.messageSender.sendTemporaryAttachment(
-                    dataSource: dataSource,
-                    contentType: OWSMimeTypeApplicationOctetStream,
-                    message: result.message
-                )
-                await self.databaseStorage.awaitableWrite { tx in
-                    Self.keyValueStore().setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
-                    self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
-                }
+            }
+            try await self.messageSender.sendTemporaryAttachment(
+                dataSource: dataSource,
+                contentType: OWSMimeTypeApplicationOctetStream,
+                message: result.message
+            )
+            await self.databaseStorage.awaitableWrite { tx in
+                Self.keyValueStore().setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
+                self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
             }
         }
     }
@@ -437,22 +417,18 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         mode: ContactSyncMode,
         tx: SDSAnyReadTransaction
     ) throws -> BuildContactSyncMessageResult? {
-        let isFullSync = mode != .localAddress
+        // Check if there's a pending request from the NSE. Any full sync in the
+        // main app can clear this flag, even if it's not started in response to
+        // calling syncAllContactsIfFullSyncRequested.
+        let fullSyncRequestId = Self.keyValueStore().getString(Constants.fullSyncRequestIdKey, transaction: tx)
 
-        // If we're doing a full sync, check if there's a pending request from the
-        // NSE. Any full sync in the main app can clear this flag, even if it's not
-        // started in response to calling syncAllContactsIfFullSyncRequested.
-        var fullSyncRequestId: String?
-        if isFullSync {
-            fullSyncRequestId = Self.keyValueStore().getString(Constants.fullSyncRequestIdKey, transaction: tx)
-        }
         // However, only syncAllContactsIfFullSyncRequested-initiated requests
         // should be skipped if there's no request.
         if mode == .allSignalAccountsIfFullSyncRequested, fullSyncRequestId == nil {
             return nil
         }
 
-        let message = OWSSyncContactsMessage(thread: thread, isFullSync: isFullSync, tx: tx)
+        let message = OWSSyncContactsMessage(thread: thread, isFullSync: true, tx: tx)
         guard let syncFileUrl = ContactSyncAttachmentBuilder.buildAttachmentFile(
             for: message,
             blockingManager: Self.blockingManager,

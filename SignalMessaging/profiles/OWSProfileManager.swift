@@ -901,20 +901,7 @@ extension OWSProfileManager {
     }
 
     private class func attemptDidComplete(retryDelay: TimeInterval, didSucceed: Bool, authedAccount: AuthedAccount) {
-        // We use a "self-only" contact sync to indicate to desktop
-        // that we've changed our profile and that it should do a
-        // profile fetch for "self".
-        //
-        // NOTE: We also inform the desktop in the failure case,
-        //       since that _may have_ affected service state.
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-        if tsRegistrationState.isRegisteredPrimaryDevice {
-            firstly {
-                self.syncManager.syncLocalContact()
-            }.catch { error in
-                Logger.warn("Error: \(error)")
-            }
-        }
 
         // Notify all our devices that the profile has changed.
         // Older linked devices may not handle this message.

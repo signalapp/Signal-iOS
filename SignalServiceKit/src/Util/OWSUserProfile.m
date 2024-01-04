@@ -838,15 +838,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         addAsyncCompletionWithQueue:dispatch_get_main_queue()
                               block:^{
                                   if (isLocalUserProfile) {
-                                      // We populate an initial (empty) profile on launch of a new install, but
-                                      // until we have a registered account, syncing will fail (and there could not
-                                      // be any linked device to sync to at this point anyway).
-                                      if ([TSAccountManagerObjcBridge isRegisteredPrimaryDeviceWithMaybeTransaction]
-                                          && CurrentAppContext().isMainApp) {
-                                          [self.syncManager syncLocalContact].catchInBackground(
-                                              ^(NSError *error) { OWSLogError(@"Error: %@", error); });
-                                      }
-
                                       if (profileKeyDidChange) {
                                           [[NSNotificationCenter defaultCenter]
                                               postNotificationNameAsync:kNSNotificationNameLocalProfileKeyDidChange
