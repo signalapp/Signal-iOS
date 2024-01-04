@@ -18,12 +18,19 @@ extension SVR2 {
 }
 
 public protocol _SVR2_AppReadinessShim {
+
+    var isMainApp: Bool { get }
+
     func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
 }
 
 public class _SVR2_AppReadinessWrapper: _SVR2_AppReadinessShim {
 
     public init() {}
+
+    public var isMainApp: Bool {
+        return CurrentAppContext().isMainApp
+    }
 
     public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
@@ -136,6 +143,8 @@ extension SVR2 {
 internal class _SVR2_AppReadinessMock: _SVR2_AppReadinessShim {
 
     init() {}
+
+    var isMainApp: Bool { true }
 
     func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {}
 }
