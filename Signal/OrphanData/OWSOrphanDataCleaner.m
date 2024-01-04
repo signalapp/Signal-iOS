@@ -19,10 +19,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// LOG_ALL_FILE_PATHS can be used to determine if there are other kinds of files
-// that we're not cleaning up.
-// #define LOG_ALL_FILE_PATHS
-
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
 
@@ -68,13 +64,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
 }
 
-+ (void)printPaths:(NSArray<NSString *> *)paths label:(NSString *)label
-{
-    for (NSString *path in [paths sortedArrayUsingSelector:@selector(compare:)]) {
-        OWSLogDebug(@"%@: %@", label, path);
-    }
-}
-
 + (long long)fileSizeOfFilePath:(NSString *)filePath
 {
     NSError *error;
@@ -82,7 +71,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     if (error) {
         if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == 260) {
             OWSLogWarn(@"can't find size of missing file.");
-            OWSLogDebug(@"can't find size of missing file: %@", filePath);
         } else {
             OWSFailDebug(@"attributesOfItemAtPath: %@ error: %@", filePath, error);
         }
@@ -193,35 +181,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     __block BOOL shouldAbort = NO;
 
-#ifdef LOG_ALL_FILE_PATHS
-    {
-        NSString *documentDirPath = [OWSFileSystem appDocumentDirectoryPath];
-        NSArray<NSString *> *_Nullable allDocumentFilePaths =
-            [self filePathsInDirectorySafe:documentDirPath].allObjects;
-        allDocumentFilePaths = [allDocumentFilePaths sortedArrayUsingSelector:@selector(compare:)];
-        NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
-        for (NSString *filePath in allDocumentFilePaths) {
-            if ([filePath hasPrefix:attachmentsFolder]) {
-                continue;
-            }
-            OWSLogVerbose(@"non-attachment file: %@", filePath);
-        }
-    }
-    {
-        NSString *documentDirPath = [OWSFileSystem appSharedDataDirectoryPath];
-        NSArray<NSString *> *_Nullable allDocumentFilePaths =
-            [self filePathsInDirectorySafe:documentDirPath].allObjects;
-        allDocumentFilePaths = [allDocumentFilePaths sortedArrayUsingSelector:@selector(compare:)];
-        NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
-        for (NSString *filePath in allDocumentFilePaths) {
-            if ([filePath hasPrefix:attachmentsFolder]) {
-                continue;
-            }
-            OWSLogVerbose(@"non-attachment file: %@", filePath);
-        }
-    }
-#endif
-
     // We treat _all_ temp files as orphan files.  This is safe
     // because temp files only need to be retained for the
     // a single launch of the app.  Since our "date threshold"
@@ -231,27 +190,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     if (!tempFilePaths || !self.isMainAppAndActive) {
         return nil;
     }
-
-#ifdef LOG_ALL_FILE_PATHS
-    {
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        [dateFormatter setDateStyle:NSDateFormatterLongStyle];
-        [dateFormatter setTimeStyle:NSDateFormatterLongStyle];
-
-        tempFilePaths = [tempFilePaths sortedArrayUsingSelector:@selector(compare:)];
-        for (NSString *filePath in tempFilePaths) {
-            NSError *error;
-            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
-            if (!attributes || error) {
-                OWSLogDebug(@"Could not get attributes of file at: %@", filePath);
-                OWSFailDebug(@"Could not get attributes of file");
-                continue;
-            }
-            OWSLogVerbose(
-                @"temp file: %@, %@", filePath, [dateFormatter stringFromDate:attributes.fileModificationDate]);
-        }
-    }
-#endif
 
     NSString *legacyAttachmentsDirPath = TSAttachmentStream.legacyAttachmentsDirPath;
     NSString *sharedDataAttachmentsDirPath = TSAttachmentStream.sharedDataAttachmentsDirPath;
@@ -328,12 +266,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }
     }
     [allOnDiskFilePaths minusSet:databaseFilePaths];
-    OWSLogVerbose(@"grdbDirectoryPath: %@ (%d)",
-        grdbPrimaryDirectoryPath,
-        [OWSFileSystem fileOrFolderExistsAtPath:grdbPrimaryDirectoryPath]);
-    OWSLogVerbose(@"databaseFilePaths: %lu", (unsigned long)databaseFilePaths.count);
-
-    OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);
 
     __block NSSet<NSString *> *profileAvatarFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -528,11 +460,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    OWSLogDebug(@"fileCount: %zu", allOnDiskFilePaths.count);
-    OWSLogDebug(@"totalFileSize: %lld", totalFileSize.longLongValue);
-    OWSLogDebug(@"attachmentStreams: %d", attachmentStreamCount);
-    OWSLogDebug(@"attachmentStreams with file paths: %zu", allAttachmentFilePaths.count);
-
     NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
@@ -541,47 +468,25 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];
 
-    OWSLogDebug(@"orphan file paths: %zu", orphanFilePaths.count);
-    OWSLogDebug(@"missing attachment file paths: %zu", missingAttachmentFilePaths.count);
-
-    [self printPaths:orphanFilePaths.allObjects label:@"orphan file paths"];
-    [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
-
-    OWSLogDebug(@"attachmentIds: %zu", allAttachmentIds.count);
-    OWSLogDebug(@"allMessageAttachmentIds: %zu", allMessageAttachmentIds.count);
-    OWSLogDebug(@"allStoryAttachmentIds: %zu", allStoryAttachmentIds.count);
-
     NSMutableSet<NSString *> *orphanAttachmentIds = [allAttachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:allMessageAttachmentIds];
     [orphanAttachmentIds minusSet:allStoryAttachmentIds];
     NSMutableSet<NSString *> *missingAttachmentIds = [allMessageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:allAttachmentIds];
 
-    OWSLogDebug(@"orphan attachmentIds: %zu", orphanAttachmentIds.count);
-    OWSLogDebug(@"missing attachmentIds: %zu", missingAttachmentIds.count);
-    OWSLogDebug(@"orphan interactions: %zu", orphanInteractionIds.count);
-
     NSMutableSet<NSString *> *orphanReactionIds = [allReactionIds mutableCopy];
     [orphanReactionIds minusSet:allMessageReactionIds];
     NSMutableSet<NSString *> *missingReactionIds = [allMessageReactionIds mutableCopy];
     [missingReactionIds minusSet:allReactionIds];
-
-    OWSLogDebug(@"orphan reactionIds: %zu", orphanReactionIds.count);
-    OWSLogDebug(@"missing reactionIds: %zu", missingReactionIds.count);
 
     NSMutableSet<NSString *> *orphanMentionIds = [allMentionIds mutableCopy];
     [orphanMentionIds minusSet:allMessageMentionIds];
     NSMutableSet<NSString *> *missingMentionIds = [allMessageMentionIds mutableCopy];
     [missingMentionIds minusSet:allMentionIds];
 
-    OWSLogDebug(@"orphan mentionIds: %zu", orphanMentionIds.count);
-    OWSLogDebug(@"missing mentionIds: %zu", missingMentionIds.count);
-
     NSMutableSet<NSString *> *orphanFileAndDirectoryPaths = [NSMutableSet set];
     [orphanFileAndDirectoryPaths unionSet:voiceMessageDraftOrphanedPaths];
     [orphanFileAndDirectoryPaths unionSet:wallpaperOrphanedPaths];
-
-    OWSLogDebug(@"orphan file/directory paths: %zu", orphanFileAndDirectoryPaths.count);
 
     OWSOrphanData *result = [OWSOrphanData new];
     result.interactionIds = [orphanInteractionIds copy];
@@ -615,10 +520,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     }
     if (!CurrentAppContext().isMainApp) {
         OWSFailDebug(@"can't audit orphan data in app extensions.");
-        return;
-    }
-    if (CurrentAppContext().isRunningTests) {
-        OWSLogVerbose(@"Ignoring audit orphan data in tests.");
         return;
     }
 
@@ -882,7 +783,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             continue;
         }
         if (![OWSFileSystem deleteFile:filePath ignoreIfMissing:YES]) {
-            OWSLogDebug(@"Could not remove orphan file at: %@", filePath);
             OWSFailDebug(@"Could not remove orphan file");
         }
     }
