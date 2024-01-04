@@ -5,6 +5,7 @@
 
 import SignalUI
 import SignalMessaging
+import SignalRingRTC
 
 // MARK: - CallCellDelegate
 
@@ -20,6 +21,28 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
+
+    // MARK: - Dependencies
+
+    private struct Dependencies {
+        let callService: CallService
+        let callRecordQuerier: CallRecordQuerier
+        let contactsManager: ContactsManagerProtocol
+        let db: SDSDatabaseStorage
+        let fullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder
+        let interactionStore: InteractionStore
+        let threadStore: ThreadStore
+    }
+
+    private lazy var deps: Dependencies = Dependencies(
+        callService: NSObject.callService,
+        callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
+        contactsManager: NSObject.contactsManager,
+        db: NSObject.databaseStorage,
+        fullTextSearchFinder: CallRecordLoader.Wrappers.FullTextSearchFinder(),
+        interactionStore: DependenciesBridge.shared.interactionStore,
+        threadStore: DependenciesBridge.shared.threadStore
+    )
 
     // MARK: - Lifecycle
 
@@ -57,7 +80,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         tableView.contentInset = .zero
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
-        updateCalls()
 
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
@@ -67,6 +89,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         noSearchResultsView.autoPinEdge(toSuperviewMargin: .top, withInset: 80)
 
         applyTheme()
+        loadCallRecordsAnew()
+
+        // [CallsTab] TODO: make ourselves a CallServiceObserver, so we know when calls change
     }
 
     override func themeDidChange() {
@@ -279,13 +304,172 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
     @objc
     private func tabChanged() {
-        Logger.debug("Tab changed")
-        filterCalls()
+        loadCallRecordsAnew()
         updateMultiselectToolbarButtons()
     }
 
     private var currentFilterMode: FilterMode {
         FilterMode(rawValue: tabPicker.selectedSegmentIndex) ?? .all
+    }
+
+    // MARK: - Call Record Loading
+
+    /// Loads call records that we convert to ``CallViewModel``s. Configured on
+    /// init with the current UI state of this view, e.g. filter mode and/or
+    /// search term.
+    private var callRecordLoader: CallRecordLoader!
+
+    /// Recreates ``callRecordLoader`` with the current UI state, and kicks off
+    /// an initial load.
+    private func loadCallRecordsAnew() {
+        AssertIsOnMainThread()
+
+        let onlyLoadMissedCalls: Bool = {
+            switch currentFilterMode {
+            case .all: return false
+            case .missed: return true
+            }
+        }()
+
+        // Rebuild the loader.
+        callRecordLoader = CallRecordLoader(
+            callRecordQuerier: deps.callRecordQuerier,
+            fullTextSearchFinder: deps.fullTextSearchFinder,
+            configuration: CallRecordLoader.Configuration(
+                onlyLoadMissedCalls: onlyLoadMissedCalls,
+                searchTerm: searchTerm
+            )
+        )
+
+        // Load the initial page of records.
+        loadMoreCalls(direction: .older)
+    }
+
+    /// Load more calls and add them to the table.
+    private func loadMoreCalls(direction: CallRecordLoader.LoadDirection) {
+        deps.db.read { tx in
+            _ = callRecordLoader.loadCallRecords(
+                loadDirection: direction,
+                tx: tx.asV2Read
+            )
+
+            calls = callRecordLoader.loadedCallRecords.map { callRecord -> CallViewModel in
+                createCallViewModel(callRecord: callRecord, tx: tx)
+            }
+        }
+
+        updateSnapshot()
+    }
+
+    /// Converts a ``CallRecord`` to a ``CallViewModel``.
+    ///
+    /// - Note
+    /// This method involves calls to external dependencies, as the view model
+    /// state relies on state elsewhere in the app (such as any
+    /// currently-ongoing calls).
+    private func createCallViewModel(
+        callRecord: CallRecord,
+        tx: SDSAnyReadTransaction
+    ) -> CallViewModel {
+        guard let callThread = deps.threadStore.fetchThread(
+            rowId: callRecord.threadRowId,
+            tx: tx.asV2Read
+        ) else {
+            owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
+        }
+
+        let callId = callRecord.callId
+
+        let callDirection: CallViewModel.Direction = {
+            if callRecord.callStatus.isMissedCall {
+                return .missed
+            }
+
+            switch callRecord.callDirection {
+            case .incoming: return .incoming
+            case .outgoing: return .outgoing
+            }
+        }()
+
+        let callState: CallViewModel.State = {
+            let currentCallId: UInt64? = {
+                guard let currentCall = deps.callService.currentCall else { return nil }
+
+                switch currentCall.mode {
+                case .individual(let individualCall):
+                    return individualCall.callId
+                case .group(let groupCall):
+                    return groupCall.peekInfo?.eraId.map { callIdFromEra($0) }
+                }
+            }()
+
+            switch callRecord.callStatus {
+            case .individual:
+                if callRecord.callId == currentCallId {
+                    // We can have at most one 1:1 call active at a time, and if
+                    // we have an active 1:1 call we must be in it. All other
+                    // 1:1 calls must have ended.
+                    return .participating
+                }
+            case .group:
+                guard let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
+                    .fetchAssociatedInteraction(
+                        callRecord: callRecord, tx: tx.asV2Read
+                    )
+                else {
+                    owsFail("Missing interaction for group call. This should be impossible per the DB schema!")
+                }
+
+                // We learn that a group call ended by peeking the group. During
+                // that peek, we update the group call interaction. It's a
+                // leetle wonky that we use the interaction to store that info,
+                // but such is life.
+                if !groupCallInteraction.hasEnded {
+                    if callRecord.callId == currentCallId {
+                        return .participating
+                    }
+
+                    return .active
+                }
+            }
+
+            return .ended(callStartedAt: callRecord.callBeganAtDate)
+        }()
+
+        if let contactThread = callThread as? TSContactThread {
+            let callType: CallViewModel.RecipientType.CallType = {
+                switch callRecord.callType {
+                case .audioCall:
+                    return .audio
+                case .groupCall:
+                    owsFailDebug("Had group call type for 1:1 call!")
+                    fallthrough
+                case .videoCall:
+                    return .video
+                }
+            }()
+
+            return CallViewModel(
+                callId: callId,
+                title: deps.contactsManager.displayName(
+                    for: contactThread.contactAddress,
+                    transaction: tx
+                ),
+                recipientType: .individual(callType),
+                direction: callDirection,
+                state: callState
+            )
+        } else if let groupThread = callThread as? TSGroupThread {
+            return CallViewModel(
+                callId: callId,
+                title: groupThread.groupModel.groupNameOrDefault,
+                recipientType: .group,
+                direction: callDirection,
+                state: callState
+            )
+        } else {
+            owsFail("Call thread was neither contact nor group! This should be impossible.")
+        }
     }
 
     // MARK: - Table view
@@ -295,8 +479,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
     }
 
     struct CallViewModel: Hashable, Identifiable {
-        typealias ID = String
-
         enum Direction: Hashable {
             case outgoing
             case incoming
@@ -315,12 +497,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }
 
         enum State: Hashable {
-            /// There is an active that the user can join
+            /// This call is active, but the user is not in it.
             case active
-            /// There is a call that the user is currently participating in
+            /// The user is currently in this call.
             case participating
-            /// The call ended
-            case ended(Date)
+            /// The call is no longer active.
+            case ended(callStartedAt: Date)
         }
 
         enum RecipientType: Hashable {
@@ -333,7 +515,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        var id: ID = UUID().uuidString
+        var callId: ID
         var title: String
         var recipientType: RecipientType
         var direction: Direction
@@ -358,75 +540,45 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        func shouldShow(with searchTerm: String) -> Bool {
-            title.localizedCaseInsensitiveContains(searchTerm)
-        }
+        // MARK: Identifiable
+
+        typealias ID = UInt64
+        var id: UInt64 { callId }
     }
 
     let tableView = UITableView(frame: .zero, style: .plain)
 
-    private var searchTerm: String? {
+    /// - Important
+    /// Don't use this directly – use ``searchTerm``.
+    private var _searchTerm: String? {
         didSet {
-            filterCalls()
+            guard oldValue != searchTerm else {
+                // If the term hasn't changed, don't do anything.
+                return
+            }
+
+            loadCallRecordsAnew()
         }
     }
 
+    /// The user's current search term. Coalesces empty strings into `nil`.
+    private var searchTerm: String? {
+        get { _searchTerm?.nilIfEmpty }
+        set { _searchTerm = newValue?.nilIfEmpty }
+    }
+
     /// Ordered list of all call view models that might be displayed.
-    ///
-    /// Setting this calls `updateCalls()`.
     private var calls: [CallViewModel] = [] {
         didSet {
-            updateCalls()
+            callViewModelsByID = Dictionary(
+                calls.map { callViewModel in (callViewModel.id, callViewModel) },
+                uniquingKeysWith: { _, new in new }
+            )
         }
     }
 
     /// The view model for a given call ID.
-    ///
-    /// Is updated by `updateCalls()`.
-    private var callViewModelsByID = [String: CallViewModel]()
-
-    /// A list of filtered calls to display by ID.
-    ///
-    /// Setting this calls `updateSnapshot()`.
-    ///
-    /// `callViewModelsByID` contains the view models for each ID.
-    private var filteredCallIDs = [String]() {
-        didSet {
-            updateSnapshot()
-        }
-    }
-
-    private func updateCalls() {
-        callViewModelsByID = Dictionary(
-            calls.map { callViewModel in (callViewModel.id, callViewModel) },
-            uniquingKeysWith: { _, new in new }
-        )
-        filterCalls()
-    }
-
-    /// Filters the call IDs from their view models in `calls` into
-    /// `filteredCallIDs` based on the selected tab or search term.
-    private func filterCalls() {
-        if
-            let searchTerm,
-            !searchTerm.isEmpty
-        {
-            filteredCallIDs = calls.filter { callViewModel in
-                callViewModel.shouldShow(with: searchTerm)
-            }
-            .map(\.id)
-            return
-        }
-
-        let filteredCalls: [CallViewModel]
-        switch self.currentFilterMode {
-        case .all:
-            filteredCalls = self.calls
-        case .missed:
-            filteredCalls = self.calls.filter(\.isMissed)
-        }
-        filteredCallIDs = filteredCalls.map(\.id)
-    }
+    private var callViewModelsByID = [CallViewModel.ID: CallViewModel]()
 
     private static var callCellReuseIdentifier = "callCell"
 
@@ -446,7 +598,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
         snapshot.appendSections([.primary])
-        snapshot.appendItems(self.filteredCallIDs)
+        snapshot.appendItems(calls.map(\.id))
         return snapshot
     }
 
@@ -463,7 +615,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
     }
 
     private func updateEmptyStateMessage() {
-        switch (filteredCallIDs.count, searchTerm) {
+        switch (calls.count, searchTerm) {
         case (0, .some(let searchTerm)) where !searchTerm.isEmpty:
             noSearchResultsView.text = "No results found for '\(searchTerm)'" // [CallsTab] TODO: Localize
             noSearchResultsView.layer.opacity = 1
@@ -503,11 +655,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 extension CallsListViewController: UITableViewDelegate {
 
     private func viewModel(forRowAt indexPath: IndexPath) -> CallViewModel? {
-        guard let id = filteredCallIDs[safe: indexPath.row] else {
-            owsFailDebug("Missing call ID")
-            return nil
+        return calls[safe: indexPath.row]
+    }
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == calls.count - 1 {
+            // Try and load the next page if we're about to hit the bottom.
+            DispatchQueue.main.async {
+                self.loadMoreCalls(direction: .older)
+            }
         }
-        return callViewModelsByID[id]
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -981,12 +1138,12 @@ extension CallsListViewController {
                 }
 
                 timestampLabel.text = nil
-            case .ended(let date):
+            case .ended(let callBeganAtDate):
                 // Info button
                 detailsButton.setImage(imageName: "info")
                 detailsButton.tintColor = Theme.primaryIconColor
 
-                timestampLabel.text = DateUtil.formatDateShort(date)
+                timestampLabel.text = DateUtil.formatDateShort(callBeganAtDate)
                 // [CallsTab] TODO: Automatic updates
                 // See ChatListCell.nextUpdateTimestamp
             }
@@ -1023,5 +1180,13 @@ extension CallsListViewController {
                 delegate.showCallInfo(from: viewModel)
             }
         }
+    }
+}
+
+// MARK: -
+
+private extension CallRecord {
+    var callBeganAtDate: Date {
+        Date(millisecondsSince1970: callBeganTimestamp)
     }
 }

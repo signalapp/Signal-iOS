@@ -43,7 +43,6 @@ class CallRecordLoader {
     }
 
     private let callRecordQuerier: CallRecordQuerier
-    private let db: DB
     private let fullTextSearchFinder: Shims.FullTextSearchFinder
 
     /// The call records that have already been loaded. These records are
@@ -55,26 +54,15 @@ class CallRecordLoader {
 
     init(
         callRecordQuerier: CallRecordQuerier,
-        db: DB,
         fullTextSearchFinder: Shims.FullTextSearchFinder,
         configuration: Configuration
     ) {
-        self.db = db
         self.callRecordQuerier = callRecordQuerier
         self.fullTextSearchFinder = fullTextSearchFinder
 
         self.configuration = configuration
 
         self.loadedCallRecords = []
-    }
-
-    static func fromGlobals(configuration: Configuration) -> CallRecordLoader {
-        return CallRecordLoader(
-            callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
-            db: DependenciesBridge.shared.db,
-            fullTextSearchFinder: Wrappers.FullTextSearchFinder(),
-            configuration: configuration
-        )
     }
 
     #if TESTABLE_BUILD
@@ -90,7 +78,10 @@ class CallRecordLoader {
     /// - Returns
     /// Whether any records were loaded as a result of this call. If `true`, the
     /// new records will be present in ``loadedCallRecords``.
-    func loadCallRecords(loadDirection: LoadDirection) -> Bool {
+    func loadCallRecords(
+        loadDirection: LoadDirection,
+        tx: DBReadTransaction
+    ) -> Bool {
         let fetchOrdering: CallRecordQuerierFetchOrdering = {
             if loadedCallRecords.isEmpty {
                 return .descending
@@ -106,14 +97,13 @@ class CallRecordLoader {
             }
         }()
 
-        let newCallRecords = db.read { tx -> [CallRecord] in
+        let newCallRecords: [CallRecord] = {
             let callRecordCursors = callRecordCursors(
                 ordering: fetchOrdering,
                 tx: tx
             )
 
             if callRecordCursors.isEmpty {
-                CallRecordLogger.shared.error("No cursors returned for load!")
                 return []
             }
 
@@ -139,7 +129,7 @@ class CallRecordLoader {
                 CallRecordLogger.shared.error("Failed to drain cursors! \(error)")
                 return []
             }
-        }
+        }()
 
         if newCallRecords.isEmpty {
             return false
@@ -227,6 +217,10 @@ extension CallRecord.CallStatus {
             .individual(.incomingMissed),
             .group(.ringingMissed)
         ]
+    }
+
+    var isMissedCall: Bool {
+        return Self.missedCalls.contains(self)
     }
 }
 
