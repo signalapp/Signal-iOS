@@ -28,12 +28,10 @@ class CreateUsernameMegaphone: MegaphoneView {
             comment: "Body text for an interactive in-app prompt to set up a Signal username."
         )
 
-        imageName = "username-megaphone-icon"
+        imageName = "usernames-48-color"
+        imageContentMode = .center
 
-        let setUpButton = Button(title: OWSLocalizedString(
-            "CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE",
-            comment: "Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow."
-        )) { [weak self, weak fromViewController] in
+        let setUpButton = Button(title: CommonStrings.learnMore) { [weak self, weak fromViewController] in
             guard
                 let self,
                 let fromViewController

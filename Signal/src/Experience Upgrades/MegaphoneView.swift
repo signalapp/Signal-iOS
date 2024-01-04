@@ -20,6 +20,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             if image != nil { imageName = nil }
         }
     }
+    var imageContentMode: UIView.ContentMode = .scaleAspectFit
 
     var animation: Animation?
     struct Animation {
@@ -225,7 +226,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             container = UIView()
             let imageView = UIImageView()
             imageView.image = image
-            imageView.contentMode = .scaleAspectFit
+            imageView.contentMode = self.imageContentMode
             container.addSubview(imageView)
             imageView.autoPinWidthToSuperview()
             imageView.autoPinToSquareAspectRatio()

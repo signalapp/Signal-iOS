@@ -19,18 +19,16 @@ class UsernameEducationViewController: OWSTableViewController2 {
         static let continueButtonInsets: UIEdgeInsets = .init(
             top: 16.0,
             leading: 36.0,
-            bottom: 48,
+            bottom: 12,
             trailing: 36.0
         )
         static let continueButtonEdgeInsets: UIEdgeInsets = .init(
             hMargin: 0,
-            vMargin: 16
+            vMargin: 14
         )
 
         static let pillSize: CGSize = .init(width: 36, height: 5)
         static let pillTopMargin: CGFloat = 12.0
-
-        static let learnMoreURL: String = "https://support.signal.org/hc/articles/5389476324250"
     }
 
     /// Completion called once the user taps 'Continue' in the education prompt
@@ -44,7 +42,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         view.backgroundColor = Theme.tableView2BackgroundColor
         rebuildTableContents()
         topHeader = pillHeader
-        bottomFooter = continueButton
+        bottomFooter = footerView
         setColorsForCurrentTheme()
         super.viewDidLoad()
     }
@@ -75,21 +73,39 @@ class UsernameEducationViewController: OWSTableViewController2 {
         return pillView
     }()
 
-    private lazy var continueButton: UIView = {
-        let footerView = UIView()
+    private lazy var footerView: UIView = {
         let continueButton = OWSFlatButton.insetButton(
-            title: CommonStrings.continueButton,
+            title: OWSLocalizedString(
+                "USERNAME_EDUCATION_SET_UP_BUTTON",
+                comment: "Label for the 'set up' button on the username education sheet"
+            ),
             font: UIFont.dynamicTypeBodyClamped.semibold(),
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
             selector: #selector(didTapContinue))
-        footerView.addSubview(continueButton)
-
         continueButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
-        continueButton.autoPinEdgesToSuperviewEdges(with: Constants.continueButtonInsets)
 
-        return footerView
+        let dismissButton = OWSFlatButton.insetButton(
+            title: CommonStrings.notNowButton,
+            font: .dynamicTypeBodyClamped.semibold(),
+            titleColor: .ows_accentBlue,
+            backgroundColor: .clear,
+            target: self,
+            selector: #selector(didTapDismiss))
+        dismissButton.contentEdgeInsets = Constants.continueButtonEdgeInsets
+
+        let stackView = UIStackView(arrangedSubviews: [
+            continueButton,
+            dismissButton,
+        ])
+        stackView.axis = .vertical
+        stackView.spacing = 16
+
+        let container = UIView()
+        container.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewSafeArea(with: Constants.continueButtonInsets)
+        return container
     }()
 
     // MARK: TableView config
@@ -104,28 +120,41 @@ class UsernameEducationViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.hasBackground = false
 
-        section.add(
-            createTableItem(
-                iconName: "number-color-48",
-                description: OWSLocalizedString(
-                    "USERNAME_DISCRIMINATOR_DESCRIPTION",
-                    comment: "Description of username discriminator digits")))
+        section.add(createTableItem(
+            iconName: "phone-48-color",
+            title: OWSLocalizedString(
+                "USERNAME_EDUCATION_PRIVACY_TITLE",
+                comment: "Title for phone number privacy section of the username education sheet"
+            ),
+            description: OWSLocalizedString(
+                "USERNAME_EDUCATION_PRIVACY_DESCRIPTION",
+                comment: "Description of phone number privacy on the username education sheet"
+            )
+        ))
 
-        section.add(
-            createTableItem(
-                iconName: "link-color-48",
-                description: OWSLocalizedString(
-                    "USERNAME_LINK_DESCRIPTION",
-                    comment: "Description of username link")))
+        section.add(createTableItem(
+            iconName: "usernames-48-color",
+            title: OWSLocalizedString(
+                "USERNAME_EDUCATION_USERNAME_TITLE",
+                comment: "Title for usernames section on the username education sheet"
+            ),
+            description: OWSLocalizedString(
+                "USERNAME_EDUCATION_USERNAME_DESCRIPTION",
+                comment: "Description of usernames on the username education sheet"
+            )
+        ))
 
-        section.add(
-            createTableItem(
-                iconName: "lock-color-48",
-                description: OWSLocalizedString(
-                    "USERNAME_DISCOVERY_DESCRIPTION",
-                    comment: "Description of how to update discovery")))
-
-        section.add(createLearnMore())
+        section.add(createTableItem(
+            iconName: "qr-codes-48-color",
+            title: OWSLocalizedString(
+                "USERNAME_EDUCATION_LINK_TITLE",
+                comment: "Title for the username links and QR codes section on the username education sheet"
+            ),
+            description: OWSLocalizedString(
+                "USERNAME_EDUCATION_LINK_DESCRIPTION",
+                comment: "Description of username links and QR codes on the username education sheet"
+            )
+        ))
 
         contents.add(sections: [
             headerSection,
@@ -147,26 +176,11 @@ class UsernameEducationViewController: OWSTableViewController2 {
         }
     }
 
-    private func createLearnMore() -> OWSTableItem {
-        return OWSTableItem {
-            let cell = OWSTableItem.newCell()
-
-            let button = OWSFlatButton.button(
-                title: CommonStrings.learnMore,
-                font: UIFont.dynamicTypeSubheadlineClamped,
-                titleColor: Theme.accentBlueColor,
-                backgroundColor: .clear,
-                target: self,
-                selector: #selector(self.didTapLearnMore))
-
-            cell.addSubview(button)
-            button.autoPinEdgesToSuperviewMargins()
-
-            return cell
-        }
-    }
-
-    private func createTableItem(iconName: String, description: String) -> OWSTableItem {
+    private func createTableItem(
+        iconName: String,
+        title: String,
+        description: String
+    ) -> OWSTableItem {
         return OWSTableItem {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
@@ -179,7 +193,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
             stackView.autoPinEdgesToSuperviewMargins(with: .init(
                 hMargin: Constants.itemMargin,
                 vMargin: 0.0))
-            stackView.alignment = .center
+            stackView.alignment = .top
 
             let iconView = UIImageView(image: UIImage(named: iconName))
             iconView.contentMode = .scaleAspectFit
@@ -189,13 +203,31 @@ class UsernameEducationViewController: OWSTableViewController2 {
             stackView.addArrangedSubview(iconView)
 
             let titleLabel = UILabel()
-            titleLabel.text = description
-            titleLabel.font = UIFont.dynamicTypeSubheadlineClamped
+            titleLabel.text = title
+            titleLabel.font = UIFont.dynamicTypeBody
             titleLabel.numberOfLines = 0
             titleLabel.textAlignment = .left
             titleLabel.lineBreakMode = .byWordWrapping
-            titleLabel.textColor = Theme.secondaryTextAndIconColor
-            stackView.addArrangedSubview(titleLabel)
+            titleLabel.textColor = Theme.primaryTextColor
+
+            let bodyLabel = UILabel()
+            bodyLabel.text = description
+            bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
+            bodyLabel.numberOfLines = 0
+            bodyLabel.textAlignment = .left
+            bodyLabel.lineBreakMode = .byWordWrapping
+            bodyLabel.textColor = Theme.secondaryTextAndIconColor
+
+            let textStack = UIStackView(
+                arrangedSubviews: [
+                    titleLabel,
+                    bodyLabel,
+                ]
+            )
+            textStack.axis = .vertical
+            textStack.spacing = 4
+
+            stackView.addArrangedSubview(textStack)
 
             return cell
         }
@@ -211,9 +243,8 @@ class UsernameEducationViewController: OWSTableViewController2 {
     }
 
     @objc
-    private func didTapLearnMore() {
-        let vc = SFSafariViewController(url: URL(string: Constants.learnMoreURL)!)
-        present(vc, animated: true, completion: nil)
+    private func didTapDismiss() {
+        dismiss(animated: true)
     }
 
     // MARK: Theme
@@ -235,8 +266,8 @@ extension UsernameEducationViewController {
 
             super.init(frame: .zero)
 
-            addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewEdges()
+            addSubview(usernameTitleLabel)
+            usernameTitleLabel.autoPinEdgesToSuperviewEdges()
 
             updateFontsForCurrentPreferredContentSize()
             setColorsForCurrentTheme()
@@ -249,25 +280,6 @@ extension UsernameEducationViewController {
 
         // MARK: Views
 
-        private lazy var iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "at-display"))
-
-        /// Displays an icon over a circular, square-aspect-ratio, colored
-        /// background.
-        private lazy var iconView: UIView = {
-            let backgroundView = UIView()
-            backgroundView.layer.masksToBounds = true
-            backgroundView.layer.cornerRadius = iconSize / 2
-
-            backgroundView.autoPinToSquareAspectRatio()
-            backgroundView.autoSetDimension(.height, toSize: iconSize)
-
-            backgroundView.addSubview(iconImageView)
-            iconImageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: iconSize / 4))
-            iconImageView.backgroundColor = .clear
-
-            return backgroundView
-        }()
-
         private lazy var usernameTitleLabel: UILabel = {
             let label = UILabel()
             label.text = OWSLocalizedString(
@@ -278,23 +290,6 @@ extension UsernameEducationViewController {
             return label
         }()
 
-        private lazy var stackView: OWSStackView = {
-            let stack = OWSStackView(
-                name: "Username Education Header Stack",
-                arrangedSubviews: [
-                    iconView,
-                    usernameTitleLabel
-                ]
-            )
-
-            stack.axis = .vertical
-            stack.alignment = .center
-            stack.distribution = .equalSpacing
-            stack.spacing = 16
-
-            return stack
-        }()
-
         // MARK: - Style views
 
         func updateFontsForCurrentPreferredContentSize() {
@@ -302,10 +297,6 @@ extension UsernameEducationViewController {
         }
 
         func setColorsForCurrentTheme() {
-            iconImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray02 : .ows_gray90
-
-            iconView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
-
             usernameTitleLabel.textColor = Theme.primaryTextColor
         }
     }
