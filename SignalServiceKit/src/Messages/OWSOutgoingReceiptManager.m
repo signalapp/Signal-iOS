@@ -252,7 +252,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
             sendPromise =
                 [SSKEnvironment.shared.messageSenderJobQueueRef addPromiseWithMessage:message.asPreparer
-                                                            removeMessageAfterSending:NO
                                                         limitToCurrentProcessLifetime:YES
                                                                        isHighPriority:NO
                                                                           transaction:transaction]

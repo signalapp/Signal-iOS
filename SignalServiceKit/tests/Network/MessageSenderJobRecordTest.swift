@@ -14,7 +14,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.read { transaction in
             let jobRecord = try! MessageSenderJobRecord(
                 message: message,
-                removeMessageAfterSending: false,
                 isHighPriority: false,
                 transaction: transaction
             )
@@ -32,7 +31,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             do {
                 _ = try MessageSenderJobRecord(
                     message: message,
-                    removeMessageAfterSending: false,
                     isHighPriority: false,
                     transaction: transaction
                 )
@@ -51,7 +49,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.read { transaction in
             let jobRecord = try! MessageSenderJobRecord(
                 message: message,
-                removeMessageAfterSending: false,
                 isHighPriority: false,
                 transaction: transaction
             )

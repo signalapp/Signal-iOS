@@ -43,7 +43,6 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
     convenience init(
         message: TSOutgoingMessage,
-        removeMessageAfterSending: Bool,
         isHighPriority: Bool,
         transaction: SDSAnyReadTransaction
     ) throws {
@@ -73,7 +72,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             threadId: message.uniqueThreadId,
             invisibleMessage: invisibleMessage,
             isMediaMessage: isMediaMessage,
-            removeMessageAfterSending: removeMessageAfterSending,
+            removeMessageAfterSending: false,
             isHighPriority: isHighPriority
         )
     }
@@ -120,5 +119,9 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         )
         try container.encode(removeMessageAfterSending, forKey: .removeMessageAfterSending)
         try container.encode(isHighPriority, forKey: .isHighPriority)
+    }
+
+    override var canBeRunByCurrentProcess: Bool {
+        return super.canBeRunByCurrentProcess && !removeMessageAfterSending
     }
 }

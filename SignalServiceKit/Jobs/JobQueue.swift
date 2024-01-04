@@ -407,15 +407,6 @@ public extension JobRecordFinder {
     }
 }
 
-private extension JobRecord {
-    var canBeRunByCurrentProcess: Bool {
-        if let exclusiveProcessIdentifier, exclusiveProcessIdentifier != JobRecord.currentProcessIdentifier {
-            return false
-        }
-        return true
-    }
-}
-
 private enum Constants {
     /// The number of JobRecords to fetch in a batch.
     ///

@@ -40,7 +40,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(
             message: message,
-            removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: false,
             isHighPriority: false,
             future: nil,
@@ -56,7 +55,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     ) {
         self.add(
             message: message,
-            removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
             isHighPriority: isHighPriority,
             future: nil,
@@ -68,7 +66,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     @available(swift, obsoleted: 1.0)
     public func addPromise(
         message: OutgoingMessagePreparer,
-        removeMessageAfterSending: Bool,
         limitToCurrentProcessLifetime: Bool,
         isHighPriority: Bool,
         transaction: SDSAnyWriteTransaction
@@ -76,7 +73,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         return AnyPromise(add(
             .promise,
             message: message,
-            removeMessageAfterSending: removeMessageAfterSending,
             limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
             isHighPriority: isHighPriority,
             transaction: transaction
@@ -86,7 +82,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public func add(
         _ namespace: PromiseNamespace,
         message: OutgoingMessagePreparer,
-        removeMessageAfterSending: Bool = false,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
@@ -94,7 +89,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         return Promise { future in
             self.add(
                 message: message,
-                removeMessageAfterSending: false,
                 exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
                 isHighPriority: isHighPriority,
                 future: future,
@@ -103,45 +97,9 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
-    public func add(
-        mediaMessage: TSOutgoingMessage,
-        dataSource: DataSource,
-        contentType: String,
-        sourceFilename: String?,
-        caption: String?,
-        albumMessageId: String?,
-        isTemporaryAttachment: Bool
-    ) {
-        let attachmentInfo = OutgoingAttachmentInfo(
-            dataSource: dataSource,
-            contentType: contentType,
-            sourceFilename: sourceFilename,
-            caption: caption,
-            albumMessageId: albumMessageId
-        )
-        let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
-        add(message: message, isTemporaryAttachment: isTemporaryAttachment)
-    }
-
-    @objc(addMessage:isTemporaryAttachment:)
-    public func add(message: OutgoingMessagePreparer, isTemporaryAttachment: Bool) {
-        databaseStorage.asyncWrite { transaction in
-            self.add(
-                message: message,
-                removeMessageAfterSending: isTemporaryAttachment,
-                exclusiveToCurrentProcessIdentifier: false,
-                isHighPriority: false,
-                future: nil,
-                transaction: transaction
-            )
-        }
-    }
-
     private var jobFutures = AtomicDictionary<String, Future<Void>>()
     private func add(
         message: OutgoingMessagePreparer,
-        removeMessageAfterSending: Bool,
         exclusiveToCurrentProcessIdentifier: Bool,
         isHighPriority: Bool,
         future: Future<Void>?,
@@ -152,7 +110,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             let messageRecord = try message.prepareMessage(transaction: transaction)
             let jobRecord = try MessageSenderJobRecord(
                 message: messageRecord,
-                removeMessageAfterSending: removeMessageAfterSending,
                 isHighPriority: isHighPriority,
                 transaction: transaction
             )
@@ -317,14 +274,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func didSucceed() {
         databaseStorage.write { tx in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
-            if self.jobRecord.removeMessageAfterSending {
-                // We only need to delete messages that were saved to the database.
-                if let messageUniqueId = self.jobRecord.messageId {
-                    TSInteraction.anyFetch(uniqueId: messageUniqueId, transaction: tx)?.anyRemove(transaction: tx)
-                }
-                // But we might have saved attachments for `invisibleMessage`s.
-                self.message.removeTemporaryAttachments(with: tx)
-            }
         }
         future?.resolve()
     }
@@ -347,13 +296,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
             self.message.update(sendingError: error, transaction: tx)
-
-            if self.jobRecord.removeMessageAfterSending {
-                // We only need to delete messages that were saved to the database.
-                if let messageUniqueId = self.jobRecord.messageId {
-                    TSInteraction.anyFetch(uniqueId: messageUniqueId, transaction: tx)?.anyRemove(transaction: tx)
-                }
-            }
         }
         future?.reject(error)
     }
