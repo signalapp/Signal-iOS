@@ -116,7 +116,7 @@ struct GroupsProtos_Member {
 
 extension GroupsProtos_Member.Role: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [GroupsProtos_Member.Role] = [
+  static let allCases: [GroupsProtos_Member.Role] = [
     .unknown,
     .default,
     .administrator,
@@ -248,7 +248,7 @@ struct GroupsProtos_AccessControl {
 
 extension GroupsProtos_AccessControl.AccessRequired: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [GroupsProtos_AccessControl.AccessRequired] = [
+  static let allCases: [GroupsProtos_AccessControl.AccessRequired] = [
     .unknown,
     .any,
     .member,

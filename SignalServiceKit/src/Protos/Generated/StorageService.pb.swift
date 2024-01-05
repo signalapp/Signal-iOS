@@ -64,7 +64,7 @@ enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum {
 
 extension StorageServiceProtos_OptionalBool: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_OptionalBool] = [
+  static let allCases: [StorageServiceProtos_OptionalBool] = [
     .unset,
     .true,
     .false,
@@ -234,7 +234,7 @@ struct StorageServiceProtos_ManifestRecord {
 
 extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_ManifestRecord.Key.TypeEnum] = [
+  static let allCases: [StorageServiceProtos_ManifestRecord.Key.TypeEnum] = [
     .unknown,
     .contact,
     .groupv1,
@@ -484,7 +484,7 @@ struct StorageServiceProtos_ContactRecord {
 
 extension StorageServiceProtos_ContactRecord.IdentityState: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_ContactRecord.IdentityState] = [
+  static let allCases: [StorageServiceProtos_ContactRecord.IdentityState] = [
     .default,
     .verified,
     .unverified,
@@ -570,7 +570,7 @@ struct StorageServiceProtos_GroupV2Record {
 
 extension StorageServiceProtos_GroupV2Record.StorySendMode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_GroupV2Record.StorySendMode] = [
+  static let allCases: [StorageServiceProtos_GroupV2Record.StorySendMode] = [
     .default,
     .disabled,
     .enabled,
@@ -959,7 +959,7 @@ struct StorageServiceProtos_AccountRecord {
 
 extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_AccountRecord.PhoneNumberSharingMode] = [
+  static let allCases: [StorageServiceProtos_AccountRecord.PhoneNumberSharingMode] = [
     .unknown,
     .everybody,
     .nobody,
@@ -968,7 +968,7 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterabl
 
 extension StorageServiceProtos_AccountRecord.UsernameLink.Color: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [StorageServiceProtos_AccountRecord.UsernameLink.Color] = [
+  static let allCases: [StorageServiceProtos_AccountRecord.UsernameLink.Color] = [
     .unknown,
     .blue,
     .white,

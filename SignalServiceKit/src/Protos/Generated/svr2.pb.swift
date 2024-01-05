@@ -205,7 +205,7 @@ struct SVR2Proto_BackupResponse {
 
 extension SVR2Proto_BackupResponse.Status: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [SVR2Proto_BackupResponse.Status] = [
+  static let allCases: [SVR2Proto_BackupResponse.Status] = [
     .unset,
     .ok,
   ]
@@ -290,7 +290,7 @@ struct SVR2Proto_RestoreResponse {
 
 extension SVR2Proto_RestoreResponse.Status: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [SVR2Proto_RestoreResponse.Status] = [
+  static let allCases: [SVR2Proto_RestoreResponse.Status] = [
     .unset,
     .ok,
     .missing,
@@ -388,7 +388,7 @@ struct SVR2Proto_ExposeResponse {
 
 extension SVR2Proto_ExposeResponse.Status: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [SVR2Proto_ExposeResponse.Status] = [
+  static let allCases: [SVR2Proto_ExposeResponse.Status] = [
     .unset,
     .ok,
     .error,

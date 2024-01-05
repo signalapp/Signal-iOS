@@ -56,7 +56,7 @@ PODS:
   - SQLCipher/standard (4.5.5):
     - SQLCipher/common
   - SSZipArchive (2.5.2)
-  - SwiftProtobuf (1.20.3)
+  - SwiftProtobuf (1.25.2)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -196,7 +196,7 @@ SPEC CHECKSUMS:
   SignalRingRTC: e8895849937536659760c0318cbf1b64554851df
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
-  SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
+  SwiftProtobuf: 407a385e97fd206c4fbe880cc84123989167e0d1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
 PODFILE CHECKSUM: 707c323de4475d09eda61fa00a3978baffa039b9
