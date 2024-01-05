@@ -2153,18 +2153,6 @@ public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
     @objc
     public let id: UInt64
 
-    @objc
-    public var sdp: String? {
-        guard hasSdp else {
-            return nil
-        }
-        return proto.sdp
-    }
-    @objc
-    public var hasSdp: Bool {
-        return proto.hasSdp
-    }
-
     public var type: SSKProtoCallMessageOfferType? {
         guard hasType else {
             return nil
@@ -2278,9 +2266,6 @@ extension SSKProtoCallMessageOffer {
     @objc
     public func asBuilder() -> SSKProtoCallMessageOfferBuilder {
         let builder = SSKProtoCallMessageOfferBuilder(id: id)
-        if let _value = sdp {
-            builder.setSdp(_value)
-        }
         if let _value = type {
             builder.setType(_value)
         }
@@ -2312,17 +2297,6 @@ public class SSKProtoCallMessageOfferBuilder: NSObject {
     @objc
     public func setId(_ valueParam: UInt64) {
         proto.id = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSdp(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.sdp = valueParam
-    }
-
-    public func setSdp(_ valueParam: String) {
-        proto.sdp = valueParam
     }
 
     @objc
@@ -2383,18 +2357,6 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let id: UInt64
-
-    @objc
-    public var sdp: String? {
-        guard hasSdp else {
-            return nil
-        }
-        return proto.sdp
-    }
-    @objc
-    public var hasSdp: Bool {
-        return proto.hasSdp
-    }
 
     @objc
     public var opaque: Data? {
@@ -2489,9 +2451,6 @@ extension SSKProtoCallMessageAnswer {
     @objc
     public func asBuilder() -> SSKProtoCallMessageAnswerBuilder {
         let builder = SSKProtoCallMessageAnswerBuilder(id: id)
-        if let _value = sdp {
-            builder.setSdp(_value)
-        }
         if let _value = opaque {
             builder.setOpaque(_value)
         }
@@ -2520,17 +2479,6 @@ public class SSKProtoCallMessageAnswerBuilder: NSObject {
     @objc
     public func setId(_ valueParam: UInt64) {
         proto.id = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSdp(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.sdp = valueParam
-    }
-
-    public func setSdp(_ valueParam: String) {
-        proto.sdp = valueParam
     }
 
     @objc
@@ -2586,39 +2534,6 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let id: UInt64
-
-    @objc
-    public var mid: String? {
-        guard hasMid else {
-            return nil
-        }
-        return proto.mid
-    }
-    @objc
-    public var hasMid: Bool {
-        return proto.hasMid
-    }
-
-    @objc
-    public var line: UInt32 {
-        return proto.line
-    }
-    @objc
-    public var hasLine: Bool {
-        return proto.hasLine
-    }
-
-    @objc
-    public var sdp: String? {
-        guard hasSdp else {
-            return nil
-        }
-        return proto.sdp
-    }
-    @objc
-    public var hasSdp: Bool {
-        return proto.hasSdp
-    }
 
     @objc
     public var opaque: Data? {
@@ -2713,15 +2628,6 @@ extension SSKProtoCallMessageIceUpdate {
     @objc
     public func asBuilder() -> SSKProtoCallMessageIceUpdateBuilder {
         let builder = SSKProtoCallMessageIceUpdateBuilder(id: id)
-        if let _value = mid {
-            builder.setMid(_value)
-        }
-        if hasLine {
-            builder.setLine(line)
-        }
-        if let _value = sdp {
-            builder.setSdp(_value)
-        }
         if let _value = opaque {
             builder.setOpaque(_value)
         }
@@ -2750,33 +2656,6 @@ public class SSKProtoCallMessageIceUpdateBuilder: NSObject {
     @objc
     public func setId(_ valueParam: UInt64) {
         proto.id = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setMid(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.mid = valueParam
-    }
-
-    public func setMid(_ valueParam: String) {
-        proto.mid = valueParam
-    }
-
-    @objc
-    public func setLine(_ valueParam: UInt32) {
-        proto.line = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setSdp(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.sdp = valueParam
-    }
-
-    public func setSdp(_ valueParam: String) {
-        proto.sdp = valueParam
     }
 
     @objc
@@ -3427,9 +3306,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
     public let iceUpdate: [SSKProtoCallMessageIceUpdate]
 
     @objc
-    public let legacyHangup: SSKProtoCallMessageHangup?
-
-    @objc
     public let busy: SSKProtoCallMessageBusy?
 
     @objc
@@ -3448,15 +3324,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasProfileKey: Bool {
         return proto.hasProfileKey
-    }
-
-    @objc
-    public var supportsMultiRing: Bool {
-        return proto.supportsMultiRing
-    }
-    @objc
-    public var hasSupportsMultiRing: Bool {
-        return proto.hasSupportsMultiRing
     }
 
     @objc
@@ -3480,7 +3347,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
                  offer: SSKProtoCallMessageOffer?,
                  answer: SSKProtoCallMessageAnswer?,
                  iceUpdate: [SSKProtoCallMessageIceUpdate],
-                 legacyHangup: SSKProtoCallMessageHangup?,
                  busy: SSKProtoCallMessageBusy?,
                  hangup: SSKProtoCallMessageHangup?,
                  opaque: SSKProtoCallMessageOpaque?) {
@@ -3488,7 +3354,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
         self.offer = offer
         self.answer = answer
         self.iceUpdate = iceUpdate
-        self.legacyHangup = legacyHangup
         self.busy = busy
         self.hangup = hangup
         self.opaque = opaque
@@ -3519,11 +3384,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate($0) }
 
-        var legacyHangup: SSKProtoCallMessageHangup?
-        if proto.hasLegacyHangup {
-            legacyHangup = try SSKProtoCallMessageHangup(proto.legacyHangup)
-        }
-
         var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy(proto.busy)
@@ -3543,7 +3403,6 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
                   offer: offer,
                   answer: answer,
                   iceUpdate: iceUpdate,
-                  legacyHangup: legacyHangup,
                   busy: busy,
                   hangup: hangup,
                   opaque: opaque)
@@ -3602,9 +3461,6 @@ extension SSKProtoCallMessage {
             builder.setAnswer(_value)
         }
         builder.setIceUpdate(iceUpdate)
-        if let _value = legacyHangup {
-            builder.setLegacyHangup(_value)
-        }
         if let _value = busy {
             builder.setBusy(_value)
         }
@@ -3613,9 +3469,6 @@ extension SSKProtoCallMessage {
         }
         if let _value = hangup {
             builder.setHangup(_value)
-        }
-        if hasSupportsMultiRing {
-            builder.setSupportsMultiRing(supportsMultiRing)
         }
         if hasDestinationDeviceID {
             builder.setDestinationDeviceID(destinationDeviceID)
@@ -3672,17 +3525,6 @@ public class SSKProtoCallMessageBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setLegacyHangup(_ valueParam: SSKProtoCallMessageHangup?) {
-        guard let valueParam = valueParam else { return }
-        proto.legacyHangup = valueParam.proto
-    }
-
-    public func setLegacyHangup(_ valueParam: SSKProtoCallMessageHangup) {
-        proto.legacyHangup = valueParam.proto
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
     public func setBusy(_ valueParam: SSKProtoCallMessageBusy?) {
         guard let valueParam = valueParam else { return }
         proto.busy = valueParam.proto
@@ -3712,11 +3554,6 @@ public class SSKProtoCallMessageBuilder: NSObject {
 
     public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
         proto.hangup = valueParam.proto
-    }
-
-    @objc
-    public func setSupportsMultiRing(_ valueParam: Bool) {
-        proto.supportsMultiRing = valueParam
     }
 
     @objc

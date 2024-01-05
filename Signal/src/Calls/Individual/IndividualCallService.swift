@@ -186,21 +186,17 @@ final public class IndividualCallService: NSObject {
         thread: TSContactThread,
         callId: UInt64,
         sourceDevice: UInt32,
-        sdp: String?,
         opaque: Data?,
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         callType: SSKProtoCallMessageOfferType,
-        supportsMultiRing: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        // opaque is required. sdp is obsolete, but it might still come with opaque.
         guard let opaque = opaque else {
-            // TODO: Remove once the proto is updated to only support opaque and require it.
             Logger.debug("opaque not received for offer, remote should update")
             return
         }
@@ -345,13 +341,11 @@ final public class IndividualCallService: NSObject {
     /**
      * Called by the call initiator after receiving an Answer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String?, opaque: Data?, supportsMultiRing: Bool) {
+    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, opaque: Data?) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        // opaque is required. sdp is obsolete, but it might still come with opaque.
         guard let opaque = opaque else {
-            // TODO: Remove once the proto is updated to only support opaque and require it.
             Logger.debug("opaque not received for answer, remote should update")
             return
         }

@@ -1132,8 +1132,6 @@ public final class MessageReceiver: Dependencies {
             setProfileKeyIfValid(profileKey, for: envelope.sourceAci, tx: tx)
         }
 
-        let supportsMultiRing = callMessage.hasSupportsMultiRing && callMessage.supportsMultiRing
-
         // Any call message which will result in the posting a new incoming call to CallKit
         // must be handled sync if we're already on the main thread.  This includes "offer"
         // and "urgent opaque" call messages.  Otherwise we violate this constraint:
@@ -1158,7 +1156,6 @@ public final class MessageReceiver: Dependencies {
                 sentAtTimestamp: envelope.timestamp,
                 serverReceivedTimestamp: envelope.serverTimestamp,
                 serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                supportsMultiRing: supportsMultiRing,
                 transaction: tx
             )
             return
@@ -1189,7 +1186,6 @@ public final class MessageReceiver: Dependencies {
                         sentAtTimestamp: envelope.timestamp,
                         serverReceivedTimestamp: envelope.serverTimestamp,
                         serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                        supportsMultiRing: supportsMultiRing,
                         transaction: tx
                     )
                 }
@@ -1199,22 +1195,13 @@ public final class MessageReceiver: Dependencies {
                 callMessageHandler?.receivedAnswer(
                     answer,
                     from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId,
-                    supportsMultiRing: supportsMultiRing
+                    sourceDevice: envelope.sourceDeviceId
                 )
                 return
             }
             if !callMessage.iceUpdate.isEmpty {
                 callMessageHandler?.receivedIceUpdate(
                     callMessage.iceUpdate,
-                    from: SignalServiceAddress(envelope.sourceAci),
-                    sourceDevice: envelope.sourceDeviceId
-                )
-                return
-            }
-            if let legacyHangup = callMessage.legacyHangup {
-                callMessageHandler?.receivedHangup(
-                    legacyHangup,
                     from: SignalServiceAddress(envelope.sourceAci),
                     sourceDevice: envelope.sourceDeviceId
                 )
@@ -1855,9 +1842,6 @@ extension SSKProtoCallMessage {
         } else if let answer = self.answer {
             messageType = "Answer"
             callId = answer.id
-        } else if let legacyHangup = self.legacyHangup {
-            messageType = "legacyHangup"
-            callId = legacyHangup.id
         } else if let hangup = self.hangup {
             messageType = "Hangup"
             callId = hangup.id

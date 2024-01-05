@@ -24,7 +24,6 @@ class FakeCallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
@@ -33,8 +32,7 @@ class FakeCallMessageHandler: NSObject, OWSCallMessageHandler {
     func receivedAnswer(
         _ answer: SSKProtoCallMessageAnswer,
         from caller: SignalServiceAddress,
-        sourceDevice device: UInt32,
-        supportsMultiRing: Bool
+        sourceDevice device: UInt32
     ) {
         Logger.info("")
     }

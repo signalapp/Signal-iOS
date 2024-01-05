@@ -37,10 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
-           legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
-           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
-- (instancetype)initWithThread:(TSThread *)thread
                  hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction;
@@ -55,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageAnswer *answerMessage;
 @property (nullable, nonatomic, readonly) NSArray<SSKProtoCallMessageIceUpdate *> *iceUpdateMessages;
-@property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *legacyHangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *hangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageBusy *busyMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOpaque *opaqueMessage;

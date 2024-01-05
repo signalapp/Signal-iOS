@@ -42,14 +42,12 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
             sentAtTimestamp:(uint64_t)sentAtTimestamp
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-          supportsMultiRing:(BOOL)supportsMultiRing
                 transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:serverReceivedTimestamp:serverDeliveryTimestamp:supportsMultiRing:transaction:));
+    NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:serverReceivedTimestamp:serverDeliveryTimestamp:transaction:));
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller
-          sourceDevice:(uint32_t)device
-     supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedAnswer(_:from:sourceDevice:supportsMultiRing:));
+          sourceDevice:(uint32_t)device NS_SWIFT_NAME(receivedAnswer(_:from:sourceDevice:));
 
 - (void)receivedIceUpdate:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdate
                fromCaller:(SignalServiceAddress *)caller

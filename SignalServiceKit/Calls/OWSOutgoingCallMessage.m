@@ -73,22 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
-           legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
-           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
-{
-    self = [self initWithThread:thread transaction:transaction];
-    if (!self) {
-        return self;
-    }
-
-    _legacyHangupMessage = legacyHangupMessage;
-    _destinationDeviceId = destinationDeviceId;
-
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
                  hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
@@ -165,10 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setIceUpdate:self.iceUpdateMessages];
     }
 
-    if (self.legacyHangupMessage) {
-        [builder setLegacyHangup:self.legacyHangupMessage];
-    }
-
     if (self.hangupMessage) {
         [builder setHangup:self.hangupMessage];
     }
@@ -186,9 +166,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:thread callMessageBuilder:builder transaction:transaction];
-
-    // All call messages must indicate multi-ring capability.
-    [builder setSupportsMultiRing:YES];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
@@ -233,8 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
         payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
-    } else if (self.legacyHangupMessage) {
-        payload = @"legacyHangupMessage";
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

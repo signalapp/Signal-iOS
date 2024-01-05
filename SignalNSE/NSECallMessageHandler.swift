@@ -143,13 +143,12 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, supportsMultiRing: Bool) {
+    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
 

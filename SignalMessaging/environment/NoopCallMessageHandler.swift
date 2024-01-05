@@ -15,12 +15,11 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         .process
     }
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, supportsMultiRing: Bool,
-                              transaction: SDSAnyWriteTransaction) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
         owsFailDebug("")
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice device: UInt32, supportsMultiRing: Bool) {
+    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice device: UInt32) {
         owsFailDebug("")
     }
 

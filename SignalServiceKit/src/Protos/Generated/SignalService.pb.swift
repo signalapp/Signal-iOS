@@ -594,121 +594,111 @@ struct SignalServiceProtos_Content {
   // methods supported on all messages.
 
   var dataMessage: SignalServiceProtos_DataMessage {
-    get {return _dataMessage ?? SignalServiceProtos_DataMessage()}
-    set {_dataMessage = newValue}
+    get {return _storage._dataMessage ?? SignalServiceProtos_DataMessage()}
+    set {_uniqueStorage()._dataMessage = newValue}
   }
   /// Returns true if `dataMessage` has been explicitly set.
-  var hasDataMessage: Bool {return self._dataMessage != nil}
+  var hasDataMessage: Bool {return _storage._dataMessage != nil}
   /// Clears the value of `dataMessage`. Subsequent reads from it will return its default value.
-  mutating func clearDataMessage() {self._dataMessage = nil}
+  mutating func clearDataMessage() {_uniqueStorage()._dataMessage = nil}
 
   var syncMessage: SignalServiceProtos_SyncMessage {
-    get {return _syncMessage ?? SignalServiceProtos_SyncMessage()}
-    set {_syncMessage = newValue}
+    get {return _storage._syncMessage ?? SignalServiceProtos_SyncMessage()}
+    set {_uniqueStorage()._syncMessage = newValue}
   }
   /// Returns true if `syncMessage` has been explicitly set.
-  var hasSyncMessage: Bool {return self._syncMessage != nil}
+  var hasSyncMessage: Bool {return _storage._syncMessage != nil}
   /// Clears the value of `syncMessage`. Subsequent reads from it will return its default value.
-  mutating func clearSyncMessage() {self._syncMessage = nil}
+  mutating func clearSyncMessage() {_uniqueStorage()._syncMessage = nil}
 
   var callMessage: SignalServiceProtos_CallMessage {
-    get {return _callMessage ?? SignalServiceProtos_CallMessage()}
-    set {_callMessage = newValue}
+    get {return _storage._callMessage ?? SignalServiceProtos_CallMessage()}
+    set {_uniqueStorage()._callMessage = newValue}
   }
   /// Returns true if `callMessage` has been explicitly set.
-  var hasCallMessage: Bool {return self._callMessage != nil}
+  var hasCallMessage: Bool {return _storage._callMessage != nil}
   /// Clears the value of `callMessage`. Subsequent reads from it will return its default value.
-  mutating func clearCallMessage() {self._callMessage = nil}
+  mutating func clearCallMessage() {_uniqueStorage()._callMessage = nil}
 
   var nullMessage: SignalServiceProtos_NullMessage {
-    get {return _nullMessage ?? SignalServiceProtos_NullMessage()}
-    set {_nullMessage = newValue}
+    get {return _storage._nullMessage ?? SignalServiceProtos_NullMessage()}
+    set {_uniqueStorage()._nullMessage = newValue}
   }
   /// Returns true if `nullMessage` has been explicitly set.
-  var hasNullMessage: Bool {return self._nullMessage != nil}
+  var hasNullMessage: Bool {return _storage._nullMessage != nil}
   /// Clears the value of `nullMessage`. Subsequent reads from it will return its default value.
-  mutating func clearNullMessage() {self._nullMessage = nil}
+  mutating func clearNullMessage() {_uniqueStorage()._nullMessage = nil}
 
   var receiptMessage: SignalServiceProtos_ReceiptMessage {
-    get {return _receiptMessage ?? SignalServiceProtos_ReceiptMessage()}
-    set {_receiptMessage = newValue}
+    get {return _storage._receiptMessage ?? SignalServiceProtos_ReceiptMessage()}
+    set {_uniqueStorage()._receiptMessage = newValue}
   }
   /// Returns true if `receiptMessage` has been explicitly set.
-  var hasReceiptMessage: Bool {return self._receiptMessage != nil}
+  var hasReceiptMessage: Bool {return _storage._receiptMessage != nil}
   /// Clears the value of `receiptMessage`. Subsequent reads from it will return its default value.
-  mutating func clearReceiptMessage() {self._receiptMessage = nil}
+  mutating func clearReceiptMessage() {_uniqueStorage()._receiptMessage = nil}
 
   var typingMessage: SignalServiceProtos_TypingMessage {
-    get {return _typingMessage ?? SignalServiceProtos_TypingMessage()}
-    set {_typingMessage = newValue}
+    get {return _storage._typingMessage ?? SignalServiceProtos_TypingMessage()}
+    set {_uniqueStorage()._typingMessage = newValue}
   }
   /// Returns true if `typingMessage` has been explicitly set.
-  var hasTypingMessage: Bool {return self._typingMessage != nil}
+  var hasTypingMessage: Bool {return _storage._typingMessage != nil}
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
-  mutating func clearTypingMessage() {self._typingMessage = nil}
+  mutating func clearTypingMessage() {_uniqueStorage()._typingMessage = nil}
 
   /// Serialized SKDM
   var senderKeyDistributionMessage: Data {
-    get {return _senderKeyDistributionMessage ?? Data()}
-    set {_senderKeyDistributionMessage = newValue}
+    get {return _storage._senderKeyDistributionMessage ?? Data()}
+    set {_uniqueStorage()._senderKeyDistributionMessage = newValue}
   }
   /// Returns true if `senderKeyDistributionMessage` has been explicitly set.
-  var hasSenderKeyDistributionMessage: Bool {return self._senderKeyDistributionMessage != nil}
+  var hasSenderKeyDistributionMessage: Bool {return _storage._senderKeyDistributionMessage != nil}
   /// Clears the value of `senderKeyDistributionMessage`. Subsequent reads from it will return its default value.
-  mutating func clearSenderKeyDistributionMessage() {self._senderKeyDistributionMessage = nil}
+  mutating func clearSenderKeyDistributionMessage() {_uniqueStorage()._senderKeyDistributionMessage = nil}
 
   /// Serialized decryption error
   var decryptionErrorMessage: Data {
-    get {return _decryptionErrorMessage ?? Data()}
-    set {_decryptionErrorMessage = newValue}
+    get {return _storage._decryptionErrorMessage ?? Data()}
+    set {_uniqueStorage()._decryptionErrorMessage = newValue}
   }
   /// Returns true if `decryptionErrorMessage` has been explicitly set.
-  var hasDecryptionErrorMessage: Bool {return self._decryptionErrorMessage != nil}
+  var hasDecryptionErrorMessage: Bool {return _storage._decryptionErrorMessage != nil}
   /// Clears the value of `decryptionErrorMessage`. Subsequent reads from it will return its default value.
-  mutating func clearDecryptionErrorMessage() {self._decryptionErrorMessage = nil}
+  mutating func clearDecryptionErrorMessage() {_uniqueStorage()._decryptionErrorMessage = nil}
 
   var storyMessage: SignalServiceProtos_StoryMessage {
-    get {return _storyMessage ?? SignalServiceProtos_StoryMessage()}
-    set {_storyMessage = newValue}
+    get {return _storage._storyMessage ?? SignalServiceProtos_StoryMessage()}
+    set {_uniqueStorage()._storyMessage = newValue}
   }
   /// Returns true if `storyMessage` has been explicitly set.
-  var hasStoryMessage: Bool {return self._storyMessage != nil}
+  var hasStoryMessage: Bool {return _storage._storyMessage != nil}
   /// Clears the value of `storyMessage`. Subsequent reads from it will return its default value.
-  mutating func clearStoryMessage() {self._storyMessage = nil}
+  mutating func clearStoryMessage() {_uniqueStorage()._storyMessage = nil}
 
   var pniSignatureMessage: SignalServiceProtos_PniSignatureMessage {
-    get {return _pniSignatureMessage ?? SignalServiceProtos_PniSignatureMessage()}
-    set {_pniSignatureMessage = newValue}
+    get {return _storage._pniSignatureMessage ?? SignalServiceProtos_PniSignatureMessage()}
+    set {_uniqueStorage()._pniSignatureMessage = newValue}
   }
   /// Returns true if `pniSignatureMessage` has been explicitly set.
-  var hasPniSignatureMessage: Bool {return self._pniSignatureMessage != nil}
+  var hasPniSignatureMessage: Bool {return _storage._pniSignatureMessage != nil}
   /// Clears the value of `pniSignatureMessage`. Subsequent reads from it will return its default value.
-  mutating func clearPniSignatureMessage() {self._pniSignatureMessage = nil}
+  mutating func clearPniSignatureMessage() {_uniqueStorage()._pniSignatureMessage = nil}
 
   var editMessage: SignalServiceProtos_EditMessage {
-    get {return _editMessage ?? SignalServiceProtos_EditMessage()}
-    set {_editMessage = newValue}
+    get {return _storage._editMessage ?? SignalServiceProtos_EditMessage()}
+    set {_uniqueStorage()._editMessage = newValue}
   }
   /// Returns true if `editMessage` has been explicitly set.
-  var hasEditMessage: Bool {return self._editMessage != nil}
+  var hasEditMessage: Bool {return _storage._editMessage != nil}
   /// Clears the value of `editMessage`. Subsequent reads from it will return its default value.
-  mutating func clearEditMessage() {self._editMessage = nil}
+  mutating func clearEditMessage() {_uniqueStorage()._editMessage = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _dataMessage: SignalServiceProtos_DataMessage? = nil
-  fileprivate var _syncMessage: SignalServiceProtos_SyncMessage? = nil
-  fileprivate var _callMessage: SignalServiceProtos_CallMessage? = nil
-  fileprivate var _nullMessage: SignalServiceProtos_NullMessage? = nil
-  fileprivate var _receiptMessage: SignalServiceProtos_ReceiptMessage? = nil
-  fileprivate var _typingMessage: SignalServiceProtos_TypingMessage? = nil
-  fileprivate var _senderKeyDistributionMessage: Data? = nil
-  fileprivate var _decryptionErrorMessage: Data? = nil
-  fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
-  fileprivate var _pniSignatureMessage: SignalServiceProtos_PniSignatureMessage? = nil
-  fileprivate var _editMessage: SignalServiceProtos_EditMessage? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -717,92 +707,71 @@ struct SignalServiceProtos_CallMessage {
   // methods supported on all messages.
 
   var offer: SignalServiceProtos_CallMessage.Offer {
-    get {return _storage._offer ?? SignalServiceProtos_CallMessage.Offer()}
-    set {_uniqueStorage()._offer = newValue}
+    get {return _offer ?? SignalServiceProtos_CallMessage.Offer()}
+    set {_offer = newValue}
   }
   /// Returns true if `offer` has been explicitly set.
-  var hasOffer: Bool {return _storage._offer != nil}
+  var hasOffer: Bool {return self._offer != nil}
   /// Clears the value of `offer`. Subsequent reads from it will return its default value.
-  mutating func clearOffer() {_uniqueStorage()._offer = nil}
+  mutating func clearOffer() {self._offer = nil}
 
   var answer: SignalServiceProtos_CallMessage.Answer {
-    get {return _storage._answer ?? SignalServiceProtos_CallMessage.Answer()}
-    set {_uniqueStorage()._answer = newValue}
+    get {return _answer ?? SignalServiceProtos_CallMessage.Answer()}
+    set {_answer = newValue}
   }
   /// Returns true if `answer` has been explicitly set.
-  var hasAnswer: Bool {return _storage._answer != nil}
+  var hasAnswer: Bool {return self._answer != nil}
   /// Clears the value of `answer`. Subsequent reads from it will return its default value.
-  mutating func clearAnswer() {_uniqueStorage()._answer = nil}
+  mutating func clearAnswer() {self._answer = nil}
 
-  var iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] {
-    get {return _storage._iceUpdate}
-    set {_uniqueStorage()._iceUpdate = newValue}
-  }
-
-  var legacyHangup: SignalServiceProtos_CallMessage.Hangup {
-    get {return _storage._legacyHangup ?? SignalServiceProtos_CallMessage.Hangup()}
-    set {_uniqueStorage()._legacyHangup = newValue}
-  }
-  /// Returns true if `legacyHangup` has been explicitly set.
-  var hasLegacyHangup: Bool {return _storage._legacyHangup != nil}
-  /// Clears the value of `legacyHangup`. Subsequent reads from it will return its default value.
-  mutating func clearLegacyHangup() {_uniqueStorage()._legacyHangup = nil}
+  var iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
 
   var busy: SignalServiceProtos_CallMessage.Busy {
-    get {return _storage._busy ?? SignalServiceProtos_CallMessage.Busy()}
-    set {_uniqueStorage()._busy = newValue}
+    get {return _busy ?? SignalServiceProtos_CallMessage.Busy()}
+    set {_busy = newValue}
   }
   /// Returns true if `busy` has been explicitly set.
-  var hasBusy: Bool {return _storage._busy != nil}
+  var hasBusy: Bool {return self._busy != nil}
   /// Clears the value of `busy`. Subsequent reads from it will return its default value.
-  mutating func clearBusy() {_uniqueStorage()._busy = nil}
+  mutating func clearBusy() {self._busy = nil}
 
   /// Signal-iOS sends profile key with call messages
   /// for earlier discovery.
   var profileKey: Data {
-    get {return _storage._profileKey ?? Data()}
-    set {_uniqueStorage()._profileKey = newValue}
+    get {return _profileKey ?? Data()}
+    set {_profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return _storage._profileKey != nil}
+  var hasProfileKey: Bool {return self._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
+  mutating func clearProfileKey() {self._profileKey = nil}
 
   var hangup: SignalServiceProtos_CallMessage.Hangup {
-    get {return _storage._hangup ?? SignalServiceProtos_CallMessage.Hangup()}
-    set {_uniqueStorage()._hangup = newValue}
+    get {return _hangup ?? SignalServiceProtos_CallMessage.Hangup()}
+    set {_hangup = newValue}
   }
   /// Returns true if `hangup` has been explicitly set.
-  var hasHangup: Bool {return _storage._hangup != nil}
+  var hasHangup: Bool {return self._hangup != nil}
   /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
-  mutating func clearHangup() {_uniqueStorage()._hangup = nil}
-
-  var supportsMultiRing: Bool {
-    get {return _storage._supportsMultiRing ?? false}
-    set {_uniqueStorage()._supportsMultiRing = newValue}
-  }
-  /// Returns true if `supportsMultiRing` has been explicitly set.
-  var hasSupportsMultiRing: Bool {return _storage._supportsMultiRing != nil}
-  /// Clears the value of `supportsMultiRing`. Subsequent reads from it will return its default value.
-  mutating func clearSupportsMultiRing() {_uniqueStorage()._supportsMultiRing = nil}
+  mutating func clearHangup() {self._hangup = nil}
 
   var destinationDeviceID: UInt32 {
-    get {return _storage._destinationDeviceID ?? 0}
-    set {_uniqueStorage()._destinationDeviceID = newValue}
+    get {return _destinationDeviceID ?? 0}
+    set {_destinationDeviceID = newValue}
   }
   /// Returns true if `destinationDeviceID` has been explicitly set.
-  var hasDestinationDeviceID: Bool {return _storage._destinationDeviceID != nil}
+  var hasDestinationDeviceID: Bool {return self._destinationDeviceID != nil}
   /// Clears the value of `destinationDeviceID`. Subsequent reads from it will return its default value.
-  mutating func clearDestinationDeviceID() {_uniqueStorage()._destinationDeviceID = nil}
+  mutating func clearDestinationDeviceID() {self._destinationDeviceID = nil}
 
   var opaque: SignalServiceProtos_CallMessage.Opaque {
-    get {return _storage._opaque ?? SignalServiceProtos_CallMessage.Opaque()}
-    set {_uniqueStorage()._opaque = newValue}
+    get {return _opaque ?? SignalServiceProtos_CallMessage.Opaque()}
+    set {_opaque = newValue}
   }
   /// Returns true if `opaque` has been explicitly set.
-  var hasOpaque: Bool {return _storage._opaque != nil}
+  var hasOpaque: Bool {return self._opaque != nil}
   /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
-  mutating func clearOpaque() {_uniqueStorage()._opaque = nil}
+  mutating func clearOpaque() {self._opaque = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -820,16 +789,6 @@ struct SignalServiceProtos_CallMessage {
     var hasID: Bool {return self._id != nil}
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
-
-    /// Legacy/deprecated; replaced by 'opaque'
-    var sdp: String {
-      get {return _sdp ?? String()}
-      set {_sdp = newValue}
-    }
-    /// Returns true if `sdp` has been explicitly set.
-    var hasSdp: Bool {return self._sdp != nil}
-    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
-    mutating func clearSdp() {self._sdp = nil}
 
     var type: SignalServiceProtos_CallMessage.Offer.TypeEnum {
       get {return _type ?? .offerAudioCall}
@@ -882,7 +841,6 @@ struct SignalServiceProtos_CallMessage {
     init() {}
 
     fileprivate var _id: UInt64? = nil
-    fileprivate var _sdp: String? = nil
     fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum? = nil
     fileprivate var _opaque: Data? = nil
   }
@@ -902,16 +860,6 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// Legacy/deprecated; replaced by 'opaque'
-    var sdp: String {
-      get {return _sdp ?? String()}
-      set {_sdp = newValue}
-    }
-    /// Returns true if `sdp` has been explicitly set.
-    var hasSdp: Bool {return self._sdp != nil}
-    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
-    mutating func clearSdp() {self._sdp = nil}
-
     var opaque: Data {
       get {return _opaque ?? Data()}
       set {_opaque = newValue}
@@ -926,7 +874,6 @@ struct SignalServiceProtos_CallMessage {
     init() {}
 
     fileprivate var _id: UInt64? = nil
-    fileprivate var _sdp: String? = nil
     fileprivate var _opaque: Data? = nil
   }
 
@@ -945,36 +892,6 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// Legacy/deprecated; remove when old clients are gone.
-    var mid: String {
-      get {return _mid ?? String()}
-      set {_mid = newValue}
-    }
-    /// Returns true if `mid` has been explicitly set.
-    var hasMid: Bool {return self._mid != nil}
-    /// Clears the value of `mid`. Subsequent reads from it will return its default value.
-    mutating func clearMid() {self._mid = nil}
-
-    /// Legacy/deprecated; remove when old clients are gone.
-    var line: UInt32 {
-      get {return _line ?? 0}
-      set {_line = newValue}
-    }
-    /// Returns true if `line` has been explicitly set.
-    var hasLine: Bool {return self._line != nil}
-    /// Clears the value of `line`. Subsequent reads from it will return its default value.
-    mutating func clearLine() {self._line = nil}
-
-    /// Legacy/deprecated; replaced by 'opaque'
-    var sdp: String {
-      get {return _sdp ?? String()}
-      set {_sdp = newValue}
-    }
-    /// Returns true if `sdp` has been explicitly set.
-    var hasSdp: Bool {return self._sdp != nil}
-    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
-    mutating func clearSdp() {self._sdp = nil}
-
     var opaque: Data {
       get {return _opaque ?? Data()}
       set {_opaque = newValue}
@@ -989,9 +906,6 @@ struct SignalServiceProtos_CallMessage {
     init() {}
 
     fileprivate var _id: UInt64? = nil
-    fileprivate var _mid: String? = nil
-    fileprivate var _line: UInt32? = nil
-    fileprivate var _sdp: String? = nil
     fileprivate var _opaque: Data? = nil
   }
 
@@ -1153,7 +1067,13 @@ struct SignalServiceProtos_CallMessage {
 
   init() {}
 
-  fileprivate var _storage = _StorageClass.defaultInstance
+  fileprivate var _offer: SignalServiceProtos_CallMessage.Offer? = nil
+  fileprivate var _answer: SignalServiceProtos_CallMessage.Answer? = nil
+  fileprivate var _busy: SignalServiceProtos_CallMessage.Busy? = nil
+  fileprivate var _profileKey: Data? = nil
+  fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup? = nil
+  fileprivate var _destinationDeviceID: UInt32? = nil
+  fileprivate var _opaque: SignalServiceProtos_CallMessage.Opaque? = nil
 }
 
 #if swift(>=4.2)
@@ -5082,128 +5002,35 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     11: .same(proto: "editMessage"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._dataMessage) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._syncMessage) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._callMessage) }()
-      case 4: try { try decoder.decodeSingularMessageField(value: &self._nullMessage) }()
-      case 5: try { try decoder.decodeSingularMessageField(value: &self._receiptMessage) }()
-      case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
-      case 7: try { try decoder.decodeSingularBytesField(value: &self._senderKeyDistributionMessage) }()
-      case 8: try { try decoder.decodeSingularBytesField(value: &self._decryptionErrorMessage) }()
-      case 9: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
-      case 10: try { try decoder.decodeSingularMessageField(value: &self._pniSignatureMessage) }()
-      case 11: try { try decoder.decodeSingularMessageField(value: &self._editMessage) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._dataMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._syncMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._callMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._nullMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._receiptMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._typingMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    } }()
-    try { if let v = self._senderKeyDistributionMessage {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._decryptionErrorMessage {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
-    } }()
-    try { if let v = self._storyMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-    } }()
-    try { if let v = self._pniSignatureMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-    } }()
-    try { if let v = self._editMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_Content, rhs: SignalServiceProtos_Content) -> Bool {
-    if lhs._dataMessage != rhs._dataMessage {return false}
-    if lhs._syncMessage != rhs._syncMessage {return false}
-    if lhs._callMessage != rhs._callMessage {return false}
-    if lhs._nullMessage != rhs._nullMessage {return false}
-    if lhs._receiptMessage != rhs._receiptMessage {return false}
-    if lhs._typingMessage != rhs._typingMessage {return false}
-    if lhs._senderKeyDistributionMessage != rhs._senderKeyDistributionMessage {return false}
-    if lhs._decryptionErrorMessage != rhs._decryptionErrorMessage {return false}
-    if lhs._storyMessage != rhs._storyMessage {return false}
-    if lhs._pniSignatureMessage != rhs._pniSignatureMessage {return false}
-    if lhs._editMessage != rhs._editMessage {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CallMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "offer"),
-    2: .same(proto: "answer"),
-    3: .same(proto: "iceUpdate"),
-    4: .same(proto: "legacyHangup"),
-    5: .same(proto: "busy"),
-    6: .same(proto: "profileKey"),
-    7: .same(proto: "hangup"),
-    8: .same(proto: "supportsMultiRing"),
-    9: .same(proto: "destinationDeviceId"),
-    10: .same(proto: "opaque"),
-  ]
-
   fileprivate class _StorageClass {
-    var _offer: SignalServiceProtos_CallMessage.Offer? = nil
-    var _answer: SignalServiceProtos_CallMessage.Answer? = nil
-    var _iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
-    var _legacyHangup: SignalServiceProtos_CallMessage.Hangup? = nil
-    var _busy: SignalServiceProtos_CallMessage.Busy? = nil
-    var _profileKey: Data? = nil
-    var _hangup: SignalServiceProtos_CallMessage.Hangup? = nil
-    var _supportsMultiRing: Bool? = nil
-    var _destinationDeviceID: UInt32? = nil
-    var _opaque: SignalServiceProtos_CallMessage.Opaque? = nil
+    var _dataMessage: SignalServiceProtos_DataMessage? = nil
+    var _syncMessage: SignalServiceProtos_SyncMessage? = nil
+    var _callMessage: SignalServiceProtos_CallMessage? = nil
+    var _nullMessage: SignalServiceProtos_NullMessage? = nil
+    var _receiptMessage: SignalServiceProtos_ReceiptMessage? = nil
+    var _typingMessage: SignalServiceProtos_TypingMessage? = nil
+    var _senderKeyDistributionMessage: Data? = nil
+    var _decryptionErrorMessage: Data? = nil
+    var _storyMessage: SignalServiceProtos_StoryMessage? = nil
+    var _pniSignatureMessage: SignalServiceProtos_PniSignatureMessage? = nil
+    var _editMessage: SignalServiceProtos_EditMessage? = nil
 
     static let defaultInstance = _StorageClass()
 
     private init() {}
 
     init(copying source: _StorageClass) {
-      _offer = source._offer
-      _answer = source._answer
-      _iceUpdate = source._iceUpdate
-      _legacyHangup = source._legacyHangup
-      _busy = source._busy
-      _profileKey = source._profileKey
-      _hangup = source._hangup
-      _supportsMultiRing = source._supportsMultiRing
-      _destinationDeviceID = source._destinationDeviceID
-      _opaque = source._opaque
+      _dataMessage = source._dataMessage
+      _syncMessage = source._syncMessage
+      _callMessage = source._callMessage
+      _nullMessage = source._nullMessage
+      _receiptMessage = source._receiptMessage
+      _typingMessage = source._typingMessage
+      _senderKeyDistributionMessage = source._senderKeyDistributionMessage
+      _decryptionErrorMessage = source._decryptionErrorMessage
+      _storyMessage = source._storyMessage
+      _pniSignatureMessage = source._pniSignatureMessage
+      _editMessage = source._editMessage
     }
   }
 
@@ -5222,16 +5049,17 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
         // allocates stack space for every case branch when no optimizations are
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
-        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._offer) }()
-        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._answer) }()
-        case 3: try { try decoder.decodeRepeatedMessageField(value: &_storage._iceUpdate) }()
-        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._legacyHangup) }()
-        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._busy) }()
-        case 6: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
-        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._hangup) }()
-        case 8: try { try decoder.decodeSingularBoolField(value: &_storage._supportsMultiRing) }()
-        case 9: try { try decoder.decodeSingularUInt32Field(value: &_storage._destinationDeviceID) }()
-        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._opaque) }()
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._dataMessage) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._syncMessage) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._callMessage) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._nullMessage) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._receiptMessage) }()
+        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._typingMessage) }()
+        case 7: try { try decoder.decodeSingularBytesField(value: &_storage._senderKeyDistributionMessage) }()
+        case 8: try { try decoder.decodeSingularBytesField(value: &_storage._decryptionErrorMessage) }()
+        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._storyMessage) }()
+        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._pniSignatureMessage) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._editMessage) }()
         default: break
         }
       }
@@ -5244,55 +5072,59 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
       // allocates stack space for every if/case branch local when no optimizations
       // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
       // https://github.com/apple/swift-protobuf/issues/1182
-      try { if let v = _storage._offer {
+      try { if let v = _storage._dataMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
-      try { if let v = _storage._answer {
+      try { if let v = _storage._syncMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
       } }()
-      if !_storage._iceUpdate.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._iceUpdate, fieldNumber: 3)
-      }
-      try { if let v = _storage._legacyHangup {
+      try { if let v = _storage._callMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._nullMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
       } }()
-      try { if let v = _storage._busy {
+      try { if let v = _storage._receiptMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
       } }()
-      try { if let v = _storage._profileKey {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+      try { if let v = _storage._typingMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
       } }()
-      try { if let v = _storage._hangup {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      try { if let v = _storage._senderKeyDistributionMessage {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
       } }()
-      try { if let v = _storage._supportsMultiRing {
-        try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+      try { if let v = _storage._decryptionErrorMessage {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
       } }()
-      try { if let v = _storage._destinationDeviceID {
-        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+      try { if let v = _storage._storyMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
       } }()
-      try { if let v = _storage._opaque {
+      try { if let v = _storage._pniSignatureMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      } }()
+      try { if let v = _storage._editMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_CallMessage, rhs: SignalServiceProtos_CallMessage) -> Bool {
+  static func ==(lhs: SignalServiceProtos_Content, rhs: SignalServiceProtos_Content) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
         let rhs_storage = _args.1
-        if _storage._offer != rhs_storage._offer {return false}
-        if _storage._answer != rhs_storage._answer {return false}
-        if _storage._iceUpdate != rhs_storage._iceUpdate {return false}
-        if _storage._legacyHangup != rhs_storage._legacyHangup {return false}
-        if _storage._busy != rhs_storage._busy {return false}
-        if _storage._profileKey != rhs_storage._profileKey {return false}
-        if _storage._hangup != rhs_storage._hangup {return false}
-        if _storage._supportsMultiRing != rhs_storage._supportsMultiRing {return false}
-        if _storage._destinationDeviceID != rhs_storage._destinationDeviceID {return false}
-        if _storage._opaque != rhs_storage._opaque {return false}
+        if _storage._dataMessage != rhs_storage._dataMessage {return false}
+        if _storage._syncMessage != rhs_storage._syncMessage {return false}
+        if _storage._callMessage != rhs_storage._callMessage {return false}
+        if _storage._nullMessage != rhs_storage._nullMessage {return false}
+        if _storage._receiptMessage != rhs_storage._receiptMessage {return false}
+        if _storage._typingMessage != rhs_storage._typingMessage {return false}
+        if _storage._senderKeyDistributionMessage != rhs_storage._senderKeyDistributionMessage {return false}
+        if _storage._decryptionErrorMessage != rhs_storage._decryptionErrorMessage {return false}
+        if _storage._storyMessage != rhs_storage._storyMessage {return false}
+        if _storage._pniSignatureMessage != rhs_storage._pniSignatureMessage {return false}
+        if _storage._editMessage != rhs_storage._editMessage {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5302,11 +5134,88 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
+extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".CallMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "offer"),
+    2: .same(proto: "answer"),
+    3: .same(proto: "iceUpdate"),
+    5: .same(proto: "busy"),
+    6: .same(proto: "profileKey"),
+    7: .same(proto: "hangup"),
+    9: .same(proto: "destinationDeviceId"),
+    10: .same(proto: "opaque"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._offer) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._answer) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.iceUpdate) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._busy) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._hangup) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self._destinationDeviceID) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._opaque) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._offer {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._answer {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    if !self.iceUpdate.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.iceUpdate, fieldNumber: 3)
+    }
+    try { if let v = self._busy {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._profileKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._hangup {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._destinationDeviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._opaque {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_CallMessage, rhs: SignalServiceProtos_CallMessage) -> Bool {
+    if lhs._offer != rhs._offer {return false}
+    if lhs._answer != rhs._answer {return false}
+    if lhs.iceUpdate != rhs.iceUpdate {return false}
+    if lhs._busy != rhs._busy {return false}
+    if lhs._profileKey != rhs._profileKey {return false}
+    if lhs._hangup != rhs._hangup {return false}
+    if lhs._destinationDeviceID != rhs._destinationDeviceID {return false}
+    if lhs._opaque != rhs._opaque {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Offer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sdp"),
     3: .same(proto: "type"),
     4: .same(proto: "opaque"),
   ]
@@ -5318,7 +5227,6 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self._type) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
       default: break
@@ -5334,9 +5242,6 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     } }()
-    try { if let v = self._sdp {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
     try { if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
     } }()
@@ -5348,7 +5253,6 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Offer, rhs: SignalServiceProtos_CallMessage.Offer) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._sdp != rhs._sdp {return false}
     if lhs._type != rhs._type {return false}
     if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -5367,7 +5271,6 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Answer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sdp"),
     3: .same(proto: "opaque"),
   ]
 
@@ -5378,7 +5281,6 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
       default: break
       }
@@ -5393,9 +5295,6 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
     try { if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     } }()
-    try { if let v = self._sdp {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
     try { if let v = self._opaque {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     } }()
@@ -5404,7 +5303,6 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Answer, rhs: SignalServiceProtos_CallMessage.Answer) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._sdp != rhs._sdp {return false}
     if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -5415,9 +5313,6 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".IceUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "mid"),
-    3: .same(proto: "line"),
-    4: .same(proto: "sdp"),
     5: .same(proto: "opaque"),
   ]
 
@@ -5428,9 +5323,6 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._mid) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._line) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
       case 5: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
       default: break
       }
@@ -5445,15 +5337,6 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
     try { if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     } }()
-    try { if let v = self._mid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._line {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._sdp {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
     try { if let v = self._opaque {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
     } }()
@@ -5462,9 +5345,6 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
 
   static func ==(lhs: SignalServiceProtos_CallMessage.IceUpdate, rhs: SignalServiceProtos_CallMessage.IceUpdate) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._mid != rhs._mid {return false}
-    if lhs._line != rhs._line {return false}
-    if lhs._sdp != rhs._sdp {return false}
     if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

@@ -34,7 +34,6 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
@@ -53,18 +52,16 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             thread: thread,
             callId: offer.id,
             sourceDevice: sourceDevice,
-            sdp: offer.sdp,
             opaque: offer.opaque,
             sentAtTimestamp: sentAtTimestamp,
             serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             callType: callType,
-            supportsMultiRing: supportsMultiRing,
             transaction: transaction
         )
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, supportsMultiRing: Bool) {
+    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
@@ -72,9 +69,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             thread: thread,
             callId: answer.id,
             sourceDevice: sourceDevice,
-            sdp: answer.sdp,
-            opaque: answer.opaque,
-            supportsMultiRing: supportsMultiRing
+            opaque: answer.opaque
         )
     }
 
