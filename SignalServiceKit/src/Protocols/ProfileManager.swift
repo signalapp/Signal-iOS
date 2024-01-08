@@ -6,4 +6,5 @@
 import Foundation
 
 public protocol ProfileManager: ProfileManagerProtocol {
+    func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?]
 }

@@ -5,11 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SSKMaybeString<NSObject>
-@property (nonatomic, nullable, readonly) NSString *stringOrNil;
-@end
-
-@interface NSString (SSK)<SSKMaybeString>
+@interface NSString (SSK)
 
 - (NSString *)filterAsE164;
 
@@ -25,9 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAttributes:(NSDictionary<NSAttributedStringKey, id> *)attributes forSubstring:(NSString *)substring;
 
-@end
-
-@interface NSNull(NSStringSSK)<SSKMaybeString>
 @end
 
 NS_ASSUME_NONNULL_END

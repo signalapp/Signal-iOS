@@ -1187,12 +1187,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return userProfile.fullName;
 }
 
-- (NSArray<id<SSKMaybeString>> *)fullNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                           transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self objc_fullNamesForAddresses:addresses transaction:transaction];
-}
-
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                             downloadIfMissing:(BOOL)downloadIfMissing
                                 authedAccount:(AuthedAccount *)authedAccount
@@ -1288,13 +1282,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
-}
-
-- (NSDictionary<SignalServiceAddress *, OWSUserProfile *> *)
-    getUserProfilesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                    transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self objc_getUserProfilesForAddresses:addresses transaction:transaction];
 }
 
 - (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData

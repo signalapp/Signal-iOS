@@ -5,17 +5,6 @@
 
 import Foundation
 
-public extension Array where Element == String? {
-    func toMaybeStrings() -> [SSKMaybeString] {
-        return map {
-            if let value = $0 {
-                return value as NSString
-            }
-            return NSNull()
-        }
-    }
-}
-
 extension Array {
     func removingDuplicates<T: Hashable>(uniquingElementsBy uniqueValue: (Element) -> T) -> [Element] {
         var result = [Element]()
@@ -38,12 +27,6 @@ extension Array {
         let result = self[index]
         remove(at: index)
         return result
-    }
-}
-
-public extension Array where Element == SSKMaybeString {
-    var sequenceWithNils: AnySequence<String?> {
-        return AnySequence(lazy.map { $0.stringOrNil })
     }
 }
 

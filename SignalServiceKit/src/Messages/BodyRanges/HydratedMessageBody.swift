@@ -211,7 +211,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             ))
         }
 
-        self.hydratedText = finalText.stringOrNil ?? ""
+        self.hydratedText = finalText as String
         self.unhydratedMentions = unhydratedMentions
         self.styleAttributes = finalStyleAttributes
         self.mentionAttributes = finalMentionAttributes

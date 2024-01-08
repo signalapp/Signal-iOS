@@ -67,13 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (NSDictionary<SignalServiceAddress *, OWSUserProfile *> *)
-    getUserProfilesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                    transaction:(SDSAnyReadTransaction *)transaction
-{
-    return @{};
-}
-
 - (void)setProfileKeyData:(NSData *)profileKey
                forAddress:(SignalServiceAddress *)address
         userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -348,22 +341,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)writeAvatarDataToFile:(nonnull NSData *)avatarData {
     return nil;
 }
-
-- (nonnull NSArray<id<SSKMaybeString>> *)fullNamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses
-                                                   transaction:(nonnull SDSAnyReadTransaction *)transaction
-{
-    NSMutableArray<id<SSKMaybeString>> *result = [NSMutableArray array];
-    for (NSUInteger i = 0; i < addresses.count; i++) {
-        if (self.fakeDisplayNames == nil) {
-            [result addObject:@"some fake profile name"];
-        } else {
-            NSString *fakeName = self.fakeDisplayNames[addresses[i]];
-            [result addObject:fakeName ?: [NSNull null]];
-        }
-    }
-    return result;
-}
-
 
 - (void)migrateWhitelistedGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {

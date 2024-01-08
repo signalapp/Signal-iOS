@@ -1324,8 +1324,7 @@ extension OWSContactsManager {
             // Prefer a saved name from system contacts, if available.
             return cachedContactNames(for: addresses, transaction: transaction)
         }.refine { addresses in
-            profileManager.fullNames(forAddresses: Array(addresses),
-                                     transaction: transaction).sequenceWithNils
+            profileManager.fullNames(for: Array(addresses), tx: transaction)
         }.refine { addresses in
             return self.phoneNumbers(for: Array(addresses),
                                      transaction: transaction).lazy.map {

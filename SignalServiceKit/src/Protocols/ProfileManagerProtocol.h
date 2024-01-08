@@ -13,9 +13,6 @@
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalRecipient;
-
-@protocol SSKMaybeString;
-
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -61,17 +58,12 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
-- (NSArray<id<SSKMaybeString>> *)fullNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
                                                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction;
-- (NSDictionary<SignalServiceAddress *, OWSUserProfile *> *)
-    getUserProfilesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                    transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
