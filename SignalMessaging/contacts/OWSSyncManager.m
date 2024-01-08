@@ -81,7 +81,7 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
-                                                 name:[RegistrationStateChangeNotificatons registrationStateDidChange]
+                                                 name:[RegistrationStateChangeNotifications registrationStateDidChange]
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willEnterForeground:)
