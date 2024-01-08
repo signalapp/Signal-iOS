@@ -271,7 +271,6 @@ public enum GRDBFullTextSearchFinder {
 
     static func modelWasInserted(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
-            Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
             return
         }
@@ -297,7 +296,6 @@ public enum GRDBFullTextSearchFinder {
 
     static func modelWasUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
-            Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
             return
         }
@@ -317,10 +315,7 @@ public enum GRDBFullTextSearchFinder {
             ftsCache.setObject(ftsContent, forKey: cacheKey)
             return false
         }
-        guard !shouldSkipUpdate else {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("Skipping FTS update")
-            }
+        if shouldSkipUpdate {
             return
         }
 
@@ -337,7 +332,6 @@ public enum GRDBFullTextSearchFinder {
 
     static func modelWasInsertedOrUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
-            Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
             return
         }
@@ -357,10 +351,7 @@ public enum GRDBFullTextSearchFinder {
             ftsCache.setObject(ftsContent, forKey: cacheKey)
             return false
         }
-        guard !shouldSkipUpdate else {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("Skipping FTS update")
-            }
+        if shouldSkipUpdate {
             return
         }
 

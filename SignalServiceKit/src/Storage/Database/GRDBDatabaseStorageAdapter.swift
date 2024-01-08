@@ -818,8 +818,6 @@ private struct GRDBStorage {
         self.poolConfiguration = Self.buildConfiguration(keyspec: keyspec)
         self.pool = try Self.buildPool(dbURL: dbURL, poolConfiguration: poolConfiguration)
 
-        Logger.debug("dbURL: \(dbURL)")
-
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
     }
 

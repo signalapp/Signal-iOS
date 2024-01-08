@@ -48,7 +48,6 @@ public class GRDBSchemaMigrator: NSObject {
             }
         } else {
             do {
-                Logger.info("Using newUserMigrator.")
                 try newUserMigrator().migrate(grdbStorageAdapter.pool)
                 didPerformIncrementalMigrations = false
             } catch {

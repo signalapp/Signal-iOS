@@ -72,10 +72,6 @@ public class SDSDatabaseStorage: NSObject {
                                                object: nil)
     }
 
-    deinit {
-        Logger.verbose("")
-    }
-
     @objc
     public class var baseDir: URL {
         return URL(

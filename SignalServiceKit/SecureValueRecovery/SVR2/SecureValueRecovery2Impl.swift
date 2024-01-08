@@ -1185,7 +1185,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private func wipeOldEnclavesIfNeeded(auth: SVR2.AuthMethod) {
-        Logger.info("Checking old enclaves to wipe")
         var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
             return (
                 self.tsAccountManager.registrationState(tx: tx).isRegistered,
@@ -1315,7 +1314,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }.then(on: scheduler) { [weak self] values -> Promise<Void> in
             guard let self, let (oldSVR2EnclaveString, pin, masterKey) = values else {
                 // No migration needed.
-                Logger.info("No migration necessary")
                 return .value(())
             }
 
