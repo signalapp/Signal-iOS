@@ -266,7 +266,6 @@ class GRDBFinderTest: SignalBaseTest {
                                    authedAccount: .implicit(),
                                    transaction: transaction)
                 expectedAddresses.insert(userProfile.address)
-                userProfile.logDates(prefix: "Expected profile")
             }
 
             do {
@@ -281,7 +280,6 @@ class GRDBFinderTest: SignalBaseTest {
                                    authedAccount: .implicit(),
                                    transaction: transaction)
                 expectedAddresses.insert(userProfile.address)
-                userProfile.logDates(prefix: "Expected profile")
             }
 
             do {
@@ -300,19 +298,12 @@ class GRDBFinderTest: SignalBaseTest {
 
         var missingAndStaleAddresses = Set<SignalServiceAddress>()
         self.read { transaction in
-            OWSUserProfile.anyEnumerate(transaction: transaction) { (userProfile: OWSUserProfile, _) in
-                userProfile.logDates(prefix: "Considering profile")
-            }
-
             finder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
-                userProfile.logDates(prefix: "Missing or stale profile")
                 XCTAssertFalse(missingAndStaleAddresses.contains(userProfile.address))
                 missingAndStaleAddresses.insert(userProfile.address)
             }
         }
 
-        Logger.verbose("expectedAddresses: \(expectedAddresses)")
-        Logger.verbose("missingAndStaleAddresses: \(missingAndStaleAddresses)")
         XCTAssertEqual(expectedAddresses, missingAndStaleAddresses)
     }
 }

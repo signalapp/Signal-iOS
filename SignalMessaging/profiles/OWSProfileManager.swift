@@ -82,8 +82,6 @@ public extension OWSProfileManager {
                 ignoreThrottling: true,
                 authedAccount: authedAccount
             ).asVoid()
-        }.done(on: DispatchQueue.global()) { () -> Void in
-            Logger.verbose("Profile update did complete.")
         }
     }
 
@@ -538,29 +536,6 @@ public extension OWSProfileManager {
         return AnyPromise(reuploadLocalProfilePromise(authedAccount: authedAccount))
     }
 
-    @available(swift, obsoleted: 1.0)
-    class func updateLocalProfilePromise(
-        profileGivenName: String?,
-        profileFamilyName: String?,
-        profileBio: String?,
-        profileBioEmoji: String?,
-        profileAvatarData: Data?,
-        visibleBadgeIds: [String],
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount
-    ) -> AnyPromise {
-        return AnyPromise(updateLocalProfilePromise(
-            profileGivenName: profileGivenName,
-            profileFamilyName: profileFamilyName,
-            profileBio: profileBio,
-            profileBioEmoji: profileBioEmoji,
-            profileAvatarData: profileAvatarData,
-            visibleBadgeIds: visibleBadgeIds,
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount
-        ))
-    }
-
     class func updateStorageServiceIfNecessary() {
         guard
             CurrentAppContext().isMainApp,
@@ -818,15 +793,6 @@ extension OWSProfileManager {
     ) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
-        if !update.hasGivenName {
-            Logger.info("Setting empty given name.")
-        }
-        if !update.hasAvatarData {
-            Logger.info("Setting empty avatar.")
-        }
-
         profileManagerImpl.isUpdatingProfileOnService = true
 
         // We capture the local user profile early to eliminate the
@@ -968,8 +934,6 @@ extension OWSProfileManager {
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.verbose("profile givenName: \(String(describing: attempt.update.profileGivenName)), familyName: \(String(describing: attempt.update.profileFamilyName)), avatarFilename: \(String(describing: attempt.avatarFilename))")
-
         attempt.userProfile.update(
             givenName: attempt.update.profileGivenName,
             familyName: attempt.update.profileFamilyName,
@@ -994,8 +958,6 @@ extension OWSProfileManager {
                                             visibleBadgeIds: [String],
                                             unsavedRotatedProfileKey: OWSAES256Key?,
                                             userProfileWriter: UserProfileWriter) -> PendingProfileUpdate {
-        Logger.verbose("")
-
         // Note that this might overwrite a pending profile update.
         // That's desirable.  We only ever want to retain the
         // latest changes.
@@ -1032,8 +994,6 @@ extension OWSProfileManager {
     }
 
     private class func tryToDequeueProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyWriteTransaction) -> Bool {
-        Logger.verbose("")
-
         guard self.isCurrentPendingProfileUpdate(update: update, transaction: transaction) else {
             Logger.warn("Ignoring stale update completion.")
             return false
@@ -1053,11 +1013,9 @@ internal extension OWSProfileManager {
     func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {
-            Logger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
             return
         }
         guard tsRegistrationState.isPrimaryDevice ?? false else {
-            Logger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
             return
         }
         // We schedule in the NSE by writing state; the actual rotation
@@ -1070,11 +1028,9 @@ internal extension OWSProfileManager {
     func forceRotateLocalProfileKeyForGroupDepartureObjc(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {
-            Logger.verbose("Not rotating profile key on unregistered device.")
             return
         }
         guard tsRegistrationState.isPrimaryDevice ?? false else {
-            Logger.verbose("Not rotating profile key on non-primary device.")
             return
         }
         // We schedule in the NSE by writing state; the actual rotation
@@ -1302,13 +1258,8 @@ public extension OWSProfileManager {
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<OWSUrlDownloadResponse> in
-            Logger.verbose("downloading profile avatar: \(profileAddress)")
             let urlSession = self.avatarUrlSession
-            return urlSession.downloadTaskPromise(avatarUrlPath,
-                                                  method: .get,
-                                                  progress: { (_, progress) in
-                Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
-            })
+            return urlSession.downloadTaskPromise(avatarUrlPath, method: .get)
         }.map(on: DispatchQueue.global()) { (response: OWSUrlDownloadResponse) -> Data in
             do {
                 return try Data(contentsOf: response.downloadUrl)
@@ -1341,26 +1292,4 @@ public extension OWSProfileManager {
             backgroundTask = nil
         }
     }
-}
-
-// MARK: -
-
-extension OWSUserProfile {
-    #if TESTABLE_BUILD
-    func logDates(prefix: String) {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-
-        var lastFetchDateString = "nil"
-        if let lastFetchDate = lastFetchDate {
-            lastFetchDateString = formatter.string(from: lastFetchDate)
-        }
-        var lastMessagingDateString = "nil"
-        if let lastMessagingDate = lastMessagingDate {
-            lastMessagingDateString = formatter.string(from: lastMessagingDate)
-        }
-        Logger.verbose("\(prefix): \(address), lastFetchDate: \(lastFetchDateString), lastMessagingDate: \(lastMessagingDateString).")
-    }
-    #endif
 }
