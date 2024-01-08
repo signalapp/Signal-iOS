@@ -191,15 +191,15 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
-            Logger.info("local number \(oldNumber ?? "nil") -> \(e164.stringValue)")
+            Logger.info("local number \(oldNumber ?? "nil") -> \(e164)")
             kvStore.setString(e164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
 
-            let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
-            Logger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
+            let oldAci = Aci.parseFrom(aciString: kvStore.getString(Keys.localAci, transaction: tx))
+            Logger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
-            let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
-            Logger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
+            let oldPni = kvStore.getString(Keys.localPni, transaction: tx).flatMap { UUID(uuidString: $0) }.flatMap { Pni(fromUUID: $0) }
+            Logger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni?.logString ?? "nil")")
             // Encoded without the "PNI:" prefix for backwards compatibility.
             kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
 
