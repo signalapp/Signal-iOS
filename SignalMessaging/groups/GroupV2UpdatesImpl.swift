@@ -774,9 +774,6 @@ private extension GroupV2UpdatesImpl {
                 transaction: transaction
             )
             builder.apply(options: groupModelOptions)
-            if snapshot.revision == 0, groupUpdateSource == localIdentifiers.aci {
-                builder.wasJustCreatedByLocalUser = true
-            }
 
             let newGroupModel = try builder.build()
 

@@ -157,7 +157,6 @@ extension TSGroupThread {
                 isAnnouncementsOnly: false,
                 isPlaceholderModel: false,
                 wasJustMigrated: false,
-                wasJustCreatedByLocalUser: false,
                 didJustAddSelfViaGroupLink: false,
                 addedByAddress: nil,
                 droppedMembers: []

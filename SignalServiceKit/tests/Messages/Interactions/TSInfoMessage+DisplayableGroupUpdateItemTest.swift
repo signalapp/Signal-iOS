@@ -62,7 +62,6 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .announcementOnlyDisabledByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
         .announcementOnlyDisabledByUnknownUser,
 
-        .wasJustCreatedByLocalUser,
         .wasMigrated,
 
         .invalidInvitesAddedByLocalUser(count: 1),

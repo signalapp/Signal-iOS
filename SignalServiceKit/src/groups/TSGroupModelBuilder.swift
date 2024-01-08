@@ -23,7 +23,6 @@ public struct TSGroupModelBuilder: Dependencies {
     public var isPlaceholderModel: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
-    public var wasJustCreatedByLocalUser: Bool = false
     public var didJustAddSelfViaGroupLink: Bool = false
     public var droppedMembers = [SignalServiceAddress]()
 
@@ -46,7 +45,6 @@ public struct TSGroupModelBuilder: Dependencies {
         self.isAnnouncementsOnly = groupV2Snapshot.isAnnouncementsOnly
         self.isPlaceholderModel = false
         self.wasJustMigrated = false
-        self.wasJustCreatedByLocalUser = false
         self.didJustAddSelfViaGroupLink = false
     }
 
@@ -194,7 +192,6 @@ public struct TSGroupModelBuilder: Dependencies {
                                   isAnnouncementsOnly: isAnnouncementsOnly,
                                   isPlaceholderModel: isPlaceholderModel,
                                   wasJustMigrated: wasJustMigrated,
-                                  wasJustCreatedByLocalUser: wasJustCreatedByLocalUser,
                                   didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
                                   addedByAddress: addedByAddress,
                                   droppedMembers: droppedMembers)
@@ -276,7 +273,6 @@ public extension TSGroupModel {
             //
             // * isPlaceholderModel
             // * wasJustMigrated
-            // * wasJustCreatedByLocalUser
             // * didJustAddSelfViaGroupLink
             //
             // We want to discard these values when updating group models.

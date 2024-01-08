@@ -36,8 +36,6 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     public var wasJustMigrated: Bool = false
     @objc
-    public var wasJustCreatedByLocalUser: Bool = false
-    @objc
     public var didJustAddSelfViaGroupLink: Bool = false
     @objc
     public var droppedMembers = [SignalServiceAddress]()
@@ -58,7 +56,6 @@ public class TSGroupModelV2: TSGroupModel {
                          isAnnouncementsOnly: Bool,
                          isPlaceholderModel: Bool,
                          wasJustMigrated: Bool,
-                         wasJustCreatedByLocalUser: Bool,
                          didJustAddSelfViaGroupLink: Bool,
                          addedByAddress: SignalServiceAddress?,
                          droppedMembers: [SignalServiceAddress]) {
@@ -72,7 +69,6 @@ public class TSGroupModelV2: TSGroupModel {
         self.isAnnouncementsOnly = isAnnouncementsOnly
         self.isPlaceholderModel = isPlaceholderModel
         self.wasJustMigrated = wasJustMigrated
-        self.wasJustCreatedByLocalUser = wasJustCreatedByLocalUser
         self.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
         self.droppedMembers = droppedMembers
 
@@ -166,7 +162,6 @@ public class TSGroupModelV2: TSGroupModel {
         //
         // * isPlaceholderModel
         // * wasJustMigrated
-        // * wasJustCreatedByLocalUser
         // * didJustAddSelfViaGroupLink
         return true
     }
@@ -188,7 +183,6 @@ public class TSGroupModelV2: TSGroupModel {
         result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
         result += "isPlaceholderModel: \(isPlaceholderModel),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
-        result += "wasJustCreatedByLocalUser: \(wasJustCreatedByLocalUser),\n"
         result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
         result += "droppedMembers: \(droppedMembers),\n"
         result += "descriptionText: \(String(describing: descriptionText)),\n"
@@ -243,13 +237,6 @@ public extension TSGroupModel {
             return false
         }
         return groupModelV2.wasJustMigrated
-    }
-
-    var wasJustCreatedByLocalUserV2: Bool {
-        guard let groupModelV2 = self as? TSGroupModelV2 else {
-            return false
-        }
-        return groupModelV2.wasJustCreatedByLocalUser
     }
 
     var didJustAddSelfViaGroupLinkV2: Bool {

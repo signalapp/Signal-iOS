@@ -55,7 +55,7 @@ public enum DisplayableGroupUpdateItem {
     case announcementOnlyDisabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case announcementOnlyDisabledByUnknownUser
 
-    case wasJustCreatedByLocalUser
+    case inviteFriendsToNewlyCreatedGroup
     case wasMigrated
 
     case invalidInvitesAddedByLocalUser(count: Int)
@@ -444,7 +444,7 @@ public enum DisplayableGroupUpdateItem {
                 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED",
                 comment: "Message indicating that 'announcement-only' mode was disabled."
             ).attributed
-        case .wasJustCreatedByLocalUser:
+        case .inviteFriendsToNewlyCreatedGroup:
             return OWSLocalizedString(
                 "GROUP_LINK_PROMOTION_UPDATE",
                 comment: "Suggestion to invite more group members via the group invite link."

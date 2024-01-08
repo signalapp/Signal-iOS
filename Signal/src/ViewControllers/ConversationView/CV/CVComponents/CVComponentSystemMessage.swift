@@ -949,7 +949,7 @@ extension CVComponentSystemMessage {
                 .inviteLinkApprovalDisabledByLocalUser,
                 .inviteLinkApprovalDisabledByOtherUser,
                 .inviteLinkApprovalDisabledByUnknownUser,
-                .wasJustCreatedByLocalUser:
+                .inviteFriendsToNewlyCreatedGroup:
             return Theme.iconName(.group16)
         case
                 .unnamedUserInvitesWereRevokedByLocalUser,
@@ -1196,19 +1196,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            if newGroupModel.wasJustCreatedByLocalUserV2 {
-                return Action(
-                    title: OWSLocalizedString(
-                        "GROUPS_INVITE_FRIENDS_BUTTON",
-                        comment: "Label for 'invite friends to group' button."
-                    ),
-                    accessibilityIdentifier: "group_invite_friends",
-                    action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel)
-                )
-            }
-
             guard
-                let oldGroupModel = infoMessage.oldGroupModel,
                 let displayableGroupUpdateItems = infoMessage.displayableGroupUpdateItems(tx: transaction),
                 !displayableGroupUpdateItems.isEmpty
             else {
@@ -1217,6 +1205,15 @@ extension CVComponentSystemMessage {
 
             for updateItem in displayableGroupUpdateItems {
                 switch updateItem {
+                case .inviteFriendsToNewlyCreatedGroup:
+                    return Action(
+                        title: OWSLocalizedString(
+                            "GROUPS_INVITE_FRIENDS_BUTTON",
+                            comment: "Label for 'invite friends to group' button."
+                        ),
+                        accessibilityIdentifier: "group_invite_friends",
+                        action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel)
+                    )
                 case .wasMigrated:
                     return Action(
                         title: CommonStrings.learnMore,
@@ -1282,6 +1279,10 @@ extension CVComponentSystemMessage {
                 default:
                     break
                 }
+            }
+
+            guard let oldGroupModel = infoMessage.oldGroupModel else {
+                return nil
             }
 
             let newlyRequestingMembers = newGroupModel.groupMembership.requestingMembers

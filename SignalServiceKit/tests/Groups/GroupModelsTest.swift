@@ -159,7 +159,6 @@ class GroupModelsTest: SSKBaseTestSwift {
         //     isAnnouncementsOnly: false,
         //     isPlaceholderModel: false,
         //     wasJustMigrated: false,
-        //     wasJustCreatedByLocalUser: false,
         //     didJustAddSelfViaGroupLink: false,
         //     addedByAddress: nil,
         //     droppedMembers: []

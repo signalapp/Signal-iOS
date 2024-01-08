@@ -273,7 +273,6 @@ public class GroupManager: NSObject {
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModelV2 in
                     var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                              transaction: transaction)
-                    builder.wasJustCreatedByLocalUser = true
                     return try builder.buildAsV2()
                 }
                 if proposedGroupModel != createdGroupModel {

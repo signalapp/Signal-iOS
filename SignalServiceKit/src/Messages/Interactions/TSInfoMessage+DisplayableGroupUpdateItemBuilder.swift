@@ -439,15 +439,15 @@ private struct NewGroupUpdateItemBuilder {
         var items = [DisplayableGroupUpdateItem]()
 
         // We're just learning of the group.
-        groupWasInsertedItem(
+        let groupWasInsertedItem = groupWasInsertedItem(
             updater: updater,
             localIdentifiers: localIdentifiers,
             newGroupModel: newGroupModel,
             newGroupMembership: newGroupModel.groupMembership,
             tx: tx
-        ).map {
-            items.append($0)
-        }
+        )
+
+        groupWasInsertedItem.map { items.append($0) }
 
         // Skip update items for things like name, avatar, current members. Do
         // add update items for the current disappearing messages state. We can
@@ -459,12 +459,15 @@ private struct NewGroupUpdateItemBuilder {
             oldToken: nil,
             newToken: newDisappearingMessageToken,
             forceUnknownAttribution: true
-        ).map {
-            items.append($0)
-        }
+        ).map { items.append($0) }
 
-        if newGroupModel.wasJustCreatedByLocalUserV2 {
-            items.append(.createdByLocalUser)
+        if
+            let groupWasInsertedItem,
+            case .createdByLocalUser = groupWasInsertedItem
+        {
+            // If we just created the group, add an update item to let users
+            // know about the group link.
+            items.append(.inviteFriendsToNewlyCreatedGroup)
         }
 
         return items
