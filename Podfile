@@ -13,8 +13,8 @@ pod 'SwiftProtobuf', ">= 1.14.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '53cf20d6b01b801c5afeb9b9f8fafe4fd2971bc862d2d64939cd7d9c3b776f38'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.37.0', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '59a0e9ad100918a816ec9421a67b87d65444c5ece57aba005099fb3cf093a108'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.38.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
