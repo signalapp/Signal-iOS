@@ -136,10 +136,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly
-                                        authedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(fetchLocalUsersProfile(mainAppOnly:authedAccount:));
-
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 
 // Profile fetches will make a best effort to download and decrypt avatar

@@ -65,6 +65,20 @@ public protocol TSAccountManager {
     func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date
 }
 
+extension TSAccountManager {
+    public func localAciWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws -> Aci {
+        switch authedAccount.info {
+        case .explicit(let info):
+            return info.localIdentifiers.aci
+        case .implicit:
+            guard let localIdentifiers = localIdentifiersWithMaybeSneakyTransaction else {
+                throw OWSAssertionError("Missing localIdentifiers.")
+            }
+            return localIdentifiers.aci
+        }
+    }
+}
+
 /// Should only be used in ``PhoneNumberDiscoverabilityManager``, so that necessary
 /// side effects can be triggered.
 public protocol PhoneNumberDiscoverabilitySetter {

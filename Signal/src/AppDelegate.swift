@@ -373,6 +373,10 @@ extension AppDelegate {
             }
         }
 
+        if tsRegistrationState.isRegistered {
+            _ = profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: .implicit())
+        }
+
         DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
         AppVersionImpl.shared.mainAppLaunchDidComplete()
 

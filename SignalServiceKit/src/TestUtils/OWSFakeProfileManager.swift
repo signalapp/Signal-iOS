@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 #if TESTABLE_BUILD
 
@@ -14,6 +15,10 @@ extension OWSFakeProfileManager: ProfileManager {
         } else {
             return Array(repeating: "some fake profile name", count: addresses.count)
         }
+    }
+
+    public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
+        return Promise(error: OWSGenericError("Not supported."))
     }
 }
 

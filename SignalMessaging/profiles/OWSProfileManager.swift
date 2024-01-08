@@ -11,6 +11,20 @@ extension OWSProfileManager: ProfileManager {
     public func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?] {
         return userProfilesRefinery(for: addresses, tx: tx).values.map { $0?.fullName }
     }
+
+    public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
+        do {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            return ProfileFetcherJob.fetchProfilePromise(
+                serviceId: try tsAccountManager.localAciWithMaybeSneakyTransaction(authedAccount: authedAccount),
+                mainAppOnly: mainAppOnly,
+                ignoreThrottling: true,
+                authedAccount: authedAccount
+            )
+        } catch {
+            return Promise(error: error)
+        }
+    }
 }
 
 public extension OWSProfileManager {

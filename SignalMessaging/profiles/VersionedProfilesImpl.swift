@@ -131,23 +131,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     ) -> Promise<VersionedProfileUpdate> {
 
         let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
-        return firstly(on: DispatchQueue.global()) {
-            let localAci: Aci
-            switch authedAccount.info {
-            case .explicit(let info):
-                localAci = info.localIdentifiers.aci
-            case .implicit:
-                guard let implicitLocalAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-                    throw OWSAssertionError("Missing localUuid.")
-                }
-                localAci = implicitLocalAci
-            }
-
-            if unsavedRotatedProfileKey != nil {
-                Logger.info("Updating local profile with unsaved rotated profile key")
-            }
-            return localAci
-        }.then(on: DispatchQueue.global()) { (localAci: Aci) -> Promise<HTTPResponse> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let localAci = try tsAccountManager.localAciWithMaybeSneakyTransaction(authedAccount: authedAccount)
             let localProfileKey = try self.parseProfileKey(profileKey: profileKeyToUse)
             let commitment = try localProfileKey.getCommitment(userId: localAci)
             let commitmentData = commitment.serialize().asData

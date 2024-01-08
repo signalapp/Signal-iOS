@@ -101,7 +101,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (CurrentAppContext().isMainApp && [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
             [self logLocalAvatarStatus];
-            [self fetchLocalUsersProfileWithMainAppOnly:YES authedAccount:AuthedAccount.implicit];
         }
     });
 
@@ -417,19 +416,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount
 {
     [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES authedAccount:authedAccount];
-}
-
-- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly authedAccount:(AuthedAccount *)authedAccount
-{
-    AciObjC *localAci =
-        [authedAccount localUserAci] ?: [TSAccountManagerObjcBridge localIdentifiersWithMaybeTransaction].aci;
-    if (localAci == nil) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing localAci.")];
-    }
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithServiceId:localAci
-                                                       mainAppOnly:mainAppOnly
-                                                  ignoreThrottling:YES
-                                                     authedAccount:authedAccount];
 }
 
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount

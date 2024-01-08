@@ -221,12 +221,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (AnyPromise *)fetchLocalUsersProfileWithMainAppOnly:(BOOL)mainAppOnly authedAccount:(AuthedAccount *)authedAccount
-{
-    // Do nothing.
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
 - (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
                  authedAccount:(nonnull AuthedAccount *)authedAccount
 {
