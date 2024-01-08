@@ -111,7 +111,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // Crash if keychain is inaccessible.
             try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists()
         } catch {
-            owsFail("\(error.grdbErrorForLogging)")
+            owsFail("\(error)")
         }
 
         do {
@@ -303,39 +303,25 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public static func ensureDatabaseKeySpecExists() throws {
-
         do {
             _ = try keyspec.fetchString()
             // Key exists and is valid.
             return
-        } catch {
-            Logger.warn("Key not accessible: \(error)")
+        } catch where CurrentAppContext().isMainApp && !CurrentAppContext().isInBackground() {
+            // We're the main app, so we can proceed to create a new database key.
+            //
+            // However, if we're in the background, we don't create a new key (because
+            // it might exist and not be accessible). Note that we should catch this
+            // earlier using `isKeyAccessible` and terminate before this point.
+            //
+            // TODO: Handle "not set" vs. "permission denied" errors here.
         }
 
-        // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-        // the keychain will be inaccessible after device restart until
-        // device is unlocked for the first time.  If the app receives
-        // a push notification, we won't be able to access the keychain to
-        // process that notification, so we should just terminate by throwing
-        // an uncaught exception.
-        var errorDescription = "CipherKeySpec inaccessible. New install, migration or no unlock since device restart?"
-        if CurrentAppContext().isMainApp {
-            let applicationState = CurrentAppContext().reportedApplicationState
-            errorDescription += ", ApplicationState: \(NSStringForUIApplicationState(applicationState))"
-        }
-        Logger.error(errorDescription)
-        Logger.flush()
-
-        if CurrentAppContext().isMainApp {
-            if CurrentAppContext().isInBackground() {
-                // Rather than crash here, we should have already detected the situation earlier
-                // and exited gracefully (in the app delegate) using isDatabasePasswordAccessible.
-                // This is a last ditch effort to avoid blowing away the user's database.
-                throw OWSAssertionError(errorDescription)
-            }
-        } else {
-            throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
-        }
+        // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, the
+        // keychain will be inaccessible after device restart until device is
+        // unlocked for the first time. If the app receives a push notification, we
+        // won't be able to access the keychain to process that notification, so we
+        // should just terminate by throwing an uncaught exception.
 
         // At this point, either:
         //
