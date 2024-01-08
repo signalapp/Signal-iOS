@@ -731,9 +731,9 @@ extension MessageDetailViewController: MediaGalleryDelegate {
 // MARK: -
 
 extension MessageDetailViewController: ContactShareViewHelperDelegate {
-    public func didCreateOrEditContact() {
+
+    func didCreateOrEditContact() {
         updateTableContents()
-        self.dismiss(animated: true)
     }
 }
 
@@ -1106,15 +1106,15 @@ extension MessageDetailViewController: CVComponentDelegate {
     }
 
     func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.sendMessage(contactShare: contactShare, from: self)
     }
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showInviteContact(contactShare: contactShare, from: self)
     }
 
     func didTapAddToContacts(contactShare: ContactShareViewModel) {
-        contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showAddToContactsPrompt(contactShare: contactShare, from: self)
     }
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {

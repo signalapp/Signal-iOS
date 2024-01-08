@@ -605,7 +605,7 @@ fileprivate extension ConversationViewController {
         dismissKeyBoard()
         contactsViewHelper.checkReadAuthorization(
             purpose: .share,
-            authorizedBehavior: .runAction({
+            performWhenAllowed: {
                 let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)
                 contactsPicker.delegate = self
                 contactsPicker.title = OWSLocalizedString(
@@ -613,8 +613,8 @@ fileprivate extension ConversationViewController {
                     comment: "navbar title for contact picker when sharing a contact"
                 )
                 self.presentFormSheet(OWSNavigationController(rootViewController: contactsPicker), animated: true)
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+            },
+            presentErrorFrom: self
         )
     }
 

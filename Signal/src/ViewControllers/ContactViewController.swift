@@ -345,31 +345,31 @@ extension ContactViewController {
     private func didPressSendMessage() {
         Logger.info("")
 
-        contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.sendMessage(contactShare: contactShare, from: self)
     }
 
     private func didPressAudioCall() {
         Logger.info("")
 
-        contactShareViewHelper.audioCall(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.audioCall(contactShare: contactShare, from: self)
     }
 
     private func didPressVideoCall() {
         Logger.info("")
 
-        contactShareViewHelper.videoCall(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.videoCall(contactShare: contactShare, from: self)
     }
 
     private func didPressInvite() {
         Logger.info("")
 
-        contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showInviteContact(contactShare: contactShare, from: self)
     }
 
     private func didPressAddToContacts() {
         Logger.info("")
 
-        contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showAddToContactsPrompt(contactShare: contactShare, from: self)
     }
 
     private func didPressPhoneNumber(phoneNumber: OWSContactPhoneNumber) {
@@ -535,8 +535,6 @@ extension ContactViewController {
 extension ContactViewController: ContactShareViewHelperDelegate {
 
     func didCreateOrEditContact() {
-        Logger.info("")
         updateContent()
-        dismiss(animated: true)
     }
 }

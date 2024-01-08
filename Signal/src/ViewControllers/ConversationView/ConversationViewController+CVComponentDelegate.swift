@@ -358,19 +358,19 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
-        contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.sendMessage(contactShare: contactShare, from: self)
     }
 
     public func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
-        contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showInviteContact(contactShare: contactShare, from: self)
     }
 
     public func didTapAddToContacts(contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
-        contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showAddToContactsPrompt(contactShare: contactShare, from: self)
     }
 
     public func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {
@@ -882,7 +882,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {
         contactsViewHelper.checkEditAuthorization(
-            authorizedBehavior: .runAction({
+            performWhenAllowed: {
                 guard let existingContact: CNContact = self.databaseStorage.read(block: {
                     guard let contact = self.contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
                     return self.contactsManager.cnContact(withId: contact.cnContactId)
@@ -896,8 +896,8 @@ extension ConversationViewController: CVComponentDelegate {
                     CreateOrEditContactFlow(address: address, contact: existingContact),
                     from: self
                 )
-            }),
-            unauthorizedBehavior: .presentError(from: self)
+            },
+            presentErrorFrom: self
         )
     }
 

@@ -235,38 +235,29 @@ public extension ContactsViewHelper {
         case read(ReadPurpose)
     }
 
-    enum AuthorizedBehavior {
-        case runAction(() -> Void)
-        case pushViewController(on: UINavigationController, viewController: () -> UIViewController?)
-    }
-
-    enum UnauthorizedBehavior {
-        case presentError(from: UIViewController)
-    }
-
     func checkEditAuthorization(
-        authorizedBehavior: AuthorizedBehavior,
-        unauthorizedBehavior: UnauthorizedBehavior
+        performWhenAllowed: () -> Void,
+        presentErrorFrom viewController: UIViewController
     ) {
         AssertIsOnMainThread()
 
         switch contactsManagerImpl.editingAuthorization {
         case .notAllowed:
-            performWhenNotAllowed(unauthorizedBehavior: unauthorizedBehavior)
+            Self.presentContactAccessNotAllowedAlert(from: viewController)
         case .denied, .restricted:
-            performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, access: .edit)
+            Self.presentContactAccessDeniedAlert(from: viewController, access: .edit)
         case .authorized:
-            perform(authorizedBehavior: authorizedBehavior)
+            performWhenAllowed()
         }
     }
 
     func checkReadAuthorization(
         purpose: ReadPurpose,
-        authorizedBehavior: AuthorizedBehavior,
-        unauthorizedBehavior: UnauthorizedBehavior
+        performWhenAllowed: @escaping () -> Void,
+        presentErrorFrom viewController: UIViewController
     ) {
         let deniedBlock = {
-            self.performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, access: .read(purpose))
+            Self.presentContactAccessDeniedAlert(from: viewController, access: .read(purpose))
         }
 
         switch contactsManagerImpl.sharingAuthorization {
@@ -274,42 +265,16 @@ public extension ContactsViewHelper {
             CNContactStore().requestAccess(for: .contacts) { granted, error in
                 DispatchQueue.main.async {
                     if granted {
-                        self.perform(authorizedBehavior: authorizedBehavior)
+                        performWhenAllowed()
                     } else {
                         deniedBlock()
                     }
                 }
             }
         case .authorized:
-            perform(authorizedBehavior: authorizedBehavior)
+            performWhenAllowed()
         case .denied:
             deniedBlock()
-        }
-    }
-
-    private func perform(authorizedBehavior: AuthorizedBehavior) {
-        switch authorizedBehavior {
-        case .runAction(let authorizedBlock):
-            authorizedBlock()
-        case .pushViewController(on: let navigationController, viewController: let viewControllerBlock):
-            guard let viewController = viewControllerBlock() else {
-                return owsFailDebug("Missing contactViewController.")
-            }
-            navigationController.pushViewController(viewController, animated: true)
-        }
-    }
-
-    private func performWhenDenied(unauthorizedBehavior: UnauthorizedBehavior, access: Access) {
-        switch unauthorizedBehavior {
-        case .presentError(from: let viewController):
-            Self.presentContactAccessDeniedAlert(from: viewController, access: access)
-        }
-    }
-
-    private func performWhenNotAllowed(unauthorizedBehavior: UnauthorizedBehavior) {
-        switch unauthorizedBehavior {
-        case .presentError(from: let viewController):
-            Self.presentContactAccessNotAllowedAlert(from: viewController)
         }
     }
 

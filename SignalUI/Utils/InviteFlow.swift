@@ -108,13 +108,13 @@ public class InviteFlow: NSObject {
         self.channel = channel
         contactsViewHelper.checkReadAuthorization(
             purpose: .invite,
-            authorizedBehavior: .runAction({
+            performWhenAllowed: {
                 let picker = ContactPickerViewController(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
                 picker.delegate = self
                 picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
                 self.presentViewController(picker, animated: true)
-            }),
-            unauthorizedBehavior: .presentError(from: presentingViewController)
+            },
+            presentErrorFrom: presentingViewController
         )
     }
 

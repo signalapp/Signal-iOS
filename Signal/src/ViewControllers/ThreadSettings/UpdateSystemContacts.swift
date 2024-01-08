@@ -142,12 +142,12 @@ extension ContactsViewHelper {
         completion: (() -> Void)? = nil
     ) {
         checkEditAuthorization(
-            authorizedBehavior: .runAction({
+            performWhenAllowed: {
                 let flowNavigationController = AddToContactsFlowNavigationController(flow: flow)
                 flowNavigationController.completion = completion
                 viewController.present(flowNavigationController, animated: true)
-            }),
-            unauthorizedBehavior: .presentError(from: viewController)
+            },
+            presentErrorFrom: viewController
         )
     }
 

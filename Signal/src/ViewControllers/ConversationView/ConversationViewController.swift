@@ -166,7 +166,6 @@ public final class ConversationViewController: OWSViewController {
         self.inputAccessoryPlaceholder.delegate = self
 
         contactsViewHelper.addObserver(self)
-        contactShareViewHelper.delegate = self
 
         self.actionOnOpen = action
 

@@ -191,18 +191,6 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
 
 // MARK: -
 
-extension ConversationViewController: ContactShareViewHelperDelegate {
-    public func didCreateOrEditContact() {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-
-// MARK: -
-
 extension ConversationViewController: ConversationHeaderViewDelegate {
     public func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
