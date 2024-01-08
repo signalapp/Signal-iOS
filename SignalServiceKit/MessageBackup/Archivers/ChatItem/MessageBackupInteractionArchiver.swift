@@ -133,6 +133,128 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.RestoreInteractionResult<Void>
 }
 
+extension MessageBackup.ArchiveInteractionResult {
+
+    enum BubbleUp<T, E> {
+        case `continue`(T)
+        case bubbleUpError(MessageBackup.ArchiveInteractionResult<E>)
+    }
+
+    /// Make it easier to "bubble up" an error case of ``ArchiveInteractionResult`` thrown deeper in the call stack.
+    /// Basically, collapses all the cases that should just be bubbled up to the caller (error cases) into an easily returnable case,
+    /// ditto for the success or partial success cases, and handles updating partialErrors along the way.
+    ///
+    /// Concretely, turns this:
+    ///
+    /// switch someResult {
+    /// case .success(let value):
+    ///   myVar = value
+    /// case .partialFailure(let value, let errors):
+    ///   myVar = value
+    ///   partialErrors.append(contentsOf: errors)
+    /// case someFailureCase(let someErrorOrErrors)
+    ///   let coalescedErrorOrErrors = partialErrors.coalesceSomehow(with: someErrorOrErrors)
+    ///   // Just bubble up the error after coalescing
+    ///   return .someFailureCase(coalescedErrorOrErrors)
+    /// // ...
+    /// // The same for every other error case that should be bubbled up
+    /// // ...
+    /// }
+    ///
+    /// Into this:
+    ///
+    /// switch someResult.bubbleUp(&partialErrors) {
+    /// case .success(let value):
+    ///   myVar = value
+    /// case .bubbleUpError(let error):
+    ///   return error
+    /// }
+    func bubbleUp<ErrorResultType>(
+        _ resultType: ErrorResultType.Type = ErrorResultType.self,
+        partialErrors: inout [Error]
+    ) -> BubbleUp<Component, ErrorResultType> {
+        switch self {
+        case .success(let value):
+            return .continue(value)
+
+        case .partialFailure(let value, let errors):
+            // Continue through partial failures.
+            partialErrors.append(contentsOf: errors)
+            return .continue(value)
+
+        // These types are just bubbled up as-is
+        case .isPastRevision:
+            return .bubbleUpError(.isPastRevision)
+        case .notYetImplemented:
+            return .bubbleUpError(.notYetImplemented)
+        case .completeFailure(let error):
+            return .bubbleUpError(.completeFailure(error))
+
+        case .messageFailure(let errors):
+            // Add message failure to partial errors and bubble it up.
+            partialErrors.append(contentsOf: errors)
+            return .bubbleUpError(.messageFailure(partialErrors))
+        }
+    }
+}
+
+extension MessageBackup.RestoreInteractionResult {
+
+    /// Returns nil for ``RestoreInteractionResult.messageFailure``, otherwise
+    /// returns the restored component. Regardless, accumulates any errors so that the caller
+    /// can return the passed in ``partialErrors`` array in the final result.
+    ///
+    /// Concretely, turns this:
+    ///
+    /// switch someResult {
+    /// case .success(let value):
+    ///   myVar = value
+    /// case .partialRestore(let value, let errors):
+    ///   myVar = value
+    ///   partialErrors.append(contentsOf: errors)
+    /// case messageFailure(let errors)
+    ///   partialErrors.append(contentsOf: errors)
+    ///   return .messageFailure(partialErrors)
+    /// }
+    ///
+    /// Into this:
+    ///
+    /// guard let myVar = someResult.unwrap(&partialErrors) else {
+    ///   return .messageFailure(partialErrors)
+    /// }
+    func unwrap(partialErrors: inout [MessageBackup.RestoringFrameError]) -> Component? {
+        switch self {
+        case .success(let component):
+            return component
+        case .partialRestore(let component, let errors):
+            partialErrors.append(contentsOf: errors)
+            return component
+        case .messageFailure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return nil
+        }
+    }
+}
+
+extension MessageBackup.RestoreInteractionResult where Component == Void {
+
+    /// Returns false for ``RestoreInteractionResult.messageFailure``, otherwise
+    /// returns true. Regardless, accumulates any errors so that the caller
+    /// can return the passed in ``partialErrors`` array in the final result.
+    func unwrap(partialErrors: inout [MessageBackup.RestoringFrameError]) -> Bool {
+        switch self {
+        case .success:
+            return true
+        case .partialRestore(_, let errors):
+            partialErrors.append(contentsOf: errors)
+            return true
+        case .messageFailure(let errors):
+            partialErrors.append(contentsOf: errors)
+            return false
+        }
+    }
+}
+
 extension BackupProtoChatItem {
 
     var id: MessageBackup.ChatItemId {

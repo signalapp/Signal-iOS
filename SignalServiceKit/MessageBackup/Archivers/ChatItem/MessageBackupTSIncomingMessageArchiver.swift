@@ -38,21 +38,11 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
 
         let directionalDetails: Details.DirectionalDetails
-        switch buildIncomingMessageDetails(message) {
-        case .success(let details):
+        switch buildIncomingMessageDetails(message).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let details):
             directionalDetails = details
-        case .isPastRevision:
-            return .isPastRevision
-        case .notYetImplemented:
-            return .notYetImplemented
-        case let .partialFailure(details, errors):
-            directionalDetails = details
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
-            return .messageFailure(partialErrors)
-        case .completeFailure(let error):
-            return .completeFailure(error)
+        case .bubbleUpError(let errorResult):
+            return errorResult
         }
 
         guard
@@ -78,21 +68,11 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             tx: tx
         )
         let type: MessageBackup.ChatItemMessageType
-        switch contentsResult {
-        case .success(let component):
-            type = component
-        case .isPastRevision:
-            return .isPastRevision
-        case .notYetImplemented:
-            return .notYetImplemented
-        case let .partialFailure(component, errors):
-            type = component
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
-            return .messageFailure(partialErrors)
-        case .completeFailure(let error):
-            return .completeFailure(error)
+        switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let t):
+            type = t
+        case .bubbleUpError(let errorResult):
+            return errorResult
         }
 
         let details = Details(
@@ -170,18 +150,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
         let contentsResult = contentsArchiver.restoreContents(
             messageType,
+            thread: thread,
+            context: context,
             tx: tx
         )
 
-        let contents: MessageBackup.RestoredMessageContents
-        switch contentsResult {
-        case .success(let value):
-            contents = value
-        case .partialRestore(let value, let errors):
-            contents = value
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
+        guard let contents = contentsResult.unwrap(partialErrors: &partialErrors) else {
             return .messageFailure(partialErrors)
         }
 
@@ -199,7 +173,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             editState: .none,
             // TODO: expose + set expire start time
             expiresInSeconds: UInt32(chatItem.expiresInMs),
-            quotedMessage: nil,
+            quotedMessage: contents.quotedMessage,
             contactShare: nil,
             linkPreview: nil,
             messageSticker: nil,
@@ -223,13 +197,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             context: context,
             tx: tx
         )
-        switch downstreamObjectsResult {
-        case .success:
-            break
-        case .partialRestore(_, let errors):
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
+        guard downstreamObjectsResult.unwrap(partialErrors: &partialErrors) else {
             return .messageFailure(partialErrors)
         }
 

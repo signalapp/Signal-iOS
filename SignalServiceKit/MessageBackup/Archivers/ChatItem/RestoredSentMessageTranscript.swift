@@ -50,8 +50,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             bodyRanges: contents.body?.ranges,
             // TODO: attachments
             attachmentPointerProtos: [],
-            // TODO: quoted message
-            quotedMessage: nil,
+            quotedMessage: contents.quotedMessage,
             // TODO: contact message
             contact: nil,
             // TODO: linkPreview message

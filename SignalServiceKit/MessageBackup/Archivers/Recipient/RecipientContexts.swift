@@ -165,3 +165,10 @@ extension BackupProtoReaction {
         return .init(authorID)
     }
 }
+
+extension BackupProtoQuote {
+
+    public var authorRecipientId: MessageBackup.RecipientId {
+        return .init(authorID)
+    }
+}

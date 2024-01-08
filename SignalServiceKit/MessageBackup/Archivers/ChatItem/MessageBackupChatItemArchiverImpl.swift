@@ -31,6 +31,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
     private lazy var reactionArchiver = MessageBackupReactionArchiver(reactionStore: reactionStore)
 
     private lazy var contentsArchiver = MessageBackupTSMessageContentsArchiver(
+        interactionStore: interactionStore,
         reactionArchiver: reactionArchiver
     )
 

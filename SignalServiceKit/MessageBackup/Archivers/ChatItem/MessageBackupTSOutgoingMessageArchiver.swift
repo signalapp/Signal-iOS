@@ -42,23 +42,15 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
         let wasAnySendSealedSender: Bool
         let directionalDetails: Details.DirectionalDetails
-        switch buildOutgoingMessageDetails(message, recipientContext: context.recipientContext) {
-        case .success(let details):
+        switch buildOutgoingMessageDetails(
+            message,
+            recipientContext: context.recipientContext
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let details):
             directionalDetails = details.details
             wasAnySendSealedSender = details.wasAnySendSealedSender
-        case .isPastRevision:
-            return .isPastRevision
-        case .notYetImplemented:
-            return .notYetImplemented
-        case let .partialFailure(details, errors):
-            directionalDetails = details.details
-            wasAnySendSealedSender = details.wasAnySendSealedSender
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
-            return .messageFailure(partialErrors)
-        case .completeFailure(let error):
-            return .completeFailure(error)
+        case .bubbleUpError(let errorResult):
+            return errorResult
         }
 
         guard let author = context.recipientContext[.localAddress] else {
@@ -75,21 +67,11 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             tx: tx
         )
         let type: MessageBackup.ChatItemMessageType
-        switch contentsResult {
-        case .success(let component):
-            type = component
-        case .isPastRevision:
-            return .isPastRevision
-        case .notYetImplemented:
-            return .notYetImplemented
-        case let .partialFailure(component, errors):
-            type = component
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
-            return .messageFailure(partialErrors)
-        case .completeFailure(let error):
-            return .completeFailure(error)
+        switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let t):
+            type = t
+        case .bubbleUpError(let errorResult):
+            return errorResult
         }
 
         let details = Details(
@@ -245,18 +227,12 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
         let contentsResult = contentsArchiver.restoreContents(
             messageType,
+            thread: thread,
+            context: context,
             tx: tx
         )
 
-        let contents: MessageBackup.RestoredMessageContents
-        switch contentsResult {
-        case .success(let value):
-            contents = value
-        case .partialRestore(let value, let errors):
-            contents = value
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
+        guard let contents = contentsResult.unwrap(partialErrors: &partialErrors) else {
             return .messageFailure(partialErrors)
         }
 
@@ -268,15 +244,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             thread: thread
         )
 
-        let transcript: RestoredSentMessageTranscript
-        switch transcriptResult {
-        case .success(let value):
-            transcript = value
-        case .partialRestore(let value, let errors):
-            transcript = value
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
+        guard let transcript = transcriptResult.unwrap(partialErrors: &partialErrors) else {
             return .messageFailure(partialErrors)
         }
 
@@ -303,13 +271,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             context: context,
             tx: tx
         )
-        switch downstreamObjectsResult {
-        case .success:
-            break
-        case .partialRestore(_, let errors):
-            partialErrors.append(contentsOf: errors)
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
+        guard downstreamObjectsResult.unwrap(partialErrors: &partialErrors) else {
             return .messageFailure(partialErrors)
         }
 
