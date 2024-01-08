@@ -78,7 +78,7 @@ struct HiddenRecipient: Codable, FetchableRecord, PersistableRecord {
 /// Manager in charge of reading from and writing to the `HiddenRecipient` table.
 public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let messageSenderJobQueue: MessageSenderJobQueue
@@ -87,7 +87,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     public static let hideListDidChange = Notification.Name("hideListDidChange")
 
     public init(
-        profileManager: ProfileManagerProtocol,
+        profileManager: ProfileManager,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         messageSenderJobQueue: MessageSenderJobQueue

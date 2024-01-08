@@ -238,9 +238,9 @@ protocol _PniHelloWorldManagerImpl_ProfileManager_Shim {
 }
 
 class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
 
-    init(_ profileManager: ProfileManagerProtocol) {
+    init(_ profileManager: ProfileManager) {
         self.profileManager = profileManager
     }
 

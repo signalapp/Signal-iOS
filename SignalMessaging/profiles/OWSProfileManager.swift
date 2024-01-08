@@ -7,6 +7,9 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
+extension OWSProfileManager: ProfileManager {
+}
+
 public extension OWSProfileManager {
 
     // The main entry point for updating the local profile. It will:

@@ -284,8 +284,8 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
 
 public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordinator_ProfileManagerShim {
 
-    private let manager: ProfileManagerProtocol
-    public init(_ manager: ProfileManagerProtocol) { self.manager = manager }
+    private let manager: ProfileManager
+    public init(_ manager: ProfileManager) { self.manager = manager }
 
     public var hasProfileName: Bool { manager.hasProfileName }
 

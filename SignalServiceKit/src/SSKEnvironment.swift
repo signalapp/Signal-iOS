@@ -35,7 +35,7 @@ public class SSKEnvironment: NSObject {
 
     public let linkPreviewManagerRef: OWSLinkPreviewManager
     public let pendingReceiptRecorderRef: PendingReceiptRecorder
-    public let profileManagerRef: ProfileManagerProtocol
+    public let profileManagerRef: ProfileManager
     public let messageReceiverRef: MessageReceiver
     public let blockingManagerRef: BlockingManager
     public let remoteConfigManagerRef: RemoteConfigManager
@@ -95,7 +95,7 @@ public class SSKEnvironment: NSObject {
         linkPreviewManager: OWSLinkPreviewManager,
         messageSender: MessageSender,
         pendingReceiptRecorder: PendingReceiptRecorder,
-        profileManager: ProfileManagerProtocol,
+        profileManager: ProfileManager,
         networkManager: NetworkManager,
         messageReceiver: MessageReceiver,
         blockingManager: BlockingManager,

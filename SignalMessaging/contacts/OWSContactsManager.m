@@ -458,7 +458,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
         return savedContactNameComponents;
     }
 
-    return [self.profileManager nameComponentsForProfileWithAddress:address transaction:transaction];
+    return [self.profileManagerObjC nameComponentsForProfileWithAddress:address transaction:transaction];
 }
 
 // TODO: Remove?
@@ -503,7 +503,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     
     __block NSData *_Nullable data;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        data = [self.profileManager profileAvatarDataForAddress:address transaction:transaction];
+        data = [self.profileManagerObjC profileAvatarDataForAddress:address transaction:transaction];
     }];
     return data;
 }

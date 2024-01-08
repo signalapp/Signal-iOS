@@ -6,9 +6,9 @@
 import Foundation
 
 class ProfileWhitelistMerger: RecipientMergeObserver {
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
 
-    init(profileManager: ProfileManagerProtocol) {
+    init(profileManager: ProfileManager) {
         self.profileManager = profileManager
     }
 

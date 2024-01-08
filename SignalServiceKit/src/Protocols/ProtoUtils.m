@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSAES256Key *)localProfileKey
 {
-    return self.profileManager.localProfileKey;
+    return self.profileManagerObjC.localProfileKey;
 }
 
 #pragma mark -
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Group threads will return YES if the group is in the whitelist
     // Contact threads will return YES if the contact is in the whitelist.
-    return [self.profileManager isThreadInProfileWhitelist:thread transaction:transaction];
+    return [self.profileManagerObjC isThreadInProfileWhitelist:thread transaction:transaction];
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread

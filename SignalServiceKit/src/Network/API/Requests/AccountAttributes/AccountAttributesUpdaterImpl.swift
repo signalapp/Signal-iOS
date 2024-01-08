@@ -11,7 +11,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let appVersion: AppVersion
     private let dateProvider: DateProvider
     private let db: DB
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
     private let serviceClient: SignalServiceClient
     private let schedulers: Schedulers
     private let svrLocalStorage: SVRLocalStorage
@@ -25,7 +25,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         appVersion: AppVersion,
         dateProvider: @escaping DateProvider,
         db: DB,
-        profileManager: ProfileManagerProtocol,
+        profileManager: ProfileManager,
         keyValueStoreFactory: KeyValueStoreFactory,
         serviceClient: SignalServiceClient,
         schedulers: Schedulers,

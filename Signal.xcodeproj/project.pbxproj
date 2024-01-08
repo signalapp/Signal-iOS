@@ -681,6 +681,8 @@
 		503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */; };
 		503B47222AF0569B00978266 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471E2AF0569A00978266 /* PublicKey.swift */; };
 		503B47232AF0569B00978266 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503B471F2AF0569A00978266 /* ECKeyPair.swift */; };
+		503BD2892B44D666009624FC /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BD2882B44D666009624FC /* ProfileManager.swift */; };
+		503BD28B2B44DA64009624FC /* OWSFakeProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BD28A2B44DA64009624FC /* OWSFakeProfileManager.swift */; };
 		503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */; };
 		503BDDB6296F5BE100FED3B2 /* ContactReminderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */; };
 		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
@@ -3324,6 +3326,8 @@
 		503AECC929B2B22E00642F66 /* VoiceMessageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageConstants.swift; sourceTree = "<group>"; };
 		503B471E2AF0569A00978266 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
 		503B471F2AF0569A00978266 /* ECKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPair.swift; sourceTree = "<group>"; };
+		503BD2882B44D666009624FC /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
+		503BD28A2B44DA64009624FC /* OWSFakeProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFakeProfileManager.swift; sourceTree = "<group>"; };
 		503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProviderTest.swift; sourceTree = "<group>"; };
 		503BDDB5296F5BE100FED3B2 /* ContactReminderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactReminderTableViewCell.swift; sourceTree = "<group>"; };
 		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
@@ -9793,6 +9797,7 @@
 				F9C5CA06289453B100548EEE /* NotificationsProtocol.h */,
 				664657402AC4FB720099DE1C /* NotificationsProtocolSwift.swift */,
 				F9C5CA04289453B100548EEE /* OWSCallMessageHandler.h */,
+				503BD2882B44D666009624FC /* ProfileManager.swift */,
 				F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */,
 				F9C5CA05289453B100548EEE /* ProtoUtils.h */,
 				F9C5CA01289453B100548EEE /* ProtoUtils.m */,
@@ -10320,6 +10325,7 @@
 				F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */,
 				F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */,
 				F9C5CB83289453B200548EEE /* OWSFakeProfileManager.m */,
+				503BD28A2B44DA64009624FC /* OWSFakeProfileManager.swift */,
 				F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */,
 				F9C5CB89289453B200548EEE /* TestAppContext.h */,
 				F9C5CB95289453B200548EEE /* TestAppContext.m */,
@@ -13043,6 +13049,7 @@
 				F9C5CE49289453B400548EEE /* OWSError.swift in Sources */,
 				F937EDA429746DA20003AF3F /* OWSFail.swift in Sources */,
 				F9C5CE53289453B400548EEE /* OWSFakeProfileManager.m in Sources */,
+				503BD28B2B44DA64009624FC /* OWSFakeProfileManager.swift in Sources */,
 				F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */,
 				F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */,
 				667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */,
@@ -13176,6 +13183,7 @@
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
+				503BD2892B44D666009624FC /* ProfileManager.swift in Sources */,
 				50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */,
 				F9C5CE1D289453B400548EEE /* Promise+OWS.swift in Sources */,
 				F9C5CCE6289453B300548EEE /* ProtoUtils.m in Sources */,

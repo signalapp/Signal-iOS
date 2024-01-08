@@ -131,7 +131,7 @@ class RecipientMergerImpl: RecipientMerger {
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
         pinnedThreadManager: PinnedThreadManager,
-        profileManager: ProfileManagerProtocol,
+        profileManager: ProfileManager,
         recipientMergeNotifier: RecipientMergeNotifier,
         signalServiceAddressCache: SignalServiceAddressCache,
         threadAssociatedDataStore: ThreadAssociatedDataStore,

@@ -72,9 +72,9 @@ public protocol _MessageBackup_ProfileManagerShim {
 
 public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
 
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
 
-    public init(_ profileManager: ProfileManagerProtocol) {
+    public init(_ profileManager: ProfileManager) {
         self.profileManager = profileManager
     }
 

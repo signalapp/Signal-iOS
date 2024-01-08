@@ -714,7 +714,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                     } else {
                         OWSLogInfo(@"Re-uploading local profile to update profile credential.");
                         [transaction addAsyncCompletionOffMain:^{
-                            [self.profileManager reuploadLocalProfileWithAuthedAccount:authedAccount];
+                            [self.profileManagerObjC reuploadLocalProfileWithAuthedAccount:authedAccount];
                         }];
                     }
                 }
@@ -792,7 +792,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
 
     if (isLocalUserProfile) {
-        [self.profileManager localProfileWasUpdated:self];
+        [self.profileManagerObjC localProfileWasUpdated:self];
         [self.subscriptionManager reconcileBadgeStatesWithTransaction:transaction];
     }
 

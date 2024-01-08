@@ -27,7 +27,7 @@ extension Usernames {
 
         public static func assembleByQuerying(
             forRecipient recipient: SignalRecipient,
-            profileManager: ProfileManagerProtocol,
+            profileManager: ProfileManager,
             contactManager: ContactsManagerProtocol,
             transaction: SDSAnyReadTransaction
         ) -> BetterIdentifierChecker {

@@ -12,7 +12,7 @@ public struct UsernameQuerier {
     private let databaseStorage: SDSDatabaseStorage
     private let localUsernameManager: LocalUsernameManager
     private let networkManager: NetworkManager
-    private let profileManager: ProfileManagerProtocol
+    private let profileManager: ProfileManager
     private let recipientFetcher: RecipientFetcher
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -46,7 +46,7 @@ public struct UsernameQuerier {
         databaseStorage: SDSDatabaseStorage,
         localUsernameManager: LocalUsernameManager,
         networkManager: NetworkManager,
-        profileManager: ProfileManagerProtocol,
+        profileManager: ProfileManager,
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
