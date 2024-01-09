@@ -231,7 +231,7 @@ public extension SDSCodableModel {
     /// Traverse all records as ``SDSIndexableModel``s, in no particular order.
     static func anyEnumerateIndexable(
         transaction: SDSAnyReadTransaction,
-        block: @escaping (SDSIndexableModel) -> Void
+        block: (SDSIndexableModel) -> Void
     ) {
         anyEnumerate(transaction: transaction, batchingPreference: .unbatched) { model, _ in
             block(model)
@@ -243,7 +243,7 @@ public extension SDSCodableModel {
     static func anyEnumerate(
         transaction: SDSAnyReadTransaction,
         batchingPreference: BatchingPreference = .unbatched,
-        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
@@ -258,7 +258,7 @@ public extension SDSCodableModel {
     static func anyEnumerateUniqueIds(
         transaction: SDSAnyReadTransaction,
         batched: Bool = false,
-        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModelUniqueIds(
             modelType: Self.self,
@@ -274,7 +274,7 @@ public extension SDSCodableModel {
         transaction: SDSAnyReadTransaction,
         sql: String,
         arguments: StatementArguments,
-        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,

@@ -141,7 +141,7 @@ public class UserProfileFinder: NSObject {
 extension UserProfileFinder {
     func enumerateMissingAndStaleUserProfiles(
         transaction tx: SDSAnyReadTransaction,
-        block: @escaping (OWSUserProfile) -> Void
+        block: (OWSUserProfile) -> Void
     ) {
         // We are only interested in active users, e.g. users
         // which the local user has sent or received a message

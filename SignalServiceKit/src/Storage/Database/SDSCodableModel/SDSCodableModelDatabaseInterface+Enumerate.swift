@@ -17,7 +17,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let transaction = SDSDB.shimOnlyBridge(transaction)
         let batchSize = batchSize(batchingPreference: batchingPreference)
@@ -38,7 +38,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String,
         arguments: StatementArguments,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let transaction = SDSDB.shimOnlyBridge(transaction)
         let batchSize = batchSize(batchingPreference: batchingPreference)
@@ -67,7 +67,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batched: Bool,
-        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
@@ -89,7 +89,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String? = nil,
         arguments: StatementArguments? = nil,
         batchSize: UInt,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         do {
             var recordCursor: RecordCursor<Model>
@@ -127,7 +127,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: SDSAnyReadTransaction,
         batchSize: UInt,
-        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         do {
             let cursor = try String.fetchCursor(
