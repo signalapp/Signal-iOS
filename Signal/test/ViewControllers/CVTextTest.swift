@@ -282,9 +282,6 @@ class CVTextTest: XCTestCase {
                 // TODO: This test is broken.
                 // XCTAssertEqual(viewSize.width, defaultSize.width)
                 // XCTAssertEqual(viewSize.height, defaultSize.height)
-                if viewSize != defaultSize {
-                    Logger.warn("viewSize: \(viewSize) != defaultSize: \(defaultSize).")
-                }
             }
         }
     }
