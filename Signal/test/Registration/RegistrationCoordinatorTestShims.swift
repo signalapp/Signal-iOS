@@ -187,16 +187,18 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
         _ givenName: String,
         _ familyName: String?,
         _ avatarData: Data?,
-        _ authedAccount: AuthedAccount
+        _ authedAccount: AuthedAccount,
+        _ tx: DBWriteTransaction
     ) -> Promise<Void>)?
 
     public func updateLocalProfile(
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
-        return updateLocalProfileMock!(givenName, familyName, avatarData, authedAccount)
+        return updateLocalProfileMock!(givenName, familyName, avatarData, authedAccount, tx)
     }
 
     public var didScheduleReuploadLocalProfile = false

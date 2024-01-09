@@ -1557,12 +1557,6 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                                    ignoreSignature: ignoreSignature)
     }
 
-    // MARK: - Profiles
-
-    public func reuploadLocalProfilePromise() -> Promise<Void> {
-        OWSProfileManager.shared.reuploadLocalProfilePromise()
-    }
-
     // MARK: - Restore Groups
 
     public func isGroupKnownToStorageService(

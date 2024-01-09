@@ -178,7 +178,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
         switch self.thanksType {
         case .badgeRedeemedViaBankPayment, .badgeRedeemedViaNonBankPayment:
-            self.saveVisibilityChanges()
+            DispatchQueue.global().async { self.saveVisibilityChanges() }
         case let .giftReceived(_, notNowAction, _):
             notNowAction()
         }
@@ -201,6 +201,8 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
     @discardableResult
     private func saveVisibilityChanges() -> Promise<Void> {
+        AssertNotOnMainThread()
+
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
         let visibleBadgeResolver = VisibleBadgeResolver(
             badgesSnapshot: .forSnapshot(profileSnapshot: snapshot)
@@ -214,15 +216,20 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             return Promise.value(())
         }
 
-        return OWSProfileManager.updateLocalProfilePromise(
-            profileGivenName: snapshot.givenName,
-            profileFamilyName: snapshot.familyName,
-            profileBio: snapshot.bio,
-            profileBioEmoji: snapshot.bioEmoji,
-            profileAvatarData: snapshot.avatarData,
-            visibleBadgeIds: visibleBadgeIds,
-            userProfileWriter: .localUser
-        )
+        return databaseStorage.write { tx in
+            return profileManager.updateLocalProfile(
+                profileGivenName: snapshot.givenName,
+                profileFamilyName: snapshot.familyName,
+                profileBio: snapshot.bio,
+                profileBioEmoji: snapshot.bioEmoji,
+                profileAvatarData: snapshot.avatarData,
+                visibleBadgeIds: visibleBadgeIds,
+                unsavedRotatedProfileKey: nil,
+                userProfileWriter: .localUser,
+                authedAccount: .implicit(),
+                tx: tx
+            )
+        }
     }
 
     private static func redeemGiftBadge(incomingMessage: TSIncomingMessage) -> Promise<Void> {

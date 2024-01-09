@@ -25,9 +25,6 @@ extension OWSProfileManager: ProfileManager {
             return Promise(error: error)
         }
     }
-}
-
-public extension OWSProfileManager {
 
     // The main entry point for updating the local profile. It will:
     //
@@ -37,29 +34,33 @@ public extension OWSProfileManager {
     // The returned promise will fail if the service can't be updated
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
-    class func updateLocalProfilePromise(
+    public func updateLocalProfile(
         profileGivenName: String?,
         profileFamilyName: String?,
         profileBio: String?,
         profileBioEmoji: String?,
         profileAvatarData: Data?,
         visibleBadgeIds: [String],
-        unsavedRotatedProfileKey: OWSAES256Key? = nil,
+        unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount = .implicit()
+        authedAccount: AuthedAccount,
+        tx: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
 
-        return DispatchQueue.global().async(.promise) {
-            return enqueueProfileUpdate(profileGivenName: profileGivenName,
-                                        profileFamilyName: profileFamilyName,
-                                        profileBio: profileBio,
-                                        profileBioEmoji: profileBioEmoji,
-                                        profileAvatarData: profileAvatarData,
-                                        visibleBadgeIds: visibleBadgeIds,
-                                        unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-                                        userProfileWriter: userProfileWriter)
-        }.then(on: DispatchQueue.main) { update in
+        let update = enqueueProfileUpdate(
+            profileGivenName: profileGivenName,
+            profileFamilyName: profileFamilyName,
+            profileBio: profileBio,
+            profileBioEmoji: profileBioEmoji,
+            profileAvatarData: profileAvatarData,
+            visibleBadgeIds: visibleBadgeIds,
+            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+            userProfileWriter: userProfileWriter,
+            tx: tx
+        )
+
+        return firstly(on: DispatchQueue.main) {
             return self.attemptToUpdateProfileOnService(update: update, authedAccount: authedAccount)
         }.then { (_) throws -> Promise<Void> in
             guard unsavedRotatedProfileKey == nil else {
@@ -86,59 +87,60 @@ public extension OWSProfileManager {
     }
 
     // This will re-upload the existing local profile state.
-    func reuploadLocalProfilePromise(
-        unsavedRotatedProfileKey: OWSAES256Key? = nil,
-        authedAccount: AuthedAccount = .implicit()
+    public func reuploadLocalProfileWithSneakyTransaction(
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        authedAccount: AuthedAccount
     ) -> Promise<Void> {
         Logger.info("")
 
-        let profileGivenName: String?
-        let profileFamilyName: String?
-        let profileBio: String?
-        let profileBioEmoji: String?
-        let profileAvatarData: Data?
-        let visibleBadgeIds: [String]
-        let userProfileWriter: UserProfileWriter
-        if let pendingUpdate = (Self.databaseStorage.read { transaction in
-            return Self.currentPendingProfileUpdate(transaction: transaction)
-        }) {
-            profileGivenName = pendingUpdate.profileGivenName
-            profileFamilyName = pendingUpdate.profileFamilyName
-            profileBio = pendingUpdate.profileBio
-            profileBioEmoji = pendingUpdate.profileBioEmoji
-            profileAvatarData = pendingUpdate.profileAvatarData
-            visibleBadgeIds = pendingUpdate.visibleBadgeIds
-            userProfileWriter = pendingUpdate.userProfileWriter
+        return databaseStorage.write { tx in
+            let profileGivenName: String?
+            let profileFamilyName: String?
+            let profileBio: String?
+            let profileBioEmoji: String?
+            let profileAvatarData: Data?
+            let visibleBadgeIds: [String]
+            let userProfileWriter: UserProfileWriter
+            if let pendingUpdate = currentPendingProfileUpdate(transaction: tx) {
+                profileGivenName = pendingUpdate.profileGivenName
+                profileFamilyName = pendingUpdate.profileFamilyName
+                profileBio = pendingUpdate.profileBio
+                profileBioEmoji = pendingUpdate.profileBioEmoji
+                profileAvatarData = pendingUpdate.profileAvatarData
+                visibleBadgeIds = pendingUpdate.visibleBadgeIds
+                userProfileWriter = pendingUpdate.userProfileWriter
 
-            if DebugFlags.internalLogging {
-                Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
-            }
-        } else {
-            let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
-            profileGivenName = profileSnapshot.givenName
-            profileFamilyName = profileSnapshot.familyName
-            profileBio = profileSnapshot.bio
-            profileBioEmoji = profileSnapshot.bioEmoji
-            profileAvatarData = profileSnapshot.avatarData
-            visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
-            userProfileWriter = .reupload
+                if DebugFlags.internalLogging {
+                    Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
+                }
+            } else {
+                let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
+                profileGivenName = profileSnapshot.givenName
+                profileFamilyName = profileSnapshot.familyName
+                profileBio = profileSnapshot.bio
+                profileBioEmoji = profileSnapshot.bioEmoji
+                profileAvatarData = profileSnapshot.avatarData
+                visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
+                userProfileWriter = .reupload
 
-            if DebugFlags.internalLogging {
-                Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
+                if DebugFlags.internalLogging {
+                    Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
+                }
             }
+            assert(profileGivenName != nil)
+            return updateLocalProfile(
+                profileGivenName: profileGivenName,
+                profileFamilyName: profileFamilyName,
+                profileBio: profileBio,
+                profileBioEmoji: profileBioEmoji,
+                profileAvatarData: profileAvatarData,
+                visibleBadgeIds: visibleBadgeIds,
+                unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+                userProfileWriter: userProfileWriter,
+                authedAccount: authedAccount,
+                tx: tx
+            )
         }
-        assert(profileGivenName != nil)
-        return OWSProfileManager.updateLocalProfilePromise(
-            profileGivenName: profileGivenName,
-            profileFamilyName: profileFamilyName,
-            profileBio: profileBio,
-            profileBioEmoji: profileBioEmoji,
-            profileAvatarData: profileAvatarData,
-            visibleBadgeIds: visibleBadgeIds,
-            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount
-        )
     }
 
     @objc
@@ -307,7 +309,10 @@ public extension OWSProfileManager {
             // change and continue to use the old profile key.
 
             let newProfileKey = OWSAES256Key.generateRandom()
-            return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount).map { newProfileKey }
+            return self.reuploadLocalProfileWithSneakyTransaction(
+                unsavedRotatedProfileKey: newProfileKey,
+                authedAccount: authedAccount
+            ).map { newProfileKey }
         }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
             guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                 throw OWSAssertionError("Missing localAci.")
@@ -519,23 +524,15 @@ public extension OWSProfileManager {
             }
         }
     }
-}
-
-// MARK: -
-
-@objc
-public extension OWSProfileManager {
-    @available(swift, obsoleted: 1.0)
-    class func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
-        updateProfileOnServiceIfNecessary(authedAccount: authedAccount)
-    }
 
     // This will re-upload the existing local profile state.
+    @objc
     @available(swift, obsoleted: 1.0)
-    func reuploadLocalProfilePromise(authedAccount: AuthedAccount) -> AnyPromise {
-        return AnyPromise(reuploadLocalProfilePromise(authedAccount: authedAccount))
+    func reuploadLocalProfileWithSneakyTransaction(authedAccount: AuthedAccount) -> AnyPromise {
+        return AnyPromise(reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: authedAccount))
     }
 
+    @objc
     class func updateStorageServiceIfNecessary() {
         guard
             CurrentAppContext().isMainApp,
@@ -570,11 +567,9 @@ public extension OWSProfileManager {
 
     private static let storageServiceStore = SDSKeyValueStore(collection: "OWSProfileManager.storageServiceStore")
     private static let hasUpdatedStorageServiceKey = "hasUpdatedStorageServiceKey"
-}
 
-// MARK: - Other User's Profiles
+    // MARK: - Other User's Profiles
 
-extension OWSProfileManager {
     @objc
     func setProfileKeyData(
         _ profileKeyData: Data,
@@ -625,12 +620,10 @@ extension OWSProfileManager {
             completion: nil
         )
     }
-}
 
-// MARK: - Bulk Fetching
+    // MARK: - Bulk Fetching
 
-private extension OWSProfileManager {
-    func userProfilesRefinery(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
+    private func userProfilesRefinery(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
         let resolvedAddresses = addresses.map { OWSUserProfile.resolve($0) }
 
         return .init(resolvedAddresses).refine(condition: { address in
@@ -642,32 +635,23 @@ private extension OWSProfileManager {
             return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: remoteAddresses, transaction: tx)
         })
     }
-}
 
-// MARK: -
-
-extension OWSProfileManager {
+    // MARK: -
 
     private class var avatarUrlSession: OWSURLSessionProtocol {
         return self.signalService.urlSessionForCdn(cdnNumber: 0)
     }
-    @objc
-    static let settingsStore = SDSKeyValueStore(collection: "kOWSProfileManager_SettingsStore")
 
     // MARK: -
 
     @objc
     public func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
-        switch Self._updateProfileOnServiceIfNecessary(authedAccount: authedAccount) {
+        switch _updateProfileOnServiceIfNecessary(authedAccount: authedAccount) {
         case .notReady, .updating:
             return
         case .notNeeded:
             repairAvatarIfNeeded(authedAccount: authedAccount)
         }
-    }
-
-    public class func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount, retryDelay: TimeInterval = 1) {
-        _updateProfileOnServiceIfNecessary(authedAccount: authedAccount, retryDelay: retryDelay)
     }
 
     private enum UpdateProfileStatus {
@@ -677,7 +661,7 @@ extension OWSProfileManager {
     }
 
     @discardableResult
-    private class func _updateProfileOnServiceIfNecessary(
+    private func _updateProfileOnServiceIfNecessary(
         authedAccount: AuthedAccount,
         retryDelay: TimeInterval = 1
     ) -> UpdateProfileStatus {
@@ -689,13 +673,13 @@ extension OWSProfileManager {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .notReady
         }
-        guard !profileManagerImpl.isUpdatingProfileOnService else {
+        guard !isUpdatingProfileOnService else {
             // Avoid having two redundant updates in flight at the same time.
             return .notReady
         }
 
-        let pendingUpdate = self.databaseStorage.read { transaction in
-            return self.currentPendingProfileUpdate(transaction: transaction)
+        let pendingUpdate = databaseStorage.read { tx in
+            return currentPendingProfileUpdate(transaction: tx)
         }
 
         guard let update = pendingUpdate else {
@@ -742,7 +726,7 @@ extension OWSProfileManager {
         }
 
         Self.avatarRepairPromise = firstly {
-            reuploadLocalProfilePromise(authedAccount: authedAccount)
+            reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: authedAccount)
         }.done { _ in
             Logger.info("Avatar repair succeeded.")
             self.clearAvatarRepairNeeded()
@@ -786,7 +770,7 @@ extension OWSProfileManager {
         }
     }
 
-    fileprivate class func attemptToUpdateProfileOnService(
+    fileprivate func attemptToUpdateProfileOnService(
         update: PendingProfileUpdate,
         retryDelay: TimeInterval = 1,
         authedAccount: AuthedAccount
@@ -799,18 +783,17 @@ extension OWSProfileManager {
         // risk of opening a transaction within a transaction.
         let userProfile = profileManagerImpl.localUserProfile()
 
-        let attempt = ProfileUpdateAttempt(update: update,
-                                           userProfile: userProfile)
+        let attempt = ProfileUpdateAttempt(update: update, userProfile: userProfile)
         let userProfileWriter = attempt.userProfileWriter
 
         let promise = firstly {
             writeProfileAvatarToDisk(attempt: attempt)
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             Logger.info("Versioned profile update, avatarUrlPath: \(attempt.avatarUrlPath?.nilIfEmpty != nil), avatarFilename: \(attempt.avatarFilename?.nilIfEmpty != nil)")
-            return updateProfileOnServiceVersioned(attempt: attempt, authedAccount: authedAccount)
+            return Self.updateProfileOnServiceVersioned(attempt: attempt, authedAccount: authedAccount)
         }.done(on: DispatchQueue.global()) { _ in
             self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
-                guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
+                guard self.tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
                     return
                 }
 
@@ -823,7 +806,7 @@ extension OWSProfileManager {
                     }
                 }
 
-                self.updateLocalProfile(
+                Self.updateLocalProfile(
                     with: attempt,
                     userProfileWriter: userProfileWriter,
                     authedAccount: authedAccount,
@@ -843,7 +826,7 @@ extension OWSProfileManager {
 
                 // Dequeue to avoid getting stuck in retry loop.
                 self.databaseStorage.write { transaction in
-                    _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
+                    _ = self.tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
                 }
             }
             self.attemptDidComplete(retryDelay: retryDelay, didSucceed: false, authedAccount: authedAccount)
@@ -858,7 +841,7 @@ extension OWSProfileManager {
         return promise
     }
 
-    private class func attemptDidComplete(retryDelay: TimeInterval, didSucceed: Bool, authedAccount: AuthedAccount) {
+    private func attemptDidComplete(retryDelay: TimeInterval, didSucceed: Bool, authedAccount: AuthedAccount) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
 
         // Notify all our devices that the profile has changed.
@@ -879,27 +862,27 @@ extension OWSProfileManager {
                 // We don't want to get in a retry loop, so we use exponential backoff
                 // in the failure case.
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                    self.updateProfileOnServiceIfNecessary(authedAccount: authedAccount, retryDelay: (retryDelay + 1) * 2)
+                    self._updateProfileOnServiceIfNecessary(authedAccount: authedAccount, retryDelay: retryDelay * 2)
                 })
             }
         }
     }
 
-    private class func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+    private func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
         guard let profileAvatarData = attempt.update.profileAvatarData else {
             return Promise.value(())
         }
-        let (promise, future) = Promise<Void>.pending()
-        DispatchQueue.global().async {
-            self.profileManagerImpl.writeAvatarToDisk(with: profileAvatarData,
-                                                      success: { avatarFilename in
-                                                        attempt.avatarFilename = avatarFilename
-                                                        future.resolve()
-                                                      }, failure: { (error) in
-                                                        future.reject(error)
-                                                      })
+        return Promise(on: DispatchQueue.global()) { future in
+            let filename = self.generateAvatarFilename()
+            let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
+            do {
+                try profileAvatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
+                attempt.avatarFilename = filename
+                future.resolve()
+            } catch {
+                future.reject(OWSError(error: .avatarWriteFailed, description: "Avatar write failed.", isRetryable: false))
+            }
         }
-        return promise
     }
 
     private class func updateProfileOnServiceVersioned(
@@ -950,33 +933,36 @@ extension OWSProfileManager {
 
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
-    private class func enqueueProfileUpdate(profileGivenName: String?,
-                                            profileFamilyName: String?,
-                                            profileBio: String?,
-                                            profileBioEmoji: String?,
-                                            profileAvatarData: Data?,
-                                            visibleBadgeIds: [String],
-                                            unsavedRotatedProfileKey: OWSAES256Key?,
-                                            userProfileWriter: UserProfileWriter) -> PendingProfileUpdate {
+    private func enqueueProfileUpdate(
+        profileGivenName: String?,
+        profileFamilyName: String?,
+        profileBio: String?,
+        profileBioEmoji: String?,
+        profileAvatarData: Data?,
+        visibleBadgeIds: [String],
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        userProfileWriter: UserProfileWriter,
+        tx: SDSAnyWriteTransaction
+    ) -> PendingProfileUpdate {
         // Note that this might overwrite a pending profile update.
         // That's desirable.  We only ever want to retain the
         // latest changes.
-        let update = PendingProfileUpdate(profileGivenName: profileGivenName,
-                                          profileFamilyName: profileFamilyName,
-                                          profileBio: profileBio,
-                                          profileBioEmoji: profileBioEmoji,
-                                          profileAvatarData: profileAvatarData,
-                                          visibleBadgeIds: visibleBadgeIds,
-                                          unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-                                          userProfileWriter: userProfileWriter)
-        databaseStorage.write { transaction in
-            self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
-        }
+        let update = PendingProfileUpdate(
+            profileGivenName: profileGivenName,
+            profileFamilyName: profileFamilyName,
+            profileBio: profileBio,
+            profileBioEmoji: profileBioEmoji,
+            profileAvatarData: profileAvatarData,
+            visibleBadgeIds: visibleBadgeIds,
+            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+            userProfileWriter: userProfileWriter
+        )
+        settingsStore.setObject(update, key: Self.kPendingProfileUpdateKey, transaction: tx)
         return update
     }
 
-    private class func currentPendingProfileUpdate(transaction: SDSAnyReadTransaction) -> PendingProfileUpdate? {
-        guard let value = settingsStore.getObject(forKey: kPendingProfileUpdateKey, transaction: transaction) else {
+    private func currentPendingProfileUpdate(transaction: SDSAnyReadTransaction) -> PendingProfileUpdate? {
+        guard let value = settingsStore.getObject(forKey: Self.kPendingProfileUpdateKey, transaction: transaction) else {
             return nil
         }
         guard let update = value as? PendingProfileUpdate else {
@@ -986,24 +972,21 @@ extension OWSProfileManager {
         return update
     }
 
-    private class func isCurrentPendingProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyReadTransaction) -> Bool {
+    private func isCurrentPendingProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyReadTransaction) -> Bool {
         guard let currentUpdate = currentPendingProfileUpdate(transaction: transaction) else {
             return false
         }
         return update.hasSameIdAs(currentUpdate)
     }
 
-    private class func tryToDequeueProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyWriteTransaction) -> Bool {
-        guard self.isCurrentPendingProfileUpdate(update: update, transaction: transaction) else {
+    private func tryToDequeueProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyWriteTransaction) -> Bool {
+        guard isCurrentPendingProfileUpdate(update: update, transaction: transaction) else {
             Logger.warn("Ignoring stale update completion.")
             return false
         }
-        self.settingsStore.removeValue(forKey: kPendingProfileUpdateKey, transaction: transaction)
+        settingsStore.removeValue(forKey: Self.kPendingProfileUpdateKey, transaction: transaction)
         return true
     }
-}
-
-internal extension OWSProfileManager {
 
     /// Rotates the local profile key. Intended specifically
     /// for the use case of recipient hiding.
@@ -1038,29 +1021,26 @@ internal extension OWSProfileManager {
         self.setLeaveGroupTriggerTimestamp(Date(), tx: tx)
         self.rotateProfileKeyIfNecessary(tx: tx)
     }
-}
 
-// MARK: - Profile Key Rotation Metadata
-
-fileprivate extension OWSProfileManager {
+    // MARK: - Profile Key Rotation Metadata
 
     private static let kLastGroupProfileKeyCheckTimestampKey = "lastGroupProfileKeyCheckTimestamp"
 
-    func lastGroupProfileKeyCheckTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+    private func lastGroupProfileKeyCheckTimestamp(tx: SDSAnyReadTransaction) -> Date? {
         return self.metadataStore.getDate(Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
     }
 
-    func setLastGroupProfileKeyCheckTimestamp(tx: SDSAnyWriteTransaction) {
+    private func setLastGroupProfileKeyCheckTimestamp(tx: SDSAnyWriteTransaction) {
         return self.metadataStore.setDate(Date(), key: Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
     }
 
     private static let recipientHidingTriggerTimestampKey = "recipientHidingTriggerTimestampKey"
 
-    func recipientHidingTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+    private func recipientHidingTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
         return self.metadataStore.getDate(Self.recipientHidingTriggerTimestampKey, transaction: tx)
     }
 
-    func setRecipientHidingTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
+    private func setRecipientHidingTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
         guard let date else {
             self.metadataStore.removeValue(forKey: Self.recipientHidingTriggerTimestampKey, transaction: tx)
             return
@@ -1070,11 +1050,11 @@ fileprivate extension OWSProfileManager {
 
     private static let leaveGroupTriggerTimestampKey = "leaveGroupTriggerTimestampKey"
 
-    func leaveGroupTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+    private func leaveGroupTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
         return self.metadataStore.getDate(Self.leaveGroupTriggerTimestampKey, transaction: tx)
     }
 
-    func setLeaveGroupTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
+    private func setLeaveGroupTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
         guard let date else {
             self.metadataStore.removeValue(forKey: Self.leaveGroupTriggerTimestampKey, transaction: tx)
             return

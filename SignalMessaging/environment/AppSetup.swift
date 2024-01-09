@@ -372,6 +372,7 @@ extension AppSetup.FinalContinuation {
             db: dependenciesBridge.db,
             keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
             groupsV2: sskEnvironment.groupsV2Ref,
+            profileManager: sskEnvironment.profileManagerRef,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             versionedProfiles: sskEnvironment.versionedProfilesRef
         ).migrateIfNeeded()

@@ -598,16 +598,22 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let avatarData = self.avatarData
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { modalActivityIndicator in
-            firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                OWSProfileManager.updateLocalProfilePromise(
+            Self.databaseStorage.write(.promise) { tx in
+                Self.profileManager.updateLocalProfile(
                     profileGivenName: normalizedGivenName,
                     profileFamilyName: normalizedFamilyName,
                     profileBio: normalizedBio,
                     profileBioEmoji: normalizedBioEmoji,
                     profileAvatarData: avatarData,
                     visibleBadgeIds: visibleBadgeIds,
-                    userProfileWriter: .localUser
+                    unsavedRotatedProfileKey: nil,
+                    userProfileWriter: .localUser,
+                    authedAccount: .implicit(),
+                    tx: tx
                 )
+            }.then(on: SyncScheduler()) { (updatePromise: Promise<Void>) in
+                // Run the Promise returned from databaseStorage.write(...).
+                updatePromise
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 Self.databaseStorage.write(.promise) { transaction in
                     Self.subscriptionManager.setDisplayBadgesOnProfile(
@@ -616,7 +622,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                         transaction: transaction
                     )
                 }
-            }.done(on: DispatchQueue.main) { _ in
+            }.done(on: DispatchQueue.main) {
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()
                     self?.profileCompleted()

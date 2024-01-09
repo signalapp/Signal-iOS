@@ -20,6 +20,25 @@ extension OWSFakeProfileManager: ProfileManager {
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise(error: OWSGenericError("Not supported."))
     }
+
+    public func updateLocalProfile(
+        profileGivenName: String?,
+        profileFamilyName: String?,
+        profileBio: String?,
+        profileBioEmoji: String?,
+        profileAvatarData: Data?,
+        visibleBadgeIds: [String],
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        tx: SDSAnyWriteTransaction
+    ) -> Promise<Void> {
+        return Promise(error: OWSGenericError("Not supported."))
+    }
+
+    public func reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: OWSAES256Key?, authedAccount: AuthedAccount) -> Promise<Void> {
+        return Promise(error: OWSGenericError("Not supported."))
+    }
 }
 
 #endif

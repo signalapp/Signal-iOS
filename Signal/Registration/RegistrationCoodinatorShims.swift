@@ -276,7 +276,8 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
     ) -> Promise<Void>
 
     func scheduleReuploadLocalProfile(authedAccount: AuthedAccount)
@@ -295,17 +296,20 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
         givenName: String,
         familyName: String?,
         avatarData: Data?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
-        return OWSProfileManager.updateLocalProfilePromise(
+        return manager.updateLocalProfile(
             profileGivenName: givenName,
             profileFamilyName: familyName,
             profileBio: nil,
             profileBioEmoji: nil,
             profileAvatarData: avatarData,
             visibleBadgeIds: [],
+            unsavedRotatedProfileKey: nil,
             userProfileWriter: .registration,
-            authedAccount: authedAccount
+            authedAccount: authedAccount,
+            tx: SDSDB.shimOnlyBridge(tx)
         )
     }
 

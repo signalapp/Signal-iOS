@@ -45,6 +45,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedServiceIdsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
+@property (nonatomic, readonly) SDSKeyValueStore *settingsStore;
 @property (nonatomic, readonly) BadgeStore *badgeStore;
 
 // This property is used by the Swift extension to ensure that only one
@@ -82,10 +83,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
 #pragma mark - Local Profile Updates
-
-- (void)writeAvatarToDiskWithData:(NSData *)avatarData
-                          success:(void (^)(NSString *fileName))successBlock
-                          failure:(ProfileManagerFailureBlock)failureBlock;
 
 // OWSUserProfile is a private implementation detail of the profile manager.
 //

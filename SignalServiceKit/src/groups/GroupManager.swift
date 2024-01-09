@@ -1492,7 +1492,7 @@ public class GroupManager: NSObject {
 
             // We've never uploaded a profile key commitment - do so now.
             Logger.info("No profile key credential available for local account - uploading local profile!")
-            return self.groupsV2Swift.reuploadLocalProfilePromise()
+            return self.profileManager.reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: .implicit())
         }
     }
 }

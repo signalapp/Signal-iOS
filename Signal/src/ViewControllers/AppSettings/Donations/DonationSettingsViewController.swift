@@ -651,19 +651,27 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
     func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(
-                message: OWSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
-                                           comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
+                message: OWSLocalizedString(
+                    "PROFILE_VIEW_NO_CONNECTION",
+                    comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."
+                )
+            )
             return
         }
+        Task {
+            await self.didCompleteBadgeConfiguration(setting, viewController: vc)
+        }
+    }
 
-        firstly { () -> Promise<Void> in
+    private func didCompleteBadgeConfiguration(_ badgeConfiguration: BadgeConfiguration, viewController: BadgeConfigurationViewController) async {
+        do {
             let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
             let allBadges = snapshot.profileBadgeInfo ?? []
             let oldVisibleBadges = allBadges.filter { $0.isVisible ?? true }
             let oldVisibleBadgeIds = oldVisibleBadges.map { $0.badgeId }
 
             let newVisibleBadgeIds: [String]
-            switch setting {
+            switch badgeConfiguration {
             case .doNotDisplayPublicly:
                 newVisibleBadgeIds = []
             case .display(featuredBadge: let newFeaturedBadge):
@@ -676,41 +684,43 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
 
             if oldVisibleBadgeIds != newVisibleBadgeIds {
                 Logger.info("[Donations] Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
-                vc.showDismissalActivity = true
-                return OWSProfileManager.updateLocalProfilePromise(
-                    profileGivenName: snapshot.givenName,
-                    profileFamilyName: snapshot.familyName,
-                    profileBio: snapshot.bio,
-                    profileBioEmoji: snapshot.bioEmoji,
-                    profileAvatarData: snapshot.avatarData,
-                    visibleBadgeIds: newVisibleBadgeIds,
-                    userProfileWriter: .localUser
-                )
-            } else {
-                return Promise.value(())
+                viewController.showDismissalActivity = true
+                let updatePromise = await databaseStorage.awaitableWrite { tx in
+                    self.profileManager.updateLocalProfile(
+                        profileGivenName: snapshot.givenName,
+                        profileFamilyName: snapshot.familyName,
+                        profileBio: snapshot.bio,
+                        profileBioEmoji: snapshot.bioEmoji,
+                        profileAvatarData: snapshot.avatarData,
+                        visibleBadgeIds: newVisibleBadgeIds,
+                        unsavedRotatedProfileKey: nil,
+                        userProfileWriter: .localUser,
+                        authedAccount: .implicit(),
+                        tx: tx
+                    )
+                }
+                try await updatePromise.awaitable()
             }
-        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+
             let displayBadgesOnProfile: Bool
-            switch setting {
+            switch badgeConfiguration {
             case .doNotDisplayPublicly:
                 displayBadgesOnProfile = false
             case .display:
                 displayBadgesOnProfile = true
             }
 
-            return Self.databaseStorage.write(.promise) { transaction in
+            await databaseStorage.awaitableWrite { tx in
                 Self.subscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
-                    transaction: transaction
+                    transaction: tx
                 )
             }
-        }.done {
-            self.navigationController?.popViewController(animated: true)
-        }.catch { error in
+        } catch {
             owsFailDebug("Failed to update profile: \(error)")
-            self.navigationController?.popViewController(animated: true)
         }
+        self.navigationController?.popViewController(animated: true)
     }
 
     func badgeConfirmationDidCancel(_: BadgeConfigurationViewController) {

@@ -33,6 +33,7 @@ class ZkParamsMigratorTest: XCTestCase {
             db: mockDb,
             keyValueStoreFactory: keyValueStoreFactory,
             groupsV2: groupsV2Ref,
+            profileManager: OWSFakeProfileManager(),
             tsAccountManager: MockTSAccountManager(),
             versionedProfiles: versionedProfilesRef
         )

@@ -131,8 +131,6 @@ public protocol GroupsV2Swift: GroupsV2 {
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) -> Promise<TSGroupThread>
 
-    func reuploadLocalProfilePromise() -> Promise<Void>
-
     func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                           ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
 
@@ -626,10 +624,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         groupSecretParamsData: Data,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) -> Promise<TSGroupThread> {
-        owsFail("Not implemented.")
-    }
-
-    public func reuploadLocalProfilePromise() -> Promise<Void> {
         owsFail("Not implemented.")
     }
 

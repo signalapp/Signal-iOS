@@ -10,6 +10,7 @@ class ZkParamsMigrator {
     private let db: DB
     private let groupsV2: GroupsV2Swift
     private let migrationStore: KeyValueStore
+    private let profileManager: ProfileManager
     private let tsAccountManager: TSAccountManager
     private let versionedProfiles: VersionedProfilesSwift
 
@@ -17,6 +18,7 @@ class ZkParamsMigrator {
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         groupsV2: GroupsV2Swift,
+        profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
         versionedProfiles: VersionedProfilesSwift
     ) {
@@ -24,6 +26,7 @@ class ZkParamsMigrator {
         self.groupsV2 = groupsV2
         // This collection name is weird for historical reasons.
         self.migrationStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.serviceStore")
+        self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.versionedProfiles = versionedProfiles
     }
@@ -65,11 +68,14 @@ class ZkParamsMigrator {
             Logger.info("Resetting zkgroup-related state.")
             groupsV2.clearTemporalCredentials(tx: tx)
             versionedProfiles.clearProfileKeyCredentials(tx: tx)
-            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [groupsV2, tsAccountManager] in
+            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [profileManager, tsAccountManager] in
                 if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
                     Logger.info("Re-uploading local profile due to zkgroup update.")
                     firstly {
-                        groupsV2.reuploadLocalProfilePromise()
+                        profileManager.reuploadLocalProfileWithSneakyTransaction(
+                            unsavedRotatedProfileKey: nil,
+                            authedAccount: .implicit()
+                        )
                     }.catch { error in
                         Logger.warn("Error: \(error)")
                     }

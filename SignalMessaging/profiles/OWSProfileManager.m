@@ -93,6 +93,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
+    _settingsStore = [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_SettingsStore"];
     _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_Metadata"];
     _badgeStore = [[BadgeStore alloc] init];
 
@@ -368,28 +369,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                         profileBadgeInfo:userProfile.profileBadgeInfo];
 }
 
-- (void)writeAvatarToDiskWithData:(NSData *)avatarData
-                          success:(void (^)(NSString *fileName))successBlock
-                          failure:(ProfileManagerFailureBlock)failureBlock
-{
-    OWSAssertDebug(avatarData);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *filename = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
-        BOOL success = [avatarData writeToFile:filePath atomically:YES];
-        OWSAssertDebug(success);
-        if (success) {
-            return successBlock(filename);
-        }
-        failureBlock([OWSError withError:OWSErrorCodeAvatarWriteFailed
-                             description:@"Avatar write failed."
-                             isRetryable:NO]);
-    });
-}
-
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image
 {
     NSUInteger kMaxAvatarBytes = 5 * 1000 * 1000;
@@ -420,7 +399,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
 {
-    [self reuploadLocalProfilePromiseWithAuthedAccount:authedAccount]
+    [self reuploadLocalProfileWithSneakyTransactionWithAuthedAccount:authedAccount]
         .done(^(id value) { OWSLogInfo(@"Done."); })
         .catch(^(NSError *error) { OWSFailDebugUnlessNetworkFailure(error); });
 }

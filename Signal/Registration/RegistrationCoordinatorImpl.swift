@@ -2672,32 +2672,40 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if !inMemoryState.hasProfileName {
             if let profileInfo = inMemoryState.pendingProfileInfo {
-                return deps.profileManager.updateLocalProfile(
-                    givenName: profileInfo.givenName,
-                    familyName: profileInfo.familyName,
-                    avatarData: profileInfo.avatarData,
-                    authedAccount: accountIdentity.authedAccount
-                )
-                    .map(on: schedulers.sync) { return nil }
-                    .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
-                        return .value(error)
+                let profileManager = deps.profileManager
+                return deps.db.writePromise { tx in
+                    profileManager.updateLocalProfile(
+                        givenName: profileInfo.givenName,
+                        familyName: profileInfo.familyName,
+                        avatarData: profileInfo.avatarData,
+                        authedAccount: accountIdentity.authedAccount,
+                        tx: tx
+                    )
+                }
+                .then(on: SyncScheduler()) { updatePromise in
+                    // Run the Promise returned from databaseStorage.write(...).
+                    updatePromise
+                }
+                .map(on: schedulers.sync) { return nil }
+                .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in
+                    return .value(error)
+                }
+                .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
+                    guard let self else {
+                        return unretainedSelfError()
                     }
-                    .then(on: schedulers.main) { [weak self] (error) -> Guarantee<RegistrationStep> in
-                        guard let self else {
-                            return unretainedSelfError()
+                    if let error {
+                        if error.isPostRegDeregisteredError {
+                            return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
                         }
-                        if let error {
-                            if error.isPostRegDeregisteredError {
-                                return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                            }
-                            return .value(.showErrorSheet(
-                                error.isNetworkFailureOrTimeout ? .networkError : .genericError
-                            ))
-                        }
-                        self.inMemoryState.hasProfileName = true
-                        self.inMemoryState.pendingProfileInfo = nil
-                        return self.nextStep()
+                        return .value(.showErrorSheet(
+                            error.isNetworkFailureOrTimeout ? .networkError : .genericError
+                        ))
                     }
+                    self.inMemoryState.hasProfileName = true
+                    self.inMemoryState.pendingProfileInfo = nil
+                    return self.nextStep()
+                }
             }
 
             return .value(.setupProfile(RegistrationProfileState(
