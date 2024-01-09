@@ -157,6 +157,7 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .localUserRequestApprovedByUnknownUser,
         .otherUserRequestApprovedByLocalUser(userName: .otherUser2, userAddress: .otherUser2),
         .otherUserRequestApproved(userName: .otherUser2, userAddress: .otherUser2, approverName: .otherUser2, approverAddress: .otherUser2),
+        .otherUserRequestApprovedByUnknownUser(userName: .otherUser2, userAddress: .otherUser2),
 
         .localUserRequestCanceledByLocalUser,
         .localUserRequestRejectedByUnknownUser,

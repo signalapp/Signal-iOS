@@ -328,7 +328,12 @@ public class GroupsV2Protos {
                 owsFailDebug("Duplicate user in group: \(aci)")
                 continue
             }
-            groupMembershipBuilder.addFullMember(aci, role: role, didJoinFromInviteLink: false)
+            groupMembershipBuilder.addFullMember(
+                aci,
+                role: role,
+                didJoinFromInviteLink: false,
+                didJoinFromAcceptedJoinRequest: false
+            )
 
             guard let profileKeyCiphertextData = memberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")

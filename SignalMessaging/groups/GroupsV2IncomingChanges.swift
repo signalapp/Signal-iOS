@@ -486,7 +486,11 @@ public class GroupsV2IncomingChanges {
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(aci)
-            groupMembershipBuilder.addFullMember(aci, role: role)
+            groupMembershipBuilder.addFullMember(
+                aci,
+                role: role,
+                didJoinFromAcceptedJoinRequest: true
+            )
         }
 
         for action in changeActionsProto.addBannedMembers {

@@ -9,13 +9,17 @@ import LibSignalClient
 // MARK: - GroupMemberState
 
 private enum GroupMemberState: Equatable {
-    case fullMember(role: TSGroupMemberRole, didJoinFromInviteLink: Bool)
+    case fullMember(
+        role: TSGroupMemberRole,
+        didJoinFromInviteLink: Bool,
+        didJoinFromAcceptedJoinRequest: Bool
+    )
     case invited(role: TSGroupMemberRole, addedByAci: Aci)
     case requesting
 
     var role: TSGroupMemberRole {
         switch self {
-        case .fullMember(let role, _):
+        case .fullMember(let role, _, _):
             return role
         case .invited(let role, _):
             return role
@@ -62,6 +66,7 @@ extension GroupMemberState: Codable {
         case role
         case addedByAci = "addedByUuid"
         case didJoinFromInviteLink
+        case didJoinFromAcceptedJoinRequest
     }
 
     init(from decoder: Decoder) throws {
@@ -72,7 +77,15 @@ extension GroupMemberState: Codable {
         case .fullMember:
             let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
             let didJoinFromInviteLink = try container.decodeIfPresent(Bool.self, forKey: .didJoinFromInviteLink) ?? false
-            self = .fullMember(role: role, didJoinFromInviteLink: didJoinFromInviteLink)
+            let didJoinFromAcceptedJoinRequest = try container.decodeIfPresent(
+                Bool.self,
+                forKey: .didJoinFromAcceptedJoinRequest
+            ) ?? false
+            self = .fullMember(
+                role: role,
+                didJoinFromInviteLink: didJoinFromInviteLink,
+                didJoinFromAcceptedJoinRequest: didJoinFromAcceptedJoinRequest
+            )
         case .invited:
             let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
             let addedByAci = try container.decode(UUID.self, forKey: .addedByAci)
@@ -86,10 +99,14 @@ extension GroupMemberState: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
-        case .fullMember(let role, let didJoinFromInviteLink):
+        case .fullMember(let role, let didJoinFromInviteLink, let didJoinFromAcceptedJoinRequest):
             try container.encode(TypeKey.fullMember, forKey: .typeKey)
             try container.encode(role, forKey: .role)
             try container.encode(didJoinFromInviteLink, forKey: .didJoinFromInviteLink)
+            try container.encode(
+                didJoinFromAcceptedJoinRequest,
+                forKey: .didJoinFromAcceptedJoinRequest
+            )
         case .invited(let role, let addedByAci):
             try container.encode(TypeKey.invited, forKey: .typeKey)
             try container.encode(role, forKey: .role)
@@ -250,12 +267,12 @@ public class GroupMembership: MTLModel {
         return invalidlyInvitedUserIdsSet == otherInvalidlyInvitedUserIdsSet
     }
 
-    /// When comparing member states, ignore the `didJoinFromInviteLink` field.
-    /// This field is not stored as part of memberships in group snapshots from
-    /// the service, and is only computed when a member joins a group and we add
+    /// When comparing member states, ignore the ``didJoinFromInviteLink`` and
+    /// ``didJoinFromAcceptedJoinRequest`` fields.
+    /// These fields are not stored as part of memberships in group snapshots from
+    /// the service, and are only computed when a member joins a group and we add
     /// them locally. If our local membership differs from a group snapshot's
-    /// only in the `didJoinFromInviteLink` field, we want to consider them
-    /// equal to avoid clobbering our local state.
+    /// only in these fields, we want to consider them equal to avoid clobbering our local state.
     private static func memberStates(
         _ memberStates: MemberStateMap,
         areEqualTo otherMemberStates: MemberStateMap
@@ -263,8 +280,12 @@ public class GroupMembership: MTLModel {
 
         func hardcodeDidJoinViaInviteLink(for groupMemberState: GroupMemberState) -> GroupMemberState {
             switch groupMemberState {
-            case .fullMember(let role, _):
-                return .fullMember(role: role, didJoinFromInviteLink: false)
+            case .fullMember(let role, _, _):
+                return .fullMember(
+                    role: role,
+                    didJoinFromInviteLink: false,
+                    didJoinFromAcceptedJoinRequest: false
+                )
             default:
                 return groupMemberState
             }
@@ -294,7 +315,11 @@ public class GroupMembership: MTLModel {
                     continue
                 }
             } else {
-                memberState = .fullMember(role: legacyMemberState.role, didJoinFromInviteLink: false)
+                memberState = .fullMember(
+                    role: legacyMemberState.role,
+                    didJoinFromInviteLink: false,
+                    didJoinFromAcceptedJoinRequest: false
+                )
             }
             result[address] = memberState
         }
@@ -398,7 +423,7 @@ public extension GroupMembership {
             return false
         }
         switch memberState {
-        case .fullMember(let role, _):
+        case .fullMember(let role, _, _):
             return role == .administrator
         case .invited(let role, _):
             return role == .administrator
@@ -499,8 +524,23 @@ public extension GroupMembership {
             return false
         }
         switch memberState {
-        case .fullMember(_, let didJoinFromInviteLink):
+        case .fullMember(_, let didJoinFromInviteLink, _):
             return didJoinFromInviteLink
+        default:
+            owsFailDebug("Not a full member.")
+            return false
+        }
+    }
+
+    /// this method should only be called for full members.
+    func didJoinFromAcceptedJoinRequest(forFullMember address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            owsFailDebug("Missing member: \(address)")
+            return false
+        }
+        switch memberState {
+        case .fullMember(_, _, let didJoinFromAcceptedJoinRequest):
+            return didJoinFromAcceptedJoinRequest
         default:
             owsFailDebug("Not a full member.")
             return false
@@ -572,24 +612,51 @@ public extension GroupMembership {
             }
         }
 
-        public mutating func addFullMember(_ aci: Aci, role: TSGroupMemberRole, didJoinFromInviteLink: Bool = false) {
-            addFullMember(SignalServiceAddress(aci), role: role, didJoinFromInviteLink: didJoinFromInviteLink)
+        public mutating func addFullMember(
+            _ aci: Aci,
+            role: TSGroupMemberRole,
+            didJoinFromInviteLink: Bool = false,
+            didJoinFromAcceptedJoinRequest: Bool = false
+        ) {
+            addFullMember(
+                SignalServiceAddress(aci),
+                role: role,
+                didJoinFromInviteLink: didJoinFromInviteLink,
+                didJoinFromAcceptedJoinRequest: didJoinFromAcceptedJoinRequest
+            )
         }
 
-        public mutating func addFullMember(_ address: SignalServiceAddress,
-                                           role: TSGroupMemberRole,
-                                           didJoinFromInviteLink: Bool = false) {
-            addFullMembers([address], role: role, didJoinFromInviteLink: didJoinFromInviteLink)
+        public mutating func addFullMember(
+            _ address: SignalServiceAddress,
+            role: TSGroupMemberRole,
+            didJoinFromInviteLink: Bool = false,
+            didJoinFromAcceptedJoinRequest: Bool = false
+        ) {
+            addFullMembers(
+                [address],
+                role: role,
+                didJoinFromInviteLink: didJoinFromInviteLink,
+                didJoinFromAcceptedJoinRequest: didJoinFromAcceptedJoinRequest
+            )
         }
 
-        public mutating func addFullMembers(_ addresses: Set<SignalServiceAddress>,
-                                            role: TSGroupMemberRole,
-                                            didJoinFromInviteLink: Bool = false) {
+        public mutating func addFullMembers(
+            _ addresses: Set<SignalServiceAddress>,
+            role: TSGroupMemberRole,
+            didJoinFromInviteLink: Bool = false,
+            didJoinFromAcceptedJoinRequest: Bool = false
+        ) {
             // Dupe is not necessarily an error; you might know of the UUID
             // mapping for a user that another group member doesn't know about.
-            addMembers(addresses,
-                       withState: .fullMember(role: role, didJoinFromInviteLink: didJoinFromInviteLink),
-                       failOnDupe: false)
+            addMembers(
+                addresses,
+                withState: .fullMember(
+                    role: role,
+                    didJoinFromInviteLink: didJoinFromInviteLink,
+                    didJoinFromAcceptedJoinRequest: didJoinFromAcceptedJoinRequest
+                ),
+                failOnDupe: false
+            )
         }
 
         public mutating func addInvitedMember(_ serviceId: ServiceId, role: TSGroupMemberRole, addedByAci: Aci) {

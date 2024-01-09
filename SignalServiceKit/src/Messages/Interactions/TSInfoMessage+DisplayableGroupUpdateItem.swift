@@ -139,6 +139,7 @@ public enum DisplayableGroupUpdateItem {
     case localUserRequestApprovedByUnknownUser
     case otherUserRequestApprovedByLocalUser(userName: String, userAddress: SignalServiceAddress)
     case otherUserRequestApproved(userName: String, userAddress: SignalServiceAddress, approverName: String, approverAddress: SignalServiceAddress)
+    case otherUserRequestApprovedByUnknownUser(userName: String, userAddress: SignalServiceAddress)
 
     case localUserRequestCanceledByLocalUser
     case localUserRequestRejectedByUnknownUser
@@ -966,6 +967,16 @@ public enum DisplayableGroupUpdateItem {
                 groupUpdateFormatArgs: [
                     .name(userName, userAddress),
                     .name(approverName, approverAddress)
+                ]
+            )
+        case let .otherUserRequestApprovedByUnknownUser(userName, userAddress):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT",
+                    comment: "Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}."
+                ),
+                groupUpdateFormatArgs: [
+                    .name(userName, userAddress)
                 ]
             )
         case .localUserRequestCanceledByLocalUser:

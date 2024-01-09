@@ -907,7 +907,8 @@ extension CVComponentSystemMessage {
                 .otherUserJoined,
                 .otherUserJoinedViaInviteLink,
                 .otherUserRequestApprovedByLocalUser,
-                .otherUserRequestApproved:
+                .otherUserRequestApproved,
+                .otherUserRequestApprovedByUnknownUser:
             return Theme.iconName(.memberAdded16)
         case
                 .createdByLocalUser,

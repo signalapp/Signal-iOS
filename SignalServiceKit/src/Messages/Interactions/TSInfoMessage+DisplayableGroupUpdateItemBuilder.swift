@@ -965,11 +965,19 @@ private struct DiffingGroupUpdateItemBuilder {
             case .requesting:
                 switch newMembershipStatus {
                 case .normalMember:
-                    addUserRequestWasApproved(
-                        address: address,
-                        oldGroupMembership: oldGroupMembership,
-                        tx: tx
-                    )
+                    if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: address) {
+                        addUserRequestWasApproved(
+                            address: address,
+                            oldGroupMembership: oldGroupMembership,
+                            tx: tx
+                        )
+                    } else {
+                        addUserWasAddedToTheGroup(
+                            address: address,
+                            newGroupModel: newGroupModel,
+                            tx: tx
+                        )
+                    }
                 case .invited:
                     addUserWasInvitedToTheGroup(
                         address: address,
@@ -987,6 +995,12 @@ private struct DiffingGroupUpdateItemBuilder {
                 case .normalMember:
                     if newGroupMembership.didJoinFromInviteLink(forFullMember: address) {
                         addUserJoinedFromInviteLink(address: address, tx: tx)
+                    } else if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: address) {
+                        addUserRequestWasApproved(
+                            address: address,
+                            oldGroupMembership: oldGroupMembership,
+                            tx: tx
+                        )
                     } else {
                         addUserWasAddedToTheGroup(
                             address: address,
@@ -1690,19 +1704,10 @@ private struct DiffingGroupUpdateItemBuilder {
                 owsFailDebug("User added themselves to the group and was updater - should not be possible.")
                 addItem(.localUserAddedByLocalUser)
             case .otherUser(let updaterName, let updaterAddress):
-                // A requesting user can either be added or "approved". If the
-                // updater is an admin, we go with approved.
-                if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
-                    addItem(.localUserRequestApproved(
-                        approverName: updaterName,
-                        approverAddress: updaterAddress
-                    ))
-                } else {
-                    addItem(.localUserAddedByOtherUser(
-                        updaterName: updaterName,
-                        updaterAddress: updaterAddress
-                    ))
-                }
+                addItem(.localUserRequestApproved(
+                    approverName: updaterName,
+                    approverAddress: updaterAddress
+                ))
             case .unknown:
                 addItem(.localUserRequestApprovedByUnknownUser)
             }
@@ -1711,41 +1716,19 @@ private struct DiffingGroupUpdateItemBuilder {
 
             switch updater {
             case .localUser:
-                // A requesting user can either be added or "approved". If the
-                // updater is an admin, we go with approved.
-                if oldGroupMembership.isFullMemberAndAdministrator(localIdentifiers.aciAddress) {
-                    addItem(.otherUserRequestApprovedByLocalUser(
-                        userName: requesterName,
-                        userAddress: requesterAddress
-                    ))
-                } else {
-                    addItem(.otherUserAddedByLocalUser(
-                        userName: requesterName,
-                        userAddress: requesterAddress
-                    ))
-                }
+                addItem(.otherUserRequestApprovedByLocalUser(
+                    userName: requesterName,
+                    userAddress: requesterAddress
+                ))
             case .otherUser(let updaterName, let updaterAddress):
-                // A requesting user can either be added or "approved". If the
-                // updater is an admin, we go with approved.
-                if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
-                    addItem(.otherUserRequestApproved(
-                        userName: requesterName,
-                        userAddress: requesterAddress,
-                        approverName: updaterName,
-                        approverAddress: updaterAddress
-                    ))
-                } else {
-                    addItem(.otherUserAddedByOtherUser(
-                        updaterName: updaterName,
-                        updaterAddress: updaterAddress,
-                        userName: requesterName,
-                        userAddress: requesterAddress
-                    ))
-                }
+                addItem(.otherUserRequestApproved(
+                    userName: requesterName,
+                    userAddress: requesterAddress,
+                    approverName: updaterName,
+                    approverAddress: updaterAddress
+                ))
             case .unknown:
-                // If we don't know the updater, we can't infer whether they
-                // were added or approved.
-                addItem(.otherUserJoined(
+                addItem(.otherUserRequestApprovedByUnknownUser(
                     userName: requesterName,
                     userAddress: requesterAddress
                 ))
