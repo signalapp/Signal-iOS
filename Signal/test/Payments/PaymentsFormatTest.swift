@@ -5,20 +5,10 @@
 
 import XCTest
 
-@testable import MobileCoin
-@testable import Signal
-@testable import SignalMessaging
 @testable import SignalServiceKit
 @testable import SignalUI
 
-class PaymentsFormatTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-
-        SSKEnvironment.shared.setPaymentsHelperForUnitTests(PaymentsHelperImpl())
-        SUIEnvironment.shared.paymentsRef = PaymentsImpl()
-    }
+class PaymentsFormatTest: XCTestCase {
 
     func test_formatAsFiatCurrency() {
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 12345 * PaymentsConstants.picoMobPerMob)
