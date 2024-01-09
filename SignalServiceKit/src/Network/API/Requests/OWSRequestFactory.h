@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
-@class ProfileValue;
 @class SMKUDAccessKey;
 @class ServiceIdObjC;
 @class SignalServiceAddress;
@@ -139,16 +138,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 #pragma mark - Profiles
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName;
-
-+ (TSRequest *)versionedProfileSetRequestWithName:(nullable ProfileValue *)name
-                                              bio:(nullable ProfileValue *)bio
-                                         bioEmoji:(nullable ProfileValue *)bioEmoji
-                                        hasAvatar:(BOOL)hasAvatar
-                                   paymentAddress:(nullable ProfileValue *)paymentAddress
-                                  visibleBadgeIds:(NSArray<NSString *> *)visibleBadgeIds
-                                          version:(NSString *)version
-                                       commitment:(NSData *)commitment
-                                             auth:(ChatServiceAuth *)auth;
 
 #pragma mark - Remote Config
 

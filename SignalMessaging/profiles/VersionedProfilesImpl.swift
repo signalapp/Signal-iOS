@@ -160,7 +160,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             }
 
             var nameValue: ProfileValue?
-            if let profileGivenName = profileGivenName {
+            if let profileGivenName {
                 var nameComponents = PersonNameComponents()
                 nameComponents.givenName = profileGivenName
                 nameComponents.familyName = profileFamilyName
@@ -172,56 +172,41 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 nameValue = encryptedValue
             }
 
-            func encryptOptionalData(_ value: Data?,
-                                     paddedLengths: [Int],
-                                     validBase64Lengths: [Int]) throws -> ProfileValue? {
-                guard let value = value,
-                      !value.isEmpty else {
+            func encryptOptionalData(_ value: Data?, paddedLengths: [Int]) throws -> ProfileValue? {
+                guard let value, !value.isEmpty else {
                     return nil
                 }
-                guard let encryptedValue = OWSUserProfile.encrypt(data: value,
-                                                                  profileKey: profileKeyToUse,
-                                                                  paddedLengths: paddedLengths,
-                                                                  validBase64Lengths: validBase64Lengths) else {
+                guard let encryptedValue = OWSUserProfile.encrypt(
+                    data: value,
+                    profileKey: profileKeyToUse,
+                    paddedLengths: paddedLengths
+                ) else {
                     throw OWSAssertionError("Could not encrypt profile value.")
                 }
                 return encryptedValue
             }
 
-            func encryptOptionalString(_ value: String?,
-                                       paddedLengths: [Int],
-                                       validBase64Lengths: [Int]) throws -> ProfileValue? {
-                guard let value = value,
-                      !value.isEmpty else {
+            func encryptOptionalString(_ value: String?, paddedLengths: [Int]) throws -> ProfileValue? {
+                guard let value, !value.isEmpty else {
                     return nil
                 }
                 guard let stringData = value.data(using: .utf8) else {
                     owsFailDebug("Invalid value.")
                     return nil
                 }
-                return try encryptOptionalData(stringData,
-                                               paddedLengths: paddedLengths,
-                                               validBase64Lengths: validBase64Lengths)
+                return try encryptOptionalData(stringData, paddedLengths: paddedLengths)
             }
 
-            // The Base 64 lengths reflect encryption + Base 64 encoding
-            // of the max-length padded value.
-            let bioValue = try encryptOptionalString(profileBio,
-                                                     paddedLengths: [128, 254, 512 ],
-                                                     validBase64Lengths: [208, 376, 720])
+            let bioValue = try encryptOptionalString(profileBio, paddedLengths: [128, 254, 512])
 
-            let bioEmojiValue = try encryptOptionalString(profileBioEmoji,
-                                                          paddedLengths: [32],
-                                                          validBase64Lengths: [80])
+            let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
 
-            let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData,
-                                                              paddedLengths: [554],
-                                                              validBase64Lengths: [776])
+            let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
-            let request = OWSRequestFactory.versionedProfileSetRequest(
-                withName: nameValue,
+            let request = OWSRequestFactory.setVersionedProfileRequest(
+                name: nameValue,
                 bio: bioValue,
                 bioEmoji: bioEmojiValue,
                 hasAvatar: hasAvatar,
@@ -233,7 +218,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             )
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
-            if let profileAvatarData = profileAvatarData {
+            if let profileAvatarData {
                 guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
                                                                               profileKey: profileKeyToUse) else {
                     throw OWSAssertionError("Could not encrypt profile avatar.")

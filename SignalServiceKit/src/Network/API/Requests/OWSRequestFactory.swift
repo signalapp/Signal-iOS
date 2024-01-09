@@ -18,7 +18,6 @@ public extension OWSRequestFactory {
     static let textSecureSignedKeysAPI  = "v2/keys/signed"
     static let textSecureDirectoryAPI  = "v1/directory"
     static let textSecureDevicesAPIFormat  = "v1/devices/%@"
-    static let textSecureVersionedProfileAPI  = "v1/profile/"
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
     static let textSecure2FAAPI  = "v1/accounts/pin"
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
@@ -417,5 +416,43 @@ extension OWSRequestFactory {
         case .pni:
             return "identity=pni"
         }
+    }
+}
+
+// MARK: - Versioned Profiles
+
+extension OWSRequestFactory {
+    public static func setVersionedProfileRequest(
+        name: ProfileValue?,
+        bio: ProfileValue?,
+        bioEmoji: ProfileValue?,
+        hasAvatar: Bool,
+        paymentAddress: ProfileValue?,
+        visibleBadgeIds: [String],
+        version: String,
+        commitment: Data,
+        auth: ChatServiceAuth
+    ) -> TSRequest {
+        var parameters: [String: Any] = [
+            "avatar": hasAvatar,
+            "badgeIds": visibleBadgeIds,
+            "commitment": commitment.base64EncodedString(),
+            "version": version,
+        ]
+        if let name {
+            parameters["name"] = name.encryptedBase64Value
+        }
+        if let bio {
+            parameters["about"] = bio.encryptedBase64Value
+        }
+        if let bioEmoji {
+            parameters["aboutEmoji"] = bioEmoji.encryptedBase64Value
+        }
+        if let paymentAddress {
+            parameters["paymentAddress"] = paymentAddress.encryptedBase64Value
+        }
+        let request = TSRequest(url: URL(string: "v1/profile/")!, method: "PUT", parameters: parameters)
+        request.setAuth(auth)
+        return request
     }
 }

@@ -466,53 +466,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-#pragma mark - Versioned Profiles
-
-+ (TSRequest *)versionedProfileSetRequestWithName:(nullable ProfileValue *)name
-                                              bio:(nullable ProfileValue *)bio
-                                         bioEmoji:(nullable ProfileValue *)bioEmoji
-                                        hasAvatar:(BOOL)hasAvatar
-                                   paymentAddress:(nullable ProfileValue *)paymentAddress
-                                  visibleBadgeIds:(NSArray<NSString *> *)visibleBadgeIds
-                                          version:(NSString *)version
-                                       commitment:(NSData *)commitment
-                                             auth:(ChatServiceAuth *)auth
-{
-    OWSAssertDebug(version.length > 0);
-    OWSAssertDebug(commitment.length > 0);
-
-    NSString *base64EncodedCommitment = [commitment base64EncodedString];
-
-    NSMutableDictionary<NSString *, NSObject *> *parameters = [@{
-        @"version" : version,
-        @"avatar" : @(hasAvatar),
-        @"commitment" : base64EncodedCommitment,
-    } mutableCopy];
-
-    if (name != nil) {
-        OWSAssertDebug(name.hasValidBase64Length);
-        parameters[@"name"] = name.encryptedBase64;
-    }
-    if (bio != nil) {
-        OWSAssertDebug(bio.hasValidBase64Length);
-        parameters[@"about"] = bio.encryptedBase64;
-    }
-    if (bioEmoji != nil) {
-        OWSAssertDebug(bioEmoji.hasValidBase64Length);
-        parameters[@"aboutEmoji"] = bioEmoji.encryptedBase64;
-    }
-    if (paymentAddress != nil) {
-        OWSAssertDebug(paymentAddress.hasValidBase64Length);
-        parameters[@"paymentAddress"] = paymentAddress.encryptedBase64;
-    }
-    parameters[@"badgeIds"] = [visibleBadgeIds copy];
-
-    NSURL *url = [NSURL URLWithString:self.textSecureVersionedProfileAPI];
-    TSRequest *request = [TSRequest requestWithUrl:url method:@"PUT" parameters:parameters];
-    [request setAuth:auth];
-    return request;
-}
-
 #pragma mark - Remote Config
 
 + (TSRequest *)getRemoteConfigRequest

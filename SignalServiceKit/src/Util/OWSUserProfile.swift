@@ -85,7 +85,6 @@ public extension OWSUserProfile {
 
     static var maxNameLengthGlyphs: Int = 26
     // The max bytes for a user's profile name, encoded in UTF8.
-    // Before encrypting and submitting we NULL pad the name data to this length.
     static var maxNameLengthBytes: Int = 128
 
     static let kMaxBioLengthGlyphs: Int = 140
@@ -195,6 +194,7 @@ public extension OWSUserProfile {
         return string
     }
 
+    @nonobjc
     class func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> ProfileValue? {
         let givenName: String? = profileNameComponents.givenName?.trimToGlyphCount(maxNameLengthGlyphs)
         guard var paddedNameData = givenName?.data(using: .utf8) else { return nil }
@@ -205,30 +205,17 @@ public extension OWSUserProfile {
             paddedNameData.append(familyNameData)
         }
 
-        // The Base 64 lengths reflect encryption + Base 64 encoding
-        // of the max-length padded value.
-        //
         // Two names plus null separator.
         let totalNameMaxLength = Int(maxNameLengthBytes) * 2 + 1
         let paddedLengths: [Int]
-        let validBase64Lengths: [Int]
         owsAssertDebug(totalNameMaxLength == 257)
-        paddedLengths = [53, 257 ]
-        validBase64Lengths = [108, 380 ]
+        paddedLengths = [53, 257]
 
-        // All encrypted profile names should be the same length on the server,
-        // so we pad out the length with null bytes to the maximum length.
-        return encrypt(data: paddedNameData,
-                       profileKey: profileKey,
-                       paddedLengths: paddedLengths,
-                       validBase64Lengths: validBase64Lengths)
+        return encrypt(data: paddedNameData, profileKey: profileKey, paddedLengths: paddedLengths)
     }
 
-    class func encrypt(data unpaddedData: Data,
-                       profileKey: OWSAES256Key,
-                       paddedLengths: [Int],
-                       validBase64Lengths: [Int]) -> ProfileValue? {
-
+    @nonobjc
+    class func encrypt(data unpaddedData: Data, profileKey: OWSAES256Key, paddedLengths: [Int]) -> ProfileValue? {
         guard paddedLengths == paddedLengths.sorted() else {
             owsFailDebug("paddedLengths have incorrect ordering.")
             return nil
@@ -251,16 +238,11 @@ public extension OWSUserProfile {
             return nil
         }
 
-        guard let encrypted = encrypt(profileData: paddedData, profileKey: profileKey) else {
+        guard let encryptedData = encrypt(profileData: paddedData, profileKey: profileKey) else {
             owsFailDebug("Could not encrypt.")
             return nil
         }
-        let value = ProfileValue(encrypted: encrypted, validBase64Lengths: validBase64Lengths)
-        guard value.hasValidBase64Length else {
-            owsFailDebug("Value has invalid base64 length: \(encrypted.count) -> \(value.encryptedBase64.count) not in \(validBase64Lengths).")
-            return nil
-        }
-        return value
+        return ProfileValue(encryptedData: encryptedData)
     }
 
     // MARK: - Indexing
@@ -389,26 +371,15 @@ public extension OWSUserProfile {
 
 // MARK: -
 
-@objc
-public class ProfileValue: NSObject {
-    public let encrypted: Data
+public struct ProfileValue {
+    let encryptedData: Data
 
-    let validBase64Lengths: [Int]
-
-    required init(encrypted: Data,
-                  validBase64Lengths: [Int]) {
-        self.encrypted = encrypted
-        self.validBase64Lengths = validBase64Lengths
+    public init(encryptedData: Data) {
+        self.encryptedData = encryptedData
     }
 
-    @objc
-    var encryptedBase64: String {
-        encrypted.base64EncodedString()
-    }
-
-    @objc
-    var hasValidBase64Length: Bool {
-        validBase64Lengths.contains(encryptedBase64.count)
+    var encryptedBase64Value: String {
+        encryptedData.base64EncodedString()
     }
 }
 
