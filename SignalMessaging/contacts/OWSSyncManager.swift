@@ -462,7 +462,9 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     // MARK: - Fetch Latest
 
-    public func sendFetchLatestProfileSyncMessage() { sendFetchLatestSyncMessage(type: .localProfile) }
+    public func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction) {
+        _sendFetchLatestSyncMessage(type: .localProfile, tx: tx)
+    }
 
     public func sendFetchLatestStorageManifestSyncMessage() { sendFetchLatestSyncMessage(type: .storageManifest) }
 

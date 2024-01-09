@@ -14,6 +14,7 @@ extern NSString *const kNSNotificationKey_UserProfileWriter;
 
 @class MessageSender;
 @class OWSAES256Key;
+@class OWSProfileManagerSwiftValues;
 @class OWSUserProfile;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -56,7 +57,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
+                            swiftValues:(OWSProfileManagerSwiftValues *)swiftValues NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) OWSProfileManagerSwiftValues *swiftValues;
 
 #pragma mark - Local Profile
 

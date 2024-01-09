@@ -77,6 +77,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 @synthesize localUserProfile = _localUserProfile;
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
+                            swiftValues:(OWSProfileManagerSwiftValues *)swiftValues
 {
     self = [super init];
 
@@ -96,6 +97,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     _settingsStore = [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_SettingsStore"];
     _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_Metadata"];
     _badgeStore = [[BadgeStore alloc] init];
+    _swiftValues = swiftValues;
 
     OWSSingletonAssert();
 

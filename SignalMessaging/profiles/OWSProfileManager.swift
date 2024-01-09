@@ -7,6 +7,10 @@ import Foundation
 import LibSignalClient
 import SignalServiceKit
 
+class OWSProfileManagerSwiftValues {
+    fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: AtomicLock())
+}
+
 extension OWSProfileManager: ProfileManager {
     public func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?] {
         return userProfilesRefinery(for: addresses, tx: tx).values.map { $0?.fullName }
@@ -60,30 +64,14 @@ extension OWSProfileManager: ProfileManager {
             tx: tx
         )
 
-        return firstly(on: DispatchQueue.main) {
-            return self.attemptToUpdateProfileOnService(update: update, authedAccount: authedAccount)
-        }.then { (_) throws -> Promise<Void> in
-            guard unsavedRotatedProfileKey == nil else {
-                Logger.info("Skipping local profile fetch during key rotation.")
-                return Promise.value(())
-            }
-            let localAci: Aci
-            switch authedAccount.info {
-            case .explicit(let info):
-                localAci = info.localIdentifiers.aci
-            case .implicit:
-                guard let implicitLocalAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-                    throw OWSAssertionError("missing local address")
-                }
-                localAci = implicitLocalAci
-            }
-            return ProfileFetcherJob.fetchProfilePromise(
-                serviceId: localAci,
-                mainAppOnly: false,
-                ignoreThrottling: true,
-                authedAccount: authedAccount
-            ).asVoid()
+        let (promise, future) = Promise<Void>.pending()
+        swiftValues.pendingUpdateRequests.update {
+            $0.append(ProfileUpdateRequest(requestId: update.id, authedAccount: authedAccount, future: future))
         }
+        tx.addAsyncCompletionOnMain {
+            self._updateProfileOnServiceIfNecessary()
+        }
+        return promise
     }
 
     // This will re-upload the existing local profile state.
@@ -646,7 +634,7 @@ extension OWSProfileManager: ProfileManager {
 
     @objc
     public func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
-        switch _updateProfileOnServiceIfNecessary(authedAccount: authedAccount) {
+        switch _updateProfileOnServiceIfNecessary() {
         case .notReady, .updating:
             return
         case .notNeeded:
@@ -660,17 +648,21 @@ extension OWSProfileManager: ProfileManager {
         case updating
     }
 
+    fileprivate struct ProfileUpdateRequest {
+        var requestId: UUID
+        var authedAccount: AuthedAccount
+        var future: Future<Void>
+    }
+
     @discardableResult
-    private func _updateProfileOnServiceIfNecessary(
-        authedAccount: AuthedAccount,
-        retryDelay: TimeInterval = 1
-    ) -> UpdateProfileStatus {
+    private func _updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) -> UpdateProfileStatus {
         AssertIsOnMainThread()
 
         guard AppReadiness.isAppReady else {
             return .notReady
         }
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return .notReady
         }
         guard !isUpdatingProfileOnService else {
@@ -681,21 +673,54 @@ extension OWSProfileManager: ProfileManager {
         let pendingUpdate = databaseStorage.read { tx in
             return currentPendingProfileUpdate(transaction: tx)
         }
-
-        guard let update = pendingUpdate else {
+        guard let pendingUpdate else {
             return .notNeeded
         }
-        firstly {
-            attemptToUpdateProfileOnService(
-                update: update,
-                retryDelay: retryDelay,
-                authedAccount: authedAccount
-            )
-        }.done { _ in
-            Logger.info("Update succeeded.")
-        }.catch { error in
-            Logger.error("Update failed: \(error)")
+
+        isUpdatingProfileOnService = true
+
+        // Find the AuthedAccount & Future for the request. This will generally
+        // exist for the initial request but will be nil for any retries.
+        let pendingRequests: (canceledRequests: [ProfileUpdateRequest], currentRequest: ProfileUpdateRequest)?
+        pendingRequests = swiftValues.pendingUpdateRequests.update { mutableRequests in
+            guard let inMemoryIndex = mutableRequests.firstIndex(where: { $0.requestId == pendingUpdate.id }) else {
+                return nil
+            }
+            let canceledRequests = Array(mutableRequests.prefix(upTo: inMemoryIndex))
+            let currentRequest = mutableRequests[inMemoryIndex]
+            mutableRequests = Array(mutableRequests[inMemoryIndex...].dropFirst())
+            return (canceledRequests, currentRequest)
         }
+
+        if let pendingRequests {
+            for canceledRequest in pendingRequests.canceledRequests {
+                canceledRequest.future.reject(OWSGenericError("Canceled because a new request was enqueued."))
+            }
+        }
+
+        let authedAccount: AuthedAccount = pendingRequests?.currentRequest.authedAccount ?? .implicit()
+        Task { @MainActor in
+            // We must be on the MainActor to touch isUpdatingProfileOnService.
+            defer {
+                isUpdatingProfileOnService = false
+            }
+            do {
+                try await attemptToUpdateProfileOnService(update: pendingUpdate, authedAccount: authedAccount)
+                if pendingUpdate.unsavedRotatedProfileKey == nil {
+                    _ = try await fetchLocalUsersProfile(mainAppOnly: false, authedAccount: authedAccount).awaitable()
+                }
+                pendingRequests?.currentRequest.future.resolve()
+                DispatchQueue.main.async {
+                    self._updateProfileOnServiceIfNecessary()
+                }
+            } catch {
+                pendingRequests?.currentRequest.future.reject(error)
+                DispatchQueue.main.asyncAfter(deadline: .now() + retryDelay) {
+                    self._updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
+                }
+            }
+        }
+
         return .updating
     }
 
@@ -770,101 +795,38 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
-    fileprivate func attemptToUpdateProfileOnService(
+    private func attemptToUpdateProfileOnService(
         update: PendingProfileUpdate,
-        retryDelay: TimeInterval = 1,
         authedAccount: AuthedAccount
-    ) -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        profileManagerImpl.isUpdatingProfileOnService = true
-
-        // We capture the local user profile early to eliminate the
-        // risk of opening a transaction within a transaction.
+    ) async throws {
+        // We capture the local user profile early to eliminate the risk of opening
+        // a transaction within a transaction.
         let userProfile = profileManagerImpl.localUserProfile()
 
         let attempt = ProfileUpdateAttempt(update: update, userProfile: userProfile)
-        let userProfileWriter = attempt.userProfileWriter
 
-        let promise = firstly {
-            writeProfileAvatarToDisk(attempt: attempt)
-        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-            Logger.info("Versioned profile update, avatarUrlPath: \(attempt.avatarUrlPath?.nilIfEmpty != nil), avatarFilename: \(attempt.avatarFilename?.nilIfEmpty != nil)")
-            return Self.updateProfileOnServiceVersioned(attempt: attempt, authedAccount: authedAccount)
-        }.done(on: DispatchQueue.global()) { _ in
-            self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
-                guard self.tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
-                    return
+        do {
+            try await writeProfileAvatarToDisk(attempt: attempt).awaitable()
+            try await Self.updateProfileOnServiceVersioned(attempt: attempt, authedAccount: authedAccount).awaitable()
+            await databaseStorage.awaitableWrite { tx in
+                if self.tryToDequeueProfileUpdate(update: attempt.update, transaction: tx) {
+                    Self.updateLocalProfile(with: attempt, authedAccount: authedAccount, transaction: tx)
                 }
-
-                if attempt.update.profileAvatarData != nil {
-                    if attempt.avatarFilename == nil {
-                        owsFailDebug("Missing avatarFilename.")
-                    }
-                    if attempt.avatarUrlPath == nil {
-                        owsFailDebug("Missing avatarUrlPath.")
-                    }
+                // Notify all our devices that the profile has changed.
+                let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
+                if tsRegistrationState.isRegistered {
+                    self.syncManager.sendFetchLatestProfileSyncMessage(tx: tx)
                 }
-
-                Self.updateLocalProfile(
-                    with: attempt,
-                    userProfileWriter: userProfileWriter,
-                    authedAccount: authedAccount,
-                    transaction: transaction
-                )
             }
-
-            self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true, authedAccount: authedAccount)
-        }.recover(on: DispatchQueue.global()) { error in
+        } catch let error where error.isNetworkFailureOrTimeout {
             // We retry network errors forever (with exponential backoff).
-            // Other errors cause us to give up immediately.
-            // Note that we only ever retry the latest profile update.
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Retrying after error: \(error)")
-            } else {
-                owsFailDebug("Error: \(error)")
-
-                // Dequeue to avoid getting stuck in retry loop.
-                self.databaseStorage.write { transaction in
-                    _ = self.tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
-                }
-            }
-            self.attemptDidComplete(retryDelay: retryDelay, didSucceed: false, authedAccount: authedAccount)
-
-            // We don't actually want to recover; in this block we
-            // handle the business logic consequences of the error,
-            // but we re-throw so that the UI can distinguish
-            // success and failure.
             throw error
-        }
-
-        return promise
-    }
-
-    private func attemptDidComplete(retryDelay: TimeInterval, didSucceed: Bool, authedAccount: AuthedAccount) {
-        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-
-        // Notify all our devices that the profile has changed.
-        // Older linked devices may not handle this message.
-        if tsRegistrationState.isRegistered {
-            self.syncManager.sendFetchLatestProfileSyncMessage()
-        }
-
-        DispatchQueue.main.async {
-            // Clear this flag immediately.
-            self.profileManagerImpl.isUpdatingProfileOnService = false
-
-            // There may be another update enqueued that we should kick off.
-            // Or we may need to retry.
-            if didSucceed {
-                self.updateProfileOnServiceIfNecessary(authedAccount: authedAccount)
-            } else {
-                // We don't want to get in a retry loop, so we use exponential backoff
-                // in the failure case.
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                    self._updateProfileOnServiceIfNecessary(authedAccount: authedAccount, retryDelay: retryDelay * 2)
-                })
+        } catch {
+            // Other errors cause us to give up immediately.
+            await databaseStorage.awaitableWrite { tx in
+                _ = self.tryToDequeueProfileUpdate(update: attempt.update, transaction: tx)
             }
+            throw error
         }
     }
 
@@ -913,7 +875,6 @@ extension OWSProfileManager: ProfileManager {
 
     private class func updateLocalProfile(
         with attempt: ProfileUpdateAttempt,
-        userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -922,7 +883,7 @@ extension OWSProfileManager: ProfileManager {
             familyName: attempt.update.profileFamilyName,
             avatarUrlPath: attempt.avatarUrlPath,
             avatarFileName: attempt.avatarFilename,
-            userProfileWriter: userProfileWriter,
+            userProfileWriter: attempt.userProfileWriter,
             authedAccount: authedAccount,
             transaction: transaction,
             completion: nil

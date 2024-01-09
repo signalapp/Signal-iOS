@@ -29,7 +29,7 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         return AnyPromise(Promise.value(()))
     }
 
-    public func sendFetchLatestProfileSyncMessage() {
+    public func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction) {
         Logger.info("")
     }
 

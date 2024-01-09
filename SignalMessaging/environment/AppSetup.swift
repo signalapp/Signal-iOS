@@ -74,7 +74,10 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
-        let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
+        let profileManager = OWSProfileManager(
+            databaseStorage: databaseStorage,
+            swiftValues: OWSProfileManagerSwiftValues()
+        )
         let reachabilityManager = SSKReachabilityManagerImpl()
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
