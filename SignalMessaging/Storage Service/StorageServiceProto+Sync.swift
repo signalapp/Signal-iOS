@@ -1340,7 +1340,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
             if let localMode = record.phoneNumberSharingMode?.asLocalMode {
-                udManager.setPhoneNumberSharingMode(localMode, updateStorageService: false, tx: transaction)
+                udManager.setPhoneNumberSharingMode(localMode, updateStorageServiceAndProfile: false, tx: transaction)
             } else {
                 Logger.error("Unknown phone number sharing mode \(String(describing: record.phoneNumberSharingMode))")
             }

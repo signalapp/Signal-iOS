@@ -144,7 +144,7 @@ public protocol OWSUDManager {
 
     func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
-        updateStorageService: Bool,
+        updateStorageServiceAndProfile: Bool,
         tx: SDSAnyWriteTransaction
     )
 }
@@ -526,14 +526,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     public func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
-        updateStorageService: Bool,
+        updateStorageServiceAndProfile: Bool,
         tx: SDSAnyWriteTransaction
     ) {
         keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx)
 
-        if updateStorageService {
+        if updateStorageServiceAndProfile {
             tx.addSyncCompletion {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                _ = Self.profileManager.reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: .implicit())
             }
         }
     }

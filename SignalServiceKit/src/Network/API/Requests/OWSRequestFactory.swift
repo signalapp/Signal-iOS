@@ -428,6 +428,7 @@ extension OWSRequestFactory {
         bioEmoji: ProfileValue?,
         hasAvatar: Bool,
         paymentAddress: ProfileValue?,
+        phoneNumberSharing: ProfileValue,
         visibleBadgeIds: [String],
         version: String,
         commitment: Data,
@@ -437,6 +438,7 @@ extension OWSRequestFactory {
             "avatar": hasAvatar,
             "badgeIds": visibleBadgeIds,
             "commitment": commitment.base64EncodedString(),
+            "phoneNumberSharing": phoneNumberSharing.encryptedBase64Value,
             "version": version,
         ]
         if let name {

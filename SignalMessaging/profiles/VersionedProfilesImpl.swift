@@ -197,20 +197,31 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 return try encryptOptionalData(stringData, paddedLengths: paddedLengths)
             }
 
+            func encryptBoolean(_ value: Bool) throws -> ProfileValue {
+                let encodedValue = Data([value ? 1 : 0])
+                guard let encryptedData = OWSUserProfile.encrypt(profileData: encodedValue, profileKey: profileKeyToUse) else {
+                    throw OWSAssertionError("Couldn't encrypt profie value.")
+                }
+                return ProfileValue(encryptedData: encryptedData)
+            }
+
             let bioValue = try encryptOptionalString(profileBio, paddedLengths: [128, 254, 512])
-
             let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
-
             let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
+            let phoneNumberSharingValue = try encryptBoolean(self.databaseStorage.read { tx in
+                self.udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
+            })
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
+
             let request = OWSRequestFactory.setVersionedProfileRequest(
                 name: nameValue,
                 bio: bioValue,
                 bioEmoji: bioEmojiValue,
                 hasAvatar: hasAvatar,
                 paymentAddress: paymentAddressValue,
+                phoneNumberSharing: phoneNumberSharingValue,
                 visibleBadgeIds: visibleBadgeIds,
                 version: profileKeyVersionString,
                 commitment: commitmentData,

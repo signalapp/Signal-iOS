@@ -118,7 +118,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
         databaseStorage.asyncWrite(block: { [weak self] transaction in
             guard let self else { return }
-            self.udManager.setPhoneNumberSharingMode(mode, updateStorageService: true, tx: transaction)
+            self.udManager.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: true, tx: transaction)
 
             // If sharing is set to `everybody`, discovery needs to be
             // updated to match this.
