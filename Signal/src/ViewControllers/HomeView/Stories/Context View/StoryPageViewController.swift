@@ -40,7 +40,7 @@ class StoryPageViewController: UIPageViewController {
     private let hiddenStoryFilter: Bool?
     private lazy var interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
 
-    private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
+    private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playback)
 
     private var isUserDraggingScrollView: Bool {
         guard let scrollView = viewIfLoaded?.subviews.compactMap({ $0 as? UIScrollView }).first else {
