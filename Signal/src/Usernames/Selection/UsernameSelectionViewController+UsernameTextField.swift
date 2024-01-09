@@ -6,6 +6,10 @@
 import SignalCoreKit
 import SignalUI
 
+protocol DiscriminatorTextFieldDelegate: AnyObject {
+    func didManuallyChangeDiscriminator()
+}
+
 extension UsernameSelectionViewController {
     class UsernameTextFieldWrapper: UIView {
         let textField: UsernameTextField
@@ -40,7 +44,7 @@ extension UsernameSelectionViewController {
     class UsernameTextField: OWSTextField {
         /// Presents state related to a username discriminator, such as the
         /// discriminator itself and state indicators such as a spinner.
-        private class DiscriminatorView: OWSStackView {
+        class DiscriminatorView: OWSStackView {
             private enum Constants {
                 static let spacing: CGFloat = 16
                 static let separatorWidth: CGFloat = 2
@@ -55,6 +59,8 @@ extension UsernameSelectionViewController {
 
             // MARK: Init
 
+            weak var delegate: (any DiscriminatorTextFieldDelegate)?
+
             /// The mode for which this view should be configured.
             var mode: Mode {
                 didSet {
@@ -63,6 +69,8 @@ extension UsernameSelectionViewController {
                     configureForCurrentMode()
                 }
             }
+
+            fileprivate var isUsingCustomDiscriminator = false
 
             init(inMode mode: Mode) {
                 self.mode = mode
@@ -75,7 +83,7 @@ extension UsernameSelectionViewController {
                 addArrangedSubviews([
                     spinnerView,
                     separatorView,
-                    discriminatorLabel
+                    discriminatorContainer,
                 ])
 
                 spacing = Constants.spacing
@@ -110,10 +118,25 @@ extension UsernameSelectionViewController {
                 return lineView
             }()
 
-            private lazy var discriminatorLabel: UILabel = {
+            private lazy var discriminatorTextField: UITextField = {
+                let textField = UITextField()
+                textField.placeholder = "00"
+                textField.delegate = self
+                textField.keyboardType = .numberPad
+                return textField
+            }()
+            // Set a minimum width for the view to the width of two characters
+            // in the given Dynamic Type size so it doesn't change when rolling
+            // new 2-digit discriminators.
+            private lazy var discriminatorContainer: UILabel = {
                 let label = UILabel()
 
                 label.numberOfLines = 1
+                label.text = "00"
+                label.textColor = .clear
+                label.isUserInteractionEnabled = true
+                label.addSubview(discriminatorTextField)
+                discriminatorTextField.autoPinEdgesToSuperviewEdges()
 
                 return label
             }()
@@ -122,11 +145,13 @@ extension UsernameSelectionViewController {
 
             func setColorsForCurrentTheme() {
                 separatorView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray15
-                discriminatorLabel.textColor = Theme.primaryTextColor
+                discriminatorTextField.textColor = Theme.primaryTextColor
             }
 
             func updateFontsForCurrentPreferredContentSize() {
-                discriminatorLabel.font = .dynamicTypeBodyClamped
+                let discriminatorFont = UIFont.dynamicTypeBodyClamped
+                discriminatorTextField.font = discriminatorFont
+                discriminatorContainer.font = discriminatorFont
             }
 
             /// Configure which subviews to present based on the current mode.
@@ -140,30 +165,41 @@ extension UsernameSelectionViewController {
                     isHidden = false
                     spinnerView.isHiddenInStackView = false
                     separatorView.isHiddenInStackView = true
-                    discriminatorLabel.isHiddenInStackView = true
+                    discriminatorTextField.isHiddenInStackView = true
                 case let .spinningWithDiscriminator(discriminatorValue):
                     isHidden = false
                     spinnerView.isHiddenInStackView = false
                     separatorView.isHiddenInStackView = false
-                    discriminatorLabel.isHiddenInStackView = false
+                    discriminatorTextField.isHiddenInStackView = false
                     setDiscriminatorValue(to: discriminatorValue)
                 case let .discriminator(discriminatorValue):
                     isHidden = false
                     spinnerView.isHiddenInStackView = true
                     separatorView.isHiddenInStackView = false
-                    discriminatorLabel.isHiddenInStackView = false
+                    discriminatorTextField.isHiddenInStackView = false
                     setDiscriminatorValue(to: discriminatorValue)
                 }
             }
 
             private func setDiscriminatorValue(to value: String) {
-                discriminatorLabel.text = "\(ParsedUsername.separator)\(value)"
+                discriminatorTextField.text = "\(value)"
             }
 
             // MARK: Getters
 
             var currentDiscriminatorString: String? {
-                discriminatorLabel.text
+                discriminatorTextField.text
+            }
+
+            /// Returns `currentDiscriminatorString` if a discriminator was manually
+            /// set. Otherwise `nil`.
+            var customDiscriminator: String? {
+                isUsingCustomDiscriminator ? currentDiscriminatorString : nil
+            }
+
+            @discardableResult
+            override func becomeFirstResponder() -> Bool {
+                discriminatorTextField.becomeFirstResponder()
             }
         }
 
@@ -172,7 +208,7 @@ extension UsernameSelectionViewController {
         /// last-known-good discriminator value.
         private var lastKnownGoodDiscriminator: String?
 
-        private let discriminatorView: DiscriminatorView = .init(inMode: .empty)
+        let discriminatorView: DiscriminatorView = .init(inMode: .empty)
 
         init(forUsername username: ParsedUsername?) {
             if let username {
@@ -193,7 +229,7 @@ extension UsernameSelectionViewController {
                 comment: "The placeholder for a text field into which users can type their desired username."
             )
 
-            returnKeyType = .default
+            returnKeyType = .next
             autocapitalizationType = .none
             autocorrectionType = .no
             spellCheckingType = .no
@@ -225,7 +261,9 @@ extension UsernameSelectionViewController {
 
         /// Configure the text field for an in-progress reservation.
         func configureForSomethingPending() {
-            if let lastKnownGoodDiscriminator {
+            if let customDiscriminator = discriminatorView.customDiscriminator {
+                setDiscriminatorViewMode(to: .spinningWithDiscriminator(value: customDiscriminator))
+            } else if let lastKnownGoodDiscriminator {
                 setDiscriminatorViewMode(to: .spinningWithDiscriminator(value: lastKnownGoodDiscriminator))
             } else {
                 setDiscriminatorViewMode(to: .spinning)
@@ -234,7 +272,9 @@ extension UsernameSelectionViewController {
 
         /// Configure the text field for an error state.
         func configureForError() {
-            if let lastKnownGoodDiscriminator {
+            if let customDiscriminator = discriminatorView.customDiscriminator {
+                setDiscriminatorViewMode(to: .discriminator(value: customDiscriminator))
+            } else if let lastKnownGoodDiscriminator {
                 setDiscriminatorViewMode(to: .discriminator(value: lastKnownGoodDiscriminator))
             } else {
                 setDiscriminatorViewMode(to: .empty)
@@ -244,6 +284,10 @@ extension UsernameSelectionViewController {
         /// Configure the text field for a confirmed username. If `nil`,
         /// configures for the intentional absence of a username.
         func configure(forConfirmedUsername confirmedUsername: ParsedUsername?) {
+            if confirmedUsername?.discriminator != discriminatorView.customDiscriminator {
+                discriminatorView.isUsingCustomDiscriminator = false
+            }
+
             if let confirmedUsername {
                 lastKnownGoodDiscriminator = confirmedUsername.discriminator
                 setDiscriminatorViewMode(to: .discriminator(value: confirmedUsername.discriminator))
@@ -281,5 +325,26 @@ extension UsernameSelectionViewController {
         var currentDiscriminatorString: String? {
             discriminatorView.currentDiscriminatorString
         }
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let oldValue = textField.text
+        let shouldChangeCharacters = FormattedNumberField.textField(
+            textField,
+            shouldChangeCharactersIn: range,
+            replacementString: string,
+            allowedCharacters: .numbers,
+            maxCharacters: 9,
+            format: { $0 }
+        )
+        if textField.text != oldValue {
+            isUsingCustomDiscriminator = true
+            delegate?.didManuallyChangeDiscriminator()
+        }
+        return shouldChangeCharacters
     }
 }

@@ -42,7 +42,7 @@ extension UsernameSelectionViewController {
 
         // MARK: Views
 
-        private lazy var iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "at-display"))
+        private lazy var iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "at-display-bold"))
 
         /// Displays an icon over a circular, square-aspect-ratio, colored
         /// background.

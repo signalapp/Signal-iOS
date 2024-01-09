@@ -47,7 +47,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         static let learnMoreLink: URL = URL(string: "sgnl://username-selection-learn-more")!
     }
 
-    private enum UsernameSelectionState: Equatable {
+    private enum UsernameSelectionState: Equatable, CustomStringConvertible {
         /// The user's existing username is unchanged.
         case noChangesToExisting
         /// Username state is pending. Stores an ID, to disambiguate multiple
@@ -70,6 +70,37 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         case cannotStartWithDigit
         /// The username contains invalid characters.
         case invalidCharacters
+        /// The custom-set discriminator is too short, but not empty.
+        case customDiscriminatorTooShort
+        /// The discriminator has been manually cleared.
+        case emptyDiscriminator(nickname: String)
+
+        var description: String {
+            switch self {
+            case .noChangesToExisting:
+                return "noChangesToExisting"
+            case .pending(id: _):
+                return "pending"
+            case .reservationSuccessful(username: _, hashedUsername: _):
+                return "reservationSuccessful"
+            case .reservationRejected:
+                return "reservationRejected"
+            case .reservationFailed:
+                return "reservationFailed"
+            case .tooShort:
+                return "tooShort"
+            case .tooLong:
+                return "tooLong"
+            case .cannotStartWithDigit:
+                return "cannotStartWithDigit"
+            case .invalidCharacters:
+                return "invalidCharacters"
+            case .customDiscriminatorTooShort:
+                return "customDiscriminatorTooShort"
+            case .emptyDiscriminator(nickname: _):
+                return "emptyDiscriminator"
+            }
+        }
     }
 
     typealias ParsedUsername = Usernames.ParsedUsername
@@ -160,6 +191,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         let wrapper = UsernameTextFieldWrapper(username: existingUsername)
 
         wrapper.translatesAutoresizingMaskIntoConstraints = false
+        wrapper.textField.discriminatorView.delegate = self
         wrapper.textField.delegate = self
         wrapper.textField.addTarget(self, action: #selector(usernameTextFieldContentsDidChange), for: .editingChanged)
 
@@ -338,7 +370,9 @@ private extension UsernameSelectionViewController {
                     .tooShort,
                     .tooLong,
                     .cannotStartWithDigit,
-                    .invalidCharacters:
+                    .invalidCharacters,
+                    .customDiscriminatorTooShort,
+                    .emptyDiscriminator:
                 return false
             }
         }()
@@ -369,7 +403,9 @@ private extension UsernameSelectionViewController {
                     .tooShort,
                     .tooLong,
                     .cannotStartWithDigit,
-                    .invalidCharacters:
+                    .invalidCharacters,
+                    .customDiscriminatorTooShort,
+                    .emptyDiscriminator:
                 return nil
             }
         }()
@@ -395,7 +431,9 @@ private extension UsernameSelectionViewController {
                 .tooShort,
                 .tooLong,
                 .cannotStartWithDigit,
-                .invalidCharacters:
+                .invalidCharacters,
+                .customDiscriminatorTooShort,
+                .emptyDiscriminator:
             self.usernameTextFieldWrapper.textField.configureForError()
         }
     }
@@ -436,6 +474,11 @@ private extension UsernameSelectionViewController {
                 return OWSLocalizedString(
                     "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE",
                     comment: "An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal."
+                )
+            case .customDiscriminatorTooShort, .emptyDiscriminator:
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has typed an invalid discriminator for their username."
                 )
             }
         }()
@@ -492,6 +535,9 @@ private extension UsernameSelectionViewController {
             .color(Theme.secondaryTextAndIconColor)
         )
 
+        usernameFooterTextView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+        ]
         usernameFooterTextView.attributedText = content
     }
 }
@@ -532,7 +578,9 @@ private extension UsernameSelectionViewController {
                     .tooShort,
                     .tooLong,
                     .cannotStartWithDigit,
-                    .invalidCharacters:
+                    .invalidCharacters,
+                    .customDiscriminatorTooShort,
+                    .emptyDiscriminator:
                 owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
             }
         }()
@@ -639,16 +687,48 @@ private extension UsernameSelectionViewController {
 
         let nicknameFromTextField: String? = usernameTextFieldWrapper.textField.normalizedNickname
 
-        if existingUsername?.nickname == nicknameFromTextField {
+        // Only set when a discriminator was manually entered. nil indicates a
+        // new discriminator should be rolled.
+        var desiredDiscriminator = usernameTextFieldWrapper.textField.discriminatorView.customDiscriminator
+
+        if
+            existingUsername?.nickname == nicknameFromTextField,
+            desiredDiscriminator == nil
+                || desiredDiscriminator == existingUsername?.discriminator
+        {
             currentUsernameState = .noChangesToExisting
         } else if let desiredNickname = nicknameFromTextField {
+            if
+                let discriminatorString = desiredDiscriminator,
+                discriminatorString.count < 2
+            {
+                if discriminatorString.count > 0 {
+                    currentUsernameState = .customDiscriminatorTooShort
+                    return
+                } else {
+                    // Empty string. If it was just set to empty, save the nickname.
+                    // Once the nickname changes, roll a new discriminator.
+                    if case let .emptyDiscriminator(nickname: oldNickname) = currentUsernameState {
+                        if oldNickname != desiredNickname {
+                            // Nickname changed. Roll new discriminator
+                            desiredDiscriminator = nil
+                            // continue
+                        }
+                    } else {
+                        currentUsernameState = .emptyDiscriminator(nickname: desiredNickname)
+                        return
+                    }
+                }
+            }
+
             typealias CandidateError = Usernames.HashedUsername.CandidateGenerationError
 
             do {
                 let usernameCandidates = try Usernames.HashedUsername.generateCandidates(
                     forNickname: desiredNickname,
                     minNicknameLength: Constants.minNicknameCodepointLength,
-                    maxNicknameLength: Constants.maxNicknameCodepointLength
+                    maxNicknameLength: Constants.maxNicknameCodepointLength,
+                    desiredDiscriminator: desiredDiscriminator
                 )
 
                 attemptReservationAndUpdateValidationState(
@@ -775,6 +855,14 @@ private extension UsernameSelectionViewController {
     }
 }
 
+// MARK: - DiscriminatorTextFieldDelegate
+
+extension UsernameSelectionViewController: DiscriminatorTextFieldDelegate {
+    func didManuallyChangeDiscriminator() {
+        usernameTextFieldContentsDidChange()
+    }
+}
+
 // MARK: - UITextFieldDelegate
 
 extension UsernameSelectionViewController: UITextFieldDelegate {
@@ -791,6 +879,12 @@ extension UsernameSelectionViewController: UITextFieldDelegate {
             replacementString: string,
             maxUnicodeScalarCount: Int(Constants.maxNicknameCodepointLength)
         )
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard let usernameTextField = textField as? UsernameTextField else { return true }
+        usernameTextField.discriminatorView.becomeFirstResponder()
+        return true
     }
 }
 

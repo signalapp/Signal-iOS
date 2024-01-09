@@ -92,9 +92,16 @@ public extension Usernames.HashedUsername {
     static func generateCandidates(
         forNickname nickname: String,
         minNicknameLength: UInt32,
-        maxNicknameLength: UInt32
+        maxNicknameLength: UInt32,
+        desiredDiscriminator: String?
     ) throws -> GeneratedCandidates {
         do {
+            if let desiredDiscriminator {
+                let usernameString = "\(nickname)\(Usernames.ParsedUsername.separator)\(desiredDiscriminator)"
+                let username = try Usernames.HashedUsername(forUsername: usernameString)
+                return GeneratedCandidates(candidates: [username])
+            }
+
             let candidates: [Usernames.HashedUsername] = try LibSignalUsername.candidates(
                 from: nickname,
                 withValidLengthWithin: minNicknameLength...maxNicknameLength
