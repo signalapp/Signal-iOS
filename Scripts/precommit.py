@@ -262,22 +262,22 @@ def lint_swift_files(file_paths: set[str]) -> bool:
 
 def check_diff_for_keywords():
     objc_keywords = [
-        "OWSAbstractMethod\(",
-        "OWSAssert\(",
-        "OWSCAssert\(",
-        "OWSFail\(",
-        "OWSCFail\(",
-        "ows_add_overflow\(",
-        "ows_sub_overflow\(",
+        "OWSAbstractMethod\\(",
+        "OWSAssert\\(",
+        "OWSCAssert\\(",
+        "OWSFail\\(",
+        "OWSCFail\\(",
+        "ows_add_overflow\\(",
+        "ows_sub_overflow\\(",
     ]
 
     swift_keywords = [
-        "owsFail\(",
-        "precondition\(",
-        "fatalError\(",
-        "dispatchPrecondition\(",
-        "preconditionFailure\(",
-        "notImplemented\(",
+        "owsFail\\(",
+        "precondition\\(",
+        "fatalError\\(",
+        "dispatchPrecondition\\(",
+        "preconditionFailure\\(",
+        "notImplemented\\(",
     ]
 
     keywords = objc_keywords + swift_keywords
@@ -308,7 +308,6 @@ def check_diff_for_keywords():
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Precommit script.")
     parser.add_argument(
         "--all", action="store_true", help="process all files in or below current dir"
