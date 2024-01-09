@@ -126,7 +126,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
 
         super.init()
-        setupDatabasePathKVO()
+        setUpDatabasePathKVO()
 
         AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
             // This adapter may have been discarded after running
@@ -142,7 +142,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     deinit {
-        unregisterKVO?()
+        if didRegisterDatabasePathKVO {
+            let userDefaults = CurrentAppContext().appUserDefaults()
+            userDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey, context: &Self.databasePathKVOContext)
+        }
     }
 
     static var tables: [SDSTableMetadata] {
@@ -198,10 +201,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: - DatabasePathObservation
 
-    var databasePathKVOContext = "DatabasePathKVOContext"
-    var unregisterKVO: (() -> Void)?
+    private static var databasePathKVOContext = 0
+    var didRegisterDatabasePathKVO = false
 
-    func setupDatabasePathKVO() {
+    func setUpDatabasePathKVO() {
         let appUserDefaults = CurrentAppContext().appUserDefaults()
 
         if CurrentAppContext().isMainApp == false {
@@ -209,18 +212,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 self,
                 forKeyPath: DirectoryMode.primaryFolderNameKey,
                 options: [],
-                context: &databasePathKVOContext
+                context: &Self.databasePathKVOContext
             )
-            unregisterKVO = {
-                appUserDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey, context: &self.databasePathKVOContext)
-                self.unregisterKVO = nil
-            }
+            didRegisterDatabasePathKVO = true
         }
     }
 
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-
-        if keyPath == DirectoryMode.primaryFolderNameKey, context == &databasePathKVOContext {
+        if keyPath == DirectoryMode.primaryFolderNameKey, context == &Self.databasePathKVOContext {
             checkForDatabasePathChange()
         } else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
