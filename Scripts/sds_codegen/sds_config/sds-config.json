@@ -19,12 +19,10 @@
 		"TSThread.editTargetTimestamp": "UInt64",
 		"TSThread.lastSentStoryTimestamp": "UInt64",
 		"TSThread.lastViewedStoryTimestamp": "UInt64",
-		"SignalRecipient.unregisteredAtTimestamp": "UInt64",
 		"TSThread.lastReceivedStoryTimestamp": "UInt64"
 	},
 	"properties_to_ignore": [
 		"TSYapDatabaseObject.grdbId",
-		"SignalRecipient.recipientSchemaVersion",
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
 		"OWSDisappearingMessagesConfiguration.newRecord",
@@ -39,7 +37,6 @@
 		"TSOutgoingMessage.outgoingMessageSchemaVersion",
 		"OWSUnknownProtocolVersionMessage.unknownProtocolVersionMessageSchemaVersion",
 		"OWSRecipientIdentity.recipientIdentitySchemaVersion",
-		"SignalAccount.accountSchemaVersion",
 		"OWSUserProfile.userProfileSchemaVersion",
 		"TSRecipientReadReceipt.recipientReadReceiptSchemaVersion",
 		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion",
@@ -56,8 +53,6 @@
 		"TSThread": "Self.modelReadCaches.threadReadCache.didReadThread",
 		"TSInteraction": "Self.modelReadCaches.interactionReadCache.didReadInteraction",
 		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.didReadAttachment",
-		"SignalRecipient": "Self.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient",
-		"SignalAccount": "Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount",
 		"OWSUserProfile": "Self.modelReadCaches.userProfileReadCache.didReadUserProfile"
 	},
 	"class_to_skip_serialization": [
@@ -140,8 +135,7 @@
 		"TSThread.isArchivedObsolete": "isArchived",
 		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
 		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
-		"TSThread.conversationColorNameObsolete": "conversationColorName",
-		"SignalAccount.contactAvatarJpegDataObsolete": "contactAvatarJpegData"
+		"TSThread.conversationColorNameObsolete": "conversationColorName"
 	},
 	"aliased_column_names": {
 		"TSInteraction.sortId": "id",
@@ -154,7 +148,6 @@
 		"TSThread.isArchivedObsolete": "isArchived",
 		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
 		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
-		"TSThread.conversationColorNameObsolete": "conversationColorName",
-		"SignalAccount.contactAvatarJpegDataObsolete": "contactAvatarJpegData"
+		"TSThread.conversationColorNameObsolete": "conversationColorName"
 	}
 }
