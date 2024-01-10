@@ -290,6 +290,7 @@ extension RemoteMegaphoneModel.Manifest {
         case finish
         case donate
         case snooze
+        case donateFriend
         case unrecognized(actionId: String)
 
         var actionId: String {
@@ -300,6 +301,8 @@ extension RemoteMegaphoneModel.Manifest {
                 return "donate"
             case .snooze:
                 return "snooze"
+            case .donateFriend:
+                return "donate_friend"
             case .unrecognized(let conditionalId):
                 return conditionalId
             }
@@ -314,6 +317,8 @@ extension RemoteMegaphoneModel.Manifest {
                     return .donate
                 case Self.snooze.actionId:
                     return .snooze
+                case Self.donateFriend.actionId:
+                    return .donateFriend
                 default:
                     return .unrecognized(actionId: actionId)
                 }

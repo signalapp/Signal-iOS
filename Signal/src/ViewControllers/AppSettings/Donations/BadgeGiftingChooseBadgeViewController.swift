@@ -126,6 +126,16 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        let isPresentedStandalone = navigationController?.viewControllers.first == self
+        if isPresentedStandalone {
+            navigationItem.leftBarButtonItem = .init(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel)
+            )
+        }
+
         loadDataIfNecessary()
         updateTableContents()
         setUpBottomFooter()
@@ -135,6 +145,13 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         super.themeDidChange()
         updateTableContents()
         updateBottomFooter()
+    }
+
+    // MARK: - Events
+
+    @objc
+    private func didTapCancel() {
+        dismiss(animated: true)
     }
 
     // MARK: - Table contents

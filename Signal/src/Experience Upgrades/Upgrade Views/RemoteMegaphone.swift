@@ -124,6 +124,26 @@ class RemoteMegaphone: MegaphoneView {
 
             let navController = OWSNavigationController(rootViewController: donateVc)
             fromViewController.present(navController, animated: true, completion: done)
+        case .donateFriend:
+            let done = { [weak self] in
+                guard let self else { return }
+                // Snooze regardless of outcome.
+                self.markAsSnoozedWithSneakyTransaction()
+                self.dismiss(animated: false)
+            }
+
+            guard DonationUtilities.canDonate(
+                inMode: .gift,
+                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+            ) else {
+                done()
+                DonationViewsUtil.openDonateWebsite()
+                return
+            }
+
+            let donateVc = BadgeGiftingChooseBadgeViewController()
+            let navController = OWSNavigationController(rootViewController: donateVc)
+            fromViewController.present(navController, animated: true, completion: done)
         case .unrecognized(let actionId):
             owsFailDebug("Unrecognized action with ID \(actionId) should never have made it into \(buttonDescriptor) button!")
             dismiss()
