@@ -99,6 +99,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     // attachments which don't need to be uploaded.
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
+    self.digest = pointer.digest;
     _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
