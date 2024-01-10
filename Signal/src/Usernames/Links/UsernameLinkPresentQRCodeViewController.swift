@@ -581,7 +581,10 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             guard let self else { return }
 
             OWSActionSheets.showActionSheet(
-                message: CommonStrings.somethingWentWrongTryAgainLaterError,
+                message: OWSLocalizedString(
+                    "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET",
+                    comment: "Text presented in an action sheet notifying the user their qr code and link are not set."
+                ),
                 fromViewController: self,
                 dismissalDelegate: self
             )

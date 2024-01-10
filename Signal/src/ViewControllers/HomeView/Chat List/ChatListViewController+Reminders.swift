@@ -113,10 +113,14 @@ public class CLVReminderViews: Dependencies {
             tapAction: { [weak self] in self?.didTapUsernameCorruptedReminderView() }
         )
         usernameLinkCorruptedReminderView = ReminderView(
-            style: .warning,
+            style: .info,
             text: OWSLocalizedString(
                 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING",
                 comment: "Label warning the user that something is wrong with their username link."
+            ),
+            actionTitle: OWSLocalizedString(
+                "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON",
+                comment: "Button below the warning to fix a username link."
             ),
             tapAction: { [weak self] in self?.didTapUsernameLinkCorruptedReminderView() }
         )

@@ -120,7 +120,7 @@ class QRCodeView: UIView {
             case .error:
                 return UIImageView.withTemplateImageName(
                     "error-circle",
-                    tintColor: .ows_accentRed
+                    tintColor: .ows_gray25
                 )
             }
         }()
@@ -151,7 +151,7 @@ class QRCodeView: UIView {
                 qrCodeImageView.autoPinEdgesToSuperviewEdges()
             }
         case .error:
-            qrCodeImageView.autoSetDimensions(to: .square(48))
+            qrCodeImageView.autoSetDimensions(to: .square(28))
         }
     }
 

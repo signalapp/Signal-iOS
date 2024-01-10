@@ -5,7 +5,7 @@
 
 import UIKit
 
-open class ReminderView: UIStackView {
+open class ReminderView: UIView {
     public enum Style {
         case info
         case warning
@@ -60,16 +60,11 @@ open class ReminderView: UIStackView {
 
     // MARK: - Rendering
 
-    private lazy var iconView: UIImageView = {
-        let result = UIImageView(image: UIImage(imageLiteralResourceName: "error-circle"))
-        result.contentMode = .scaleAspectFit
-        result.autoSetDimensions(to: CGSize(square: 22))
-        return result
-    }()
+    private lazy var backgroundView = UIView()
 
     private lazy var textLabel: UILabel = {
         let result = UILabel()
-        result.font = .dynamicTypeFootnote
+        result.font = .dynamicTypeSubheadline
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result
@@ -77,7 +72,7 @@ open class ReminderView: UIStackView {
 
     private lazy var actionLabel: UILabel = {
         let result = UILabel()
-        result.font = .dynamicTypeFootnote.semibold()
+        result.font = .dynamicTypeSubheadline.semibold()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result
@@ -86,23 +81,22 @@ open class ReminderView: UIStackView {
     private lazy var textContainer: UIStackView = {
         let result = UIStackView()
         result.axis = .vertical
-        result.spacing = 4
+        result.spacing = 8
+        result.alignment = .trailing
         return result
     }()
 
     private func initialRender() {
-        switch style {
-        case .info: break
-        case .warning: addArrangedSubview(iconView)
-        }
+        self.layoutMargins = .init(hMargin: 18, vMargin: 12)
+        self.addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewMargins()
+        backgroundView.layer.cornerRadius = 12
+        backgroundView.layoutMargins = .init(top: 14, leading: 16, bottom: 14, trailing: 16)
 
+        backgroundView.addSubview(textContainer)
         textContainer.addArrangedSubview(textLabel)
-        addArrangedSubview(textContainer)
-
-        spacing = 16
-        alignment = .leading
-        isLayoutMarginsRelativeArrangement = true
-        layoutMargins = .init(top: 14, leading: 16, bottom: 14, trailing: 16)
+        textContainer.autoPinEdgesToSuperviewMargins()
+        textLabel.autoPinWidthToSuperviewMargins()
 
         render()
     }
@@ -110,6 +104,7 @@ open class ReminderView: UIStackView {
     @objc
     private func render() {
         textLabel.text = text
+        actionLabel.textColor = Theme.primaryTextColor
 
         textContainer.removeArrangedSubview(actionLabel)
         if let actionTitle {
@@ -120,19 +115,19 @@ open class ReminderView: UIStackView {
             layoutMargins.bottom = 14
         }
 
+        self.backgroundColor = Theme.backgroundColor
+
         switch style {
         case .warning:
             if Theme.isDarkThemeEnabled {
-                backgroundColor = .ows_gray75
+                backgroundView.backgroundColor = .ows_gray75
                 textLabel.textColor = .ows_gray05
             } else {
-                backgroundColor = UIColor(rgbHex: 0xFCF0D9)
+                backgroundView.backgroundColor = UIColor(rgbHex: 0xFCF0D9)
                 textLabel.textColor = .ows_gray65
             }
-            actionLabel.textColor = Theme.accentBlueColor
-            iconView.tintColor = Theme.secondaryTextAndIconColor
         case .info:
-            backgroundColor = Theme.washColor
+            backgroundView.backgroundColor = Theme.secondaryBackgroundColor
             textLabel.textColor = Theme.primaryTextColor
         }
     }
