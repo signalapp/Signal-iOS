@@ -88,7 +88,8 @@ public class FeatureFlags: BaseFlags {
 
     public static let groupCallDisposition = build.includes(.internal)
 
-    public static let allowIDEALDonations = build.includes(.dev)
+    public static let allowIDEALDonations = build.includes(.beta)
+    public static let allowInternalIDEALDonations = build.includes(.internal)
 
     public static let shouldShowCallsTab = false
 

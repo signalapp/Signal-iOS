@@ -28,6 +28,7 @@ public class RemoteConfig: BaseFlags {
     private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
     private let paypalDisabledRegions: PhoneNumberRegions
     private let sepaEnabledRegions: PhoneNumberRegions
+    private let idealEnabledRegions: PhoneNumberRegions
 
     init(
         clockSkew: TimeInterval,
@@ -44,6 +45,7 @@ public class RemoteConfig: BaseFlags {
         self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
         self.paypalDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paypalDisabledRegions)
         self.sepaEnabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .sepaEnabledRegions)
+        self.idealEnabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .idealEnabledRegions)
     }
 
     fileprivate static var emptyConfig: RemoteConfig {
@@ -136,6 +138,11 @@ public class RemoteConfig: BaseFlags {
     public static var sepaEnabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.sepaEnabledRegions
+    }
+
+    public static var idealEnabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.idealEnabledRegions
     }
 
     public static var canDonateOneTimeWithApplePay: Bool {
@@ -523,6 +530,7 @@ private enum ValueFlag: String, FlagType {
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case paypalDisabledRegions = "global.donations.paypalDisabledRegions"
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
+    case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
     case minNicknameLength = "global.nicknames.min"
     case maxNicknameLength = "global.nicknames.max"
@@ -546,6 +554,7 @@ private enum ValueFlag: String, FlagType {
         case .creditAndDebitCardDisabledRegions: fallthrough
         case .paypalDisabledRegions: fallthrough
         case .sepaEnabledRegions: fallthrough
+        case .idealEnabledRegions: fallthrough
         case .maxGroupCallRingSize: fallthrough
         case .minNicknameLength: fallthrough
         case .maxNicknameLength: fallthrough
@@ -565,6 +574,7 @@ private enum ValueFlag: String, FlagType {
         case .creditAndDebitCardDisabledRegions: fallthrough
         case .paypalDisabledRegions: fallthrough
         case .sepaEnabledRegions: fallthrough
+        case .idealEnabledRegions: fallthrough
         case .maxGroupCallRingSize:
             return true
 
