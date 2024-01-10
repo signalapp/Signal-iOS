@@ -815,7 +815,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal गट";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "Calls";
+"CALLS_LIST_TITLE" = "कॉल";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "एक चित्र घ्या आणि नंतर त्यास पाठवा";
@@ -1481,13 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "देश कोड निवडा";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "वापरकर्तानावे आपणाला आपल्या फोन नंबरशिवाय इतरांना संदेश करू देतात.";
-
-/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
-"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "सेट अप";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "आपले Signal वापरकर्तानाव सेटअप करा";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "आपले कार्ड कालबाह्य झाले आहे. आपला कार्ड तपशील बरोबर असल्याची पडताळणी करा आणि पुन्हा प्रयत्न करा.";
@@ -1928,10 +1925,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "कालबाह्य झालेे";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "आपल्या iDEAL देणगीवर अद्याप प्रक्रिया होत आहे. आणखी देणगी देण्यापूर्वी पेमेंटला मान्यता देण्यासाठी आपल्या बँकेचे ॲप तपासा.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "आपल्या iDEAL देणगीवर अद्याप प्रक्रिया होत आहे. आणखी देणगी देण्यापूर्वी पेमेंटला मान्यता देण्यासाठी आपल्या बँकेचे ॲप तपासा.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "बँक हस्तांतरणावर प्रक्रिया होण्यासाठी सामान्यपणे 1 व्यावसायिक दिवसाचा कालावधी लागतो. कृपया आणखी एक देणगी देण्यापूर्वी हे पेमेंट्स पूर्ण होण्याची प्रतिक्षा करा.";
@@ -1955,7 +1952,7 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "आपण देणगी देऊ शकता अशी किमान रक्कम %1$@ आहे.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donation awaiting authorization";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "देणगी अधिकृततेच्या प्रतीक्षेत आहे";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "आपली देणगी प्रलंबित आहे";
@@ -2007,12 +2004,6 @@
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "पुन्हा प्रयत्न करा";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects that the donation referred to by this deep link wasn't found in the app. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_NOT_FOUND_MESSAGE" = "Donation was not found. Check your banking app to approve your payment or contact support if the error persists.";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects an unknown error was encountered with the donation. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_UNKNOWN_FOUND_MESSAGE" = "Unknown error encountered when processing the donation. Please contact support.";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "%1$@ टिकते";
@@ -2159,13 +2150,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "आपण जर Signal पुन्हा स्थापित केले असल्यास, मागील देणगीच्या पावत्या उपलब्ध होणार नाहीत.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Payment cancelled. Please try again.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "पेमेंट रद्द केले. कृपया पुन्हा प्रयत्न करा.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Invalid payment response. Please try again.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "अवैध पेमेंट प्रतिसाद. कृपया पुन्हा प्रयत्न करा.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Authorization of pending donation was denied by the user.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "देणगी द्या";
@@ -2186,10 +2177,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "पुन्हा प्रयत्न करा";
 
 /* Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "आपले बँक हस्तांतरण अधिकृततेची प्रतिक्षा करत आहे. आपल्या iDEAL देणगीला मंजूर करण्यासाठी आपले बँकिंग ॲप तपासा.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donation Awaiting Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "देणगी अधिकृततेच्या प्रतीक्षेत आहे";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपले बँक हस्तांतरण प्रलंबित आहे. बँक हस्तांतरणावर प्रक्रिया होण्यासाठी सामान्यपणे 1 व्यावसायिक दिवसाचा कालावधी लागतो.";
@@ -2204,19 +2195,19 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "देणगीवर प्रक्रिया करताना त्रुटी आली";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Couldn't Confirm Donation";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "देणगीची पुष्टी करू शकत नाही";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपल्या एक-वेळ %1$@ iDEAL देणगीची पुष्टी केली जाऊ शकत नाही. आपल्या iDEAL देणगीला मंजूर करण्यासाठी आपले बँकिंग ॲप तपासा.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "आपल्या iDEAL आवर्ती मासिक देणगीवर प्रक्रिया केली जाऊ शकत नाही. दुसरी पेमेंट पद्धत वापरून पहा किंवा अधिक माहितीसाठी आपल्या बँकेशी संपर्क साधा.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपल्या आवर्ती %1$@ मासिक iDEAL देणगीची पुष्टी केली जाऊ शकत नाही. आपल्या iDEAL देणगीला मंजूर करण्यासाठी आपले बँकिंग ॲप तपासा.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "आपली आवर्ती मासिक देणगी समाप्त झाली आहे. %1$@";
@@ -2237,7 +2228,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "मासिक देणगी रद्द करण्यात आली";
 
 /* A label describing a donation payment that has requires authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Waiting for Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "अधिकृत करण्याच्या प्रतिक्षेत आहे";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ एक-वेळ";
@@ -3185,7 +3176,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "आपण %1$@ ला काढले.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is no longer in the group";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ हे यापुढे गटात नाही";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ने %2$@ ला काढून टाकले.";
@@ -3195,6 +3186,9 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ कडून गटात सामील होण्याच्या विनंतीला %2$@ ने मान्यता दिली.";
+
+/* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गटात सामील होण्याची त्यांची विनंती रद्द केली.";
@@ -4193,7 +4187,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "आपल्या खात्यासोबत लिंक करू शकणाऱ्या डिव्हाइसच्या कमाल मर्यादेपर्यंत सध्या आपण पोहोचला आहात. कृपया डिव्हाइस काढून टाका आणि पुन्हा प्रयत्न करा.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "Mic off";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "माईक बंद आहे";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "मूक केलेले";
@@ -5665,6 +5659,9 @@
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "आपल्या वापरकर्ता नावासह काहीतरी चुकीचे झाले आहे, ते यापुढे आपल्या अकाऊंटसह नियुक्त केलेले नाही. आपण प्रयत्न करू शकता आणि तो पुन्हा सेट करू शकता किंवा नवीन निवडू शकता.";
 
+/* Button below the warning to fix a username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "आपल्या वापरकर्ता नाव QR कोड आणि लिंक यासह काहीतरी चुकीचे झाले आहे, ती यापुढे वैध असणार नाही. इतरांसह शेअर करण्यास एक नवीन लिंक तयार करा.";
 
@@ -5693,10 +5690,10 @@
 "RETURN_CALL_PILL_BUTTON" = "परत जा";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Ringing off";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "रिंग होणे बंद झाले";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "Ringing on";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "रिंग होणे सुरू झाले";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "कसेही करून जोडा";
@@ -6947,10 +6944,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "सत्यापन पूर्ण करा";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Speaker off";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "स्पीकर बंद";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Speaker on";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "स्पीकर सुरू";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "वैशिष्ट्यीकृत";
@@ -7367,7 +7364,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "बॅज जोडता आला नाही";
 
 /* Action sheet title for Error Authorizing Payment sheet */
-"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Error Authorizing Payment";
+"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "पेमेंट अधिकृत करण्यामध्ये त्रुटी";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "देणगीवर प्रक्रिया करताना त्रुटी आली";
@@ -7604,7 +7601,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal आपल्या डिव्हाईसला अनलिंक करण्यात अक्षम झाले.";
 
 /* Text for a toast confirming that the mic has been unmuted for a call. */
-"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Mic on";
+"UNMUTE_CONFIRMATION_TOAST_LABEL" = "माईक चालू आहे";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "अनपिन करा";
@@ -7642,17 +7639,29 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "आपण मोबाईल डेटा किंवा Wi-Fi वरून Signal ला कनेक्ट करू शकत नसल्यासच प्रॉक्सी वापरा.";
 
-/* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "इतरांना आपल्याशी संपर्क साधण्याचा प्राथमिक मार्ग म्हणून आपले वापरकर्ता नाव वापरण्यास सेटिंग्ज > गोपनीयता > फोन नंबर > माझा नंबर कोण शोधू शकते, खाली फोन नंबर शोध बंद करा.";
+/* Description of username links and QR codes on the username education sheet */
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
 
-/* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "वापरकर्तानावे ही अंकांच्या संचासह जोडलेली असतात आणि ती आपल्या प्रोफाईल वर शेअर केलेली नसतात";
+/* Title for the username links and QR codes section on the username education sheet */
+"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+
+/* Description of phone number privacy on the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+
+/* Title for phone number privacy section of the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+
+/* Label for the 'set up' button on the username education sheet */
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "आपले Signal वापरकर्तानाव सेटअप करा";
+"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
 
-/* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "आपल्यासह चॅटस् सुरू करण्यासाठी आपल्या मित्रांसह आपण शेअर करू शकता अशी एक अद्वितीय लिंक प्रत्येक वापरकर्तानावासह असते";
+/* Description of usernames on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+
+/* Title for usernames section on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "रंग";
@@ -7663,14 +7672,14 @@
 /* Text for a label explaining what the username link and QR code give others access to. */
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "आपण विश्वास करत असलेल्या लाेकांसह फक्त आपला QR कोड आणि लिंक शेअर करा. जेव्हा शेअर केलेले असेल इतर आपले वापरकर्ता नाव पाहू शकतात आणि आपल्या बराेबर चॅट सुरु शकतात.";
 
+/* Text presented in an action sheet notifying the user their qr code and link are not set. */
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "रीसेट करा";
 
 /* A message explaining what will happen if the user resets their QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "आपण आपला QR कोड रीसेट केल्यास, आपला अस्तित्वात असलेला QR कोड आणि लिंक यापुढे काम करणार नाही.";
-
-/* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "लिंक रीसेट करत आहे...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "सामायिक करा";
@@ -7692,6 +7701,9 @@
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "या लिंकसह असलेले कोणीही आपले वापरकर्ता नाव पाहू शकेल आणि आपणासह चॅट करणे सुरू करेल. आपण ज्यांच्यावर विश्वास ठेवता फक्त त्याच्यासह शेअर करा.";
+
+/* Title for a button to open a sheet for copying and sharing your username link. */
+"USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "इतरांना आपल्या सोबत त्यांचा असामान्य QR कोड किंवा लिंक शेअर करून चॅट सुरू करू द्या.";
@@ -7731,6 +7743,9 @@
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "वापरकर्तानावामध्ये फक्त a-z, 0-9, आणि _ असू शकतात.";
+
+/* An error message shown when the user has typed an invalid discriminator for their username. */
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "हे अंक आपले वापरकर्तानाव गोपनीय ठेवण्यास मदत करतील ज्यामुळे आपण नको असलेले संदेश टाळू शकता. आपणाला ज्यांच्या सोबत चॅट करणे आवडते फक्त अशा लोकांसह आणि गटांसह आपले वापरकर्तानाव शेअर करा. आपण वापरकर्तानाव बदलल्यास आपणाला अंकांचा नवीन संच मिळेल.";

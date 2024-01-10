@@ -815,7 +815,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal-gruppe";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "Calls";
+"CALLS_LIST_TITLE" = "Opkald";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Tag et billed og send det";
@@ -1481,13 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Vælg landekode";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Brugernavne gør det muligt for andre at sende dig beskeder uden dit telefonnummer.";
-
-/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
-"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Opsæt";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "Angiv dit Signal-brugernavn";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Dit kort er udløbet. Tjek, at dine kortoplysninger er korrekte, og prøv igen.";
@@ -1928,10 +1925,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Udløbet";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Din iDEAL-donation er stadig under behandling. Tjek din bankapp for at godkende betalingen, før du foretager en anden donation.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Din iDEAL-donation er stadig under behandling. Tjek din bankapp for at godkende betalingen, før du foretager en anden donation.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Bankoverførsler tager som regel én arbejdsdag at behandle. Vent på at betalingen bliver gennemført, inden du foretager en anden donation.";
@@ -1955,7 +1952,7 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Det mindste beløb, du kan donere, er %1$@.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donation awaiting authorization";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donation afventer godkendelse";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Du har en afventende donation";
@@ -2007,12 +2004,6 @@
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Prøv igen";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects that the donation referred to by this deep link wasn't found in the app. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_NOT_FOUND_MESSAGE" = "Donation was not found. Check your banking app to approve your payment or contact support if the error persists.";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects an unknown error was encountered with the donation. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_UNKNOWN_FOUND_MESSAGE" = "Unknown error encountered when processing the donation. Please contact support.";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Holder %1$@";
@@ -2159,13 +2150,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Hvis du har geninstalleret Signal, vil kvitteringer fra tidligere donationer ikke være tilgængelige.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Payment cancelled. Please try again.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Betaling annulleret. Prøv igen.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Invalid payment response. Please try again.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Ugyldigt betalingsrespons. Prøv igen.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Authorization of pending donation was denied by the user.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Donér";
@@ -2186,10 +2177,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Prøv igen";
 
 /* Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Din bankoverførsel afventer godkendelse. Tjek din bankapp for at godkende din iDEAL-betaling.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donation Awaiting Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donation afventer godkendelse";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din bankoverførsel er endnu ikke modtaget. Bankoverførsler tager som regel én arbejdsdag at behandle.";
@@ -2204,19 +2195,19 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Fejl ved behandling af donation";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Couldn't Confirm Donation";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Kunne ikke bekræfte donation";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Din iDEAL engangsdonation på %1$@ kunne ikke bekræftes. Tjek din bankapp for at godkende din iDEAL-betaling.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Din månedlige iDEAL-donation kunne ikke behandles. Prøv en anden betalingsmetode eller kontakt din bank for at få flere oplysninger..";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Din iDEAL-donation på %1$@ om måneden kunne ikke bekræftes. Tjek din bankapp for at godkende din iDEAL-betaling.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Din månedlige donation blev annulleret. %1$@";
@@ -2237,7 +2228,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Månedlig donation annulleret";
 
 /* A label describing a donation payment that has requires authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Waiting for Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Afventer godkendlese";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ én gang";
@@ -3185,7 +3176,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Du fjernede %1$@.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is no longer in the group";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ er ikke længere i gruppen";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ fjernede %2$@.";
@@ -3195,6 +3186,9 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ godkendte en anmodning fra %1$@ om at deltage i gruppen";
+
+/* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ annullerede sin anmodning om at deltage i gruppen";
@@ -4193,7 +4187,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nået det maksimale antal enheder, du i øjeblikket kan forbinde med din konto. Fjern en enhed, og prøv igen.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "Mic off";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "Mikrofon slået fra";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Ignoreret";
@@ -5665,6 +5659,9 @@
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Noget gik galt med dit brugernavn. Det er ikke længere tildelt din konto. Du kan prøve at indstille det igen eller vælge et nyt.";
 
+/* Button below the warning to fix a username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Noget gik galt med QR-koden for dit brugernavn og dit link. Det er ikke længere gyldigt. Opret et nyt link, som du kan dele med andre.";
 
@@ -5693,10 +5690,10 @@
 "RETURN_CALL_PILL_BUTTON" = "Tilbage";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Ringing off";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Opringning slået fra";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "Ringing on";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "Opringning slået til";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Tilføj alligevel";
@@ -6947,10 +6944,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Gennemfør bekræftelsen";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Speaker off";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Højttaler fra";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Speaker on";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Højttaler til";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Fremhævet";
@@ -7367,7 +7364,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Kunne ikke tilføje emblem";
 
 /* Action sheet title for Error Authorizing Payment sheet */
-"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Error Authorizing Payment";
+"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Fejl ved godkendelse af betaling";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Fejl ved behandling af donation";
@@ -7604,7 +7601,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal var ikke i stand til at frakoble enheden";
 
 /* Text for a toast confirming that the mic has been unmuted for a call. */
-"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Mic on";
+"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Mikrofon slået til";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Frigør";
@@ -7642,17 +7639,29 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "Brug kun en proxy, hvis du ikke kan oprette forbindelse til Signal på mobildata eller over Wi-Fi.";
 
-/* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Slå opdagelse af telefonnummer fra under Indstillinger > Privatliv > Telefonnummer > Hvem kan finde mit nummer, for at bruge dit brugernavn som den primære måde, hvorpå andre kan kontakte dig.";
+/* Description of username links and QR codes on the username education sheet */
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
 
-/* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Brugernavne er parret med et sæt cifre og deles ikke på din profil";
+/* Title for the username links and QR codes section on the username education sheet */
+"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+
+/* Description of phone number privacy on the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+
+/* Title for phone number privacy section of the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+
+/* Label for the 'set up' button on the username education sheet */
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Angiv dit Signal-brugernavn";
+"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
 
-/* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Hvert brugernavn har et unikt link, som du kan dele med dine venner for at starte en chat med dig";
+/* Description of usernames on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+
+/* Title for usernames section on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Farve";
@@ -7663,14 +7672,14 @@
 /* Text for a label explaining what the username link and QR code give others access to. */
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Del kun din QR-kode og dit link med personer, du stoler på. Når de deles, kan andre se dit brugernavn og starte en chat med dig.";
 
+/* Text presented in an action sheet notifying the user their qr code and link are not set. */
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Nulstil";
 
 /* A message explaining what will happen if the user resets their QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Hvis du nulstiller din QR-kode, vil din eksisterende QR-kode og dit link ikke længere fungere.";
-
-/* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Nulstiller link...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Del";
@@ -7692,6 +7701,9 @@
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Alle med dette link kan se dit brugernavn og starte en chat med dig. Del det kun med personer, du stoler på.";
+
+/* Title for a button to open a sheet for copying and sharing your username link. */
+"USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "Lad andre starte en chat med dig ved at dele din unikke QR-kode eller dit link.";
@@ -7731,6 +7743,9 @@
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Brugernavne må kun indeholde a-z, 0-9 og _.";
+
+/* An error message shown when the user has typed an invalid discriminator for their username. */
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Disse cifre hjælper med at skjule dit brugernavn, så du ikke modtager uønskede beskeder. Del kun dit brugernavn med de personer og grupper, du gerne vil chatte med. Hvis du ændrer brugernavn, får du et nyt sæt cifre.";

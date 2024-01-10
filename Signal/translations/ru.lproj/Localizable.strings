@@ -815,7 +815,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Группа Signal";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "Calls";
+"CALLS_LIST_TITLE" = "Звонки";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Сделать фотографию и отправить её";
@@ -1481,13 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Выберите код страны";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Имена пользователей позволяют другим пользователям отправлять вам сообщения без вашего номера телефона.";
-
-/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
-"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "Настроить";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "Настройте своё имя пользователя Signal";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Срок действия вашей карты истёк. Проверьте правильность данных вашей карты и попробуйте ещё раз.";
@@ -1928,10 +1925,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Истёк";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Ваше пожертвование через iDEAL всё ещё обрабатывается. Проверьте в своем банковском приложении подтверждение платежа, прежде чем сделать очередное пожертвование.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Ваше пожертвование через iDEAL всё ещё обрабатывается. Проверьте в своем банковском приложении подтверждение платежа, прежде чем сделать очередное пожертвование.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Обработка банковских переводов обычно занимает 1 рабочий день. Пожалуйста, дождитесь завершения обработки пожертвования, прежде чем обновлять подписку.";
@@ -1955,7 +1952,7 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Минимальная сумма пожертвования составляет %1$@.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donation awaiting authorization";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Пожертвование ожидает авторизации";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Ваше пожертвование на рассмотрении";
@@ -2007,12 +2004,6 @@
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Попробовать ещё раз";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects that the donation referred to by this deep link wasn't found in the app. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_NOT_FOUND_MESSAGE" = "Donation was not found. Check your banking app to approve your payment or contact support if the error persists.";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects an unknown error was encountered with the donation. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_UNKNOWN_FOUND_MESSAGE" = "Unknown error encountered when processing the donation. Please contact support.";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Действует %1$@";
@@ -2159,13 +2150,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Если вы переустановили Signal, квитанции о ранее сделанных пожертвованиях не будут доступны.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Payment cancelled. Please try again.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Платёж отменён. Пожалуйста, попробуйте ещё раз.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Invalid payment response. Please try again.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Недействительный ответ на платёж. Пожалуйста, попробуйте ещё раз.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Authorization of pending donation was denied by the user.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Пожертвовать";
@@ -2186,10 +2177,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Попробовать ещё раз";
 
 /* Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Ваш банковский перевод ожидает авторизации. Проверьте в своем банковском приложении подтверждение пожертвования через iDEAL.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donation Awaiting Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Пожертвование, ожидающее авторизации";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваш банковский перевод находится на рассмотрении. Обработка банковских переводов обычно занимает 1 рабочий день.";
@@ -2204,19 +2195,19 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Ошибка обработки пожертвования";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Couldn't Confirm Donation";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Не удалось подтвердить пожертвование";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Ваше разовое пожертвование на %1$@ через iDEAL не удалось подтвердить. Проверьте в своём банковском приложении подтверждение пожертвования через iDEAL.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Ваше пожертвование через iDEAL, повторяющееся ежемесячно, не удалось обработать. Попробуйте другой способ оплаты или свяжитесь со своим банком для получения дополнительной информации.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Ваше пожертвование на %1$@ через iDEAL, повторяющееся ежемесячно, не удалось обработать. Проверьте в своём банковском приложении подтверждение пожертвования через iDEAL.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Ваше пожертвование, повторяющееся ежемесячно, прекращено. %1$@";
@@ -2237,7 +2228,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Ежемесячное пожертвование отменено";
 
 /* A label describing a donation payment that has requires authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Waiting for Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Ожидание авторизации";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "Разовое на %1$@";
@@ -3185,7 +3176,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Вы удалили %1$@.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is no longer in the group";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ больше не состоит в группе";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ удалил(-а) %2$@.";
@@ -3195,6 +3186,9 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ принял(-а) запрос на присоединение к группе от %1$@.";
+
+/* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ отменил(-а) свой запрос на присоединение к группе.";
@@ -4193,7 +4187,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вы достигли максимального количества устройств, которые в настоящее время можно связать с вашей учётной записью. Пожалуйста, удалите одно из устройств и повторите попытку.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "Mic off";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "Микрофон выключен";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Без звука";
@@ -5665,6 +5659,9 @@
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Что-то пошло не так с вашим именем пользователя, оно больше не закреплено за вашей учётной записью. Вы можете попробовать установить его снова или выбрать новое.";
 
+/* Button below the warning to fix a username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Что-то пошло не так с QR-кодом и ссылкой на ваше имя пользователя, они больше не действительны. Создайте новую ссылку, чтобы делиться ею с другими.";
 
@@ -5693,10 +5690,10 @@
 "RETURN_CALL_PILL_BUTTON" = "Вернуться";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Ringing off";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Звонки отключены";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "Ringing on";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "Звонки включены";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Всё равно добавить";
@@ -6947,10 +6944,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Пройдите проверку";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Speaker off";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Звук выключен";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Speaker on";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Звук включён";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Избранные";
@@ -7367,7 +7364,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не удалось добавить значок";
 
 /* Action sheet title for Error Authorizing Payment sheet */
-"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Error Authorizing Payment";
+"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Ошибка авторизации платежа";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Ошибка обработки пожертвования";
@@ -7604,7 +7601,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal не смог отвязать ваше устройство.";
 
 /* Text for a toast confirming that the mic has been unmuted for a call. */
-"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Mic on";
+"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Микрофон включён";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Открепить";
@@ -7642,17 +7639,29 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "Используйте прокси, только если вы не можете подключиться к Signal через мобильные данные или Wi-Fi.";
 
-/* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "Выключите функцию обнаружения номера телефона в разделе Настройки > Конфиденциальность > Номер телефона > Кто может найти мой номер, чтобы использовать ваше имя пользователя в качестве основного способа связи с вами.";
+/* Description of username links and QR codes on the username education sheet */
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
 
-/* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "Имя пользователя состоит из набора цифр и не указывается в профиле";
+/* Title for the username links and QR codes section on the username education sheet */
+"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+
+/* Description of phone number privacy on the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+
+/* Title for phone number privacy section of the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+
+/* Label for the 'set up' button on the username education sheet */
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "Настройте своё имя пользователя Signal";
+"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
 
-/* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Каждому имени пользователя присвоена уникальная ссылка, которой вы можете поделиться со своими друзьями, чтобы они могли начать чат с вами";
+/* Description of usernames on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+
+/* Title for usernames section on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Цвет";
@@ -7663,14 +7672,14 @@
 /* Text for a label explaining what the username link and QR code give others access to. */
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Передавайте ваш QR-код и ссылку только тем людям, которым вы доверяете. При передаче другие смогут увидеть ваше имя пользователя и начать чат с вами.";
 
+/* Text presented in an action sheet notifying the user their qr code and link are not set. */
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Сбросить";
 
 /* A message explaining what will happen if the user resets their QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "При сбросе QR-кода существующий QR-код и ссылка перестанут работать.";
-
-/* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Сброс ссылки...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Поделиться";
@@ -7692,6 +7701,9 @@
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Любой, у кого есть эта ссылка, может видеть ваше имя пользователя и начать чат с вами. Делитесь информацией только с теми, кому доверяете.";
+
+/* Title for a button to open a sheet for copying and sharing your username link. */
+"USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "Позвольте другим начать чат с вами, поделившись вашим уникальным QR-кодом или ссылкой.";
@@ -7731,6 +7743,9 @@
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Имена пользователей могут содержать только a-z, 0-9 и _.";
+
+/* An error message shown when the user has typed an invalid discriminator for their username. */
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Эти цифры помогают сохранить ваше имя пользователя в тайне и избежать нежелательных сообщений. Делитесь своим именем пользователя только с теми людьми и группами, с которыми вы хотели бы общаться. Если вы измените имя пользователя, вы получите новый набор цифр.";

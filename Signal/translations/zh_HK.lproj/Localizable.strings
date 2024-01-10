@@ -815,7 +815,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal 群組";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "Calls";
+"CALLS_LIST_TITLE" = "通話";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "拍照並傳送";
@@ -1481,13 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "選取國家代碼";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "用戶名稱讓其他人無需透過電話號碼也可以向你傳送訊息。";
-
-/* Title for a button in an interactive in-app prompt to set up a Signal username, which will start a create-username flow. */
-"CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "設定";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "設定你的 Signal 用戶名稱";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "您的信用卡已過期。驗證您的信用卡資料是否正確，然後重試。";
@@ -1928,10 +1925,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "已過期";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "你的 iDEAL 捐款仍在處理中。 請檢查銀行應用程式以核准你的付款，然後才進行另一次捐款。";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "你的 iDEAL 捐款仍在處理中。 請檢查銀行應用程式以核准你的付款，然後才進行另一次捐款。";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "銀行轉帳通常需要 1 個工作天來處理。 請等待捐款完成後，才進行另一次捐款。";
@@ -1955,7 +1952,7 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "你可以捐款的最低金額為 %1$@。";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Donation awaiting authorization";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "捐款等待授權";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "你有捐款正待處理";
@@ -2007,12 +2004,6 @@
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "再試一次";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects that the donation referred to by this deep link wasn't found in the app. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_NOT_FOUND_MESSAGE" = "Donation was not found. Check your banking app to approve your payment or contact support if the error persists.";
-
-/* Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects an unknown error was encountered with the donation. */
-"DONATION_DEEP_LINK_IDEAL_DONATION_UNKNOWN_FOUND_MESSAGE" = "Unknown error encountered when processing the donation. Please contact support.";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "為期 %1$@";
@@ -2159,13 +2150,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "若您已重新安裝 Signal，先前捐款的收據恕未能提供。";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Payment cancelled. Please try again.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "已取消付款。請重試。";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Invalid payment response. Please try again.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "無效的付款回應。請重試。";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Authorization of pending donation was denied by the user.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "捐款";
@@ -2186,10 +2177,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "再試一次";
 
 /* Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "你的銀行轉帳正待授權。請檢查銀行應用程式以核准你的 iDEAL 捐款。";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donation Awaiting Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "捐款等待授權";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "你的銀行轉帳正待處理。 銀行轉帳通常需要 1 個工作天來處理。";
@@ -2204,19 +2195,19 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "處理捐款時發生錯誤";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Couldn't Confirm Donation";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "無法確認捐款";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "無法確認你的 %1$@ iDEAL 單次捐款。請檢查銀行應用程式以核准你的 iDEAL 捐款。";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "無法處理你的 iDEAL 每月定期捐款。請嘗試其他付款方式，或聯絡你的銀行取得更多資訊。";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL donation couldn’t be confirmed. Check your banking app to approve your iDEAL donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "無法確認你每月 %1$@ 的 iDEAL 定期捐款。請檢查銀行應用程式以核准你的 iDEAL 捐款。";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "你的每月定期捐款已結束。%1$@";
@@ -2237,7 +2228,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "已取消每月捐款";
 
 /* A label describing a donation payment that has requires authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Waiting for Authorization";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "正在等候授權";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ 單次";
@@ -3185,7 +3176,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "您已將 %1$@ 移出群組。";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ is no longer in the group";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ 已不在此群組中";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 已將 %2$@ 移出群組。";
@@ -3195,6 +3186,9 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ 已批准 %1$@ 加入此群組的請求。";
+
+/* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ 已取消加入此群組的請求。";
@@ -4193,7 +4187,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "您已達到與現有帳戶連結的裝置數量上限。請移除一部裝置，然後重試。";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "Mic off";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "關閉麥克風";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "已靜音";
@@ -5665,6 +5659,9 @@
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "你的用戶名稱發生問題，不再被指定到你的帳戶。你可以嘗試重設或選擇一個新的。";
 
+/* Button below the warning to fix a username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "你的用戶名稱及連結發生問題，已不再有效。建立新連結以與他人分享。";
 
@@ -5693,10 +5690,10 @@
 "RETURN_CALL_PILL_BUTTON" = "返回";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "Ringing off";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "關閉響鈴";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "Ringing on";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "開啟響鈴";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "繼續新增";
@@ -6947,10 +6944,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "完成驗證";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Speaker off";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "揚聲器關閉";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Speaker on";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "揚聲器開啟";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "精選";
@@ -7367,7 +7364,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "無法新增徽章";
 
 /* Action sheet title for Error Authorizing Payment sheet */
-"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Error Authorizing Payment";
+"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "處理授權付款時發生錯誤";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "處理捐款時發生錯誤";
@@ -7604,7 +7601,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal 無法與您的裝置解除連結。";
 
 /* Text for a toast confirming that the mic has been unmuted for a call. */
-"UNMUTE_CONFIRMATION_TOAST_LABEL" = "Mic on";
+"UNMUTE_CONFIRMATION_TOAST_LABEL" = "開啟麥克風";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "取消釘選";
@@ -7642,17 +7639,29 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "僅在無法透過行動數據或 Wi-Fi 連接 Signal 時才使用代理伺服器。";
 
-/* Description of how to update discovery */
-"USERNAME_DISCOVERY_DESCRIPTION" = "要關閉電話號碼搜索功能，請前往「設定」>「隱私」>「電話號碼」>「誰可以找到我的電話號碼」，以使用你的用戶名稱作為其他人聯絡你的主要方式。";
+/* Description of username links and QR codes on the username education sheet */
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
 
-/* Description of username discriminator digits */
-"USERNAME_DISCRIMINATOR_DESCRIPTION" = "用戶名稱與一組數字配對，並且不會在你的個人檔案上公開";
+/* Title for the username links and QR codes section on the username education sheet */
+"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+
+/* Description of phone number privacy on the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+
+/* Title for phone number privacy section of the username education sheet */
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+
+/* Label for the 'set up' button on the username education sheet */
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "設定你的 Signal 用戶名稱";
+"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
 
-/* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "每個用戶名稱都擁有獨一無二的連結，你可以與好友分享該連結以開始聊天";
+/* Description of usernames on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+
+/* Title for usernames section on the username education sheet */
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "色彩";
@@ -7663,14 +7672,14 @@
 /* Text for a label explaining what the username link and QR code give others access to. */
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "僅與你信任的人分享你的二維碼。當分享時其他人將能夠看到你的用戶名稱並與你開始聊天。";
 
+/* Text presented in an action sheet notifying the user their qr code and link are not set. */
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "重設";
 
 /* A message explaining what will happen if the user resets their QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "如果你重設二維碼，你現有的二維碼和連結將會無效。";
-
-/* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "正在重設連結...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "共享";
@@ -7692,6 +7701,9 @@
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "任何人憑此連結將可檢視你的用戶名稱，並開始與你聊天。請只與你信任的人分享此連結。";
+
+/* Title for a button to open a sheet for copying and sharing your username link. */
+"USERNAME_LINK_SHEET_BUTTON" = "link";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "分享你專屬的二維碼或連結，讓其他人能開始與你聊天。";
@@ -7731,6 +7743,9 @@
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "用戶名稱僅可包括英文字母 (a-z)、數字 (0-9) 及底線 (_)。";
+
+/* An error message shown when the user has typed an invalid discriminator for their username. */
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "這組數字有助將你的用戶名稱保密，以免你受到不必要的訊息騷擾。請僅向你願意與其通訊的聯絡人和群組分享你的用戶名稱。如要更改用戶名稱，你將會收到一組新的數字。";
