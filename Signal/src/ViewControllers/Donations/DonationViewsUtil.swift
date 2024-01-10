@@ -219,12 +219,9 @@ public final class DonationViewsUtil {
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?,
         currencyCode: Currency.Code,
-        databaseStorage: SDSDatabaseStorage,
-        onFinished: ((Error?, ProfileBadge, DonationPaymentMethod) -> Void)? = nil
+        databaseStorage: SDSDatabaseStorage
     ) -> Promise<Void> {
         let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        let badge = newSubscriptionLevel.badge
-        let paymentMethod = paymentType.paymentMethod
         return firstly(on: DispatchQueue.sharedUserInitiated) {
             DonationViewsUtil.finalizeAndRedeemSubscription(
                 subscriberId: subscriberId,
@@ -237,10 +234,6 @@ public final class DonationViewsUtil {
             databaseStorage.write { tx in
                 pendingStore.clearPendingSubscription(tx: tx.asV2Write)
             }
-        }.done(on: DispatchQueue.main) {
-            onFinished?(nil, badge, paymentMethod)
-        }.catch(on: DispatchQueue.main) { error in
-            onFinished?(error, badge, paymentMethod)
         }
     }
 
@@ -250,41 +243,20 @@ public final class DonationViewsUtil {
         paymentIntentId: String,
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod,
-        databaseStorage: SDSDatabaseStorage,
-        onFinished: ((Error?, ProfileBadge?, DonationPaymentMethod) -> Void)? = nil
+        databaseStorage: SDSDatabaseStorage
     ) -> Promise<Void> {
         let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        var badge: ProfileBadge?
-
         return firstly(on: DispatchQueue.sharedUserInitiated) {
-            // Fetch the badge so it's available for the onFinished callback.
-            SubscriptionManagerImpl.getCachedBadge(level: .boostBadge)
-                .fetchIfNeeded()
-                .map(on: DispatchQueue.main) { result in
-                    switch result {
-                    case .notFound:
-                        badge = nil
-                    case let .profileBadge(profileBadge):
-                        badge = profileBadge
-                    }
-                }
-                .then(on: DispatchQueue.main) {
-                    DonationViewsUtil.createAndRedeemOneTimeDonation(
-                        paymentIntentId: paymentIntentId,
-                        amount: amount,
-                        paymentMethod: paymentMethod
-                    )
-                }
+            DonationViewsUtil.createAndRedeemOneTimeDonation(
+                paymentIntentId: paymentIntentId,
+                amount: amount,
+                paymentMethod: paymentMethod
+            )
         }
         .ensure {
             databaseStorage.write { tx in
                 pendingStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
             }
-        }
-        .done {
-            onFinished?(nil, badge, paymentMethod)
-        }.catch { error in
-            onFinished?(error, badge, paymentMethod)
         }
     }
 
@@ -380,8 +352,7 @@ public final class DonationViewsUtil {
 
     static func completeIDEALDonation(
         donationType: Stripe.IDEALCallbackType,
-        databaseStorage: SDSDatabaseStorage,
-        onFinished: ((Error?, ProfileBadge?, DonationPaymentMethod) -> Void)?
+        databaseStorage: SDSDatabaseStorage
     ) -> Promise<Void> {
         let paymentStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         switch donationType {
@@ -404,20 +375,14 @@ public final class DonationViewsUtil {
             }
 
             return firstly(on: DispatchQueue.global()) {
-                OWSProfileManager.shared.badgeStore.populateAssetsOnBadge(
-                    monthlyDonation.newSubscriptionLevel.badge
+                DonationViewsUtil.completeMonthlyDonations(
+                    subscriberId: monthlyDonation.subscriberId,
+                    paymentType: .ideal(setupIntentId: monthlyDonation.setupIntentId),
+                    newSubscriptionLevel: monthlyDonation.newSubscriptionLevel,
+                    priorSubscriptionLevel: monthlyDonation.oldSubscriptionLevel,
+                    currencyCode: monthlyDonation.amount.currencyCode,
+                    databaseStorage: databaseStorage
                 )
-                .then(on: DispatchQueue.global()) {
-                    DonationViewsUtil.completeMonthlyDonations(
-                        subscriberId: monthlyDonation.subscriberId,
-                        paymentType: .ideal(setupIntentId: monthlyDonation.setupIntentId),
-                        newSubscriptionLevel: monthlyDonation.newSubscriptionLevel,
-                        priorSubscriptionLevel: monthlyDonation.oldSubscriptionLevel,
-                        currencyCode: monthlyDonation.amount.currencyCode,
-                        databaseStorage: databaseStorage,
-                        onFinished: onFinished
-                    )
-                }
             }
         case let .oneTime(success, intentId):
             guard let oneTimePayment = databaseStorage.read(block: { tx in
@@ -439,8 +404,7 @@ public final class DonationViewsUtil {
                     paymentIntentId: oneTimePayment.paymentIntentId,
                     amount: oneTimePayment.amount,
                     paymentMethod: .ideal,
-                    databaseStorage: databaseStorage,
-                    onFinished: onFinished
+                    databaseStorage: databaseStorage
                 )
             }
         }

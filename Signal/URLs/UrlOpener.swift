@@ -178,245 +178,32 @@ class UrlOpener {
             }
 
         case .completeIDEALDonation(let donationType):
-            self.attemptToContinueActiveIDEALDonation(type: donationType)
-                .then(on: DispatchQueue.main) { [weak self] handled -> Promise<Void> in
-                    guard let self else { return .value(()) }
-                    if handled {
-                        return Promise.value(())
-                    }
-                    return self.restartAndCompleteInterruptedIDEALDonation(
-                        type: donationType,
-                        rootViewController: rootViewController
-                    )
-                }.done {
-                    Logger.info("[Donations] Completed external donation")
-                } .catch { [weak self] error in
-                    self?.handleIDEALError(error, donationType: donationType)
-                }
-        }
-    }
-}
-
-// MARK: iDEAL donation completion
-
-private extension UrlOpener {
-
-    /// If the donation can't be continued, build back up the donation UI and attempt to complete the donation.
-    private func restartAndCompleteInterruptedIDEALDonation(
-        type donationType: Stripe.IDEALCallbackType,
-        rootViewController: UIViewController
-    ) -> Promise<Void> {
-        let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        let (success, intent, localIntent) = self.databaseStorage.read { tx in
-            switch donationType {
-            case let .oneTime(didSucceed: success, paymentIntentId: intentId):
-                let localIntentId = donationStore.getPendingOneTimeDonation(tx: tx.asV2Read)
-                return (success, intentId, localIntentId?.paymentIntentId)
-            case let .monthly(didSucceed: success, _, setupIntentId: intentId):
-                let localIntentId = donationStore.getPendingSubscription(tx: tx.asV2Read)
-                return (success, intentId, localIntentId?.setupIntentId)
-            }
-        }
-
-        guard let localIntent else {
-            return .init(error: IDEALError.noActiveDonation)
-        }
-
-        guard intent == localIntent else {
-            return .init(error: IDEALError.invalidArguments)
-        }
-
-        guard success else {
-            return .init(error: IDEALError.failedValidation)
-        }
-
-        let (promise, future) = Promise<Void>.pending()
-
-        let completion = {
-            guard let frontVc = CurrentAppContext().frontmostViewController() else {
-                future.resolve(())
-                return
-            }
-
-            // Build up the Donation UI
-            let appSettings = AppSettingsViewController.inModalNavigationController()
-            let donationsVC = DonationSettingsViewController()
-            donationsVC.showExpirationSheet = false
-            appSettings.viewControllers += [ donationsVC ]
-
-            frontVc.presentFormSheet(appSettings, animated: false) {
-                AssertIsOnMainThread()
-                guard success else {
-                    future.reject(IDEALError.failedValidation)
-                    return
-                }
-
-                DonationViewsUtil.wrapPromiseInProgressView(
-                    from: donationsVC,
-                    promise: DonationViewsUtil.completeIDEALDonation(
-                        donationType: donationType,
-                        databaseStorage: self.databaseStorage
-                    ) { error, badge, paymentMethod in
-                        guard let badge else { return }
-                        if let error {
-                            DonationViewsUtil.presentErrorSheet(
-                                from: donationsVC,
-                                error: error,
-                                mode: donationType.asDonationMode,
-                                badge: badge,
-                                paymentMethod: paymentMethod
-                            )
-                        } else {
-                            guard
-                                let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.loadWithSneakyTransaction(
-                                    successMode: donationType.asSuccessMode
-                                )
-                            else { return }
-
-                            badgeThanksSheetPresenter.presentBadgeThanksAndClearSuccess(
-                                fromViewController: donationsVC
-                            )
-                        }
-                    }
-                ).done {
-                    future.resolve(())
-                }.catch { error in
-                    future.reject(error)
-                }
-            }
-        }
-
-        if rootViewController.presentedViewController != nil {
-            rootViewController.dismiss(animated: false) {
-                completion()
-            }
-        } else {
-            completion()
-        }
-        return promise
-    }
-
-    /// Attempts to seamlessly continue the donation, if the app state is still at the appropriate step in the iDEAL donation flow.
-    ///
-    /// - Returns:
-    /// `true` if the donation was continued by previously-constructed UI.
-    /// `false` otherwise,  in which case the caller is responsible for "reconstructing" the appropriate step in the
-    /// donation flow and continuing the donation.
-    private func attemptToContinueActiveIDEALDonation(
-        type donationType: Stripe.IDEALCallbackType
-    ) -> Promise<Bool> {
-        // Inspect this view controller to find out if the layout is as expected.
-        guard
-            let frontVC = CurrentAppContext().frontmostViewController(),
-            let navController = frontVC.presentingViewController as? UINavigationController,
-            let vc = navController.viewControllers.last,
-            let donationPaymentVC = vc as? DonationPaymentDetailsViewController,
-            donationPaymentVC.threeDSecureAuthenticationSession != nil
-        else {
-            // Not in the expected donation flow, so revert to building
-            // the donation view stack from scratch
-            return .value(false)
-        }
-
-        let (promise, future) = Promise<Bool>.pending()
-
-        frontVC.dismiss(animated: true) {
-            let (success, intentId) = {
-                switch donationType {
-                case
-                    let .oneTime(success, intent),
-                    let .monthly(success, _, intent):
-                    return (success, intent)
-                }
-            }()
-
-            // Attempt to slide back into the current donation flow by completing
-            // the active 3DS session with the intent.  If the payment was externally
-            // failed, pass that into the existing donation flow to be handled inline
-            let continuedWithActiveDonation = donationPaymentVC.completeExternal3DS(
-                success: success,
-                intentID: intentId
+            DonationViewsUtil.attemptToContinueActiveIDEALDonation(
+                type: donationType,
+                databaseStorage: self.databaseStorage
             )
-
-            future.resolve(continuedWithActiveDonation)
-        }
-        return promise
-    }
-
-    private func handleIDEALError(_ error: Error, donationType: Stripe.IDEALCallbackType) {
-        let message: String?
-        switch error {
-        case IDEALError.failedValidation:
-            message = OWSLocalizedString(
-                "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE",
-                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment."
-            )
-        case IDEALError.invalidArguments, IDEALError.noActiveDonation:
-            message = OWSLocalizedString(
-                "DONATION_DEEP_LINK_IDEAL_DONATION_NOT_FOUND_MESSAGE",
-                comment: "Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects that the donation referred to by this deep link wasn't found in the app."
-            )
-        case Signal.DonationJobError.timeout:
-            message = nil
-        default:
-            message = OWSLocalizedString(
-                "DONATION_DEEP_LINK_IDEAL_DONATION_UNKNOWN_FOUND_MESSAGE",
-                comment: "Error message displayed when a user deeplinks back into the app from an external banking app. This message reflects an unknown error was encountered with the donation."
-            )
-        }
-
-        guard let message else { return }
-
-        let actionSheet = ActionSheetController(
-            title: OWSLocalizedString(
-                "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                comment: "Title for a sheet explaining that a payment failed."
-            ),
-            message: message
-        )
-        actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { _ in
-            switch error {
-            case IDEALError.failedValidation:
-                // When a payment is failed, this will be remembered by Stripe
-                // and fail no matter what going forward, so clear the donation
-                let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-                self.databaseStorage.write { tx in
-                    switch donationType {
-                    case .monthly:
-                        idealStore.clearPendingSubscription(tx: tx.asV2Write)
-                    case .oneTime:
-                        idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
-                    }
+            .then(on: DispatchQueue.main) { [weak self] handled -> Promise<Void> in
+                guard let self else { return .value(()) }
+                if handled {
+                    return Promise.value(())
                 }
-            default:
-                break
+                return DonationViewsUtil.restartAndCompleteInterruptedIDEALDonation(
+                    type: donationType,
+                    rootViewController: rootViewController,
+                    databaseStorage: self.databaseStorage
+                )
+            }.done {
+                Logger.info("[Donations] Completed iDEAL donation")
+            } .catch { error in
+                switch error {
+                case Signal.DonationJobError.timeout:
+                    // This is an expected error case for pending donations
+                    break
+                default:
+                    // Unexpected.  Log an warning
+                    OWSLogger.warn("[Donations] Unexpected error encountered with iDEAL donation")
+                }
             }
-        }))
-        if let frontVc = CurrentAppContext().frontmostViewController() {
-            frontVc.presentActionSheet(actionSheet, animated: true)
         }
     }
-}
-
-private extension Stripe.IDEALCallbackType {
-
-    var asSuccessMode: ReceiptCredentialResultStore.Mode {
-        switch self {
-        case .oneTime: return .oneTimeBoost
-        case .monthly: return .recurringSubscriptionInitiation
-        }
-    }
-
-    var asDonationMode: DonateViewController.DonateMode {
-        switch self {
-        case .oneTime: return .oneTime
-        case .monthly: return .monthly
-        }
-    }
-}
-
-private enum IDEALError: Error {
-    case noActiveDonation
-    case failedValidation
-    case invalidArguments
 }

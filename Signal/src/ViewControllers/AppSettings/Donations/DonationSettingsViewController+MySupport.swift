@@ -421,17 +421,6 @@ extension DonationSettingsViewController {
                 )
             )
 
-            actionSheet.addAction(ActionSheetAction(
-                title: CommonStrings.learnMore,
-                handler: { [weak self] _ in
-                    guard let self else { return }
-
-                    self.present(
-                        SFSafariViewController(url: SupportConstants.donationPendingLearnMoreURL),
-                        animated: true
-                    )
-                }
-            ))
             actionSheet.addAction(OWSActionSheets.okayAction)
             #if DEBUG
             actionSheet.addAction(ActionSheetAction(

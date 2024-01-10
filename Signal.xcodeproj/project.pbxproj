@@ -1379,6 +1379,7 @@
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
 		C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
@@ -4103,6 +4104,7 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
@@ -8889,6 +8891,7 @@
 				F94360F02910154C007EE6A7 /* DonationPaymentDetailsViewController.swift */,
 				F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */,
 				F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */,
+				C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */,
 				F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */,
 				F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */,
 				F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */,
@@ -12265,6 +12268,7 @@
 				D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */,
 				F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */,
 				F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */,
+				C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */,
 				F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */,
 				F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */,
 				F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */,
