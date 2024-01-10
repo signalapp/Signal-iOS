@@ -159,6 +159,14 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                             newGroupCallStatus = .ringingAccepted
                         }
                     case .outgoing:
+                        if
+                            case .outgoing = existingCallRecord.callDirection,
+                            case .ringingAccepted = existingCallStatus
+                        {
+                            logger.warn("How did we already know about this call?")
+                            return
+                        }
+
                         // We rang a group from another device. It's possible we
                         // opportunistically learned about that call on this
                         // device via peek (and maybe joined), but this should
@@ -168,20 +176,20 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                             newCallDirection = .outgoing
                             newGroupCallStatus = .ringingAccepted
                         case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
-                            logger.error("How did we have a ringing call event for a call we started on another device?")
-                            return
+                            logger.warn("How did we have a ringing call event for a call we started on another device?")
+                            newGroupCallStatus = .ringingAccepted
                         }
                     }
                 case .notAccepted:
                     switch syncMessageDirection {
                     case .incoming:
                         // We declined on another device. If we joined the call
-                        // on this device, we'll prefer that status.
+                        // on this device, we'll prefer the join.
                         switch existingCallStatus {
                         case .generic, .ringing, .ringingMissed, .ringingDeclined:
                             newGroupCallStatus = .ringingDeclined
                         case .joined, .ringingAccepted:
-                            newGroupCallStatus = existingCallStatus
+                            newGroupCallStatus = .ringingAccepted
                         }
                     case .outgoing:
                         logger.error("How did we decline our own outgoing call?")

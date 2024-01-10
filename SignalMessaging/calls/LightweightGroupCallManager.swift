@@ -34,41 +34,20 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         }
     }
 
-    public let sfuClient: SFUClient
-    public let httpClient: HTTPClient
+    private var callRecordStore: CallRecordStore { DependenciesBridge.shared.callRecordStore }
+    private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
+    private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
+    private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
-    private var groupCallRecordManager: GroupCallRecordManager {
-        DependenciesBridge.shared.groupCallRecordManager
-    }
+    private var logger: PrefixedLogger { CallRecordLogger.shared }
 
-    private var callRecordStore: CallRecordStore {
-        DependenciesBridge.shared.callRecordStore
-    }
-
-    private var interactionStore: InteractionStore {
-        DependenciesBridge.shared.interactionStore
-    }
-
-    private var logger: PrefixedLogger {
-        CallRecordLogger.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        DependenciesBridge.shared.tsAccountManager
-    }
-
-    private var sfuUrl: String {
-        DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-    }
+    public let groupCallPeekClient: GroupCallPeekClient
+    public var httpClient: SignalRingRTC.HTTPClient { groupCallPeekClient.httpClient }
 
     public override init() {
-        let newClient = HTTPClient(delegate: nil)
-        sfuClient = SFUClient(httpClient: newClient)
-        httpClient = newClient
+        groupCallPeekClient = GroupCallPeekClient()
 
         super.init()
-
-        httpClient.delegate = self
     }
 
     open dynamic func peekGroupCallAndUpdateThread(
@@ -97,7 +76,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 )
             }
 
-            return self.fetchPeekInfo(for: thread)
+            return self.groupCallPeekClient.fetchPeekInfo(groupThread: thread)
         }.then(on: DispatchQueue.sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
             let shouldUpdateCallModels: Bool = {
                 guard let infoEraId = info.eraId else {
@@ -408,26 +387,6 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
         }
     }
 
-    private func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
-        AssertNotOnMainThread()
-
-        return firstly { () -> Promise<Data> in
-            self.fetchGroupMembershipProof(for: thread)
-        }.then(on: DispatchQueue.main) { (membershipProof: Data) -> Guarantee<PeekResponse> in
-            let membership = try self.databaseStorage.read {
-                try self.groupMemberInfo(for: thread, transaction: $0)
-            }
-            let peekRequest = PeekRequest(sfuURL: self.sfuUrl, membershipProof: membershipProof, groupMembers: membership)
-            return self.sfuClient.peek(request: peekRequest)
-        }.map(on: DispatchQueue.sharedUtility) { peekResponse in
-            if let errorCode = peekResponse.errorStatusCode {
-                throw OWSGenericError("Failed to peek with status code: \(errorCode)")
-            } else {
-                return peekResponse.peekInfo
-            }
-        }
-    }
-
     open dynamic func postUserNotificationIfNecessary(
         groupCallMessage: OWSGroupCallMessage,
         joinedMemberAcis: [Aci],
@@ -451,118 +410,5 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             wantsSound: true,
             transaction: tx
         )
-    }
-}
-
-extension LightweightGroupCallManager {
-
-    /// Fetches a data blob that serves as proof of membership in the group
-    /// Used by RingRTC to verify access to group call information
-    public func fetchGroupMembershipProof(for thread: TSGroupThread) -> Promise<Data> {
-        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("unexpectedly missing group model")
-            return Promise(error: OWSAssertionError("Invalid group"))
-        }
-
-        return firstly {
-            try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
-        }.map(on: DispatchQueue.sharedUtility) { (credential) -> Data in
-            guard let tokenData = credential.token?.data(using: .utf8) else {
-                throw OWSAssertionError("Invalid credential")
-            }
-            return tokenData
-        }
-    }
-
-    public func groupMemberInfo(for thread: TSGroupThread, transaction: SDSAnyReadTransaction) throws -> [GroupMemberInfo] {
-        // Make sure we're working with the latest group state.
-        thread.anyReload(transaction: transaction)
-
-        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid group thread")
-        }
-        let groupV2Params = try groupModel.groupV2Params()
-
-        return thread.groupMembership.fullMembers.compactMap {
-            guard let aci = $0.serviceId as? Aci else {
-                owsFailDebug("Skipping group member, missing uuid")
-                return nil
-            }
-            guard let aciCiphertext = try? groupV2Params.userId(for: aci) else {
-                owsFailDebug("Skipping group member, missing uuidCipherText")
-                return nil
-            }
-
-            return GroupMemberInfo(userId: aci.rawUUID, userIdCipherText: aciCiphertext)
-        }
-    }
-}
-
-// MARK: - <CallManagerLiteDelegate>
-
-extension LightweightGroupCallManager: HTTPDelegate {
-    /**
-     * A HTTP request should be sent to the given url.
-     * Invoked on the main thread, asychronously.
-     * The result of the call should be indicated by calling the receivedHttpResponse() function.
-     */
-    public func sendRequest(requestId: UInt32, request: HTTPRequest) {
-        AssertIsOnMainThread()
-        logger.info("sendRequest")
-
-        let session = OWSURLSession(
-            securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-            configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-            canUseSignalProxy: true
-        )
-        session.require2xxOr3xx = false
-        session.allowRedirects = true
-        session.customRedirectHandler = { redirectedRequest in
-            var redirectedRequest = redirectedRequest
-            if let authHeader = request.headers.first(where: {
-                $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
-            }) {
-                redirectedRequest.setValue(authHeader.value, forHTTPHeaderField: authHeader.key)
-            }
-            return redirectedRequest
-        }
-
-        firstly { () -> Promise<SignalServiceKit.HTTPResponse> in
-            session.dataTaskPromise(
-                request.url,
-                method: request.method.httpMethod,
-                headers: request.headers,
-                body: request.body)
-
-        }.done(on: DispatchQueue.main) { response in
-            self.httpClient.receivedResponse(requestId: requestId, response: response.asRingRTCResponse)
-
-        }.catch(on: DispatchQueue.main) { error in
-            if error.isNetworkFailureOrTimeout {
-                self.logger.warn("Call manager http request failed \(error)")
-            } else {
-                owsFailDebug("Call manager http request failed \(error)")
-            }
-            self.httpClient.httpRequestFailed(requestId: requestId)
-        }
-    }
-}
-
-// MARK: - HTTP helpers
-
-extension SignalRingRTC.HTTPMethod {
-    var httpMethod: SignalServiceKit.HTTPMethod {
-        switch self {
-        case .get: return .get
-        case .post: return .post
-        case .put: return .put
-        case .delete: return .delete
-        }
-    }
-}
-
-extension SignalServiceKit.HTTPResponse {
-    var asRingRTCResponse: SignalRingRTC.HTTPResponse {
-        SignalRingRTC.HTTPResponse(statusCode: UInt16(responseStatusCode), body: responseBodyData)
     }
 }

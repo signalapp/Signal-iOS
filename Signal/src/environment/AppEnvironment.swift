@@ -113,6 +113,11 @@ public class AppEnvironment: NSObject {
             db.asyncWrite { tx in
                 DependenciesBridge.shared.masterKeySyncManager.runStartupJobs(tx: tx)
             }
+
+            db.asyncWrite { tx in
+                GroupCallRecordRingingCleanupManager.fromGlobals()
+                    .cleanupRingingCalls(tx: tx)
+            }
         }
 
         // Hang certain singletons on SMEnvironment too.

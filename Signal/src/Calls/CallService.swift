@@ -851,8 +851,10 @@ public final class CallService: LightweightGroupCallManager {
 
             let membershipInfo: [GroupMemberInfo]
             do {
-                membershipInfo = try self.databaseStorage.read {
-                    try self.groupMemberInfo(for: groupThread, transaction: $0)
+                membershipInfo = try self.databaseStorage.read { tx in
+                    try self.groupCallPeekClient.groupMemberInfo(
+                        groupThread: groupThread, tx: tx
+                    )
                 }
             } catch {
                 owsFailDebug("Failed to fetch membership info: \(error)")
@@ -1038,7 +1040,7 @@ extension CallService: CallObserver {
         }
 
         firstly {
-            fetchGroupMembershipProof(for: groupThread)
+            groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
         }.done(on: DispatchQueue.main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
         }.catch(on: DispatchQueue.main) { error in

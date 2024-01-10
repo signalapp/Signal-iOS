@@ -95,6 +95,8 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
             Premise(.acceptedOnAnotherDevice, .ringingDeclined): Result(.ringingAccepted, false),
             Premise(.acceptedOnAnotherDevice, .ringingMissed): Result(.ringingAccepted, false),
 
+            Premise(.declinedOnAnotherDevice, .generic): Result(.ringingDeclined, false),
+            Premise(.declinedOnAnotherDevice, .joined): Result(.ringingAccepted, false),
             Premise(.declinedOnAnotherDevice, .ringing): Result(.ringingDeclined, false),
             Premise(.declinedOnAnotherDevice, .ringingMissed): Result(.ringingDeclined, false),
         ]

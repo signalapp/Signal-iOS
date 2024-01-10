@@ -22,6 +22,18 @@ public protocol CallRecordCursor {
     func next() throws -> CallRecord?
 }
 
+public extension CallRecordCursor {
+    func drain() throws -> [CallRecord] {
+        var records = [CallRecord]()
+
+        while let record = try next() {
+            records.append(record)
+        }
+
+        return records
+    }
+}
+
 /// Performs queries over the ``CallRecord`` table.
 ///
 /// - Important

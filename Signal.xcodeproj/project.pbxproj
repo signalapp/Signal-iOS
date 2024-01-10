@@ -1462,6 +1462,8 @@
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
 		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
+		D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */; };
+		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
@@ -4183,6 +4185,8 @@
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
+		D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallPeekClient.swift; sourceTree = "<group>"; };
+		D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingingCleanupManager.swift; sourceTree = "<group>"; };
 		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
 		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
@@ -5335,6 +5339,7 @@
 		32525F9327C74AC50099E801 /* calls */ = {
 			isa = PBXGroup;
 			children = (
+				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
 				32525F9427C74B1A0099E801 /* LightweightGroupCallManager.swift */,
 			);
 			path = calls;
@@ -7588,6 +7593,7 @@
 			isa = PBXGroup;
 			children = (
 				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
+				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
 				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
 			);
 			path = Group;
@@ -11875,6 +11881,7 @@
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */,
+				D95777BC2B46452100CFE3AE /* GroupCallPeekClient.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
@@ -12299,6 +12306,7 @@
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */,
 				88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */,
+				D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,
 				328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */,
 				88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */,

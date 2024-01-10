@@ -364,14 +364,9 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     func testUpdatesGroupCall_ringDeclinedSupercededByJoin() {
         var updateCount = 0
-        mockGroupCallRecordManager.updateGroupCallStub = { existingCallRecord, _, newGroupCallStatus in
-            guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
-                XCTFail("Missing group call status!")
-                return
-            }
-
+        mockGroupCallRecordManager.updateGroupCallStub = { _, _, newGroupCallStatus in
             updateCount += 1
-            XCTAssertEqual(newGroupCallStatus, groupCallStatus)
+            XCTAssertEqual(newGroupCallStatus, .ringingAccepted)
         }
 
         let (joinedCallRecord, joinedGroupId) = createGroupCallRecord(
@@ -382,7 +377,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             groupId: 2, callDirection: .incoming, groupCallStatus: .ringingAccepted
         )
 
-        /// Updating a joined record keeps it joined.
+        /// Updating a joined record makes it ringing-accepted.
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
                 incomingSyncMessage: CallRecordIncomingSyncMessageParams(

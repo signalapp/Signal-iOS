@@ -141,18 +141,25 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                     return
                 }
             case .declinedOnAnotherDevice:
+                // We don't have the ringer's ACI in these states, so we'll end
+                // up with group call records in "ringing" states that don't
+                // have the ringer's ACI. That's ok – we'd prefer to track the
+                // ringing state.
+                //
+                // Note that this case implies we've missed ring messages,
+                // because otherwise we'd have marked this record as ringing
+                // already.
                 switch existingGroupCallStatus {
-                case .ringing, .ringingMissed:
+                case .ringing, .ringingMissed, .generic:
                     newGroupCallStatus = .ringingDeclined
-                case .generic, .joined:
-                    // Since we don't have the ringer's ACI in these states,
-                    // we'll just leave the record as-is.
-                    //
-                    // Note that this case implies we've missed ring messages,
-                    // because otherwise we'd have marked this record as ringing
-                    // already.
+                case .joined:
+                    newGroupCallStatus = .ringingAccepted
+                case .ringingAccepted:
+                    if case .outgoing = existingCallRecord.callDirection {
+                        logger.warn("How did we have a declined ring for a call we started?")
+                    }
                     fallthrough
-                case .ringingAccepted, .ringingDeclined:
+                case .ringingDeclined:
                     return
                 }
             }

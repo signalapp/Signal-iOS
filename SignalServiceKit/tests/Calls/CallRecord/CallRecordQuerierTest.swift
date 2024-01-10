@@ -102,7 +102,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         inMemoryDB.read { tx in
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     ordering: .descending,
                     db: tx.database
                 )!.drain(),
@@ -120,7 +120,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     ordering: .descendingBefore(timestamp: 4),
                     db: tx.database
                 )!.drain(),
@@ -130,7 +130,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     ordering: .ascendingAfter(timestamp: 4),
                     db: tx.database
                 )!.drain(),
@@ -158,7 +158,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         inMemoryDB.read { tx in
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
                     db: tx.database
@@ -168,7 +168,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 6),
                     db: tx.database
@@ -178,7 +178,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 6),
                     db: tx.database
@@ -207,7 +207,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         inMemoryDB.read { tx in
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .descending,
                     db: tx.database
@@ -220,7 +220,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .descendingBefore(timestamp: 5),
                     db: tx.database
@@ -230,7 +230,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .ascendingAfter(timestamp: 0),
                     db: tx.database
@@ -260,7 +260,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         inMemoryDB.read { tx in
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
@@ -271,7 +271,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 5),
@@ -282,7 +282,7 @@ final class CallRecordQuerierTest: XCTestCase {
             )
 
             testCase(
-                callRecordQuerier.fetchCursor(
+                try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 5),
@@ -316,18 +316,6 @@ final class CallRecordQuerierTest: XCTestCase {
 private extension DBReadTransaction {
     var database: Database {
         return InMemoryDB.shimOnlyBridge(self).db
-    }
-}
-
-private extension CallRecordCursor {
-    func drain() -> [CallRecord] {
-        var records = [CallRecord]()
-
-        while let next = try! next() {
-            records.append(next)
-        }
-
-        return records
     }
 }
 
