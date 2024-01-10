@@ -1429,7 +1429,13 @@ public class GroupManager: NSObject {
         var authoritativeProfileKeysByAddress = [SignalServiceAddress: Data]()
         if let authoritativeProfileKeysByAci {
             for (aci, profileKeyData) in authoritativeProfileKeysByAci {
-                authoritativeProfileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
+                let address = SignalServiceAddress(aci)
+                if !address.isLocalAddress {
+                    // We trust what is locally-stored as the local user's profile
+                    // key to be more authoritative than what is stored in the group
+                    // state on the server.
+                    authoritativeProfileKeysByAddress[address] = profileKeyData
+                }
             }
         }
         profileManager.fillInProfileKeys(
