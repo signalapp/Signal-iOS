@@ -959,9 +959,26 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             // Show the 'editing' tag
             if let editTarget = editTarget {
 
-                let body = editTarget.body ?? ""
+                // Fetch the original text (including any oversized text attachments)
+                let componentState = databaseStorage.read { tx in
+                    CVLoader.buildStandaloneComponentState(
+                        interaction: editTarget,
+                        spoilerState: SpoilerRenderState(),
+                        transaction: tx)
+                }
+
+                let messageBody: MessageBody
                 let ranges = editTarget.bodyRanges ?? .empty
-                let messageBody = MessageBody(text: body, ranges: ranges)
+                switch componentState?.bodyText?.displayableText?.fullTextValue {
+                case .attributedText(let string):
+                    messageBody = MessageBody(text: string.string, ranges: ranges)
+                case .messageBody(let body):
+                    messageBody = body.asStyleOnlyBody().asMessageBody()
+                case .text(let text):
+                    messageBody = MessageBody(text: text, ranges: ranges)
+                case .none:
+                    messageBody = MessageBody(text: "", ranges: .empty)
+                }
                 self.setMessageBody(messageBody, animated: true)
 
                 showEditMessageView(animated: animateChanges)

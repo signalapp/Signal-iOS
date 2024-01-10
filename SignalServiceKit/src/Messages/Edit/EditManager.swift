@@ -277,6 +277,17 @@ public class EditManager {
             tx: tx
         ) { messageBuilder in
             updateBlock(messageBuilder)
+
+            let attachments = self.context.dataStore.getMediaAttachments(
+                message: editTarget.message,
+                tx: tx
+            )
+            // Remove existing long text messages. Any new long text
+            // attachments should be added as part of the message sending
+            messageBuilder.attachmentIds = attachments
+                .filter { !$0.isOversizeText }
+                .map { $0.uniqueId  }
+
             messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
         }
 
