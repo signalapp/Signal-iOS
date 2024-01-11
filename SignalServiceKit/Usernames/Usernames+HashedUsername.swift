@@ -73,9 +73,9 @@ public extension Usernames.HashedUsername {
             guard let signalError else { return nil }
 
             switch signalError {
-            case .cannotBeEmpty:
+            case .nicknameCannotBeEmpty:
                 self = .nicknameCannotBeEmpty
-            case .cannotStartWithDigit:
+            case .nicknameCannotStartWithDigit:
                 self = .nicknameCannotStartWithDigit
             case .badNicknameCharacter:
                 self = .nicknameContainsInvalidCharacters
