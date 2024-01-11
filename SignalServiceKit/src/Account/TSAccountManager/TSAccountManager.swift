@@ -66,15 +66,15 @@ public protocol TSAccountManager {
 }
 
 extension TSAccountManager {
-    public func localAciWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws -> Aci {
+    public func localIdentifiersWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws -> LocalIdentifiers {
         switch authedAccount.info {
         case .explicit(let info):
-            return info.localIdentifiers.aci
+            return info.localIdentifiers
         case .implicit:
             guard let localIdentifiers = localIdentifiersWithMaybeSneakyTransaction else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
-            return localIdentifiers.aci
+            return localIdentifiers
         }
     }
 }

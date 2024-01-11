@@ -133,7 +133,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
         return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let localAci = try tsAccountManager.localAciWithMaybeSneakyTransaction(authedAccount: authedAccount)
+            let localAci = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci
             let localProfileKey = try self.parseProfileKey(profileKey: profileKeyToUse)
             let commitment = try localProfileKey.getCommitment(userId: localAci)
             let commitmentData = commitment.serialize().asData

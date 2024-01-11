@@ -20,7 +20,7 @@ extension OWSProfileManager: ProfileManager {
         do {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             return ProfileFetcherJob.fetchProfilePromise(
-                serviceId: try tsAccountManager.localAciWithMaybeSneakyTransaction(authedAccount: authedAccount),
+                serviceId: try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
                 mainAppOnly: mainAppOnly,
                 ignoreThrottling: true,
                 authedAccount: authedAccount
