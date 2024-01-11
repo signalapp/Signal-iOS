@@ -36,7 +36,7 @@ extension OWSFakeProfileManager: ProfileManager {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
-    public func reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: OWSAES256Key?, authedAccount: AuthedAccount) -> Promise<Void> {
+    public func reuploadLocalProfile(unsavedRotatedProfileKey: OWSAES256Key?, authedAccount: AuthedAccount, tx: DBWriteTransaction) -> Promise<Void> {
         return Promise(error: OWSGenericError("Not supported."))
     }
 }

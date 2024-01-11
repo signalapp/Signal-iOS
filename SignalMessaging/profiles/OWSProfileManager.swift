@@ -75,60 +75,59 @@ extension OWSProfileManager: ProfileManager {
     }
 
     // This will re-upload the existing local profile state.
-    public func reuploadLocalProfileWithSneakyTransaction(
+    public func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         Logger.info("")
 
-        return databaseStorage.write { tx in
-            let profileGivenName: String?
-            let profileFamilyName: String?
-            let profileBio: String?
-            let profileBioEmoji: String?
-            let profileAvatarData: Data?
-            let visibleBadgeIds: [String]
-            let userProfileWriter: UserProfileWriter
-            if let pendingUpdate = currentPendingProfileUpdate(transaction: tx) {
-                profileGivenName = pendingUpdate.profileGivenName
-                profileFamilyName = pendingUpdate.profileFamilyName
-                profileBio = pendingUpdate.profileBio
-                profileBioEmoji = pendingUpdate.profileBioEmoji
-                profileAvatarData = pendingUpdate.profileAvatarData
-                visibleBadgeIds = pendingUpdate.visibleBadgeIds
-                userProfileWriter = pendingUpdate.userProfileWriter
+        let profileGivenName: String?
+        let profileFamilyName: String?
+        let profileBio: String?
+        let profileBioEmoji: String?
+        let profileAvatarData: Data?
+        let visibleBadgeIds: [String]
+        let userProfileWriter: UserProfileWriter
+        if let pendingUpdate = currentPendingProfileUpdate(transaction: SDSDB.shimOnlyBridge(tx)) {
+            profileGivenName = pendingUpdate.profileGivenName
+            profileFamilyName = pendingUpdate.profileFamilyName
+            profileBio = pendingUpdate.profileBio
+            profileBioEmoji = pendingUpdate.profileBioEmoji
+            profileAvatarData = pendingUpdate.profileAvatarData
+            visibleBadgeIds = pendingUpdate.visibleBadgeIds
+            userProfileWriter = pendingUpdate.userProfileWriter
 
-                if DebugFlags.internalLogging {
-                    Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
-                }
-            } else {
-                let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
-                profileGivenName = profileSnapshot.givenName
-                profileFamilyName = profileSnapshot.familyName
-                profileBio = profileSnapshot.bio
-                profileBioEmoji = profileSnapshot.bioEmoji
-                profileAvatarData = profileSnapshot.avatarData
-                visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
-                userProfileWriter = .reupload
-
-                if DebugFlags.internalLogging {
-                    Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
-                }
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
             }
-            assert(profileGivenName != nil)
-            return updateLocalProfile(
-                profileGivenName: profileGivenName,
-                profileFamilyName: profileFamilyName,
-                profileBio: profileBio,
-                profileBioEmoji: profileBioEmoji,
-                profileAvatarData: profileAvatarData,
-                visibleBadgeIds: visibleBadgeIds,
-                unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-                userProfileWriter: userProfileWriter,
-                authedAccount: authedAccount,
-                tx: tx
-            )
+        } else {
+            let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
+            profileGivenName = profileSnapshot.givenName
+            profileFamilyName = profileSnapshot.familyName
+            profileBio = profileSnapshot.bio
+            profileBioEmoji = profileSnapshot.bioEmoji
+            profileAvatarData = profileSnapshot.avatarData
+            visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
+            userProfileWriter = .reupload
+
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
+            }
         }
+        assert(profileGivenName != nil)
+        return updateLocalProfile(
+            profileGivenName: profileGivenName,
+            profileFamilyName: profileFamilyName,
+            profileBio: profileBio,
+            profileBioEmoji: profileBioEmoji,
+            profileAvatarData: profileAvatarData,
+            visibleBadgeIds: visibleBadgeIds,
+            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+            userProfileWriter: userProfileWriter,
+            authedAccount: authedAccount,
+            tx: SDSDB.shimOnlyBridge(tx)
+        )
     }
 
     @objc
@@ -275,7 +274,6 @@ extension OWSProfileManager: ProfileManager {
         }
 
         isRotatingProfileKey = true
-        var needsAnotherRotation = false
 
         let rotationStartDate = Date()
 
@@ -286,7 +284,7 @@ extension OWSProfileManager: ProfileManager {
         // we avoid a case where other devices are operating with a *new* profile
         // key that we have yet to upload a profile for.
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<OWSAES256Key> in
+        return Promise.wrapAsync {
             Logger.info("Reuploading profile with new profile key")
 
             // We re-upload our local profile with the new profile key *before* we
@@ -297,63 +295,67 @@ extension OWSProfileManager: ProfileManager {
             // change and continue to use the old profile key.
 
             let newProfileKey = OWSAES256Key.generateRandom()
-            return self.reuploadLocalProfileWithSneakyTransaction(
-                unsavedRotatedProfileKey: newProfileKey,
-                authedAccount: authedAccount
-            ).map { newProfileKey }
-        }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
+            let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
+                self.reuploadLocalProfile(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount, tx: tx.asV2Write)
+            }
+            try await uploadPromise.awaitable()
+
             guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
                 throw OWSAssertionError("Missing localAci.")
             }
 
             Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
 
-            return self.databaseStorage.write(.promise) { transaction in
+            let needsAnotherRotation = await self.databaseStorage.awaitableWrite { tx in
                 self.setLocalProfileKey(
                     newProfileKey,
                     userProfileWriter: .localUser,
                     authedAccount: authedAccount,
-                    transaction: transaction
+                    transaction: tx
                 )
 
                 // Whenever a user's profile key changes, we need to fetch a new profile
                 // key credential for them.
-                self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: transaction)
+                self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
 
                 // We schedule the updates here but process them below using
                 // processProfileKeyUpdates. It's more efficient to process them after the
                 // intermediary steps are done.
-                self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
+                self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
+
+                var needsAnotherRotation = false
 
                 triggers.forEach { trigger in
                     switch trigger {
                     case .blocklistChange(let values):
-                        self.didRotateProfileKeyFromBlocklistTrigger(values, tx: transaction)
+                        self.didRotateProfileKeyFromBlocklistTrigger(values, tx: tx)
                     case .recipientHiding(let triggerDate):
                         needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromHidingTrigger(
                             rotationStartDate: rotationStartDate,
                             triggerDate: triggerDate,
-                            tx: transaction
+                            tx: tx
                         )
                     case .leftGroupWithHiddenOrBlockedRecipient(let triggerDate):
                         needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromLeaveGroupTrigger(
                             rotationStartDate: rotationStartDate,
                             triggerDate: triggerDate,
-                            tx: transaction
+                            tx: tx
                         )
                     }
                 }
+
+                return needsAnotherRotation
             }
-        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+
             Logger.info("Updating account attributes after profile key rotation.")
-            return Promise.wrapAsync {
-                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
-            }
-        }.done(on: DispatchQueue.global()) {
+            try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
+
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
-        }.ensure {
-            self.isRotatingProfileKey = false
+
+            await MainActor.run {
+                self.isRotatingProfileKey = false
+            }
             if needsAnotherRotation {
                 self.rotateLocalProfileKeyIfNecessary()
             }
@@ -517,7 +519,9 @@ extension OWSProfileManager: ProfileManager {
     @objc
     @available(swift, obsoleted: 1.0)
     func reuploadLocalProfileWithSneakyTransaction(authedAccount: AuthedAccount) -> AnyPromise {
-        return AnyPromise(reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: authedAccount))
+        return AnyPromise(databaseStorage.write { tx in
+            reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: authedAccount, tx: tx.asV2Write)
+        })
     }
 
     @objc
@@ -777,53 +781,52 @@ extension OWSProfileManager: ProfileManager {
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false,
             self.localProfileAvatarData() != nil
         else {
-            clearAvatarRepairNeeded()
+            databaseStorage.write { tx in clearAvatarRepairNeeded(tx: tx) }
             return
         }
 
-        Self.avatarRepairPromise = firstly {
-            reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: authedAccount)
-        }.done { _ in
-            Logger.info("Avatar repair succeeded.")
-            self.clearAvatarRepairNeeded()
-            Self.avatarRepairPromise = nil
-        }.catch { error in
-            Logger.error("Avatar repair failed: \(error)")
-            self.incrementAvatarRepairAttempts()
-            Self.avatarRepairPromise = nil
+        Self.avatarRepairPromise = Promise.wrapAsync { @MainActor in
+            defer {
+                Self.avatarRepairPromise = nil
+            }
+            do {
+                let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
+                    return self.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: authedAccount, tx: tx.asV2Write)
+                }
+                try await uploadPromise.awaitable()
+                Logger.info("Avatar repair succeeded.")
+                await self.databaseStorage.awaitableWrite { tx in self.clearAvatarRepairNeeded(tx: tx) }
+            } catch {
+                Logger.warn("Avatar repair failed: \(error)")
+                await self.databaseStorage.awaitableWrite { tx in self.incrementAvatarRepairAttempts(tx: tx) }
+            }
         }
     }
 
-    private static let maxAvataraRepairAttempts = 5
+    private static let maxAvatarRepairAttempts = 5
 
     private func avatairRepairAttemptCount(_ transaction: SDSAnyReadTransaction) -> Int {
         let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
         return store.getInt(GRDBSchemaMigrator.avatarRepairAttemptCount,
-                            defaultValue: Self.maxAvataraRepairAttempts,
+                            defaultValue: Self.maxAvatarRepairAttempts,
                             transaction: transaction)
     }
 
     private func avatarRepairNeeded() -> Bool {
         return self.databaseStorage.read { transaction in
             let count = avatairRepairAttemptCount(transaction)
-            return count < Self.maxAvataraRepairAttempts
+            return count < Self.maxAvatarRepairAttempts
         }
     }
 
-    private func incrementAvatarRepairAttempts() {
-        databaseStorage.write { transaction in
-            let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
-            store.setInt(avatairRepairAttemptCount(transaction) + 1,
-                         key: GRDBSchemaMigrator.avatarRepairAttemptCount,
-                         transaction: transaction)
-        }
+    private func incrementAvatarRepairAttempts(tx: SDSAnyWriteTransaction) {
+        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        store.setInt(avatairRepairAttemptCount(tx) + 1, key: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: tx)
     }
 
-    private func clearAvatarRepairNeeded() {
-        databaseStorage.write { transaction in
-            let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
-            store.removeValue(forKey: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: transaction)
-        }
+    private func clearAvatarRepairNeeded(tx: SDSAnyWriteTransaction) {
+        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        store.removeValue(forKey: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: tx)
     }
 
     private func attemptToUpdateProfileOnService(

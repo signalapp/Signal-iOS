@@ -68,19 +68,7 @@ class ZkParamsMigrator {
             Logger.info("Resetting zkgroup-related state.")
             groupsV2.clearTemporalCredentials(tx: tx)
             versionedProfiles.clearProfileKeyCredentials(tx: tx)
-            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [profileManager, tsAccountManager] in
-                if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                    Logger.info("Re-uploading local profile due to zkgroup update.")
-                    firstly {
-                        profileManager.reuploadLocalProfileWithSneakyTransaction(
-                            unsavedRotatedProfileKey: nil,
-                            authedAccount: .implicit()
-                        )
-                    }.catch { error in
-                        Logger.warn("Error: \(error)")
-                    }
-                }
-            }
+            reuploadLocalProfile()
             fallthrough
         case 4:
             // If you have v4 and the right params, do a "normal" migration to v5. The
@@ -105,6 +93,24 @@ class ZkParamsMigrator {
             return "AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X36nOoGPs54XsEGzPdEV+itQNGUFEjY6X9Uv+Acuks7NpyGvCoKxGwgKgE5XyJ+nNKlyHHOLb6N1NuHyBrZrgtY/JYJHRooo5CEqYKBqdFnmbTVGEkCvJKxLnjwKWf+fEPoWeQFj5ObDjcKMZf2Jm2Ae69x+ikU5gBXsRmoF94GXTLfN0/vLt98KDPnxwAQL9j5V1jGOY8jQl6MLxEs56cwXN0dqCnImzVH3TZT1cJ8SW1BRX6qIVxEzjsSGx3yxF3suAilPMqGRp4ffyopjMD1JXiKR2RwLKzizUe5e8XyGOy9fplzhw3jVzTRyUZTRSZKkMLWcQ/gv0E4aONNqs4P"
         } else {
             return "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdlukrpzzsCIvEwjwQlJYVPOQPj4V0F4UXXBdHSLK05uoPBCQG8G9rYIGedYsClJXnbrgGYG3eMTG5hnx4X4ntARBgELuMWWUEEfSK0mjXg+/2lPmWcTZWR9nkqgQQP0tbzuiPm74H2wMO4u1Wafe+UwyIlIT9L7KLS19Aw8r4sPrXZSSsOZ6s7M1+rTJN0bI5CKY2PX29y5Ok3jSWufIKcgKOnWoP67d5b2du2ZVJjpjfibNIHbT/cegy/sBLoFwtHogVYUewANUAXIaMPyCLRArsKhfJ5wBtTminG/PAvuBdJ70Z/bXVPf8TVsR292zQ65xwvWTejROW6AZX6aqucUj"
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func reuploadLocalProfile() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [db, profileManager, tsAccountManager] in
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                return
+            }
+            Logger.info("Re-uploading local profile due to zkgroup update.")
+            firstly {
+                db.write { tx in
+                    profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx)
+                }
+            }.catch { error in
+                Logger.warn("Error: \(error)")
+            }
         }
     }
 }

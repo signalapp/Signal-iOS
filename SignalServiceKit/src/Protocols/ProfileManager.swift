@@ -23,8 +23,9 @@ public protocol ProfileManager: ProfileManagerProtocol {
         tx: SDSAnyWriteTransaction
     ) -> Promise<Void>
 
-    func reuploadLocalProfileWithSneakyTransaction(
+    func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
     ) -> Promise<Void>
 }

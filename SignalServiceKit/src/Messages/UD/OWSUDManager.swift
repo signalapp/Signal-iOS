@@ -534,8 +534,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         if updateStorageServiceAndProfile {
             tx.addSyncCompletion {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
-                _ = Self.profileManager.reuploadLocalProfileWithSneakyTransaction(unsavedRotatedProfileKey: nil, authedAccount: .implicit())
             }
+            _ = profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx.asV2Write)
         }
     }
 }
