@@ -1371,13 +1371,14 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                     if (![NSObject isNullableObject:currentUserProfile.profileKey.keyData equalTo:profileKeyAtStart]
                         || ![NSObject isNullableObject:currentUserProfile.avatarUrlPath equalTo:avatarUrlPathAtStart]) {
                         OWSLogVerbose(@"Aborting; profileKey or avatarUrlPath has changed.");
-                        // If the profileKey or avatarUrlPath has changed,
-                        // abort and kick off a new download if necessary.
+                        // If the profileKey or avatarUrlPath has changed, abort and kick off a new
+                        // download if necessary.
                         if (currentUserProfile.avatarFileName == nil) {
                             [transaction addAsyncCompletionOffMain:^{
                                 [self downloadAvatarForUserProfile:currentUserProfile authedAccount:authedAccount];
                             }];
                         }
+                        return;
                     }
 
                     [currentUserProfile updateWithAvatarFileName:filename
