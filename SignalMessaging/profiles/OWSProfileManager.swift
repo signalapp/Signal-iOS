@@ -661,10 +661,6 @@ extension OWSProfileManager: ProfileManager {
         guard AppReadiness.isAppReady else {
             return .notReady
         }
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return .notReady
-        }
         guard !isUpdatingProfileOnService else {
             // Avoid having two redundant updates in flight at the same time.
             return .notReady
@@ -677,28 +673,12 @@ extension OWSProfileManager: ProfileManager {
             return .notNeeded
         }
 
+        guard let (future, authedAccount) = processProfileUpdateRequests(upThrough: pendingUpdate.id) else {
+            return .notReady
+        }
+
         isUpdatingProfileOnService = true
 
-        // Find the AuthedAccount & Future for the request. This will generally
-        // exist for the initial request but will be nil for any retries.
-        let pendingRequests: (canceledRequests: [ProfileUpdateRequest], currentRequest: ProfileUpdateRequest)?
-        pendingRequests = swiftValues.pendingUpdateRequests.update { mutableRequests in
-            guard let inMemoryIndex = mutableRequests.firstIndex(where: { $0.requestId == pendingUpdate.id }) else {
-                return nil
-            }
-            let canceledRequests = Array(mutableRequests.prefix(upTo: inMemoryIndex))
-            let currentRequest = mutableRequests[inMemoryIndex]
-            mutableRequests = Array(mutableRequests[inMemoryIndex...].dropFirst())
-            return (canceledRequests, currentRequest)
-        }
-
-        if let pendingRequests {
-            for canceledRequest in pendingRequests.canceledRequests {
-                canceledRequest.future.reject(OWSGenericError("Canceled because a new request was enqueued."))
-            }
-        }
-
-        let authedAccount: AuthedAccount = pendingRequests?.currentRequest.authedAccount ?? .implicit()
         Task { @MainActor in
             // We must be on the MainActor to touch isUpdatingProfileOnService.
             defer {
@@ -709,12 +689,16 @@ extension OWSProfileManager: ProfileManager {
                 if pendingUpdate.unsavedRotatedProfileKey == nil {
                     _ = try await fetchLocalUsersProfile(mainAppOnly: false, authedAccount: authedAccount).awaitable()
                 }
-                pendingRequests?.currentRequest.future.resolve()
+                DispatchQueue.global().async {
+                    future?.resolve()
+                }
                 DispatchQueue.main.async {
                     self._updateProfileOnServiceIfNecessary()
                 }
             } catch {
-                pendingRequests?.currentRequest.future.reject(error)
+                DispatchQueue.global().async {
+                    future?.reject(error)
+                }
                 DispatchQueue.main.asyncAfter(deadline: .now() + retryDelay) {
                     self._updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
                 }
@@ -722,6 +706,53 @@ extension OWSProfileManager: ProfileManager {
         }
 
         return .updating
+    }
+
+    /// Searches `pendingUpdateRequests` for a match; cancels dropped requests.
+    ///
+    /// Processes `pendingUpdateRequests` while searching for `requestId`. If it
+    /// finds a pending request with `requestId`, it will cancel any preceding
+    /// requests that are now obsolete.
+    ///
+    /// - Returns: The `Future` and `AuthedAccount` to use for `requestId`. If
+    /// `requestId` can't be sent right now, returns `nil`. We can't send
+    /// requests if we can't authenticate with the server. We assume we can
+    /// authenticate when we're registered or if the request's `authedAccount`
+    /// contains explicit credentials.
+    private func processProfileUpdateRequests(upThrough requestId: UUID) -> (Future<Void>?, AuthedAccount)? {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+
+        // Find the AuthedAccount & Future for the request. This will generally
+        // exist for the initial request but will be nil for any retries.
+        let pendingRequests: (canceledRequests: [ProfileUpdateRequest], result: (Future<Void>?, AuthedAccount)?)
+        pendingRequests = swiftValues.pendingUpdateRequests.update { mutableRequests in
+            let canceledRequests: [ProfileUpdateRequest]
+            let currentRequest: ProfileUpdateRequest?
+            if let requestIndex = mutableRequests.firstIndex(where: { $0.requestId == requestId }) {
+                canceledRequests = Array(mutableRequests.prefix(upTo: requestIndex))
+                currentRequest = mutableRequests[requestIndex]
+                mutableRequests = Array(mutableRequests[requestIndex...])
+            } else {
+                canceledRequests = []
+                currentRequest = nil
+            }
+
+            let authedAccount = currentRequest?.authedAccount ?? .implicit()
+            switch authedAccount.info {
+            case .implicit where isRegistered, .explicit:
+                mutableRequests = Array(mutableRequests.dropFirst())
+                return (canceledRequests, (currentRequest?.future, authedAccount))
+            case .implicit:
+                return (canceledRequests, nil)
+            }
+        }
+
+        for canceledRequest in pendingRequests.canceledRequests {
+            canceledRequest.future.reject(OWSGenericError("Canceled because a new request was enqueued."))
+        }
+
+        return pendingRequests.result
     }
 
     private static var avatarRepairPromise: Promise<Void>?
