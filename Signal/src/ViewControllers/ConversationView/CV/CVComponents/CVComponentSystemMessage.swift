@@ -662,7 +662,7 @@ extension CVComponentSystemMessage {
             labelText.append("  ", attributes: [:])
         }
 
-        let (systemMessageText, isSystemMessageTextMultiline) = Self.systemMessageText(
+        let systemMessageText = Self.systemMessageText(
             forInteraction: interaction,
             transaction: transaction
         )
@@ -676,19 +676,15 @@ extension CVComponentSystemMessage {
             labelText.append(DateUtil.formatTimestampAsTime(interaction.timestamp))
         }
 
-        if isSystemMessageTextMultiline {
-            applyParagraphStyling()
-        }
-
         return labelText
     }
 
     private static func systemMessageText(
         forInteraction interaction: TSInteraction,
         transaction: SDSAnyReadTransaction
-    ) -> (String, isMultiline: Bool) {
+    ) -> String {
         if let errorMessage = interaction as? TSErrorMessage {
-            return (errorMessage.previewText(transaction: transaction), false)
+            return errorMessage.previewText(transaction: transaction)
         } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let isVerified = verificationMessage.verificationState == .verified
             let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, transaction: transaction)
@@ -703,59 +699,16 @@ extension CVComponentSystemMessage {
                                                     comment: "Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}.")
                                 : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
                                                     comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}.")))
-            return (String(format: format, displayName), false)
+            return String(format: format, displayName)
         } else if let infoMessage = interaction as? TSInfoMessage {
-            return (infoMessage.conversationSystemMessageComponentText(with: transaction), false)
+            return infoMessage.conversationSystemMessageComponentText(with: transaction)
         } else if let call = interaction as? TSCall {
-            return (call.previewText(transaction: transaction), false)
+            return call.previewText(transaction: transaction)
         } else if let groupCall = interaction as? OWSGroupCallMessage {
-            let systemText = groupCall.systemText(with: transaction)
-
-            let internalOnlyCallRecordText: String? = {
-                guard FeatureFlags.groupCallDisposition else {
-                    return nil
-                }
-
-                guard
-                    let interactionRowId = groupCall.sqliteRowId,
-                    let callRecord = DependenciesBridge.shared.callRecordStore.fetch(
-                        interactionRowId: interactionRowId,
-                        tx: transaction.asV2Read
-                    )
-                else { return nil }
-
-                switch callRecord.callStatus {
-                case .individual:
-                    owsFailDebug("Group call interaction missing group call status!")
-                    return nil
-                case .group(let groupCallStatus):
-                    switch groupCallStatus {
-                    case .generic:
-                        return "Call started!"
-                    case .joined:
-                        return "Call joined!"
-                    case .ringing:
-                        return "Call ringing!"
-                    case .ringingMissed:
-                        return "Call ringing missed!"
-                    case .ringingAccepted where callRecord.callDirection == .outgoing:
-                        return "Outgoing call rung!"
-                    case .ringingAccepted:
-                        return "Incoming call ringing accepted!"
-                    case .ringingDeclined:
-                        return "Call ringing declined!"
-                    }
-                }
-            }()
-
-            if let internalOnlyCallRecordText {
-                return ("\(systemText)\nInternal: \(internalOnlyCallRecordText)", true)
-            } else {
-                return (systemText, false)
-            }
+            return groupCall.systemText(with: transaction)
         } else {
             owsFailDebug("Not a system message.")
-            return ("", false)
+            return ""
         }
     }
 

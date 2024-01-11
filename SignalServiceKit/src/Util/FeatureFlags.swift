@@ -91,7 +91,7 @@ public class FeatureFlags: BaseFlags {
     public static let allowIDEALDonations = build.includes(.beta)
     public static let allowInternalIDEALDonations = build.includes(.internal)
 
-    public static let shouldShowCallsTab = false
+    public static let shouldShowCallsTab = build.includes(.internal)
 
     @objc
     public static var notificationServiceExtension: Bool {

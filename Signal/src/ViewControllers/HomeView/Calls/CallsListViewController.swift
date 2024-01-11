@@ -81,6 +81,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
 
+        // [CallsTab] TODO: Remove when releasing
+        let internalReminder = ReminderView(
+            style: .warning,
+            text: "The calls tab is internal-only. Some features are not yet implemented."
+        )
+        // tableHeaderView doesn't like autolayout. I'm sure I could get it to
+        // work but it's internal anyway so I'm not gonna bother.
+        internalReminder.frame.height = 100
+        tableView.tableHeaderView = internalReminder
+
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
 
@@ -455,7 +465,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                     for: contactThread.contactAddress,
                     transaction: tx
                 ),
-                recipientType: .individual(callType),
+                recipientType: .individual(
+                    type: callType,
+                    contactThread: contactThread
+                ),
                 direction: callDirection,
                 state: callState
             )
@@ -463,7 +476,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             return CallViewModel(
                 callId: callId,
                 title: groupThread.groupModel.groupNameOrDefault,
-                recipientType: .group,
+                recipientType: .group(groupThread: groupThread),
                 direction: callDirection,
                 state: callState
             )
@@ -506,8 +519,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }
 
         enum RecipientType: Hashable {
-            case individual(CallType)
-            case group
+            case individual(type: CallType, contactThread: TSContactThread)
+            case group(groupThread: TSGroupThread)
 
             enum CallType: Hashable {
                 case audio
@@ -524,10 +537,22 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
         var callType: RecipientType.CallType {
             switch recipientType {
-            case .individual(let callType):
+            case let .individual(callType, _):
                 return callType
-            case .group:
+            case .group(_):
                 return .video
+            }
+        }
+
+        /// The `TSThread` for the call. If a `TSContactThread` or
+        /// `TSGroupThread` is needed, switch on `recipientType`
+        /// instead of typecasting this property.
+        var thread: TSThread {
+            switch recipientType {
+            case let .individual(_, contactThread):
+                return contactThread
+            case let .group(groupThread):
+                return groupThread
             }
         }
 
@@ -886,15 +911,29 @@ extension CallsListViewController: CallCellDelegate {
     }
 
     private func startAudioCall(from viewModel: CallViewModel) {
-        Logger.debug("Start audio call")
+        // [CallsTab] TODO: See ConversationViewController.startIndividualCall(withVideo:)
+        switch viewModel.recipientType {
+        case let .individual(_, contactThread):
+            callService.initiateCall(thread: contactThread, isVideo: false)
+        case let .group(groupThread):
+            owsFail("Shouldn't be able to start audio call from group")
+        }
     }
 
     private func startVideoCall(from viewModel: CallViewModel) {
-        Logger.debug("Start video call")
+        // [CallsTab] TODO: Check if the conversation is blocked or there's a message request.
+        // See ConversationViewController.startIndividualCall(withVideo:)
+        // and  ConversationViewController.showGroupLobbyOrActiveCall()
+        switch viewModel.recipientType {
+        case let .individual(_, contactThread):
+            callService.initiateCall(thread: contactThread, isVideo: true)
+        case let .group(groupThread):
+            GroupCallViewController.presentLobby(thread: groupThread)
+        }
     }
 
     private func goToChat(from viewModel: CallViewModel) {
-        Logger.debug("Go to chat")
+        SignalApp.shared.presentConversationForThread(viewModel.thread, action: .compose, animated: false)
     }
 
     private func deleteCall(from viewModel: CallViewModel) {
@@ -937,7 +976,6 @@ extension CallsListViewController {
         private static var verticalMargin: CGFloat = 11
         private static var horizontalMargin: CGFloat = 20
         private static var joinButtonMargin: CGFloat = 18
-        private static var chatImageSize: CGFloat = 36
         // [CallsTab] TODO: Dynamic type?
         private static var subtitleIconSize: CGFloat = 16
 
@@ -951,12 +989,10 @@ extension CallsListViewController {
 
         // MARK: Subviews
 
-        private lazy var chatImageView: UIImageView = {
-            let imageView = UIImageView()
-            imageView.layer.cornerRadius = Self.chatImageSize / 2
-            imageView.clipsToBounds = true
-            return imageView
-        }()
+        private lazy var avatarView = ConversationAvatarView(
+            sizeClass: .thirtySix,
+            localUserDisplayMode: .asUser
+        )
 
         private lazy var titleLabel: UILabel = {
             let label = UILabel()
@@ -1047,7 +1083,7 @@ extension CallsListViewController {
             bodyVStack.spacing = 2
 
             let leadingHStack = UIStackView(arrangedSubviews: [
-                chatImageView,
+                avatarView,
                 bodyVStack,
             ])
             leadingHStack.axis = .horizontal
@@ -1067,8 +1103,6 @@ extension CallsListViewController {
             ])
             outerHStack.axis = .horizontal
             outerHStack.spacing = 4
-
-            chatImageView.autoSetDimensions(to: .square(Self.chatImageSize))
 
             // The details button should take up the entire trailing space,
             // top to bottom, so the content should have zero margins.
@@ -1103,7 +1137,9 @@ extension CallsListViewController {
                 return owsFailDebug("Missing view model")
             }
 
-            self.chatImageView.image = viewModel.image
+            avatarView.updateWithSneakyTransactionIfNecessary { configuration in
+                configuration.dataSource = .thread(viewModel.thread)
+            }
 
             self.titleLabel.text = viewModel.title
             self.subtitleLabel.text = viewModel.direction.label
