@@ -1827,7 +1827,7 @@ private struct DiffingGroupUpdateItemBuilder {
         }
 
         // This might be zero if DMs are not enabled.
-        let durationMs = UInt64(newToken.durationSeconds * 1000)
+        let durationMs = UInt64(newToken.durationSeconds) * 1000
 
         if forceUnknownAttribution, newToken.isEnabled {
             return .disappearingMessagesEnabledByUnknownUser(durationMs: durationMs)
