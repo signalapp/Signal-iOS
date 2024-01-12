@@ -64,6 +64,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         )
         let attachmentDownloads = OWSAttachmentDownloads()
         let blockingManager = BlockingManager()
+        let contactsManager = FakeContactsManager()
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let groupsV2 = MockGroupsV2()
@@ -93,6 +94,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
         let udManager = OWSUDManagerImpl()
+        let usernameLookupManager = UsernameLookupManagerImpl()
         let versionedProfiles = MockVersionedProfiles()
         let webSocketFactory = WebSocketFactoryMock()
 
@@ -102,6 +104,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             appVersion: AppVersionImpl.shared,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
+            contactsManager: contactsManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -128,13 +131,13 @@ public class MockSSKEnvironment: SSKEnvironment {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             udManager: udManager,
+            usernameLookupManager: usernameLookupManager,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )
 
         // Set up ourselves
         let appExpiry = dependenciesBridge.appExpiry
-        let contactsManager = FakeContactsManager()
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
         let messageReceiver = MessageReceiver()

@@ -36,8 +36,8 @@ public protocol UsernameLookupManager {
 
 /// A ``UsernameLookupManager`` implementation that uses on-disk persistence
 /// paired with an in-memory cache.
-class UsernameLookupManagerImpl: UsernameLookupManager {
-    typealias Username = String
+public class UsernameLookupManagerImpl: UsernameLookupManager {
+    public typealias Username = String
 
     private enum CachedLookupResult {
         case found(username: Username)
@@ -57,13 +57,13 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
 
     private let cachedLookups: AtomicDictionary<Aci, CachedLookupResult>
 
-    init() {
+    public init() {
         cachedLookups = .init(lock: .init())
     }
 
     // MARK: - UsernameLookupManager
 
-    func fetchUsername(
+    public func fetchUsername(
         forAci aci: Aci,
         transaction: DBReadTransaction
     ) -> Username? {
@@ -83,7 +83,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
         return nil
     }
 
-    func fetchUsernames(
+    public func fetchUsernames(
         forAddresses addresses: AnySequence<SignalServiceAddress>,
         transaction: DBReadTransaction
     ) -> [Username?] {
@@ -94,7 +94,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
         }
     }
 
-    func saveUsername(
+    public func saveUsername(
         _ username: Username?,
         forAci aci: Aci,
         transaction: DBWriteTransaction

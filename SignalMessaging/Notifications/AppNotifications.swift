@@ -1042,7 +1042,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                         groupUpdateAuthor = nil
                     case .newGroup(_, let updateMetadata), .modelDiff(_, _, let updateMetadata):
                         switch updateMetadata.source {
-                        case .unknown:
+                        case .unknown, .localUser:
                             groupUpdateAuthor = nil
                         case .legacyE164(let e164):
                             groupUpdateAuthor = .init(e164)

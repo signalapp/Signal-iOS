@@ -26,18 +26,6 @@ class OWSContactsManagerSwiftValues {
     }
 }
 
-// MARK: Build for ObjC
-
-extension OWSContactsManagerSwiftValues {
-    /// This method allows ObjC code to get an instance of this class, without
-    /// exposing the Swift-only types required by the constructor. Note that
-    /// this method will fail if ``DependenciesBridge`` has not yet been
-    /// created.
-    static func makeWithValuesFromDependenciesBridge() -> OWSContactsManagerSwiftValues {
-        .init(usernameLookupManager: DependenciesBridge.shared.usernameLookupManager)
-    }
-}
-
 // MARK: - Some caches
 
 // TODO: Should we use these caches in NSE?

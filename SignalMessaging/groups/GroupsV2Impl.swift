@@ -2042,7 +2042,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: dmToken,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSource: .aci(localIdentifiers.aci),
+                    groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
@@ -2087,7 +2087,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     groupThread: groupThread,
                     groupModel: groupModel,
                     disappearingMessageToken: dmToken,
-                    groupUpdateSource: .aci(localIdentifiers.aci),
+                    groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     transaction: transaction
                 )
 
@@ -2237,7 +2237,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 oldDisappearingMessageToken: dmToken,
                 newDisappearingMessageToken: dmToken,
                 newlyLearnedPniToAciAssociations: [:],
-                groupUpdateSource: .aci(localIdentifiers.aci),
+                groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
             )

@@ -6,6 +6,13 @@
 import Foundation
 import SignalCoreKit
 
+/// Represents a specific update made to a group that can be presented to the
+/// user as part of a ``TSInfoMessage``.
+///
+/// Legacy info messages produce these by "diffing" group models from
+/// "before/after" the update, while new info messages produce these from
+/// ``TSInfoMessage/PersistableGroupUpdateItem``s that are "precomputed" when the
+/// info message is created.
 public enum DisplayableGroupUpdateItem {
     case genericUpdateByLocalUser
     case genericUpdateByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
@@ -188,6 +195,9 @@ public enum DisplayableGroupUpdateItem {
     case otherUserJoinedViaInviteLink(userName: String, userAddress: SignalServiceAddress)
 
     case sequenceOfInviteLinkRequestAndCancels(userName: String, userAddress: SignalServiceAddress, count: UInt, isTail: Bool)
+}
+
+public extension TSInfoMessage.PersistableGroupUpdateItem {
 
     /// Should this update appear as a group preview in the inbox?
     var shouldAppearInInbox: Bool {
@@ -201,6 +211,9 @@ public enum DisplayableGroupUpdateItem {
             return true
         }
     }
+}
+
+extension DisplayableGroupUpdateItem {
 
     /// Localized text representing this update.
     public var localizedText: NSAttributedString {

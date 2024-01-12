@@ -6,13 +6,20 @@
 import Foundation
 import LibSignalClient
 
-public enum GroupUpdateSource {
+public indirect enum GroupUpdateSource {
     /// No source found.
     case unknown
+
+    /// Source known to be the local user. The original source
+    /// cannot itself be localUser or unknown.
+    case localUser(originalSource: GroupUpdateSource)
+
     /// Legacy update (pre-gv2) with only an e164.
     case legacyE164(E164)
+
     /// Standard case. Most updates come from an aci.
     case aci(Aci)
+
     /// Only case at time of writing where an update comes
     /// from a pni; a user invited by pni rejected that invite.
     case rejectedInviteToPni(Pni)
@@ -26,7 +33,7 @@ public enum GroupUpdateSource {
 
 extension GroupUpdateSource {
 
-    public func serviceId() -> ServiceId? {
+    public func serviceIdUnsafeForLocalUserComparison() -> ServiceId? {
         switch self {
         case .unknown:
             return nil
@@ -36,6 +43,8 @@ extension GroupUpdateSource {
             return aci
         case .rejectedInviteToPni(let pni):
             return pni
+        case .localUser(let originalSource):
+            return originalSource.serviceIdUnsafeForLocalUserComparison()
         }
     }
 }
@@ -46,80 +55,30 @@ extension TSInfoMessage {
 
     // MARK: - Serialization
 
-    private enum GroupUpdateSourceRaw: Int {
-        /// Historically we serialized the updater as a SignalServiceAddress,
-        /// so it could be an e164, aci, pni, or unknown.
-        /// If it is a pni, it _must_ be from an update
-        /// where a pni invitee rejected the invite. All other
-        /// cases use aci, or were created after the introduction
-        /// of this type and therefore would not use the legacy case.
-        case legacy = 0
-        case aci = 1
-        case rejectedInviteToPni = 2
-    }
-
-    internal static func insertGroupUpdateSource(
-        _ groupUpdateSource: GroupUpdateSource,
-        intoInfoMessageUserInfoDict userInfoDict: inout [InfoMessageUserInfoKey: Any],
-        localIdentifiers: LocalIdentifiers
-    ) {
-        switch groupUpdateSource {
-        case .unknown:
-            // Don't insert anything.
-            return
-        case .legacyE164(let e164):
-            // We really shouldn't be inserting these in the modern day...
-            owsFailDebug("Serializing e164 group updater!")
-            userInfoDict[.groupUpdateSourceType] = GroupUpdateSourceRaw.legacy.rawValue
-            userInfoDict[.groupUpdateSourceLegacyAddress] = SignalServiceAddress(e164)
-            userInfoDict[.legacyUpdaterKnownToBeLocalUser] = localIdentifiers.contains(phoneNumber: e164)
-        case .aci(let aci):
-            userInfoDict[.groupUpdateSourceType] = GroupUpdateSourceRaw.aci.rawValue
-            userInfoDict[.groupUpdateSourceAciData] = Data(aci.serviceIdBinary)
-        case .rejectedInviteToPni(let pni):
-            userInfoDict[.groupUpdateSourceType] = GroupUpdateSourceRaw.rejectedInviteToPni.rawValue
-            userInfoDict[.groupUpdateSourcePniData] = Data(pni.serviceIdBinary)
-        }
-    }
-
-    internal static func groupUpdateSource(
+    internal static func legacyGroupUpdateSource(
         infoMessageUserInfoDict: [InfoMessageUserInfoKey: Any]?
     ) -> GroupUpdateSource {
         guard let infoMessageUserInfoDict else {
             return .unknown
         }
 
-        guard let rawType = infoMessageUserInfoDict[.groupUpdateSourceType] as? Int else {
-            return legacyGroupUpdateSource(infoMessageUserInfoDict: infoMessageUserInfoDict)
-        }
-        switch GroupUpdateSourceRaw(rawValue: rawType) {
-        case .none:
-            owsFailDebug("Unknown group update source")
-            return legacyGroupUpdateSource(infoMessageUserInfoDict: infoMessageUserInfoDict)
-        case .legacy:
-            return legacyGroupUpdateSource(infoMessageUserInfoDict: infoMessageUserInfoDict)
-        case .aci:
-            guard
-                let aciData = infoMessageUserInfoDict[.groupUpdateSourceAciData] as? Data,
-                let aci = try? Aci.parseFrom(serviceIdBinary: aciData)
-            else {
-                return .unknown
+        // Legacy cases stored if they were known local users.
+        let isKnownLocalUser: () -> Bool = {
+            if let storedValue = infoMessageUserInfoDict[.legacyUpdaterKnownToBeLocalUser] as? Bool {
+                return storedValue
             }
-            return .aci(aci)
-        case .rejectedInviteToPni:
-            guard
-                let pniData = infoMessageUserInfoDict[.groupUpdateSourcePniData] as? Data,
-                let pni = try? Pni.parseFrom(serviceIdBinary: pniData)
-            else {
-                return .unknown
-            }
-            return .rejectedInviteToPni(pni)
-        }
-    }
 
-    private static func legacyGroupUpdateSource(
-        infoMessageUserInfoDict: [InfoMessageUserInfoKey: Any]
-    ) -> GroupUpdateSource {
+            // Check for legacy persisted enum state.
+            if
+                let legacyPrecomputed = infoMessageUserInfoDict[.legacyGroupUpdateItems]
+                    as? LegacyPersistableGroupUpdateItemsWrapper,
+                case let .inviteRemoved(_, wasLocalUser) = legacyPrecomputed.updateItems.first
+            {
+                return wasLocalUser
+            }
+            return false
+        }
+
         guard let address = infoMessageUserInfoDict[.groupUpdateSourceLegacyAddress] as? SignalServiceAddress else {
             return .unknown
         }
@@ -132,9 +91,17 @@ extension TSInfoMessage {
             // Maybe other cases got added in the future, but if they did they'd
             // not use the legacy address storage, so if we find a legacy address
             // with a Pni, it _must_ be from the pni invite rejection case.
-            return .rejectedInviteToPni(pni)
+            if isKnownLocalUser() {
+                return .localUser(originalSource: .rejectedInviteToPni(pni))
+            } else {
+                return .rejectedInviteToPni(pni)
+            }
         } else if let e164 = address.e164 {
-            return .legacyE164(e164)
+            if isKnownLocalUser() {
+                return .localUser(originalSource: .legacyE164(e164))
+            } else {
+                return .legacyE164(e164)
+            }
         } else {
             return .unknown
         }

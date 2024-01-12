@@ -1146,44 +1146,17 @@ extension CVComponentSystemMessage {
             owsFailDebug("TSInfoMessageAddGroupToProfileWhitelistOffer")
             return nil
         case .typeGroupUpdate:
-            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-                tx: transaction.asV2Read
-            )
-            switch infoMessage.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
-
-            case .legacyRawString, .nonGroupUpdate:
-                return nil
-
-            case .precomputed(let precomputedItems):
-                let thread = { infoMessage.thread(tx: transaction) as? TSGroupThread }
-                return precomputedItems.updateItems
-                    .lazy
-                    .compactMap {
-                        $0.cvComponentAction(
-                            groupThread: thread,
-                            contactsManager: contactsManager,
-                            tx: transaction
-                        )
-                    }
-                    .first
-
-            case .newGroup(let newGroupModel, let updateMetadata):
-                return action(
-                    forOldGroupModel: nil,
-                    newGroupModel: newGroupModel.groupModel,
-                    infoMessage: infoMessage,
-                    changeAuthor: updateMetadata.source,
-                    tx: transaction
-                )
-            case .modelDiff(let oldGroupModel, let newGroupModel, let updateMetadata):
-                return action(
-                    forOldGroupModel: oldGroupModel.groupModel,
-                    newGroupModel: newGroupModel.groupModel,
-                    infoMessage: infoMessage,
-                    changeAuthor: updateMetadata.source,
-                    tx: transaction
-                )
-            }
+            let thread = { infoMessage.thread(tx: transaction) as? TSGroupThread }
+            return infoMessage.computedGroupUpdateItems(tx: transaction)?
+                .lazy
+                .compactMap {
+                    $0.cvComponentAction(
+                        groupThread: thread,
+                        contactsManager: contactsManager,
+                        tx: transaction
+                    )
+                }
+                .first
         case .typeGroupQuit:
             return nil
         case .unknownProtocolVersion:
@@ -1319,102 +1292,6 @@ extension CVComponentSystemMessage {
         case .sessionSwitchover:
             return nil
         }
-    }
-
-    private static func action(
-        forOldGroupModel oldGroupModel: TSGroupModel?,
-        newGroupModel: TSGroupModel,
-        infoMessage: TSInfoMessage,
-        changeAuthor: GroupUpdateSource,
-        tx: SDSAnyReadTransaction
-    ) -> Action? {
-        guard
-            let displayableGroupUpdateItems = infoMessage.displayableGroupUpdateItems(tx: tx),
-            !displayableGroupUpdateItems.isEmpty
-        else {
-            return nil
-        }
-
-        for updateItem in displayableGroupUpdateItems {
-            switch updateItem {
-            case .inviteFriendsToNewlyCreatedGroup:
-                return Action(
-                    title: OWSLocalizedString(
-                        "GROUPS_INVITE_FRIENDS_BUTTON",
-                        comment: "Label for 'invite friends to group' button."
-                    ),
-                    accessibilityIdentifier: "group_invite_friends",
-                    action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel)
-                )
-            case .wasMigrated:
-                return Action(
-                    title: CommonStrings.learnMore,
-                    accessibilityIdentifier: "group_migration_learn_more",
-                    action: .didTapGroupMigrationLearnMore
-                )
-            case
-                    .descriptionChangedByLocalUser(let newGroupDescription),
-                    .descriptionChangedByOtherUser(let newGroupDescription, _, _),
-                    .descriptionChangedByUnknownUser(let newGroupDescription):
-                return Action(
-                    title: CommonStrings.viewButton,
-                    accessibilityIdentifier: "group_description_view",
-                    action: .didTapViewGroupDescription(newGroupDescription: newGroupDescription)
-                )
-            case let .sequenceOfInviteLinkRequestAndCancels(_, _, _, isTail):
-                switch changeAuthor {
-                case .unknown, .legacyE164, .rejectedInviteToPni:
-                    owsFailDebug("Missing parameters for join request sequence")
-                    return nil
-                case .aci(let requesterAci):
-                    return .sequenceOfInviteLinkRequestAndCancelsAction(
-                        requester: requesterAci,
-                        isTail: isTail,
-                        groupThread: {
-                            TSGroupThread.fetch(
-                                groupId: newGroupModel.groupId,
-                                transaction: tx
-                            )
-                        },
-                        contactsManager: contactsManager,
-                        tx: tx
-                    )
-                }
-            default:
-                break
-            }
-        }
-
-        guard let oldGroupModel else {
-            return nil
-        }
-
-        let newlyRequestingMembers = newGroupModel.groupMembership.requestingMembers
-            .subtracting(oldGroupModel.groupMembership.requestingMembers)
-
-        guard !newlyRequestingMembers.isEmpty else {
-            return nil
-        }
-
-        let title: String = {
-            if newlyRequestingMembers.count > 1 {
-                return OWSLocalizedString(
-                    "GROUPS_VIEW_REQUESTS_BUTTON",
-                    comment: "Label for button that lets the user view the requests to join the group."
-                )
-            } else {
-                return OWSLocalizedString(
-                    "GROUPS_VIEW_REQUEST_BUTTON",
-                    comment: "Label for button that lets the user view the request to join the group."
-                )
-            }
-        }()
-
-        return Action(
-            title: title,
-            accessibilityIdentifier: "show_group_requests_button",
-            action: .didTapShowConversationSettingsAndShowMemberRequests
-        )
     }
 
     private static func action(forCall call: TSCall,

@@ -92,12 +92,18 @@ public class AppSetup {
         let udManager = OWSUDManagerImpl()
         let versionedProfiles = VersionedProfilesImpl()
 
+        let usernameLookupManager = UsernameLookupManagerImpl()
+        let contactsManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+            usernameLookupManager: usernameLookupManager
+        ))
+
         let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
             appContext: appContext,
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
+            contactsManager: contactsManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -124,6 +130,7 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             udManager: udManager,
+            usernameLookupManager: usernameLookupManager,
             versionedProfiles: versionedProfiles,
             websocketFactory: webSocketFactory
         )
@@ -141,7 +148,6 @@ public class AppSetup {
         // MARK: SSK environment properties
 
         let appExpiry = dependenciesBridge.appExpiry
-        let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
         let messageReceiver = MessageReceiver()

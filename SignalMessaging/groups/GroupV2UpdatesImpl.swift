@@ -189,7 +189,9 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             transaction: transaction
         ).groupThread
 
-        let authoritativeProfileKeys = changedGroupModel.profileKeys.filter { $0.key == changedGroupModel.updateSource.serviceId() }
+        let authoritativeProfileKeys = changedGroupModel.profileKeys.filter {
+            $0.key == changedGroupModel.updateSource.serviceIdUnsafeForLocalUserComparison()
+        }
         GroupManager.storeProfileKeysFromGroupProtos(
             allProfileKeysByAci: changedGroupModel.profileKeys,
             authoritativeProfileKeysByAci: authoritativeProfileKeys
@@ -726,6 +728,8 @@ private extension GroupV2UpdatesImpl {
                     .init(pni),
                     transaction: transaction
                 )
+            case .localUser:
+                localUserWasAddedByBlockedUser = false
             }
 
             if localUserWasAddedByBlockedUser {
@@ -784,7 +788,10 @@ private extension GroupV2UpdatesImpl {
                 throw OWSAssertionError("Missing first group change with snapshot")
             }
 
-            let groupUpdateSource = try firstGroupChange.author(groupV2Params: groupV2Params)
+            let groupUpdateSource = try firstGroupChange.author(
+                groupV2Params: groupV2Params,
+                localIdentifiers: localIdentifiers
+            )
 
             var builder = try TSGroupModelBuilder.builderForSnapshot(
                 groupV2Snapshot: snapshot,
@@ -963,7 +970,7 @@ private extension GroupV2UpdatesImpl {
         ).groupThread
 
         switch groupUpdateSource {
-        case .unknown, .legacyE164, .rejectedInviteToPni:
+        case .unknown, .legacyE164, .rejectedInviteToPni, .localUser:
             break
         case .aci(let groupUpdateSourceAci):
             if let groupUpdateProfileKey = newProfileKeys[groupUpdateSourceAci] {
@@ -1291,9 +1298,15 @@ extension GroupsV2Error: IsRetryableProvider {
 }
 
 private extension GroupV2Change {
-    func author(groupV2Params: GroupV2Params) throws -> GroupUpdateSource {
+    func author(
+        groupV2Params: GroupV2Params,
+        localIdentifiers: LocalIdentifiers
+    ) throws -> GroupUpdateSource {
         if let changeActionsProto = changeActionsProto {
-            return try changeActionsProto.updateSource(groupV2Params: groupV2Params)
+            return try changeActionsProto.updateSource(
+                groupV2Params: groupV2Params,
+                localIdentifiers: localIdentifiers
+            ).0
         }
         return .unknown
     }
@@ -1301,16 +1314,19 @@ private extension GroupV2Change {
 
 public extension GroupsProtoGroupChangeActions {
 
-    func updateSource(groupV2Params: GroupV2Params) throws -> GroupUpdateSource {
+    func updateSource(
+        groupV2Params: GroupV2Params,
+        localIdentifiers: LocalIdentifiers
+    ) throws -> (GroupUpdateSource, ServiceId?) {
         guard let changeAuthorUuidData = self.sourceUuid else {
             owsFailDebug("Explicit changes should always have authors")
-            return .unknown
+            return (.unknown, nil)
         }
 
         let serviceId = try groupV2Params.serviceId(for: changeAuthorUuidData)
         switch serviceId.concreteType {
         case .aci(let aci):
-            return .aci(aci)
+            return (.aci(aci), aci)
         case .pni(let pni):
             // As of now, the only update with a pni author is
             // declining a pni invite. If this changes, differentiate
@@ -1322,7 +1338,14 @@ public extension GroupsProtoGroupChangeActions {
             // or before/after model we get from the server.
             owsAssertDebug(self.deletePendingMembers.count == 1)
             owsAssertDebug(self.deletePendingMembers.first?.deletedUserID == Data(pni.serviceIdBinary))
-            return .rejectedInviteToPni(pni)
+
+            // At this point we are processing a new set of group changes; its safe
+            // to compare our pni against this pni.
+            if localIdentifiers.contains(serviceId: pni) {
+                return (.localUser(originalSource: .rejectedInviteToPni(pni)), pni)
+            } else {
+                return (.rejectedInviteToPni(pni), pni)
+            }
         }
     }
 }

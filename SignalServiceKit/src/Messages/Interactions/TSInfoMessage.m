@@ -20,12 +20,6 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
     = @"InfoMessageUserInfoKeyNewDisappearingMessageToken";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceLegacyAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceType
-    = @"InfoMessageUserInfoKeyGroupUpdateSourceType";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAciData
-    = @"InfoMessageUserInfoKeyGroupUpdateSourceAci";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourcePniData
-    = @"InfoMessageUserInfoKeyGroupUpdateSourcePni";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyLegacyUpdaterKnownToBeLocalUser
     = @"InfoMessageUserInfoKeyUpdaterWasLocalUser";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";

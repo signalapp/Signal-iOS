@@ -30,9 +30,14 @@ public protocol GroupUpdateInfoMessageInserter {
 }
 
 class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
-    let notificationsManager: NotificationsProtocol
+    private let groupUpdateItemBuilder: GroupUpdateItemBuilder
+    private let notificationsManager: NotificationsProtocol
 
-    init(notificationsManager: NotificationsProtocol) {
+    init(
+        groupUpdateItemBuilder: GroupUpdateItemBuilder,
+        notificationsManager: NotificationsProtocol
+    ) {
+        self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.notificationsManager = notificationsManager
     }
 
@@ -92,102 +97,88 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         groupUpdateSource: GroupUpdateSource,
         transaction v2Transaction: DBWriteTransaction
     ) {
-        let transaction = SDSDB.shimOnlyBridge(v2Transaction)
-
-        var updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem] = []
+        let sdsTransaction = SDSDB.shimOnlyBridge(v2Transaction)
+        let updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem]
 
         if
             let oldGroupModel,
-            let oldDisappearingMessageToken,
-            oldDisappearingMessageToken == newDisappearingMessageToken,
-            let precomputedUpdateType = PrecomputedUpdateType.from(
+            let invitedPniPromotions: InvitedPnisPromotionToFullMemberAcis = .from(
                 oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
                 newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations
             )
         {
-            switch precomputedUpdateType {
-            case
-                    .newJoinRequestFromSingleUser,
-                    .canceledJoinRequestFromSingleUser,
-                    .bannedMemberChange:
-                switch handlePossiblyCollapsibleMembershipChange(
-                    precomputedUpdateType: precomputedUpdateType,
+            /// We can't accurately detect PNI -> ACI promotions via the group
+            /// model approach we'll take below, so we need to check for it in a
+            /// one-off fashion here before going into that flow.
+            updateItemsForNewMessage = invitedPniPromotions.promotions.map { (pni, aci) in
+                return .invitedPniPromotedToFullMemberAci(
+                    newMember: aci.codableUuid,
+                    inviter: oldGroupModel.groupMembership.addedByAci(
+                        forInvitedMember: .init(pni)
+                    )?.codableUuid
+                )
+            }
+        } else {
+            let persistibleGroupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem] = {
+                if let oldGroupModel {
+                    return groupUpdateItemBuilder.precomputedUpdateItemsByDiffingModels(
+                        oldGroupModel: oldGroupModel,
+                        newGroupModel: newGroupModel,
+                        oldDisappearingMessageToken: oldDisappearingMessageToken,
+                        newDisappearingMessageToken: newDisappearingMessageToken,
+                        localIdentifiers: localIdentifiers,
+                        groupUpdateSource: groupUpdateSource,
+                        tx: v2Transaction
+                    )
+                } else {
+                    return groupUpdateItemBuilder.precomputedUpdateItemsForNewGroup(
+                        newGroupModel: newGroupModel,
+                        newDisappearingMessageToken: newDisappearingMessageToken,
+                        localIdentifiers: localIdentifiers,
+                        groupUpdateSource: groupUpdateSource,
+                        tx: v2Transaction
+                    )
+                }
+            }()
+
+            let possiblyCollapsibleMembershipChange: PossiblyCollapsibleMembershipChange? = {
+                if
+                    persistibleGroupUpdateItems.count == 1,
+                    case let .otherUserRequestedToJoin(requesterAci) = persistibleGroupUpdateItems.first!
+                {
+                    return .newJoinRequestFromSingleUser(requestingAci: requesterAci.wrappedValue)
+                } else if
+                    persistibleGroupUpdateItems.count == 1,
+                    case let .otherUserRequestCanceledByOtherUser(requesterAci) = persistibleGroupUpdateItems.first!
+                {
+                    return .canceledJoinRequestFromSingleUser(cancelingAci: requesterAci.wrappedValue)
+                }
+
+                return nil
+            }()
+
+            if
+                let possiblyCollapsibleMembershipChange,
+                let collapseResult = handlePossiblyCollapsibleMembershipChange(
+                    possiblyCollapsibleMembershipChange: possiblyCollapsibleMembershipChange,
                     localIdentifiers: localIdentifiers,
                     groupThread: groupThread,
-                    oldGroupModel: oldGroupModel,
                     newGroupModel: newGroupModel,
-                    oldDisappearingMessageToken: oldDisappearingMessageToken,
-                    newDisappearingMessageToken: newDisappearingMessageToken,
-                    transaction: transaction
-                ) {
-                case nil:
-                    break
-                case .updatesCollapsedIntoExistingMessage?:
+                    transaction: sdsTransaction
+                )
+            {
+                switch collapseResult {
+                case .updatesCollapsedIntoExistingMessage:
+                    // If we collapsed this update into an existing info
+                    // message, we should bail out before doing anything with a
+                    // new info message.
                     return
-                case .updateItemForNewMessage(let updateItem)?:
-                    updateItemsForNewMessage.append(updateItem)
+                case let .updateItemForNewMessage(persistableGroupUpdateItem):
+                    updateItemsForNewMessage = [persistableGroupUpdateItem]
                 }
-            case .invitedPnisPromotedToFullMemberAcis(let promotions):
-                for (pni, aci) in promotions {
-                    updateItemsForNewMessage.append(
-                        .invitedPniPromotedToFullMemberAci(
-                            newMember: aci.codableUuid,
-                            inviter: oldGroupModel.groupMembership.addedByAci(
-                                forInvitedMember: .init(pni)
-                            )?.codableUuid
-                        )
-                    )
-                }
-            case .invitesRemoved(let inviteeServiceIds):
-                // Maps from the remover's aci (or unknown) to count.
-                var unnamedInvitesRemoved = [Aci?: Int]()
-                var inviteesRemovedByLocalUser = [ServiceId]()
-                for inviteeServiceId in inviteeServiceIds {
-                    let item = Self.persistableUpdateForRemovedInvite(
-                        inviteeServiceId: inviteeServiceId,
-                        groupUpdateSource: groupUpdateSource,
-                        oldGroupMembership: oldGroupModel.groupMembership,
-                        localIdentifiers: localIdentifiers,
-                        unnamedInvitesRemoved: &unnamedInvitesRemoved,
-                        inviteesRemovedByLocalUser: &inviteesRemovedByLocalUser
-                    )
-                    if let item {
-                        updateItemsForNewMessage.append(item)
-                    }
-                }
-                if inviteesRemovedByLocalUser.count == 1 {
-                    updateItemsForNewMessage.append(
-                        .otherUserInviteRevokedByLocalUser(
-                            invitee: inviteesRemovedByLocalUser[0].codableUppercaseString
-                        )
-                    )
-                } else if inviteesRemovedByLocalUser.count > 1 {
-                    updateItemsForNewMessage.append(
-                        .unnamedUserInvitesWereRevokedByLocalUser(
-                            count: UInt(inviteesRemovedByLocalUser.count)
-                        )
-                    )
-                }
-                for (removerAci, removedInviteCount) in unnamedInvitesRemoved {
-                    guard removedInviteCount > 0 else {
-                        continue
-                    }
-                    if let removerAci {
-                        updateItemsForNewMessage.append(
-                            .unnamedUserInvitesWereRevokedByOtherUser(
-                                updaterAci: removerAci.codableUuid,
-                                count: UInt(removedInviteCount)
-                            )
-                        )
-                    } else {
-                        updateItemsForNewMessage.append(
-                            .unnamedUserInvitesWereRevokedByUnknownUser(
-                                count: UInt(removedInviteCount)
-                            )
-                        )
-                    }
-                }
+            } else {
+                updateItemsForNewMessage = persistibleGroupUpdateItems
             }
         }
 
@@ -195,6 +186,13 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
         userInfoForNewMessage[.newGroupModel] = newGroupModel
         userInfoForNewMessage[.newDisappearingMessageToken] = newDisappearingMessageToken
+
+        /// This is true because the list of group update items we
+        /// compute above will never be empty. Even if we get a strange group
+        /// update that somehow doesn't produce a diff, we'll get back a list
+        /// with a single "generic group update" item in it.
+        owsAssert(!updateItemsForNewMessage.isEmpty)
+        userInfoForNewMessage[.groupUpdateItems] = TSInfoMessage.PersistableGroupUpdateItemsWrapper(updateItemsForNewMessage)
 
         if let oldGroupModel = oldGroupModel {
             userInfoForNewMessage[.oldGroupModel] = oldGroupModel
@@ -204,36 +202,22 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             userInfoForNewMessage[.oldDisappearingMessageToken] = oldDisappearingMessageToken
         }
 
-        TSInfoMessage.insertGroupUpdateSource(
-            groupUpdateSource,
-            intoInfoMessageUserInfoDict: &userInfoForNewMessage,
-            localIdentifiers: localIdentifiers
-        )
-
-        if !updateItemsForNewMessage.isEmpty {
-            userInfoForNewMessage[.groupUpdateItems] = TSInfoMessage.PersistableGroupUpdateItemsWrapper(updateItemsForNewMessage)
-        }
-
         let infoMessage = TSInfoMessage(
             thread: groupThread,
             messageType: .typeGroupUpdate,
             infoMessageUserInfo: userInfoForNewMessage
         )
-        infoMessage.anyInsert(transaction: transaction)
+        infoMessage.anyInsert(transaction: sdsTransaction)
 
         let wasLocalUserInGroup = oldGroupModel?.groupMembership.isLocalUserMemberOfAnyKind ?? false
         let isLocalUserInGroup = newGroupModel.groupMembership.isLocalUserMemberOfAnyKind
 
         let isLocalUserUpdate: Bool
         switch groupUpdateSource {
-        case .unknown:
+        case .localUser:
+            isLocalUserUpdate = true
+        default:
             isLocalUserUpdate = false
-        case .legacyE164(let e164):
-            isLocalUserUpdate = localIdentifiers.contains(phoneNumber: e164)
-        case .aci(let aci):
-            isLocalUserUpdate = localIdentifiers.contains(serviceId: aci)
-        case .rejectedInviteToPni(let pni):
-            isLocalUserUpdate = localIdentifiers.contains(serviceId: pni)
         }
         if isLocalUserUpdate {
             infoMessage.markAsRead(
@@ -241,7 +225,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 thread: groupThread,
                 circumstance: .onThisDevice,
                 shouldClearNotifications: true,
-                transaction: transaction
+                transaction: sdsTransaction
             )
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
@@ -249,107 +233,58 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 forTSMessage: infoMessage,
                 thread: groupThread,
                 wantsSound: true,
-                transaction: transaction
+                transaction: sdsTransaction
             )
         }
     }
+}
 
-    private static func persistableUpdateForRemovedInvite(
-        inviteeServiceId: ServiceId,
-        groupUpdateSource: GroupUpdateSource,
+// MARK: -
+
+/// Represents a group change that consists exclusively of invited PNIs being
+/// promoted to a full-member ACI.
+///
+/// When a user is invited to a group by PNI and accept, their ACI joins the
+/// group as a full member. To a ``TSGroupModel`` diff that looks like "someone
+/// declined an invite and someone entirely unrelated joined the group", because
+/// PNI:ACI association isn't tracked in the group model.
+///
+/// Consequently, we check for this in a one-off fashion here.
+private struct InvitedPnisPromotionToFullMemberAcis {
+    let promotions: [(pni: Pni, aci: Aci)]
+
+    private init(promotions: [(pni: Pni, aci: Aci)]) {
+        self.promotions = promotions
+    }
+
+    static func from(
         oldGroupMembership: GroupMembership,
-        localIdentifiers: LocalIdentifiers,
-        unnamedInvitesRemoved: inout [Aci?: Int],
-        inviteesRemovedByLocalUser: inout [ServiceId]
-    ) -> TSInfoMessage.PersistableGroupUpdateItem? {
-        let inviteeIsLocalUser = localIdentifiers.contains(
-            serviceId: inviteeServiceId
-        )
-        let inviterAci = oldGroupMembership.addedByAci(
-            forInvitedMember: .init(inviteeServiceId)
-        )
-        let inviterIsLocalUser = inviterAci == localIdentifiers.aci
-        switch groupUpdateSource {
-        case .unknown:
-            if inviteeIsLocalUser {
-                return .localUserInviteRevokedByUnknownUser
-            } else {
-                unnamedInvitesRemoved[nil] = (unnamedInvitesRemoved[nil] ?? 0) + 1
-                return nil
-            }
-        case .legacyE164:
-            owsFailDebug("Cannot remove invites from an e164")
-            return nil
-        case .aci(let revokerAci):
-            let revokerIsLocalUser = revokerAci == localIdentifiers.aci
-            if inviteeIsLocalUser {
-                if revokerIsLocalUser {
-                    if let inviterAci {
-                        return .localUserDeclinedInviteFromInviter(
-                            inviterAci: inviterAci.codableUuid
-                        )
-                    } else {
-                        return .localUserDeclinedInviteFromUnknownUser
-                    }
-                } else {
-                    return .localUserInviteRevoked(
-                        revokerAci: revokerAci.codableUuid
-                    )
-                }
-            } else if revokerAci == inviteeServiceId {
-                if inviterIsLocalUser {
-                    return .otherUserDeclinedInviteFromLocalUser(
-                        invitee: inviteeServiceId.codableUppercaseString
-                    )
-                } else if let inviterAci {
-                    return .otherUserDeclinedInviteFromInviter(
-                        invitee: inviteeServiceId.codableUppercaseString,
-                        inviterAci: inviterAci.codableUuid
-                    )
-                } else {
-                    return .otherUserDeclinedInviteFromUnknownUser(
-                        invitee: inviteeServiceId.codableUppercaseString
-                    )
-                }
-            } else {
-                if revokerIsLocalUser {
-                    inviteesRemovedByLocalUser.append(inviteeServiceId)
-                    return nil
-                } else {
-                    unnamedInvitesRemoved[revokerAci] =
-                        (unnamedInvitesRemoved[revokerAci] ?? 0) + 1
-                    return nil
-                }
-            }
-        case .rejectedInviteToPni(let revokerPni):
-            // Only two options: we rejected our own pni invite,
-            // or another user rejected their own pni invite.
-            if revokerPni == localIdentifiers.pni {
-                if let inviterAci {
-                    return .localUserDeclinedInviteFromInviter(
-                        inviterAci: inviterAci.codableUuid
-                    )
-                } else {
-                    return.localUserDeclinedInviteFromUnknownUser
-                }
-            } else {
-                if let inviterAci {
-                    if inviterAci == localIdentifiers.aci {
-                        return .otherUserDeclinedInviteFromLocalUser(
-                            invitee: inviteeServiceId.codableUppercaseString
-                        )
-                    } else {
-                        return.otherUserDeclinedInviteFromInviter(
-                            invitee: inviteeServiceId.codableUppercaseString,
-                            inviterAci: inviterAci.codableUuid
-                        )
-                    }
-                } else {
-                    return .otherUserDeclinedInviteFromUnknownUser(
-                        invitee: inviteeServiceId.codableUppercaseString
-                    )
-                }
+        newGroupMembership: GroupMembership,
+        newlyLearnedPniToAciAssociations: [Pni: Aci]
+    ) -> InvitedPnisPromotionToFullMemberAcis? {
+        let membersDiff: Set<ServiceId> = newGroupMembership.allMembersOfAnyKindServiceIds
+            .symmetricDifference(oldGroupMembership.allMembersOfAnyKindServiceIds)
+
+        var remainingMembers = membersDiff
+        var promotions: [(pni: Pni, aci: Aci)] = []
+
+        for possiblyInvitedPni in membersDiff.compactMap({ $0 as? Pni }) {
+            if
+                oldGroupMembership.isInvitedMember(possiblyInvitedPni),
+                let fullMemberAci = newlyLearnedPniToAciAssociations[possiblyInvitedPni],
+                newGroupMembership.isFullMember(fullMemberAci)
+            {
+                remainingMembers.remove(possiblyInvitedPni)
+                remainingMembers.remove(fullMemberAci)
+
+                promotions.append((pni: possiblyInvitedPni, aci: fullMemberAci))
             }
         }
+
+        if remainingMembers.isEmpty, !promotions.isEmpty {
+            return InvitedPnisPromotionToFullMemberAcis(promotions: promotions)
+        }
+
+        return nil
     }
 }

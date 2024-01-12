@@ -7,6 +7,13 @@ import Foundation
 import LibSignalClient
 
 extension GroupUpdateInfoMessageInserterImpl {
+    /// Represents updates to a group's membership that may be possible to
+    /// collapse into existing info messages.
+    enum PossiblyCollapsibleMembershipChange {
+        case newJoinRequestFromSingleUser(requestingAci: Aci)
+        case canceledJoinRequestFromSingleUser(cancelingAci: Aci)
+    }
+
     /// Represents the result of collapsing updates into existing messages.
     enum CollapsibleMembershipChangeResult {
         /// Membership changes were collapsed into an existing, now-updated,
@@ -19,13 +26,10 @@ extension GroupUpdateInfoMessageInserterImpl {
     }
 
     func handlePossiblyCollapsibleMembershipChange(
-        precomputedUpdateType: PrecomputedUpdateType,
+        possiblyCollapsibleMembershipChange: PossiblyCollapsibleMembershipChange,
         localIdentifiers: LocalIdentifiers,
         groupThread: TSGroupThread,
-        oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
-        oldDisappearingMessageToken: DisappearingMessageToken,
-        newDisappearingMessageToken: DisappearingMessageToken,
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
         guard
@@ -37,8 +41,14 @@ extension GroupUpdateInfoMessageInserterImpl {
             return nil
         }
 
-        switch precomputedUpdateType {
+        switch possiblyCollapsibleMembershipChange {
         case .newJoinRequestFromSingleUser(let requestingAci):
+            /// By requesting and canceling over and over, a user who is not in
+            /// a group would be able to fill the group's chat history with info
+            /// messages detailing their actions. To address that, we'll
+            /// "collapse" a request/cancel event into a preexisting info
+            /// message, if appropriate, rather than letting the events pile up.
+
             guard localIdentifiers.aci != requestingAci else {
                 return nil
             }
@@ -50,6 +60,8 @@ extension GroupUpdateInfoMessageInserterImpl {
                 transaction: transaction
             )
         case .canceledJoinRequestFromSingleUser(let cancelingAci):
+            /// See the comment above for why we care about this case.
+
             guard localIdentifiers.aci != cancelingAci else {
                 return nil
             }
@@ -62,26 +74,6 @@ extension GroupUpdateInfoMessageInserterImpl {
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
-        case .bannedMemberChange:
-            switch mostRecentInfoMsg.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
-            case .legacyRawString, .nonGroupUpdate, .precomputed:
-                // Nothing to do for these types; they don't keep the group
-                // model on themselves.
-                return .updatesCollapsedIntoExistingMessage
-            case .newGroup, .modelDiff:
-                // If we know only banned members changed we don't want to make a
-                // new info message, and should simply update the most recent info
-                // message with the new group model so it accurately reflects the
-                // latest group state, i.e. is aware of the now-banned members.
-                mostRecentInfoMsg.setNewGroupModelForLegacyMessage(newGroupModel)
-                mostRecentInfoMsg.anyUpsert(transaction: transaction)
-            }
-
-            return .updatesCollapsedIntoExistingMessage
-        case
-                .invitedPnisPromotedToFullMemberAcis,
-                .invitesRemoved:
-            owsFail("Should never get here with a non-collapsible group update type!")
         }
     }
 
@@ -155,7 +147,8 @@ extension GroupUpdateInfoMessageInserterImpl {
 
         guard
             let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsSingleRequestToJoin(
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
+                tx: transaction
             ),
             cancelingAci == mostRecentInfoMsgJoiner
         else {
@@ -258,53 +251,46 @@ private extension TSInfoMessage {
         setGroupUpdateItemsWrapper(PersistableGroupUpdateItemsWrapper([singleUpdateItem]))
     }
 
-    func representsSingleRequestToJoin(localIdentifiers: LocalIdentifiers) -> Aci? {
+    func representsSingleRequestToJoin(
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyReadTransaction
+    ) -> Aci? {
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .newGroup, .nonGroupUpdate, .legacyRawString:
             return nil
         case .precomputed(let precomputedItems):
             switch precomputedItems.asSingleUpdateItem {
-            case .none,
-                .invitedPniPromotedToFullMemberAci,
-                .localUserDeclinedInviteFromInviter,
-                .localUserDeclinedInviteFromUnknownUser,
-                .otherUserDeclinedInviteFromLocalUser,
-                .otherUserDeclinedInviteFromInviter,
-                .otherUserDeclinedInviteFromUnknownUser,
-                .unnamedUserDeclinedInviteFromInviter,
-                .unnamedUserDeclinedInviteFromUnknownUser,
-                .localUserInviteRevoked,
-                .localUserInviteRevokedByUnknownUser,
-                .otherUserInviteRevokedByLocalUser,
-                .unnamedUserInvitesWereRevokedByLocalUser,
-                .unnamedUserInvitesWereRevokedByOtherUser,
-                .unnamedUserInvitesWereRevokedByUnknownUser:
-                return nil
             case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
                 guard isTail, count == 0 else {
                     return nil
                 }
                 return requester.wrappedValue
-            }
-        case let .modelDiff(oldGroupModel, newGroupModel, updateMetadata):
-
-            guard oldGroupModel.dmToken == newGroupModel.dmToken else {
+            case .localUserRequestedToJoin:
+                // Just calling out that we don't collapse the local user's requests.
+                return nil
+            case let .otherUserRequestedToJoin(requester):
+                return requester.wrappedValue
+            default:
                 return nil
             }
-
+        case .modelDiff:
+            // In the case of a model diff, convert to a displayable item first, and see if
+            // that displayable item is a single request to join. The displayable item
+            // generation logic already has logic to determine this case; no need to
+            // replicate it here (although this method is wasteful since it will fetch
+            // a bunch of metadata we throw away)
             guard
-                let membershipEvent = GroupUpdateInfoMessageInserterImpl.PrecomputedUpdateType.from(
-                    oldGroupMembership: oldGroupModel.groupModel.groupMembership,
-                    newGroupMembership: newGroupModel.groupModel.groupMembership,
-                    newlyLearnedPniToAciAssociations: [:]
+                let groupUpdateItems = computedGroupUpdateItems(
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
                 ),
-                case .newJoinRequestFromSingleUser(let requestingAci) = membershipEvent,
-                requestingAci == updateMetadata.source.serviceId()
+                groupUpdateItems.count == 1,
+                case let .otherUserRequestedToJoin(requesterAci) = groupUpdateItems.first!
             else {
                 return nil
             }
 
-            return requestingAci
+            return requesterAci.wrappedValue
         }
     }
 }

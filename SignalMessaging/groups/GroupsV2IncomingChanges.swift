@@ -70,17 +70,14 @@ public class GroupsV2IncomingChanges {
             throw GroupsV2Error.cantApplyChangesToPlaceholder
         }
         let groupV2Params = try oldGroupModel.groupV2Params()
-        let updateSource = try changeActionsProto.updateSource(groupV2Params: groupV2Params)
-        let changeAuthor: ServiceId
-        switch updateSource {
-        case .unknown, .legacyE164:
+        let (updateSource, changeAuthor) = try changeActionsProto.updateSource(
+            groupV2Params: groupV2Params,
+            localIdentifiers: localIdentifiers
+        )
+        guard let changeAuthor else {
             // Many change actions have author info, e.g. addedByUserID. But we can
             // safely assume that all actions in the "change actions" have the same author.
             throw OWSAssertionError("Missing changeAuthorUuid.")
-        case .aci(let aci):
-            changeAuthor = aci
-        case .rejectedInviteToPni(let pni):
-            changeAuthor = pni
         }
 
         guard changeActionsProto.hasRevision else {

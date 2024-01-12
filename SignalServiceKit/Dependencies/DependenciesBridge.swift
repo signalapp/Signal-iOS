@@ -96,6 +96,9 @@ public class DependenciesBridge {
     public let registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
+
+    public let signalRecipientStore: SignalRecipientStore
+
     public let socketManager: SocketManager
 
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
@@ -128,6 +131,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
+        contactsManager: ContactsManagerProtocol,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
@@ -154,6 +158,7 @@ public class DependenciesBridge {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         udManager: OWSUDManager,
+        usernameLookupManager: UsernameLookupManager,
         versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) -> DependenciesBridge {
@@ -163,6 +168,7 @@ public class DependenciesBridge {
             appVersion: appVersion,
             attachmentDownloads: attachmentDownloads,
             blockingManager: blockingManager,
+            contactsManager: contactsManager,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             earlyMessageManager: earlyMessageManager,
@@ -190,6 +196,7 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
             udManager: udManager,
+            usernameLookupManager: usernameLookupManager,
             versionedProfiles: versionedProfiles,
             websocketFactory: websocketFactory
         )
@@ -203,6 +210,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         attachmentDownloads: OWSAttachmentDownloads,
         blockingManager: BlockingManager,
+        contactsManager: ContactsManagerProtocol,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         earlyMessageManager: EarlyMessageManager,
@@ -230,6 +238,7 @@ public class DependenciesBridge {
         syncManager: SyncManagerProtocol,
         tsConstants: TSConstantsProtocol,
         udManager: OWSUDManager,
+        usernameLookupManager: UsernameLookupManager,
         versionedProfiles: VersionedProfilesSwift,
         websocketFactory: WebSocketFactory
     ) {
@@ -239,6 +248,9 @@ public class DependenciesBridge {
 
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
+
+        let signalRecipientStore = SignalRecipientStoreImpl()
+        self.signalRecipientStore = signalRecipientStore
 
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
@@ -311,6 +323,10 @@ public class DependenciesBridge {
         )
 
         self.groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
+            groupUpdateItemBuilder: GroupUpdateItemBuilderImpl(
+                contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
+                signalRecipientStore: signalRecipientStore
+            ),
             notificationsManager: notificationsManager
         )
 
@@ -550,7 +566,7 @@ public class DependenciesBridge {
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
             schedulers: schedulers
         )
-        self.usernameLookupManager = UsernameLookupManagerImpl()
+        self.usernameLookupManager = usernameLookupManager
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
         self.usernameLinkManager = UsernameLinkManagerImpl(
             db: db,
@@ -632,7 +648,7 @@ public class DependenciesBridge {
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientHidingManager: recipientHidingManager,
-                recipientStore: SignalRecipientStoreImpl(),
+                recipientStore: signalRecipientStore,
                 storyStore: StoryStoreImpl(),
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager

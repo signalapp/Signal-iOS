@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalMessaging
 import SignalServiceKit
 
 extension TSInfoMessage.PersistableGroupUpdateItem {
@@ -14,48 +15,65 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
         contactsManager: ContactsManagerProtocol,
         tx: SDSAnyReadTransaction
     ) -> CVComponentSystemMessage.Action? {
+        typealias Action = CVComponentSystemMessage.Action
+
         switch self {
-        case let .sequenceOfInviteLinkRequestAndCancels(requester, _, isTail):
-            return .sequenceOfInviteLinkRequestAndCancelsAction(
+        case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
+            if count == 0 {
+                // This is just a request to join.
+                return Action.forNewlyRequestingMembers(count: 1)
+            }
+            return Action.sequenceOfInviteLinkRequestAndCancelsAction(
                 requester: requester.wrappedValue,
                 isTail: isTail,
                 groupThread: groupThread,
                 contactsManager: contactsManager,
                 tx: tx
             )
-        case .invitedPniPromotedToFullMemberAci:
-            return nil
-        case .localUserDeclinedInviteFromInviter:
-            return nil
-        case .localUserDeclinedInviteFromUnknownUser:
-            return nil
-        case .otherUserDeclinedInviteFromLocalUser:
-            return nil
-        case .otherUserDeclinedInviteFromInviter:
-            return nil
-        case .otherUserDeclinedInviteFromUnknownUser:
-            return nil
-        case .localUserInviteRevoked:
-            return nil
-        case .localUserInviteRevokedByUnknownUser:
-            return nil
-        case .otherUserInviteRevokedByLocalUser:
-            return nil
-        case .unnamedUserInvitesWereRevokedByLocalUser:
-            return nil
-        case .unnamedUserInvitesWereRevokedByOtherUser:
-            return nil
-        case .unnamedUserInvitesWereRevokedByUnknownUser:
-            return nil
-        case .unnamedUserDeclinedInviteFromInviter:
-            return nil
-        case .unnamedUserDeclinedInviteFromUnknownUser:
+        case .inviteFriendsToNewlyCreatedGroup:
+            // We should use the latest group model, not the one from the time
+            // the info message was made.
+            guard let thread = groupThread() else {
+                return nil
+            }
+            return Action(
+                title: OWSLocalizedString(
+                    "GROUPS_INVITE_FRIENDS_BUTTON",
+                    comment: "Label for 'invite friends to group' button."
+                ),
+                accessibilityIdentifier: "group_invite_friends",
+                action: .didTapGroupInviteLinkPromotion(groupModel: thread.groupModel)
+            )
+        case .wasMigrated:
+            return Action(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "group_migration_learn_more",
+                action: .didTapGroupMigrationLearnMore
+            )
+        case
+                .descriptionChangedByLocalUser(let newGroupDescription),
+                .descriptionChangedByOtherUser(_, let newGroupDescription),
+                .descriptionChangedByUnknownUser(let newGroupDescription):
+            return Action(
+                title: CommonStrings.viewButton,
+                accessibilityIdentifier: "group_description_view",
+                action: .didTapViewGroupDescription(newGroupDescription: newGroupDescription)
+            )
+        case
+            let .unnamedUserInvitesWereRevokedByLocalUser(count),
+            let .unnamedUsersWereInvitedByOtherUser(_, count),
+            let .unnamedUsersWereInvitedByUnknownUser(count):
+            return Action.forNewlyRequestingMembers(count: count)
+        case .localUserRequestedToJoin, .otherUserRequestedToJoin:
+            return Action.forNewlyRequestingMembers(count: 1)
+
+        default:
             return nil
         }
     }
 }
 
-extension CVComponentSystemMessage.Action {
+fileprivate extension CVComponentSystemMessage.Action {
 
     static func sequenceOfInviteLinkRequestAndCancelsAction(
         requester: Aci,
@@ -98,6 +116,28 @@ extension CVComponentSystemMessage.Action {
                 ),
                 requesterAci: requester
             )
+        )
+    }
+
+    static func forNewlyRequestingMembers(count: UInt) -> Self {
+        let title: String = {
+            if count > 1 {
+                return OWSLocalizedString(
+                    "GROUPS_VIEW_REQUESTS_BUTTON",
+                    comment: "Label for button that lets the user view the requests to join the group."
+                )
+            } else {
+                return OWSLocalizedString(
+                    "GROUPS_VIEW_REQUEST_BUTTON",
+                    comment: "Label for button that lets the user view the request to join the group."
+                )
+            }
+        }()
+
+        return Self(
+            title: title,
+            accessibilityIdentifier: "show_group_requests_button",
+            action: .didTapShowConversationSettingsAndShowMemberRequests
         )
     }
 }

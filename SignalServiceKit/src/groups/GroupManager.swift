@@ -285,7 +285,7 @@ public class GroupManager: NSObject {
                 let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
                     groupModel: groupModel,
                     disappearingMessageToken: disappearingMessageToken,
-                    groupUpdateSource: .aci(localIdentifiers.aci),
+                    groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
@@ -416,7 +416,7 @@ public class GroupManager: NSObject {
         return try remoteUpsertExistingGroupForTests(
             groupModel: groupModel,
             disappearingMessageToken: nil,
-            groupUpdateSource: .aci(localIdentifiers.aci),
+            groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
             localIdentifiers: localIdentifiers,
             transaction: transaction
         ).groupThread
@@ -458,12 +458,20 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiersObjC,
         transaction: SDSAnyWriteTransaction
     ) {
+        let changeAuthor: GroupUpdateSource = {
+            if let changeAuthor, changeAuthor.wrappedAciValue == localIdentifiers.aci.wrappedAciValue {
+                return .localUser(originalSource: .aci(changeAuthor.wrappedAciValue))
+            } else if let changeAuthor {
+                return .aci(changeAuthor.wrappedAciValue)
+            } else {
+                return .unknown
+            }
+        }()
         _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
             token: disappearingMessageToken,
             thread: thread,
             shouldInsertInfoMessage: true,
-            changeAuthor: changeAuthor?.wrappedAciValue,
-            localIdentifiers: localIdentifiers.wrappedValue,
+            changeAuthor: changeAuthor,
             transaction: transaction
         )
     }
@@ -481,8 +489,7 @@ public class GroupManager: NSObject {
             token: disappearingMessageToken,
             thread: thread,
             shouldInsertInfoMessage: true,
-            changeAuthor: nil,
-            localIdentifiers: localIdentifiers,
+            changeAuthor: .localUser(originalSource: .aci(localIdentifiers.aci)),
             transaction: tx
         )
         self.sendDisappearingMessagesConfigurationMessage(
@@ -524,8 +531,7 @@ public class GroupManager: NSObject {
         token newToken: DisappearingMessageToken,
         thread: TSThread,
         shouldInsertInfoMessage: Bool,
-        changeAuthor: ServiceId?,
-        localIdentifiers: LocalIdentifiers,
+        changeAuthor: GroupUpdateSource,
         transaction: SDSAnyWriteTransaction
     ) -> UpdateDMConfigurationResult {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -534,9 +540,26 @@ public class GroupManager: NSObject {
         // Skip redundant updates.
         if result.newConfiguration != result.oldConfiguration {
             if shouldInsertInfoMessage {
-                var remoteContactName: String?
-                if let changeAuthor, !localIdentifiers.contains(serviceId: changeAuthor) {
-                    remoteContactName = contactsManager.displayName(for: SignalServiceAddress(changeAuthor), transaction: transaction)
+
+                let remoteContactName: String?
+                switch changeAuthor {
+                case .unknown, .localUser:
+                    remoteContactName = nil
+                case .legacyE164(let e164):
+                    remoteContactName = contactsManager.displayName(
+                        for: .init(e164),
+                        transaction: transaction
+                    )
+                case .aci(let aci):
+                    remoteContactName = contactsManager.displayName(
+                        for: .init(aci),
+                        transaction: transaction
+                    )
+                case .rejectedInviteToPni(let pni):
+                    remoteContactName = contactsManager.displayName(
+                        for: .init(pni),
+                        transaction: transaction
+                    )
                 }
                 let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                     thread: thread,
@@ -991,8 +1014,7 @@ public class GroupManager: NSObject {
             token: newDisappearingMessageToken,
             thread: groupThread,
             shouldInsertInfoMessage: false,
-            changeAuthor: groupUpdateSource.serviceId(),
-            localIdentifiers: localIdentifiers,
+            changeAuthor: groupUpdateSource,
             transaction: transaction
         )
 
@@ -1130,8 +1152,7 @@ public class GroupManager: NSObject {
                 token: newDisappearingMessageToken,
                 thread: groupThread,
                 shouldInsertInfoMessage: false,
-                changeAuthor: groupUpdateSource.serviceId(),
-                localIdentifiers: localIdentifiers,
+                changeAuthor: groupUpdateSource,
                 transaction: transaction
             )
         } else {
@@ -1350,25 +1371,31 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let groupUpdateSource = groupUpdateSource.serviceId() else {
-            return
-        }
-
         let justAdded = wasLocalUserJustAddedToTheGroup(
-            oldGroupModel: oldGroupModel, newGroupModel: newGroupModel, localIdentifiers: localIdentifiers
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            localIdentifiers: localIdentifiers
         )
         guard justAdded else {
             return
         }
 
-        let isAnyLocalIdentifier = localIdentifiers.contains(serviceId: groupUpdateSource)
-        let isSystemContact = contactsManager.isSystemContact(
-            address: SignalServiceAddress(groupUpdateSource), transaction: tx
-        )
-        let isUserInProfileWhitelist = profileManager.isUser(
-            inProfileWhitelist: SignalServiceAddress(groupUpdateSource), transaction: tx
-        )
-        let shouldAddToWhitelist = (isAnyLocalIdentifier || isSystemContact || isUserInProfileWhitelist)
+        let shouldAddToWhitelist: Bool
+        switch groupUpdateSource {
+        case .unknown, .legacyE164, .rejectedInviteToPni:
+            // Invalid updaters, shouldn't add.
+            shouldAddToWhitelist = false
+        case .aci(let aci):
+            shouldAddToWhitelist = contactsManager.isSystemContact(
+                address: SignalServiceAddress(aci), transaction: tx
+            ) || profileManager.isUser(
+                inProfileWhitelist: SignalServiceAddress(aci), transaction: tx
+            )
+        case .localUser:
+            // Always whitelist if its the local user updating.
+            shouldAddToWhitelist = true
+        }
+
         guard shouldAddToWhitelist else {
             return
         }

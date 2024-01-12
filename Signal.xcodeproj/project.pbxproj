@@ -1589,7 +1589,6 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
-		D9FC835029F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC834F29F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
 		E17283DE2B2A713C00302DC7 /* CallControlsConfirmationToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */; };
@@ -1873,7 +1872,7 @@
 		F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBE5289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F2289453B100548EEE /* OWSDynamicOutgoingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CBE7289453B300548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F3289453B100548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBE9289453B300548EEE /* OWSStaticOutgoingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBEB289453B300548EEE /* TSOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4328,7 +4327,6 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
-		D9FC834F29F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -4622,7 +4620,7 @@
 		F9C5C8F0289453B100548EEE /* TSQuotedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSQuotedMessage.m; sourceTree = "<group>"; };
 		F9C5C8F1289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingConfigurationUpdateInfoMessage.h; sourceTree = "<group>"; };
 		F9C5C8F2289453B100548EEE /* OWSDynamicOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDynamicOutgoingMessage.h; sourceTree = "<group>"; };
-		F9C5C8F3289453B100548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift"; sourceTree = "<group>"; };
+		F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateItemBuilder.swift"; sourceTree = "<group>"; };
 		F9C5C8F4289453B100548EEE /* OWSEndSessionMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSEndSessionMessage.m; sourceTree = "<group>"; };
 		F9C5C8F5289453B100548EEE /* OWSStaticOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSStaticOutgoingMessage.h; sourceTree = "<group>"; };
 		F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingMessage.m; sourceTree = "<group>"; };
@@ -9488,7 +9486,7 @@
 				F9C5C8E8289453B100548EEE /* TSIncomingMessage.h */,
 				F9C5C8FC289453B100548EEE /* TSIncomingMessage.m */,
 				D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */,
-				F9C5C8F3289453B100548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift */,
+				F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift */,
 				F9A042C5289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift */,
 				667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */,
 				F9C5C8FA289453B100548EEE /* TSInfoMessage+ProfileChanges.swift */,
@@ -10383,7 +10381,6 @@
 				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
 				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
 				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
-				D9FC834F29F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift */,
 				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
 				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
@@ -12894,7 +12891,6 @@
 				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
 				F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */,
 				D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */,
-				D9FC835029F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift in Sources */,
 				D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */,
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
@@ -13447,7 +13443,7 @@
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
 				F9C5CBF0289453B300548EEE /* TSIncomingMessage.m in Sources */,
 				D9B0AC7429EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift in Sources */,
-				F9C5CBE7289453B300548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift in Sources */,
+				F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateItemBuilder.swift in Sources */,
 				F9A042C6289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift in Sources */,
 				667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */,
 				F9C5CBEE289453B300548EEE /* TSInfoMessage+ProfileChanges.swift in Sources */,
