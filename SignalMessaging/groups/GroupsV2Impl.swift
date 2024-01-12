@@ -2042,7 +2042,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: dmToken,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSource: localIdentifiers.aci,
+                    groupUpdateSource: .aci(localIdentifiers.aci),
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
@@ -2082,15 +2082,12 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
-                GroupManager.insertGroupUpdateInfoMessage(
-                    groupThread: groupThread,
-                    oldGroupModel: nil,
-                    newGroupModel: groupModel,
-                    oldDisappearingMessageToken: nil,
-                    newDisappearingMessageToken: dmToken,
-                    newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSource: localIdentifiers.aci,
+                GroupManager.insertGroupUpdateInfoMessageForNewGroup(
                     localIdentifiers: localIdentifiers,
+                    groupThread: groupThread,
+                    groupModel: groupModel,
+                    disappearingMessageToken: dmToken,
+                    groupUpdateSource: .aci(localIdentifiers.aci),
                     transaction: transaction
                 )
 
@@ -2240,7 +2237,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 oldDisappearingMessageToken: dmToken,
                 newDisappearingMessageToken: dmToken,
                 newlyLearnedPniToAciAssociations: [:],
-                groupUpdateSource: localIdentifiers.aci,
+                groupUpdateSource: .aci(localIdentifiers.aci),
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
@@ -2387,7 +2384,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
-                // groupUpdateSourceAddress is nil; we don't know who did the update.
+                // groupUpdateSource is unknown; we don't know who did the update.
                 GroupManager.insertGroupUpdateInfoMessage(
                     groupThread: groupThread,
                     oldGroupModel: oldGroupModel,
@@ -2395,7 +2392,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: dmToken,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSource: nil,
+                    groupUpdateSource: .unknown,
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )

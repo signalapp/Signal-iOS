@@ -349,6 +349,14 @@ extension OWSUserProfileBadgeInfo: DeepCopyable {
 // MARK: -
 
 @objc
+extension TSInfoMessage.LegacyPersistableGroupUpdateItemsWrapper: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+@objc
 extension TSInfoMessage.PersistableGroupUpdateItemsWrapper: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
@@ -363,6 +371,9 @@ extension NSObject {
     public static func asDeepCopyable(_ value: Any) -> DeepCopyable? {
         if let string = value as? String {
             return string
+        }
+        if let data = value as? Data {
+            return data
         }
         guard let deepCopyable = value as? DeepCopyable else {
             owsFailDebug("Could not copy: \(value)")

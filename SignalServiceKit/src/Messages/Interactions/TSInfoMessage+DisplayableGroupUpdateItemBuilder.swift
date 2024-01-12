@@ -16,10 +16,7 @@ public protocol DisplayableGroupUpdateItemBuilder {
     /// preferred over all others.
     func displayableUpdateItemsForPrecomputed(
         precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
-        oldGroupModel: TSGroupModel?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
-        updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem]
 
@@ -32,7 +29,7 @@ public protocol DisplayableGroupUpdateItemBuilder {
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem]
@@ -49,7 +46,7 @@ public protocol DisplayableGroupUpdateItemBuilder {
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem]
@@ -57,7 +54,7 @@ public protocol DisplayableGroupUpdateItemBuilder {
     /// Get a default group update item, if the models required to build more
     /// specific group updates are not available.
     func defaultDisplayableUpdateItem(
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers?,
         tx: DBReadTransaction
     ) -> DisplayableGroupUpdateItem
@@ -74,13 +71,13 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem] {
-        let updater: Updater = .build(
+        let updater: GroupUpdater = .build(
             localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
             contactsManager: contactsManager,
             tx: tx
@@ -104,30 +101,27 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
 
     public func displayableUpdateItemsForPrecomputed(
         precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
-        oldGroupModel: TSGroupModel?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
-        updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem] {
-        let updater: Updater = .build(
-            localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
-            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
-            contactsManager: contactsManager,
-            tx: tx
-        )
-
         let items = PrecomputedGroupUpdateItemBuilder(
             contactsManager: contactsManager
         ).buildGroupUpdateItems(
             precomputedUpdateItems: precomputedUpdateItems,
-            oldGroupMembership: oldGroupModel?.groupMembership,
-            updater: updater,
             localIdentifiers: localIdentifiers,
             tx: tx
         )
 
+        let updater: GroupUpdater
+        if let precomputedUpdateItem = precomputedUpdateItems.first {
+            updater = precomputedUpdateItem.updater(
+                localIdentifiers: localIdentifiers,
+                contactsManager: contactsManager,
+                tx: tx
+            )
+        } else {
+            updater = .unknown
+        }
         return validateUpdateItemsNotEmpty(
             tentativeUpdateItems: items,
             updater: updater
@@ -140,13 +134,13 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         updaterKnownToBeLocalUser: Bool,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem] {
-        let updater: Updater = .build(
+        let updater: GroupUpdater = .build(
             localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
             contactsManager: contactsManager,
             tx: tx
@@ -159,7 +153,7 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
             newDisappearingMessageToken: newDisappearingMessageToken,
             updater: updater,
             localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             contactsManager: contactsManager,
             tx: tx
         ).itemList
@@ -171,12 +165,12 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
     }
 
     public func defaultDisplayableUpdateItem(
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers?,
         tx: DBReadTransaction
     ) -> DisplayableGroupUpdateItem {
         return DefaultGroupUpdateItemBuilder().buildGroupUpdateItem(
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             contactsManager: contactsManager,
             tx: tx
@@ -185,7 +179,7 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
 
     private func validateUpdateItemsNotEmpty(
         tentativeUpdateItems: [DisplayableGroupUpdateItem],
-        updater: Updater,
+        updater: GroupUpdater,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -212,7 +206,7 @@ public struct DisplayableGroupUpdateItemBuilderImpl: DisplayableGroupUpdateItemB
 
 // MARK: -
 
-private enum Updater {
+public enum GroupUpdater {
     case localUser
     case otherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case unknown
@@ -221,19 +215,27 @@ private enum Updater {
     ///
     /// - Parameter updaterKnownToBeLocalUser
     /// Whether we know ahead of time that the updater is the local user.
-    static func build(
+    internal static func build(
         localIdentifiers: LocalIdentifiers?,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         updaterKnownToBeLocalUser: Bool,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
-    ) -> Updater {
+    ) -> GroupUpdater {
         if updaterKnownToBeLocalUser {
             return .localUser
         }
 
-        guard let updaterAddress = groupUpdateSourceAddress else {
+        let updaterAddress: SignalServiceAddress
+        switch groupUpdateSource {
+        case .unknown:
             return .unknown
+        case .legacyE164(let e164):
+            updaterAddress = .init(e164)
+        case .aci(let aci):
+            updaterAddress = .init(aci)
+        case .rejectedInviteToPni(let pni):
+            updaterAddress = .init(pni)
         }
 
         if let localIdentifiers, localIdentifiers.contains(address: updaterAddress) {
@@ -333,58 +335,103 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
     func buildGroupUpdateItems(
         precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
-        oldGroupMembership: GroupMembership?,
-        updater: Updater,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem] {
         return precomputedUpdateItems.compactMap { persistableGroupUpdateItem -> DisplayableGroupUpdateItem? in
+
+            let updater = persistableGroupUpdateItem.updater(
+                localIdentifiers: localIdentifiers,
+                contactsManager: contactsManager,
+                tx: tx
+            )
+
             switch persistableGroupUpdateItem {
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail):
+            case let .sequenceOfInviteLinkRequestAndCancels(_, count, isTail):
                 return sequenceOfInviteLinkRequestAndCancelsItem(
                     updater: updater,
                     count: count,
                     isTail: isTail
                 )
-            case let .invitedPniPromotedToFullMemberAci(pni, aci):
-                let invitedPniAddress = SignalServiceAddress(pni.wrappedValue)
-                let fullMemberAciAddress = SignalServiceAddress(aci.wrappedValue)
-
+            case let .invitedPniPromotedToFullMemberAci(newMember, inviter):
                 return DiffingGroupUpdateItemBuilder.userInviteWasAcceptedItem(
-                    invitedAsAddress: invitedPniAddress,
-                    acceptedAsAddress: fullMemberAciAddress,
-                    oldGroupMembership: oldGroupMembership,
+                    acceptedAsAddress: .init(newMember.wrappedValue),
+                    inviterAci: inviter?.wrappedValue,
                     updater: updater,
+                    // Promotions are only authored by the invitee; otherwise
+                    // it would be an add member not a promotion.
+                    updaterKnownToBeInvitee: true,
                     isLocalUserBlock: { localIdentifiers.isLocalUser(address: $0) },
                     contactsManager: contactsManager,
                     tx: tx
                 )
-            case let .inviteRemoved(invitee, wasLocalUser):
-                var unnamedInviteCounts = UnnamedInviteCounts()
-
-                if let item = DiffingGroupUpdateItemBuilder.userInviteWasDeclinedOrRevokedItem(
-                    inviteeAddress: SignalServiceAddress(invitee.wrappedValue),
-                    inviteeKnownToBeLocalUser: wasLocalUser,
-                    oldGroupMembership: oldGroupMembership,
-                    unnamedInviteCounts: &unnamedInviteCounts,
-                    updater: updater,
-                    isLocalUserBlock: { localIdentifiers.isLocalUser(address: $0) },
-                    contactsManager: contactsManager,
-                    tx: tx
-                ) {
-                    return item
-                } else {
-                    return DiffingGroupUpdateItemBuilder.unnamedUserInvitesWereRevokedItem(
-                        count: unnamedInviteCounts.revokedInviteCount,
-                        updater: updater
-                    )
-                }
+            case .localUserDeclinedInviteFromInviter(let inviterAci):
+                return .localUserDeclinedInviteFromInviter(
+                    inviterName: contactsManager.displayName(
+                        address: .init(inviterAci.wrappedValue),
+                        tx: tx
+                    ),
+                    inviterAddress: .init(inviterAci.wrappedValue)
+                )
+            case .localUserDeclinedInviteFromUnknownUser:
+                return .localUserDeclinedInviteFromUnknownUser
+            case .otherUserDeclinedInviteFromLocalUser(let invitee):
+                return .otherUserDeclinedInviteFromLocalUser(
+                    userName: contactsManager.displayName(
+                        address: .init(invitee.wrappedValue),
+                        tx: tx
+                    ),
+                    userAddress: .init(invitee.wrappedValue)
+                )
+            case let .otherUserDeclinedInviteFromInviter(_, inviterAci),
+                let .unnamedUserDeclinedInviteFromInviter(inviterAci):
+                return .otherUserDeclinedInviteFromInviter(
+                    inviterName: contactsManager.displayName(
+                        address: .init(inviterAci.wrappedValue),
+                        tx: tx
+                    ),
+                    inviterAddress: .init(inviterAci.wrappedValue)
+                )
+            case .otherUserDeclinedInviteFromUnknownUser,
+                .unnamedUserDeclinedInviteFromUnknownUser:
+                return .otherUserDeclinedInviteFromUnknownUser
+            case .localUserInviteRevoked(let revokerAci):
+                return .localUserInviteRevoked(
+                    revokerName: contactsManager.displayName(
+                        address: .init(revokerAci.wrappedValue),
+                        tx: tx
+                    ),
+                    revokerAddress: .init(revokerAci.wrappedValue)
+                )
+            case .localUserInviteRevokedByUnknownUser:
+                return .localUserInviteRevokedByUnknownUser
+            case .otherUserInviteRevokedByLocalUser(let invitee):
+                return .otherUserInviteRevokedByLocalUser(
+                    userName: contactsManager.displayName(
+                        address: .init(invitee.wrappedValue),
+                        tx: tx
+                    ),
+                    userAddress: .init(invitee.wrappedValue)
+                )
+            case .unnamedUserInvitesWereRevokedByLocalUser(let count):
+                return .unnamedUserInvitesWereRevokedByLocalUser(count: count)
+            case let .unnamedUserInvitesWereRevokedByOtherUser(updaterAci, count):
+                return .unnamedUserInvitesWereRevokedByOtherUser(
+                    updaterName: contactsManager.displayName(
+                        address: .init(updaterAci.wrappedValue),
+                        tx: tx
+                    ),
+                    updaterAddress: .init(updaterAci.wrappedValue),
+                    count: count
+                )
+            case .unnamedUserInvitesWereRevokedByUnknownUser(let count):
+                return .unnamedUserInvitesWereRevokedByUnknownUser(count: count)
             }
         }
     }
 
     private func sequenceOfInviteLinkRequestAndCancelsItem(
-        updater: Updater,
+        updater: GroupUpdater,
         count: UInt,
         isTail: Bool
     ) -> DisplayableGroupUpdateItem? {
@@ -432,7 +479,7 @@ private struct NewGroupUpdateItemBuilder {
     func buildGroupUpdateItems(
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        updater: Updater,
+        updater: GroupUpdater,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction
     ) -> [DisplayableGroupUpdateItem] {
@@ -474,7 +521,7 @@ private struct NewGroupUpdateItemBuilder {
     }
 
     private func groupWasInsertedItem(
-        updater: Updater,
+        updater: GroupUpdater,
         localIdentifiers: LocalIdentifiers,
         newGroupModel: TSGroupModel,
         newGroupMembership: GroupMembership,
@@ -565,7 +612,7 @@ private struct DiffingGroupUpdateItemBuilder {
     private let contactsManager: Shims.ContactsManager
 
     private let localIdentifiers: LocalIdentifiers
-    private let updater: Updater
+    private let updater: GroupUpdater
     private let isReplacingJoinRequestPlaceholder: Bool
 
     /// The update items, in order.
@@ -573,21 +620,21 @@ private struct DiffingGroupUpdateItemBuilder {
 
     /// Create a ``GroupUpdateCopy``.
     ///
-    /// - Parameter groupUpdateSourceAddress
+    /// - Parameter groupUpdateSource
     /// The address to whom this update should be attributed, if known.
     /// - Parameter updaterKnownToBeLocalUser
     /// Whether we know, ahead of time, that this update should be attributed to
     /// the local user. Necessary if we cannot reliably determine attribution
-    /// via ``groupUpdateSourceAddress`` alone. For example, the update address
+    /// via ``groupUpdateSource`` alone. For example, the update address
     /// may refer to a PNI that has moved to another owner.
     init(
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        updater: Updater,
+        updater: GroupUpdater,
         localIdentifiers: LocalIdentifiers,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
     ) {
@@ -607,7 +654,7 @@ private struct DiffingGroupUpdateItemBuilder {
             newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             tx: tx
         )
 
@@ -642,7 +689,7 @@ private struct DiffingGroupUpdateItemBuilder {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         tx: DBReadTransaction
     ) {
         if isReplacingJoinRequestPlaceholder {
@@ -650,7 +697,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
                 newGroupModel: newGroupModel,
-                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                groupUpdateSource: groupUpdateSource,
                 forLocalUserOnly: true,
                 tx: tx
             )
@@ -670,7 +717,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
                 newGroupModel: newGroupModel,
-                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                groupUpdateSource: groupUpdateSource,
                 forLocalUserOnly: false,
                 tx: tx
             )
@@ -861,7 +908,7 @@ private struct DiffingGroupUpdateItemBuilder {
         oldGroupMembership: GroupMembership,
         newGroupMembership: GroupMembership,
         newGroupModel: TSGroupModel,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         forLocalUserOnly: Bool,
         tx: DBReadTransaction
     ) {
@@ -886,7 +933,18 @@ private struct DiffingGroupUpdateItemBuilder {
 
         // If the updater has changed their membership status, ensure it appears _last_.
         // This trumps the re-ordering of the local user above.
-        if let updaterAddress = groupUpdateSourceAddress {
+        let updaterAddress: SignalServiceAddress?
+        switch groupUpdateSource {
+        case .unknown:
+            updaterAddress = nil
+        case .legacyE164(let e164):
+            updaterAddress = .init(e164)
+        case .aci(let aci):
+            updaterAddress = .init(aci)
+        case .rejectedInviteToPni(let pni):
+            updaterAddress = .init(pni)
+        }
+        if let updaterAddress {
             allUsersSorted = allUsersSorted.filter { $0 != updaterAddress } + [updaterAddress]
         }
 
@@ -1290,11 +1348,23 @@ private struct DiffingGroupUpdateItemBuilder {
         oldGroupMembership: GroupMembership,
         tx: DBReadTransaction
     ) {
+        let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: invitedAsAddress)
+
+        let updaterKnownToBeInvitee: Bool
+        switch updater {
+        case .localUser:
+            updaterKnownToBeInvitee = localIdentifiers.contains(address: invitedAsAddress)
+        case .otherUser(_, let updaterAddress):
+            updaterKnownToBeInvitee = updaterAddress == invitedAsAddress
+        case .unknown:
+            updaterKnownToBeInvitee = false
+        }
+
         addItem(Self.userInviteWasAcceptedItem(
-            invitedAsAddress: invitedAsAddress,
             acceptedAsAddress: acceptedAsAddress,
-            oldGroupMembership: oldGroupMembership,
+            inviterAci: inviterAci,
             updater: updater,
+            updaterKnownToBeInvitee: updaterKnownToBeInvitee,
             isLocalUserBlock: { isLocalUser(address: $0) },
             contactsManager: contactsManager,
             tx: tx
@@ -1302,10 +1372,10 @@ private struct DiffingGroupUpdateItemBuilder {
     }
 
     static func userInviteWasAcceptedItem(
-        invitedAsAddress: SignalServiceAddress,
         acceptedAsAddress: SignalServiceAddress,
-        oldGroupMembership: GroupMembership?,
-        updater: Updater,
+        inviterAci: Aci?,
+        updater: GroupUpdater,
+        updaterKnownToBeInvitee: Bool,
         isLocalUserBlock: IsLocalUserBlock,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
@@ -1313,7 +1383,7 @@ private struct DiffingGroupUpdateItemBuilder {
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
 
-        if let inviterAci = oldGroupMembership?.addedByAci(forInvitedMember: invitedAsAddress) {
+        if let inviterAci {
             inviterAddress = SignalServiceAddress(inviterAci)
             inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
@@ -1348,10 +1418,10 @@ private struct DiffingGroupUpdateItemBuilder {
                     userAddress: acceptedAsAddress
                 )
             case let .otherUser(updaterName, updaterAddress):
-                if invitedAsAddress == updaterAddress || acceptedAsAddress == updaterAddress {
+                if updaterKnownToBeInvitee || acceptedAsAddress == updaterAddress {
                     // The update came from the person who was invited.
 
-                    if isLocalUserBlock(invitedAsAddress) {
+                    if let inviterAddress, isLocalUserBlock(inviterAddress) {
                         return .otherUserAcceptedInviteFromLocalUser(
                             userName: acceptedAsName,
                             userAddress: acceptedAsAddress
@@ -1394,10 +1464,12 @@ private struct DiffingGroupUpdateItemBuilder {
         unnamedInviteCounts: inout UnnamedInviteCounts,
         tx: DBReadTransaction
     ) {
+        let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: inviteeAddress)
+
         Self.userInviteWasDeclinedOrRevokedItem(
             inviteeAddress: inviteeAddress,
             inviteeKnownToBeLocalUser: inviteeKnownToBeLocalUser,
-            oldGroupMembership: oldGroupMembership,
+            inviterAci: inviterAci,
             unnamedInviteCounts: &unnamedInviteCounts,
             updater: updater,
             isLocalUserBlock: { isLocalUser(address: $0) },
@@ -1418,16 +1490,16 @@ private struct DiffingGroupUpdateItemBuilder {
     static func userInviteWasDeclinedOrRevokedItem(
         inviteeAddress: SignalServiceAddress,
         inviteeKnownToBeLocalUser: Bool,
-        oldGroupMembership: GroupMembership?,
+        inviterAci: Aci?,
         unnamedInviteCounts: inout UnnamedInviteCounts,
-        updater: Updater,
+        updater: GroupUpdater,
         isLocalUserBlock: IsLocalUserBlock,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
     ) -> DisplayableGroupUpdateItem? {
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterAci = oldGroupMembership?.addedByAci(forInvitedMember: inviteeAddress) {
+        if let inviterAci {
             inviterAddress = SignalServiceAddress(inviterAci)
             inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
@@ -1638,7 +1710,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     static func unnamedUserInvitesWereRevokedItem(
         count: UInt,
-        updater: Updater
+        updater: GroupUpdater
     ) -> DisplayableGroupUpdateItem? {
         guard count > 0 else {
             return nil
@@ -1816,7 +1888,7 @@ private struct DiffingGroupUpdateItemBuilder {
     }
 
     static func disappearingMessageUpdateItem(
-        updater: Updater,
+        updater: GroupUpdater,
         oldToken: DisappearingMessageToken?,
         newToken: DisappearingMessageToken?,
         forceUnknownAttribution: Bool
@@ -2066,14 +2138,14 @@ private struct DefaultGroupUpdateItemBuilder {
     init() {}
 
     func buildGroupUpdateItem(
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers?,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
     ) -> DisplayableGroupUpdateItem {
-        let updater: Updater = .build(
+        let updater: GroupUpdater = .build(
             localIdentifiers: localIdentifiers,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             updaterKnownToBeLocalUser: false,
             contactsManager: contactsManager,
             tx: tx
@@ -2104,7 +2176,7 @@ private extension LocalIdentifiers {
 
 // MARK: - Dependencies
 
-private typealias Shims = DisplayableGroupUpdateItemBuilderImpl.Shims
+internal typealias Shims = DisplayableGroupUpdateItemBuilderImpl.Shims
 private typealias IsLocalUserBlock = (SignalServiceAddress) -> Bool
 
 extension DisplayableGroupUpdateItemBuilderImpl {

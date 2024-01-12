@@ -896,6 +896,10 @@
 		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
 		667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */; };
 		66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */; };
+		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */; };
+		667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */; };
+		667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */; };
+		667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */; };
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
@@ -3541,6 +3545,10 @@
 		667664352A43BBCD00716B84 /* OWSFingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprint.swift; sourceTree = "<group>"; };
 		667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintBuilder.swift; sourceTree = "<group>"; };
 		66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferQRCodeViewController.swift; sourceTree = "<group>"; };
+		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
+		667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift"; sourceTree = "<group>"; };
+		667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift"; sourceTree = "<group>"; };
+		667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateSource.swift; sourceTree = "<group>"; };
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
@@ -5795,6 +5803,7 @@
 				347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */,
 				347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */,
 				348815BF2553291200D4F4C4 /* CVComponentViewOnce.swift */,
+				667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */,
 			);
 			path = CVComponents;
 			sourceTree = "<group>";
@@ -9097,6 +9106,7 @@
 			isa = PBXGroup;
 			children = (
 				D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */,
+				667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */,
 				D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */,
 				F9426221289B1B5500460798 /* TSMessageTest.swift */,
 				F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */,
@@ -9449,6 +9459,7 @@
 		F9C5C8D8289453B100548EEE /* Interactions */ = {
 			isa = PBXGroup;
 			children = (
+				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
 				50468F2829EE130A00948E02 /* InteractionStore.swift */,
 				F9C5C8EB289453B100548EEE /* MentionFinder.swift */,
 				763A15FF2AEC3A490081D7E5 /* OWSContact.swift */,
@@ -9479,6 +9490,7 @@
 				D9B0AC7329EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift */,
 				F9C5C8F3289453B100548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift */,
 				F9A042C5289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift */,
+				667AF9D92B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift */,
 				F9C5C8FA289453B100548EEE /* TSInfoMessage+ProfileChanges.swift */,
 				F9C5C8EE289453B100548EEE /* TSInfoMessage+SDS.swift */,
 				F9C5C8E2289453B100548EEE /* TSInfoMessage+Swift.swift */,
@@ -12443,6 +12455,7 @@
 				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
 				D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */,
+				667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */,
 				C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoAlbumPickerViewController.swift in Sources */,
@@ -12883,6 +12896,7 @@
 				D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */,
 				D9FC835029F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift in Sources */,
 				D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */,
+				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
 				F9C5CDBC289453B400548EEE /* HTTPUtils.m in Sources */,
@@ -13435,6 +13449,7 @@
 				D9B0AC7429EF42960070F31C /* TSInfoMessage+DisplayableGroupUpdateItem.swift in Sources */,
 				F9C5CBE7289453B300548EEE /* TSInfoMessage+DisplayableGroupUpdateItemBuilder.swift in Sources */,
 				F9A042C6289C7468007D08B6 /* TSInfoMessage+PersistableGroupUpdateItem.swift in Sources */,
+				667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+PersistableGroupUpdateItemUpdater.swift in Sources */,
 				F9C5CBEE289453B300548EEE /* TSInfoMessage+ProfileChanges.swift in Sources */,
 				F9C5CBE2289453B300548EEE /* TSInfoMessage+SDS.swift in Sources */,
 				F9C5CBD6289453B300548EEE /* TSInfoMessage+Swift.swift in Sources */,
@@ -13678,6 +13693,7 @@
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
 				D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */,
 				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */,
+				667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */,
 				D9CD40622A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift in Sources */,
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,

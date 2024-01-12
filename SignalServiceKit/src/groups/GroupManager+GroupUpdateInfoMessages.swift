@@ -7,6 +7,26 @@ import Foundation
 import LibSignalClient
 
 extension GroupManager {
+
+    /// Inserts an info message into the given thread for a new group.
+    public static func insertGroupUpdateInfoMessageForNewGroup(
+        localIdentifiers: LocalIdentifiers,
+        groupThread: TSGroupThread,
+        groupModel: TSGroupModel,
+        disappearingMessageToken: DisappearingMessageToken,
+        groupUpdateSource: GroupUpdateSource,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessageForNewGroup(
+            localIdentifiers: localIdentifiers,
+            groupThread: groupThread,
+            groupModel: groupModel,
+            disappearingMessageToken: disappearingMessageToken,
+            groupUpdateSource: groupUpdateSource,
+            transaction: transaction.asV2Write
+        )
+    }
+
     /// Inserts an info message into the given thread describing how the thread
     /// has been updated, given before/after models for the thread.
     ///
@@ -15,12 +35,12 @@ extension GroupManager {
     /// group update.
     public static func insertGroupUpdateInfoMessage(
         groupThread: TSGroupThread,
-        oldGroupModel: TSGroupModel?,
+        oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
-        oldDisappearingMessageToken: DisappearingMessageToken?,
+        oldDisappearingMessageToken: DisappearingMessageToken,
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) {

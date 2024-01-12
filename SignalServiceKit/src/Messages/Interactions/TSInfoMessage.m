@@ -10,16 +10,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateItems = @"InfoMessageUserInfoKeyUpdateMessages";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyLegacyGroupUpdateItems = @"InfoMessageUserInfoKeyUpdateMessages";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateItems = @"InfoMessageUserInfoKeyUpdateMessagesV2";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldGroupModel = @"InfoMessageUserInfoKeyOldGroupModel";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewGroupModel = @"InfoMessageUserInfoKeyNewGroupModel";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldDisappearingMessageToken
     = @"InfoMessageUserInfoKeyOldDisappearingMessageToken";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
     = @"InfoMessageUserInfoKeyNewDisappearingMessageToken";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceLegacyAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyUpdaterKnownToBeLocalUser
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceType
+    = @"InfoMessageUserInfoKeyGroupUpdateSourceType";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAciData
+    = @"InfoMessageUserInfoKeyGroupUpdateSourceAci";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourcePniData
+    = @"InfoMessageUserInfoKeyGroupUpdateSourcePni";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyLegacyUpdaterKnownToBeLocalUser
     = @"InfoMessageUserInfoKeyUpdaterWasLocalUser";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberAciString

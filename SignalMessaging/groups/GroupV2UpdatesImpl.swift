@@ -184,12 +184,12 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             newGroupModel: changedGroupModel.newGroupModel,
             newDisappearingMessageToken: changedGroupModel.newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: changedGroupModel.newlyLearnedPniToAciAssociations,
-            groupUpdateSource: changedGroupModel.changeAuthor,
+            groupUpdateSource: changedGroupModel.updateSource,
             localIdentifiers: localIdentifiers,
             transaction: transaction
         ).groupThread
 
-        let authoritativeProfileKeys = changedGroupModel.profileKeys.filter { $0.key == changedGroupModel.changeAuthor }
+        let authoritativeProfileKeys = changedGroupModel.profileKeys.filter { $0.key == changedGroupModel.updateSource.serviceId() }
         GroupManager.storeProfileKeysFromGroupProtos(
             allProfileKeysByAci: changedGroupModel.profileKeys,
             authoritativeProfileKeysByAci: authoritativeProfileKeys
@@ -692,14 +692,13 @@ private extension GroupV2UpdatesImpl {
 
                 if
                     let applyResult = applyResult,
-                    let changeAuthor = applyResult.changeAuthor,
                     applyResult.wasLocalUserAddedByChange
                 {
                     owsAssertDebug(
-                        localUserWasAddedBy == nil || (index == 0 && localUserWasAddedBy == changeAuthor),
+                        localUserWasAddedBy == .unknown || (index == 0 && localUserWasAddedBy == applyResult.changeAuthor),
                         "Multiple change actions added the user to the group"
                     )
-                    localUserWasAddedBy = changeAuthor
+                    localUserWasAddedBy = applyResult.changeAuthor
                 }
             }
 
@@ -708,10 +707,28 @@ private extension GroupV2UpdatesImpl {
                 authoritativeProfileKeysByAci: authoritativeProfileKeysByAci
             )
 
-            if
-                let localUserWasAddedBy = localUserWasAddedBy,
-                self.blockingManager.isAddressBlocked(SignalServiceAddress(localUserWasAddedBy), transaction: transaction)
-            {
+            let localUserWasAddedByBlockedUser: Bool
+            switch localUserWasAddedBy {
+            case .unknown:
+                localUserWasAddedByBlockedUser = false
+            case .legacyE164(let e164):
+                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
+                    .init(e164),
+                    transaction: transaction
+                )
+            case .aci(let aci):
+                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
+                    .init(aci),
+                    transaction: transaction
+                )
+            case .rejectedInviteToPni(let pni):
+                localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
+                    .init(pni),
+                    transaction: transaction
+                )
+            }
+
+            if localUserWasAddedByBlockedUser {
                 // If we have been added to the group by a blocked user, we
                 // should automatically leave the group. To that end, enqueue
                 // a leave action after we've finished processing messages.
@@ -753,10 +770,10 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
-    ) -> (TSGroupThread, addedToNewThreadBy: ServiceId?)? {
+    ) -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource)? {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            return (groupThread, addedToNewThreadBy: nil)
+            return (groupThread, addedToNewThreadBy: .unknown)
         }
 
         do {
@@ -801,7 +818,7 @@ private extension GroupV2UpdatesImpl {
 
             return (
                 result.groupThread,
-                addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : nil
+                addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : .unknown
             )
         } catch {
             owsFailDebug("Error: \(error)")
@@ -810,7 +827,7 @@ private extension GroupV2UpdatesImpl {
     }
 
     private struct ApplySingleChangeFromServiceResult {
-        let changeAuthor: ServiceId?
+        let changeAuthor: GroupUpdateSource
         let wasLocalUserAddedByChange: Bool
     }
 
@@ -862,7 +879,7 @@ private extension GroupV2UpdatesImpl {
         let newDisappearingMessageToken: DisappearingMessageToken?
         let newProfileKeys: [Aci: Data]
         let newlyLearnedPniToAciAssociations: [Pni: Aci]
-        let groupUpdateSource: ServiceId?
+        let groupUpdateSource: GroupUpdateSource
 
         // We should prefer to update models using the change action if we can,
         // since it contains information about the change author.
@@ -883,7 +900,7 @@ private extension GroupV2UpdatesImpl {
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
             newProfileKeys = changedGroupModel.profileKeys
             newlyLearnedPniToAciAssociations = changedGroupModel.newlyLearnedPniToAciAssociations
-            groupUpdateSource = changedGroupModel.changeAuthor
+            groupUpdateSource = changedGroupModel.updateSource
         } else if let snapshot = groupChange.snapshot {
             logger.info("Applying snapshot.")
 
@@ -895,7 +912,7 @@ private extension GroupV2UpdatesImpl {
             newProfileKeys = snapshot.profileKeys
             newlyLearnedPniToAciAssociations = [:]
             // Snapshots don't have a single author, so we don't know the source.
-            groupUpdateSource = nil
+            groupUpdateSource = .unknown
         } else if groupChange.changeActionsProto != nil {
             logger.info("Change action proto was not a single revision update.")
 
@@ -945,11 +962,13 @@ private extension GroupV2UpdatesImpl {
             transaction: transaction
         ).groupThread
 
-        if
-            let groupUpdateSourceAci = groupUpdateSource as? Aci,
-            let groupUpdateProfileKey = newProfileKeys[groupUpdateSourceAci]
-        {
-            authoritativeProfileKeysByAci[groupUpdateSourceAci] = groupUpdateProfileKey
+        switch groupUpdateSource {
+        case .unknown, .legacyE164, .rejectedInviteToPni:
+            break
+        case .aci(let groupUpdateSourceAci):
+            if let groupUpdateProfileKey = newProfileKeys[groupUpdateSourceAci] {
+                authoritativeProfileKeysByAci[groupUpdateSourceAci] = groupUpdateProfileKey
+            }
         }
 
         // Merge known profile keys, always taking latest.
@@ -1040,9 +1059,9 @@ private extension GroupV2UpdatesImpl {
 
             let newGroupModel = try builder.buildAsV2()
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
-            // groupUpdateSourceAddress is nil because we don't know the
+            // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
-            let groupUpdateSource: ServiceId? = nil
+            let groupUpdateSource: GroupUpdateSource = .unknown
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
@@ -1272,16 +1291,38 @@ extension GroupsV2Error: IsRetryableProvider {
 }
 
 private extension GroupV2Change {
-    func author(groupV2Params: GroupV2Params) throws -> ServiceId? {
+    func author(groupV2Params: GroupV2Params) throws -> GroupUpdateSource {
         if let changeActionsProto = changeActionsProto {
-            guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
-                owsFailDebug("Explicit changes should always have authors")
-                return nil
-            }
+            return try changeActionsProto.updateSource(groupV2Params: groupV2Params)
+        }
+        return .unknown
+    }
+}
 
-            return try groupV2Params.serviceId(for: changeAuthorUuidData)
+public extension GroupsProtoGroupChangeActions {
+
+    func updateSource(groupV2Params: GroupV2Params) throws -> GroupUpdateSource {
+        guard let changeAuthorUuidData = self.sourceUuid else {
+            owsFailDebug("Explicit changes should always have authors")
+            return .unknown
         }
 
-        return nil
+        let serviceId = try groupV2Params.serviceId(for: changeAuthorUuidData)
+        switch serviceId.concreteType {
+        case .aci(let aci):
+            return .aci(aci)
+        case .pni(let pni):
+            // As of now, the only update with a pni author is
+            // declining a pni invite. If this changes, differentiate
+            // state here and split which enum case this becomes.
+            // This may not be the BEST place to do that differentiation;
+            // you may need to pass in new params to be able to tell,
+            // or even just push this up to the callsite. In any case,
+            // the time to differentiate is when looking at the group updates
+            // or before/after model we get from the server.
+            owsAssertDebug(self.deletePendingMembers.count == 1)
+            owsAssertDebug(self.deletePendingMembers.first?.deletedUserID == Data(pni.serviceIdBinary))
+            return .rejectedInviteToPni(pni)
+        }
     }
 }

@@ -47,19 +47,27 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
     static var constants: [(TSInfoMessage.PersistableGroupUpdateItem, base64JsonData: Data)] {
         [
             (
-                .sequenceOfInviteLinkRequestAndCancels(count: 12, isTail: true),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjoxMiwiaXNUYWlsIjp0cnVlfX0=")!
+                .sequenceOfInviteLinkRequestAndCancels(
+                    requester: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
+                    count: 12,
+                    isTail: true
+                ),
+                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjoxMiwiaXNUYWlsIjp0cnVlLCJyZXF1ZXN0ZXIiOiI1NkVFMEVGNC1BN0RGLTRCNTItQkZBRi1DNjM3RjE1QjRGRUMifX0=")!
             ),
             (
-                .sequenceOfInviteLinkRequestAndCancels(count: 0, isTail: false),
-                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImNvdW50IjowLCJpc1RhaWwiOmZhbHNlfX0=")!
+                .sequenceOfInviteLinkRequestAndCancels(
+                    requester: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
+                    count: 0,
+                    isTail: false),
+                Data(base64Encoded: "eyJzZXF1ZW5jZU9mSW52aXRlTGlua1JlcXVlc3RBbmRDYW5jZWxzIjp7ImlzVGFpbCI6ZmFsc2UsImNvdW50IjowLCJyZXF1ZXN0ZXIiOiI1NkVFMEVGNC1BN0RGLTRCNTItQkZBRi1DNjM3RjE1QjRGRUMifX0=")!
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
-                    pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA").codableUuid,
-                    aci: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid
+                    newMember: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
+                    inviter: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE").codableUuid
+
                 ),
-                Data(base64Encoded: "eyJpbnZpdGVkUG5pUHJvbW90ZWRUb0Z1bGxNZW1iZXJBY2kiOnsicG5pIjoiN0NFODBERTMtNjI0My00QUQ1LUFFNjAtMEQxRjIwNTM5MURBIiwiYWNpIjoiNTZFRTBFRjQtQTdERi00QjUyLUJGQUYtQzYzN0YxNUI0RkVDIn19")!
+                Data(base64Encoded: "eyJpbnZpdGVkUG5pUHJvbW90ZWRUb0Z1bGxNZW1iZXJBY2kiOnsibmV3TWVtYmVyIjoiNTZFRTBFRjQtQTdERi00QjUyLUJGQUYtQzYzN0YxNUI0RkVDIiwiaW52aXRlciI6IjU2RUUwRUY0LUE3REYtNEI1Mi1CRkFGLUM2MzdGMTVCNUZFRSJ9fQ==")!
             )
         ]
     }
@@ -69,22 +77,40 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
 
         switch (self, against) {
         case let (
-            .sequenceOfInviteLinkRequestAndCancels(selfCount, selfIsTail),
-            .sequenceOfInviteLinkRequestAndCancels(againstCount, againstIsTail)
+            .sequenceOfInviteLinkRequestAndCancels(selfRequester, selfCount, selfIsTail),
+            .sequenceOfInviteLinkRequestAndCancels(againstRequester, againstCount, againstIsTail)
         ):
             if
+                selfRequester == againstRequester,
                 selfCount == againstCount,
                 selfIsTail == againstIsTail
             {
                 validated = true
             }
         case let (
-            .invitedPniPromotedToFullMemberAci(selfPni, selfAci),
-            .invitedPniPromotedToFullMemberAci(againstPni, againstAci)
+            .invitedPniPromotedToFullMemberAci(selfNewMemberAci, selfInviter),
+            .invitedPniPromotedToFullMemberAci(againstNewMemberAci, againstInviter)
         ):
             if
-                selfPni == againstPni,
-                selfAci == againstAci
+                selfNewMemberAci == againstNewMemberAci,
+                selfInviter == againstInviter
+            {
+                validated = true
+            }
+        case let (
+            .localUserInviteRevoked(selfRevokerAci),
+            .localUserInviteRevoked(againstRevokerAci)
+        ):
+            if selfRevokerAci == againstRevokerAci {
+                validated = true
+            }
+        case let (
+            .unnamedUserInvitesWereRevokedByOtherUser(selfUpdaterAci, selfCount),
+            .unnamedUserInvitesWereRevokedByOtherUser(againstUpdaterAci, againstCount)
+        ):
+            if
+                selfUpdaterAci == againstUpdaterAci,
+                selfCount == againstCount
             {
                 validated = true
             }

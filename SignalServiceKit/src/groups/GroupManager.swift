@@ -285,7 +285,7 @@ public class GroupManager: NSObject {
                 let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
                     groupModel: groupModel,
                     disappearingMessageToken: disappearingMessageToken,
-                    groupUpdateSource: localIdentifiers.aci,
+                    groupUpdateSource: .aci(localIdentifiers.aci),
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
@@ -416,7 +416,7 @@ public class GroupManager: NSObject {
         return try remoteUpsertExistingGroupForTests(
             groupModel: groupModel,
             disappearingMessageToken: nil,
-            groupUpdateSource: localIdentifiers.aci,
+            groupUpdateSource: .aci(localIdentifiers.aci),
             localIdentifiers: localIdentifiers,
             transaction: transaction
         ).groupThread
@@ -426,7 +426,7 @@ public class GroupManager: NSObject {
     private static func remoteUpsertExistingGroupForTests(
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken?,
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
@@ -859,7 +859,7 @@ public class GroupManager: NSObject {
                 groupModelBuilder.groupMembership = groupMembershipBuilder.build()
                 let newGroupModel = try groupModelBuilder.build()
 
-                // groupUpdateSource is nil because we don't (and can't) know who removed
+                // groupUpdateSource is unknown because we don't (and can't) know who removed
                 // us or revoked our invite.
                 //
                 // newDisappearingMessageToken is nil because we don't want to change DM
@@ -868,7 +868,7 @@ public class GroupManager: NSObject {
                     newGroupModel: newGroupModel,
                     newDisappearingMessageToken: nil,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSource: nil,
+                    groupUpdateSource: .unknown,
                     infoMessagePolicy: .always,
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
@@ -968,7 +968,7 @@ public class GroupManager: NSObject {
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken?,
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
@@ -991,7 +991,7 @@ public class GroupManager: NSObject {
             token: newDisappearingMessageToken,
             thread: groupThread,
             shouldInsertInfoMessage: false,
-            changeAuthor: groupUpdateSource,
+            changeAuthor: groupUpdateSource.serviceId(),
             localIdentifiers: localIdentifiers,
             transaction: transaction
         )
@@ -1006,15 +1006,12 @@ public class GroupManager: NSObject {
 
         switch infoMessagePolicy {
         case .always, .insertsOnly:
-            insertGroupUpdateInfoMessage(
-                groupThread: groupThread,
-                oldGroupModel: nil,
-                newGroupModel: groupModel,
-                oldDisappearingMessageToken: nil,
-                newDisappearingMessageToken: newDisappearingMessageToken,
-                newlyLearnedPniToAciAssociations: [:],
-                groupUpdateSource: groupUpdateSource,
+            insertGroupUpdateInfoMessageForNewGroup(
                 localIdentifiers: localIdentifiers,
+                groupThread: groupThread,
+                groupModel: groupModel,
+                disappearingMessageToken: newDisappearingMessageToken,
+                groupUpdateSource: groupUpdateSource,
                 transaction: transaction
             )
         default:
@@ -1039,7 +1036,7 @@ public class GroupManager: NSObject {
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         canInsert: Bool,
         didAddLocalUserToV2Group: Bool,
         infoMessagePolicy: InfoMessagePolicy = .always,
@@ -1075,7 +1072,7 @@ public class GroupManager: NSObject {
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(
                 groupModel: newGroupModel,
                 disappearingMessageToken: newDisappearingMessageToken,
-                groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : nil,
+                groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : .unknown,
                 infoMessagePolicy: infoMessagePolicy,
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
@@ -1106,7 +1103,7 @@ public class GroupManager: NSObject {
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
@@ -1133,7 +1130,7 @@ public class GroupManager: NSObject {
                 token: newDisappearingMessageToken,
                 thread: groupThread,
                 shouldInsertInfoMessage: false,
-                changeAuthor: groupUpdateSource,
+                changeAuthor: groupUpdateSource.serviceId(),
                 localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
@@ -1349,11 +1346,11 @@ public class GroupManager: NSObject {
     private static func autoWhitelistGroupIfNecessary(
         oldGroupModel: TSGroupModel?,
         newGroupModel: TSGroupModel,
-        groupUpdateSource: ServiceId?,
+        groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let groupUpdateSource else {
+        guard let groupUpdateSource = groupUpdateSource.serviceId() else {
             return
         }
 

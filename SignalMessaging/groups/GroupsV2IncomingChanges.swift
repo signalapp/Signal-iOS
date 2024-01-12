@@ -12,7 +12,7 @@ public struct ChangedGroupModel {
     public let newGroupModel: TSGroupModelV2
     // newDisappearingMessageToken is only set of DM state changed.
     public let newDisappearingMessageToken: DisappearingMessageToken?
-    public let changeAuthor: ServiceId
+    public let updateSource: GroupUpdateSource
     public let profileKeys: [Aci: Data]
 
     /// Associations between a PNI and ACI that we learned as a part of this
@@ -23,14 +23,14 @@ public struct ChangedGroupModel {
         oldGroupModel: TSGroupModelV2,
         newGroupModel: TSGroupModelV2,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        changeAuthor: ServiceId,
+        updateSource: GroupUpdateSource,
         profileKeys: [Aci: Data],
         newlyLearnedPniToAciAssociations: [Pni: Aci]
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.newDisappearingMessageToken = newDisappearingMessageToken
-        self.changeAuthor = changeAuthor
+        self.updateSource = updateSource
         self.profileKeys = profileKeys
         self.newlyLearnedPniToAciAssociations = newlyLearnedPniToAciAssociations
     }
@@ -70,14 +70,18 @@ public class GroupsV2IncomingChanges {
             throw GroupsV2Error.cantApplyChangesToPlaceholder
         }
         let groupV2Params = try oldGroupModel.groupV2Params()
-        // Many change actions have author info, e.g. addedByUserID. But we can
-        // safely assume that all actions in the "change actions" have the same author.
-        guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
+        let updateSource = try changeActionsProto.updateSource(groupV2Params: groupV2Params)
+        let changeAuthor: ServiceId
+        switch updateSource {
+        case .unknown, .legacyE164:
+            // Many change actions have author info, e.g. addedByUserID. But we can
+            // safely assume that all actions in the "change actions" have the same author.
             throw OWSAssertionError("Missing changeAuthorUuid.")
+        case .aci(let aci):
+            changeAuthor = aci
+        case .rejectedInviteToPni(let pni):
+            changeAuthor = pni
         }
-        // Some userIds/uuidCiphertexts can be validated by
-        // the service. This is one.
-        let changeAuthor = try groupV2Params.serviceId(for: changeAuthorUuidData)
 
         guard changeActionsProto.hasRevision else {
             throw OWSAssertionError("Missing revision.")
@@ -655,7 +659,7 @@ public class GroupsV2IncomingChanges {
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            changeAuthor: changeAuthor,
+            updateSource: updateSource,
             profileKeys: profileKeys,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations
         )

@@ -20,7 +20,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     func handlePossiblyCollapsibleMembershipChange(
         precomputedUpdateType: PrecomputedUpdateType,
-        localAci: Aci,
+        localIdentifiers: LocalIdentifiers,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
@@ -37,21 +37,20 @@ extension GroupUpdateInfoMessageInserterImpl {
             return nil
         }
 
-        owsAssertDebug(mostRecentInfoMsg.newGroupModel == oldGroupModel)
-
         switch precomputedUpdateType {
         case .newJoinRequestFromSingleUser(let requestingAci):
-            guard localAci != requestingAci else {
+            guard localIdentifiers.aci != requestingAci else {
                 return nil
             }
 
             return maybeUpdate(
                 mostRecentInfoMsg: mostRecentInfoMsg,
                 withNewJoinRequestFrom: requestingAci,
+                localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
         case .canceledJoinRequestFromSingleUser(let cancelingAci):
-            guard localAci != cancelingAci else {
+            guard localIdentifiers.aci != cancelingAci else {
                 return nil
             }
 
@@ -60,16 +59,23 @@ extension GroupUpdateInfoMessageInserterImpl {
                 andSecondMostRecentInfoMsg: secondMostRecentInfoMsgMaybe,
                 withCanceledJoinRequestFrom: cancelingAci,
                 newGroupModel: newGroupModel,
+                localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
         case .bannedMemberChange:
-            // If we know only banned members changed we don't want to make a
-            // new info message, and should simply update the most recent info
-            // message with the new group model so it accurately reflects the
-            // latest group state, i.e. is aware of the now-banned members.
-
-            mostRecentInfoMsg.setNewGroupModel(newGroupModel)
-            mostRecentInfoMsg.anyUpsert(transaction: transaction)
+            switch mostRecentInfoMsg.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+            case .legacyRawString, .nonGroupUpdate, .precomputed:
+                // Nothing to do for these types; they don't keep the group
+                // model on themselves.
+                return .updatesCollapsedIntoExistingMessage
+            case .newGroup, .modelDiff:
+                // If we know only banned members changed we don't want to make a
+                // new info message, and should simply update the most recent info
+                // message with the new group model so it accurately reflects the
+                // latest group state, i.e. is aware of the now-banned members.
+                mostRecentInfoMsg.setNewGroupModelForLegacyMessage(newGroupModel)
+                mostRecentInfoMsg.anyUpsert(transaction: transaction)
+            }
 
             return .updatesCollapsedIntoExistingMessage
         case
@@ -82,6 +88,7 @@ extension GroupUpdateInfoMessageInserterImpl {
     private func maybeUpdate(
         mostRecentInfoMsg: TSInfoMessage,
         withNewJoinRequestFrom requestingAci: Aci,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
 
@@ -93,10 +100,18 @@ extension GroupUpdateInfoMessageInserterImpl {
         // Note that the new message might get collapsed further (into the
         // most recent message) in the future.
 
+        let mostRecentUpdateItem: TSInfoMessage.PersistableGroupUpdateItem?
+        switch mostRecentInfoMsg.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+        case .precomputed(let precomputedItems):
+            mostRecentUpdateItem = precomputedItems.asSingleUpdateItem
+        case .modelDiff, .legacyRawString, .newGroup, .nonGroupUpdate:
+            return nil
+        }
+
         guard
-            let mostRecentUpdateItem = mostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem,
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = mostRecentUpdateItem,
-            requestingAci == mostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
+            let mostRecentUpdateItem,
+            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail) = mostRecentUpdateItem,
+            requestingAci == requester.wrappedValue
         else {
             return nil
         }
@@ -104,12 +119,20 @@ extension GroupUpdateInfoMessageInserterImpl {
         owsAssertDebug(isTail)
 
         mostRecentInfoMsg.setSingleUpdateItem(
-            singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: count, isTail: false)
+            singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                requester: requestingAci.codableUuid,
+                count: count,
+                isTail: false
+            )
         )
         mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
         return .updateItemForNewMessage(
-            .sequenceOfInviteLinkRequestAndCancels(count: 0, isTail: true)
+            .sequenceOfInviteLinkRequestAndCancels(
+                requester: requestingAci.codableUuid,
+                count: 0,
+                isTail: true
+            )
         )
     }
 
@@ -118,6 +141,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         andSecondMostRecentInfoMsg secondMostRecentInfoMsg: TSInfoMessage?,
         withCanceledJoinRequestFrom cancelingAci: Aci,
         newGroupModel: TSGroupModel,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
 
@@ -130,37 +154,48 @@ extension GroupUpdateInfoMessageInserterImpl {
         // message.
 
         guard
-            let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsSingleRequestToJoin(),
+            let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsSingleRequestToJoin(
+                localIdentifiers: localIdentifiers
+            ),
             cancelingAci == mostRecentInfoMsgJoiner
         else {
             return nil
         }
 
-        if
-            let secondMostRecentInfoMsg = secondMostRecentInfoMsg,
-            let updateItem = secondMostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem,
-            case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = updateItem,
-            cancelingAci == secondMostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
-        {
-            switch mostRecentInfoMsg.precomputedGroupUpdateItems?.asSingleUpdateItem {
-            case .sequenceOfInviteLinkRequestAndCancels(0, true)?: break
-            default: owsFailDebug("Unexpected state for most recent info message")
-            }
+        let secondMostRecentUpdateItem: TSInfoMessage.PersistableGroupUpdateItem?
+        switch secondMostRecentInfoMsg?.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+        case .precomputed(let precomputedItems):
+            secondMostRecentUpdateItem = precomputedItems.asSingleUpdateItem
+        case .modelDiff, .legacyRawString, .newGroup, .nonGroupUpdate, .none:
+            secondMostRecentUpdateItem = nil
+        }
 
+        if
+            let secondMostRecentInfoMsg,
+            let secondMostRecentUpdateItem,
+            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail) = secondMostRecentUpdateItem,
+            cancelingAci == requester.wrappedValue
+        {
             mostRecentInfoMsg.anyRemove(transaction: transaction)
 
             owsAssertDebug(!isTail)
-            secondMostRecentInfoMsg.setNewGroupModel(newGroupModel)
             secondMostRecentInfoMsg.setSingleUpdateItem(
-                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: count + 1, isTail: true)
+                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                    requester: cancelingAci.codableUuid,
+                    count: count + 1,
+                    isTail: true
+                )
             )
             secondMostRecentInfoMsg.anyUpsert(transaction: transaction)
 
             return .updatesCollapsedIntoExistingMessage
         } else {
-            mostRecentInfoMsg.setNewGroupModel(newGroupModel)
             mostRecentInfoMsg.setSingleUpdateItem(
-                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(count: 1, isTail: true)
+                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                    requester: cancelingAci.codableUuid,
+                    count: 1,
+                    isTail: true
+                )
             )
             mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -208,7 +243,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
 // MARK: TSInfoMessage extension
 
-private extension TSInfoMessage.PersistableGroupUpdateItemsWrapper {
+public extension TSInfoMessage.PersistableGroupUpdateItemsWrapper {
     var asSingleUpdateItem: TSInfoMessage.PersistableGroupUpdateItem? {
         guard updateItems.count == 1 else {
             return nil
@@ -223,26 +258,53 @@ private extension TSInfoMessage {
         setGroupUpdateItemsWrapper(PersistableGroupUpdateItemsWrapper([singleUpdateItem]))
     }
 
-    func representsSingleRequestToJoin() -> Aci? {
-        guard oldDisappearingMessageToken == newDisappearingMessageToken else {
+    func representsSingleRequestToJoin(localIdentifiers: LocalIdentifiers) -> Aci? {
+        switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+        case .newGroup, .nonGroupUpdate, .legacyRawString:
             return nil
-        }
+        case .precomputed(let precomputedItems):
+            switch precomputedItems.asSingleUpdateItem {
+            case .none,
+                .invitedPniPromotedToFullMemberAci,
+                .localUserDeclinedInviteFromInviter,
+                .localUserDeclinedInviteFromUnknownUser,
+                .otherUserDeclinedInviteFromLocalUser,
+                .otherUserDeclinedInviteFromInviter,
+                .otherUserDeclinedInviteFromUnknownUser,
+                .unnamedUserDeclinedInviteFromInviter,
+                .unnamedUserDeclinedInviteFromUnknownUser,
+                .localUserInviteRevoked,
+                .localUserInviteRevokedByUnknownUser,
+                .otherUserInviteRevokedByLocalUser,
+                .unnamedUserInvitesWereRevokedByLocalUser,
+                .unnamedUserInvitesWereRevokedByOtherUser,
+                .unnamedUserInvitesWereRevokedByUnknownUser:
+                return nil
+            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
+                guard isTail, count == 0 else {
+                    return nil
+                }
+                return requester.wrappedValue
+            }
+        case let .modelDiff(oldGroupModel, newGroupModel, updateMetadata):
 
-        guard
-            let oldGroupModel = oldGroupModel,
-            let newGroupModel = newGroupModel,
-            let groupUpdateSourceAddress = groupUpdateSourceAddress,
-            let membershipEvent = GroupUpdateInfoMessageInserterImpl.PrecomputedUpdateType.from(
-                oldGroupMembership: oldGroupModel.groupMembership,
-                newGroupMembership: newGroupModel.groupMembership,
-                newlyLearnedPniToAciAssociations: [:]
-            ),
-            case .newJoinRequestFromSingleUser(let requestingAci) = membershipEvent,
-            requestingAci == groupUpdateSourceAddress.serviceId
-        else {
-            return nil
-        }
+            guard oldGroupModel.dmToken == newGroupModel.dmToken else {
+                return nil
+            }
 
-        return requestingAci
+            guard
+                let membershipEvent = GroupUpdateInfoMessageInserterImpl.PrecomputedUpdateType.from(
+                    oldGroupMembership: oldGroupModel.groupModel.groupMembership,
+                    newGroupMembership: newGroupModel.groupModel.groupMembership,
+                    newlyLearnedPniToAciAssociations: [:]
+                ),
+                case .newJoinRequestFromSingleUser(let requestingAci) = membershipEvent,
+                requestingAci == updateMetadata.source.serviceId()
+            else {
+                return nil
+            }
+
+            return requestingAci
+        }
     }
 }

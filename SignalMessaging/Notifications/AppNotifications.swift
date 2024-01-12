@@ -1031,9 +1031,31 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             }
 
             if let infoMessage = tsInteraction as? TSInfoMessage {
+                let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+                    tx: transaction.asV2Read
+                )
                 switch infoMessage.messageType {
                 case .typeGroupUpdate:
-                    if let groupUpdateAuthor = infoMessage.groupUpdateSourceAddress,
+                    let groupUpdateAuthor: SignalServiceAddress?
+                    switch infoMessage.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+                    case .legacyRawString, .nonGroupUpdate:
+                        groupUpdateAuthor = nil
+                    case .newGroup(_, let updateMetadata), .modelDiff(_, _, let updateMetadata):
+                        switch updateMetadata.source {
+                        case .unknown:
+                            groupUpdateAuthor = nil
+                        case .legacyE164(let e164):
+                            groupUpdateAuthor = .init(e164)
+                        case .aci(let aci):
+                            groupUpdateAuthor = .init(aci)
+                        case .rejectedInviteToPni(let pni):
+                            groupUpdateAuthor = .init(pni)
+                        }
+                    case .precomputed(let persistableGroupUpdateItemsWrapper):
+                        groupUpdateAuthor = persistableGroupUpdateItemsWrapper
+                            .asSingleUpdateItem?.senderForNotification
+                    }
+                    if let groupUpdateAuthor,
                        let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction) {
                         wrapIntent(intent)
                     }
