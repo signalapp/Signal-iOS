@@ -65,14 +65,6 @@ public enum DisplayableGroupUpdateItem {
     case inviteFriendsToNewlyCreatedGroup
     case wasMigrated
 
-    case invalidInvitesAddedByLocalUser(count: Int)
-    case invalidInvitesAddedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, count: Int)
-    case invalidInvitesAddedByUnknownUser(count: Int)
-
-    case invalidInvitesRemovedByLocalUser(count: Int)
-    case invalidInvitesRemovedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, count: Int)
-    case invalidInvitesRemovedByUnknownUser(count: Int)
-
     case localUserWasGrantedAdministratorByLocalUser
     case localUserWasGrantedAdministratorByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case localUserWasGrantedAdministratorByUnknownUser
@@ -155,9 +147,6 @@ public enum DisplayableGroupUpdateItem {
     case otherUserRequestRejectedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, requesterName: String, requesterAddress: SignalServiceAddress)
     case otherUserRequestCanceledByOtherUser(requesterName: String, requesterAddress: SignalServiceAddress)
     case otherUserRequestRejectedByUnknownUser(requesterName: String, requesterAddress: SignalServiceAddress)
-
-    case disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs: UInt64)
-    case disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs: UInt64)
 
     case disappearingMessagesEnabledByLocalUser(durationMs: UInt64)
     case disappearingMessagesEnabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, durationMs: UInt64)
@@ -468,96 +457,6 @@ extension DisplayableGroupUpdateItem {
                 "GROUP_WAS_MIGRATED",
                 comment: "Message indicating that the group was migrated."
             ).attributed
-        case let .invalidInvitesAddedByLocalUser(count):
-            switch count {
-            case 1:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1",
-                    comment: "Message indicating that 1 invalid invite was added by the local user."
-                ).attributed
-            default:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N",
-                    comment: "Message indicating that multiple invalid invites were added by the local user."
-                ).attributed
-            }
-        case let .invalidInvitesAddedByOtherUser(updaterName, updaterAddress, count):
-            switch count {
-            case 1:
-                return NSAttributedString.make(
-                    fromFormat: OWSLocalizedString(
-                        "GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1",
-                        comment: "Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}."
-                    ),
-                    groupUpdateFormatArgs: [.name(updaterName, updaterAddress)]
-                )
-            default:
-                return NSAttributedString.make(
-                    fromFormat: OWSLocalizedString(
-                        "GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N",
-                        comment: "Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}."
-                    ),
-                    groupUpdateFormatArgs: [.name(updaterName, updaterAddress)]
-                )
-            }
-        case let .invalidInvitesAddedByUnknownUser(count):
-            switch count {
-            case 1:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_ADDED_1",
-                    comment: "Message indicating that 1 invalid invite was added to the group."
-                ).attributed
-            default:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_ADDED_N",
-                    comment: "Message indicating that multiple invalid invites were added to the group."
-                ).attributed
-            }
-        case let .invalidInvitesRemovedByLocalUser(count):
-            switch count {
-            case 1:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1",
-                    comment: "Message indicating that 1 invalid invite was revoked by the local user."
-                ).attributed
-            default:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N",
-                    comment: "Message indicating that multiple invalid invites were revoked by the local user."
-                ).attributed
-            }
-        case let .invalidInvitesRemovedByOtherUser(updaterName, updaterAddress, count):
-            switch count {
-            case 1:
-                return NSAttributedString.make(
-                    fromFormat: OWSLocalizedString(
-                        "GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1",
-                        comment: "Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}."
-                    ),
-                    groupUpdateFormatArgs: [.name(updaterName, updaterAddress)]
-                )
-            default:
-                return NSAttributedString.make(
-                    fromFormat: OWSLocalizedString(
-                        "GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N",
-                        comment: "Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}."
-                    ),
-                    groupUpdateFormatArgs: [.name(updaterName, updaterAddress)]
-                )
-            }
-        case let .invalidInvitesRemovedByUnknownUser(count):
-            switch count {
-            case 1:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_REMOVED_1",
-                    comment: "Message indicating that 1 invalid invite was revoked."
-                ).attributed
-            default:
-                return OWSLocalizedString(
-                    "GROUP_INVALID_INVITES_REMOVED_N",
-                    comment: "Message indicating that multiple invalid invites were revoked."
-                ).attributed
-            }
         case .localUserWasGrantedAdministratorByLocalUser:
             return OWSLocalizedString(
                 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
@@ -1036,22 +935,6 @@ extension DisplayableGroupUpdateItem {
                     comment: "Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}."
                 ),
                 groupUpdateFormatArgs: [.name(requesterName, requesterAddress)]
-            )
-        case let .disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs):
-            return NSAttributedString.make(
-                fromFormat: OWSLocalizedString(
-                    "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                    comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
-                ),
-                groupUpdateFormatArgs: [.durationMs(durationMs)]
-            )
-        case let .disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs):
-            return NSAttributedString.make(
-                fromFormat: OWSLocalizedString(
-                    "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
-                    comment: "Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context."
-                ),
-                groupUpdateFormatArgs: [.durationMs(durationMs)]
             )
         case let .disappearingMessagesEnabledByLocalUser(durationMs):
             return NSAttributedString.make(

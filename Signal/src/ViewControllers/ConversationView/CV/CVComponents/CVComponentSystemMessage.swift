@@ -878,12 +878,6 @@ extension CVComponentSystemMessage {
                 .otherUserRequestRejectedByLocalUser,
                 .otherUserRequestRejectedByOtherUser,
                 .otherUserRequestRejectedByUnknownUser,
-                .invalidInvitesAddedByLocalUser,
-                .invalidInvitesAddedByOtherUser,
-                .invalidInvitesAddedByUnknownUser,
-                .invalidInvitesRemovedByLocalUser,
-                .invalidInvitesRemovedByOtherUser,
-                .invalidInvitesRemovedByUnknownUser,
                 .sequenceOfInviteLinkRequestAndCancels,
                 .inviteLinkResetByLocalUser,
                 .inviteLinkResetByOtherUser,
@@ -967,10 +961,6 @@ extension CVComponentSystemMessage {
                 .avatarRemovedByOtherUser,
                 .avatarRemovedByUnknownUser:
             return Theme.iconName(.photo16)
-        case
-            .disappearingMessagesUpdatedNoOldTokenByLocalUser,
-            .disappearingMessagesUpdatedNoOldTokenByUnknownUser:
-            return Theme.iconName(.timer16)
         case
             .disappearingMessagesEnabledByLocalUser,
             .disappearingMessagesEnabledByOtherUser,

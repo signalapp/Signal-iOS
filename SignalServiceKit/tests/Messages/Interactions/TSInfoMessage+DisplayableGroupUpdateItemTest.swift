@@ -64,20 +64,6 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
 
         .wasMigrated,
 
-        .invalidInvitesAddedByLocalUser(count: 1),
-        .invalidInvitesAddedByLocalUser(count: 5),
-        .invalidInvitesAddedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, count: 1),
-        .invalidInvitesAddedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, count: 5),
-        .invalidInvitesAddedByUnknownUser(count: 1),
-        .invalidInvitesAddedByUnknownUser(count: 5),
-
-        .invalidInvitesRemovedByLocalUser(count: 1),
-        .invalidInvitesRemovedByLocalUser(count: 5),
-        .invalidInvitesRemovedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, count: 1),
-        .invalidInvitesRemovedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, count: 5),
-        .invalidInvitesRemovedByUnknownUser(count: 1),
-        .invalidInvitesRemovedByUnknownUser(count: 5),
-
         .localUserWasGrantedAdministratorByLocalUser,
         .localUserWasGrantedAdministratorByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
         .localUserWasGrantedAdministratorByUnknownUser,
@@ -166,9 +152,6 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .otherUserRequestRejectedByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, requesterName: .otherUser2, requesterAddress: .otherUser2),
         .otherUserRequestCanceledByOtherUser(requesterName: .otherUser2, requesterAddress: .otherUser2),
         .otherUserRequestRejectedByUnknownUser(requesterName: .otherUser2, requesterAddress: .otherUser2),
-
-        .disappearingMessagesUpdatedNoOldTokenByLocalUser(durationMs: 1000),
-        .disappearingMessagesUpdatedNoOldTokenByUnknownUser(durationMs: 1000),
 
         .disappearingMessagesEnabledByLocalUser(durationMs: 1000),
         .disappearingMessagesEnabledByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1, durationMs: 1000),
