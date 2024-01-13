@@ -13,7 +13,10 @@ protocol ScrollPositionPreserving: AnyObject {
 }
 
 class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
+
     private var contentSizeBeforeInsertingToTop: CGSize?
+
+    let contentCardVerticalInset: CGFloat
 
     func recordContentSizeBeforeInsertingToTop() {
         contentSizeBeforeInsertingToTop = collectionViewContentSize
@@ -29,11 +32,14 @@ class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserv
         }
     }
 
-    init(interItemSpacing: CGFloat) {
+    init(contentCardVerticalInset inset: CGFloat) {
+        contentCardVerticalInset = inset
+
         super.init()
+
         scrollDirection = .vertical
-        minimumLineSpacing = interItemSpacing
-        minimumInteritemSpacing = interItemSpacing
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = 0
     }
 
     required init?(coder: NSCoder) {

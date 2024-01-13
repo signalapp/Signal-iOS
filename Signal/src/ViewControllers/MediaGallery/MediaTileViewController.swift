@@ -44,12 +44,11 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
         if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
             // Adding a "load newer" section. It goes at the end.
             collectionView?.insertSections(IndexSet(integer: localSection(numberOfSectionsAfter)))
-            accessoriesHelper.updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
             // Remove "load earlier" section at the beginning.
             collectionView?.deleteSections(IndexSet(integer: 0))
-            accessoriesHelper.updateFooterBarState()
         }
+        accessoriesHelper.updateFooterBarState()
     }
 }
 
@@ -729,6 +728,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                     return defaultView()
                 }
                 sectionHeader.leadingEdgeTextInset = layout == .grid ? 0 : 8
+                if let wideMediaTileViewLayout = currentCollectionViewLayout as? WideMediaTileViewLayout {
+                    sectionHeader.textMarginBottomAdjustment = wideMediaTileViewLayout.contentCardVerticalInset
+                } else {
+                    sectionHeader.textMarginBottomAdjustment = 0
+                }
                 sectionHeader.configure(title: date.localizedString)
                 return sectionHeader
             }
@@ -748,8 +752,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         if !allCells.contains(cell) {
             allCells.append(cell)
         }
-        cell.indexPathDidChange(indexPath,
-                                itemCount: collectionView.numberOfItems(inSection: indexPath.section))
+        cell.indexPathDidChange(indexPath, itemCount: collectionView.numberOfItems(inSection: indexPath.section))
         guard !mediaGallery.galleryDates.isEmpty else {
             owsFailDebug("unexpected cell for loadNewerSectionIdx")
             cell.makePlaceholder()
@@ -846,9 +849,9 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             case .list:
                 switch fileType {
                 case .photoVideo:
-                    return WideMediaTileViewLayout(interItemSpacing: 0)
+                    return WideMediaTileViewLayout(contentCardVerticalInset: WidePhotoCell.contentCardVerticalInset)
                 case .audio:
-                    return WideMediaTileViewLayout(interItemSpacing: 12)
+                    return WideMediaTileViewLayout(contentCardVerticalInset: AudioCell.contentCardVerticalInset)
                 }
             case .grid:
                 return SquareMediaTileViewLayout()
@@ -998,14 +1001,19 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     private var cachedLoadingDataHeaderHeight: CGFloat?
 
     private func dateHeaderHeight() -> CGFloat {
+        var headerHeight: CGFloat
         if let cachedDateHeaderHeight {
-            return cachedDateHeaderHeight
+            headerHeight = cachedDateHeaderHeight
+        } else {
+            let headerView = MediaGalleryDateHeader()
+            headerView.configure(title: "M")
+            headerHeight = headerView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height
+            cachedDateHeaderHeight = headerHeight
         }
-        let headerView = MediaGalleryDateHeader()
-        headerView.configure(title: "M")
-        let size = headerView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
-        cachedDateHeaderHeight = size.height
-        return size.height
+        if let wideMediaTileLayout = currentCollectionViewLayout as? WideMediaTileViewLayout {
+            headerHeight -= wideMediaTileLayout.contentCardVerticalInset
+        }
+        return headerHeight
     }
 
     private func loadingDataHeaderHeight() -> CGFloat {
@@ -1287,23 +1295,33 @@ private class MediaGalleryDateHeader: UICollectionReusableView {
         }
     }
 
-    override public init(frame: CGRect) {
+    private static let textMarginBottom: CGFloat = 10
+    // This property allows us to decrease distance between text and bottom edge of the header view
+    // with the purpose of keeping vertical spacing between header view text and top edge
+    // of the first content "card" in section same (applicable in the list view only).
+    var textMarginBottomAdjustment: CGFloat = 0 {
+        didSet {
+            labelBottomEdgeConstraint.constant = Self.textMarginBottom - textMarginBottomAdjustment
+        }
+    }
+    private lazy var labelBottomEdgeConstraint = bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: Self.textMarginBottom)
+
+    override init(frame: CGRect) {
         super.init(frame: frame)
 
         preservesSuperviewLayoutMargins = true
 
         addSubview(label)
-        labelLeadingEdgeConstraint.isActive = true
+        NSLayoutConstraint.activate([ labelLeadingEdgeConstraint, labelBottomEdgeConstraint ])
         label.autoPinTrailingToSuperviewMargin()
         label.autoPinEdge(toSuperviewEdge: .top, withInset: 32)
-        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 10)
     }
 
-    public required init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configure(title: String) {
+    func configure(title: String) {
         label.text = title
     }
 }

@@ -30,6 +30,8 @@ class AudioCell: MediaTileListModeCell {
 
     private static let contentInset = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 10)
 
+    override class var contentCardVerticalInset: CGFloat { 6 }
+
     private static var cellHeightsWithTopLabel: [UIContentSizeCategory: CGFloat] = [:]
 
     private static var cellHeightsWithoutTopLabel: [UIContentSizeCategory: CGFloat] = [:]
@@ -72,7 +74,7 @@ class AudioCell: MediaTileListModeCell {
             presentation: presenter
         )
 
-        let cellHeight = audioMessageViewSize.height + AudioCell.contentInset.totalHeight
+        let cellHeight = audioMessageViewSize.height + AudioCell.contentInset.totalHeight + 2*Self.contentCardVerticalInset
         if displaysTopLabel {
             cellHeightsWithTopLabel[currentContentSizeCategory] = cellHeight
         } else {
@@ -203,8 +205,8 @@ class AudioCell: MediaTileListModeCell {
     private func setupViews() {
         contentView.addSubview(audioMessageContainerView)
         NSLayoutConstraint.activate([
-            audioMessageContainerView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            audioMessageContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            audioMessageContainerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Self.contentCardVerticalInset),
+            audioMessageContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Self.contentCardVerticalInset),
             audioMessageContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OWSTableViewController2.defaultHOuterMargin)
         ])
 
