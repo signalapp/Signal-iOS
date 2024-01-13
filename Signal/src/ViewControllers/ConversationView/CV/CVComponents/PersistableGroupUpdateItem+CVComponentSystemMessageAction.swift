@@ -10,7 +10,69 @@ import SignalServiceKit
 
 extension TSInfoMessage.PersistableGroupUpdateItem {
 
-    func cvComponentAction(
+    static func cvComponentAction(
+        items: [Self],
+        groupThread: () -> TSGroupThread?,
+        contactsManager: ContactsManagerProtocol,
+        tx: SDSAnyReadTransaction
+    ) -> CVComponentSystemMessage.Action? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        // Cache the group thread so we only fetch it once.
+        var hasFetchedGroupThread = false
+        var cachedGroupThread: TSGroupThread?
+        let cachingGroupThread: () -> TSGroupThread? = {
+            if hasFetchedGroupThread {
+                return cachedGroupThread
+            } else {
+                return groupThread()
+            }
+        }
+
+        var index = 0
+        while index < items.count {
+            let item = items[index]
+
+            /// Normally we use the action from the first non-nil item
+            /// on the info message.
+            /// It is legal, in a backup, to have a single TSInfoMessage
+            /// with both a collapsed .sequenceOfInviteLinkRequestAndCancels
+            /// and a single request to join right after. (Which implies the
+            /// sequence ends in a cancel, and a new request came after).
+            /// In this case we want to show the action from the request to join
+            /// (an "accept request" item) that follows, so do a little lookahead
+            /// to catch this exception case.
+            if
+                case let .sequenceOfInviteLinkRequestAndCancels(_, _, isTail) = item,
+                let nextItem = items[safe: index + 1],
+                nextItem.representsCollapsibleSingleRequestToJoin() != nil,
+                let nextItemAction = item.cvComponentAction(
+                    groupThread: cachingGroupThread,
+                    contactsManager: contactsManager,
+                    tx: tx
+                )
+            {
+                owsAssertDebug(
+                    isTail.negated,
+                    "Collapsed item with a following request shouldn't be a tail!"
+                )
+                return nextItemAction
+            }
+
+            if let action = item.cvComponentAction(
+                groupThread: cachingGroupThread,
+                contactsManager: contactsManager,
+                tx: tx
+            ) {
+                return action
+            }
+        }
+        return nil
+    }
+
+    private func cvComponentAction(
         groupThread: () -> TSGroupThread?,
         contactsManager: ContactsManagerProtocol,
         tx: SDSAnyReadTransaction

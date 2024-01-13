@@ -145,8 +145,28 @@ extension GroupUpdateInfoMessageInserterImpl {
         // increment that message's collapse counter and delete the most recent
         // message.
 
+        if let (mostRecentInfoMsgJoiner, count) = mostRecentInfoMsg.representsSequenceOfRequestsAndCancelsWithAdditionalRequestToJoin(
+            localIdentifiers: localIdentifiers
+        ) {
+            guard mostRecentInfoMsgJoiner == cancelingAci else {
+                return nil
+            }
+            // collapse into the single most recent message; it already represents
+            // a sequence of requests + cancels and one more request.
+            mostRecentInfoMsg.setSingleUpdateItem(
+                singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                    requester: cancelingAci.codableUuid,
+                    count: count + 1,
+                    isTail: true
+                )
+            )
+            mostRecentInfoMsg.anyUpsert(transaction: transaction)
+
+            return .updatesCollapsedIntoExistingMessage
+        }
+
         guard
-            let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsSingleRequestToJoin(
+            let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsCollapsibleSingleRequestToJoin(
                 localIdentifiers: localIdentifiers,
                 tx: transaction
             ),
@@ -155,23 +175,16 @@ extension GroupUpdateInfoMessageInserterImpl {
             return nil
         }
 
-        let secondMostRecentUpdateItem: TSInfoMessage.PersistableGroupUpdateItem?
-        switch secondMostRecentInfoMsg?.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
-        case .precomputed(let precomputedItems):
-            secondMostRecentUpdateItem = precomputedItems.asSingleUpdateItem
-        case .modelDiff, .legacyRawString, .newGroup, .nonGroupUpdate, .none:
-            secondMostRecentUpdateItem = nil
-        }
-
         if
             let secondMostRecentInfoMsg,
-            let secondMostRecentUpdateItem,
-            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail) = secondMostRecentUpdateItem,
-            cancelingAci == requester.wrappedValue
+            let (requester, count) = secondMostRecentInfoMsg
+                .representsSingleSequenceOfRequestsAndCancels(
+                    localIdentifiers: localIdentifiers
+                ),
+            cancelingAci == requester
         {
             mostRecentInfoMsg.anyRemove(transaction: transaction)
 
-            owsAssertDebug(!isTail)
             secondMostRecentInfoMsg.setSingleUpdateItem(
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
                     requester: cancelingAci.codableUuid,
@@ -194,6 +207,33 @@ extension GroupUpdateInfoMessageInserterImpl {
 
             return .updatesCollapsedIntoExistingMessage
         }
+    }
+
+    /// See ``GroupUpdateInfoMessageInserterBackupHelper``.
+    public static func maybeUpdate(
+        mostRecentInfoMsg: TSInfoMessage,
+        joinRequestFromBackup requestingAci: Aci,
+        localIdentifiers: LocalIdentifiers
+    ) {
+
+        guard let (mostRecentMsgAci, count) = mostRecentInfoMsg
+            .representsSingleSequenceOfRequestsAndCancels(
+                localIdentifiers: localIdentifiers
+            ),
+            requestingAci == mostRecentMsgAci
+        else {
+            return
+        }
+
+        mostRecentInfoMsg.setSingleUpdateItem(
+            singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                requester: mostRecentMsgAci.codableUuid,
+                // Count stays the same.
+                count: count,
+                // Its not the tail because of the subsequent request.
+                isTail: false
+            )
+        )
     }
 
     private func mostRecentVisibleInteractionsAsInfoMessages(
@@ -251,7 +291,7 @@ private extension TSInfoMessage {
         setGroupUpdateItemsWrapper(PersistableGroupUpdateItemsWrapper([singleUpdateItem]))
     }
 
-    func representsSingleRequestToJoin(
+    func representsCollapsibleSingleRequestToJoin(
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyReadTransaction
     ) -> Aci? {
@@ -259,38 +299,109 @@ private extension TSInfoMessage {
         case .newGroup, .nonGroupUpdate, .legacyRawString:
             return nil
         case .precomputed(let precomputedItems):
-            switch precomputedItems.asSingleUpdateItem {
-            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
-                guard isTail, count == 0 else {
-                    return nil
-                }
-                return requester.wrappedValue
-            case .localUserRequestedToJoin:
-                // Just calling out that we don't collapse the local user's requests.
-                return nil
-            case let .otherUserRequestedToJoin(requester):
-                return requester.wrappedValue
-            default:
-                return nil
-            }
+            return precomputedItems
+                .asSingleUpdateItem?
+                .representsCollapsibleSingleRequestToJoin()
         case .modelDiff:
-            // In the case of a model diff, convert to a displayable item first, and see if
-            // that displayable item is a single request to join. The displayable item
+            // In the case of a model diff, convert to a persistable item first, and see if
+            // that persistable item is a single request to join. The persistable item
             // generation logic already has logic to determine this case; no need to
-            // replicate it here (although this method is wasteful since it will fetch
-            // a bunch of metadata we throw away)
+            // replicate it here.
             guard
                 let groupUpdateItems = computedGroupUpdateItems(
                     localIdentifiers: localIdentifiers,
                     tx: tx
                 ),
-                groupUpdateItems.count == 1,
-                case let .otherUserRequestedToJoin(requesterAci) = groupUpdateItems.first!
+                groupUpdateItems.count == 1
             else {
                 return nil
             }
 
-            return requesterAci.wrappedValue
+            return groupUpdateItems.first?.representsCollapsibleSingleRequestToJoin()
+        }
+    }
+
+    func representsSingleSequenceOfRequestsAndCancels(
+        localIdentifiers: LocalIdentifiers
+    ) -> (Aci, count: UInt)? {
+        switch self.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+        case .modelDiff, .legacyRawString, .newGroup, .nonGroupUpdate:
+            // This is a phenomenon exclusive to precomputed cases.
+            return nil
+        case .precomputed(let precomputedItems):
+            guard
+                let item = precomputedItems.asSingleUpdateItem,
+                case let .sequenceOfInviteLinkRequestAndCancels(requester, count, _) = item
+            else {
+                return nil
+            }
+            return (requester.wrappedValue, count)
+        }
+    }
+
+    /// It is possible (e.g. when restoring from a desktop-generated backup) to have a single info message
+    /// containing both a ``sequenceOfInviteLinkRequestAndCancels`` and a single request to
+    /// join that happens right after.
+    /// If this is the latest message, and we get a new cancel, we want to collapse everything down to
+    /// a single ``sequenceOfInviteLinkRequestAndCancels`` with an incremented count.
+    func representsSequenceOfRequestsAndCancelsWithAdditionalRequestToJoin(
+        localIdentifiers: LocalIdentifiers
+    ) -> (Aci, count: UInt)? {
+        switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
+        case .newGroup, .nonGroupUpdate, .legacyRawString, .modelDiff:
+            // This is a phenomenon exclusive to precomputed cases.
+            return nil
+        case .precomputed(let precomputedItems):
+            let precomputedItems = precomputedItems.updateItems
+            guard precomputedItems.count == 2 else {
+                return nil
+            }
+            let firstItemRequester: Aci
+            let firstItemCount: UInt
+            let firstMessageIsTail: Bool
+            switch precomputedItems[0] {
+            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
+                firstItemRequester = requester.wrappedValue
+                firstItemCount = count
+                firstMessageIsTail = isTail
+            default:
+                return nil
+            }
+
+            guard let secondItemRequester = precomputedItems[1]
+                .representsCollapsibleSingleRequestToJoin()
+            else {
+                return nil
+            }
+
+            guard firstItemRequester == secondItemRequester else {
+                return nil
+            }
+            owsAssertDebug(
+                !firstMessageIsTail,
+                "Should not be tail when there is a subsequent request!"
+            )
+            return (firstItemRequester, firstItemCount)
+        }
+    }
+}
+
+public extension TSInfoMessage.PersistableGroupUpdateItem {
+
+    func representsCollapsibleSingleRequestToJoin() -> Aci? {
+        switch self {
+        case let .sequenceOfInviteLinkRequestAndCancels(requester, count, isTail):
+            guard isTail, count == 0 else {
+                return nil
+            }
+            return requester.wrappedValue
+        case .localUserRequestedToJoin:
+            // Just calling out that we don't collapse the local user's requests.
+            return nil
+        case let .otherUserRequestedToJoin(requester):
+            return requester.wrappedValue
+        default:
+            return nil
         }
     }
 }

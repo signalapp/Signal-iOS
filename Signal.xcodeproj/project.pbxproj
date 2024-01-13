@@ -821,6 +821,7 @@
 		6619A1C92B2CC536004B38FE /* RestoredSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1C82B2CC536004B38FE /* RestoredSentMessageTranscript.swift */; };
 		6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */; };
 		6619A1CD2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */; };
+		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -3468,6 +3469,7 @@
 		6619A1C82B2CC536004B38FE /* RestoredSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoredSentMessageTranscript.swift; sourceTree = "<group>"; };
 		6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContactAddress.swift; sourceTree = "<group>"; };
 		6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceUnknownFieldMigrator.swift; sourceTree = "<group>"; };
+		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -10382,6 +10384,7 @@
 				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
 				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
 				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
+				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
 				F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */,
 				D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */,
 				F9C5CBA6289453B200548EEE /* TSGroupModel.h */,
@@ -12892,6 +12895,7 @@
 				F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */,
 				D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */,
 				D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */,
+				662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */,
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,

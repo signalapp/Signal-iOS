@@ -1137,16 +1137,15 @@ extension CVComponentSystemMessage {
             return nil
         case .typeGroupUpdate:
             let thread = { infoMessage.thread(tx: transaction) as? TSGroupThread }
-            return infoMessage.computedGroupUpdateItems(tx: transaction)?
-                .lazy
-                .compactMap {
-                    $0.cvComponentAction(
-                        groupThread: thread,
-                        contactsManager: contactsManager,
-                        tx: transaction
-                    )
-                }
-                .first
+            guard let items = infoMessage.computedGroupUpdateItems(tx: transaction) else {
+                return nil
+            }
+            return TSInfoMessage.PersistableGroupUpdateItem.cvComponentAction(
+                items: items,
+                groupThread: thread,
+                contactsManager: contactsManager,
+                tx: transaction
+            )
         case .typeGroupQuit:
             return nil
         case .unknownProtocolVersion:
