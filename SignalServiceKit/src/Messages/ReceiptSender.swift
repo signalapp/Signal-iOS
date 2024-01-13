@@ -152,11 +152,6 @@ public class ReceiptSender: NSObject {
             owsFailDebug("Invalid timestamp.")
             return
         }
-        let isHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
-        guard !isHiddenRecipient else {
-            // Don't send receipts to hidden recipients.
-            return
-        }
         let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send")
         let persistedSet = fetchAndMergeReceiptSet(receiptType: receiptType, address: address, tx: tx.asV2Write)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
