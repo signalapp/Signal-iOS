@@ -34,6 +34,9 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
         var index = 0
         while index < items.count {
             let item = items[index]
+            defer {
+                index += 1
+            }
 
             /// Normally we use the action from the first non-nil item
             /// on the info message.
