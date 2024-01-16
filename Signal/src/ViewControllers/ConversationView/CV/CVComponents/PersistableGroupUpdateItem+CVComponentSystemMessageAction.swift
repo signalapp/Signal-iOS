@@ -27,7 +27,9 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             if hasFetchedGroupThread {
                 return cachedGroupThread
             } else {
-                return groupThread()
+                cachedGroupThread = groupThread()
+                hasFetchedGroupThread = true
+                return cachedGroupThread
             }
         }
 
