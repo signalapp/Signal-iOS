@@ -42,9 +42,14 @@ public class TSAccountManagerImpl: TSAccountManager {
         }
     }
 
+    fileprivate static let regStateLogger = PrefixedLogger(prefix: "TSRegistrationState")
+
     public func warmCaches() {
         // Load account state into the cache and log.
-        getOrLoadAccountStateWithMaybeTransaction().log()
+        db.read { tx in
+            reloadAccountState(logger: Self.regStateLogger, tx: tx).log(Self.regStateLogger)
+        }
+
     }
 
     // MARK: - Local Identifiers
@@ -191,18 +196,19 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
-            Logger.info("local number \(oldNumber ?? "nil") -> \(e164)")
+            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(e164)")
             kvStore.setString(e164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
 
             let oldAci = Aci.parseFrom(aciString: kvStore.getString(Keys.localAci, transaction: tx))
-            Logger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
+            Self.regStateLogger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
             let oldPni = kvStore.getString(Keys.localPni, transaction: tx).flatMap { UUID(uuidString: $0) }.flatMap { Pni(fromUUID: $0) }
-            Logger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni?.logString ?? "nil")")
+            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni?.logString ?? "nil")")
             // Encoded without the "PNI:" prefix for backwards compatibility.
             kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
 
+            Self.regStateLogger.info("device id is primary? \(deviceId == OWSDevice.primaryDeviceId)")
             kvStore.setUInt32(deviceId, key: Keys.deviceId, transaction: tx)
             kvStore.setString(serverAuthToken, key: Keys.serverAuthToken, transaction: tx)
 
@@ -226,15 +232,15 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
-            Logger.info("local number \(oldNumber ?? "nil") -> \(newE164.stringValue)")
+            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(newE164.stringValue)")
             kvStore.setString(newE164.stringValue, key: Keys.localPhoneNumber, transaction: tx)
 
             let oldAci = kvStore.getString(Keys.localAci, transaction: tx)
-            Logger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
+            Self.regStateLogger.info("local aci \(oldAci ?? "nil") -> \(aci.serviceIdUppercaseString)")
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
             let oldPni = kvStore.getString(Keys.localPni, transaction: tx)
-            Logger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
+            Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(pni?.rawUUID.uuidString ?? "nil")")
             // Encoded without the "PNI:" prefix for backwards compatibility.
             kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
         }
@@ -245,6 +251,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             let oldValue = kvStore.getBool(Keys.isDeregisteredOrDelinked, defaultValue: false, transaction: tx)
             guard oldValue != isDeregisteredOrDelinked else {
                 return false
+            }
+            if isDeregisteredOrDelinked {
+                Self.regStateLogger.warn("Deregistered!")
+            } else {
+                Self.regStateLogger.info("Resetting isDeregistered/Delinked")
             }
             kvStore.setBool(isDeregisteredOrDelinked, key: Keys.isDeregisteredOrDelinked, transaction: tx)
             return true
@@ -258,6 +269,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         tx: DBWriteTransaction
     ) {
         mutateWithLock(tx: tx) {
+            Self.regStateLogger.info("Resetting for reregistration, was primary? \(wasPrimaryDevice)")
             kvStore.removeAll(transaction: tx)
 
             kvStore.setString(localNumber.stringValue, key: Keys.reregistrationPhoneNumber, transaction: tx)
@@ -271,6 +283,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         guard oldValue != isTransferInProgress else {
             return false
         }
+        if isTransferInProgress {
+            Self.regStateLogger.warn("Transfer in progress!")
+        } else {
+            Self.regStateLogger.info("Resetting isTransferInProgress")
+        }
         mutateWithLock(tx: tx) {
             kvStore.setBool(isTransferInProgress, key: Keys.isTransferInProgress, transaction: tx)
         }
@@ -281,6 +298,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         let oldValue = kvStore.getBool(Keys.wasTransferred, transaction: tx)
         guard oldValue != wasTransferred else {
             return false
+        }
+        if wasTransferred {
+            Self.regStateLogger.warn("Marking wasTransferred!")
+        } else {
+            Self.regStateLogger.info("Resetting wasTransferred")
         }
         mutateWithLock(tx: tx) {
             kvStore.setBool(wasTransferred, key: Keys.wasTransferred, transaction: tx)
@@ -298,6 +320,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
                 guard kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx) else {
                     return
                 }
+                Self.regStateLogger.info("Transfer was in progress but app relaunched; resetting")
                 kvStore.setBool(false, key: Keys.isTransferInProgress, transaction: tx)
             }
         }
@@ -307,7 +330,9 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
 extension TSAccountManagerImpl: DBChangeDelegate {
 
     public func dbChangesDidUpdateExternally() {
-        self.db.read(block: reloadAccountState(tx:))
+        self.db.read { tx in
+            _ = reloadAccountState(logger: nil, tx: tx)
+        }
     }
 }
 
@@ -337,9 +362,16 @@ extension TSAccountManagerImpl {
         }
     }
 
-    private func reloadAccountState(tx: DBReadTransaction) {
-        accountStateLock.withLock {
-            _ = loadAccountState(tx: tx)
+    @discardableResult
+    private func reloadAccountState(
+        logger: PrefixedLogger?,
+        tx: DBReadTransaction
+    ) -> AccountState {
+        return accountStateLock.withLock {
+            return loadAccountState(
+                logger: logger,
+                tx: tx
+            )
         }
     }
 
@@ -360,8 +392,15 @@ extension TSAccountManagerImpl {
 
     /// Must be called within the lock
     @discardableResult
-    private func loadAccountState(tx: DBReadTransaction) -> AccountState {
-        let accountState = AccountState.init(kvStore: kvStore, tx: tx)
+    private func loadAccountState(
+        logger: PrefixedLogger? = nil,
+        tx: DBReadTransaction
+    ) -> AccountState {
+        let accountState = AccountState.init(
+            kvStore: kvStore,
+            logger: logger,
+            tx: tx
+        )
         self.cachedAccountState = accountState
         return accountState
     }
@@ -399,14 +438,21 @@ extension TSAccountManagerImpl {
             return registrationState.isRegisteredPrimaryDevice ? aciString : "\(aciString).\(deviceId)"
         }
 
+        /// Logger is optional so we don't log every time we load state (which is a lot),
+        /// and can just do so once per app launch.
         init(
             kvStore: KeyValueStore,
+            logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) {
             // WARNING: AccountState is loaded before data migrations have run (as well as after).
             // Do not use data migrations to update AccountState data; do it through schema migrations
             // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
-            let localIdentifiers = Self.loadLocalIdentifiers(kvStore: kvStore, tx: tx)
+            let localIdentifiers = Self.loadLocalIdentifiers(
+                kvStore: kvStore,
+                logger: logger,
+                tx: tx
+            )
             self.localIdentifiers = localIdentifiers
 
             let persistedDeviceId = kvStore.getUInt32(
@@ -418,11 +464,15 @@ extension TSAccountManagerImpl {
 
             self.serverAuthToken = kvStore.getString(Keys.serverAuthToken, transaction: tx)
 
+            logger?.info("Has server auth token: \(self.serverAuthToken != nil)")
+
             let isPrimaryDevice: Bool?
             if let persistedDeviceId {
                 isPrimaryDevice = persistedDeviceId == OWSDevice.primaryDeviceId
+                logger?.info("Device id loaded, is primary: \(isPrimaryDevice!)")
             } else {
                 isPrimaryDevice = nil
+                logger?.info("Using default primary device id")
             }
 
             let isTransferInProgress = kvStore.getBool(Keys.isTransferInProgress, defaultValue: false, transaction: tx)
@@ -433,6 +483,7 @@ extension TSAccountManagerImpl {
                 isPrimaryDevice: isPrimaryDevice,
                 isTransferInProgress: isTransferInProgress,
                 kvStore: kvStore,
+                logger: logger,
                 tx: tx
             )
             self.registrationDate = kvStore.getDate(Keys.registrationDate, transaction: tx)
@@ -454,17 +505,21 @@ extension TSAccountManagerImpl {
 
         private static func loadLocalIdentifiers(
             kvStore: KeyValueStore,
+            logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) -> LocalIdentifiers? {
             guard
                 let localNumber = kvStore.getString(Keys.localPhoneNumber, transaction: tx)
             else {
+                logger?.info("No local phone number!")
                 return nil
             }
             guard let localAci = kvStore.getUuid(Keys.localAci, transaction: tx) else {
+                logger?.info("No local aci!")
                 return nil
             }
             let pni = kvStore.getUuid(Keys.localPni, transaction: tx).map(Pni.init(fromUUID:))
+            logger?.info("Has local pni? \(pni != nil)")
             return LocalIdentifiers(
                 aci: Aci(fromUUID: localAci),
                 pni: pni,
@@ -477,6 +532,7 @@ extension TSAccountManagerImpl {
             isPrimaryDevice: Bool?,
             isTransferInProgress: Bool,
             kvStore: KeyValueStore,
+            logger: PrefixedLogger?,
             tx: DBReadTransaction
         ) -> TSRegistrationState {
             let reregistrationPhoneNumber = kvStore.getString(
@@ -502,17 +558,22 @@ extension TSAccountManagerImpl {
 
             // Go in semi-reverse order; with higher priority stuff going first.
             if wasTransferred {
+                logger?.info("WasTransferred=true; marking as transferred")
                 // If we transferred, we are transferred regardless of what else
                 // may be going on. Other state might be a mess; doesn't matter.
                 return .transferred
             } else if isTransferInProgress {
                 // Ditto for a transfer in progress; regardless of whatever
                 // else is going on (except being transferred) this takes precedence.
-                if let isPrimaryDevice {
-                    return isPrimaryDevice
-                        ? .transferringPrimaryOutgoing
-                        : .transferringLinkedOutgoing
-                } else {
+                switch isPrimaryDevice {
+                case true:
+                    logger?.info("isTransferInProgress=true on primary")
+                    return .transferringPrimaryOutgoing
+                case false:
+                    logger?.info("isTransferInProgress=true on secondary")
+                    return .transferringLinkedOutgoing
+                default:
+                    logger?.info("isTransferInProgress=true on unknown primary state; transfer incoming")
                     // If we never knew primary device state, it must be an
                     // incoming transfer, where we started from a blank state.
                     return .transferringIncoming
@@ -523,11 +584,13 @@ extension TSAccountManagerImpl {
                 // isDeregistered is probably also true; this takes precedence.
 
                 if kvStore.getBool(Keys.reregistrationWasPrimaryDevice, defaultValue: true, transaction: tx) {
+                    logger?.info("rereg phone number set, and wasPrimaryDevice true; reregistering")
                     return .reregistering(
                         phoneNumber: reregistrationPhoneNumber,
                         aci: reregistrationAci
                     )
                 } else {
+                    logger?.info("rereg phone number set, and wasPrimaryDevice false; relinking")
                     return .relinking(
                         phoneNumber: reregistrationPhoneNumber,
                         aci: reregistrationAci
@@ -537,25 +600,50 @@ extension TSAccountManagerImpl {
                 // if isDeregistered is true, we may have been registered
                 // or not. But its being true means we should be deregistered
                 // (or delinked, based on whether this is a primary).
-                // isPrimaryDevice should have some value; if we've explicit
+                // isPrimaryDevice should have some value; if we've explicitly
                 // set isDeregistered that means we _were_ registered before.
-                owsAssertDebug(isPrimaryDevice != nil)
-                return isPrimaryDevice == true ? .deregistered : .delinked
+                switch isPrimaryDevice {
+                case true:
+                    logger?.info("Deregistered")
+                    return .deregistered
+                case false:
+                    logger?.info("Delinked")
+                    return .delinked
+                default:
+                    let logString = "Deregistered, but primary device state unknown!"
+                    if let logger {
+                        logger.warn(logString)
+                    } else {
+                        owsAssertDebug(false, logString)
+                    }
+                    return .delinked
+                }
             } else if localIdentifiers == nil {
                 // Setting localIdentifiers is what marks us as registered
                 // in primary registration. (As long as above conditions don't
                 // override that state)
                 // For provisioning, we set them before finishing, but the fact
                 // that we set them means we linked (but didn't finish yet).
+                logger?.info("Not deregistered but local identifiers unavailable; not registered yet")
                 return .unregistered
             } else {
                 // We have local identifiers, so we are registered/provisioned.
-                return isPrimaryDevice == true ? .registered : .provisioned
+                switch isPrimaryDevice {
+                case true:
+                    logger?.info("Registered")
+                    return .registered
+                case false:
+                    logger?.info("Provisioned")
+                    return .provisioned
+                default:
+                    logger?.warn("Registered but primary state unknown; marking provisioned")
+                    return .provisioned
+                }
             }
         }
 
-        func log() {
-            Logger.info("RegistrationState: \(registrationState.logString)")
+        func log(_ logger: PrefixedLogger) {
+            logger.info("RegistrationState: \(registrationState.logString)")
         }
 
         fileprivate enum Keys {
