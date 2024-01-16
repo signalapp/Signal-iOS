@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Vælg landekode";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducerer telefonnummerbeskyttelse, valgfrie brugernavne og links.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Nye måder at komme i kontakt på";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Dit kort er udløbet. Tjek, at dine kortoplysninger er korrekte, og prøv igen.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Ugyldigt betalingsrespons. Prøv igen.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Din donation kunne ikke behandles. Få flere oplysninger i din bankapp, eller prøv igen.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Donér";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Kunne ikke bekræfte donation";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Din iDEAL-engangsdonation kunne ikke behandles. Prøv en anden betalingsmetode, eller kontakt din bank for at få flere oplysninger.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Din iDEAL engangsdonation på %1$@ kunne ikke bekræftes. Tjek din bankapp for at godkende din iDEAL-betaling.";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ godkendte en anmodning fra %1$@ om at deltage i gruppen";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "En anmodning fra %1$@ om at deltage i gruppen blev godkendt.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ annullerede sin anmodning om at deltage i gruppen";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Noget gik galt med dit brugernavn. Det er ikke længere tildelt din konto. Du kan prøve at indstille det igen eller vælge et nyt.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Få hjælp nu";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Noget gik galt med QR-koden for dit brugernavn og dit link. Det er ikke længere gyldigt. Opret et nyt link, som du kan dele med andre.";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "Brug kun en proxy, hvis du ikke kan oprette forbindelse til Signal på mobildata eller over Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Brugernavne har en unik QR-kode og et link, som du kan dele med dine venner, så de hurtigt kan starte en chat med dig.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "QR-koder og links";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Dit telefonnummer deles ikke længere med chats. Hvis dit nummer er gemt i en vens kontakter, vil de stadig kunne se det.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefonnummerprivatliv";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Angiv dit brugernavn";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "Nye måder at komme i kontakt på";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Folk kan nu sende dig beskeder med dit valgfrie brugernavn. Telefonnumre er ikke længere påkrævet. Brugernavne er ikke synlige på din profil. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Brugernavne";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Farve";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Del kun din QR-kode og dit link med personer, du stoler på. Når de deles, kan andre se dit brugernavn og starte en chat med dig.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-kode og link er ikke indstillet. Tjek din netværksforbindelse, og prøv igen.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Nulstil";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Brugernavne må kun indeholde a-z, 0-9 og _.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ugyldigt brugernavn, angiv min. 2 cifre";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Disse cifre hjælper med at skjule dit brugernavn, så du ikke modtager uønskede beskeder. Del kun dit brugernavn med de personer og grupper, du gerne vil chatte med. Hvis du ændrer brugernavn, får du et nyt sæt cifre.";

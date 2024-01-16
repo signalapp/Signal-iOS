@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Válassz országhívószámot";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Bemutatjuk a telefonszám-védelmet, az opcionális felhasználóneveket és a linkeket.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Új csatlakozási módok";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "A kártyád érvényessége lejárt. Ellenőrizd, hogy a kártyaadatok helyesek-e, és próbáld újra.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Érvénytelen fizetési válasz. Próbáld újra!";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Az adományodat nem sikerült feldolgozni. További információért ellenőrizd a banki alkalmazásodat, vagy próbálkozz újra.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Támogatás";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Nem sikerült megerősíteni az adományt";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Egyszeri iDEAL-adományodat nem sikerült feldolgozni. Próbáld újra egy másik fizetési eszközzel, vagy keresd fel bankodat további információért!";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Egyszeri %1$@ iDEAL-adományodat nem sikerült megerősíteni. Az iDEAL-adományod jóváhagyásához ellenőrizd a banki alkalmazásodat.";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ jóváhagyott egy csoport belépési igényt tőle: %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ csatlakozási igénye jóvá lett hagyva.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ visszavonta csoport belépési igényét.";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Valami hiba történt a felhasználóneveddel, már nincs hozzárendelve a fiókodhoz. Megpróbálhatod újra beállítani, vagy választhatsz egy újat.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Javítás most";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Hiba történt a felhasználónevedhez tartozó QR-kóddal és a hivatkozással, ezért azok már nem érvényesek. Hozz létre egy új hivatkozást és oszd meg másokkal.";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "Csak abban az esetben használj proxy-t, ha nem lehet a Signalhoz csatlakozni se mobilnet, se Wi-Fi használatával.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "A felhasználónevek egyedi QR-kóddal és linkkel rendelkeznek, amelyet megoszthatsz a barátaiddal, hogy gyorsan cseveghess velük.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "QR kódok és linkek";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "A telefonszámod többé nem kerül megosztásra a csevegőpartnereiddel. Ha a telefonszámodat elmentette egy ismerősöd a névjegyei közé, ő továbbra is látni fogja.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefonszám-védelem";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Állítsd be a felhasználónevedet";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "Új csatlakozási módok";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Mostantól küldhetnek neked üzenetet az opcionális felhasználóneved használatával. Már nem kell telefonszámot megadni. A felhasználónevek nem láthatók a profilokon. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Felhasználónevek";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Szín";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Csak olyanokkal oszd meg a QR-kódod és a hivatkozást, akikben megbízol. Ha megosztod, mások láthatják a felhasználóneved, és csevegést kezdeményezhetnek veled.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "A QR-kód és a hivatkozás nincs beállítva. Ellenőrizd a hálózati kapcsolatot, és próbáld újra!";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Visszaállítás";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "A felhasználónevek csak az alábbi karaktereket tartalmazhatják: a-z, 0-9, _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Érvénytelen felhasználónév, adj meg legalább 2 számjegyet";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Ezek a számok segítenek megőrizni a felhasználóneved privát jellegét, hogy elkerüld a nem kívánt üzeneteket. Csak azokkal az emberekkel és csoportokkal oszd meg a felhasználóneved, akikkel csevegni szeretnél. Ha módosítod a felhasználóneved, új számsort kapsz.";

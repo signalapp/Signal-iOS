@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Roghnaigh Cód Tíre";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Tús eolais ar phríobháideacht ar uimhreacha gutháin, ainmneacha úsáideora roghnacha agus naisc.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Bealaí Nua le Nascadh";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Tá do chárta as feidhm. Fíoraigh go bhfuil sonraí do chárta ceart agus triail arís.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Freagairt don íocaíocht neamhbhailí. Triail arís.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Níorbh fhéidir do thabhartas a phróiseáil. Seiceáil d'aip bhaincéireachta le tuilleadh faisnéise a fháil nó triail arís.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Tabhair airgead";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Níorbh fhéidir an tabhartas a dheimhniú";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Níorbh fhéidir do thabhartas aonuaire iDEAL a phróiseáil. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Níorbh fhéidir do thabhartas iDEAL %1$@ a dheimhniú. Seiceáil d'aip bhaincéireachta le do thabhartas iDEAL a cheadú.";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Faomhadh iarratas ó %1$@ ar dhul isteach sa ghrúpa.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ canceled their request to join the group.";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Bhí fadhb le d'ainm úsáideora, níl sé sannta do do chuntas a thuilleadh. Is féidir leat athshocrú a thriail nó ceann nua a roghnú.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Deisigh anois";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Bhí fadhb le cód QR agus nasc d'ainm úsáideora, níl sé bailí a thuilleadh. Cruthaigh nasc nua le comhroinnt le daoine eile.";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "Ná húsáid seachfhreastalaí ach amháin mura bhfuil tú in ann nascadh le Signal ar shonraí móibíleacha nó Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Tá cód QR agus nasc uathúil ag ainmneacha úsáideora, is féidir leat iad a chomhroinnt le cairde chun tosú ar chomhrá leat.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "Cóid QR agus Naisc";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Ní chomhroinntear d'uimhir ghutháin le comhráite a thuilleadh. Má tá d'uimhir sábháilte i dteagmhálaithe carad, feicfidh an duine sin fós í.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Príobháideacht ar Uimhreacha Gutháin";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Socraigh d'Ainm Úsáideora";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "Bealaí Nua le Nascadh";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Is féidir le daoine teachtaireacht a sheoladh chugat anois trí d'ainm úsáideora roghnach. Níl uimhreacha gutháin de dhíth a thuilleadh. Níl ainmneacha úsáideora infheicthe ar do phróifíl. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Ainmneacha úsáideora";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Dath";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Ná comhroinn do chód QR ná nasc ach le daoine a bhfuil muinín agat iontu. Agus iad comhroinnte, beidh daoine eile in ann d'ainm úsáideora a fheiceáil agus tosú ar chomhrá leat.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Níor socraíodh an cód QR ná nasc. Seiceáil do nasc líonra agus triail arís.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Athshocraigh";
@@ -7703,7 +7703,7 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Aon duine a bhfuil an nasc sin acu, beidh siad in ann féachaint ar d'ainm úsáideora agus tús a chur le comhrá leat. Ná comhroinn é ach le daoine a bhfuil muinín agat iontu.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
-"USERNAME_LINK_SHEET_BUTTON" = "link";
+"USERNAME_LINK_SHEET_BUTTON" = "nasc";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "Lig do dhaoine eile tosú ar chomhrá leat trí do chód QR uathúil nó do nasc a chomhroinnt.";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Ní ceadmhach ann ach a-z, 0-9, agus _.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ainm úsáideora neamhbhailí, cuir isteach íoslíon de 2 dhigit";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Cabhraíonn na digití seo le d'ainm úsáideora a choimeád príobháideach le gur féidir leat teachtaireachtaí gan iarraidh a sheachaint. Ná comhroinn d'ainm úsáideora ach le daoine agus le grúpaí ar mhaith leat comhrá a dhéanamh leo. Má athraíonn tú d'ainm úsáideora gheobhaidh tú tacar nua digití.";

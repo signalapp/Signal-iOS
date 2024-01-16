@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "دۆلەت كودى تاللاڭ";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "تېلېفون نومۇر مەخپىيەتلىكى، تاللانما ئىشلەتكۈچى نامى ۋە ئۇلانمىسى كىرگۈزۈلدى.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "ئۇلىنىشنىڭ يېڭى ئۇسۇللىرى";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "كارتىڭىزنىڭ ۋاقتى ئۆتكەن. كارتا تەپسىلاتىنىڭ توغرىلىقىنى دەلىللەپ قايتا سىناڭ.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "ئىناۋەتسىز چىقىم ئىنكاسى. قايتا سىناڭ.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "ئىئانىڭىزنى بىر تەرەپ قىلغىلى بولمىدى. تەپسىلاتىنى بانكا ئەپىڭىزدىن تەكشۈرۈڭ ياكى قايتا سىناڭ.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "ئىئانە قىلىڭ";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "ئىئانىنى جەزملەشتۈرەلمىدى";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "بىر قېتىملىق iDEAL ئىئانىڭىزنى بىر تەرەپ قىلالمىدى. باشقا پۇل تۆلەش ئۇسۇلىنى سىناپ بېقىڭ ياكى تەپسىلاتى ئۈچۈن بانكا بىلەن ئالاقىلىشىڭ.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "بىر قېتىملىق %1$@ iDEAL ئىئانىڭىزنى جەزملەشتۈرەلمىدى. بانكا ئەپىنى تەكشۈرۈپ iDEAL ئىئانىڭىزنى تەستىقلاڭ.";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىنى %2$@ تەستىقلىدى.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسى تەستىقلاندى.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىدىن ۋاز كەچتى.";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "ئىشلەتكۈچى نامىڭىزدا خاتالىق كۆرۈلگەن بولۇپ، ئۇ ئەمدى سىزنىڭ ھېساباتىڭىزغا تەۋە ئەمەس. ئۇنى قايتا تەڭشەپ سىناپ باقسىڭىز ياكى يېڭى بىر نام تاللىسىڭىز بولىدۇ.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "دەرھال ئوڭشاش";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "سىزنىڭ ئىشلەتكۈى نامىڭىز، QR كودىڭىز ۋە ئۇلانمىڭىزدا بەزى مەسىلىلەر بار، بۇنىڭدىن كىيىن كۈچكە ئىگە ئەمەس. باشقىلار بىلەن ئورتاقلىشىش ئۈچۈن يېڭى بىر ئۇلانما تۈزۈڭ.";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "كۆچمە ئېقىم ياكى Wi-Fi دا Signal غا ئۇلىنالمىغان ئەھۋالدىلا ئاندىن ۋاكالەتچى ئىشلىتىڭ.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "ئىشلەتكۈچى نامىنىڭ خاس QR ۋە ئۇلانمىسى بار بولۇپ، ئۇلارنى دوستلىرىڭىز بىلەن ئورتاقلىشىپ پاراڭلىشىشنى باشلىسىڭىز بولىدۇ.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "QR كودى ياكى ئۇلانما";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "تېلېفون نومۇرىڭىز ئەمدى پاراڭلاردا ئورتاقلىشىلمايدۇ. ئەگەر تېلېفون نومۇرىڭىز دوستىڭىزنىڭ ئالاقىداش تىزىملىكىدە ساقلانغان بولسا، ئۇلار ئۇنى كۆرەلەيدۇ.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "تېلېفون نومۇرى مەخپىيەتلىكى";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "ئىشلەتكۈچى نامىنى تەڭشەش";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "ئۇلىنىشنىڭ يېڭى ئۇسۇللىرى";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "باشقىلار ئەمدى سىزنىڭ باشقا ئىشلەتكۈچى نامىڭىز ئارقىلىق سىزگە ئۇچۇر يوللىسا بولىدۇ. تېلېفون نومۇرى ئەمدى تەلەپ قىلىنمايدۇ. ئىشلەتكۈچى نامى ئارخىپىڭىزدا كۆرۈنمەيدۇ. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "ئىشلەتكۈچى نامى";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "رەڭ";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "QR كودىڭىز ۋە ئۇلانمىڭىزنى سىز ئىشىنىدىغان كىشىلەر بىلەنلا ئورتاقلىشىڭ. ئۇلارنى ئورتاقلاشقاندا باشقىلار سىزنىڭ ئ‍ىشلەتكۈچى نامىڭىزنى كۆرەلەيدۇ ۋە سىز بىلەن پاراڭ باشلىيالايدۇ.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR كودى ۋە ئۇلانمىسى بېكىتىلمىدى. تور ئۇلىنىشىنى تەكشۈرۈپ قايتا سىناڭ.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "ئەسلىگە قايتۇر";
@@ -7703,7 +7703,7 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "بۇ ئۇلانما بار ھەرقانداق ئادەم ئىشلەتكۈچى نامىڭىزنى كۆرەلەيدۇ ۋە سىز بىلەن پاراڭ باشلىيالايدۇ. ئۇنى پەقەت سىز ئىشىنىدىغان كىشىلەر بىلەنلا ئورتاقلىشىڭ.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
-"USERNAME_LINK_SHEET_BUTTON" = "link";
+"USERNAME_LINK_SHEET_BUTTON" = "ئۇلانما";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "سىزنىڭ خاس QR كودىڭىز ياكى ئۇلانمىڭىزنى پايلىشىش ئارقىلىق باشقىلار بىلەن پاراڭلىشىڭ";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى پەقەت a-Z، 0-9 ۋە ئاستى سىزىق «_» دىن تۈزۈلىشى كېرەك.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى ئىناۋەتسىز، ئاز دېگەندە 2 خانە كىرگۈزۈڭ";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "بۇ رەقەملەر ئارقىلىق ئىشلەتكۈچى نامىڭىزنى مەخپىي تۇتالايسىز ۋە شۇ ئارقىلىق خالىمىغان ئۇچۇرلاردىن ساقلىنالايسىز. ئىشلەتكۈچى نامىڭىزنى پەقەت سىز پاراڭلاشماقچى بولغان كىشىلەر ۋە گۇرۇپپا بىلەنلا ئورتاقلىشىڭ. ئىشلەتكۈچى نامىڭىزنى ئۆزگەرتسىڭىز، يېڭى بىر يۈرۈش رەقەمگە ئېرىشىسىز.";

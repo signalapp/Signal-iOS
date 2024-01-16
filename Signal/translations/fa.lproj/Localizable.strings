@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "پیش‌شماره کشور را انتخاب کنید";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "معرفی حریم شخصی شماره تلفن، نام کاربری انتخابی و پیوندها.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "روش‌های جدید برقراری ارتباط";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "کارت شما منقضی شده است. بررسی کنید که مشخصات کارت‌تان درست باشد و دوباره امتحان کنید.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "پاسخ پرداخت نامعتبر است. لطفاً دوباره امتحان کنید.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "اهدای مالی شما پردازش نشد. برای اطلاعات بیشتر، اپلیکیشن بانک‌تان را بررسی کنید یا دوباره امتحان کنید.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "اهدای کمک مالی";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "اهدای مالی تأیید نشد";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "اهدای مالی یک‌بارۀ iDEAL شما پردازش نشد. یک روش پرداختی دیگر را امتحان کنید یا با بانک خود برای اطلاعات بیشتر تماس بگیرید.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "اهدای مالی یک‌بارۀ iDEAL شما به‌مبلغ %1$@ تأیید نشد. برای تأیید اهدای مالی iDEAL خود، اپلیکیشن بانک‌تان را بررسی کنید.";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ با درخواستی از %1$@ برای پیوستن به گروه موافقت کرد.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "با درخواستی از %1$@ برای پیوستن به گروه موافقت شد.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ درخواست خود را برای پیوستن به گروه لغو کرد.";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "خطایی در مورد نام کاربری شما رخ داد، این نام دیگر به حساب شما تعلق ندارد. می‌توانید سعی کنید و دوباره آن را برگزینید یا نام کاربری جدیدی انتخاب کنید.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "اکنون اصلاح شود";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "خطایی در مورد کد و پیوند QR نام کاربری شما رخ داد و دیگر معتبر نیست. پیوند جدیدی ایجاد کنید تا با دیگران به اشتراک بگذارید.";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "فقط در صورتی از پروکسی استفاده کنید که قادر به اتصال به سیگنال روی اینترنت همراه یا Wi-Fi نباشید.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "هر نام کاربری یک کد QR و پیوند منحصربه‌فرد دارد که می‌توانید با دوستانتان به اشتراک بگذارید تا از آن برای شروع سریع گفتگو با شما استفاده کنند.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "پیوندها و کدهای QR";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "شماره تلفن شما دیگر با گفتگوها به اشتراک گذاشته نخواهد شد. اگر شمارۀ شما در مخاطبان دوستتان ذخیره شده باشد، همچنان قادر به دیدن آن خواهد بود.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "حریم شخصی شماره تلفن";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "تنظیم نام کاربری";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "روش‌های جدید برقراری ارتباط";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "حالا دیگران می‌توانند با استفاده از نام کاربری انتخابی‌تان به شما پیام بفرستند. دیگر نیازی به شماره تلفن نیست. نام کاربری در نمایه‌تان قابل مشاهده نیست. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "نام کاربری";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "رنگ";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "کد QR و پیوند خود را فقط با افراد مورد اعتمادتان به اشتراک بگذارید. با اشتراک‌گذاری آن‌ها، دیگران می‌توانند نام کاربری‌تان را ببینند و گفتگویی را با شما شروع کنند.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "پیوند و کد QR تنظیم نشده است. اتصال شبکه خود را بررسی کنید و دوباره امتحان کنید.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "بازنشانی";
@@ -7703,7 +7703,7 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "هر کسی که این لینک را داشته باشند می‌تواند نام کاربری شما را مشاهده کند و گفتگویی را با شما آغاز کند. آن را فقط با کسانی به اشتراک بگذارید که به آن‌ها اعتماد دارید.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
-"USERNAME_LINK_SHEET_BUTTON" = "link";
+"USERNAME_LINK_SHEET_BUTTON" = "پیوند";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "با هم‌رسانی پیوند یا کد QR منحصربه‌فرد خود، اجازه دهید دیگران گفتگویی را با شما شروع کنند.";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "نام کاربری فقط می‌تواند حاوی حروف a تا z، اعداد ۰ تا ۹ و _ باشد.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "نام کاربری نامعتبر است، حداقل ۲ رقم وارد کنید";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "این ارقام به خصوصی ماندن نام کاربری‌تان کمک می‌کند تا بتوانید از پیام‌های ناخواسته جلوگیری کنید. نام کاربری خود را فقط با افراد و گروه‌هایی که می‌خواهید با آن‌ها گفتگو کنید به اشتراک بگذارید. اگر نام کاربری را تغییر دهید، مجموعه ارقام جدیدی دریافت خواهید کرد.";

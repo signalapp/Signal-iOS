@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "เลือกรหัสประเทศ";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "ขอแนะนำการรักษาความเป็นส่วนตัวของหมายเลขโทรศัพท์ ตัวเลือกการกำหนดชื่อผู้ใช้และลิงก์เพิ่มเติม";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "วิธีใหม่ในการติดต่อสื่อสาร";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "บัตรหมดอายุแล้ว ตรวจยืนยันว่ารายละเอียดบัตรของคุณถูกต้อง แล้วลองอีกครั้ง";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "รูปแบบการชำระเงินไม่ถูกต้อง กรุณาลองอีกครั้ง";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "ไม่สามารถดำเนินการบริจาคของคุณได้ โปรดตรวจสอบแอปธนาคารของคุณเพื่อศึกษาข้อมูลเพิ่มเติมหรือลองอีกครั้ง";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "บริจาค";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "ไม่สามารถยืนยันการบริจาคได้";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "ไม่สามารถดำเนินการบริจาคครั้งเดียวผ่าน iDEAL ของคุณได้ ลองวิธีการชำระอื่น หรือติดต่อธนาคารเพื่อขอข้อมูลเพิ่มเติม";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "ไม่สามารถยืนยันการบริจาคครั้งเดียวผ่าน iDEAL จำนวน %1$@ ของคุณได้ โปรดตรวจสอบแอปธนาคารของคุณเพื่ออนุมัติการบริจาคผ่าน iDEAL";
@@ -3188,7 +3188,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้อนุมัติคำขอเข้ากลุ่มของ %1$@";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "คำขอเข้ากลุ่มจาก %1$@ ได้รับอนุมัติแล้ว";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ยกเลิกคำขอเข้ากลุ่มของเขา";
@@ -5660,7 +5660,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "เกิดข้อผิดพลาดเกี่ยวกับชื่อผู้ใช้ ไม่สามารถใช้ชื่อผู้ใช้นี้กับบัญชีของคุณได้อีกต่อไป โปรดลองใหม่ด้วยการใส่ชื่อผู้ใช้อีกครั้งหรือตั้งชื่อผู้ใช้ใหม่";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "แก้ไขตอนนี้";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "เกิดข้อผิดพลาดเกี่ยวกับคิวอาร์โค้ดและลิงก์ชื่อผู้ใช้ของคุณ จึงไม่สามารถใช้ลิงก์นี้ได้อีกต่อไป โปรดสร้างลิงก์ใหม่เพื่อใช้สำหรับแชร์กับผู้ติดต่อ";
@@ -7640,28 +7640,28 @@
 "USE_PROXY_EXPLANATION" = "ใช้พร็อกซีเฉพาะเมื่อคุณไม่สามารถเชื่อมต่อ Signal ผ่านอินเทอร์เน็ตมือถือหรือ Wi-Fi เท่านั้น";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "ชื่อผู้ใช้จะมีคิวอาร์โค้ดและลิงก์เฉพาะที่คุณสามารถแชร์เพื่อให้เพื่อนเริ่มแชทด้วยได้ทันที";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "คิวอาร์โค้ดและลิงก์";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "ระบบจะไม่แสดงหมายเลขโทรศัพท์ของคุณในแชทอีกต่อไป ผู้ติดต่อจะยังคงเห็นหมายเลขโทรศัพท์ของคุณ หากบันทึกเบอร์คุณไว้ในรายชื่อติดต่อ";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "การรักษาความเป็นส่วนตัวของหมายเลขโทรศัพท์";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "กำหนดชื่อผู้ใช้ของคุณ";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "วิธีใหม่ในการติดต่อสื่อสาร";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "ผู้ติดต่อจะสามารถส่งข้อความหาคุณผ่านชื่อผู้ใช้ที่คุณกำหนด วิธีนี้ทำให้ไม่จำเป็นต้องทราบหมายเลขโทรศัพท์ของคุณ โดยชื่อผู้ใช้จะไม่ปรากฏบนโปรไฟล์ของคุณ ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "ชื่อผู้ใช้";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "สี";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "เราขอแนะนำให้แชร์คิวอาร์โค้ดและลิงก์ของคุณกับคนที่ไว้วางใจเท่านั้น นี่จะเป็นการเปิดเผยให้ผู้อื่นเห็นชื่อผู้ใช้ของคุณและเริ่มต้นแชทกับคุณได้";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "ยังไม่ได้ตั้งค่าคิวอาร์โค้ดและลิงก์ โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "รีเซ็ต";
@@ -7703,7 +7703,7 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "ทุกคนที่มีลิงก์นี้จะสามารถมองเห็นชื่อผู้ใช้ของคุณและเริ่มแชทกับคุณได้ เราขอแนะนำให้แชร์ลิงก์นี้กับคนที่คุณไว้วางใจเท่านั้น";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
-"USERNAME_LINK_SHEET_BUTTON" = "link";
+"USERNAME_LINK_SHEET_BUTTON" = "ลิงก์";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "แชร์คิวอาร์โค้ดหรือลิงก์เฉพาะเพื่อให้ผู้ติดต่อเริ่มแชทกับคุณได้";
@@ -7745,7 +7745,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ชื่อผู้ใช้จะมีได้เฉพาะ a-z, 0-9 และ _";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "ชื่อผู้ใช้ไม่ถูกต้อง ต้องกรอกตัวเลขอย่างน้อย 2 หลัก";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "ตัวเลขนี้จะช่วยรักษาความเป็นส่วนตัวให้ชื่อผู้ใช้ของคุณ ป้องกันไม่ให้คุณได้รับข้อความที่ไม่พึงประสงค์ เราขอแนะนำให้แชร์ชื่อผู้ใช้ของคุณเฉพาะกับคนและกลุ่มที่คุณอยากติดต่อด้วยเท่านั้น โดยหากเปลี่ยนชื่อผู้ใช้ คุณก็จะได้รับชุดตัวเลขใหม่";
