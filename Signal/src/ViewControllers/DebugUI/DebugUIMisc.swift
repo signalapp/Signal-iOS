@@ -27,13 +27,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         }
 
         items += [
-            OWSTableItem(title: "Make next app launch fail", actionBlock: {
-                CurrentAppContext().appUserDefaults().set(10, forKey: kAppLaunchesAttemptedKey)
-                if let frontmostViewController = CurrentAppContext().frontmostViewController() {
-                    frontmostViewController.presentToast(text: "Okay, the next app launch will fail!")
-                }
-            }),
-
             OWSTableItem(title: "Re-register", actionBlock: {
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",

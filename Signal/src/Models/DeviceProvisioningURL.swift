@@ -12,6 +12,10 @@ class DeviceProvisioningURL {
 
     let publicKey: PublicKey
 
+    enum Constants {
+        static let linkDeviceHost = "linkdevice"
+    }
+
     init?(urlString: String) {
         guard let queryItems = URLComponents(string: urlString)?.queryItems else {
             return nil
@@ -54,5 +58,4 @@ class DeviceProvisioningURL {
         }
         return publicKey
     }
-
 }

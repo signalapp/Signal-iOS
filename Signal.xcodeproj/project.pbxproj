@@ -1097,7 +1097,6 @@
 		76E7A20F2A01A50C00A8F538 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */; };
 		76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */; };
 		76E7A2192A01DD0500A8F538 /* DebugUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E7A2182A01DD0500A8F538 /* DebugUI.swift */; };
-		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */; };
 		76F4B581293ACCD200A7CF2F /* UIKit+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */; };
 		76F958612A09A4FD00B43E63 /* DebugUIContacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F958602A09A4FD00B43E63 /* DebugUIContacts.swift */; };
@@ -1616,7 +1615,6 @@
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
 		F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */; };
-		F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */; };
 		F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */; };
 		F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
@@ -1781,7 +1779,6 @@
 		F98ED2CE2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CD2922F114008483DC /* DonationPaymentDetailsViewController+DonationMode.swift */; };
 		F98ED2D02922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */; };
 		F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */; };
-		F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */; };
 		F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		F9952B2F29F1E59F00EA989E /* OsExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B2E29F1E59F00EA989E /* OsExpiry.swift */; };
 		F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */; };
@@ -3749,8 +3746,6 @@
 		76E7A20E2A01A50C00A8F538 /* OWSTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUITableViewController.swift; sourceTree = "<group>"; };
 		76E7A2182A01DD0500A8F538 /* DebugUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUI.swift; sourceTree = "<group>"; };
-		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollButton.swift; sourceTree = "<group>"; };
 		76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Animations.swift"; sourceTree = "<group>"; };
 		76F958602A09A4FD00B43E63 /* DebugUIContacts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIContacts.swift; sourceTree = "<group>"; };
@@ -4366,7 +4361,6 @@
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
 		F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppExpiryTest.swift; sourceTree = "<group>"; };
-		F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Lifecycle.swift"; sourceTree = "<group>"; };
 		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
 		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
 		F90E4AAB29F0798C00F54191 /* MockAppExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppExpiry.swift; sourceTree = "<group>"; };
@@ -4530,7 +4524,6 @@
 		F98ED2CF2922F24C008483DC /* DonationPaymentDetailsViewController+MonthlyDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationPaymentDetailsViewController+MonthlyDonation.swift"; sourceTree = "<group>"; };
 		F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+PaymentMethod.swift"; sourceTree = "<group>"; };
 		F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentMethod.swift; sourceTree = "<group>"; };
-		F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Orientation.swift"; sourceTree = "<group>"; };
 		F992ACC328F8C9D900906038 /* StripeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeTest.swift; sourceTree = "<group>"; };
 		F9952B2E29F1E59F00EA989E /* OsExpiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OsExpiry.swift; sourceTree = "<group>"; };
 		F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagViewTest.swift; sourceTree = "<group>"; };
@@ -7494,10 +7487,6 @@
 				D99840BB297A04A300F7ED6D /* Usernames */,
 				76EB04C818170B33006006FC /* util */,
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
-				F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */,
-				F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */,
-				76EB03C218170B33006006FC /* AppDelegate.h */,
-				76EB03C318170B33006006FC /* AppDelegate.m */,
 				F92074752888648A00B7F087 /* AppDelegate.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
 				45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */,
@@ -12005,9 +11994,6 @@
 				45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */,
 				32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */,
 				50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */,
-				F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */,
-				F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */,
-				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				F92074762888648A00B7F087 /* AppDelegate.swift in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,

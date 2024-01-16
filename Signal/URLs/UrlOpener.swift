@@ -30,6 +30,12 @@ class UrlOpener {
         self.tsAccountManager = tsAccountManager
     }
 
+    // MARK: - Constants
+
+    enum Constants {
+        static let sgnlPrefix = "sgnl"
+    }
+
     // MARK: - Parsing URLs
 
     struct ParsedUrl {
@@ -75,7 +81,7 @@ class UrlOpener {
     private static func parseSgnlAddStickersUrl(_ url: URL) -> StickerPackInfo? {
         guard
             let components = URLComponents(string: url.absoluteString),
-            components.scheme == kURLSchemeSGNLKey,
+            components.scheme == Constants.sgnlPrefix,
             components.host?.hasPrefix("addstickers") == true,
             let queryItems = components.queryItems
         else {
@@ -99,7 +105,7 @@ class UrlOpener {
     }
 
     private static func parseSgnlLinkDeviceUrl(_ url: URL) -> DeviceProvisioningURL? {
-        guard url.scheme == kURLSchemeSGNLKey, url.host?.hasPrefix(kURLHostLinkDevicePrefix) == true else {
+        guard url.scheme == Constants.sgnlPrefix, url.host?.hasPrefix(DeviceProvisioningURL.Constants.linkDeviceHost) == true else {
             return nil
         }
         return DeviceProvisioningURL(urlString: url.absoluteString)

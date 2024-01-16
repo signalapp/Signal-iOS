@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Intents
 import SignalMessaging
 import SignalUI
+import WebRTC
 
 enum LaunchPreflightError {
     case unknownDatabaseVersion
@@ -35,12 +37,115 @@ enum LaunchPreflightError {
     }
 }
 
-extension AppDelegate {
-    // MARK: - App launch
+private func uncaughtExceptionHandler(_ exception: NSException) {
+    if DebugFlags.internalLogging {
+        Logger.error("exception: \(exception)")
+        Logger.error("name: \(exception.name)")
+        Logger.error("reason: \(String(describing: exception.reason))")
+        Logger.error("userInfo: \(String(describing: exception.userInfo))")
+    } else {
+        let reason = exception.reason ?? ""
+        let reasonData = reason.data(using: .utf8) ?? Data()
+        let reasonHash = Cryptography.computeSHA256Digest(reasonData)?.base64EncodedString() ?? ""
 
-    @objc
-    func handleDidFinishLaunching(launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
+        var truncatedReason = reason.prefix(20)
+        if let spaceIndex = truncatedReason.lastIndex(of: " ") {
+            truncatedReason = truncatedReason[..<spaceIndex]
+        }
+        let maybeEllipsis = (truncatedReason.endIndex < reason.endIndex) ? "..." : ""
+        Logger.error("\(exception.name): \(truncatedReason)\(maybeEllipsis) (hash: \(reasonHash))")
+    }
+    Logger.error("callStackSymbols: \(exception.callStackSymbols.joined(separator: "\n"))")
+    Logger.flush()
+}
+
+final class AppDelegate: UIResponder, UIApplicationDelegate {
+    // MARK: - Constants
+
+    private enum Constants {
+        static let appLaunchesAttemptedKey = "AppLaunchesAttempted"
+    }
+
+    // MARK: - Lifecycle
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        Logger.info("")
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        AssertIsOnMainThread()
+        if CurrentAppContext().isRunningTests {
+            return
+        }
+
+        Logger.warn("")
+
+        if didAppLaunchFail {
+            return
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync { self.handleActivation() }
+
+        // Clear all notifications whenever we become active.
+        // When opening the app from a notification,
+        // AppDelegate.didReceiveLocalNotification will always
+        // be called _before_ we become active.
+        clearAllNotificationsAndRestoreBadgeCount()
+
+        // On every activation, clear old temp directories.
+        ClearOldTemporaryDirectories()
+
+        // Ensure that all windows have the correct frame.
+        WindowManager.shared.updateWindowFrames()
+    }
+
+    private let flushQueue = DispatchQueue(label: "org.signal.flush", qos: .utility)
+
+    func applicationWillResignActive(_ application: UIApplication) {
+        AssertIsOnMainThread()
+
+        if didAppLaunchFail {
+            return
+        }
+
+        Logger.warn("")
+
+        clearAllNotificationsAndRestoreBadgeCount()
+
+        let backgroundTask = OWSBackgroundTask(label: #function)
+        flushQueue.async {
+            defer { backgroundTask.end() }
+            Logger.flush()
+        }
+    }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        Logger.info("")
+
+        if shouldKillAppWhenBackgrounded {
+            Logger.flush()
+            exit(0)
+        }
+    }
+
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        Logger.info("")
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        Logger.info("")
+        Logger.flush()
+    }
+
+    // MARK: - App Launch
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
         let launchStartedAt = CACurrentMediaTime()
+
+        NSSetUncaughtExceptionHandler(uncaughtExceptionHandler(_:))
 
         // This should be the first thing we do.
         let mainAppContext = MainAppContext()
@@ -51,7 +156,7 @@ extension AppDelegate {
 
         if mainAppContext.isRunningTests {
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())
-            return
+            return true
         }
 
         debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
@@ -61,8 +166,8 @@ extension AppDelegate {
             debugLogger.enableErrorReporting()
         }
 
-        Logger.warn("application: didFinishLaunchingWithOptions.")
-        defer { Logger.info("application: didFinishLaunchingWithOptions completed.") }
+        Logger.warn("Synchronous launch started")
+        defer { Logger.info("Synchronous launch finished") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
         AppReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
@@ -93,7 +198,7 @@ extension AppDelegate {
 
         // If there's a notification, queue it up for processing. (This processing
         // may happen immediately, after a short delay, or never.)
-        if let remoteNotification = launchOptions[.remoteNotification] as? NSDictionary {
+        if let remoteNotification = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
             Logger.info("Application was launched by tapping a push notification.")
             processRemoteNotification(remoteNotification, completion: {})
         }
@@ -119,20 +224,23 @@ extension AppDelegate {
                 viewController: viewController,
                 launchStartedAt: launchStartedAt
             )
-            return
+            return true
         }
 
         // If this is a regular launch, increment the "launches attempted" counter.
         // If repeatedly start launching but never finish them (ie the app is
         // crashing while launching), we'll notice in `checkIfAllowedToLaunch`.
         let userDefaults = mainAppContext.appUserDefaults()
-        let appLaunchesAttempted = userDefaults.integer(forKey: kAppLaunchesAttemptedKey)
-        userDefaults.set(appLaunchesAttempted + 1, forKey: kAppLaunchesAttemptedKey)
+        let appLaunchesAttempted = userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey)
+        userDefaults.set(appLaunchesAttempted + 1, forKey: Constants.appLaunchesAttemptedKey)
 
         // Show LoadingViewController until the database migrations are complete.
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
         self.launchApp(in: window, appContext: mainAppContext, launchStartedAt: launchStartedAt)
+        return true
     }
+
+    var window: UIWindow?
 
     private func initializeWindow(mainAppContext: MainAppContext, rootViewController: UIViewController) -> UIWindow {
         let window = OWSWindow()
@@ -212,8 +320,6 @@ extension AppDelegate {
             for: .nseDidReceiveNotification,
             queue: DispatchQueue.global(qos: .userInitiated)
         ) { token in
-            Logger.debug("Handling NSE received notification")
-
             // Immediately let the NSE know we will handle this notification so that it
             // does not attempt to process messages while we are active.
             DarwinNotificationCenter.post(.mainAppHandledNotification)
@@ -231,7 +337,6 @@ extension AppDelegate {
         window: UIWindow,
         launchStartedAt: CFTimeInterval
     ) {
-        Logger.info("")
         AssertIsOnMainThread()
 
         // First thing; clean up any transfer state in case we are launching after a transfer.
@@ -344,7 +449,7 @@ extension AppDelegate {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReadyUIStillPending()
 
-        appContext.appUserDefaults().removeObject(forKey: kAppLaunchesAttemptedKey)
+        appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
@@ -522,7 +627,17 @@ extension AppDelegate {
         }
     }
 
-    // MARK: - Launch failures
+    // MARK: - Launch Failures
+
+    private var didAppLaunchFail: Bool = false {
+        didSet {
+            if !didAppLaunchFail {
+                self.shouldKillAppWhenBackgrounded = false
+            }
+        }
+    }
+
+    private var shouldKillAppWhenBackgrounded: Bool = false
 
     private func checkIfAllowedToLaunch(
         mainAppContext: MainAppContext,
@@ -564,7 +679,7 @@ extension AppDelegate {
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if
             appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
-            userDefaults.integer(forKey: kAppLaunchesAttemptedKey) >= launchAttemptFailureThreshold
+            userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey) >= launchAttemptFailureThreshold
         {
             if case .readCorrupted = databaseCorruptionState.status {
                 return .possibleReadCorruptionCrashed
@@ -820,25 +935,153 @@ extension AppDelegate {
         return viewController
     }
 
-    // MARK: - Remote notifications
+    // MARK: - Activation
 
-    enum HandleSilentPushContentResult {
+    private var hasActivated = false
+
+    private func handleActivation() {
+        AssertIsOnMainThread()
+
+        defer {
+            Logger.info("Synchronous handleActivation finished")
+        }
+
+        let tsRegistrationState: TSRegistrationState = DependenciesBridge.shared.db.read { tx in
+            // Always check prekeys after app launches, and sometimes check on app activation.
+            let registrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
+            if registrationState.isRegistered {
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
+            }
+            return registrationState
+        }
+
+        if !hasActivated {
+            hasActivated = true
+
+            RTCInitializeSSL()
+
+            // Clean up any messages that expired since last launch and continue
+            // cleaning in the background.
+            self.disappearingMessagesJob.startIfNecessary()
+
+            if !tsRegistrationState.isRegistered {
+                // Unregistered user should have no unread messages. e.g. if you delete your account.
+                AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            }
+        }
+
+        // Every time we become active...
+        if tsRegistrationState.isRegistered {
+            // At this point, potentially lengthy DB locking migrations could be running.
+            // Avoid blocking app launch by putting all further possible DB access in async block
+            DispatchQueue.main.async {
+                AppEnvironment.shared.contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
+
+                // TODO: Should we run this immediately even if we would like to process
+                // already decrypted envelopes handed to us by the NSE?
+                self.messageFetcherJob.run()
+
+                if !UIApplication.shared.isRegisteredForRemoteNotifications {
+                    Logger.info("Retrying to register for remote notifications since user hasn't registered yet.")
+                    // Push tokens don't normally change while the app is launched, so checking once during launch is
+                    // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
+                    // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
+                    // restart the app, so we check every activation for users who haven't yet registered.
+                    SyncPushTokensJob.run()
+                }
+            }
+        }
+
+        // We want to defer this so that we never call this method until
+        // [UIApplicationDelegate applicationDidBecomeActive:] is complete.
+        let identityManager = DependenciesBridge.shared.identityManager
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { identityManager.tryToSyncQueuedVerificationStates() }
+    }
+
+    // MARK: - Orientation
+
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        if CurrentAppContext().isRunningTests || didAppLaunchFail {
+            return .portrait
+        }
+
+        // The call-banner window is only suitable for portrait display on iPhone
+        if CurrentAppContext().hasActiveCall, !UIDevice.current.isIPad {
+            return .portrait
+        }
+
+        guard let rootViewController = self.window?.rootViewController else {
+            return UIDevice.current.defaultSupportedOrientations
+        }
+
+        return rootViewController.supportedInterfaceOrientations
+    }
+
+    // MARK: - Notifications
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        AssertIsOnMainThread()
+
+        if didAppLaunchFail {
+            return
+        }
+
+        Logger.info("")
+        pushRegistrationManager.didReceiveVanillaPushToken(deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        AssertIsOnMainThread()
+
+        if didAppLaunchFail {
+            return
+        }
+
+        Logger.warn("")
+        #if DEBUG
+        pushRegistrationManager.didReceiveVanillaPushToken(Data(count: 32))
+        #else
+        pushRegistrationManager.didFailToReceiveVanillaPushToken(error: error)
+        #endif
+    }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        AssertIsOnMainThread()
+
+        if DebugFlags.verboseNotificationLogging {
+            Logger.info("")
+        }
+
+        // Mark down that the APNS token is working because we got a push.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.databaseStorage.asyncWrite { tx in
+                APNSRotationStore.didReceiveAPNSPush(transaction: tx)
+            }
+        }
+
+        processRemoteNotification(userInfo) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                completionHandler(.newData)
+            }
+        }
+    }
+
+    private enum HandleSilentPushContentResult {
         case handled
         case notHandled
     }
 
     // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
-    @objc
-    func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void) {
+    private func processRemoteNotification(_ remoteNotification: [AnyHashable: Any], completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             // TODO: Wait to invoke this until we've finished fetching messages.
             defer { completion() }
-
-            guard let remoteNotification = remoteNotification as? [AnyHashable: Any] else {
-                return
-            }
 
             switch self.handleSilentPushContent(remoteNotification) {
             case .handled:
@@ -871,13 +1114,175 @@ extension AppDelegate {
         return .notHandled
     }
 
+    private func clearAllNotificationsAndRestoreBadgeCount() {
+        AssertIsOnMainThread()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
+            AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
+        }
+    }
+
+    // MARK: - Handoff
+
+    /// Among other things, this is used by "call back" CallKit dialog and calling from the Contacts app.
+    ///
+    /// We always return true if we are going to try to handle the user activity
+    /// since we never want iOS to contact us again using a URL.
+    ///
+    /// From https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=objc:
+    ///
+    /// If you do not implement this method or if your implementation returns
+    /// false, iOS tries to create a document for your app to open using a URL.
+    @available(iOS, deprecated: 13.0) // hack to mute deprecation warnings; this is not deprecated
+    func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        AssertIsOnMainThread()
+
+        if didAppLaunchFail {
+            return false
+        }
+
+        Logger.info("\(userActivity.activityType)")
+
+        switch userActivity.activityType {
+        case "INSendMessageIntent":
+            let intent = userActivity.interaction?.intent
+            guard let intent = intent as? INSendMessageIntent else {
+                owsFailDebug("Wrong type for intent: \(type(of: intent))")
+                return false
+            }
+            guard let threadUniqueId = intent.conversationIdentifier else {
+                owsFailDebug("Missing threadUniqueId for intent")
+                return false
+            }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                    Logger.warn("Ignoring user activity; not registered.")
+                    return
+                }
+                SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadUniqueId, animated: false)
+            }
+            return true
+        case "INStartVideoCallIntent":
+            let intent = userActivity.interaction?.intent
+            guard let intent = intent as? INStartVideoCallIntent else {
+                owsFailDebug("Wrong type for intent: \(type(of: intent))")
+                return false
+            }
+            guard let handle = intent.contacts?.first?.personHandle?.value else {
+                owsFailDebug("Missing handle for intent")
+                return false
+            }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                    Logger.warn("Ignoring user activity; not registered.")
+                    return
+                }
+                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
+                    Logger.warn("Ignoring user activity; unknown user.")
+                    return
+                }
+
+                // This intent can be received from more than one user interaction.
+                //
+                // * It can be received if the user taps the "video" button in the CallKit UI for an
+                //   an ongoing call.  If so, the correct response is to try to activate the local
+                //   video for that call.
+                // * It can be received if the user taps the "video" button for a contact in the
+                //   contacts app.  If so, the correct response is to try to initiate a new call
+                //   to that user - unless there already is another call in progress.
+                if let currentCall = self.callService.currentCall {
+                    if currentCall.isIndividualCall, thread.uniqueId == currentCall.thread.uniqueId {
+                        Logger.info("Upgrading existing call to video")
+                        self.callService.individualCallService.handleCallKitStartVideo()
+                    } else {
+                        Logger.warn("Ignoring user activity; on another call.")
+                    }
+                    return
+                }
+                self.callService.initiateCall(thread: thread, isVideo: true)
+            }
+            return true
+        case "INStartAudioCallIntent":
+            let intent = userActivity.interaction?.intent
+            guard let intent = intent as? INStartAudioCallIntent else {
+                owsFailDebug("Wrong type for intent: \(type(of: intent))")
+                return false
+            }
+            guard let handle = intent.contacts?.first?.personHandle?.value else {
+                owsFailDebug("Missing handle for intent")
+                return false
+            }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                    Logger.warn("Ignoring user activity; not registered.")
+                    return
+                }
+                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
+                    Logger.warn("Ignoring user activity; unknown user.")
+                    return
+                }
+                if self.callService.currentCall != nil {
+                    Logger.warn("Ignoring user activity; on another call.")
+                    return
+                }
+                self.callService.initiateCall(thread: thread, isVideo: false)
+            }
+            return true
+        case "INStartCallIntent":
+            let intent = userActivity.interaction?.intent
+            guard let intent = intent as? INStartCallIntent else {
+                owsFailDebug("Wrong type for intent: \(type(of: intent))")
+                return false
+            }
+            guard let handle = intent.contacts?.first?.personHandle?.value else {
+                owsFailDebug("Missing handle for intent")
+                return false
+            }
+            let isVideo = intent.callCapability == .videoCall
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                    Logger.warn("Ignoring user activity; not registered.")
+                    return
+                }
+                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
+                    Logger.warn("Ignoring user activity; unknown user.")
+                    return
+                }
+                if self.callService.currentCall != nil {
+                    Logger.warn("Ignoring user activity; on another call.")
+                    return
+                }
+                self.callService.initiateCall(thread: thread, isVideo: isVideo)
+            }
+            return true
+        case NSUserActivityTypeBrowsingWeb:
+            guard let webpageUrl = userActivity.webpageURL else {
+                owsFailDebug("Missing webpageUrl.")
+                return false
+            }
+            return handleOpenUrl(webpageUrl)
+        default:
+            return false
+        }
+    }
+
     // MARK: - Events
 
     @objc
     private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        Logger.info("registrationStateDidChange")
+        Logger.info("")
 
         scheduleBgAppRefresh()
 
@@ -902,7 +1307,37 @@ extension AppDelegate {
         scheduleBgAppRefresh()
     }
 
-    // MARK: - Utilities
+    // MARK: - Shortcut Items
+
+    func application(
+        _ application: UIApplication,
+        performActionFor shortcutItem: UIApplicationShortcutItem,
+        completionHandler: @escaping (Bool) -> Void
+    ) {
+        AssertIsOnMainThread()
+
+        if didAppLaunchFail {
+            completionHandler(false)
+            return
+        }
+
+        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                let controller = ActionSheetController(
+                    title: OWSLocalizedString("REGISTER_CONTACTS_WELCOME", comment: ""),
+                    message: OWSLocalizedString("REGISTRATION_RESTRICTED_MESSAGE", comment: "")
+                )
+                controller.addAction(ActionSheetAction(title: CommonStrings.okButton))
+                UIApplication.shared.frontmostViewController?.present(controller, animated: true, completion: {
+                    completionHandler(false)
+                })
+                return
+            }
+            SignalApp.shared.showNewConversationView()
+            completionHandler(true)
+        }
+    }
 
     public static func updateApplicationShortcutItems(isRegistered: Bool) {
         guard CurrentAppContext().isMainApp else { return }
@@ -924,12 +1359,15 @@ extension AppDelegate {
 
     // MARK: - URL Handling
 
-    @objc
-    func handleOpenUrl(_ url: URL) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        AssertIsOnMainThread()
+        return handleOpenUrl(url)
+    }
+
+    private func handleOpenUrl(_ url: URL) -> Bool {
         AssertIsOnMainThread()
 
-        if self.didAppLaunchFail {
-            Logger.error("App launch failed")
+        if didAppLaunchFail {
             return false
         }
 

@@ -9,7 +9,7 @@ import SignalUI
 /// Namespace for logic around Signal Dot Me links pointing to a user's phone
 /// number. These URLs look like `{https,sgnl}://signal.me/#p/<e164>`.
 class SignalDotMePhoneNumberLink: Dependencies {
-    private static let pattern = try! NSRegularExpression(pattern: "^(?:https|\(kURLSchemeSGNLKey))://signal.me/#p/(\\+[0-9]+)$", options: [])
+    private static let pattern = try! NSRegularExpression(pattern: "^(?:https|\(UrlOpener.Constants.sgnlPrefix))://signal.me/#p/(\\+[0-9]+)$", options: [])
 
     static func isPossibleUrl(_ url: URL) -> Bool {
         pattern.hasMatch(input: url.absoluteString.lowercased())

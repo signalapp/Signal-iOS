@@ -14,14 +14,18 @@ extension DeviceTransferService {
     private static let certificateHashKey = "certificateHash"
     private static let transferModeKey = "transferMode"
 
+    private enum Constants {
+        static let transferHost = "transfer"
+    }
+
     func urlForTransfer(mode: TransferMode) throws -> URL {
         guard let identity = identity else {
             throw OWSAssertionError("unexpectedly missing identity")
         }
 
         var components = URLComponents()
-        components.scheme = kURLSchemeSGNLKey
-        components.host = kURLHostTransferPrefix
+        components.scheme = UrlOpener.Constants.sgnlPrefix
+        components.host = Constants.transferHost
 
         guard let base64CertificateHash = try identity.computeCertificateHash().base64EncodedString().encodeURIComponent else {
             throw OWSAssertionError("failed to get base64 certificate hash")
