@@ -1471,6 +1471,7 @@
 		D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */; };
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
+		D958E2AD2B57168A00EE9831 /* DebugUICallsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
 		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
@@ -4195,6 +4196,7 @@
 		D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingingCleanupManager.swift; sourceTree = "<group>"; };
 		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
 		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
+		D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUICallsTab.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
 		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
@@ -6443,6 +6445,7 @@
 				349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */,
 				76E7A2182A01DD0500A8F538 /* DebugUI.swift */,
 				45638BDB1F3DD0D400128435 /* DebugUICalling.swift */,
+				D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */,
 				76F958602A09A4FD00B43E63 /* DebugUIContacts.swift */,
 				4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */,
 				76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */,
@@ -12205,6 +12208,7 @@
 				34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */,
 				76E7A2192A01DD0500A8F538 /* DebugUI.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
+				D958E2AD2B57168A00EE9831 /* DebugUICallsTab.swift in Sources */,
 				76F958612A09A4FD00B43E63 /* DebugUIContacts.swift in Sources */,
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
 				76F958632A09A5AE00B43E63 /* DebugUIDiskUsage.swift in Sources */,

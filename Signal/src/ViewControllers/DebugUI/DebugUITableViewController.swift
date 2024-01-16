@@ -32,6 +32,7 @@ class DebugUITableViewController: OWSTableViewController {
         let viewController = DebugUITableViewController()
 
         let subsectionItems: [OWSTableItem] = [
+            itemForSubsection(DebugUICallsTab(), viewController: viewController),
             itemForSubsection(DebugUIContacts(), viewController: viewController),
             itemForSubsection(DebugUIDiskUsage(), viewController: viewController),
             itemForSubsection(DebugUISessionState(), viewController: viewController),
@@ -51,6 +52,7 @@ class DebugUITableViewController: OWSTableViewController {
         let viewController = DebugUITableViewController()
 
         var subsectionItems: [OWSTableItem] = [
+            itemForSubsection(DebugUICallsTab(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIMessages(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIContacts(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIDiskUsage(), viewController: viewController, thread: thread),
