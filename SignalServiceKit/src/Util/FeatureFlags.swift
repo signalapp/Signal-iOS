@@ -294,12 +294,6 @@ public class DebugFlags: BaseFlags {
     public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
-    public static let fakeLinkedDevices = false
-
-    @objc
-    public static let paymentsOnlyInContactThreads = true
-
-    @objc
     public static let paymentsIgnoreBlockTimestamps = TestableFlag(false,
                                                                    title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
                                                                    details: LocalizationNotNeeded("Payments will not fill in missing ledger block timestamps"))
