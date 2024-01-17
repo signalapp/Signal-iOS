@@ -113,7 +113,6 @@ public class DonationUtilities: Dependencies {
         }()
 
         let isIDEALAvailable = {
-            // TODO[IDEAL]: Remove the "allow internal" check before release
             guard
                 FeatureFlags.allowInternalIDEALDonations ||
                 RemoteConfig.idealEnabledRegions.contains(e164: localNumber)
@@ -123,8 +122,7 @@ public class DonationUtilities: Dependencies {
 
             switch donationMode {
             case .oneTime, .monthly:
-                // TODO[IDEAL]: Remove feature flag before release
-                return FeatureFlags.allowIDEALDonations
+                return true
             case .gift:
                 return false
             }
