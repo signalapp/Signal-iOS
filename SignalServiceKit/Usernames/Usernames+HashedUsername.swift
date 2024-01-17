@@ -96,15 +96,15 @@ public extension Usernames.HashedUsername {
         desiredDiscriminator: String?
     ) throws -> GeneratedCandidates {
         do {
+            let nicknameLengthRange = minNicknameLength...maxNicknameLength
             if let desiredDiscriminator {
-                let usernameString = "\(nickname)\(Usernames.ParsedUsername.separator)\(desiredDiscriminator)"
-                let username = try Usernames.HashedUsername(forUsername: usernameString)
-                return GeneratedCandidates(candidates: [username])
+                let username = try LibSignalUsername(nickname: nickname, discriminator: desiredDiscriminator, withValidLengthWithin: nicknameLengthRange)
+                return .init(candidates: [.init(libSignalUsername: username)])
             }
 
             let candidates: [Usernames.HashedUsername] = try LibSignalUsername.candidates(
                 from: nickname,
-                withValidLengthWithin: minNicknameLength...maxNicknameLength
+                withValidLengthWithin: nicknameLengthRange
             ).map { candidate -> Usernames.HashedUsername in
                 return .init(libSignalUsername: candidate)
             }

@@ -333,6 +333,8 @@ extension UsernameSelectionViewController {
 extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let oldValue = textField.text
+
+        // Filter to only ascii numbers
         let shouldChangeCharacters = FormattedNumberField.textField(
             textField,
             shouldChangeCharactersIn: range,
@@ -341,6 +343,27 @@ extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: U
             maxCharacters: 9,
             format: { $0 }
         )
+
+        // Remove execess leading zeroes
+        if
+            let text = textField.text,
+            text.count > 2
+        {
+            // Minimum discriminator length is 2, so ignore last 2 digits before
+            // removing leading zeroes. For example, 01 is valid, so don't
+            // remove that leading 0. Do so by dropping the last 2 digits,
+            // removing leading zeroes, then re-adding them.
+            textField.text = text
+                .dropLast(2)
+                .replacingOccurrences(
+                    // Find any amount of `0`s at the start of the string
+                    of: "^0*",
+                    with: "",
+                    options: .regularExpression
+                )
+                .appending(text.suffix(2))
+        }
+
         if textField.text != oldValue {
             isUsingCustomDiscriminator = true
             delegate?.didManuallyChangeDiscriminator()

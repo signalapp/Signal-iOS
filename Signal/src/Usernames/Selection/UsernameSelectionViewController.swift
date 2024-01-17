@@ -72,6 +72,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         case invalidCharacters
         /// The custom-set discriminator is too short, but not empty.
         case customDiscriminatorTooShort
+        /// The custom-set discriminator is 00, which is not valid.
+        case customDiscriminatorIs00
         /// The discriminator has been manually cleared.
         case emptyDiscriminator(nickname: String)
 
@@ -97,6 +99,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
                 return "invalidCharacters"
             case .customDiscriminatorTooShort:
                 return "customDiscriminatorTooShort"
+            case .customDiscriminatorIs00:
+                return "customDiscriminatorIs00"
             case .emptyDiscriminator(nickname: _):
                 return "emptyDiscriminator"
             }
@@ -324,6 +328,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         usernameTextFieldWrapper.autoPinEdge(.bottom, to: .top, of: usernameErrorTextView)
 
         usernameErrorTextView.autoPinEdge(.bottom, to: .top, of: usernameFooterTextView)
+        usernameErrorTextView.autoPinWidthToSuperview()
 
         usernameFooterTextView.bottomAnchor.constraint(
             equalTo: contentLayoutGuide.bottomAnchor
@@ -372,6 +377,7 @@ private extension UsernameSelectionViewController {
                     .cannotStartWithDigit,
                     .invalidCharacters,
                     .customDiscriminatorTooShort,
+                    .customDiscriminatorIs00,
                     .emptyDiscriminator:
                 return false
             }
@@ -405,6 +411,7 @@ private extension UsernameSelectionViewController {
                     .cannotStartWithDigit,
                     .invalidCharacters,
                     .customDiscriminatorTooShort,
+                    .customDiscriminatorIs00,
                     .emptyDiscriminator:
                 return nil
             }
@@ -433,6 +440,7 @@ private extension UsernameSelectionViewController {
                 .cannotStartWithDigit,
                 .invalidCharacters,
                 .customDiscriminatorTooShort,
+                .customDiscriminatorIs00,
                 .emptyDiscriminator:
             self.usernameTextFieldWrapper.textField.configureForError()
         }
@@ -479,6 +487,11 @@ private extension UsernameSelectionViewController {
                 return OWSLocalizedString(
                     "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE",
                     comment: "An error message shown when the user has typed an invalid discriminator for their username."
+                )
+            case .customDiscriminatorIs00:
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has typed '00' as their discriminator for their username."
                 )
             }
         }()
@@ -580,6 +593,7 @@ private extension UsernameSelectionViewController {
                     .cannotStartWithDigit,
                     .invalidCharacters,
                     .customDiscriminatorTooShort,
+                    .customDiscriminatorIs00,
                     .emptyDiscriminator:
                 owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
             }
@@ -697,6 +711,8 @@ private extension UsernameSelectionViewController {
                 || desiredDiscriminator == existingUsername?.discriminator
         {
             currentUsernameState = .noChangesToExisting
+        } else if desiredDiscriminator == "00" {
+            currentUsernameState = .customDiscriminatorIs00
         } else if let desiredNickname = nicknameFromTextField {
             if
                 let discriminatorString = desiredDiscriminator,
