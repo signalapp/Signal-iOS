@@ -86,6 +86,10 @@ extension UsernameSelectionViewController {
                     discriminatorContainer,
                 ])
 
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapDiscriminator))
+                tapGesture.delegate = self
+                discriminatorContainer.addGestureRecognizer(tapGesture)
+
                 spacing = Constants.spacing
                 isLayoutMarginsRelativeArrangement = true
                 layoutMargins.leading = Constants.spacing
@@ -163,18 +167,20 @@ extension UsernameSelectionViewController {
                     isHidden = true
                 case .spinning:
                     isHidden = false
-                    spinnerView.isHiddenInStackView = false
+                    spinnerView.isHidden = false
                     separatorView.isHiddenInStackView = true
                     discriminatorTextField.isHiddenInStackView = true
                 case let .spinningWithDiscriminator(discriminatorValue):
                     isHidden = false
-                    spinnerView.isHiddenInStackView = false
+                    // Using isHiddenInStackView for spinnerView here causes an
+                    // an unwanted slide-in animation for some reason.
+                    spinnerView.isHidden = false
                     separatorView.isHiddenInStackView = false
                     discriminatorTextField.isHiddenInStackView = false
                     setDiscriminatorValue(to: discriminatorValue)
                 case let .discriminator(discriminatorValue):
                     isHidden = false
-                    spinnerView.isHiddenInStackView = true
+                    spinnerView.isHidden = true
                     separatorView.isHiddenInStackView = false
                     discriminatorTextField.isHiddenInStackView = false
                     setDiscriminatorValue(to: discriminatorValue)
@@ -197,8 +203,21 @@ extension UsernameSelectionViewController {
                 isUsingCustomDiscriminator ? currentDiscriminatorString : nil
             }
 
+            // MARK: Actions
+
             @discardableResult
             override func becomeFirstResponder() -> Bool {
+                discriminatorTextField.becomeFirstResponder()
+            }
+
+            /// Tapping the discriminator when it is not focused should start
+            /// editing with the cursor at the end of the text content. Manually
+            /// calling `becomeFirstResponder()` from a tap gesture accomplishes
+            /// this if the tap gesture is recognized alongside the text field's
+            /// own tap gesture in
+            /// `gestureRecognizer(_:shouldRecognizeSimultaneouslyWith:)`.
+            @objc
+            private func didTapDiscriminator() {
                 discriminatorTextField.becomeFirstResponder()
             }
         }
@@ -328,7 +347,7 @@ extension UsernameSelectionViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+// MARK: - DiscriminatorView + UITextFieldDelegate
 
 extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -369,5 +388,14 @@ extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: U
             delegate?.didManuallyChangeDiscriminator()
         }
         return shouldChangeCharacters
+    }
+}
+
+// MARK: - DiscriminatorView + UIGestureRecognizerDelegate
+
+extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // See didTapDiscriminator
+        true
     }
 }
