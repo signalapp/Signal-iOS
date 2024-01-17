@@ -245,7 +245,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     static var tryToReturnAcisWithoutUaks: Bool {
-        return !isEnabled(.cdsDisableCompatibilityMode)
+        return !(isEnabled(.cdsDisableCompatibilityMode) || FeatureFlags.disableCdsCompatibilityMode)
     }
 
     public static var maxAttachmentDownloadSizeBytes: UInt {

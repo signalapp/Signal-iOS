@@ -60,6 +60,8 @@ public class FeatureFlags: BaseFlags {
 
     public static let phoneNumberPrivacy = build.includes(.internal)
 
+    static let disableCdsCompatibilityMode = build.includes(.internal)
+
     @objc
     public static let usernames = build.includes(.internal)
 
