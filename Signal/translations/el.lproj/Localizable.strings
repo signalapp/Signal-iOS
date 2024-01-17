@@ -1481,10 +1481,10 @@
 "COUNTRYCODE_SELECT_TITLE" = "Επιλογή κωδικού χώρας";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Introducing phone number privacy, optional usernames and links.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Παρουσιάζουμε το απόρρητο των αριθμών τηλεφώνου, τα προαιρετικά ονόματα χρηστών και τους συνδέσμους.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "New Ways to Connect";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "Νέοι τρόποι σύνδεσης";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Η κάρτα σου έχει λήξει. Επαλήθευσε ότι τα στοιχεία της κάρτας σου είναι σωστά και δοκίμασε ξανά.";
@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Μη έγκυρη απόκριση πληρωμής. Δοκίμασε ξανά.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Your donation couldn’t be processed. Check your banking app for more information or try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Δεν ήταν δυνατή η επεξεργασία της δωρεάς σου. Έλεγξε την τραπεζική σου εφαρμογή για περισσότερες πληροφορίες ή δοκίμασε ξανά.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Δωρεά";
@@ -2198,7 +2198,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Δεν ήταν δυνατή η επεξεργασία της μεμονωμένης δωρεάς iDEAL. Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Δεν ήταν δυνατή η επιβεβαίωση της εφάπαξ δωρεάς στο %1$@ iDEAL. Έλεγξε την εφαρμογή σου στην τράπεζα για να εγκρίνεις τη δωρεά iDEAL.";
@@ -2812,42 +2812,6 @@
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Περιγραφή ομάδας (%1$@)";
 
-/* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "Προστέθηκε μια άκυρη πρόσκληση.";
-
-/* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Πρόσθεσες μια άκυρη πρόσκληση.";
-
-/* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Πρόσθεσες άκυρες προσκλήσεις.";
-
-/* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "Ο/Η %1$@ πρόσθεσε μια άκυρη πρόσκληση.";
-
-/* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "Ο/Η %1$@ πρόσθεσε άκυρες προσκλήσεις.";
-
-/* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Προστέθηκαν άκυρες προσκλήσεις.";
-
-/* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "Μια άκυρη πρόσκληση ανακλήθηκε.";
-
-/* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Ανακάλεσες μια άκυρη πρόσκληση.";
-
-/* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Ανακάλεσες άκυρες προσκλήσεις.";
-
-/* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "Ο/Η %1$@ ανακάλεσε μια άκυρη πρόσκληση.";
-
-/* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "Ο/Η %1$@ ανακάλεσε άκυρες προσκλήσεις.";
-
-/* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Ανακλήθηκαν άκυρες προσκλήσεις.";
-
 /* Message indicating that the group invite link was disabled. */
 "GROUP_INVITE_LINK_DISABLED" = "Ο σύνδεσμος της ομάδας απενεργοποιήθηκε.";
 
@@ -3188,7 +3152,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "Ο/Η %2$@ ενέκρινε το αίτημα του/της %1$@ να μπει στην ομάδα.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "A request to join the group from %1$@ has been approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Το αίτημα του/της %1$@ να μπει στην ομάδα εγκρίθηκε.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "Ο/Η %1$@ ακύρωσε το αίτημά του/της για είσοδο στην ομάδα.";
@@ -5660,7 +5624,7 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Κάτι πήγε στραβά με το όνομα χρήστη σου, δεν αντιστοιχεί πλέον στον λογαριασμό σου. Μπορείς να δοκιμάσεις να το ρυθμίσεις ξανά ή να επιλέξεις ένα νέο.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Διόρθωση τώρα";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Κάτι πήγε στραβά με τον κωδικό QR και τον σύνδεσμο του ονόματος χρήστη σου, δεν ισχύει πλέον. Δημιούργησε έναν νέο σύνδεσμο για κοινή χρήση με άλλους.";
@@ -7640,28 +7604,28 @@
 "USE_PROXY_EXPLANATION" = "Χρησιμοποίησε proxy μόνο αν δεν μπορείς να συνδεθείς στο Signal από δεδομένα κινητής ή Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Usernames have a unique QR code and link you can share with friends to quickly start a chat with you.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Τα ονόματα χρηστών έχουν έναν μοναδικό κωδικό QR και έναν σύνδεσμο που μπορείς να μοιραστείς με φίλους για να ξεκινήσεις γρήγορα μια συνομιλία μεταξύ σας.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "QR Codes and Links";
+"USERNAME_EDUCATION_LINK_TITLE" = "Κωδικοί QR και σύνδεσμοι";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Your phone number is no longer shared with chats. If your number is saved to a friend’s contacts, they will still see it.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "Ο αριθμός τηλεφώνου σου δεν κοινοποιείται πλέον στις συνομιλίες. Εάν ο αριθμός σου είναι αποθηκευμένος στις επαφές ενός φίλου, θα εξακολουθεί να τον βλέπει.";
 
 /* Title for phone number privacy section of the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_TITLE" = "Phone Number Privacy";
+"USERNAME_EDUCATION_PRIVACY_TITLE" = "Απόρρητο αριθμού τηλεφώνου";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Set up your Username";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Ρύθμισε το όνομα χρήστη";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "New Ways to Connect";
+"USERNAME_EDUCATION_TITLE" = "Νέοι τρόποι σύνδεσης";
 
 /* Description of usernames on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "People can now message you using your optional username. Phone numbers are no longer required. Usernames aren’t visible on your profile. ";
+"USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "Οι χρήστες Signal μπορούν πλέον να σου στέλνουν μηνύματα χρησιμοποιώντας το προαιρετικό όνομα χρήστη σου. Οι αριθμοί τηλεφώνου δεν απαιτούνται πλέον. Τα ονόματα χρηστών δεν είναι ορατά στο προφίλ σου. ";
 
 /* Title for usernames section on the username education sheet */
-"USERNAME_EDUCATION_USERNAME_TITLE" = "Usernames";
+"USERNAME_EDUCATION_USERNAME_TITLE" = "Ονόματα χρηστών";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Χρώμα";
@@ -7673,7 +7637,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Μοιράσου τον κωδικό QR σου μόνο με άτομα που εμπιστεύεσαι. Όταν κοινοποιηθεί, οι άλλοι θα μπορούν να δουν το όνομα χρήστη σου και να ξεκινήσουν μια συνομιλία μαζί σου.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR code and link not set. Check your network connection and try again.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Ο κωδικός QR και ο σύνδεσμος δεν έχουν οριστεί. Έλεγξε τη σύνδεσή σου στο δίκτυο και δοκίμασε πάλι.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Επαναφορά";
@@ -7703,7 +7667,7 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Με αυτόν τον σύνδεσμο, οποιοδήποτε άτομο μπορεί να δει το όνομα χρήστη σου και να ξεκινήσει μια συνομιλία μαζί σου. Μοιράσου τον μόνο με άτομα που εμπιστεύεσαι.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
-"USERNAME_LINK_SHEET_BUTTON" = "link";
+"USERNAME_LINK_SHEET_BUTTON" = "σύνδεσμος";
 
 /* Subtitle for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_SUBTITLE" = "Άσε τους άλλους να ξεκινήσουν μια συνομιλία μαζί σου κοινοποιώντας τον μοναδικό κωδικό QR ή τον σύνδεσμό σου.";
@@ -7745,7 +7709,7 @@
 "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Τα ονόματα χρήστη μπορούν να περιέχουν μόνο λατινικούς χαρακτήρες a-z, νούμερα 0-9 και την κάτω παύλα _.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Invalid username, enter a minimum of 2 digits";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Μη έγκυρο όνομα χρήστη, γράψε τουλάχιστον 2 ψηφία";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Αυτά τα ψηφία διατηρούν απόρρητο το δικό σου όνομα χρήστη, ώστε να μη λαμβάνεις ανεπιθύμητα μηνύματα. Να μοιράζεσαι το όνομα χρήστη σου μόνο με άτομα και ομάδες που θέλεις να συνομιλείς. Εάν θέλεις να αλλάξεις όνομα χρήστη, θα λάβεις ένα νέο σετ ψηφίων.";
@@ -7764,6 +7728,9 @@
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$@ χαρακτήρες.";
+
+/* An error message shown when the user has typed '00' as their discriminator for their username. */
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Το όνομα συσκευής δεν μπορεί να είναι κενό";
