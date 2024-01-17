@@ -7,7 +7,6 @@ import Foundation
 import CommonCrypto
 import SignalServiceKit
 
-@objc
 public enum LocalUserDisplayMode: UInt {
     // We should use this value by default.
     case asUser = 0
@@ -49,9 +48,7 @@ public class AvatarBuilder: NSObject {
         Self.avatarBuilder
     }
 
-    @objc
     public static let smallAvatarSizePoints: UInt = 36
-    @objc
     public static let standardAvatarSizePoints: UInt = 48
     public static let mediumAvatarSizePoints: UInt = 68
     public static let largeAvatarSizePoints: UInt = 96
@@ -63,7 +60,6 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    @objc
     public override init() {
         super.init()
 
@@ -121,10 +117,12 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    public func avatarImage(forThread thread: TSThread,
-                            diameterPoints: UInt,
-                            localUserDisplayMode: LocalUserDisplayMode,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
+    public func avatarImage(
+        forThread thread: TSThread,
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
         return avatarImage(
             forThread: thread,
             diameterPixels: CGFloat(diameterPoints).pointsAsPixels,
@@ -133,75 +131,93 @@ public class AvatarBuilder: NSObject {
         )
     }
 
-    public func avatarImage(forThread thread: TSThread,
-                            diameterPixels: CGFloat,
-                            localUserDisplayMode: LocalUserDisplayMode,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        guard let request = buildRequest(forThread: thread,
-                                         diameterPixels: diameterPixels,
-                                         localUserDisplayMode: localUserDisplayMode,
-                                         transaction: transaction) else {
+    public func avatarImage(
+        forThread thread: TSThread,
+        diameterPixels: CGFloat,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        guard let request = buildRequest(
+            forThread: thread,
+            diameterPixels: diameterPixels,
+            localUserDisplayMode: localUserDisplayMode,
+            transaction: transaction
+        ) else {
             return nil
         }
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    public func avatarImageWithSneakyTransaction(forAddress address: SignalServiceAddress,
-                                                 diameterPoints: UInt,
-                                                 localUserDisplayMode: LocalUserDisplayMode) -> UIImage? {
+    public func avatarImageWithSneakyTransaction(
+        forAddress address: SignalServiceAddress,
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode
+    ) -> UIImage? {
         databaseStorage.read { transaction in
-            avatarImage(forAddress: address,
-                        diameterPoints: diameterPoints,
-                        localUserDisplayMode: localUserDisplayMode,
-                        transaction: transaction)
+            avatarImage(
+                forAddress: address,
+                diameterPoints: diameterPoints,
+                localUserDisplayMode: localUserDisplayMode,
+                transaction: transaction
+            )
         }
     }
 
-    private func request(forAddress address: SignalServiceAddress,
-                         diameterPixels: CGFloat,
-                         localUserDisplayMode: LocalUserDisplayMode,
-                         transaction: SDSAnyReadTransaction) -> Request {
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
-                                                                           transaction: transaction)
-        let requestType: RequestType = .contactAddress(address: address,
-                                                       localUserDisplayMode: localUserDisplayMode)
-        return Request(requestType: requestType,
-                       diameterPixels: diameterPixels,
-                       shouldBlurAvatar: shouldBlurAvatar)
+    private func request(
+        forAddress address: SignalServiceAddress,
+        diameterPixels: CGFloat,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> Request {
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address, transaction: transaction)
+        let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
+        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
     }
 
-    public func avatarImage(forAddress address: SignalServiceAddress,
-                            diameterPoints: UInt,
-                            localUserDisplayMode: LocalUserDisplayMode,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        let request = request(forAddress: address,
-                              diameterPixels: CGFloat(diameterPoints).pointsAsPixels,
-                              localUserDisplayMode: localUserDisplayMode,
-                              transaction: transaction)
+    public func avatarImage(
+        forAddress address: SignalServiceAddress,
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        let request = request(
+            forAddress: address,
+            diameterPixels: CGFloat(diameterPoints).pointsAsPixels,
+            localUserDisplayMode: localUserDisplayMode,
+            transaction: transaction
+        )
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    public func avatarImage(forAddress address: SignalServiceAddress,
-                            diameterPixels: CGFloat,
-                            localUserDisplayMode: LocalUserDisplayMode,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        let request = request(forAddress: address,
-                              diameterPixels: diameterPixels,
-                              localUserDisplayMode: localUserDisplayMode,
-                              transaction: transaction)
+    public func avatarImage(
+        forAddress address: SignalServiceAddress,
+        diameterPixels: CGFloat,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        let request = request(
+            forAddress: address,
+            diameterPixels: diameterPixels,
+            localUserDisplayMode: localUserDisplayMode,
+            transaction: transaction
+        )
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
     // Never builds; only returns an avatar if there is already a copy
     // in a cache.
-    public func precachedAvatarImage(forAddress address: SignalServiceAddress,
-                                     diameterPoints: UInt,
-                                     localUserDisplayMode: LocalUserDisplayMode,
-                                     transaction: SDSAnyReadTransaction) -> UIImage? {
-        let request = request(forAddress: address,
-                              diameterPixels: CGFloat(diameterPoints).pointsAsPixels,
-                              localUserDisplayMode: localUserDisplayMode,
-                              transaction: transaction)
+    public func precachedAvatarImage(
+        forAddress address: SignalServiceAddress,
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        let request = request(
+            forAddress: address,
+            diameterPixels: CGFloat(diameterPoints).pointsAsPixels,
+            localUserDisplayMode: localUserDisplayMode,
+            transaction: transaction
+        )
         guard let requestCacheKey = request.cacheKey else {
             return nil
         }
@@ -211,37 +227,34 @@ public class AvatarBuilder: NSObject {
         return contentToImageCache.object(forKey: content.cacheKey)
     }
 
-    private func request(forGroupThread groupThread: TSGroupThread,
-                         diameterPoints: UInt,
-                         transaction: SDSAnyReadTransaction) -> Request {
+    private func request(
+        forGroupThread groupThread: TSGroupThread,
+        diameterPoints: UInt,
+        transaction tx: SDSAnyReadTransaction
+    ) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
-                                                                         transaction: transaction)
-        let requestType = buildRequestType(forGroupThread: groupThread,
-                                           diameterPixels: diameterPixels,
-                                           transaction: transaction)
-        return Request(requestType: requestType,
-                       diameterPixels: diameterPixels,
-                       shouldBlurAvatar: shouldBlurAvatar)
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread, transaction: tx)
+        let requestType = buildRequestType(forGroupThread: groupThread, diameterPixels: diameterPixels, transaction: tx)
+        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
     }
 
-    public func avatarImage(forGroupThread groupThread: TSGroupThread,
-                            diameterPoints: UInt,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        let request = request(forGroupThread: groupThread,
-                              diameterPoints: diameterPoints,
-                              transaction: transaction)
+    public func avatarImage(
+        forGroupThread groupThread: TSGroupThread,
+        diameterPoints: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        let request = request(forGroupThread: groupThread, diameterPoints: diameterPoints, transaction: transaction)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
     // Never builds; only returns an avatar if there is already a copy
     // in a cache.
-    public func precachedAvatarImage(forGroupThread groupThread: TSGroupThread,
-                                     diameterPoints: UInt,
-                                     transaction: SDSAnyReadTransaction) -> UIImage? {
-        let request = request(forGroupThread: groupThread,
-                              diameterPoints: diameterPoints,
-                              transaction: transaction)
+    public func precachedAvatarImage(
+        forGroupThread groupThread: TSGroupThread,
+        diameterPoints: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        let request = request(forGroupThread: groupThread, diameterPoints: diameterPoints, transaction: transaction)
         guard let requestCacheKey = request.cacheKey else {
             return nil
         }
@@ -251,37 +264,41 @@ public class AvatarBuilder: NSObject {
         return contentToImageCache.object(forKey: content.cacheKey)
     }
 
-    public func avatarImageForLocalUserWithSneakyTransaction(diameterPoints: UInt,
-                                                             localUserDisplayMode: LocalUserDisplayMode) -> UIImage? {
+    public func avatarImageForLocalUserWithSneakyTransaction(
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode
+    ) -> UIImage? {
         databaseStorage.read { transaction in
-            return avatarImageForLocalUser(diameterPoints: diameterPoints,
-                                           localUserDisplayMode: localUserDisplayMode,
-                                           transaction: transaction)
+            return avatarImageForLocalUser(
+                diameterPoints: diameterPoints,
+                localUserDisplayMode: localUserDisplayMode,
+                transaction: transaction
+            )
         }
     }
 
-    public func avatarImageForLocalUser(diameterPoints: UInt,
-                                        localUserDisplayMode: LocalUserDisplayMode,
-                                        transaction: SDSAnyReadTransaction) -> UIImage? {
+    public func avatarImageForLocalUser(
+        diameterPoints: UInt,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
         }
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
-                                                                           transaction: transaction)
-        let requestType: RequestType = .contactAddress(address: address,
-                                                       localUserDisplayMode: localUserDisplayMode)
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              shouldBlurAvatar: shouldBlurAvatar)
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address, transaction: transaction)
+        let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
+        let request = Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    public func avatarImage(personNameComponents: PersonNameComponents,
-                            address: SignalServiceAddress? = nil,
-                            diameterPoints: UInt,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
+    public func avatarImage(
+        personNameComponents: PersonNameComponents,
+        address: SignalServiceAddress? = nil,
+        diameterPoints: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = false
         let theme: AvatarTheme
@@ -297,13 +314,10 @@ public class AvatarBuilder: NSObject {
                 return .contactDefaultIcon(theme: theme)
             }
         }()
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              shouldBlurAvatar: shouldBlurAvatar)
+        let request = Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    @objc
     public func avatarImage(forGroupId groupId: Data, diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         return avatarImage(forGroupId: groupId, diameterPixels: UInt(diameterPixels))
@@ -312,15 +326,19 @@ public class AvatarBuilder: NSObject {
     public func avatarImage(forGroupId groupId: Data, diameterPixels: UInt) -> UIImage? {
         let shouldBlurAvatar = false
         let requestType: RequestType = .groupDefaultIcon(groupId: groupId)
-        let request = Request(requestType: requestType,
-                              diameterPixels: CGFloat(diameterPixels),
-                              shouldBlurAvatar: shouldBlurAvatar)
+        let request = Request(
+            requestType: requestType,
+            diameterPixels: CGFloat(diameterPixels),
+            shouldBlurAvatar: shouldBlurAvatar
+        )
         let avatarContentType: AvatarContentType = .groupDefault(theme: .forGroupId(groupId))
-        let avatarContent = AvatarContent(request: request,
-                                          contentType: avatarContentType,
-                                          failoverContentType: nil,
-                                          diameterPixels: request.diameterPixels,
-                                          shouldBlurAvatar: request.shouldBlurAvatar)
+        let avatarContent = AvatarContent(
+            request: request,
+            contentType: avatarContentType,
+            failoverContentType: nil,
+            diameterPixels: request.diameterPixels,
+            shouldBlurAvatar: request.shouldBlurAvatar
+        )
         return avatarImage(forAvatarContent: avatarContent, transaction: nil)
     }
 
@@ -460,24 +478,33 @@ public class AvatarBuilder: NSObject {
         }
     }
 
-    private func buildRequest(forThread thread: TSThread,
-                              diameterPixels: CGFloat,
-                              localUserDisplayMode: LocalUserDisplayMode,
-                              transaction: SDSAnyReadTransaction) -> Request? {
-
+    private func buildRequest(
+        forThread thread: TSThread,
+        diameterPixels: CGFloat,
+        localUserDisplayMode: LocalUserDisplayMode,
+        transaction: SDSAnyReadTransaction
+    ) -> Request? {
         func buildRequestType() -> (RequestType, Bool)? {
             if let contactThread = thread as? TSContactThread {
-                let requestType: RequestType = .contactAddress(address: contactThread.contactAddress,
-                                                               localUserDisplayMode: localUserDisplayMode)
-                let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: contactThread.contactAddress,
-                                                                                   transaction: transaction)
+                let requestType: RequestType = .contactAddress(
+                    address: contactThread.contactAddress,
+                    localUserDisplayMode: localUserDisplayMode
+                )
+                let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(
+                    address: contactThread.contactAddress,
+                    transaction: transaction
+                )
                 return (requestType, shouldBlurAvatar)
             } else if let groupThread = thread as? TSGroupThread {
-                let requestType = self.buildRequestType(forGroupThread: groupThread,
-                                                        diameterPixels: diameterPixels,
-                                                        transaction: transaction)
-                let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
-                                                                                 transaction: transaction)
+                let requestType = self.buildRequestType(
+                    forGroupThread: groupThread,
+                    diameterPixels: diameterPixels,
+                    transaction: transaction
+                )
+                let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(
+                    groupThread: groupThread,
+                    transaction: transaction
+                )
                 return (requestType, shouldBlurAvatar)
             } else {
                 owsFailDebug("Invalid thread.")
@@ -487,25 +514,23 @@ public class AvatarBuilder: NSObject {
         guard let (requestType, shouldBlurAvatar) = buildRequestType() else {
             return nil
         }
-        return Request(requestType: requestType,
-                       diameterPixels: diameterPixels,
-                       shouldBlurAvatar: shouldBlurAvatar)
+        return Request(requestType: requestType, diameterPixels: diameterPixels, shouldBlurAvatar: shouldBlurAvatar)
     }
 
-    private func buildRequestType(forGroupThread groupThread: TSGroupThread,
-                                  diameterPixels: CGFloat,
-                                  transaction: SDSAnyReadTransaction) -> RequestType {
+    private func buildRequestType(
+        forGroupThread groupThread: TSGroupThread,
+        diameterPixels: CGFloat,
+        transaction tx: SDSAnyReadTransaction
+    ) -> RequestType {
         func requestTypeForGroup(groupThread: TSGroupThread) -> RequestType {
-            if let avatarData = groupThread.groupModel.avatarData,
-               avatarData.ows_isValidImage {
+            if let avatarData = groupThread.groupModel.avatarData, avatarData.ows_isValidImage {
                 let digestString = avatarData.sha1HexadecimalDigestString
                 return .group(groupId: groupThread.groupId, avatarData: avatarData, digestString: digestString)
             } else {
                 return .groupDefaultIcon(groupId: groupThread.groupId)
             }
         }
-        if let latestGroupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThread.uniqueId,
-                                                                     transaction: transaction) {
+        if let latestGroupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThread.uniqueId, transaction: tx) {
             return requestTypeForGroup(groupThread: latestGroupThread)
         } else {
             owsFailDebug("Missing groupThread.")
@@ -520,8 +545,7 @@ public class AvatarBuilder: NSObject {
             return nil
         }
 
-        guard let abbreviation = OWSFormat.formatNameComponents(personNameComponents,
-                                                                style: .abbreviated).strippedOrNil else {
+        guard let abbreviation = OWSFormat.formatNameComponents(personNameComponents, style: .abbreviated).strippedOrNil else {
             Logger.warn("Could not abbreviate name.")
             return nil
         }
@@ -584,11 +608,13 @@ public class AvatarBuilder: NSObject {
         let diameterPixels: CGFloat
         let shouldBlurAvatar: Bool
 
-        init(request: Request,
-             contentType: AvatarContentType,
-             failoverContentType: AvatarContentType?,
-             diameterPixels: CGFloat,
-             shouldBlurAvatar: Bool) {
+        init(
+            request: Request,
+            contentType: AvatarContentType,
+            failoverContentType: AvatarContentType?,
+            diameterPixels: CGFloat,
+            shouldBlurAvatar: Bool
+        ) {
             self.request = request
             self.contentType = contentType
             self.failoverContentType = failoverContentType
@@ -612,25 +638,12 @@ public class AvatarBuilder: NSObject {
     // would affect AvatarContent for the request changes.
     private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128, nseMaxSize: 0)
 
-    private func avatarContent(forRequest request: Request,
-                               transaction: SDSAnyReadTransaction) -> AvatarContent {
-        if let cacheKey = request.cacheKey,
-           let avatarContent = requestToContentCache.object(forKey: cacheKey) {
+    private func avatarContent(forRequest request: Request, transaction: SDSAnyReadTransaction) -> AvatarContent {
+        if let cacheKey = request.cacheKey, let avatarContent = requestToContentCache.object(forKey: cacheKey) {
             return avatarContent
         }
 
         let avatarContent = buildAvatarContent(forRequest: request, transaction: transaction)
-
-        if DebugFlags.internalLogging {
-            switch request.requestType {
-            case .contactAddress(let address, _):
-                if address.isLocalAddress {
-                    Logger.info("Building avatar for local user: \(avatarContent.contentType.cacheKey)")
-                }
-            default:
-                break
-            }
-        }
 
         if let cacheKey = request.cacheKey {
             requestToContentCache.setObject(avatarContent, forKey: cacheKey)
@@ -652,8 +665,7 @@ public class AvatarBuilder: NSObject {
 
     private static let contactCacheKeys = SDSKeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
 
-    private func avatarImage(forAvatarContent avatarContent: AvatarContent,
-                             transaction: SDSAnyReadTransaction?) -> UIImage? {
+    private func avatarImage(forAvatarContent avatarContent: AvatarContent, transaction: SDSAnyReadTransaction?) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
 
         if let image = contentToImageCache.object(forKey: cacheKey) {
@@ -715,8 +727,10 @@ public class AvatarBuilder: NSObject {
         // The avatars in our hot code paths which are 36-56pt.  At 3x scale,
         // a threshold of 200 will include these avatars.
         let maxCacheSizePixels = 200
-        let canCacheAvatarImage = (image.pixelWidth <= maxCacheSizePixels &&
-                                    image.pixelHeight <= maxCacheSizePixels)
+        let canCacheAvatarImage: Bool = (
+            image.pixelWidth <= maxCacheSizePixels
+            && image.pixelHeight <= maxCacheSizePixels
+        )
         guard canCacheAvatarImage else { return }
         contentToImageCache.setObject(image, forKey: cacheKey)
     }
@@ -734,16 +748,16 @@ public class AvatarBuilder: NSObject {
             case .contactAddress(let address, let localUserDisplayMode):
                 guard address.isValid else {
                     owsFailDebug("Invalid address.")
-                    return AvatarContentTypes(contentType: .contactDefaultIcon(theme: .default),
-                                              failoverContentType: nil)
+                    return AvatarContentTypes(contentType: .contactDefaultIcon(theme: .default), failoverContentType: nil)
                 }
 
                 let theme = AvatarTheme.forAddress(address)
 
-                if address.isLocalAddress,
-                   localUserDisplayMode == .noteToSelf {
-                    return AvatarContentTypes(contentType: .noteToSelf(theme: theme),
-                                              failoverContentType: .contactDefaultIcon(theme: theme))
+                if address.isLocalAddress, localUserDisplayMode == .noteToSelf {
+                    return AvatarContentTypes(
+                        contentType: .noteToSelf(theme: theme),
+                        failoverContentType: .contactDefaultIcon(theme: theme)
+                    )
                 }
 
                 if CurrentAppContext().isNSE {
@@ -759,51 +773,45 @@ public class AvatarBuilder: NSObject {
                         )
                     }
                 } else {
-                    if let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address,
-                                                                                shouldValidate: true,
-                                                                                transaction: transaction) {
+                    let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address, shouldValidate: true, transaction: transaction)
+                    if let imageData {
                         let digestString = imageData.sha1HexadecimalDigestString
-                        if DebugFlags.internalLogging {
-                            Logger.info("Returning avatar image data for address")
-                        }
-                        return AvatarContentTypes(contentType: .data(imageData: imageData,
-                                                                     digestString: digestString,
-                                                                     shouldValidate: false),
-                                                  failoverContentType: .contactDefaultIcon(theme: theme))
+                        return AvatarContentTypes(
+                            contentType: .data(imageData: imageData, digestString: digestString, shouldValidate: false),
+                            failoverContentType: .contactDefaultIcon(theme: theme)
+                        )
                     }
 
-                    if let nameComponents = Self.contactsManager.nameComponents(for: address,
-                                                                                transaction: transaction),
-                       let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents) {
-                        if DebugFlags.internalLogging {
-                            Logger.info("Returning avatar initials image data for address")
-                        }
-                        return AvatarContentTypes(contentType: .text(text: contactInitials, theme: theme),
-                                                  failoverContentType: .contactDefaultIcon(theme: theme))
+                    if
+                        let nameComponents = Self.contactsManager.nameComponents(for: address, transaction: transaction),
+                        let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents)
+                    {
+                        return AvatarContentTypes(
+                            contentType: .text(text: contactInitials, theme: theme),
+                            failoverContentType: .contactDefaultIcon(theme: theme)
+                        )
                     }
                 }
-
-                if DebugFlags.internalLogging {
-                    Logger.info("Failed to generate avatar data or initials, returning failover avatar image")
-                }
-                return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme),
-                                          failoverContentType: nil)
+                return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme), failoverContentType: nil)
             case .text(let text, let theme):
-                return AvatarContentTypes(contentType: .text(text: text, theme: theme),
-                                          failoverContentType: .contactDefaultIcon(theme: theme))
+                return AvatarContentTypes(
+                    contentType: .text(text: text, theme: theme),
+                    failoverContentType: .contactDefaultIcon(theme: theme)
+                )
             case .contactDefaultIcon(let theme):
-                return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme),
-                                          failoverContentType: nil)
+                return AvatarContentTypes(
+                    contentType: .contactDefaultIcon(theme: theme),
+                    failoverContentType: nil
+                )
             case .group(let groupId, let avatarData, let digestString):
                 let theme = AvatarTheme.forGroupId(groupId)
-                return AvatarContentTypes(contentType: .data(imageData: avatarData,
-                                                             digestString: digestString,
-                                                             shouldValidate: false),
-                                          failoverContentType: .groupDefault(theme: theme))
+                return AvatarContentTypes(
+                    contentType: .data(imageData: avatarData, digestString: digestString, shouldValidate: false),
+                    failoverContentType: .groupDefault(theme: theme)
+                )
             case .groupDefaultIcon(let groupId):
                 let theme = AvatarTheme.forGroupId(groupId)
-                return AvatarContentTypes(contentType: .groupDefault(theme: theme),
-                                          failoverContentType: nil)
+                return AvatarContentTypes(contentType: .groupDefault(theme: theme), failoverContentType: nil)
             case .model(let model):
                 switch model.type {
                 case .icon(let icon):
@@ -825,19 +833,23 @@ public class AvatarBuilder: NSObject {
             }
         }
         let contentTypes = buildAvatarContentTypes()
-        return AvatarContent(request: request,
-                             contentType: contentTypes.contentType,
-                             failoverContentType: contentTypes.failoverContentType,
-                             diameterPixels: request.diameterPixels,
-                             shouldBlurAvatar: request.shouldBlurAvatar)
+        return AvatarContent(
+            request: request,
+            contentType: contentTypes.contentType,
+            failoverContentType: contentTypes.failoverContentType,
+            diameterPixels: request.diameterPixels,
+            shouldBlurAvatar: request.shouldBlurAvatar
+        )
     }
 
     // MARK: - Building Images
 
     // TODO: We could modify this method to always return some kind of
     //       default avatar.
-    private static func buildOrLoadImage(forAvatarContent avatarContent: AvatarContent,
-                                         transaction: SDSAnyReadTransaction?) -> UIImage? {
+    private static func buildOrLoadImage(
+        forAvatarContent avatarContent: AvatarContent,
+        transaction: SDSAnyReadTransaction?
+    ) -> UIImage? {
         func buildOrLoadWithContentType(_ contentType: AvatarContentType) -> UIImage? {
             switch contentType {
             case .file(let fileUrl, let shouldValidate):
@@ -857,14 +869,18 @@ public class AvatarBuilder: NSObject {
                     owsFailDebug("tried to build a contact avatar without a transaction")
                     return nil
                 }
-                guard let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: contactAddress,
-                                                                               shouldValidate: true,
-                                                                               transaction: transaction) else {
+                guard let imageData = Self.contactsManagerImpl.avatarImageData(
+                    forAddress: contactAddress,
+                    shouldValidate: true,
+                    transaction: transaction
+                ) else {
                     return nil
                 }
-                return loadAndResizeAvatarImageData(avatarContent: avatarContent,
-                                                    imageData: imageData,
-                                                    shouldValidate: false)
+                return loadAndResizeAvatarImageData(
+                    avatarContent: avatarContent,
+                    imageData: imageData,
+                    shouldValidate: false
+                )
             case .text(let text, let theme):
                 return buildAvatar(avatarContent: avatarContent, text: text, theme: theme)
             case .tintedImage(let name, let theme):
@@ -877,8 +893,10 @@ public class AvatarBuilder: NSObject {
             if let image = buildOrLoadWithContentType(avatarContent.contentType) {
                 return image
             }
-            if let failoverContentType = avatarContent.failoverContentType,
-               let image = buildOrLoadWithContentType(failoverContentType) {
+            if
+                let failoverContentType = avatarContent.failoverContentType,
+                let image = buildOrLoadWithContentType(failoverContentType)
+            {
                 return image
             }
             owsFailDebug("Could not build avatar.")
@@ -915,23 +933,22 @@ public class AvatarBuilder: NSObject {
 
     // Ensure image scale matches main screen scale.
     private static func normalizeImageScale(_ image: UIImage?) -> UIImage? {
-        guard let image = image,
-              let cgImage = image.cgImage else {
+        guard let image = image, let cgImage = image.cgImage else {
             owsFailDebug("Missing or invalid image.")
             return nil
         }
         if image.scale == UIScreen.main.scale {
             return image
         } else {
-            return UIImage(cgImage: cgImage,
-                           scale: UIScreen.main.scale,
-                           orientation: image.imageOrientation)
+            return UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: image.imageOrientation)
         }
     }
 
-    private static func loadAndResizeAvatarFile(avatarContent: AvatarContent,
-                                                fileUrl: URL,
-                                                shouldValidate: Bool) -> UIImage? {
+    private static func loadAndResizeAvatarFile(
+        avatarContent: AvatarContent,
+        fileUrl: URL,
+        shouldValidate: Bool
+    ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
         if shouldValidate {
             guard NSData.ows_isValidImage(atPath: fileUrl.path) else {
@@ -948,18 +965,20 @@ public class AvatarBuilder: NSObject {
         if CGFloat(pixelWidth) > diameterPixels || CGFloat(pixelHeight) > diameterPixels {
             // Resize to target size.
             return sourceImage.resizedImage(toFillPixelSize: .square(diameterPixels))
-        } else if pixelWidth != pixelHeight {
+        }
+        if pixelWidth != pixelHeight {
             // Crop to square.
             let pixelSize = min(pixelWidth, pixelHeight)
             return sourceImage.resizedImage(toFillPixelSize: .square(CGFloat(pixelSize)))
-        } else {
-            return sourceImage
         }
+        return sourceImage
     }
 
-    private static func loadAndResizeAvatarImageData(avatarContent: AvatarContent,
-                                                     imageData: Data,
-                                                     shouldValidate: Bool) -> UIImage? {
+    private static func loadAndResizeAvatarImageData(
+        avatarContent: AvatarContent,
+        imageData: Data,
+        shouldValidate: Bool
+    ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
         if shouldValidate {
             guard imageData.ows_isValidImage else {
@@ -976,13 +995,13 @@ public class AvatarBuilder: NSObject {
         if CGFloat(pixelWidth) > diameterPixels || CGFloat(pixelHeight) > diameterPixels {
             // Resize to target size.
             return sourceImage.resizedImage(toFillPixelSize: .square(diameterPixels))
-        } else if pixelWidth != pixelHeight {
+        }
+        if pixelWidth != pixelHeight {
             // Crop to square.
             let pixelSize = min(pixelWidth, pixelHeight)
             return sourceImage.resizedImage(toFillPixelSize: .square(CGFloat(pixelSize)))
-        } else {
-            return sourceImage
         }
+        return sourceImage
     }
 
     private static func buildAvatar(
@@ -1067,9 +1086,11 @@ public class AvatarBuilder: NSObject {
         }
     }
 
-    private static func buildAvatar(diameterPixels: CGFloat,
-                                    backgroundColor: UIColor,
-                                    drawBlock: (CGContext) -> Void) -> UIImage? {
+    private static func buildAvatar(
+        diameterPixels: CGFloat,
+        backgroundColor: UIColor,
+        drawBlock: (CGContext) -> Void
+    ) -> UIImage? {
         let diameterPixels = diameterPixels
         guard diameterPixels > 0 else {
             owsFailDebug("Invalid diameter.")
@@ -1171,11 +1192,13 @@ public class AvatarBuilder: NSObject {
         (text).draw(at: locationPixels, withAttributes: textAttributesForDrawing)
     }
 
-    private static func drawIconInAvatar(icon: UIImage,
-                                         iconSizePixels: CGSize,
-                                         iconColor: UIColor? = nil,
-                                         diameterPixels: CGFloat,
-                                         context: CGContext) {
+    private static func drawIconInAvatar(
+        icon: UIImage,
+        iconSizePixels: CGSize,
+        iconColor: UIColor? = nil,
+        diameterPixels: CGFloat,
+        context: CGContext
+    ) {
         context.saveGState()
         defer { context.restoreGState() }
 
@@ -1253,13 +1276,14 @@ fileprivate extension String {
 
 // MARK: -
 
+#if USE_DEBUG_UI
+
 extension AvatarBuilder {
 
     public static func buildNoiseAvatar(diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let backgroundColor = UIColor(rgbHex: 0xaca6633)
-        return Self.buildAvatar(diameterPixels: diameterPixels,
-                                backgroundColor: backgroundColor) { context in
+        return Self.buildAvatar(diameterPixels: diameterPixels, backgroundColor: backgroundColor) { context in
             Self.drawNoiseInAvatar(diameterPixels: diameterPixels, context: context)
         }
     }
@@ -1281,8 +1305,7 @@ extension AvatarBuilder {
             while y < diameterPixels {
                 let color = UIColor.ows_randomColor(isAlphaRandom: false)
                 context.setFillColor(color.cgColor)
-                let rect = CGRect(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
-                                  size: .square(CGFloat(stride)))
+                let rect = CGRect(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)), size: .square(CGFloat(stride)))
                 context.fill(rect)
                 y += stride
             }
@@ -1321,3 +1344,5 @@ extension AvatarBuilder {
         }
     }
 }
+
+#endif
