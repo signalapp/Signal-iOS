@@ -1318,12 +1318,12 @@ public extension GroupsProtoGroupChangeActions {
         groupV2Params: GroupV2Params,
         localIdentifiers: LocalIdentifiers
     ) throws -> (GroupUpdateSource, ServiceId?) {
-        guard let changeAuthorUuidData = self.sourceUuid else {
+        guard let changeAuthorUserId: Data = self.sourceUserID else {
             owsFailDebug("Explicit changes should always have authors")
             return (.unknown, nil)
         }
 
-        let serviceId = try groupV2Params.serviceId(for: changeAuthorUuidData)
+        let serviceId = try groupV2Params.serviceId(for: changeAuthorUserId)
         switch serviceId.concreteType {
         case .aci(let aci):
             return (.aci(aci), aci)

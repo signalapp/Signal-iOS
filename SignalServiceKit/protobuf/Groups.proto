@@ -190,7 +190,7 @@ message GroupChange {
             bool announcementsOnly = 1;
         }
 
-                 bytes                                      sourceUuid                      = 1; // Who made the change
+                 bytes                                      sourceUserId                    = 1; // Encrypted ServiceId for who made the change
                  uint32                                     revision                        = 2; // The change revision number
         repeated AddMemberAction                            addMembers                      = 3; // Members added
         repeated DeleteMemberAction                         deleteMembers                   = 4; // Members deleted

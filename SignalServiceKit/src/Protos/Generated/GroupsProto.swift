@@ -4707,14 +4707,14 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
 
     public let promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction]
 
-    public var sourceUuid: Data? {
-        guard hasSourceUuid else {
+    public var sourceUserID: Data? {
+        guard hasSourceUserID else {
             return nil
         }
-        return proto.sourceUuid
+        return proto.sourceUserID
     }
-    public var hasSourceUuid: Bool {
-        return !proto.sourceUuid.isEmpty
+    public var hasSourceUserID: Bool {
+        return !proto.sourceUserID.isEmpty
     }
 
     public var revision: UInt32 {
@@ -4922,8 +4922,8 @@ extension GroupsProtoGroupChangeActions {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
         var builder = GroupsProtoGroupChangeActionsBuilder()
-        if let _value = sourceUuid {
-            builder.setSourceUuid(_value)
+        if let _value = sourceUserID {
+            builder.setSourceUserID(_value)
         }
         if hasRevision {
             builder.setRevision(revision)
@@ -4982,13 +4982,13 @@ public struct GroupsProtoGroupChangeActionsBuilder {
     fileprivate init() {}
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setSourceUuid(_ valueParam: Data?) {
+    public mutating func setSourceUserID(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
-        proto.sourceUuid = valueParam
+        proto.sourceUserID = valueParam
     }
 
-    public mutating func setSourceUuid(_ valueParam: Data) {
-        proto.sourceUuid = valueParam
+    public mutating func setSourceUserID(_ valueParam: Data) {
+        proto.sourceUserID = valueParam
     }
 
     public mutating func setRevision(_ valueParam: UInt32) {

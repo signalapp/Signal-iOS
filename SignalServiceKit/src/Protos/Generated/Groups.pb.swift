@@ -330,10 +330,10 @@ struct GroupsProtos_GroupChange {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// Who made the change
-    var sourceUuid: Data {
-      get {return _storage._sourceUuid}
-      set {_uniqueStorage()._sourceUuid = newValue}
+    /// Encrypted ServiceId for who made the change
+    var sourceUserID: Data {
+      get {return _storage._sourceUserID}
+      set {_uniqueStorage()._sourceUserID = newValue}
     }
 
     /// The change revision number
@@ -1597,7 +1597,7 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
 extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.protoMessageName + ".Actions"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sourceUuid"),
+    1: .same(proto: "sourceUserId"),
     2: .same(proto: "revision"),
     3: .same(proto: "addMembers"),
     4: .same(proto: "deleteMembers"),
@@ -1624,7 +1624,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
   ]
 
   fileprivate class _StorageClass {
-    var _sourceUuid: Data = Data()
+    var _sourceUserID: Data = Data()
     var _revision: UInt32 = 0
     var _addMembers: [GroupsProtos_GroupChange.Actions.AddMemberAction] = []
     var _deleteMembers: [GroupsProtos_GroupChange.Actions.DeleteMemberAction] = []
@@ -1654,7 +1654,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     private init() {}
 
     init(copying source: _StorageClass) {
-      _sourceUuid = source._sourceUuid
+      _sourceUserID = source._sourceUserID
       _revision = source._revision
       _addMembers = source._addMembers
       _deleteMembers = source._deleteMembers
@@ -1696,7 +1696,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         // allocates stack space for every case branch when no optimizations are
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
-        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._sourceUuid) }()
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._sourceUserID) }()
         case 2: try { try decoder.decodeSingularUInt32Field(value: &_storage._revision) }()
         case 3: try { try decoder.decodeRepeatedMessageField(value: &_storage._addMembers) }()
         case 4: try { try decoder.decodeRepeatedMessageField(value: &_storage._deleteMembers) }()
@@ -1732,8 +1732,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       // allocates stack space for every if/case branch local when no optimizations
       // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
       // https://github.com/apple/swift-protobuf/issues/1182
-      if !_storage._sourceUuid.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._sourceUuid, fieldNumber: 1)
+      if !_storage._sourceUserID.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._sourceUserID, fieldNumber: 1)
       }
       if _storage._revision != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._revision, fieldNumber: 2)
@@ -1813,7 +1813,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
         let rhs_storage = _args.1
-        if _storage._sourceUuid != rhs_storage._sourceUuid {return false}
+        if _storage._sourceUserID != rhs_storage._sourceUserID {return false}
         if _storage._revision != rhs_storage._revision {return false}
         if _storage._addMembers != rhs_storage._addMembers {return false}
         if _storage._deleteMembers != rhs_storage._deleteMembers {return false}
