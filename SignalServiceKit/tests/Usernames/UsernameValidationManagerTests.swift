@@ -256,19 +256,6 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testValidationFailsIfMessageProcessingFails() {
-        mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
-        mockMessageProcessor.processingResult = .error()
-
-        runRunRun()
-
-        mockDB.read { tx in
-            XCTAssertNil(validationManager.lastValidationDate(tx))
-            XCTAssertFalse(mockLocalUsernameManager.didSetCorruptedUsername)
-            XCTAssertFalse(mockLocalUsernameManager.didSetCorruptedLink)
-        }
-    }
-
     func testValidationFailsIfStorageServiceRestoreFails() {
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
         mockMessageProcessor.processingResult = .value(())
@@ -361,10 +348,10 @@ extension UsernameValidationManagerTest {
     }
 
     private class MockMessageProcessor: Usernames.Validation.Shims.MessageProcessor {
-        var processingResult: ConsumableMockPromise<Void> = .unset
+        var processingResult: ConsumableMockGuarantee<Void> = .unset
 
-        public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-            return processingResult.consumeIntoPromise()
+        public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+            return processingResult.consumeIntoGuarantee()
         }
     }
 

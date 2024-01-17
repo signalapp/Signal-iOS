@@ -202,7 +202,7 @@ class NotificationService: UNNotificationServiceExtension {
             let runningAndCompletedPromises = AtomicArray<(String, Promise<Void>)>()
 
             return firstly { () -> Promise<Void> in
-                let promise = self.messageProcessor.processingCompletePromise()
+                let promise = self.messageProcessor.waitForProcessingComplete().asPromise()
                 runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
                 return promise
             }.then(on: DispatchQueue.global()) { () -> Promise<Void> in

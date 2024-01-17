@@ -1,5 +1,5 @@
 //
-// Copyright 2023 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
@@ -8,30 +8,27 @@ import XCTest
 
 @testable import SignalServiceKit
 
-/// A mock value standing in for a promise. Useful when mocking APIs that return
-/// promises.
-enum ConsumableMockPromise<V> {
+/// A mock value standing in for a Guarantee. Useful when mocking APIs that
+/// return Guarantees.
+enum ConsumableMockGuarantee<V> {
     case value(V)
-    case error(Error = OWSGenericError("Intentional failure!"))
     case unset
 
-    mutating func consumeIntoPromise() -> Promise<V> {
+    mutating func consumeIntoGuarantee() -> Guarantee<V> {
         defer { self = .unset }
 
         switch self {
         case .value(let v):
             return .value(v)
-        case let .error(error):
-            return Promise(error: error)
         case .unset:
             XCTFail("Mock not set!")
-            return Promise(error: OWSGenericError("Mock not set!"))
+            fatalError()
         }
     }
 
     func ensureUnset() {
         switch self {
-        case .value, .error:
+        case .value:
             XCTFail("Mock was set!")
         case .unset:
             break

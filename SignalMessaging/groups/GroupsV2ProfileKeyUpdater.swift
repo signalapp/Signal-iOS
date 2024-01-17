@@ -221,8 +221,8 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         }
 
         return firstly {
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetchingAndProcessingCompletePromise") }
-            return self.messageProcessor.fetchingAndProcessingCompletePromise()
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForFetchingAndProcessing") }
+            return self.messageProcessor.waitForFetchingAndProcessing()
         }.map(on: DispatchQueue.global()) { () throws -> TSGroupThread in
             if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] getting group thread") }
             return try self.databaseStorage.read { transaction throws in
@@ -279,11 +279,10 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     // the profile update.
                     return Promise.value(())
                 }
-                // If the revisions don't match, we want to update the group
-                // state in the local database before proceeding.  It's not
-                // safe to do so until we've finished message processing,
-                // but we've already blocked on fetchingAndProcessingCompletePromise
-                // above.
+                // If the revisions don't match, we want to update the group state in the
+                // local database before proceeding. It's not safe to do so until we've
+                // finished message processing, but we've already blocked on
+                // waitForFetchingAndProcessing above.
                 let groupId = groupModel.groupId
                 let groupSecretParamsData = groupModel.secretParamsData
                 if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] try to refresh v2 group up to curr revision immed") }

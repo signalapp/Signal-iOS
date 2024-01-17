@@ -117,15 +117,6 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         XCTAssertTrue(self.isMarkedDeregistered)
     }
 
-    func testNotUnlinkedIfMessageFetchingProcessingFails() {
-        messageProcessorMock.fetchProcessResult = .error()
-
-        runRunRun(recordIssue: true)
-
-        XCTAssertTrue(kvStore.hasDecryptionError())
-        XCTAssertFalse(self.isMarkedDeregistered)
-    }
-
     func testNotUnlinkedIfIdentityKeyCheckingFails() {
         messageProcessorMock.fetchProcessResult = .value({})
         tsAccountManagerMock.localIdentifiersMock = { .mock }
@@ -230,7 +221,7 @@ private extension LocalIdentifiers {
 }
 
 private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageProcessor {
-    var fetchProcessResult: ConsumableMockPromise<() -> Void> = .unset
+    var fetchProcessResult: ConsumableMockGuarantee<() -> Void> = .unset
 
     private let schedulers: Schedulers
 
@@ -238,8 +229,8 @@ private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageP
         self.schedulers = schedulers
     }
 
-    func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        return fetchProcessResult.consumeIntoPromise().map(on: schedulers.sync) { $0() }
+    func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        return fetchProcessResult.consumeIntoGuarantee().map(on: schedulers.sync) { $0() }
     }
 }
 

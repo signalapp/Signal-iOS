@@ -120,8 +120,8 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
             return
         }
 
-        firstly(on: schedulers.sync) { () -> Promise<Void> in
-            return self.messageProcessor.fetchingAndProcessingCompletePromise()
+        firstly(on: schedulers.sync) { () -> Guarantee<Void> in
+            return self.messageProcessor.waitForFetchingAndProcessing()
         }
         .then(on: schedulers.global()) { () throws -> Promise<Bool> in
             return try self.db.read { tx throws in
@@ -202,7 +202,7 @@ extension LinkedDevicePniKeyManagerImpl {
 // MARK: MessageProcessor
 
 protocol _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void>
+    func waitForFetchingAndProcessing() -> Guarantee<Void>
 }
 
 class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
@@ -212,7 +212,7 @@ class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniK
         self.messageProcessor = messageProcessor
     }
 
-    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        messageProcessor.fetchingAndProcessingCompletePromise()
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        messageProcessor.waitForFetchingAndProcessing()
     }
 }

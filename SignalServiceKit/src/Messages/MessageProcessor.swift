@@ -15,11 +15,12 @@ public class MessageProcessor: NSObject {
         !pendingEnvelopes.isEmpty
     }
 
-    /// When calling `processingCompletePromise` while message processing is suspended,
-    /// there is a problem. We may have pending messages waiting to be processed once the suspension
-    /// is lifted. But what's more, we may have started processing messages, then suspended, then called
-    /// `processingCompletePromise` before that initial processing finished. Suspending does not
-    /// interrupt processing if it already started.
+    /// When calling `waitForProcessingComplete` while message processing is
+    /// suspended, there is a problem. We may have pending messages waiting to
+    /// be processed once the suspension is lifted. But what's more, we may have
+    /// started processing messages, then suspended, then called
+    /// `waitForProcessingComplete` before that initial processing finished.
+    /// Suspending does not interrupt processing if it already started.
     ///
     /// So there are 4 cases to worry about:
     /// 1. Message processing isn't suspended
@@ -29,29 +30,31 @@ public class MessageProcessor: NSObject {
     ///
     /// Cases 1 and 2 are easy and behave the same in all cases.
     ///
-    /// Case 3 differs in behavior; sometimes we want to wait for suspension to be lifted and
-    /// those pending messages to be processed, other times we don't want to wait to unsuspend.
+    /// Case 3 differs in behavior; sometimes we want to wait for suspension to
+    /// be lifted and those pending messages to be processed, other times we
+    /// don't want to wait to unsuspend.
     ///
-    /// Case 4 is once again the same in all cases; processing has started and can't be stopped, so
-    /// we should always wait until it finishes.
+    /// Case 4 is once again the same in all cases; processing has started and
+    /// can't be stopped, so we should always wait until it finishes.
     public enum SuspensionBehavior {
         /// Default value. (Legacy behavior)
-        /// If suspended with pending messages and no processing underway, wait for suspension
-        /// to be lifted and those messages to be processed.
+        /// If suspended with pending messages and no processing underway, wait for
+        /// suspension to be lifted and those messages to be processed.
         case alwaysWait
-        /// If suspended with pending messages, only wait if processing has already started. If it
-        /// hasn't started, don't wait for it to start, so that the promise can resolve before suspension
-        /// is lifted.
+        /// If suspended with pending messages, only wait if processing has already
+        /// started. If it hasn't started, don't wait for it to start, so that the
+        /// promise can resolve before suspension is lifted.
         case onlyWaitIfAlreadyInProgress
     }
 
-    /// - parameter suspensionBehavior: What the promise should wait for if message processing
-    /// is suspended; see `SuspensionBehavior` documentation for details.
-    public func processingCompletePromise(
+    /// - parameter suspensionBehavior: What the promise should wait for if
+    /// message processing is suspended; see `SuspensionBehavior` documentation
+    /// for details.
+    public func waitForProcessingComplete(
         suspensionBehavior: SuspensionBehavior = .alwaysWait
-    ) -> Promise<Void> {
+    ) -> Guarantee<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            return Promise.value(())
+            return Guarantee.value(())
         }
 
         var shouldWaitForMessageProcessing = self.hasPendingEnvelopes
@@ -81,7 +84,7 @@ public class MessageProcessor: NSObject {
                 once: Self.messageProcessorDidDrainQueue
             ).then { _ in
                 // Recur, in case we've enqueued messages handled in another block.
-                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+                self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
             }.asVoid()
         } else if shouldWaitForGV2MessageProcessing {
             if DebugFlags.internalLogging {
@@ -96,10 +99,10 @@ public class MessageProcessor: NSObject {
                 once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
             ).then { _ in
                 // Recur, in case we've enqueued messages handled in another block.
-                self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+                self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
             }.asVoid()
         } else {
-            return Promise.value(())
+            return Guarantee.value(())
         }
     }
 
@@ -118,21 +121,21 @@ public class MessageProcessor: NSObject {
         // may get queued up for processing. After 2, nothing new can come in, so we only
         // need to wait the once.
         // In most cases nothing sneaks in between 1 and 2, so 3 resolves instantly.
-        return processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress).then(on: DispatchQueue.main) {
+        return waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress).then(on: DispatchQueue.main) {
             self.messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: suspension)
-            return self.processingCompletePromise(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
+            return self.waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
         }.recover(on: SyncScheduler()) { _ in return () }
     }
 
-    public func fetchingAndProcessingCompletePromise(
+    public func waitForFetchingAndProcessing(
         suspensionBehavior: SuspensionBehavior = .alwaysWait
-    ) -> Promise<Void> {
-        return firstly { () -> Promise<Void> in
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] fetchingCompletePromise") }
-            return Self.messageFetcherJob.fetchingCompletePromise()
-        }.then { () -> Promise<Void> in
-            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] processingCompletePromise") }
-            return self.processingCompletePromise(suspensionBehavior: suspensionBehavior)
+    ) -> Guarantee<Void> {
+        return firstly { () -> Guarantee<Void> in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForFetchingComplete") }
+            return Self.messageFetcherJob.waitForFetchingComplete()
+        }.then { () -> Guarantee<Void> in
+            if DebugFlags.internalLogging { Logger.info("[Scroll Perf Debug] waitForProcessingComplete") }
+            return self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
         }
     }
 

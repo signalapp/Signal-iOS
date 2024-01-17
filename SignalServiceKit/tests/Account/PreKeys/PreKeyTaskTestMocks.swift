@@ -66,8 +66,8 @@ class _PreKey_LinkedDevicePniKeyManagerMock: LinkedDevicePniKeyManager {
 }
 
 struct _PreKey_MessageProcessorMock: PreKey.Shims.MessageProcessor {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        return Promise<Void>.value(())
+    func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        return Guarantee<Void>.value(())
     }
 }
 

@@ -151,7 +151,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     /// username.
     private func ensureUsernameStateUpToDate() -> Promise<Void> {
         return firstly(on: context.schedulers.sync) {
-            self.context.messageProcessor.fetchingAndProcessingCompletePromise()
+            self.context.messageProcessor.waitForFetchingAndProcessing()
         }
         .then(on: context.schedulers.sync) {
             self.context.storageServiceManager.waitForPendingRestores()
@@ -281,7 +281,7 @@ internal class _UsernameValidationManager_AccountServiceClientWrapper: Usernames
 // MARK: MessageProcessor
 
 public protocol _UsernameValidationManager_MessageProcessorShim {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void>
+    func waitForFetchingAndProcessing() -> Guarantee<Void>
 }
 
 internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Validation.Shims.MessageProcessor {
@@ -290,8 +290,8 @@ internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Val
         self.messageProcessor = messageProcessor
     }
 
-    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        messageProcessor.fetchingAndProcessingCompletePromise()
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        messageProcessor.waitForFetchingAndProcessing()
     }
 }
 

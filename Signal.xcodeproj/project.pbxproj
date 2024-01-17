@@ -656,6 +656,7 @@
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		5027A6AC2AFC48D000D5AB95 /* LogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */; };
+		5027B3632B505298005AFE96 /* ConsumableMockGuarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */; };
 		502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */; };
@@ -3297,6 +3298,7 @@
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormatter.swift; sourceTree = "<group>"; };
+		5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableMockGuarantee.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAttachmentInfo.swift; sourceTree = "<group>"; };
 		502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitableAsyncBlockOperation.swift; sourceTree = "<group>"; };
@@ -9154,6 +9156,7 @@
 		F945FE4E2984820B00C835C7 /* TestUtils */ = {
 			isa = PBXGroup;
 			children = (
+				5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */,
 				D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */,
 				D979CC392AD3964E006AAC49 /* Numbers+Random.swift */,
 				F945FE4F2984822D00C835C7 /* UserDefaults.swift */,
@@ -13542,6 +13545,7 @@
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
+				5027B3632B505298005AFE96 /* ConsumableMockGuarantee.swift in Sources */,
 				D938307B2A70432B006CDCDE /* ConsumableMockPromise.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,

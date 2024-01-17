@@ -49,8 +49,8 @@ public class GroupV2UpdatesImpl: Dependencies {
             return
         }
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            self.messageProcessor.fetchingAndProcessingCompletePromise()
+        firstly(on: DispatchQueue.global()) { () -> Guarantee<Void> in
+            self.messageProcessor.waitForFetchingAndProcessing()
         }.then(on: DispatchQueue.global()) { _ -> Promise<Void> in
             guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
                 // We didn't find a group to refresh; abort.
@@ -379,13 +379,13 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         // MARK: Run
 
         public override func run() {
-            firstly { () -> Promise<Void> in
+            firstly { () -> Guarantee<Void> in
                 if groupUpdateMode.shouldBlockOnMessageProcessing {
-                    return self.messageProcessor.fetchingAndProcessingCompletePromise()
+                    return self.messageProcessor.waitForFetchingAndProcessing()
                 } else {
-                    return Promise.value(())
+                    return Guarantee.value(())
                 }
-            }.then(on: DispatchQueue.global()) { _ in
+            }.then(on: DispatchQueue.global()) { () in
                 self.groupV2UpdatesImpl.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
                                                                 groupUpdateMode: self.groupUpdateMode,
                                                                 groupModelOptions: self.groupModelOptions)
@@ -615,11 +615,11 @@ private extension GroupV2UpdatesImpl {
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
+        return firstly { () -> Guarantee<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessor.fetchingAndProcessingCompletePromise()
+                return self.messageProcessor.waitForFetchingAndProcessing()
             } else {
-                return Promise.value(())
+                return Guarantee.value(())
             }
         }.then(on: DispatchQueue.global()) {
             return self.tryToApplyGroupChangesFromServiceNow(
@@ -1022,13 +1022,13 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
 
-        return firstly { () -> Promise<Void> in
+        return firstly { () -> Guarantee<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessor.fetchingAndProcessingCompletePromise()
+                return self.messageProcessor.waitForFetchingAndProcessing()
             } else {
-                return Promise.value(())
+                return Guarantee.value(())
             }
-        }.then(on: DispatchQueue.global()) { _ in
+        }.then(on: DispatchQueue.global()) { () in
             self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
                 groupV2Snapshot: groupV2Snapshot,
                 groupModelOptions: groupModelOptions

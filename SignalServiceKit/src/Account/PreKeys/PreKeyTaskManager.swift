@@ -441,7 +441,7 @@ internal struct PreKeyTaskManager {
         try Task.checkCancellation()
 
         do {
-            try await messageProcessor.fetchingAndProcessingCompletePromise()
+            try await messageProcessor.waitForFetchingAndProcessing().asPromise()
                 .timeout(seconds: 3, timeoutErrorBlock: { MessageProcessingTimeoutError() })
                 .awaitable()
         } catch let error {

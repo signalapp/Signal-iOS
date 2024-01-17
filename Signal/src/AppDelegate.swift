@@ -474,7 +474,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 SyncPushTokensJob.run(mode: .rotateIfEligible)
             }).map {
                 // If the method returns a closure, run it after message processing.
-                _ = messageProcessor.fetchingAndProcessingCompletePromise().done($0)
+                _ = messageProcessor.waitForFetchingAndProcessing().done($0)
             }
         }
 

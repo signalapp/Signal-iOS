@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 extension PreKey {
     public enum Shims {
@@ -54,7 +55,7 @@ public class _PreKeyManager_IdentityManagerWrapper: _PreKeyManager_IdentityManag
 // MARK: - MessageProcessor
 
 public protocol _PreKeyManager_MessageProcessorShim {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void>
+    func waitForFetchingAndProcessing() -> Guarantee<Void>
 }
 
 public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Shims.MessageProcessor {
@@ -63,8 +64,8 @@ public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Shims.MessageProces
         self.messageProcessor = messageProcessor
     }
 
-    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        messageProcessor.fetchingAndProcessingCompletePromise(
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        messageProcessor.waitForFetchingAndProcessing(
             suspensionBehavior: .onlyWaitIfAlreadyInProgress
         )
     }

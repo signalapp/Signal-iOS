@@ -171,34 +171,34 @@ public class MessageFetcherJob: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func fetchingCompletePromise() -> AnyPromise {
-        AnyPromise(fetchingCompletePromise())
+    public func waitForFetchingComplete() -> AnyPromise {
+        AnyPromise(waitForFetchingComplete())
     }
 
-    public func fetchingCompletePromise() -> Promise<Void> {
+    public func waitForFetchingComplete() -> Guarantee<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
-            return Promise.value(())
+            return Guarantee.value(())
         }
 
         if Self.shouldUseWebSocket {
             guard !hasCompletedInitialFetch else {
-                return Promise.value(())
+                return Guarantee.value(())
             }
 
             return NotificationCenter.default.observe(
                 once: OWSWebSocket.webSocketStateDidChange
             ).then { _ in
-                self.fetchingCompletePromise()
+                self.waitForFetchingComplete()
             }.asVoid()
         } else {
             guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
-                return Promise.value(())
+                return Guarantee.value(())
             }
 
             return NotificationCenter.default.observe(
                 once: Self.didChangeStateNotificationName
             ).then { _ in
-                self.fetchingCompletePromise()
+                self.waitForFetchingComplete()
             }.asVoid()
         }
     }

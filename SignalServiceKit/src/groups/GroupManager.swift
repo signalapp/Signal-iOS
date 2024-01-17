@@ -1552,7 +1552,7 @@ public extension GroupManager {
 
     private class func messageProcessingPromise(description: String) -> Promise<Void> {
         return firstly {
-            self.messageProcessor.fetchingAndProcessingCompletePromise()
+            self.messageProcessor.waitForFetchingAndProcessing()
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
             GroupsV2Error.timeout
