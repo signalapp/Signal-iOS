@@ -203,7 +203,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             Self.regStateLogger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
             kvStore.setString(aci.serviceIdUppercaseString, key: Keys.localAci, transaction: tx)
 
-            let oldPni = kvStore.getString(Keys.localPni, transaction: tx).flatMap { UUID(uuidString: $0) }.flatMap { Pni(fromUUID: $0) }
+            let oldPni = Pni.parseFrom(pniString: kvStore.getString(Keys.localPni, transaction: tx))
             Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni?.logString ?? "nil")")
             // Encoded without the "PNI:" prefix for backwards compatibility.
             kvStore.setString(pni?.rawUUID.uuidString, key: Keys.localPni, transaction: tx)
@@ -514,17 +514,13 @@ extension TSAccountManagerImpl {
                 logger?.info("No local phone number!")
                 return nil
             }
-            guard let localAci = kvStore.getUuid(Keys.localAci, transaction: tx) else {
+            guard let localAci = Aci.parseFrom(aciString: kvStore.getString(Keys.localAci, transaction: tx)) else {
                 logger?.info("No local aci!")
                 return nil
             }
-            let pni = kvStore.getUuid(Keys.localPni, transaction: tx).map(Pni.init(fromUUID:))
-            logger?.info("Has local pni? \(pni != nil)")
-            return LocalIdentifiers(
-                aci: Aci(fromUUID: localAci),
-                pni: pni,
-                phoneNumber: localNumber
-            )
+            let localPni = Pni.parseFrom(pniString: kvStore.getString(Keys.localPni, transaction: tx))
+            logger?.info("Has local pni? \(localPni != nil)")
+            return LocalIdentifiers(aci: localAci, pni: localPni, phoneNumber: localNumber)
         }
 
         private static func loadRegistrationState(
@@ -540,10 +536,10 @@ extension TSAccountManagerImpl {
                 transaction: tx
             )
             // TODO: Eventually require reregistrationAci during re-registration.
-            let reregistrationAci = kvStore.getUuid(
+            let reregistrationAci = Aci.parseFrom(aciString: kvStore.getString(
                 Keys.reregistrationAci,
                 transaction: tx
-            ).map(Aci.init(fromUUID:))
+            ))
 
             let isDeregisteredOrDelinked = kvStore.getBool(
                 Keys.isDeregisteredOrDelinked,
@@ -669,15 +665,5 @@ extension TSAccountManagerImpl {
 
             static let isManualMessageFetchEnabled = "TSAccountManager_ManualMessageFetchKey"
         }
-    }
-}
-
-extension KeyValueStore {
-
-    func getUuid(_ key: String, transaction: DBReadTransaction) -> UUID? {
-        guard let raw = getString(key, transaction: transaction) else {
-            return nil
-        }
-        return UUID(uuidString: raw)
     }
 }

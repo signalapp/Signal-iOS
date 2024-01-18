@@ -134,13 +134,10 @@ public class ProvisioningCipher {
 
         let pni: Pni? = try {
             guard proto.hasPni, let pniString = proto.pni else { return nil }
-            if let pni = UUID(uuidString: pniString) {
-                return Pni(fromUUID: pni)
-            } else if let serviceId = try? ServiceId.parseFrom(serviceIdString: pniString), let pni = serviceId as? Pni {
-                return pni
-            } else {
+            guard let pni = Pni.parseFrom(ambiguousString: pniString) else {
                 throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
             }
+            return pni
         }()
 
         // TODO: eventually this will become required, at which point

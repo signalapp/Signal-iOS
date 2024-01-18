@@ -16,10 +16,25 @@ extension Aci {
         guard let aciString else { return nil }
         guard let serviceId = try? ServiceId.parseFrom(serviceIdString: aciString) else { return nil }
         guard let aci = serviceId as? Aci else {
-            owsFailDebug("Expected an ACI but found something else.")
             return nil
         }
         return aci
+    }
+}
+
+extension Pni {
+    public static func parseFrom(pniString: String?) -> Pni? {
+        guard let pniString else { return nil }
+        guard let pniUuid = UUID(uuidString: pniString) else {
+            return nil
+        }
+        return Pni(fromUUID: pniUuid)
+    }
+
+    public static func parseFrom(ambiguousString: String?) -> Pni? {
+        guard let ambiguousString else { return nil }
+        // Give LibSignal the first pass at parsing a "PNI:"-prefixed value.
+        return (try? Pni.parseFrom(serviceIdString: ambiguousString)) ?? parseFrom(pniString: ambiguousString)
     }
 }
 

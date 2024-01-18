@@ -280,7 +280,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callType: .groupCall,
                 callDirection: .incoming,
                 callStatus: .group(.ringingMissed),
-                groupCallRingerAci: Aci(fromUUID: UUID(uuidString: "C2459E88-8A6A-474B-80FD-51A79923FD50")!),
+                groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
                 callBeganTimestamp: 1701300001
             ),
         ]

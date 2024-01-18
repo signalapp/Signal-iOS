@@ -51,10 +51,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
         updatedPni updatedPniString: String?,
         tx: DBWriteTransaction
     ) {
-        guard
-            let updatedPniString,
-            let updatedPni = UUID(uuidString: updatedPniString).map({ Pni(fromUUID: $0) })
-        else {
+        guard let updatedPni = Pni.parseFrom(pniString: updatedPniString) else {
             owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
             return
         }

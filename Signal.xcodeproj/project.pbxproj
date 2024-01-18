@@ -664,6 +664,7 @@
 		502D45462A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */; };
 		502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */; };
 		502D69322A7AC07C0085B656 /* Dictionary+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */; };
+		503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503158F12B57B0010023A5DB /* ServiceIdTest.swift */; };
 		5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */; };
 		5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46029D638FD007FEADA /* ThreadStore.swift */; };
 		5033D46329D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */; };
@@ -3308,6 +3309,7 @@
 		502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationStore.swift; sourceTree = "<group>"; };
 		502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfoStore.swift; sourceTree = "<group>"; };
 		502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+SSK.swift"; sourceTree = "<group>"; };
+		503158F12B57B0010023A5DB /* ServiceIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdTest.swift; sourceTree = "<group>"; };
 		5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMerger.swift; sourceTree = "<group>"; };
 		5033D46029D638FD007FEADA /* ThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadStore.swift; sourceTree = "<group>"; };
 		5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberChangedMessageInserter.swift; sourceTree = "<group>"; };
@@ -9047,6 +9049,7 @@
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
 				D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */,
 				D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */,
+				503158F12B57B0010023A5DB /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
 			);
@@ -13668,6 +13671,7 @@
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
 				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
 				6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */,
+				503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,

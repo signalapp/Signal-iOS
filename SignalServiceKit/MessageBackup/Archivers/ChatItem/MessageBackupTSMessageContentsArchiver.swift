@@ -160,11 +160,8 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             let bodyRangeProtoBuilder = BackupProtoBodyRange.builder()
             bodyRangeProtoBuilder.setStart(bodyRange.start)
             bodyRangeProtoBuilder.setLength(bodyRange.length)
-            if
-                let rawMentionAci = bodyRange.mentionAci,
-                let mentionUuid = UUID(uuidString: rawMentionAci)
-            {
-                bodyRangeProtoBuilder.setMentionAci(Aci(fromUUID: mentionUuid).serviceIdBinary.asData)
+            if let mentionAci = Aci.parseFrom(aciString: bodyRange.mentionAci) {
+                bodyRangeProtoBuilder.setMentionAci(mentionAci.serviceIdBinary.asData)
             } else if let style = bodyRange.style {
                 switch style {
                 case .none:
