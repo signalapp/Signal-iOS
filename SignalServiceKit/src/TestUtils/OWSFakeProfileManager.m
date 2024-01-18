@@ -290,13 +290,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
-                                                   avatarUrlPath:(NSString *)avatarUrlPath
-                                                      profileKey:(OWSAES256Key *)profileKey
-{
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
     return nil;
 }

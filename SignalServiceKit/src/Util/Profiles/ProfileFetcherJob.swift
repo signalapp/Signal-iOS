@@ -386,11 +386,12 @@ public class ProfileFetcherJob: NSObject {
         if didAlreadyDownloadAvatar {
             return nil
         }
-        let anyAvatarData: Any?
+        let avatarData: Data
         do {
-            anyAvatarData = try await profileManager.downloadAndDecryptProfileAvatar(
-                forProfileAddress: profileAddress, avatarUrlPath: newAvatarUrlPath, profileKey: profileKey
-            ).asAny().awaitable()
+            avatarData = try await profileManager.downloadAndDecryptAvatar(
+                avatarUrlPath: newAvatarUrlPath,
+                profileKey: profileKey
+            )
         } catch {
             Logger.warn("Error: \(error)")
             if error.isNetworkFailureOrTimeout, profileAddress.isLocalAddress {
@@ -410,9 +411,6 @@ public class ProfileFetcherJob: NSObject {
             //   flight. We should eventually recover since profile updates are
             //   durable.
             return nil
-        }
-        guard let avatarData = anyAvatarData as? Data else {
-            throw OWSAssertionError("Unexpected result.")
         }
         return avatarData.isEmpty ? nil : profileManager.writeAvatarDataToFile(avatarData)
     }

@@ -427,6 +427,7 @@ extension OWSRequestFactory {
         bio: ProfileValue?,
         bioEmoji: ProfileValue?,
         hasAvatar: Bool,
+        sameAvatar: Bool,
         paymentAddress: ProfileValue?,
         phoneNumberSharing: ProfileValue,
         visibleBadgeIds: [String],
@@ -436,6 +437,7 @@ extension OWSRequestFactory {
     ) -> TSRequest {
         var parameters: [String: Any] = [
             "avatar": hasAvatar,
+            "sameAvatar": sameAvatar,
             "badgeIds": visibleBadgeIds,
             "commitment": commitment.base64EncodedString(),
             "phoneNumberSharing": phoneNumberSharing.encryptedBase64Value,

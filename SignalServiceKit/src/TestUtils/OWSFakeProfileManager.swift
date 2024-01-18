@@ -22,12 +22,12 @@ extension OWSFakeProfileManager: ProfileManager {
     }
 
     public func updateLocalProfile(
-        profileGivenName: String?,
-        profileFamilyName: String?,
-        profileBio: String?,
-        profileBioEmoji: String?,
-        profileAvatarData: Data?,
-        visibleBadgeIds: [String],
+        profileGivenName: OptionalChange<String?>,
+        profileFamilyName: OptionalChange<String?>,
+        profileBio: OptionalChange<String?>,
+        profileBioEmoji: OptionalChange<String?>,
+        profileAvatarData: OptionalChange<Data?>,
+        visibleBadgeIds: OptionalChange<[String]>,
         unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
@@ -38,6 +38,14 @@ extension OWSFakeProfileManager: ProfileManager {
 
     public func reuploadLocalProfile(unsavedRotatedProfileKey: OWSAES256Key?, authedAccount: AuthedAccount, tx: DBWriteTransaction) -> Promise<Void> {
         return Promise(error: OWSGenericError("Not supported."))
+    }
+
+    public func downloadAndDecryptAvatarIfNeeded(userProfile: OWSUserProfile, authedAccount: AuthedAccount) async throws {
+        throw OWSGenericError("Not supported.")
+    }
+
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> Data {
+        throw OWSGenericError("Not supported.")
     }
 }
 

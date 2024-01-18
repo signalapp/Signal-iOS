@@ -687,12 +687,12 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                 viewController.showDismissalActivity = true
                 let updatePromise = await databaseStorage.awaitableWrite { tx in
                     self.profileManager.updateLocalProfile(
-                        profileGivenName: snapshot.givenName,
-                        profileFamilyName: snapshot.familyName,
-                        profileBio: snapshot.bio,
-                        profileBioEmoji: snapshot.bioEmoji,
-                        profileAvatarData: snapshot.avatarData,
-                        visibleBadgeIds: newVisibleBadgeIds,
+                        profileGivenName: .noChange,
+                        profileFamilyName: .noChange,
+                        profileBio: .noChange,
+                        profileBioEmoji: .noChange,
+                        profileAvatarData: .noChange,
+                        visibleBadgeIds: .setTo(newVisibleBadgeIds),
                         unsavedRotatedProfileKey: nil,
                         userProfileWriter: .localUser,
                         authedAccount: .implicit(),

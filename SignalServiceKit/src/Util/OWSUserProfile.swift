@@ -487,6 +487,8 @@ public extension OWSUserProfile {
     func update(
         givenName: String?,
         familyName: String?,
+        bio: String?,
+        bioEmoji: String?,
         avatarUrlPath: String?,
         avatarFileName: String?,
         userProfileWriter: UserProfileWriter,
@@ -497,6 +499,8 @@ public extension OWSUserProfile {
         let changes = UserProfileChanges()
         changes.givenName = .init(givenName)
         changes.familyName = .init(familyName)
+        changes.bio = .init(bio)
+        changes.bioEmoji = .init(bioEmoji)
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         apply(

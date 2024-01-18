@@ -1073,7 +1073,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                           completion:nil];
 
     if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-        [self downloadAvatarForUserProfile:userProfile authedAccount:authedAccount];
+        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
     }
 }
 
@@ -1169,7 +1169,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     if (downloadIfMissing && (userProfile.avatarUrlPath.length > 0)) {
         // Try to fill in missing avatar.
-        [self downloadAvatarForUserProfile:userProfile authedAccount:authedAccount];
+        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
     }
 
     return nil;
@@ -1216,7 +1216,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     if (downloadIfMissing && userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
         // Try to fill in missing avatar.
-        [self downloadAvatarForUserProfile:userProfile authedAccount:authedAccount];
+        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
     }
 
     return userProfile.avatarUrlPath;
@@ -1288,109 +1288,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (NSString *)generateAvatarFilename
 {
     return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-}
-
-// We may know a profile's avatar URL (avatarUrlPath != nil) but not
-// have downloaded the avatar data yet (avatarFileName == nil).
-// We use this method to fill in these missing avatars.
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile authedAccount:(AuthedAccount *)authedAccount
-{
-    OWSAssertDebug(userProfile);
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-        // Record the avatarUrlPath and profileKey; if they change
-        // during the avatar download, we don't want to update the profile.
-        __block NSString *_Nullable avatarUrlPathAtStart;
-        __block OWSAES256Key *_Nullable profileKeyAtStart;
-        __block BOOL shouldDownload;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            OWSUserProfile *_Nullable currentUserProfile = [OWSUserProfile getUserProfileForAddress:userProfile.address
-                                                                                        transaction:transaction];
-            if (currentUserProfile == nil) {
-                OWSFailDebug(@"Aborting; currentUserProfile cannot be found.");
-                shouldDownload = NO;
-                return;
-            }
-            avatarUrlPathAtStart = currentUserProfile.avatarUrlPath;
-            profileKeyAtStart = currentUserProfile.profileKey;
-            if (profileKeyAtStart.keyData.length < 1 || avatarUrlPathAtStart.length < 1) {
-                OWSLogVerbose(@"Aborting; avatarUrlPath or profileKey are not known.");
-                shouldDownload = NO;
-                return;
-            }
-            if (currentUserProfile.avatarFileName.length > 0) {
-                OWSLogVerbose(@"Aborting; avatar already present.");
-                shouldDownload = NO;
-                return;
-            }
-            shouldDownload = YES;
-        }];
-        if (!shouldDownload) {
-            return;
-        }
-
-        NSString *filename = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
-
-        // downloadAndDecryptProfileAvatarForProfileAddress:... ensures that
-        // only one download is in flight at a time for a given avatar.
-        [self downloadAndDecryptProfileAvatarForProfileAddress:userProfile.address
-                                                 avatarUrlPath:avatarUrlPathAtStart
-                                                    profileKey:profileKeyAtStart]
-            .doneInBackground(^(id value) {
-                if (![value isKindOfClass:[NSData class]]) {
-                    OWSFailDebug(@"Invalid value.");
-                    return;
-                }
-                NSData *decryptedData = value;
-                BOOL success = [decryptedData writeToFile:filePath atomically:YES];
-                if (!success) {
-                    OWSFailDebug(@"Could not write avatar to disk.");
-                    return;
-                }
-
-                UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
-                if (image == nil) {
-                    OWSLogError(@"Could not read avatar image.");
-                    return;
-                }
-
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    OWSUserProfile *currentUserProfile =
-                        [OWSUserProfile getOrBuildUserProfileForAddress:userProfile.address
-                                                          authedAccount:authedAccount
-                                                            transaction:transaction];
-
-                    if (currentUserProfile.avatarFileName.length > 0) {
-                        OWSLogVerbose(@"Aborting; avatar already present.");
-                        return;
-                    }
-
-                    if (![NSObject isNullableObject:currentUserProfile.profileKey.keyData equalTo:profileKeyAtStart]
-                        || ![NSObject isNullableObject:currentUserProfile.avatarUrlPath equalTo:avatarUrlPathAtStart]) {
-                        OWSLogVerbose(@"Aborting; profileKey or avatarUrlPath has changed.");
-                        // If the profileKey or avatarUrlPath has changed, abort and kick off a new
-                        // download if necessary.
-                        if (currentUserProfile.avatarFileName == nil) {
-                            [transaction addAsyncCompletionOffMain:^{
-                                [self downloadAvatarForUserProfile:currentUserProfile authedAccount:authedAccount];
-                            }];
-                        }
-                        return;
-                    }
-
-                    [currentUserProfile updateWithAvatarFileName:filename
-                                               userProfileWriter:UserProfileWriter_AvatarDownload
-                                                   authedAccount:authedAccount
-                                                     transaction:transaction];
-                });
-
-                OWSAssertDebug(backgroundTask);
-                backgroundTask = nil;
-            });
-    });
 }
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)addressParam
@@ -1482,7 +1379,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     // download this avatar. downloadAvatarForUserProfile will de-bounce
     // downloads.
     if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-        [self downloadAvatarForUserProfile:userProfile authedAccount:authedAccount];
+        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
     }
 }
 
@@ -1539,15 +1436,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         OWSLogWarn(@"Could not load profile avatar.");
         return nil;
     }
-}
-
-- (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
-                                                   avatarUrlPath:(NSString *)avatarUrlPath
-                                                      profileKey:(OWSAES256Key *)profileKey
-{
-    return [OWSProfileManager avatarDownloadAndDecryptPromiseObjcWithProfileAddress:profileAddress
-                                                                      avatarUrlPath:avatarUrlPath
-                                                                         profileKey:profileKey];
 }
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {

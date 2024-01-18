@@ -119,146 +119,161 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Update
 
-    public func updateProfilePromise(
+    public func updateProfile(
         profileGivenName: String?,
         profileFamilyName: String?,
         profileBio: String?,
         profileBioEmoji: String?,
-        profileAvatarData: Data?,
+        profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        profileKey: OWSAES256Key,
         authedAccount: AuthedAccount
-    ) -> Promise<VersionedProfileUpdate> {
+    ) async throws -> VersionedProfileUpdate {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localAci = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci
+        let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
+        let commitment = try localProfileKey.getCommitment(userId: localAci)
+        let commitmentData = commitment.serialize().asData
 
-        let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
-        return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let localAci = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci
-            let localProfileKey = try self.parseProfileKey(profileKey: profileKeyToUse)
-            let commitment = try localProfileKey.getCommitment(userId: localAci)
-            let commitmentData = commitment.serialize().asData
-            let hasAvatar = profileAvatarData != nil
-
-            func fetchLocalPaymentAddressProtoData() -> Data? {
-                Self.databaseStorage.write { transaction in
-                    Self.paymentsHelper.lastKnownLocalPaymentAddressProtoData(transaction: transaction)
-                }
+        func fetchLocalPaymentAddressProtoData() async -> Data? {
+            await databaseStorage.awaitableWrite { tx in
+                Self.paymentsHelper.lastKnownLocalPaymentAddressProtoData(transaction: tx)
             }
-
-            var profilePaymentAddressData: Data?
-            if Self.paymentsHelper.arePaymentsEnabled,
-               !Self.paymentsHelper.isKillSwitchActive,
-               let addressProtoData = fetchLocalPaymentAddressProtoData() {
-
-                var paymentAddressDataWithLength = Data()
-                var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))
-                withUnsafePointer(to: &littleEndian) { pointer in
-                    paymentAddressDataWithLength.append(UnsafeBufferPointer(start: pointer, count: 1))
-                }
-                paymentAddressDataWithLength.append(addressProtoData)
-                profilePaymentAddressData = paymentAddressDataWithLength
-            }
-
-            var nameValue: ProfileValue?
-            if let profileGivenName {
-                var nameComponents = PersonNameComponents()
-                nameComponents.givenName = profileGivenName
-                nameComponents.familyName = profileFamilyName
-
-                guard let encryptedValue = OWSUserProfile.encrypt(profileNameComponents: nameComponents,
-                                                                  profileKey: profileKeyToUse) else {
-                    throw OWSAssertionError("Could not encrypt profile name.")
-                }
-                nameValue = encryptedValue
-            }
-
-            func encryptOptionalData(_ value: Data?, paddedLengths: [Int]) throws -> ProfileValue? {
-                guard let value, !value.isEmpty else {
-                    return nil
-                }
-                guard let encryptedValue = OWSUserProfile.encrypt(
-                    data: value,
-                    profileKey: profileKeyToUse,
-                    paddedLengths: paddedLengths
-                ) else {
-                    throw OWSAssertionError("Could not encrypt profile value.")
-                }
-                return encryptedValue
-            }
-
-            func encryptOptionalString(_ value: String?, paddedLengths: [Int]) throws -> ProfileValue? {
-                guard let value, !value.isEmpty else {
-                    return nil
-                }
-                guard let stringData = value.data(using: .utf8) else {
-                    owsFailDebug("Invalid value.")
-                    return nil
-                }
-                return try encryptOptionalData(stringData, paddedLengths: paddedLengths)
-            }
-
-            func encryptBoolean(_ value: Bool) throws -> ProfileValue {
-                let encodedValue = Data([value ? 1 : 0])
-                guard let encryptedData = OWSUserProfile.encrypt(profileData: encodedValue, profileKey: profileKeyToUse) else {
-                    throw OWSAssertionError("Couldn't encrypt profie value.")
-                }
-                return ProfileValue(encryptedData: encryptedData)
-            }
-
-            let bioValue = try encryptOptionalString(profileBio, paddedLengths: [128, 254, 512])
-            let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
-            let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
-            let phoneNumberSharingValue = try encryptBoolean(self.databaseStorage.read { tx in
-                self.udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
-            })
-
-            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
-            let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
-
-            let request = OWSRequestFactory.setVersionedProfileRequest(
-                name: nameValue,
-                bio: bioValue,
-                bioEmoji: bioEmojiValue,
-                hasAvatar: hasAvatar,
-                paymentAddress: paymentAddressValue,
-                phoneNumberSharing: phoneNumberSharingValue,
-                visibleBadgeIds: visibleBadgeIds,
-                version: profileKeyVersionString,
-                commitment: commitmentData,
-                auth: authedAccount.chatServiceAuth
-            )
-            return self.networkManager.makePromise(request: request)
-        }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
-            if let profileAvatarData {
-                guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
-                                                                              profileKey: profileKeyToUse) else {
-                    throw OWSAssertionError("Could not encrypt profile avatar.")
-                }
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                return self.parseFormAndUpload(formResponseObject: json,
-                                               profileAvatarData: encryptedProfileAvatarData)
-            }
-            return Promise.value(VersionedProfileUpdate())
         }
+
+        let profilePaymentAddressData: Data? = await {
+            guard
+                paymentsHelper.arePaymentsEnabled,
+                !paymentsHelper.isKillSwitchActive,
+                let addressProtoData = await fetchLocalPaymentAddressProtoData()
+            else {
+                return nil
+            }
+            var result = Data()
+            var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))
+            withUnsafePointer(to: &littleEndian) { pointer in
+                result.append(UnsafeBufferPointer(start: pointer, count: 1))
+            }
+            result.append(addressProtoData)
+            return result
+        }()
+
+        let nameValue: ProfileValue? = try {
+            guard let profileGivenName else {
+                return nil
+            }
+            var nameComponents = PersonNameComponents()
+            nameComponents.givenName = profileGivenName
+            nameComponents.familyName = profileFamilyName
+
+            guard let encryptedValue = OWSUserProfile.encrypt(
+                profileNameComponents: nameComponents,
+                profileKey: profileKey
+            ) else {
+                throw OWSAssertionError("Could not encrypt profile name.")
+            }
+            return encryptedValue
+        }()
+
+        func encryptOptionalData(_ value: Data?, paddedLengths: [Int]) throws -> ProfileValue? {
+            guard let value, !value.isEmpty else {
+                return nil
+            }
+            guard let encryptedValue = OWSUserProfile.encrypt(
+                data: value,
+                profileKey: profileKey,
+                paddedLengths: paddedLengths
+            ) else {
+                throw OWSAssertionError("Could not encrypt profile value.")
+            }
+            return encryptedValue
+        }
+
+        func encryptOptionalString(_ value: String?, paddedLengths: [Int]) throws -> ProfileValue? {
+            guard let value, !value.isEmpty else {
+                return nil
+            }
+            guard let stringData = value.data(using: .utf8) else {
+                owsFailDebug("Invalid value.")
+                return nil
+            }
+            return try encryptOptionalData(stringData, paddedLengths: paddedLengths)
+        }
+
+        func encryptBoolean(_ value: Bool) throws -> ProfileValue {
+            let encodedValue = Data([value ? 1 : 0])
+            guard let encryptedData = OWSUserProfile.encrypt(profileData: encodedValue, profileKey: profileKey) else {
+                throw OWSAssertionError("Couldn't encrypt profie value.")
+            }
+            return ProfileValue(encryptedData: encryptedData)
+        }
+
+        let bioValue = try encryptOptionalString(profileBio, paddedLengths: [128, 254, 512])
+        let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
+        let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
+        let phoneNumberSharingValue = try encryptBoolean(databaseStorage.read { tx in
+            udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
+        })
+
+        let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
+        let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
+
+        let hasAvatar: Bool
+        let sameAvatar: Bool
+        switch profileAvatarMutation {
+        case .keepAvatar:
+            hasAvatar = true
+            sameAvatar = true
+        case .clearAvatar:
+            hasAvatar = false
+            sameAvatar = false
+        case .changeAvatar:
+            hasAvatar = true
+            sameAvatar = false
+        }
+
+        let request = OWSRequestFactory.setVersionedProfileRequest(
+            name: nameValue,
+            bio: bioValue,
+            bioEmoji: bioEmojiValue,
+            hasAvatar: hasAvatar,
+            sameAvatar: sameAvatar,
+            paymentAddress: paymentAddressValue,
+            phoneNumberSharing: phoneNumberSharingValue,
+            visibleBadgeIds: visibleBadgeIds,
+            version: profileKeyVersionString,
+            commitment: commitmentData,
+            auth: authedAccount.chatServiceAuth
+        )
+        let response = try await networkManager.makePromise(request: request).awaitable()
+
+        let avatarUrlPath: OptionalChange<String?>
+        switch profileAvatarMutation {
+        case .keepAvatar:
+            avatarUrlPath = .noChange
+        case .clearAvatar:
+            avatarUrlPath = .setTo(nil)
+        case .changeAvatar(let avatarData):
+            guard let encryptedAvatarData = OWSUserProfile.encrypt(profileData: avatarData, profileKey: profileKey) else {
+                throw OWSAssertionError("Could not encrypt profile avatar.")
+            }
+            avatarUrlPath = .setTo(try await uploadAvatar(
+                formResponse: response.responseBodyJson,
+                encryptedAvatarData: encryptedAvatarData
+            ))
+        }
+
+        return VersionedProfileUpdate(avatarUrlPath: avatarUrlPath)
     }
 
-    private func parseFormAndUpload(formResponseObject: Any?,
-                                    profileAvatarData: Data) -> Promise<VersionedProfileUpdate> {
-        return firstly { () throws -> Promise<OWSUploadFormV2> in
-            guard let response = formResponseObject as? [AnyHashable: Any] else {
-                throw OWSAssertionError("Unexpected response.")
-            }
-            guard let form = OWSUploadFormV2.parseDictionary(response) else {
-                throw OWSAssertionError("Could not parse response.")
-            }
-            return Promise.value(form)
-        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadFormV2) -> Promise<String> in
-            OWSUpload.uploadV2(data: profileAvatarData, uploadForm: uploadForm, uploadUrlPath: "")
-        }.map(on: DispatchQueue.global()) { (avatarUrlPath: String) -> VersionedProfileUpdate in
-            return VersionedProfileUpdate(avatarUrlPath: avatarUrlPath)
+    private func uploadAvatar(formResponse: Any?, encryptedAvatarData: Data) async throws -> String {
+        guard let formResponse = formResponse as? [AnyHashable: Any] else {
+            throw OWSAssertionError("Unexpected response.")
         }
+        guard let uploadForm = OWSUploadFormV2.parseDictionary(formResponse) else {
+            throw OWSAssertionError("Could not parse response.")
+        }
+        return try await OWSUpload.uploadV2(data: encryptedAvatarData, uploadForm: uploadForm, uploadUrlPath: "").awaitable()
     }
 
     // MARK: - Get

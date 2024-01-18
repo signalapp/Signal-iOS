@@ -300,12 +300,12 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
         tx: DBWriteTransaction
     ) -> Promise<Void> {
         return manager.updateLocalProfile(
-            profileGivenName: givenName,
-            profileFamilyName: familyName,
-            profileBio: nil,
-            profileBioEmoji: nil,
-            profileAvatarData: avatarData,
-            visibleBadgeIds: [],
+            profileGivenName: .setTo(givenName),
+            profileFamilyName: .setTo(familyName),
+            profileBio: .setTo(nil),
+            profileBioEmoji: .setTo(nil),
+            profileAvatarData: .setTo(avatarData),
+            visibleBadgeIds: .setTo([]),
             unsavedRotatedProfileKey: nil,
             userProfileWriter: .registration,
             authedAccount: authedAccount,

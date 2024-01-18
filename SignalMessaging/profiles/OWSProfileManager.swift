@@ -5,10 +5,12 @@
 
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 import SignalServiceKit
 
 class OWSProfileManagerSwiftValues {
     fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: AtomicLock())
+    fileprivate let avatarDownloadRequests = AtomicValue<[OWSProfileManager.AvatarDownloadKey: Promise<Data>]>([:], lock: AtomicLock())
 }
 
 extension OWSProfileManager: ProfileManager {
@@ -39,12 +41,12 @@ extension OWSProfileManager: ProfileManager {
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
     public func updateLocalProfile(
-        profileGivenName: String?,
-        profileFamilyName: String?,
-        profileBio: String?,
-        profileBioEmoji: String?,
-        profileAvatarData: Data?,
-        visibleBadgeIds: [String],
+        profileGivenName: OptionalChange<String?>,
+        profileFamilyName: OptionalChange<String?>,
+        profileBio: OptionalChange<String?>,
+        profileBioEmoji: OptionalChange<String?>,
+        profileAvatarData: OptionalChange<Data?>,
+        visibleBadgeIds: OptionalChange<[String]>,
         unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
@@ -66,7 +68,11 @@ extension OWSProfileManager: ProfileManager {
 
         let (promise, future) = Promise<Void>.pending()
         swiftValues.pendingUpdateRequests.update {
-            $0.append(ProfileUpdateRequest(requestId: update.id, authedAccount: authedAccount, future: future))
+            $0.append(ProfileUpdateRequest(
+                requestId: update.id,
+                requestParameters: .init(profileKey: unsavedRotatedProfileKey, future: future),
+                authedAccount: authedAccount
+            ))
         }
         tx.addAsyncCompletionOnMain {
             self._updateProfileOnServiceIfNecessary()
@@ -82,49 +88,16 @@ extension OWSProfileManager: ProfileManager {
     ) -> Promise<Void> {
         Logger.info("")
 
-        let profileGivenName: String?
-        let profileFamilyName: String?
-        let profileBio: String?
-        let profileBioEmoji: String?
-        let profileAvatarData: Data?
-        let visibleBadgeIds: [String]
-        let userProfileWriter: UserProfileWriter
-        if let pendingUpdate = currentPendingProfileUpdate(transaction: SDSDB.shimOnlyBridge(tx)) {
-            profileGivenName = pendingUpdate.profileGivenName
-            profileFamilyName = pendingUpdate.profileFamilyName
-            profileBio = pendingUpdate.profileBio
-            profileBioEmoji = pendingUpdate.profileBioEmoji
-            profileAvatarData = pendingUpdate.profileAvatarData
-            visibleBadgeIds = pendingUpdate.visibleBadgeIds
-            userProfileWriter = pendingUpdate.userProfileWriter
-
-            if DebugFlags.internalLogging {
-                Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
-            }
-        } else {
-            let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
-            profileGivenName = profileSnapshot.givenName
-            profileFamilyName = profileSnapshot.familyName
-            profileBio = profileSnapshot.bio
-            profileBioEmoji = profileSnapshot.bioEmoji
-            profileAvatarData = profileSnapshot.avatarData
-            visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
-            userProfileWriter = .reupload
-
-            if DebugFlags.internalLogging {
-                Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
-            }
-        }
-        assert(profileGivenName != nil)
+        let profileChanges = currentPendingProfileChanges(tx: SDSDB.shimOnlyBridge(tx))
         return updateLocalProfile(
-            profileGivenName: profileGivenName,
-            profileFamilyName: profileFamilyName,
-            profileBio: profileBio,
-            profileBioEmoji: profileBioEmoji,
-            profileAvatarData: profileAvatarData,
-            visibleBadgeIds: visibleBadgeIds,
+            profileGivenName: profileChanges?.profileGivenName ?? .noChange,
+            profileFamilyName: profileChanges?.profileFamilyName ?? .noChange,
+            profileBio: profileChanges?.profileBio ?? .noChange,
+            profileBioEmoji: profileChanges?.profileBioEmoji ?? .noChange,
+            profileAvatarData: profileChanges?.profileAvatarData ?? .noChange,
+            visibleBadgeIds: profileChanges?.visibleBadgeIds ?? .noChange,
             unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-            userProfileWriter: userProfileWriter,
+            userProfileWriter: profileChanges?.userProfileWriter ?? .reupload,
             authedAccount: authedAccount,
             tx: SDSDB.shimOnlyBridge(tx)
         )
@@ -654,8 +627,13 @@ extension OWSProfileManager: ProfileManager {
 
     fileprivate struct ProfileUpdateRequest {
         var requestId: UUID
+        var requestParameters: Parameters
         var authedAccount: AuthedAccount
-        var future: Future<Void>
+
+        struct Parameters {
+            var profileKey: OWSAES256Key?
+            var future: Future<Void>
+        }
     }
 
     @discardableResult
@@ -670,38 +648,41 @@ extension OWSProfileManager: ProfileManager {
             return .notReady
         }
 
-        let pendingUpdate = databaseStorage.read { tx in
-            return currentPendingProfileUpdate(transaction: tx)
+        let profileChanges = databaseStorage.read { tx in
+            return currentPendingProfileChanges(tx: tx)
         }
-        guard let pendingUpdate else {
+        guard let profileChanges else {
             return .notNeeded
         }
 
-        guard let (future, authedAccount) = processProfileUpdateRequests(upThrough: pendingUpdate.id) else {
+        guard let (parameters, authedAccount) = processProfileUpdateRequests(upThrough: profileChanges.id) else {
             return .notReady
         }
 
         isUpdatingProfileOnService = true
 
+        let backgroundTask = OWSBackgroundTask(label: #function)
         Task { @MainActor in
             // We must be on the MainActor to touch isUpdatingProfileOnService.
             defer {
                 isUpdatingProfileOnService = false
+                backgroundTask.end()
             }
             do {
-                try await attemptToUpdateProfileOnService(update: pendingUpdate, authedAccount: authedAccount)
-                if pendingUpdate.unsavedRotatedProfileKey == nil {
-                    _ = try await fetchLocalUsersProfile(mainAppOnly: false, authedAccount: authedAccount).awaitable()
-                }
+                try await updateProfileOnService(
+                    profileChanges: profileChanges,
+                    newProfileKey: parameters?.profileKey,
+                    authedAccount: authedAccount
+                )
                 DispatchQueue.global().async {
-                    future?.resolve()
+                    parameters?.future.resolve()
                 }
                 DispatchQueue.main.async {
                     self._updateProfileOnServiceIfNecessary()
                 }
             } catch {
                 DispatchQueue.global().async {
-                    future?.reject(error)
+                    parameters?.future.reject(error)
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + retryDelay) {
                     self._updateProfileOnServiceIfNecessary(retryDelay: retryDelay * 2)
@@ -723,13 +704,13 @@ extension OWSProfileManager: ProfileManager {
     /// requests if we can't authenticate with the server. We assume we can
     /// authenticate when we're registered or if the request's `authedAccount`
     /// contains explicit credentials.
-    private func processProfileUpdateRequests(upThrough requestId: UUID) -> (Future<Void>?, AuthedAccount)? {
+    private func processProfileUpdateRequests(upThrough requestId: UUID) -> (ProfileUpdateRequest.Parameters?, AuthedAccount)? {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
 
         // Find the AuthedAccount & Future for the request. This will generally
         // exist for the initial request but will be nil for any retries.
-        let pendingRequests: (canceledRequests: [ProfileUpdateRequest], result: (Future<Void>?, AuthedAccount)?)
+        let pendingRequests: (canceledRequests: [ProfileUpdateRequest], result: (ProfileUpdateRequest.Parameters?, AuthedAccount)?)
         pendingRequests = swiftValues.pendingUpdateRequests.update { mutableRequests in
             let canceledRequests: [ProfileUpdateRequest]
             let currentRequest: ProfileUpdateRequest?
@@ -746,14 +727,14 @@ extension OWSProfileManager: ProfileManager {
             switch authedAccount.info {
             case .implicit where isRegistered, .explicit:
                 mutableRequests = Array(mutableRequests.dropFirst())
-                return (canceledRequests, (currentRequest?.future, authedAccount))
+                return (canceledRequests, (currentRequest?.requestParameters, authedAccount))
             case .implicit:
                 return (canceledRequests, nil)
             }
         }
 
         for canceledRequest in pendingRequests.canceledRequests {
-            canceledRequest.future.reject(OWSGenericError("Canceled because a new request was enqueued."))
+            canceledRequest.requestParameters.future.reject(OWSGenericError("Canceled because a new request was enqueued."))
         }
 
         return pendingRequests.result
@@ -829,99 +810,140 @@ extension OWSProfileManager: ProfileManager {
         store.removeValue(forKey: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: tx)
     }
 
-    private func attemptToUpdateProfileOnService(
-        update: PendingProfileUpdate,
+    private func updateProfileOnService(
+        profileChanges: PendingProfileUpdate,
+        newProfileKey: OWSAES256Key?,
         authedAccount: AuthedAccount
     ) async throws {
-        // We capture the local user profile early to eliminate the risk of opening
-        // a transaction within a transaction.
-        let userProfile = profileManagerImpl.localUserProfile()
-
-        let attempt = ProfileUpdateAttempt(update: update, userProfile: userProfile)
-
         do {
-            try await writeProfileAvatarToDisk(attempt: attempt).awaitable()
-            try await Self.updateProfileOnServiceVersioned(attempt: attempt, authedAccount: authedAccount).awaitable()
+            let avatarUpdate = try await buildAvatarUpdate(
+                avatarChange: profileChanges.profileAvatarData,
+                isRotatingProfileKey: newProfileKey != nil,
+                authedAccount: authedAccount
+            )
+
+            // We capture the local user profile early to eliminate the risk of opening
+            // a transaction within a transaction.
+            let userProfile = profileManagerImpl.localUserProfile()
+            guard let profileKey = newProfileKey ?? userProfile.profileKey else {
+                throw OWSAssertionError("Can't upload profile without profileKey.")
+            }
+
+            let newGivenName = profileChanges.profileGivenName.orExistingValue(userProfile.unfilteredGivenName)
+            let newFamilyName = profileChanges.profileFamilyName.orExistingValue(userProfile.unfilteredFamilyName)
+            let newBio = profileChanges.profileBio.orExistingValue(userProfile.bio)
+            let newBioEmoji = profileChanges.profileBioEmoji.orExistingValue(userProfile.bioEmoji)
+            let newVisibleBadgeIds = profileChanges.visibleBadgeIds.orExistingValue(userProfile.visibleBadges.map { $0.badgeId })
+
+            let versionedUpdate = try await Self.versionedProfilesSwift.updateProfile(
+                profileGivenName: newGivenName,
+                profileFamilyName: newFamilyName,
+                profileBio: newBio,
+                profileBioEmoji: newBioEmoji,
+                profileAvatarMutation: avatarUpdate.remoteMutation,
+                visibleBadgeIds: newVisibleBadgeIds,
+                profileKey: profileKey,
+                authedAccount: authedAccount
+            )
             await databaseStorage.awaitableWrite { tx in
-                if self.tryToDequeueProfileUpdate(update: attempt.update, transaction: tx) {
-                    Self.updateLocalProfile(with: attempt, authedAccount: authedAccount, transaction: tx)
-                }
+                self.tryToDequeueProfileChanges(profileChanges, tx: tx)
+                // Apply the changes to our local profile.
+                let userProfile = OWSUserProfile.getOrBuildUserProfile(
+                    for: OWSUserProfile.localProfileAddress,
+                    authedAccount: authedAccount,
+                    transaction: tx
+                )
+                userProfile.update(
+                    givenName: newGivenName,
+                    familyName: newFamilyName,
+                    bio: newBio,
+                    bioEmoji: newBioEmoji,
+                    avatarUrlPath: versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath),
+                    avatarFileName: avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName),
+                    userProfileWriter: profileChanges.userProfileWriter,
+                    authedAccount: authedAccount,
+                    transaction: tx,
+                    completion: nil
+                )
                 // Notify all our devices that the profile has changed.
                 let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
                 if tsRegistrationState.isRegistered {
                     self.syncManager.sendFetchLatestProfileSyncMessage(tx: tx)
                 }
             }
+            // If we're changing the profile key, then the normal "fetch our profile"
+            // method will fail because it will the just-obsoleted profile key.
+            if newProfileKey == nil {
+                _ = try await fetchLocalUsersProfile(mainAppOnly: false, authedAccount: authedAccount).awaitable()
+            }
         } catch let error where error.isNetworkFailureOrTimeout {
             // We retry network errors forever (with exponential backoff).
             throw error
         } catch {
             // Other errors cause us to give up immediately.
-            await databaseStorage.awaitableWrite { tx in
-                _ = self.tryToDequeueProfileUpdate(update: attempt.update, transaction: tx)
-            }
+            await databaseStorage.awaitableWrite { tx in self.tryToDequeueProfileChanges(profileChanges, tx: tx) }
             throw error
         }
     }
 
-    private func writeProfileAvatarToDisk(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        guard let profileAvatarData = attempt.update.profileAvatarData else {
-            return Promise.value(())
-        }
-        return Promise(on: DispatchQueue.global()) { future in
-            let filename = self.generateAvatarFilename()
-            let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
-            do {
-                try profileAvatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
-                attempt.avatarFilename = filename
-                future.resolve()
-            } catch {
-                future.reject(OWSError(error: .avatarWriteFailed, description: "Avatar write failed.", isRetryable: false))
-            }
-        }
-    }
-
-    private class func updateProfileOnServiceVersioned(
-        attempt: ProfileUpdateAttempt,
+    /// Computes necessary changes to the avatar.
+    ///
+    /// Most fields are re-encrypted with every update. However, the avatar can
+    /// be large, so we only update it if absolutely necessary. We must update
+    /// the profile avatar in two cases:
+    ///   (1) The avatar has changed (duh!).
+    ///   (2) The profile key has changed.
+    /// In the former case, we'll always have the new avatar because we're
+    /// actively changing it. In the latter case, another device may have
+    /// changed it, so we may need to download it to re-encrypt it.
+    private func buildAvatarUpdate(
+        avatarChange: OptionalChange<Data?>,
+        isRotatingProfileKey: Bool,
         authedAccount: AuthedAccount
-    ) -> Promise<Void> {
-        Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
-                        "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
-                        "profileFamilyName?: \(attempt.update.profileFamilyName != nil), " +
-                        "profileBio?: \(attempt.update.profileBio != nil), " +
-                        "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil) " +
-                        "visibleBadges?: \(attempt.update.visibleBadgeIds.count).")
-        return firstly(on: DispatchQueue.global()) {
-            Self.versionedProfilesSwift.updateProfilePromise(
-                profileGivenName: attempt.update.profileGivenName,
-                profileFamilyName: attempt.update.profileFamilyName,
-                profileBio: attempt.update.profileBio,
-                profileBioEmoji: attempt.update.profileBioEmoji,
-                profileAvatarData: attempt.update.profileAvatarData,
-                visibleBadgeIds: attempt.update.visibleBadgeIds,
-                unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey,
-                authedAccount: authedAccount
-            )
-        }.map(on: DispatchQueue.global()) { versionedUpdate in
-            attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
+    ) async throws -> (remoteMutation: VersionedProfileAvatarMutation, filenameChange: OptionalChange<String?>) {
+        switch avatarChange {
+        case .setTo(let newAvatar):
+            // This is case (1). It's also case (2) when we're also changing the avatar.
+            if let newAvatar {
+                let avatarFilename = try writeProfileAvatarToDisk(avatarData: newAvatar)
+                return (.changeAvatar(newAvatar), .setTo(avatarFilename))
+            }
+            return (.clearAvatar, .setTo(nil))
+        case .noChange:
+            // This is case (2).
+            if isRotatingProfileKey {
+                do {
+                    try await _downloadAndDecryptAvatarIfNeeded(
+                        internalAddress: OWSUserProfile.localProfileAddress,
+                        authedAccount: authedAccount
+                    )
+                } catch where !error.isNetworkFailureOrTimeout {
+                    // Ignore the error because it's not likely to go away if we retry. If we
+                    // can't decrypt the existing avatar, then we don't really have any choice
+                    // other than blowing it away.
+                }
+                if let avatarFilename = localUserProfile().avatarFileName, let avatarData = localProfileAvatarData() {
+                    return (.changeAvatar(avatarData), .setTo(avatarFilename))
+                }
+                return (.clearAvatar, .setTo(nil))
+            }
+            // We aren't changing the avatar, so use the existing value.
+            if localProfileAvatarData() != nil {
+                return (.keepAvatar, .noChange)
+            }
+            return (.clearAvatar, .setTo(nil))
         }
     }
 
-    private class func updateLocalProfile(
-        with attempt: ProfileUpdateAttempt,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        attempt.userProfile.update(
-            givenName: attempt.update.profileGivenName,
-            familyName: attempt.update.profileFamilyName,
-            avatarUrlPath: attempt.avatarUrlPath,
-            avatarFileName: attempt.avatarFilename,
-            userProfileWriter: attempt.userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: nil
-        )
+    private func writeProfileAvatarToDisk(avatarData: Data) throws -> String {
+        let filename = self.generateAvatarFilename()
+        let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
+        do {
+            try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
+        } catch {
+            throw OWSError(error: .avatarWriteFailed, description: "Avatar write failed.", isRetryable: false)
+        }
+        return filename
     }
 
     // MARK: - Update Queue
@@ -929,58 +951,54 @@ extension OWSProfileManager: ProfileManager {
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
     private func enqueueProfileUpdate(
-        profileGivenName: String?,
-        profileFamilyName: String?,
-        profileBio: String?,
-        profileBioEmoji: String?,
-        profileAvatarData: Data?,
-        visibleBadgeIds: [String],
+        profileGivenName: OptionalChange<String?>,
+        profileFamilyName: OptionalChange<String?>,
+        profileBio: OptionalChange<String?>,
+        profileBioEmoji: OptionalChange<String?>,
+        profileAvatarData: OptionalChange<Data?>,
+        visibleBadgeIds: OptionalChange<[String]>,
         unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
         tx: SDSAnyWriteTransaction
     ) -> PendingProfileUpdate {
-        // Note that this might overwrite a pending profile update.
-        // That's desirable.  We only ever want to retain the
-        // latest changes.
-        let update = PendingProfileUpdate(
-            profileGivenName: profileGivenName,
-            profileFamilyName: profileFamilyName,
-            profileBio: profileBio,
-            profileBioEmoji: profileBioEmoji,
-            profileAvatarData: profileAvatarData,
-            visibleBadgeIds: visibleBadgeIds,
-            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+        let oldChanges = currentPendingProfileChanges(tx: tx)
+        let newChanges = PendingProfileUpdate(
+            profileGivenName: profileGivenName.orElseIfNoChange(oldChanges?.profileGivenName ?? .noChange),
+            profileFamilyName: profileFamilyName.orElseIfNoChange(oldChanges?.profileFamilyName ?? .noChange),
+            profileBio: profileBio.orElseIfNoChange(oldChanges?.profileBio ?? .noChange),
+            profileBioEmoji: profileBioEmoji.orElseIfNoChange(oldChanges?.profileBioEmoji ?? .noChange),
+            profileAvatarData: profileAvatarData.orElseIfNoChange(oldChanges?.profileAvatarData ?? .noChange),
+            visibleBadgeIds: visibleBadgeIds.orElseIfNoChange(oldChanges?.visibleBadgeIds ?? .noChange),
             userProfileWriter: userProfileWriter
         )
-        settingsStore.setObject(update, key: Self.kPendingProfileUpdateKey, transaction: tx)
-        return update
+        settingsStore.setObject(newChanges, key: Self.kPendingProfileUpdateKey, transaction: tx)
+        return newChanges
     }
 
-    private func currentPendingProfileUpdate(transaction: SDSAnyReadTransaction) -> PendingProfileUpdate? {
-        guard let value = settingsStore.getObject(forKey: Self.kPendingProfileUpdateKey, transaction: transaction) else {
+    private func currentPendingProfileChanges(tx: SDSAnyReadTransaction) -> PendingProfileUpdate? {
+        guard let value = settingsStore.getObject(forKey: Self.kPendingProfileUpdateKey, transaction: tx) else {
             return nil
         }
-        guard let update = value as? PendingProfileUpdate else {
+        guard let profileChanges = value as? PendingProfileUpdate else {
             owsFailDebug("Invalid value.")
             return nil
         }
-        return update
+        return profileChanges
     }
 
-    private func isCurrentPendingProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let currentUpdate = currentPendingProfileUpdate(transaction: transaction) else {
+    private func isCurrentPendingProfileChanges(_ profileChanges: PendingProfileUpdate, tx: SDSAnyReadTransaction) -> Bool {
+        guard let databaseValue = currentPendingProfileChanges(tx: tx) else {
             return false
         }
-        return update.hasSameIdAs(currentUpdate)
+        return profileChanges.hasSameIdAs(databaseValue)
     }
 
-    private func tryToDequeueProfileUpdate(update: PendingProfileUpdate, transaction: SDSAnyWriteTransaction) -> Bool {
-        guard isCurrentPendingProfileUpdate(update: update, transaction: transaction) else {
+    private func tryToDequeueProfileChanges(_ profileChanges: PendingProfileUpdate, tx: SDSAnyWriteTransaction) {
+        guard isCurrentPendingProfileChanges(profileChanges, tx: tx) else {
             Logger.warn("Ignoring stale update completion.")
-            return false
+            return
         }
-        settingsStore.removeValue(forKey: Self.kPendingProfileUpdateKey, transaction: transaction)
-        return true
+        settingsStore.removeValue(forKey: Self.kPendingProfileUpdateKey, transaction: tx)
     }
 
     /// Rotates the local profile key. Intended specifically
@@ -1064,55 +1082,31 @@ class PendingProfileUpdate: NSObject, NSCoding {
     let id: UUID
 
     // If nil, we are clearing the profile given name.
-    let profileGivenName: String?
-
-    // If nil, we are clearing the profile family name.
-    let profileFamilyName: String?
-
-    let profileBio: String?
-
-    let profileBioEmoji: String?
-
-    // If nil, we are clearing the profile avatar.
-    let profileAvatarData: Data?
-
-    let visibleBadgeIds: [String]
-
-    let unsavedRotatedProfileKey: OWSAES256Key?
-
-    var hasGivenName: Bool {
-        guard let givenName = profileGivenName else {
-            return false
-        }
-        return !givenName.isEmpty
-    }
-
-    var hasAvatarData: Bool {
-        guard let avatarData = profileAvatarData else {
-            return false
-        }
-        return !avatarData.isEmpty
-    }
+    let profileGivenName: OptionalChange<String?>
+    let profileFamilyName: OptionalChange<String?>
+    let profileBio: OptionalChange<String?>
+    let profileBioEmoji: OptionalChange<String?>
+    let profileAvatarData: OptionalChange<Data?>
+    let visibleBadgeIds: OptionalChange<[String]>
 
     let userProfileWriter: UserProfileWriter
 
-    init(profileGivenName: String?,
-         profileFamilyName: String?,
-         profileBio: String?,
-         profileBioEmoji: String?,
-         profileAvatarData: Data?,
-         visibleBadgeIds: [String],
-         unsavedRotatedProfileKey: OWSAES256Key?,
-         userProfileWriter: UserProfileWriter) {
-
+    init(
+        profileGivenName: OptionalChange<String?>,
+        profileFamilyName: OptionalChange<String?>,
+        profileBio: OptionalChange<String?>,
+        profileBioEmoji: OptionalChange<String?>,
+        profileAvatarData: OptionalChange<Data?>,
+        visibleBadgeIds: OptionalChange<[String]>,
+        userProfileWriter: UserProfileWriter
+    ) {
         self.id = UUID()
-        self.profileGivenName = profileGivenName
+        self.profileGivenName = Self.normalizeGivenName(profileGivenName)
         self.profileFamilyName = profileFamilyName
         self.profileBio = profileBio
         self.profileBioEmoji = profileBioEmoji
-        self.profileAvatarData = profileAvatarData
+        self.profileAvatarData = Self.normalizeAvatar(profileAvatarData)
         self.visibleBadgeIds = visibleBadgeIds
-        self.unsavedRotatedProfileKey = unsavedRotatedProfileKey
         self.userProfileWriter = userProfileWriter
     }
 
@@ -1120,38 +1114,93 @@ class PendingProfileUpdate: NSObject, NSCoding {
         return self.id == other.id
     }
 
-    // MARK: - NSCoding
-
-    @objc
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(id.uuidString, forKey: "id")
-        aCoder.encode(profileGivenName, forKey: "profileGivenName")
-        aCoder.encode(profileFamilyName, forKey: "profileFamilyName")
-        aCoder.encode(profileBio, forKey: "profileBio")
-        aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
-        aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
-        aCoder.encode(visibleBadgeIds, forKey: "visibleBadgeIds")
-        aCoder.encode(unsavedRotatedProfileKey, forKey: "unsavedRotatedProfileKey")
-        aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: "userProfileWriter")
+    private static func normalizeGivenName(_ givenName: OptionalChange<String?>) -> OptionalChange<String?> {
+        return givenName.map { $0?.nilIfEmpty }
     }
 
-    @objc
+    private static func normalizeAvatar(_ avatarData: OptionalChange<Data?>) -> OptionalChange<Data?> {
+        return avatarData.map { $0?.nilIfEmpty }
+    }
+
+    // MARK: - NSCoding
+
+    private enum NSCodingKeys: String {
+        case id
+        case profileGivenName
+        case profileFamilyName
+        case profileBio
+        case profileBioEmoji
+        case profileAvatarData
+        case visibleBadgeIds
+        case userProfileWriter
+
+        var changedKey: String { rawValue + "Changed" }
+    }
+
+    private static func encodeOptionalChange<T>(_ value: OptionalChange<T?>, for codingKey: NSCodingKeys, with aCoder: NSCoder) {
+        switch value {
+        case .noChange:
+            aCoder.encode(false, forKey: codingKey.changedKey)
+        case .setTo(let value):
+            if let value {
+                aCoder.encode(value, forKey: codingKey.rawValue)
+            }
+        }
+    }
+
+    private static func encodeVisibleBadgeIds(_ value: OptionalChange<[String]>, for codingKey: NSCodingKeys, with aCoder: NSCoder) {
+        switch value {
+        case .noChange:
+            break
+        case .setTo(let value):
+            aCoder.encode(value, forKey: codingKey.rawValue)
+        }
+    }
+
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(id.uuidString, forKey: NSCodingKeys.id.rawValue)
+        Self.encodeOptionalChange(profileGivenName, for: .profileGivenName, with: aCoder)
+        Self.encodeOptionalChange(profileFamilyName, for: .profileFamilyName, with: aCoder)
+        Self.encodeOptionalChange(profileBio, for: .profileBio, with: aCoder)
+        Self.encodeOptionalChange(profileBioEmoji, for: .profileBioEmoji, with: aCoder)
+        Self.encodeOptionalChange(profileAvatarData, for: .profileAvatarData, with: aCoder)
+        Self.encodeVisibleBadgeIds(visibleBadgeIds, for: .visibleBadgeIds, with: aCoder)
+        aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: NSCodingKeys.userProfileWriter.rawValue)
+    }
+
+    private static func decodeOptionalChange<T>(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<T?> {
+        if aDecoder.containsValue(forKey: codingKey.changedKey), !aDecoder.decodeBool(forKey: codingKey.changedKey) {
+            return .noChange
+        }
+        return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
+    }
+
+    private static func decodeVisibleBadgeIds(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<[String]> {
+        guard let visibleBadgeIds = aDecoder.decodeObject(forKey: codingKey.rawValue) as? [String] else {
+            return .noChange
+        }
+        return .setTo(visibleBadgeIds)
+    }
+
     public required init?(coder aDecoder: NSCoder) {
-        guard let idString = aDecoder.decodeObject(forKey: "id") as? String,
-              let id = UUID(uuidString: idString) else {
+        guard
+            let idString = aDecoder.decodeObject(forKey: NSCodingKeys.id.rawValue) as? String,
+            let id = UUID(uuidString: idString)
+        else {
             owsFailDebug("Missing id")
             return nil
         }
         self.id = id
-        self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
-        self.profileFamilyName = aDecoder.decodeObject(forKey: "profileFamilyName") as? String
-        self.profileBio = aDecoder.decodeObject(forKey: "profileBio") as? String
-        self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
-        self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
-        self.visibleBadgeIds = (aDecoder.decodeObject(forKey: "visibleBadgeIds") as? [String]) ?? []
-        self.unsavedRotatedProfileKey = aDecoder.decodeObject(forKey: "unsavedRotatedProfileKey") as? OWSAES256Key
-        if aDecoder.containsValue(forKey: "userProfileWriter"),
-           let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: "userProfileWriter"))) {
+        self.profileGivenName = Self.normalizeGivenName(Self.decodeOptionalChange(for: .profileGivenName, with: aDecoder))
+        self.profileFamilyName = Self.decodeOptionalChange(for: .profileFamilyName, with: aDecoder)
+        self.profileBio = Self.decodeOptionalChange(for: .profileBio, with: aDecoder)
+        self.profileBioEmoji = Self.decodeOptionalChange(for: .profileBioEmoji, with: aDecoder)
+        self.profileAvatarData = Self.normalizeAvatar(Self.decodeOptionalChange(for: .profileAvatarData, with: aDecoder))
+        self.visibleBadgeIds = Self.decodeVisibleBadgeIds(for: .visibleBadgeIds, with: aDecoder)
+        if
+            aDecoder.containsValue(forKey: NSCodingKeys.userProfileWriter.rawValue),
+            let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: NSCodingKeys.userProfileWriter.rawValue)))
+        {
             self.userProfileWriter = userProfileWriter
         } else {
             self.userProfileWriter = .unknown
@@ -1159,112 +1208,137 @@ class PendingProfileUpdate: NSObject, NSCoding {
     }
 }
 
-// MARK: -
-
-private class ProfileUpdateAttempt {
-    let update: PendingProfileUpdate
-
-    let userProfile: OWSUserProfile
-
-    // These properties are populated during the update process.
-    var avatarFilename: String?
-    var avatarUrlPath: String?
-
-    var userProfileWriter: UserProfileWriter { update.userProfileWriter }
-
-    init(update: PendingProfileUpdate, userProfile: OWSUserProfile) {
-        self.update = update
-        self.userProfile = userProfile
-    }
-}
-
 // MARK: - Avatar Downloads
 
-public extension OWSProfileManager {
-
-    private struct CacheKey: Hashable {
+extension OWSProfileManager {
+    fileprivate struct AvatarDownloadKey: Hashable {
         let avatarUrlPath: String
         let profileKey: Data
     }
 
-    private static let serialQueue = DispatchQueue(label: "org.signal.profile-manager")
-
-    private static var avatarDownloadCache = [CacheKey: Promise<Data>]()
-
     @objc
-    class func avatarDownloadAndDecryptPromiseObjc(profileAddress: SignalServiceAddress,
-                                                   avatarUrlPath: String,
-                                                   profileKey: OWSAES256Key) -> AnyPromise {
-        return AnyPromise(avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
-                                                          avatarUrlPath: avatarUrlPath,
-                                                          profileKey: profileKey))
-    }
-
-    private class func avatarDownloadAndDecryptPromise(profileAddress: SignalServiceAddress,
-                                                       avatarUrlPath: String,
-                                                       profileKey: OWSAES256Key) -> Promise<Data> {
-        let cacheKey = CacheKey(avatarUrlPath: avatarUrlPath, profileKey: profileKey.keyData)
-        return serialQueue.sync { () -> Promise<Data> in
-            if let cachedPromise = avatarDownloadCache[cacheKey] {
-                return cachedPromise
-            }
-            let promise = avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
-                                                          avatarUrlPath: avatarUrlPath,
-                                                          profileKey: profileKey,
-                                                          remainingRetries: 3)
-            avatarDownloadCache[cacheKey] = promise
-            _ = promise.ensure(on: OWSProfileManager.serialQueue) {
-                guard avatarDownloadCache[cacheKey] != nil else {
-                    owsFailDebug("Missing cached promise.")
-                    return
-                }
-                avatarDownloadCache.removeValue(forKey: cacheKey)
-            }
-            return promise
+    func downloadAndDecryptAvatarIfNeededObjC(userProfile: OWSUserProfile, authedAccount: AuthedAccount) {
+        Task {
+            try await self.downloadAndDecryptAvatarIfNeeded(userProfile: userProfile, authedAccount: authedAccount)
         }
     }
 
-    private class func avatarDownloadAndDecryptPromise(profileAddress: SignalServiceAddress,
-                                                       avatarUrlPath: String,
-                                                       profileKey: OWSAES256Key,
-                                                       remainingRetries: UInt) -> Promise<Data> {
+    public func downloadAndDecryptAvatarIfNeeded(userProfile: OWSUserProfile, authedAccount: AuthedAccount) async throws {
+        let backgroundTask = OWSBackgroundTask(label: #function)
+        defer { backgroundTask.end() }
+        try await _downloadAndDecryptAvatarIfNeeded(internalAddress: userProfile.address, authedAccount: authedAccount)
+    }
+
+    private func _downloadAndDecryptAvatarIfNeeded(internalAddress: SignalServiceAddress, authedAccount: AuthedAccount) async throws {
+        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getFor(internalAddress, transaction: tx) }
+        guard
+            let oldProfile,
+            let profileKey = oldProfile.profileKey,
+            let avatarUrlPath = oldProfile.avatarUrlPath,
+            !avatarUrlPath.isEmpty,
+            oldProfile.avatarFileName == nil
+        else {
+            return
+        }
+        let shouldRetry: Bool
+        do {
+            let filename = generateAvatarFilename()
+            let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
+            let avatarData = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey).awaitable()
+            try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
+            var didConsumeFilePath = false
+            defer {
+                if !didConsumeFilePath { try? FileManager.default.removeItem(atPath: filePath) }
+            }
+            guard UIImage(contentsOfFile: filePath) != nil else {
+                throw OWSGenericError("Avatar image can't be decoded.")
+            }
+            (shouldRetry, didConsumeFilePath) = await databaseStorage.awaitableWrite { tx in
+                let newProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, authedAccount: authedAccount, transaction: tx)
+                guard newProfile.avatarFileName == nil else {
+                    return (false, false)
+                }
+                // If the URL/profileKey change, we have a new avatar to download.
+                guard newProfile.profileKey == profileKey, newProfile.avatarUrlPath == avatarUrlPath else {
+                    return (true, false)
+                }
+                newProfile.update(
+                    avatarFileName: filename,
+                    userProfileWriter: .avatarDownload,
+                    authedAccount: authedAccount,
+                    transaction: tx
+                )
+                return (false, true)
+            }
+        }
+        if shouldRetry {
+            try await _downloadAndDecryptAvatarIfNeeded(internalAddress: internalAddress, authedAccount: authedAccount)
+        }
+    }
+
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> Data {
+        try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey).awaitable()
+    }
+
+    fileprivate func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) -> Promise<Data> {
+        let key = AvatarDownloadKey(avatarUrlPath: avatarUrlPath, profileKey: profileKey.keyData)
+        let (promise, futureToStart): (Promise<Data>, Future<Data>?) = swiftValues.avatarDownloadRequests.update {
+            if let existingPromise = $0[key] {
+                return (existingPromise, nil)
+            }
+            let (promise, futureToStart) = Promise<Data>.pending()
+            $0[key] = promise.ensure(on: DispatchQueue.global()) { [weak self] in
+                self?.swiftValues.avatarDownloadRequests.update { _ = $0.removeValue(forKey: key) }
+            }
+            return (promise, futureToStart)
+        }
+        if let futureToStart {
+            futureToStart.resolve(on: SyncScheduler(), with: Promise.wrapAsync {
+                let backgroundTask = OWSBackgroundTask(label: "\(#function)")
+                defer { backgroundTask.end() }
+
+                return try await Self._downloadAndDecryptAvatar(
+                    avatarUrlPath: avatarUrlPath,
+                    profileKey: profileKey,
+                    remainingRetries: 3
+                )
+            })
+        }
+        return promise
+    }
+
+    private static func _downloadAndDecryptAvatar(
+        avatarUrlPath: String,
+        profileKey: OWSAES256Key,
+        remainingRetries: Int
+    ) async throws -> Data {
         assert(!avatarUrlPath.isEmpty)
+        do {
+            Logger.info("")
 
-        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
-
-        return firstly(on: DispatchQueue.global()) { () throws -> Promise<OWSUrlDownloadResponse> in
             let urlSession = self.avatarUrlSession
-            return urlSession.downloadTaskPromise(avatarUrlPath, method: .get)
-        }.map(on: DispatchQueue.global()) { (response: OWSUrlDownloadResponse) -> Data in
+            let response = try await urlSession.downloadTaskPromise(avatarUrlPath, method: .get).awaitable()
+
+            let encryptedData: Data
             do {
-                return try Data(contentsOf: response.downloadUrl)
+                encryptedData = try Data(contentsOf: response.downloadUrl)
             } catch {
                 owsFailDebug("Could not load data failed: \(error)")
                 // Fail immediately; do not retry.
                 throw SSKUnretryableError.couldNotLoadFileData
             }
-        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Data> in
-            throw error
-        }.map(on: DispatchQueue.global()) { (encryptedData: Data) -> Data in
-            guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData,
-                                                             profileKey: profileKey) else {
+
+            guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData, profileKey: profileKey) else {
                 throw OWSGenericError("Could not decrypt profile avatar.")
             }
+
             return decryptedData
-        }.recover { error -> Promise<Data> in
-            if error.isNetworkFailureOrTimeout,
-               remainingRetries > 0 {
-                // Retry
-                return self.avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
-                                                            avatarUrlPath: avatarUrlPath,
-                                                            profileKey: profileKey,
-                                                            remainingRetries: remainingRetries - 1)
-            } else {
-                throw error
-            }
-        }.ensure {
-            assert(backgroundTask != nil)
-            backgroundTask = nil
+        } catch where error.isNetworkFailureOrTimeout && remainingRetries > 0 {
+            return try await _downloadAndDecryptAvatar(
+                avatarUrlPath: avatarUrlPath,
+                profileKey: profileKey,
+                remainingRetries: remainingRetries - 1
+            )
         }
     }
 }

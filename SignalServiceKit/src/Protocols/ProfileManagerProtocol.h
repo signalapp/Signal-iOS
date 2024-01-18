@@ -21,20 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 // This enum is serialized.
 typedef NS_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_LocalUser = 0,
-    UserProfileWriter_ProfileFetch,
-    UserProfileWriter_StorageService,
-    UserProfileWriter_SyncMessage,
-    UserProfileWriter_Registration,
-    UserProfileWriter_Linking,
-    UserProfileWriter_GroupState,
-    UserProfileWriter_Reupload,
-    UserProfileWriter_AvatarDownload,
-    UserProfileWriter_MetadataUpdate,
-    UserProfileWriter_Debugging,
-    UserProfileWriter_Tests,
-    UserProfileWriter_Unknown,
-    UserProfileWriter_SystemContactsFetch,
-    UserProfileWriter_ChangePhoneNumber,
+    UserProfileWriter_ProfileFetch = 1,
+    UserProfileWriter_StorageService = 2,
+    UserProfileWriter_SyncMessage = 3,
+    UserProfileWriter_Registration = 4,
+    UserProfileWriter_Linking = 5,
+    UserProfileWriter_GroupState = 6,
+    UserProfileWriter_Reupload = 7,
+    UserProfileWriter_AvatarDownload = 8,
+    UserProfileWriter_MetadataUpdate = 9,
+    UserProfileWriter_Debugging = 10,
+    UserProfileWriter_Tests = 11,
+    UserProfileWriter_Unknown = 12,
+    UserProfileWriter_SystemContactsFetch = 13,
+    UserProfileWriter_ChangePhoneNumber = 14,
 };
 
 #pragma mark -
@@ -161,10 +161,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 // This is an internal implementation detail and should only be used by OWSUserProfile.
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile;
-
-- (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
-                                                   avatarUrlPath:(NSString *)avatarUrlPath
-                                                      profileKey:(OWSAES256Key *)profileKey;
 
 - (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
                              authedAccount:(AuthedAccount *)authedAccount

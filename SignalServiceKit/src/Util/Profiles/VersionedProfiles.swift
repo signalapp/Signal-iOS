@@ -6,13 +6,11 @@
 import Foundation
 import LibSignalClient
 
-@objc
-public class VersionedProfileUpdate: NSObject {
+public struct VersionedProfileUpdate {
     // This will only be set if there is a profile avatar.
-    @objc
-    public let avatarUrlPath: String?
+    public let avatarUrlPath: OptionalChange<String?>
 
-    public required init(avatarUrlPath: String? = nil) {
+    public init(avatarUrlPath: OptionalChange<String?>) {
         self.avatarUrlPath = avatarUrlPath
     }
 }
@@ -42,16 +40,16 @@ public protocol VersionedProfiles: AnyObject {
 
 public protocol VersionedProfilesSwift: VersionedProfiles {
 
-    func updateProfilePromise(
+    func updateProfile(
         profileGivenName: String?,
         profileFamilyName: String?,
         profileBio: String?,
         profileBioEmoji: String?,
-        profileAvatarData: Data?,
+        profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        profileKey: OWSAES256Key,
         authedAccount: AuthedAccount
-    ) -> Promise<VersionedProfileUpdate>
+    ) async throws -> VersionedProfileUpdate
 
     func versionedProfileRequest(
         for aci: Aci,
@@ -70,6 +68,18 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
     ) async
 
     func clearProfileKeyCredentials(tx: DBWriteTransaction)
+}
+
+// MARK: -
+
+public enum VersionedProfileAvatarMutation {
+    /// There's an existing avatar that we want to keep.
+    case keepAvatar
+    /// There's either (a) no existing avatar and we don't want one after this
+    /// change or (b) an existing avatar that we want to clear.
+    case clearAvatar
+    /// We want to set a new avatar.
+    case changeAvatar(Data)
 }
 
 // MARK: -
@@ -97,16 +107,16 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
 
     public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {}
 
-    public func updateProfilePromise(
+    public func updateProfile(
         profileGivenName: String?,
         profileFamilyName: String?,
         profileBio: String?,
         profileBioEmoji: String?,
-        profileAvatarData: Data?,
+        profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        profileKey: OWSAES256Key,
         authedAccount: AuthedAccount
-    ) -> Promise<VersionedProfileUpdate> {
+    ) async throws -> VersionedProfileUpdate {
         owsFail("Not implemented.")
     }
 

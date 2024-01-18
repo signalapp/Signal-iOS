@@ -218,12 +218,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
         return databaseStorage.write { tx in
             return profileManager.updateLocalProfile(
-                profileGivenName: snapshot.givenName,
-                profileFamilyName: snapshot.familyName,
-                profileBio: snapshot.bio,
-                profileBioEmoji: snapshot.bioEmoji,
-                profileAvatarData: snapshot.avatarData,
-                visibleBadgeIds: visibleBadgeIds,
+                profileGivenName: .noChange,
+                profileFamilyName: .noChange,
+                profileBio: .noChange,
+                profileBioEmoji: .noChange,
+                profileAvatarData: .noChange,
+                visibleBadgeIds: .setTo(visibleBadgeIds),
                 unsavedRotatedProfileKey: nil,
                 userProfileWriter: .localUser,
                 authedAccount: .implicit(),
