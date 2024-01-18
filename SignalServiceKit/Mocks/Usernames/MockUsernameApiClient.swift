@@ -41,7 +41,16 @@ class MockUsernameApiClient: UsernameApiClient {
     // MARK: Set link
 
     var setLinkResult: ConsumableMockPromise<UUID> = .unset
-    func setUsernameLink(encryptedUsername: Data) -> Promise<UUID> {
+    var setLinkMock: ((
+        _ encryptedUsername: Data,
+        _ keepLinkHandle: Bool
+    ) -> Promise<UUID>)?
+
+    func setUsernameLink(encryptedUsername: Data, keepLinkHandle: Bool) -> Promise<UUID> {
+        if let methodMock = setLinkMock {
+            return methodMock(encryptedUsername, keepLinkHandle)
+        }
+
         return setLinkResult.consumeIntoPromise()
     }
 

@@ -226,9 +226,13 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
     // MARK: Links
 
-    public func setUsernameLink(encryptedUsername: Data) -> Promise<UUID> {
+    public func setUsernameLink(
+        encryptedUsername: Data,
+        keepLinkHandle: Bool
+    ) -> Promise<UUID> {
         let request = OWSRequestFactory.setUsernameLinkRequest(
-            encryptedUsername: encryptedUsername
+            encryptedUsername: encryptedUsername,
+            keepLinkHandle: keepLinkHandle
         )
 
         func onRequestSuccess(response: HTTPResponse) throws -> UUID {

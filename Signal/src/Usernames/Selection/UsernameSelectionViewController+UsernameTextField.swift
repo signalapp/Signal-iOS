@@ -327,15 +327,14 @@ extension UsernameSelectionViewController {
 
         // MARK: - Getters
 
-        /// Returns the user-visible nickname contents with normalizations
-        /// applied. Note that nicknames by definition do not contain the
-        /// discriminator.
+        /// Returns the user-visible, case-sensitive nickname contents. Note
+        /// that nicknames by definition do not contain the discriminator.
         ///
         /// - Returns
-        /// The normalized contents of the text field. If the returned value
+        /// The case-sensitive contents of the text field. If the returned value
         /// would be empty, returns `nil` instead.
-        var normalizedNickname: String? {
-            return text?.lowercased().nilIfEmpty
+        var nickname: String? {
+            return text?.nilIfEmpty
         }
 
         /// Returns the current user-visible discriminator value. This value is

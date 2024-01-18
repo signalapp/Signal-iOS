@@ -377,14 +377,14 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
     func testSetUsernameLink() {
         let request = OWSRequestFactory.setUsernameLinkRequest(
-            encryptedUsername: "aa?".data(using: .utf8)! // Force a character that's special in base64Url
+            encryptedUsername: "aa?".data(using: .utf8)!, // Force a character that's special in base64Url
+            keepLinkHandle: true
         )
 
         XCTAssertEqual(request.url?.path, "v1/accounts/username_link")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(request.parameters as! [String: String], [
-            "usernameLinkEncryptedValue": "YWE_" // base64Url
-        ])
+        XCTAssertEqual(request.parameters["usernameLinkEncryptedValue"] as! String, "YWE_") // base64Url
+        XCTAssertEqual(request.parameters["keepLinkHandle"] as! Bool, true)
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 

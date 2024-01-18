@@ -100,16 +100,19 @@ public extension OWSRequestFactory {
     }
 
     /// Store the given encrypted username for use in the authenticated user's
-    /// username link.
+    /// username link. Optionally requests that the service not rotate the
+    /// handle for this username link.
     ///
     /// - SeeAlso
     /// ``Usernames.UsernameLink`` and ``UsernameLinkManager``.
     static func setUsernameLinkRequest(
-        encryptedUsername: Data
+        encryptedUsername: Data,
+        keepLinkHandle: Bool
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.setUsernameLink)!
-        let params: [String: String] = [
-            "usernameLinkEncryptedValue": encryptedUsername.asBase64Url
+        let params: [String: Any] = [
+            "usernameLinkEncryptedValue": encryptedUsername.asBase64Url,
+            "keepLinkHandle": keepLinkHandle
         ]
 
         let request = TSRequest(

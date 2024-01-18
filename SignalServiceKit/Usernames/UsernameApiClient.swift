@@ -51,9 +51,18 @@ public protocol UsernameApiClient {
     /// - SeeAlso
     /// ``Usernames.UsernameLink`` and ``UsernameLinkManager``.
     ///
+    /// - Parameter encryptedUsername
+    /// The new encrypted username for the username link.
+    /// - Parameter keepLinkHandle
+    /// Whether we should ask the service to keep the existing link handle the
+    /// same, rather than rotating it. Intended for use specifically in
+    /// ``LocalUsernameManager/updateVisibleCaseOfExistingUsername``.
     /// - Returns
     /// The handle for the local user's encrypted username.
-    func setUsernameLink(encryptedUsername: Data) -> Promise<UUID>
+    func setUsernameLink(
+        encryptedUsername: Data,
+        keepLinkHandle: Bool
+    ) -> Promise<UUID>
 
     /// Gets the encrypted username for the given handle, if any.
     ///

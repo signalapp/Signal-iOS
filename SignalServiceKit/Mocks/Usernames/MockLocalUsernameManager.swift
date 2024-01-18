@@ -33,6 +33,7 @@ public class MockLocalUsernameManager: LocalUsernameManager {
     public func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Promise<Usernames.ConfirmationResult> { owsFail("Not implemented!") }
     public func deleteUsername(tx: DBWriteTransaction) -> Promise<Void> { owsFail("Not implemented!") }
     public func rotateUsernameLink(tx: DBWriteTransaction) -> Promise<Usernames.UsernameLink> { owsFail("Not implemented!") }
+    public func updateVisibleCaseOfExistingUsername(newUsername: String, tx: DBWriteTransaction) -> Promise<Void> { owsFail("Not implemented!") }
 }
 
 #endif

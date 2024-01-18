@@ -77,6 +77,23 @@ public protocol LocalUsernameManager {
 
     /// Rotate the local user's username link, without modifying their username.
     func rotateUsernameLink(tx: DBWriteTransaction) -> Promise<Usernames.UsernameLink>
+
+    /// Update the case of the local user's existing username, as it will be
+    /// visibly presented.
+    ///
+    /// This updates the local store to reflect the new username casing. It also
+    /// performs an in-place update of the encrypted username used in the user's
+    /// username link without modifying the link handle or entropy. The existing
+    /// username link is consequently unaffected, but the username that is
+    /// available via the link will reflect the new casing.
+    ///
+    /// - Important
+    /// The new username must case-insensitively match the existing username
+    /// when calling this API.
+    func updateVisibleCaseOfExistingUsername(
+        newUsername: String,
+        tx: DBWriteTransaction
+    ) -> Promise<Void>
 }
 
 public extension Usernames {
@@ -502,7 +519,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         return firstly(on: schedulers.global()) { () -> Promise<UUID> in
             return self.makeRequestWithNetworkRetries(requestBlock: {
                 return self.usernameApiClient.setUsernameLink(
-                    encryptedUsername: newEncryptedUsername
+                    encryptedUsername: newEncryptedUsername,
+                    keepLinkHandle: false
                 )
             })
         }.map(on: schedulers.global()) { newHandle -> Usernames.UsernameLink in
@@ -532,6 +550,88 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             )
 
             throw error
+        }
+    }
+
+    func updateVisibleCaseOfExistingUsername(
+        newUsername: String,
+        tx syncTx: DBWriteTransaction
+    ) -> Promise<Void> {
+        let currentUsernameState = usernameState(tx: syncTx)
+
+        guard
+            let currentUsernameLink = currentUsernameState.usernameLink,
+            let currentUsername = currentUsernameState.username,
+            newUsername.lowercased() == currentUsername.lowercased()
+        else {
+            return Promise(error: OWSAssertionError(
+                "Attempting to change username case, but new nickname does not match existing username!"
+            ))
+        }
+
+        let newEncryptedUsername: Data
+        do {
+            (_, newEncryptedUsername) = try usernameLinkManager.generateEncryptedUsername(
+                username: newUsername,
+                existingEntropy: currentUsernameLink.entropy
+            )
+        } catch let error {
+            return Promise(error: error)
+        }
+
+        // Mark as corrupted in case we encounter an unexpected error while
+        // setting the new encrypted username. If that happens we can't be sure
+        // if our encrypted username was updated or not, so we conservatively
+        // leave it in the corrupted state. If, however, we get a response, we
+        // remove the corrupted flag.
+        markUsernameLinkCorrupted(true, tx: syncTx)
+
+        return firstly(on: schedulers.global()) { () -> Promise<UUID> in
+            return self.makeRequestWithNetworkRetries(requestBlock: {
+                /// Pass `keepLinkHandle = true` here, to ask the service not to
+                /// rotate the username link handle. That's key to keeping the
+                /// existing link unaffected while updating the case of the
+                /// visible username the link points to.
+                return self.usernameApiClient.setUsernameLink(
+                    encryptedUsername: newEncryptedUsername,
+                    keepLinkHandle: true
+                )
+            })
+        }.map(on: schedulers.global()) { newHandle throws -> Void in
+            guard currentUsernameLink.handle == newHandle else {
+                UsernameLogger.shared.error(
+                    "Handle received while changing username case did not match existing! Is this a server bug?"
+                )
+                throw OWSGenericError("")
+            }
+
+            self.db.write { tx in
+                self.setLocalUsername(
+                    username: newUsername,
+                    usernameLink: currentUsernameLink,
+                    tx: tx
+                )
+            }
+        }.recover(on: schedulers.global()) { error -> Promise<Void> in
+            // Even though we failed to update the link, we can save the new
+            // nickname locally. If the user rotates their link to fix the
+            // issue, the new link will reflect the updated nickname.
+            self.db.write { tx in
+                self.setLocalUsernameWithCorruptedLink(
+                    username: newUsername,
+                    tx: tx
+                )
+            }
+
+            UsernameLogger.shared.error(
+                "Error while updating username link for nickname case change. Username updated locally, but link now assumed corrupted!"
+            )
+
+            throw error
+        }.ensure(on: schedulers.global()) {
+            // We back up the username and link in StorageService, and in all
+            // codepaths we've updated the username, so trigger a backup now.
+            self.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 }

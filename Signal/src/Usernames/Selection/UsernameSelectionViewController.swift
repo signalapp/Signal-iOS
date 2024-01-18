@@ -50,12 +50,14 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     private enum UsernameSelectionState: Equatable, CustomStringConvertible {
         /// The user's existing username is unchanged.
         case noChangesToExisting
+        /// The user's existing username has changed, but only in letter casing.
+        case caseOnlyChange(newUsername: ParsedUsername)
         /// Username state is pending. Stores an ID, to disambiguate multiple
         /// potentially-overlapping state updates.
         case pending(id: UUID)
         /// The username has been successfully reserved.
         case reservationSuccessful(
-            username: Usernames.ParsedUsername,
+            username: ParsedUsername,
             hashedUsername: Usernames.HashedUsername
         )
         /// The username was rejected by the server during reservation.
@@ -81,6 +83,8 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
             switch self {
             case .noChangesToExisting:
                 return "noChangesToExisting"
+            case .caseOnlyChange:
+                return "caseOnlyChange"
             case .pending(id: _):
                 return "pending"
             case .reservationSuccessful(username: _, hashedUsername: _):
@@ -365,6 +369,7 @@ private extension UsernameSelectionViewController {
         doneBarButtonItem.isEnabled = {
             switch currentUsernameState {
             case
+                    .caseOnlyChange,
                     .reservationSuccessful:
                 return true
             case
@@ -400,6 +405,8 @@ private extension UsernameSelectionViewController {
                     "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
                     comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
                 )
+            case let .caseOnlyChange(newUsername):
+                return newUsername.reassembled
             case let .reservationSuccessful(username, _):
                 return username.reassembled
             case
@@ -428,6 +435,8 @@ private extension UsernameSelectionViewController {
         switch self.currentUsernameState {
         case .noChangesToExisting:
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: self.existingUsername)
+        case let .caseOnlyChange(newUsername):
+            self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: newUsername)
         case .pending:
             self.usernameTextFieldWrapper.textField.configureForSomethingPending()
         case let .reservationSuccessful(username, _):
@@ -453,6 +462,7 @@ private extension UsernameSelectionViewController {
             switch currentUsernameState {
             case
                     .noChangesToExisting,
+                    .caseOnlyChange,
                     .pending,
                     .reservationSuccessful:
                 return nil
@@ -577,28 +587,73 @@ private extension UsernameSelectionViewController {
     /// username.
     @objc
     private func didTapDone() {
-        let reservedUsername: Usernames.HashedUsername = {
-            let usernameState = self.currentUsernameState
+        AssertIsOnMainThread()
 
-            switch usernameState {
-            case let .reservationSuccessful(_, hashedUsername):
-                return hashedUsername
-            case
-                    .noChangesToExisting,
-                    .pending,
-                    .reservationRejected,
-                    .reservationFailed,
-                    .tooShort,
-                    .tooLong,
-                    .cannotStartWithDigit,
-                    .invalidCharacters,
-                    .customDiscriminatorTooShort,
-                    .customDiscriminatorIs00,
-                    .emptyDiscriminator:
-                owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
+        let usernameState = self.currentUsernameState
+
+        switch usernameState {
+        case let .caseOnlyChange(newUsername):
+            changeUsernameCaseBehindModalActivityIndicator(
+                newUsername: newUsername
+            )
+        case let .reservationSuccessful(_, hashedUsername):
+            confirmNewUsername(reservedUsername: hashedUsername)
+        case
+                .noChangesToExisting,
+                .pending,
+                .reservationRejected,
+                .reservationFailed,
+                .tooShort,
+                .tooLong,
+                .cannotStartWithDigit,
+                .invalidCharacters,
+                .customDiscriminatorTooShort,
+                .emptyDiscriminator,
+                .customDiscriminatorIs00:
+            owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
+        }
+    }
+
+    private func changeUsernameCaseBehindModalActivityIndicator(
+        newUsername: ParsedUsername
+    ) {
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false
+        ) { modal in
+            UsernameLogger.shared.info("Changing username case.")
+
+            firstly(on: self.context.schedulers.sync) { () -> Promise<Void> in
+                return self.context.databaseStorage.write { tx in
+                    self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(
+                        newUsername: newUsername.reassembled,
+                        tx: tx.asV2Write
+                    )
+                }
+            }.ensure(on: self.context.schedulers.main) {
+                let newState = self.context.databaseStorage.read { tx in
+                    return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
+                }
+
+                self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
+            }.done(on: self.context.schedulers.main) {
+                UsernameLogger.shared.info("Changed username case!")
+
+                modal.dismiss {
+                    self.dismiss(animated: true)
+                }
+            }.catch(on: self.context.schedulers.main) { error in
+                UsernameLogger.shared.error("Error while changing username case: \(error)")
+
+                self.dismiss(
+                    modalActivityIndicator: modal,
+                    andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
+                )
             }
-        }()
+        }
+    }
 
+    private func confirmNewUsername(reservedUsername: Usernames.HashedUsername) {
         if existingUsername == nil {
             self.confirmReservationBehindModalActivityIndicator(
                 reservedUsername: reservedUsername
@@ -699,18 +754,37 @@ private extension UsernameSelectionViewController {
     private func usernameTextFieldContentsDidChange() {
         AssertIsOnMainThread()
 
-        let nicknameFromTextField: String? = usernameTextFieldWrapper.textField.normalizedNickname
+        let nicknameFromTextField: String? = usernameTextFieldWrapper.textField.nickname
 
         // Only set when a discriminator was manually entered. nil indicates a
         // new discriminator should be rolled.
         var desiredDiscriminator = usernameTextFieldWrapper.textField.discriminatorView.customDiscriminator
 
+        let hasEnteredNewCustomDiscriminator: Bool = {
+            if
+                let desiredDiscriminator,
+                desiredDiscriminator != existingUsername?.discriminator
+            {
+                return true
+            }
+
+            return false
+        }()
+
         if
-            existingUsername?.nickname == nicknameFromTextField,
-            desiredDiscriminator == nil
-                || desiredDiscriminator == existingUsername?.discriminator
+            !hasEnteredNewCustomDiscriminator,
+            existingUsername?.nickname == nicknameFromTextField
         {
             currentUsernameState = .noChangesToExisting
+        } else if
+            !hasEnteredNewCustomDiscriminator,
+            let existingUsername,
+            let nicknameFromTextField,
+            existingUsername.nickname.lowercased() == nicknameFromTextField.lowercased()
+        {
+            currentUsernameState = .caseOnlyChange(
+                newUsername: existingUsername.updatingNickame(newNickname: nicknameFromTextField)
+            )
         } else if desiredDiscriminator == "00" {
             currentUsernameState = .customDiscriminatorIs00
         } else if let desiredNickname = nicknameFromTextField {

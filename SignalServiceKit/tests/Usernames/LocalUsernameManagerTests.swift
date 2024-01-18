@@ -450,13 +450,68 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
 
+    func testUpdateVisibleCaseHappyPath() {
+        let linkHandle = UUID()
+
+        mockUsernameApiClient.setLinkMock = { _, keepLinkHandle in
+            XCTAssertTrue(keepLinkHandle)
+            return .value(linkHandle)
+        }
+
+        let currentLink = setUsername(username: "boba_fett.42", linkHandle: linkHandle).usernameLink!
+
+        _ = mockDB.write { tx in
+            localUsernameManager.updateVisibleCaseOfExistingUsername(
+                newUsername: "BoBa_fEtT.42",
+                tx: tx
+            )
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertEqual(
+            usernameState(),
+            .available(username: "BoBa_fEtT.42", usernameLink: currentLink)
+        )
+        XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
+    func testUpdateVisibleCaseSetsLocalEvenIfError() {
+        let linkHandle = UUID()
+
+        mockUsernameApiClient.setLinkMock = { _, keepLinkHandle in
+            XCTAssertTrue(keepLinkHandle)
+            return Promise(error: OWSGenericError("oopsie"))
+        }
+
+        _ = setUsername(username: "boba_fett.42", linkHandle: linkHandle).usernameLink!
+
+        _ = mockDB.write { tx in
+            localUsernameManager.updateVisibleCaseOfExistingUsername(
+                newUsername: "BoBa_fEtT.42",
+                tx: tx
+            )
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertEqual(
+            usernameState(),
+            .linkCorrupted(username: "BoBa_fEtT.42")
+        )
+        XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
     // MARK: Utilities
 
-    private func setUsername(username: String) -> Usernames.LocalUsernameState {
+    private func setUsername(
+        username: String,
+        linkHandle: UUID? = nil
+    ) -> Usernames.LocalUsernameState {
         return mockDB.write { tx in
             localUsernameManager.setLocalUsername(
                 username: username,
-                usernameLink: .mock(handle: UUID()),
+                usernameLink: .mock(handle: linkHandle ?? UUID()),
                 tx: tx
             )
 
