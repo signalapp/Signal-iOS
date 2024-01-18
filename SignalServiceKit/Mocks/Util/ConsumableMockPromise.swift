@@ -4,9 +4,8 @@
 //
 
 import SignalCoreKit
-import XCTest
 
-@testable import SignalServiceKit
+#if TESTABLE_BUILD
 
 /// A mock value standing in for a promise. Useful when mocking APIs that return
 /// promises.
@@ -24,17 +23,18 @@ enum ConsumableMockPromise<V> {
         case let .error(error):
             return Promise(error: error)
         case .unset:
-            XCTFail("Mock not set!")
-            return Promise(error: OWSGenericError("Mock not set!"))
+            owsFail("Mock not set!")
         }
     }
 
     func ensureUnset() {
         switch self {
         case .value, .error:
-            XCTFail("Mock was set!")
+            owsFail("Mock was set!")
         case .unset:
             break
         }
     }
 }
+
+#endif

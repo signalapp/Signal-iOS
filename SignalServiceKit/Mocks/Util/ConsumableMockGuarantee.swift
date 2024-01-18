@@ -4,9 +4,8 @@
 //
 
 import SignalCoreKit
-import XCTest
 
-@testable import SignalServiceKit
+#if TESTABLE_BUILD
 
 /// A mock value standing in for a Guarantee. Useful when mocking APIs that
 /// return Guarantees.
@@ -21,17 +20,18 @@ enum ConsumableMockGuarantee<V> {
         case .value(let v):
             return .value(v)
         case .unset:
-            XCTFail("Mock not set!")
-            fatalError()
+            owsFail("Mock not set!")
         }
     }
 
     func ensureUnset() {
         switch self {
         case .value:
-            XCTFail("Mock was set!")
+            owsFail("Mock was set!")
         case .unset:
             break
         }
     }
 }
+
+#endif

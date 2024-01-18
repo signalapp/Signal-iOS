@@ -656,7 +656,6 @@
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
 		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		5027A6AC2AFC48D000D5AB95 /* LogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */; };
-		5027B3632B505298005AFE96 /* ConsumableMockGuarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */; };
 		502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */; };
@@ -1435,8 +1434,6 @@
 		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
-		D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
-		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
 		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
@@ -1452,7 +1449,6 @@
 		D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830712A703727006CDCDE /* UsernameApiClient.swift */; };
 		D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830732A703968006CDCDE /* LocalUsernameManager.swift */; };
 		D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830792A704123006CDCDE /* UsernameLinkManager.swift */; };
-		D938307B2A70432B006CDCDE /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
 		D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */; };
 		D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */; };
 		D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307F2A705D64006CDCDE /* UsernameLogger.swift */; };
@@ -1473,6 +1469,7 @@
 		D958305A2AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */; };
 		D95830602AE8931900BB06A4 /* ReceiptCredentialRequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */; };
 		D958E2AD2B57168A00EE9831 /* DebugUICallsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */; };
+		D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
 		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
@@ -1507,6 +1504,11 @@
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
+		D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */; };
+		D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
+		D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */; };
+		D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */; };
+		D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554712AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */; };
@@ -3298,7 +3300,6 @@
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormatter.swift; sourceTree = "<group>"; };
-		5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableMockGuarantee.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAttachmentInfo.swift; sourceTree = "<group>"; };
 		502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwaitableAsyncBlockOperation.swift; sourceTree = "<group>"; };
@@ -4199,6 +4200,7 @@
 		D95830592AE85E1600BB06A4 /* ReceiptCredentialResultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialResultStore.swift; sourceTree = "<group>"; };
 		D958305F2AE8931900BB06A4 /* ReceiptCredentialRequestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRequestError.swift; sourceTree = "<group>"; };
 		D958E2AC2B57168A00EE9831 /* DebugUICallsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUICallsTab.swift; sourceTree = "<group>"; };
+		D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockGuarantee.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
 		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
@@ -4232,6 +4234,9 @@
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
+		D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameApiClient.swift; sourceTree = "<group>"; };
+		D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLocalUsernameManager.swift; sourceTree = "<group>"; };
+		D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLinkManager.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
 		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
@@ -5803,14 +5808,6 @@
 				667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */,
 			);
 			path = CVComponents;
-			sourceTree = "<group>";
-		};
-		34843B29214FE295004DED45 /* mocks */ = {
-			isa = PBXGroup;
-			children = (
-				D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */,
-			);
-			path = mocks;
 			sourceTree = "<group>";
 		};
 		34969558219B605E00DCFE74 /* Photos */ = {
@@ -8200,7 +8197,6 @@
 				B660F6751C29867F00687D6E /* contact */,
 				50B6BCB22AEC58190010FB3B /* Contacts */,
 				349BC85F253A2651003C949A /* Groups */,
-				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
 				3471210D25ED5F850037CD1F /* Payments */,
 				4C10B1C523176DB00099396B /* PerformanceTests */,
@@ -8627,6 +8623,26 @@
 			path = "Remote Megaphone";
 			sourceTree = "<group>";
 		};
+		D990CAC42B4CCA69000A99A2 /* Usernames */ = {
+			isa = PBXGroup;
+			children = (
+				D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */,
+				D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */,
+				D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */,
+				D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */,
+			);
+			path = Usernames;
+			sourceTree = "<group>";
+		};
+		D990CACC2B4DCD69000A99A2 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */,
+				D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		D99840BB297A04A300F7ED6D /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
@@ -8759,6 +8775,8 @@
 				6691E7F02996E9B00032A68A /* Registration */,
 				6612780F2996BDFE00A1D5A1 /* Scheduler */,
 				C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */,
+				D990CAC42B4CCA69000A99A2 /* Usernames */,
+				D990CACC2B4DCD69000A99A2 /* Util */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -9156,8 +9174,6 @@
 		F945FE4E2984820B00C835C7 /* TestUtils */ = {
 			isa = PBXGroup;
 			children = (
-				5027B3622B505298005AFE96 /* ConsumableMockGuarantee.swift */,
-				D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */,
 				D979CC392AD3964E006AAC49 /* Numbers+Random.swift */,
 				F945FE4F2984822D00C835C7 /* UserDefaults.swift */,
 			);
@@ -11976,7 +11992,6 @@
 				34B14D8B24F0012100CC3A9A /* GroupsPerfTest.swift in Sources */,
 				D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */,
 				4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */,
-				D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */,
 				4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */,
 				4C10B1C723176DD60099396B /* SDSPerformanceTest.swift in Sources */,
 				173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */,
@@ -12680,7 +12695,6 @@
 				50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* MessageLoaderTest.swift in Sources */,
 				34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */,
-				D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
@@ -12779,6 +12793,8 @@
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				66CD256A2B06963200139E17 /* CloudBackupStickerPackArchiver.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
+				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
+				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
 				F9C5CCE5289453B300548EEE /* Contact+Swift.swift in Sources */,
 				F9C5CCB5289453B300548EEE /* Contact.m in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
@@ -12995,6 +13011,7 @@
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
 				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
+				D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */,
 				664657372AC371B90099DE1C /* MockPhoneNumberDiscoverabilityManager.swift in Sources */,
 				6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */,
 				6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */,
@@ -13003,6 +13020,9 @@
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
 				661170C62ABA4E9C00A1B16D /* MockTSAccountManager.swift in Sources */,
+				D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */,
+				D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */,
+				D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
@@ -13545,8 +13565,6 @@
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
-				5027B3632B505298005AFE96 /* ConsumableMockGuarantee.swift in Sources */,
-				D938307B2A70432B006CDCDE /* ConsumableMockPromise.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,

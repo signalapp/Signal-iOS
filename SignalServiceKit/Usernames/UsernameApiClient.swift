@@ -28,7 +28,8 @@ public protocol UsernameApiClient {
     /// An encrypted form of this username for use in a username link.
     func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
-        encryptedUsernameForLink: Data
+        encryptedUsernameForLink: Data,
+        chatServiceAuth: ChatServiceAuth
     ) -> Promise<Usernames.ApiClientConfirmationResult>
 
     // MARK: Deletion

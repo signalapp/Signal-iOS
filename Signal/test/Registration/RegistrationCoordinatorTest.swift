@@ -35,6 +35,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
+    private var localUsernameManagerMock: MockLocalUsernameManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
     private var mockURLSession: TSRequestOWSURLSessionMock!
@@ -50,6 +51,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var svr: SecureValueRecoveryMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
     private var tsAccountManagerMock: MockTSAccountManager!
+    private var usernameApiClientMock: MockUsernameApiClient!
+    private var usernameLinkManagerMock: MockUsernameLinkManager!
 
     public override func setUp() {
         super.setUp()
@@ -65,6 +68,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
+        localUsernameManagerMock = {
+            let mock = MockLocalUsernameManager()
+            // This should result in no username reclamation. Tests that want to
+            // test reclamation should overwrite this.
+            mock.startingUsernameState = .unset
+            return mock
+        }()
         svr = SecureValueRecoveryMock()
         svrAuthCredentialStore = SVRAuthCredentialStorageMock()
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
@@ -79,6 +89,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
         sessionManager = RegistrationSessionManagerMock()
         storageServiceManagerMock = FakeStorageServiceManager()
         tsAccountManagerMock = MockTSAccountManager(dateProvider: dateProvider)
+        usernameApiClientMock = MockUsernameApiClient()
+        usernameLinkManagerMock = MockUsernameLinkManager()
 
         let mockURLSession = TSRequestOWSURLSessionMock()
         self.mockURLSession = mockURLSession
@@ -98,6 +110,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             db: db,
             experienceManager: experienceManager,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,
             ows2FAManager: ows2FAManagerMock,
@@ -114,7 +127,9 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr: svr,
             svrAuthCredentialStore: svrAuthCredentialStore,
             tsAccountManager: tsAccountManagerMock,
-            udManager: RegistrationCoordinatorImpl.TestMocks.UDManager()
+            udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
+            usernameApiClient: usernameApiClientMock,
+            usernameLinkManager: usernameLinkManagerMock
         )
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         coordinator = db.write {
@@ -363,7 +378,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
             return .value(())
         }
 
-        // Once we do the storage service restore,
+        // Once we restore from storage service, we should attempt to reclaim
+        // our username.
+        let mockUsernameLink: Usernames.UsernameLink = .mocked
+        localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
+        usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+            XCTAssertEqual(chatServiceAuth, .explicit(
+                aci: identityResponse.aci,
+                deviceId: .primary,
+                password: authPassword
+            ))
+            return .value(.success(usernameLinkHandle: mockUsernameLink.handle))
+        }
+
+        // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(),
@@ -499,6 +527,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 XCTAssertEqual(auth.authedAccount, expectedAuthedAccount())
                 return .value(())
             }
+
+            // Once we restore from storage service, we should attempt to reclaim
+            // our username. For this test, let's have a corrupted username (and
+            // skip reclamation). This should have no impact on the rest of
+            // registration.
+            localUsernameManagerMock.startingUsernameState = .usernameAndLinkCorrupted
 
             // Once we do the storage service restore,
             // we will sync account attributes and then we are finished!
@@ -988,7 +1022,24 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return self.scheduler.promise(resolvingWith: (), atTime: 8)
             }
 
-            // Once we do the storage service restore at t=8,
+            // Once we restore from storage service at t=8, we should attempt to
+            // reclaim our username. Succeed at t=9.
+            let mockUsernameLink: Usernames.UsernameLink = .mocked
+            localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
+            usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+                XCTAssertEqual(self.scheduler.currentTime, 8)
+                XCTAssertEqual(chatServiceAuth, .explicit(
+                    aci: identityResponse.aci,
+                    deviceId: .primary,
+                    password: authPassword
+                ))
+                return self.scheduler.promise(
+                    resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
+                    atTime: 9
+                )
+            }
+
+            // Once we do the storage service restore at t=9,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 Stubs.accountAttributes(),
@@ -1002,12 +1053,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     statusCode: 200,
                     bodyData: nil
                 ),
-                atTime: 9,
+                atTime: 10,
                 on: scheduler
             )
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 9)
+            XCTAssertEqual(scheduler.currentTime, 10)
 
             XCTAssertEqual(nextStep.value, .done)
 
@@ -1191,6 +1242,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return self.scheduler.promise(resolvingWith: (), atTime: 6)
             }
 
+            // Once we restore from storage service at t=6, we should attempt to
+            // reclaim our username. Succeed at t=7.
+            let mockUsernameLink: Usernames.UsernameLink = .mocked
+            localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
+            usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+                XCTAssertEqual(self.scheduler.currentTime, 6)
+                XCTAssertEqual(chatServiceAuth, .explicit(
+                    aci: accountIdentityResponse.aci,
+                    deviceId: .primary,
+                    password: authPassword
+                ))
+                return self.scheduler.promise(
+                    resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
+                    atTime: 7
+                )
+            }
+
             // And at t=6 once we do the storage service restore,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
@@ -1199,20 +1267,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
             self.mockURLSession.addResponse(
                 matcher: { request in
-                    XCTAssertEqual(self.scheduler.currentTime, 6)
+                    XCTAssertEqual(self.scheduler.currentTime, 7)
                     return request.url == expectedAttributesRequest.url
                 },
                 statusCode: 200
             )
 
-            for i in 0...5 {
+            for i in 0...6 {
                 scheduler.run(atTime: i) {
                     XCTAssertNil(nextStepPromise.value)
                 }
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 6)
+            XCTAssertEqual(scheduler.currentTime, 7)
 
             XCTAssertEqual(nextStepPromise.value, .done)
 
@@ -1556,13 +1624,31 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return self.scheduler.promise(resolvingWith: (), atTime: 2)
             }
 
+            // Once we restore from storage service, we should attempt to reclaim
+            // our username. For this test, let's fail at t=3. This should have
+            // no different impact on the rest of registration.
+            let mockUsernameLink: Usernames.UsernameLink = .mocked
+            localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
+            usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
+                XCTAssertEqual(self.scheduler.currentTime, 2)
+                XCTAssertEqual(chatServiceAuth, .explicit(
+                    aci: accountIdentityResponse.aci,
+                    deviceId: .primary,
+                    password: authPassword
+                ))
+                return self.scheduler.promise(
+                    rejectedWith: OWSGenericError("Something went wrong :("),
+                    atTime: 3
+                )
+            }
+
             // When registered, we should create pre-keys.
             preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
                 XCTAssertEqual(auth, expectedAuthedAccount())
                 return .value(())
             }
 
-            // And at t=2 once we do the storage service restore,
+            // And at t=3 once we do the storage service restore,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 Stubs.accountAttributes(),
@@ -1570,14 +1656,14 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
             self.mockURLSession.addResponse(
                 matcher: { request in
-                    XCTAssertEqual(self.scheduler.currentTime, 2)
+                    XCTAssertEqual(self.scheduler.currentTime, 3)
                     return request.url == expectedAttributesRequest.url
                 },
                 statusCode: 200
             )
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 2)
+            XCTAssertEqual(scheduler.currentTime, 3)
 
             XCTAssertEqual(nextStep.value, .done)
 
@@ -3866,5 +3952,14 @@ extension RegistrationServiceResponses.RegistrationLockFailureResponse: Encodabl
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(timeRemainingMs, forKey: .timeRemainingMs)
         try container.encodeIfPresent(svr2AuthCredential.credential, forKey: .svr2AuthCredential)
+    }
+}
+
+private extension Usernames.UsernameLink {
+    static var mocked: Usernames.UsernameLink {
+        return Usernames.UsernameLink(
+            handle: UUID(),
+            entropy: Data(repeating: 8, count: 32)
+        )!
     }
 }

@@ -374,7 +374,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 linkEntropy,
                 linkEncryptedUsername
             ) = try self.usernameLinkManager.generateEncryptedUsername(
-                username: reservedUsername.usernameString
+                username: reservedUsername.usernameString,
+                existingEntropy: nil
             )
         } catch let error {
             return Promise(error: error)
@@ -391,7 +392,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return self.makeRequestWithNetworkRetries(requestBlock: {
                 return self.usernameApiClient.confirmReservedUsername(
                     reservedUsername: reservedUsername,
-                    encryptedUsernameForLink: linkEncryptedUsername
+                    encryptedUsernameForLink: linkEncryptedUsername,
+                    chatServiceAuth: .implicit()
                 )
             })
         }.map(on: schedulers.global()) { apiClientConfirmationResult -> Usernames.ConfirmationResult in
@@ -484,7 +486,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 newEntropy,
                 newEncryptedUsername
             ) = try self.usernameLinkManager.generateEncryptedUsername(
-                username: currentUsername
+                username: currentUsername,
+                existingEntropy: nil
             )
         } catch let error {
             return Promise(error: error)

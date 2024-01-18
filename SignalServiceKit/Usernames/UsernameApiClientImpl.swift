@@ -100,13 +100,15 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
     public func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
-        encryptedUsernameForLink: Data
+        encryptedUsernameForLink: Data,
+        chatServiceAuth: ChatServiceAuth
     ) -> Promise<Usernames.ApiClientConfirmationResult> {
         let request = OWSRequestFactory.confirmReservedUsernameRequest(
             reservedUsernameHash: reservedUsername.hashString,
             reservedUsernameZKProof: reservedUsername.proofString,
             encryptedUsernameForLink: encryptedUsernameForLink
         )
+        request.setAuth(chatServiceAuth)
 
         func onRequestSuccess(response: HTTPResponse) throws -> Usernames.ApiClientConfirmationResult {
             guard response.responseStatusCode == 200 else {

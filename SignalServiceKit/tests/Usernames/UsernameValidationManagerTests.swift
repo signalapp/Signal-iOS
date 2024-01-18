@@ -362,46 +362,4 @@ extension UsernameValidationManagerTest {
             return whoamiResponse.consumeIntoPromise()
         }
     }
-
-    private class MockLocalUsernameManager: LocalUsernameManager {
-        var startingUsernameState: Usernames.LocalUsernameState!
-
-        var didSetCorruptedUsername: Bool = false
-        var didSetCorruptedLink: Bool = false
-
-        func usernameState(tx: DBReadTransaction) -> Usernames.LocalUsernameState {
-            return startingUsernameState
-        }
-
-        func setLocalUsernameWithCorruptedLink(username: String, tx: DBWriteTransaction) {
-            didSetCorruptedLink = true
-        }
-
-        func setLocalUsernameCorrupted(tx: DBWriteTransaction) {
-            didSetCorruptedUsername = true
-        }
-
-        func setLocalUsername(username: String, usernameLink: Usernames.UsernameLink, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func clearLocalUsername(tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func usernameLinkQRCodeColor(tx: DBReadTransaction) -> Usernames.QRCodeColor { owsFail("Not implemented!") }
-        func setUsernameLinkQRCodeColor(color: Usernames.QRCodeColor, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Promise<Usernames.ReservationResult> { owsFail("Not implemented!") }
-        func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Promise<Usernames.ConfirmationResult> { owsFail("Not implemented!") }
-        func deleteUsername(tx: DBWriteTransaction) -> Promise<Void> { owsFail("Not implemented!") }
-        func rotateUsernameLink(tx: DBWriteTransaction) -> Promise<Usernames.UsernameLink> { owsFail("Not implemented!") }
-    }
-
-    private class MockUsernameLinkManager: UsernameLinkManager {
-        var decryptLinkResult: ConsumableMockPromise<String?> = .unset
-
-        deinit {
-            decryptLinkResult.ensureUnset()
-        }
-
-        func decryptEncryptedLink(link: Usernames.UsernameLink) -> Promise<String?> {
-            return decryptLinkResult.consumeIntoPromise()
-        }
-
-        func generateEncryptedUsername(username: String) throws -> (entropy: Data, encryptedUsername: Data) { owsFail("Not implemented!") }
-    }
 }

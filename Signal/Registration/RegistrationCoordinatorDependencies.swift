@@ -15,6 +15,7 @@ public struct RegistrationCoordinatorDependencies {
     public let db: DB
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let keyValueStoreFactory: KeyValueStoreFactory
+    public let localUsernameManager: LocalUsernameManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
     public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
@@ -32,6 +33,8 @@ public struct RegistrationCoordinatorDependencies {
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
     public let tsAccountManager: TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
+    public let usernameApiClient: UsernameApiClient
+    public let usernameLinkManager: UsernameLinkManager
 
     public static func from(_ object: NSObject) -> RegistrationCoordinatorDependencies {
         return RegistrationCoordinatorDependencies(
@@ -43,6 +46,7 @@ public struct RegistrationCoordinatorDependencies {
             db: DependenciesBridge.shared.db,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+            localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(object.messagePipelineSupervisor),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(object.messageProcessor),
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(object.ows2FAManager),
@@ -61,7 +65,9 @@ public struct RegistrationCoordinatorDependencies {
             svr: DependenciesBridge.shared.svr,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(object.udManager)
+            udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(object.udManager),
+            usernameApiClient: DependenciesBridge.shared.usernameApiClient,
+            usernameLinkManager: DependenciesBridge.shared.usernameLinkManager
         )
     }
 }

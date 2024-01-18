@@ -6,6 +6,7 @@
 import Contacts
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 import SignalServiceKit
 
 public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
@@ -568,6 +569,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // we can restore profile info from storage service.
         var hasRestoredFromStorageService = false
         var hasSkippedRestoreFromStorageService = false
+
+        /// Tracks the state of "username reclamation" following Storage Service
+        /// restore during registration. See ``attemptToReclaimUsername()`` for
+        /// more details.
+        enum UsernameReclamationState {
+            case localUsernameStateNotLoaded
+            case localUsernameStateLoaded(Usernames.LocalUsernameState)
+            case reclamationAttempted
+        }
+        var usernameReclamationState: UsernameReclamationState = .localUsernameStateNotLoaded
     }
 
     private var inMemoryState = InMemoryState()
@@ -2670,6 +2681,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return restoreFromStorageService(accountIdentity: accountIdentity)
         }
 
+        if let localUsernameState = shouldAttemptToReclaimUsername() {
+            return attemptToReclaimUsername(
+                accountIdentity: accountIdentity,
+                localUsernameState: localUsernameState
+            )
+        }
+
         if !inMemoryState.hasProfileName {
             if let profileInfo = inMemoryState.pendingProfileInfo {
                 let profileManager = deps.profileManager
@@ -2939,6 +2957,106 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
+    /// If we have a username/username link during registration – which we would
+    /// have restored from Storage Service – attempts to "reclaim" it.
+    ///
+    /// When we call `POST /v1/registration` and an account already exists with
+    /// our phone number, and the account has a username, the server will move
+    /// the username to a "reserved" state. That gives us an opportunity to
+    /// reclaim that username and have it re-added to our account, which we do
+    /// by sending a "confirm username" request.
+    ///
+    /// In making that request we use the username we have locally (which we
+    /// expect to be reserved), and the same username-link-entropy we had
+    /// locally. The server will notice that we're attempting to confirm a
+    /// username it moved from confirmed -> reserved, and will not rotate the
+    /// username-link-handle. The end result should therefore be that we get our
+    /// username back, and our username link is unaffected.
+    ///
+    /// - Note
+    /// This method will automatically retry the "confirm username" request on
+    /// network errors.
+    ///
+    /// - Note
+    /// If the reclamation attempt fails for a non-network reason, or exhausts
+    /// network retries, we will simply move on. Any further recovery will
+    /// happen via the username validation job and interactive recovery flows.
+    private func attemptToReclaimUsername(
+        accountIdentity: AccountIdentity,
+        localUsernameState: Usernames.LocalUsernameState,
+        remainingNetworkErrorRetries: UInt = 2
+    ) -> Guarantee<RegistrationStep> {
+        func attemptComplete() -> Guarantee<RegistrationStep> {
+            AssertIsOnMainThread()
+            inMemoryState.usernameReclamationState = .reclamationAttempted
+            return nextStep()
+        }
+
+        let logger = PrefixedLogger(prefix: "UsernameReclamation")
+
+        let localUsername: String
+        let localUsernameLink: Usernames.UsernameLink
+
+        switch localUsernameState {
+        case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
+            return attemptComplete()
+        case .available(let username, let usernameLink):
+            localUsername = username
+            localUsernameLink = usernameLink
+        }
+
+        let hashedLocalUsername: Usernames.HashedUsername
+        let encryptedUsernameForLink: Data
+
+        do {
+            hashedLocalUsername = try Usernames.HashedUsername(forUsername: localUsername)
+            (_, encryptedUsernameForLink) = try deps.usernameLinkManager.generateEncryptedUsername(
+                username: localUsername,
+                existingEntropy: localUsernameLink.entropy
+            )
+        } catch let error {
+            logger.error("Failed to reclaim username: error while generating params! \(error)")
+            return attemptComplete()
+        }
+
+        return firstly(on: schedulers.sync) { () -> Promise<Usernames.ApiClientConfirmationResult> in
+            return self.deps.usernameApiClient.confirmReservedUsername(
+                reservedUsername: hashedLocalUsername,
+                encryptedUsernameForLink: encryptedUsernameForLink,
+                chatServiceAuth: accountIdentity.chatServiceAuth
+            )
+        }
+        .then(on: schedulers.main) { confirmationResult -> Guarantee<RegistrationStep> in
+            switch confirmationResult {
+            case .success(let usernameLinkHandle):
+                if localUsernameLink.handle != usernameLinkHandle {
+                    logger.error("Username link handle rotated during reclamation! Our local username link is now broken.")
+                } else {
+                    logger.info("Successfully reclaimed username during registration.")
+                }
+            case .rejected, .rateLimited:
+                logger.error("Unexpectedly failed to confirm .username! \(confirmationResult)")
+            }
+
+            return attemptComplete()
+        }
+        .recover(on: schedulers.main) { error -> Guarantee<RegistrationStep> in
+            if error.isNetworkFailureOrTimeout, remainingNetworkErrorRetries > 0 {
+                return self.attemptToReclaimUsername(
+                    accountIdentity: accountIdentity,
+                    localUsernameState: localUsernameState,
+                    remainingNetworkErrorRetries: remainingNetworkErrorRetries - 1
+                )
+            } else if error.isNetworkFailureOrTimeout {
+                logger.error("Failed to reclaim username: network error!")
+            } else {
+                logger.error("Failed to reclaim username: unknown error!")
+            }
+
+            return attemptComplete()
+        }
+    }
+
     private func enableReglock(
         accountIdentity: AccountIdentity,
         reglockToken: String
@@ -3002,6 +3120,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.read { tx in
             inMemoryState.phoneNumberDiscoverability =
                 deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx)
+
+            inMemoryState.usernameReclamationState =
+                .localUsernameStateLoaded(deps.localUsernameManager.usernameState(tx: tx))
         }
     }
 
@@ -3801,6 +3922,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .showErrorSheet(.submittingVerificationCodeBeforeAnyCodeSent)
         case .exhaustedCodeAttempts, .requested:
             return .showErrorSheet(.verificationCodeSubmissionUnavailable)
+        }
+    }
+
+    private func shouldAttemptToReclaimUsername() -> Usernames.LocalUsernameState? {
+        switch mode {
+        case .registering, .reRegistering:
+            switch inMemoryState.usernameReclamationState {
+            case .localUsernameStateNotLoaded, .reclamationAttempted:
+                return nil
+            case .localUsernameStateLoaded(let localUsernameState):
+                return localUsernameState
+            }
+        case .changingNumber:
+            return nil
         }
     }
 

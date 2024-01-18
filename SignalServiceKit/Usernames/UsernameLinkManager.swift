@@ -30,8 +30,13 @@ public protocol UsernameLinkManager {
     ///
     /// To be used in a link, this username should be uploaded to the service in
     /// exchange for a handle.
+    ///
+    /// - Parameter existingEntropy
+    /// Specific entropy to use when encrypting the username. If this is passed,
+    /// the `entropy` return value will be equivalent to it.
     func generateEncryptedUsername(
-        username: String
+        username: String,
+        existingEntropy: Data?
     ) throws -> (entropy: Data, encryptedUsername: Data)
 
     /// Uses the given link to fetch an encrypted username and decrypt it into a
@@ -55,10 +60,13 @@ public final class UsernameLinkManagerImpl: UsernameLinkManager {
     }
 
     public func generateEncryptedUsername(
-        username: String
+        username: String,
+        existingEntropy: Data?
     ) throws -> (entropy: Data, encryptedUsername: Data) {
         let lscUsername = try LibSignalClient.Username(username)
-        let (entropyBytes, encryptedUsernameBytes) = try lscUsername.createLink()
+        let (entropyBytes, encryptedUsernameBytes) = try lscUsername.createLink(
+            previousEntropy: existingEntropy.map { [UInt8]($0) }
+        )
 
         return (
             entropy: Data(entropyBytes),
