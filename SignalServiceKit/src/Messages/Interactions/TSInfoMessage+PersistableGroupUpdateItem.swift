@@ -251,6 +251,9 @@ extension TSInfoMessage {
             case createdByUnknownUser
             case inviteFriendsToNewlyCreatedGroup
             case wasMigrated
+            case localUserInvitedAfterMigration
+            case otherUsersInvitedAfterMigration
+            case otherUsersDroppedAfterMigration
             case nameChangedByLocalUser
             case nameChangedByOtherUser
             case nameChangedByUnknownUser
@@ -400,10 +403,21 @@ extension TSInfoMessage {
         case createdByUnknownUser
 
         case inviteFriendsToNewlyCreatedGroup
-        // TODO: Need cases for members that couldn't be added after migrating
-        // These won't ever be generated locally, but may be ported from the
-        // other platforms.
+
+        /// The group was migrated from gv1 to gv2
         case wasMigrated
+        /// As part of a gv1->gv2 migration, the user who did the migration could'nt add the local user
+        /// and invited them instead (because the migrating user lacked the local user's profile key).
+        /// We have never generated these locally, but they may be present in backups from other clients.
+        case localUserInvitedAfterMigration
+        /// As part of a gv1->gv2 migration, gv1 members whose acis were known but profile keys
+        /// were not known were invited to the new gv2 group.
+        /// We have never generated these locally, but they may be present in backups from other clients.
+        case otherUsersInvitedAfterMigration(count: UInt)
+        /// As part of a gv1->gv2 migration, gv1 members whose acis were not known were removed
+        /// from the group.
+        /// We have never generated these locally, but they may be present in backups from other clients. 
+        case otherUsersDroppedAfterMigration(count: UInt)
 
         case nameChangedByLocalUser(newGroupName: String)
         case nameChangedByOtherUser(updaterAci: AciUuid, newGroupName: String)

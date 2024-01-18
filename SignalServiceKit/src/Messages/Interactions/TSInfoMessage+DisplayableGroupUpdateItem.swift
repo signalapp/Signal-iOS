@@ -64,6 +64,9 @@ public enum DisplayableGroupUpdateItem {
 
     case inviteFriendsToNewlyCreatedGroup
     case wasMigrated
+    case localUserInvitedAfterMigration
+    case otherUsersInvitedAfterMigration(count: UInt)
+    case otherUsersDroppedAfterMigration(count: UInt)
 
     case localUserWasGrantedAdministratorByLocalUser
     case localUserWasGrantedAdministratorByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
@@ -457,6 +460,33 @@ extension DisplayableGroupUpdateItem {
                 "GROUP_WAS_MIGRATED",
                 comment: "Message indicating that the group was migrated."
             ).attributed
+        case .localUserInvitedAfterMigration:
+            return OWSLocalizedString(
+                "GROUP_WAS_MIGRATED_LOCAL_USER_INVITED",
+                comment: "Message indicating that the local user was invited after the group was migrated."
+            ).attributed
+        case .otherUsersInvitedAfterMigration(let count):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_WAS_MIGRATED_USERS_INVITED_%d",
+                    tableName: "PluralAware",
+                    comment: "Message indicating that some members were invited after the group was migrated. Embeds {{ %1$@ the number of invited users }}."
+                ),
+                groupUpdateFormatArgs: [
+                    .raw(count)
+                ]
+            )
+        case .otherUsersDroppedAfterMigration(let count):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_WAS_MIGRATED_USERS_DROPPED_%d",
+                    tableName: "PluralAware",
+                    comment: "Message indicating that some members were dropped after the group was migrated. Embeds {{ %1$@ the number of dropped users }}."
+                ),
+                groupUpdateFormatArgs: [
+                    .raw(count)
+                ]
+            )
         case .localUserWasGrantedAdministratorByLocalUser:
             return OWSLocalizedString(
                 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",

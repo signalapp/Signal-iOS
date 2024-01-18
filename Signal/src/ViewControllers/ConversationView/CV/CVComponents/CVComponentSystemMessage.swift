@@ -914,6 +914,9 @@ extension CVComponentSystemMessage {
             return Theme.iconName(.memberDeclined16)
         case
                 .wasMigrated,
+                .localUserInvitedAfterMigration,
+                .otherUsersInvitedAfterMigration,
+                .otherUsersDroppedAfterMigration,
                 .attributesAccessChangedByLocalUser,
                 .attributesAccessChangedByOtherUser,
                 .attributesAccessChangedByUnknownUser,

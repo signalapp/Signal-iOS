@@ -432,6 +432,12 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
         case .wasMigrated:
             return .wasMigrated
+        case .localUserInvitedAfterMigration:
+            return .localUserInvitedAfterMigration
+        case .otherUsersInvitedAfterMigration(let count):
+            return .otherUsersInvitedAfterMigration(count: count)
+        case .otherUsersDroppedAfterMigration(let count):
+            return .otherUsersDroppedAfterMigration(count: count)
 
         case .nameChangedByLocalUser(let newGroupName):
             return .nameChangedByLocalUser(newGroupName: newGroupName)

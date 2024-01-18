@@ -59,6 +59,12 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 return nil
             case .wasMigrated:
                 return nil
+            case .localUserInvitedAfterMigration:
+                return nil
+            case .otherUsersInvitedAfterMigration:
+                return nil
+            case .otherUsersDroppedAfterMigration:
+                return nil
             case .nameChangedByLocalUser:
                 return nil
             case .nameChangedByOtherUser(let updaterAci, _):
