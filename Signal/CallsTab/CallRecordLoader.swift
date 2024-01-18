@@ -41,6 +41,16 @@ class CallRecordLoader {
 
     private let configuration: Configuration
 
+    /// The row IDs for the threads matching the search term in this loader's
+    /// ``Configuration``. Set during the first load with this configuration.
+    /// `nil` if this configuration does not contain a search term.
+    ///
+    /// If each time we loaded a new page of records we performed a new search,
+    /// we may end up with records for a different set of threads for the new
+    /// page than in the existing pages, if something changed in the search
+    /// index between loads. That'd be very bad.
+    private var threadRowIdsMatchingSearchTerm: [Int64]?
+
     init(
         callRecordQuerier: CallRecordQuerier,
         fullTextSearchFinder: Shims.FullTextSearchFinder,
@@ -140,25 +150,30 @@ class CallRecordLoader {
             return []
         }
 
-        let threadsMatchingSearch = fullTextSearchFinder.findThreadsMatching(
-            searchTerm: searchTerm,
-            maxSearchResults: configuration.maxSearchResults,
-            tx: tx
-        )
-
-        if threadsMatchingSearch.isEmpty {
-            return []
-        }
-
-        let threadRowIds = threadsMatchingSearch.compactMap { thread -> Int64 in
-            guard let threadRowId = thread.sqliteRowId else {
-                owsFail("How did we match a thread in the FTS index that doesn't have a SQLite row ID?")
+        let threadRowIdsMatchingSearchTerm: [Int64] = {
+            if let threadsFromEarlierSearch = self.threadRowIdsMatchingSearchTerm {
+                return threadsFromEarlierSearch
             }
 
-            return threadRowId
-        }
+            let threadsMatchingSearch = fullTextSearchFinder.findThreadsMatching(
+                searchTerm: searchTerm,
+                maxSearchResults: configuration.maxSearchResults,
+                tx: tx
+            )
 
-        return threadRowIds.flatMap { threadRowId -> [CallRecordCursor] in
+            let threadRowIdsMatchingSearchTerm = threadsMatchingSearch.compactMap { thread -> Int64 in
+                guard let threadRowId = thread.sqliteRowId else {
+                    owsFail("How did we match a thread in the FTS index that doesn't have a SQLite row ID?")
+                }
+
+                return threadRowId
+            }
+
+            self.threadRowIdsMatchingSearchTerm = threadRowIdsMatchingSearchTerm
+            return threadRowIdsMatchingSearchTerm
+        }()
+
+        return threadRowIdsMatchingSearchTerm.flatMap { threadRowId -> [CallRecordCursor] in
             if configuration.onlyLoadMissedCalls {
                 return CallRecord.CallStatus.missedCalls.compactMap { callStatus in
                     return callRecordQuerier.fetchCursor(

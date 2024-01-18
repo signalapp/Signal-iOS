@@ -46,6 +46,8 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 1), .fixture(callId: 2)
         ]
 
+        mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [:]
+
         setupCallRecordLoader(searchTerm: "han solo")
         XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
 
@@ -289,9 +291,16 @@ private class MockCallRecordQuerier: CallRecordQuerier {
 }
 
 private class MockFullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder {
-    var mockThreadRowIdsForSearchTerm: [String: [Int64]] = [:]
+    var mockThreadRowIdsForSearchTerm: [String: [Int64]]?
 
     func findThreadsMatching(searchTerm: String, maxSearchResults: UInt, tx: DBReadTransaction) -> [TSThread] {
+        guard let mockThreadRowIdsForSearchTerm else {
+            XCTFail("Mock not set!")
+            return []
+        }
+
+        self.mockThreadRowIdsForSearchTerm = nil
+
         guard let threadRowIds = mockThreadRowIdsForSearchTerm[searchTerm] else {
             return []
         }
