@@ -382,11 +382,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<AccountId> {
         guard let contact = StorageServiceContact(record) else {
-            owsFailDebug("invalid contact")
+            owsFailDebug("Can't merge record with invalid identifiers: hasAci? \(record.hasAci) hasPni? \(record.hasPni) hasPhoneNumber? \(record.hasE164)")
             return .invalid
         }
 
         if contact.matchesAnyLocalIdentifier(in: localIdentifiers) {
+            owsFailDebug("Can't merge record for the local user") // this should be an AccountRecord
             return .invalid
         }
 
