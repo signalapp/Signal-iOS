@@ -44,6 +44,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         threadStore: DependenciesBridge.shared.threadStore
     )
 
+    private enum Constants {
+        /// The max number of records to request when loading a new page of
+        /// calls.
+        static let pageSizeToLoad: UInt = 50
+
+        /// The maximum number of calls this view should hold in-memory at once.
+        /// Any calls beyond this number are dropped when loading new ones.
+        static let maxCallsToHoldAtOnce: Int = 150
+    }
+
     // MARK: - Lifecycle
 
     private lazy var emptyStateMessageView: UILabel = {
@@ -99,9 +109,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         noSearchResultsView.autoPinEdge(toSuperviewMargin: .top, withInset: 80)
 
         applyTheme()
-        loadCallRecordsAnew()
 
         // [CallsTab] TODO: make ourselves a CallServiceObserver, so we know when calls change
+
+        loadCallRecordsAnew(animated: false)
     }
 
     override func themeDidChange() {
@@ -314,7 +325,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
     @objc
     private func tabChanged() {
-        loadCallRecordsAnew()
+        loadCallRecordsAnew(animated: true)
         updateMultiselectToolbarButtons()
     }
 
@@ -331,7 +342,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
     /// Recreates ``callRecordLoader`` with the current UI state, and kicks off
     /// an initial load.
-    private func loadCallRecordsAnew() {
+    private func loadCallRecordsAnew(animated: Bool) {
         AssertIsOnMainThread()
 
         let onlyLoadMissedCalls: Bool = {
@@ -340,6 +351,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             case .missed: return true
             }
         }()
+
+        // Throw away all our existing calls.
+        calls = []
 
         // Rebuild the loader.
         callRecordLoader = CallRecordLoader(
@@ -352,23 +366,67 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         )
 
         // Load the initial page of records.
-        loadMoreCalls(direction: .older)
+        loadMoreCalls(direction: .older, animated: animated)
+    }
+
+    private enum LoadDirection {
+        case older
+        case newer
     }
 
     /// Load more calls and add them to the table.
-    private func loadMoreCalls(direction: CallRecordLoader.LoadDirection) {
+    private func loadMoreCalls(
+        direction loadDirection: LoadDirection,
+        animated: Bool
+    ) {
         deps.db.read { tx in
-            _ = callRecordLoader.loadCallRecords(
-                loadDirection: direction,
+            let loaderLoadDirection: CallRecordLoader.LoadDirection = {
+                switch loadDirection {
+                case .older:
+                    return .older(oldestCallTimestamp: calls.last?.callBeganTimestamp)
+                case .newer:
+                    guard let newestCall = calls.first else {
+                        // A little weird, but if we have no calls these are
+                        // equivalent anyway.
+                        return .older(oldestCallTimestamp: nil)
+                    }
+
+                    return .newer(newestCallTimestamp: newestCall.callBeganTimestamp)
+                }
+            }()
+
+            let newCallRecords: [CallRecord] = callRecordLoader.loadCallRecords(
+                loadDirection: loaderLoadDirection,
+                pageSize: Constants.pageSizeToLoad,
                 tx: tx.asV2Read
             )
 
-            calls = callRecordLoader.loadedCallRecords.map { callRecord -> CallViewModel in
+            let newCalls: [CallViewModel] = newCallRecords.map { callRecord -> CallViewModel in
                 createCallViewModel(callRecord: callRecord, tx: tx)
+            }
+
+            let combinedCalls: [CallViewModel] = {
+                switch loadDirection {
+                case .older: return calls + newCalls
+                case .newer: return newCalls + calls
+                }
+            }()
+
+            guard combinedCalls.count > Constants.maxCallsToHoldAtOnce else {
+                calls = combinedCalls
+                return
+            }
+
+            let overage = combinedCalls.count - Constants.maxCallsToHoldAtOnce
+            switch loadDirection {
+            case .older:
+                calls = Array(combinedCalls.dropFirst(overage))
+            case .newer:
+                calls = Array(combinedCalls.dropLast(overage))
             }
         }
 
-        updateSnapshot()
+        updateSnapshot(animated: animated)
     }
 
     /// Converts a ``CallRecord`` to a ``CallViewModel``.
@@ -389,6 +447,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }
 
         let callId = callRecord.callId
+        let callBeganTimestamp = callRecord.callBeganTimestamp
 
         let callDirection: CallViewModel.Direction = {
             if callRecord.callStatus.isMissedCall {
@@ -443,7 +502,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                 }
             }
 
-            return .ended(callStartedAt: callRecord.callBeganAtDate)
+            return .ended
         }()
 
         if let contactThread = callThread as? TSContactThread {
@@ -470,7 +529,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                     contactThread: contactThread
                 ),
                 direction: callDirection,
-                state: callState
+                state: callState,
+                callBeganTimestamp: callBeganTimestamp
             )
         } else if let groupThread = callThread as? TSGroupThread {
             return CallViewModel(
@@ -478,7 +538,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                 title: groupThread.groupModel.groupNameOrDefault,
                 recipientType: .group(groupThread: groupThread),
                 direction: callDirection,
-                state: callState
+                state: callState,
+                callBeganTimestamp: callBeganTimestamp
             )
         } else {
             owsFail("Call thread was neither contact nor group! This should be impossible.")
@@ -515,7 +576,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             /// The user is currently in this call.
             case participating
             /// The call is no longer active.
-            case ended(callStartedAt: Date)
+            case ended
         }
 
         enum RecipientType: Hashable {
@@ -534,6 +595,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         var direction: Direction
         var image: UIImage?
         var state: State
+
+        var callBeganTimestamp: UInt64
+        var callBeganDate: Date { Date(millisecondsSince1970: callBeganTimestamp) }
 
         var callType: RecipientType.CallType {
             switch recipientType {
@@ -582,7 +646,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                 return
             }
 
-            loadCallRecordsAnew()
+            loadCallRecordsAnew(animated: true)
         }
     }
 
@@ -627,9 +691,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         return snapshot
     }
 
-    // [CallsTab] TODO: Rename to something like "reload table"?
-    private func updateSnapshot() {
-        dataSource.apply(getSnapshot())
+    private func updateSnapshot(animated: Bool) {
+        dataSource.apply(getSnapshot(), animatingDifferences: animated)
         updateEmptyStateMessage()
     }
 
@@ -684,10 +747,19 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            DispatchQueue.main.async {
+                // Try and load the next page if we're about to hit the top.
+                DispatchQueue.main.async {
+                    self.loadMoreCalls(direction: .newer, animated: false)
+                }
+            }
+        }
+
         if indexPath.row == calls.count - 1 {
             // Try and load the next page if we're about to hit the bottom.
             DispatchQueue.main.async {
-                self.loadMoreCalls(direction: .older)
+                self.loadMoreCalls(direction: .older, animated: false)
             }
         }
     }
@@ -915,7 +987,7 @@ extension CallsListViewController: CallCellDelegate {
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
             callService.initiateCall(thread: contactThread, isVideo: false)
-        case let .group(groupThread):
+        case .group:
             owsFail("Shouldn't be able to start audio call from group")
         }
     }
@@ -1174,12 +1246,12 @@ extension CallsListViewController {
                 }
 
                 timestampLabel.text = nil
-            case .ended(let callBeganAtDate):
+            case .ended:
                 // Info button
                 detailsButton.setImage(imageName: "info")
                 detailsButton.tintColor = Theme.primaryIconColor
 
-                timestampLabel.text = DateUtil.formatDateShort(callBeganAtDate)
+                timestampLabel.text = DateUtil.formatDateShort(viewModel.callBeganDate)
                 // [CallsTab] TODO: Automatic updates
                 // See ChatListCell.nextUpdateTimestamp
             }
@@ -1216,13 +1288,5 @@ extension CallsListViewController {
                 delegate.showCallInfo(from: viewModel)
             }
         }
-    }
-}
-
-// MARK: -
-
-private extension CallRecord {
-    var callBeganAtDate: Date {
-        Date(millisecondsSince1970: callBeganTimestamp)
     }
 }

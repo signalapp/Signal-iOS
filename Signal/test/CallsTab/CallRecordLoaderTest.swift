@@ -20,7 +20,6 @@ final class CallRecordLoaderTest: XCTestCase {
     }
 
     private func setupCallRecordLoader(
-        presetCallRecords: [CallRecord] = [],
         onlyLoadMissedCalls: Bool = false,
         searchTerm: String? = nil
     ) {
@@ -29,24 +28,17 @@ final class CallRecordLoaderTest: XCTestCase {
             fullTextSearchFinder: mockFullTextSearchFinder,
             configuration: CallRecordLoader.Configuration(
                 onlyLoadMissedCalls: onlyLoadMissedCalls,
-                searchTerm: searchTerm,
-                pageSize: 3
+                searchTerm: searchTerm
             )
         )
-
-        if !presetCallRecords.isEmpty {
-            callRecordLoader.presetCallRecords(presetCallRecords)
-        }
     }
 
-    private func loadRecords(loadDirection: CallRecordLoader.LoadDirection) -> Bool {
+    private func loadRecords(loadDirection: CallRecordLoader.LoadDirection) -> [UInt64] {
         return MockDB().read { tx in
-            callRecordLoader.loadCallRecords(loadDirection: loadDirection, tx: tx)
+            callRecordLoader
+                .loadCallRecords(loadDirection: loadDirection, pageSize: 3, tx: tx)
+                .map { $0.callId }
         }
-    }
-
-    private func assertLoaded(_ callIds: [UInt64]) {
-        XCTAssertEqual(callRecordLoader.loadedCallRecords.map { $0.callId }, callIds)
     }
 
     func testNothingMatching() {
@@ -55,14 +47,13 @@ final class CallRecordLoaderTest: XCTestCase {
         ]
 
         setupCallRecordLoader(searchTerm: "han solo")
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
 
         setupCallRecordLoader(onlyLoadMissedCalls: true)
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
 
         setupCallRecordLoader()
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([2, 1])
+        XCTAssertEqual([2, 1], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
     }
 
     // MARK: Older
@@ -76,13 +67,10 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7)
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([7, 6, 5])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([7, 6, 5, 4, 3, 2])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([7, 6, 5, 4, 3, 2, 1])
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([7, 6, 5], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([4, 3, 2], loadRecords(loadDirection: .older(oldestCallTimestamp: 5)))
+        XCTAssertEqual([1], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 1)))
     }
 
     func testGetOlderPageSearching() {
@@ -100,11 +88,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([6, 5, 3])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([6, 5, 3, 2])
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([6, 5, 3], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([2], loadRecords(loadDirection: .older(oldestCallTimestamp: 3)))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
     }
 
     func testGetOlderPageForMissed() {
@@ -122,11 +108,9 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 9),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([8, 7, 6])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([8, 7, 6, 4, 2])
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([8, 7, 6], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([4, 2], loadRecords(loadDirection: .older(oldestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
     }
 
     func testGetOlderPageForMissedSearching() {
@@ -152,19 +136,16 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([11, 10, 9])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([11, 10, 9, 6, 5, 4])
-        XCTAssertTrue(loadRecords(loadDirection: .older))
-        assertLoaded([11, 10, 9, 6, 5, 4, 2])
-        XCTAssertFalse(loadRecords(loadDirection: .older))
+        XCTAssertEqual([11, 10, 9], loadRecords(loadDirection: .older(oldestCallTimestamp: nil)))
+        XCTAssertEqual([6, 5, 4], loadRecords(loadDirection: .older(oldestCallTimestamp: 9)))
+        XCTAssertEqual([2], loadRecords(loadDirection: .older(oldestCallTimestamp: 4)))
+        XCTAssertEqual([], loadRecords(loadDirection: .older(oldestCallTimestamp: 2)))
     }
 
     // MARK: Newer
 
     func testGetNewerPage() {
-        setupCallRecordLoader(presetCallRecords: [.fixture(callId: 0)])
+        setupCallRecordLoader()
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1), .fixture(callId: 2), .fixture(callId: 3),
@@ -172,17 +153,14 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7)
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([3, 2, 1, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([6, 5, 4, 3, 2, 1, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([7, 6, 5, 4, 3, 2, 1, 0])
-        XCTAssertFalse(loadRecords(loadDirection: .newer))
+        XCTAssertEqual([3, 2, 1], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
+        XCTAssertEqual([6, 5, 4], loadRecords(loadDirection: .newer(newestCallTimestamp: 3)))
+        XCTAssertEqual([7], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 7)))
     }
 
     func testGetNewerPageSearching() {
-        setupCallRecordLoader(presetCallRecords: [.fixture(callId: 0)], searchTerm: "boba fett")
+        setupCallRecordLoader(searchTerm: "boba fett")
 
         mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
             "boba fett": [1, 2]
@@ -196,15 +174,13 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 7),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([5, 3, 2, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([6, 5, 3, 2, 0])
-        XCTAssertFalse(loadRecords(loadDirection: .newer))
+        XCTAssertEqual([5, 3, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
+        XCTAssertEqual([6], loadRecords(loadDirection: .newer(newestCallTimestamp: 5)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
     }
 
     func testGetNewerPageForMissed() {
-        setupCallRecordLoader(presetCallRecords: [.fixture(callId: 0)], onlyLoadMissedCalls: true)
+        setupCallRecordLoader(onlyLoadMissedCalls: true)
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
@@ -218,15 +194,13 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 9),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([6, 4, 2, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([8, 7, 6, 4, 2, 0])
-        XCTAssertFalse(loadRecords(loadDirection: .newer))
+        XCTAssertEqual([6, 4, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
+        XCTAssertEqual([8, 7], loadRecords(loadDirection: .newer(newestCallTimestamp: 6)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 8)))
     }
 
     func testGetNewerPageForMissedSearching() {
-        setupCallRecordLoader(presetCallRecords: [.fixture(callId: 0)], onlyLoadMissedCalls: true, searchTerm: "darth vader")
+        setupCallRecordLoader(onlyLoadMissedCalls: true, searchTerm: "darth vader")
 
         mockFullTextSearchFinder.mockThreadRowIdsForSearchTerm = [
             "darth vader": [1, 2]
@@ -248,19 +222,18 @@ final class CallRecordLoaderTest: XCTestCase {
             .fixture(callId: 13, callStatus: .group(.ringingMissed)),
         ]
 
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([5, 4, 2, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([10, 9, 6, 5, 4, 2, 0])
-        XCTAssertTrue(loadRecords(loadDirection: .newer))
-        assertLoaded([11, 10, 9, 6, 5, 4, 2, 0])
-        XCTAssertFalse(loadRecords(loadDirection: .newer))
+        XCTAssertEqual([5, 4, 2], loadRecords(loadDirection: .newer(newestCallTimestamp: 0)))
+        XCTAssertEqual([10, 9, 6], loadRecords(loadDirection: .newer(newestCallTimestamp: 5)))
+        XCTAssertEqual([11], loadRecords(loadDirection: .newer(newestCallTimestamp: 10)))
+        XCTAssertEqual([], loadRecords(loadDirection: .newer(newestCallTimestamp: 11)))
     }
 }
 
 // MARK: - Mocks
 
 private extension CallRecord {
+    /// Creates a ``CallRecord`` with the given parameters. The record's
+    /// timestamp will be equivalent to its call ID.
     static func fixture(
         callId: UInt64,
         threadRowId: Int64 = 0,

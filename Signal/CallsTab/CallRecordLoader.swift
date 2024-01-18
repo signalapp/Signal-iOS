@@ -14,10 +14,6 @@ class CallRecordLoader {
         /// If present, the loader will only load calls that match this term.
         let searchTerm: String?
 
-        /// The number of records that should be loaded in each invocation of
-        /// ``CallRecordLoader/loadCallRecords(loadDirection:onlyMissedCalls:matchingSearchTerm:)``.
-        let pageSize: UInt
-
         // [CallsTab] TODO: do we want special behavior if a load exceeds this amount?
         // [CallsTab] TODO: what happens if the search results change under us between loads?
         /// The max number of matches for ``searchTerm`` used for an invocation
@@ -27,28 +23,21 @@ class CallRecordLoader {
         init(
             onlyLoadMissedCalls: Bool = false,
             searchTerm: String? = nil,
-            pageSize: UInt = 50,
             maxSearchResults: UInt = 100
         ) {
             self.onlyLoadMissedCalls = onlyLoadMissedCalls
             self.searchTerm = searchTerm
-            self.pageSize = pageSize
             self.maxSearchResults = maxSearchResults
         }
     }
 
     enum LoadDirection {
-        case older
-        case newer
+        case older(oldestCallTimestamp: UInt64?)
+        case newer(newestCallTimestamp: UInt64)
     }
 
     private let callRecordQuerier: CallRecordQuerier
     private let fullTextSearchFinder: Shims.FullTextSearchFinder
-
-    /// The call records that have already been loaded. These records are
-    /// ordered descending from newest (should be shown first) to oldest (should
-    /// be shown last).
-    private(set) var loadedCallRecords: [CallRecord]
 
     private let configuration: Configuration
 
@@ -61,39 +50,26 @@ class CallRecordLoader {
         self.fullTextSearchFinder = fullTextSearchFinder
 
         self.configuration = configuration
-
-        self.loadedCallRecords = []
     }
 
-    #if TESTABLE_BUILD
-
-    func presetCallRecords(_ callRecords: [CallRecord]) {
-        self.loadedCallRecords = callRecords
-    }
-
-    #endif
-
-    /// Loads the next page of ``CallRecord``s in the given direction.
+    /// Loads a page of ``CallRecord``s in the given direction.
     ///
     /// - Returns
-    /// Whether any records were loaded as a result of this call. If `true`, the
-    /// new records will be present in ``loadedCallRecords``.
+    /// The newly-loaded records. These records are always sorted descending;
+    /// i.e., the first record is the newest and the last record is the oldest.
     func loadCallRecords(
         loadDirection: LoadDirection,
+        pageSize: UInt,
         tx: DBReadTransaction
-    ) -> Bool {
+    ) -> [CallRecord] {
         let fetchOrdering: CallRecordQuerierFetchOrdering = {
-            if loadedCallRecords.isEmpty {
-                return .descending
-            }
-
             switch loadDirection {
-            case .older:
-                let lastCallRecord = loadedCallRecords.last!
-                return .descendingBefore(timestamp: lastCallRecord.callBeganTimestamp)
-            case .newer:
-                let firstCallRecord = loadedCallRecords.first!
-                return .ascendingAfter(timestamp: firstCallRecord.callBeganTimestamp)
+            case .older(nil):
+                return .descending
+            case .older(.some(let oldestCallTimestamp)):
+                return .descendingBefore(timestamp: oldestCallTimestamp)
+            case .newer(let newestCallTimestamp):
+                return .ascendingAfter(timestamp: newestCallTimestamp)
             }
         }()
 
@@ -124,27 +100,21 @@ class CallRecordLoader {
                     }
                 )
 
-                return try interleavingCursor.drain(maxResults: configuration.pageSize)
+                return try interleavingCursor.drain(maxResults: pageSize)
             } catch let error {
                 CallRecordLogger.shared.error("Failed to drain cursors! \(error)")
                 return []
             }
         }()
 
-        if newCallRecords.isEmpty {
-            return false
-        }
-
         switch fetchOrdering {
         case .descending, .descendingBefore:
-            loadedCallRecords += newCallRecords
+            return newCallRecords
         case .ascendingAfter:
             // The new call records will be sorted ascending, which makes sense
-            // for the query but ultimately we still want them here descending.
-            loadedCallRecords = newCallRecords.reversed() + loadedCallRecords
+            // for the query but we want to return them descending.
+            return newCallRecords.reversed()
         }
-
-        return true
     }
 
     private func callRecordCursors(
