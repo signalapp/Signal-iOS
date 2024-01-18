@@ -12,6 +12,7 @@ class LocalUsernameManagerTests: XCTestCase {
     private var mockDB: MockDB!
     private var testScheduler: TestScheduler!
 
+    private var mockReachabilityManager: MockReachabilityManager!
     private var mockStorageServiceManager: MockStorageServiceManager!
     private var mockUsernameApiClient: MockUsernameApiClient!
     private var mockUsernameLinkManager: MockUsernameLinkManager!
@@ -25,6 +26,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockDB = MockDB()
         testScheduler = TestScheduler()
 
+        mockReachabilityManager = MockReachabilityManager()
         mockStorageServiceManager = MockStorageServiceManager()
         mockUsernameApiClient = MockUsernameApiClient()
         mockUsernameLinkManager = MockUsernameLinkManager()
@@ -35,6 +37,7 @@ class LocalUsernameManagerTests: XCTestCase {
         localUsernameManager = LocalUsernameManagerImpl(
             db: mockDB,
             kvStoreFactory: kvStoreFactory,
+            reachabilityManager: mockReachabilityManager,
             schedulers: TestSchedulers(scheduler: testScheduler),
             storageServiceManager: mockStorageServiceManager,
             usernameApiClient: mockUsernameApiClient,
@@ -137,6 +140,25 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
 
+    func testConfirmBailsEarlyIfNotReachable() {
+        mockReachabilityManager.isReachable = false
+
+        let stateBeforeConfirm = setUsername(username: "boba_fett.42")
+
+        let promise = mockDB.write { tx in
+            localUsernameManager.confirmUsername(
+                reservedUsername: .mock("boba_fett.43"),
+                tx: tx
+            )
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertNil(promise.value)
+        XCTAssertEqual(usernameState(), stateBeforeConfirm)
+        XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
     func testNoCorruptionIfFailToGenerateLink() {
         mockUsernameLinkManager.entropyToGenerate = .failure(OWSGenericError("A Sarlacc"))
 
@@ -148,6 +170,8 @@ class LocalUsernameManagerTests: XCTestCase {
                 tx: tx
             )
         }
+
+        testScheduler.runUntilIdle()
 
         XCTAssertNil(promise.value)
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
@@ -303,6 +327,22 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
 
+    func testDeleteBailsEarlyIfNotReachable() {
+        mockReachabilityManager.isReachable = false
+
+        let stateBeforeConfirm = setUsername(username: "boba_fett.42")
+
+        let promise = mockDB.write { tx in
+            localUsernameManager.deleteUsername(tx: tx)
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertNil(promise.value)
+        XCTAssertEqual(usernameState(), stateBeforeConfirm)
+        XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
     func testCorruptionIfErrorWhileDeleting() {
         mockUsernameApiClient.deletionResult = .error()
 
@@ -388,6 +428,22 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
 
+    func testRotationBailsEarlyIfNotReachable() {
+        mockReachabilityManager.isReachable = false
+
+        let stateBeforeConfirm = setUsername(username: "boba_fett.42")
+
+        let promise = mockDB.write { tx in
+            localUsernameManager.rotateUsernameLink(tx: tx)
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertNil(promise.value)
+        XCTAssertEqual(usernameState(), stateBeforeConfirm)
+        XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
     func testNoCorruptionIfFailToGenerateNewLink() {
         mockUsernameLinkManager.entropyToGenerate = .failure(OWSGenericError("Jabba's Sudden But Inevitable Betrayal"))
 
@@ -460,7 +516,7 @@ class LocalUsernameManagerTests: XCTestCase {
 
         let currentLink = setUsername(username: "boba_fett.42", linkHandle: linkHandle).usernameLink!
 
-        _ = mockDB.write { tx in
+        let promise = mockDB.write { tx in
             localUsernameManager.updateVisibleCaseOfExistingUsername(
                 newUsername: "BoBa_fEtT.42",
                 tx: tx
@@ -469,11 +525,31 @@ class LocalUsernameManagerTests: XCTestCase {
 
         testScheduler.runUntilIdle()
 
+        XCTAssertNotNil(promise.value)
         XCTAssertEqual(
             usernameState(),
             .available(username: "BoBa_fEtT.42", usernameLink: currentLink)
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+    }
+
+    func testUpdateVisibleCaseBailsEarlyIfNotReachable() {
+        mockReachabilityManager.isReachable = false
+
+        let stateBeforeConfirm = setUsername(username: "boba_fett.42")
+
+        let promise = mockDB.write { tx in
+            localUsernameManager.updateVisibleCaseOfExistingUsername(
+                newUsername: "BoBa_fEtT.42",
+                tx: tx
+            )
+        }
+
+        testScheduler.runUntilIdle()
+
+        XCTAssertNil(promise.value)
+        XCTAssertEqual(usernameState(), stateBeforeConfirm)
+        XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
 
     func testUpdateVisibleCaseSetsLocalEvenIfError() {
@@ -486,7 +562,7 @@ class LocalUsernameManagerTests: XCTestCase {
 
         _ = setUsername(username: "boba_fett.42", linkHandle: linkHandle).usernameLink!
 
-        _ = mockDB.write { tx in
+        let promise = mockDB.write { tx in
             localUsernameManager.updateVisibleCaseOfExistingUsername(
                 newUsername: "BoBa_fEtT.42",
                 tx: tx
@@ -495,6 +571,7 @@ class LocalUsernameManagerTests: XCTestCase {
 
         testScheduler.runUntilIdle()
 
+        XCTAssertNil(promise.value)
         XCTAssertEqual(
             usernameState(),
             .linkCorrupted(username: "BoBa_fEtT.42")
@@ -546,6 +623,11 @@ private extension Data {
 }
 
 // MARK: - Mocks
+
+private class MockReachabilityManager: SSKReachabilityManager {
+    var isReachable: Bool = true
+    func isReachable(via reachabilityType: ReachabilityType) -> Bool { owsFail("Not implemented!") }
+}
 
 private class MockStorageServiceManager: StorageServiceManager {
     var didRecordPendingLocalAccountUpdates: Bool = false

@@ -119,6 +119,7 @@ public class AppSetup {
             paymentsEvents: paymentsEvents,
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
+            reachabilityManager: reachabilityManager,
             receiptManager: receiptManager,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,

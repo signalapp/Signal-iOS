@@ -643,8 +643,6 @@ private extension UsernameSelectionViewController {
                     self.dismiss(animated: true)
                 }
             }.catch(on: self.context.schedulers.main) { error in
-                UsernameLogger.shared.error("Error while changing username case: \(error)")
-
                 self.dismiss(
                     modalActivityIndicator: modal,
                     andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
@@ -722,8 +720,6 @@ private extension UsernameSelectionViewController {
                     )
                 }
             }.catch(on: self.context.schedulers.main) { error in
-                UsernameLogger.shared.error("Error while confirming username: \(error)")
-
                 self.dismiss(
                     modalActivityIndicator: modal,
                     andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError

@@ -83,6 +83,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             recipientIdFinder: recipientIdFinder
         )
         let profileManager = OWSFakeProfileManager()
+        let reachabilityManager = MockSSKReachabilityManager()
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
@@ -120,6 +121,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             paymentsEvents: paymentsEvents,
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
+            reachabilityManager: reachabilityManager,
             receiptManager: receiptManager,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
@@ -149,7 +151,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             kvStoreFactory: dependenciesBridge.keyValueStoreFactory,
             signalServiceAddressCache: signalServiceAddressCache
         )
-        let reachabilityManager = MockSSKReachabilityManager()
         let typingIndicators = TypingIndicatorsImpl()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()

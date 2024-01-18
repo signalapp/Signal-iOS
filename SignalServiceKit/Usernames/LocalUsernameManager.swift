@@ -246,7 +246,18 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         }
     }
 
+    /// Thrown when ``SSKReachability`` indicates we do not have network access,
+    /// and that consequently we will not succeed in a usernames-related
+    /// network request.
+    ///
+    /// Because we mark the username/link as corrupted while mutation requests
+    /// are in-flight it's preferable to bail out early if we believe the
+    /// request is doomed to fail, rather than unnecessarily leaving the
+    /// username/link corrupted when the request fails.
+    private struct NoReachabilityError: Error {}
+
     private let db: DB
+    private let reachabilityManager: SSKReachabilityManager
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
     private let usernameApiClient: UsernameApiClient
@@ -255,15 +266,19 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     private let corruptionStore: CorruptionStore
     private let usernameStore: UsernameStore
 
+    private var logger: PrefixedLogger { UsernameLogger.shared }
+
     init(
         db: DB,
         kvStoreFactory: KeyValueStoreFactory,
+        reachabilityManager: SSKReachabilityManager,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         usernameApiClient: UsernameApiClient,
         usernameLinkManager: UsernameLinkManager
     ) {
         self.db = db
+        self.reachabilityManager = reachabilityManager
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.usernameApiClient = usernameApiClient
@@ -384,6 +399,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         reservedUsername: Usernames.HashedUsername,
         tx syncTx: DBWriteTransaction
     ) -> Promise<Usernames.ConfirmationResult> {
+        guard reachabilityManager.isReachable else {
+            logger.warn("Not attempting to  username – Reachability indicates we will fail.")
+            return Promise(error: NoReachabilityError())
+        }
+
         let linkEntropy: Data
         let linkEncryptedUsername: Data
         do {
@@ -395,6 +415,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
+            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
@@ -458,6 +479,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     }
 
     func deleteUsername(tx syncTx: DBWriteTransaction) -> Promise<Void> {
+        guard reachabilityManager.isReachable else {
+            logger.warn("Not attempting to delete username – Reachability indicates we will fail.")
+            return Promise(error: NoReachabilityError())
+        }
+
         // Mark as corrupted in case we encounter an unexpected error while
         // deleting. If that happens we can't be sure if our new username was
         // deleted or not, so we conservatively leave it in the corrupted state.
@@ -490,6 +516,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     func rotateUsernameLink(
         tx syncTx: DBWriteTransaction
     ) -> Promise<Usernames.UsernameLink> {
+        guard reachabilityManager.isReachable else {
+            logger.warn("Not attempting to rotate username link – Reachability indicates we will fail.")
+            return Promise(error: NoReachabilityError())
+        }
+
         guard let currentUsername = usernameState(tx: syncTx).username else {
             return Promise(error: OWSAssertionError(
                 "Tried to rotate link, but missing current username!"
@@ -507,6 +538,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
+            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
@@ -557,6 +589,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         newUsername: String,
         tx syncTx: DBWriteTransaction
     ) -> Promise<Void> {
+        guard reachabilityManager.isReachable else {
+            logger.warn("Not attempting to update visible username case – Reachability indicates we will fail.")
+            return Promise(error: NoReachabilityError())
+        }
+
         let currentUsernameState = usernameState(tx: syncTx)
 
         guard
@@ -576,6 +613,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: currentUsernameLink.entropy
             )
         } catch let error {
+            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
