@@ -989,6 +989,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     typealias RecordType = StorageServiceProtoAccountRecord
 
     private let localIdentifiers: LocalIdentifiers
+    private let isPrimaryDevice: Bool
     private let authedAccount: AuthedAccount
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
@@ -1011,6 +1012,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     init(
         localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
@@ -1032,6 +1034,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         usernameEducationManager: UsernameEducationManager
     ) {
         self.localIdentifiers = localIdentifiers
+        self.isPrimaryDevice = isPrimaryDevice
         self.authedAccount = authedAccount
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
@@ -1223,14 +1226,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             transaction: transaction
         )
 
-        // On the primary device, we only ever want to
-        // take the profile key from storage service if
-        // we have no record of a local profile. This
-        // allows us to restore your profile during onboarding,
-        // but ensures no other device can ever change the profile
-        // key other than the primary device.
-        let isPrimary = tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false
-        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimary
+        // On the primary device, we only ever want to take the profile key from
+        // storage service if we have no record of a local profile. This allows us
+        // to restore your profile during onboarding but ensures no other device
+        // can ever change the profile key other than the primary device.
+        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimaryDevice
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
@@ -1459,7 +1459,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             if localAddress.e164 != serviceLocalE164 {
                 Logger.warn("localAddress.e164: \(String(describing: localAddress.e164)) != serviceLocalE164: \(serviceLocalE164)")
 
-                if tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
+                if isPrimaryDevice {
                     // It's not clear how we got into this scenario, but if we
                     // do it's bad. Once all clients are PNI-capable we can
                     // ignore the AccountRecord's e164 entirely, and remove

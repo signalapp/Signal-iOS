@@ -1553,6 +1553,7 @@ class StorageServiceOperation: OWSOperation {
         return SingleElementStateUpdater(
             recordUpdater: StorageServiceAccountRecordUpdater(
                 localIdentifiers: localIdentifiers,
+                isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2Swift,
