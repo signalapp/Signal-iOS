@@ -13,6 +13,37 @@ public enum BackupProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - BackupProtoGroupV2AccessLevel
+
+@objc
+public enum BackupProtoGroupV2AccessLevel: Int32 {
+    case unknown = 0
+    case any = 1
+    case member = 2
+    case administrator = 3
+    case unsatisfiable = 4
+}
+
+private func BackupProtoGroupV2AccessLevelWrap(_ value: BackupProtos_GroupV2AccessLevel) -> BackupProtoGroupV2AccessLevel {
+    switch value {
+    case .unknown: return .unknown
+    case .any: return .any
+    case .member: return .member
+    case .administrator: return .administrator
+    case .unsatisfiable: return .unsatisfiable
+    }
+}
+
+private func BackupProtoGroupV2AccessLevelUnwrap(_ value: BackupProtoGroupV2AccessLevel) -> BackupProtos_GroupV2AccessLevel {
+    switch value {
+    case .unknown: return .unknown
+    case .any: return .any
+    case .member: return .member
+    case .administrator: return .administrator
+    case .unsatisfiable: return .unsatisfiable
+    }
+}
+
 // MARK: - BackupProtoBackupInfo
 
 @objc
@@ -3702,9 +3733,6 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
     @objc
     public let timestamp: UInt64
 
-    @objc
-    public let ringerRecipientID: UInt64
-
     public var type: BackupProtoCallType? {
         guard hasType else {
             return nil
@@ -3723,6 +3751,15 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    @objc
+    public var ringerRecipientID: UInt64 {
+        return proto.ringerRecipientID
+    }
+    @objc
+    public var hasRingerRecipientID: Bool {
+        return proto.hasRingerRecipientID
     }
 
     public var event: BackupProtoCallEvent? {
@@ -3757,14 +3794,12 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
                  callID: UInt64,
                  conversationRecipientID: UInt64,
                  outgoing: Bool,
-                 timestamp: UInt64,
-                 ringerRecipientID: UInt64) {
+                 timestamp: UInt64) {
         self.proto = proto
         self.callID = callID
         self.conversationRecipientID = conversationRecipientID
         self.outgoing = outgoing
         self.timestamp = timestamp
-        self.ringerRecipientID = ringerRecipientID
     }
 
     @objc
@@ -3799,17 +3834,11 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
-        guard proto.hasRingerRecipientID else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: ringerRecipientID")
-        }
-        let ringerRecipientID = proto.ringerRecipientID
-
         self.init(proto: proto,
                   callID: callID,
                   conversationRecipientID: conversationRecipientID,
                   outgoing: outgoing,
-                  timestamp: timestamp,
-                  ringerRecipientID: ringerRecipientID)
+                  timestamp: timestamp)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -3850,16 +3879,19 @@ public class BackupProtoCall: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoCall {
     @objc
-    public static func builder(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) -> BackupProtoCallBuilder {
-        return BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
+    public static func builder(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64) -> BackupProtoCallBuilder {
+        return BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoCallBuilder {
-        let builder = BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp, ringerRecipientID: ringerRecipientID)
+        let builder = BackupProtoCallBuilder(callID: callID, conversationRecipientID: conversationRecipientID, outgoing: outgoing, timestamp: timestamp)
         if let _value = type {
             builder.setType(_value)
+        }
+        if hasRingerRecipientID {
+            builder.setRingerRecipientID(ringerRecipientID)
         }
         if let _value = event {
             builder.setEvent(_value)
@@ -3880,14 +3912,13 @@ public class BackupProtoCallBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64, ringerRecipientID: UInt64) {
+    fileprivate init(callID: UInt64, conversationRecipientID: UInt64, outgoing: Bool, timestamp: UInt64) {
         super.init()
 
         setCallID(callID)
         setConversationRecipientID(conversationRecipientID)
         setOutgoing(outgoing)
         setTimestamp(timestamp)
-        setRingerRecipientID(ringerRecipientID)
     }
 
     @objc
@@ -4291,6 +4322,139 @@ extension BackupProtoChatItemOutgoingMessageDetailsBuilder {
 
 #endif
 
+// MARK: - BackupProtoChatItemDirectionlessMessageDetails
+
+@objc
+public class BackupProtoChatItemDirectionlessMessageDetails: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_ChatItem.DirectionlessMessageDetails
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_ChatItem.DirectionlessMessageDetails) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_ChatItem.DirectionlessMessageDetails(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_ChatItem.DirectionlessMessageDetails) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoChatItemDirectionlessMessageDetails {
+    @objc
+    public static func builder() -> BackupProtoChatItemDirectionlessMessageDetailsBuilder {
+        return BackupProtoChatItemDirectionlessMessageDetailsBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoChatItemDirectionlessMessageDetailsBuilder {
+        let builder = BackupProtoChatItemDirectionlessMessageDetailsBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoChatItemDirectionlessMessageDetailsBuilder: NSObject {
+
+    private var proto = BackupProtos_ChatItem.DirectionlessMessageDetails()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoChatItemDirectionlessMessageDetails {
+        return BackupProtoChatItemDirectionlessMessageDetails(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoChatItemDirectionlessMessageDetails {
+        return BackupProtoChatItemDirectionlessMessageDetails(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoChatItemDirectionlessMessageDetails(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoChatItemDirectionlessMessageDetails {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoChatItemDirectionlessMessageDetailsBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoChatItemDirectionlessMessageDetails? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - BackupProtoChatItem
 
 @objc
@@ -4321,6 +4485,9 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let outgoing: BackupProtoChatItemOutgoingMessageDetails?
+
+    @objc
+    public let directionless: BackupProtoChatItemDirectionlessMessageDetails?
 
     @objc
     public let standardMessage: BackupProtoStandardMessage?
@@ -4375,6 +4542,7 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
                  sms: Bool,
                  incoming: BackupProtoChatItemIncomingMessageDetails?,
                  outgoing: BackupProtoChatItemOutgoingMessageDetails?,
+                 directionless: BackupProtoChatItemDirectionlessMessageDetails?,
                  standardMessage: BackupProtoStandardMessage?,
                  contactMessage: BackupProtoContactMessage?,
                  voiceMessage: BackupProtoVoiceMessage?,
@@ -4390,6 +4558,7 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
         self.sms = sms
         self.incoming = incoming
         self.outgoing = outgoing
+        self.directionless = directionless
         self.standardMessage = standardMessage
         self.contactMessage = contactMessage
         self.voiceMessage = voiceMessage
@@ -4448,6 +4617,11 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
             outgoing = try BackupProtoChatItemOutgoingMessageDetails(proto.outgoing)
         }
 
+        var directionless: BackupProtoChatItemDirectionlessMessageDetails?
+        if proto.hasDirectionless {
+            directionless = BackupProtoChatItemDirectionlessMessageDetails(proto.directionless)
+        }
+
         var standardMessage: BackupProtoStandardMessage?
         if proto.hasStandardMessage {
             standardMessage = try BackupProtoStandardMessage(proto.standardMessage)
@@ -4487,6 +4661,7 @@ public class BackupProtoChatItem: NSObject, Codable, NSSecureCoding {
                   sms: sms,
                   incoming: incoming,
                   outgoing: outgoing,
+                  directionless: directionless,
                   standardMessage: standardMessage,
                   contactMessage: contactMessage,
                   voiceMessage: voiceMessage,
@@ -4553,6 +4728,9 @@ extension BackupProtoChatItem {
         }
         if let _value = outgoing {
             builder.setOutgoing(_value)
+        }
+        if let _value = directionless {
+            builder.setDirectionless(_value)
         }
         if let _value = standardMessage {
             builder.setStandardMessage(_value)
@@ -4663,6 +4841,17 @@ public class BackupProtoChatItemBuilder: NSObject {
 
     public func setOutgoing(_ valueParam: BackupProtoChatItemOutgoingMessageDetails) {
         proto.outgoing = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDirectionless(_ valueParam: BackupProtoChatItemDirectionlessMessageDetails?) {
+        guard let valueParam = valueParam else { return }
+        proto.directionless = valueParam.proto
+    }
+
+    public func setDirectionless(_ valueParam: BackupProtoChatItemDirectionlessMessageDetails) {
+        proto.directionless = valueParam.proto
     }
 
     @objc
@@ -10639,7 +10828,7 @@ public class BackupProtoChatUpdateMessage: NSObject, Codable, NSSecureCoding {
     public let simpleUpdate: BackupProtoSimpleChatUpdate?
 
     @objc
-    public let groupDescription: BackupProtoGroupDescriptionChatUpdate?
+    public let groupChange: BackupProtoGroupChangeChatUpdate?
 
     @objc
     public let expirationTimerChange: BackupProtoExpirationTimerChatUpdate?
@@ -10666,7 +10855,7 @@ public class BackupProtoChatUpdateMessage: NSObject, Codable, NSSecureCoding {
 
     private init(proto: BackupProtos_ChatUpdateMessage,
                  simpleUpdate: BackupProtoSimpleChatUpdate?,
-                 groupDescription: BackupProtoGroupDescriptionChatUpdate?,
+                 groupChange: BackupProtoGroupChangeChatUpdate?,
                  expirationTimerChange: BackupProtoExpirationTimerChatUpdate?,
                  profileChange: BackupProtoProfileChangeChatUpdate?,
                  threadMerge: BackupProtoThreadMergeChatUpdate?,
@@ -10674,7 +10863,7 @@ public class BackupProtoChatUpdateMessage: NSObject, Codable, NSSecureCoding {
                  callingMessage: BackupProtoCallChatUpdate?) {
         self.proto = proto
         self.simpleUpdate = simpleUpdate
-        self.groupDescription = groupDescription
+        self.groupChange = groupChange
         self.expirationTimerChange = expirationTimerChange
         self.profileChange = profileChange
         self.threadMerge = threadMerge
@@ -10699,9 +10888,9 @@ public class BackupProtoChatUpdateMessage: NSObject, Codable, NSSecureCoding {
             simpleUpdate = BackupProtoSimpleChatUpdate(proto.simpleUpdate)
         }
 
-        var groupDescription: BackupProtoGroupDescriptionChatUpdate?
-        if proto.hasGroupDescription {
-            groupDescription = try BackupProtoGroupDescriptionChatUpdate(proto.groupDescription)
+        var groupChange: BackupProtoGroupChangeChatUpdate?
+        if proto.hasGroupChange {
+            groupChange = try BackupProtoGroupChangeChatUpdate(proto.groupChange)
         }
 
         var expirationTimerChange: BackupProtoExpirationTimerChatUpdate?
@@ -10731,7 +10920,7 @@ public class BackupProtoChatUpdateMessage: NSObject, Codable, NSSecureCoding {
 
         self.init(proto: proto,
                   simpleUpdate: simpleUpdate,
-                  groupDescription: groupDescription,
+                  groupChange: groupChange,
                   expirationTimerChange: expirationTimerChange,
                   profileChange: profileChange,
                   threadMerge: threadMerge,
@@ -10788,8 +10977,8 @@ extension BackupProtoChatUpdateMessage {
         if let _value = simpleUpdate {
             builder.setSimpleUpdate(_value)
         }
-        if let _value = groupDescription {
-            builder.setGroupDescription(_value)
+        if let _value = groupChange {
+            builder.setGroupChange(_value)
         }
         if let _value = expirationTimerChange {
             builder.setExpirationTimerChange(_value)
@@ -10834,13 +11023,13 @@ public class BackupProtoChatUpdateMessageBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setGroupDescription(_ valueParam: BackupProtoGroupDescriptionChatUpdate?) {
+    public func setGroupChange(_ valueParam: BackupProtoGroupChangeChatUpdate?) {
         guard let valueParam = valueParam else { return }
-        proto.groupDescription = valueParam.proto
+        proto.groupChange = valueParam.proto
     }
 
-    public func setGroupDescription(_ valueParam: BackupProtoGroupDescriptionChatUpdate) {
-        proto.groupDescription = valueParam.proto
+    public func setGroupChange(_ valueParam: BackupProtoGroupChangeChatUpdate) {
+        proto.groupChange = valueParam.proto
     }
 
     @objc
@@ -11304,10 +11493,19 @@ public class BackupProtoGroupCallChatUpdate: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: BackupProtos_GroupCallChatUpdate
 
     @objc
-    public let startedCallAci: Data
+    public let startedCallTimestamp: UInt64
 
     @objc
-    public let startedCallTimestamp: UInt64
+    public var startedCallAci: Data? {
+        guard hasStartedCallAci else {
+            return nil
+        }
+        return proto.startedCallAci
+    }
+    @objc
+    public var hasStartedCallAci: Bool {
+        return proto.hasStartedCallAci
+    }
 
     @objc
     public var inCallAcis: [Data] {
@@ -11323,10 +11521,8 @@ public class BackupProtoGroupCallChatUpdate: NSObject, Codable, NSSecureCoding {
     }
 
     private init(proto: BackupProtos_GroupCallChatUpdate,
-                 startedCallAci: Data,
                  startedCallTimestamp: UInt64) {
         self.proto = proto
-        self.startedCallAci = startedCallAci
         self.startedCallTimestamp = startedCallTimestamp
     }
 
@@ -11342,18 +11538,12 @@ public class BackupProtoGroupCallChatUpdate: NSObject, Codable, NSSecureCoding {
     }
 
     fileprivate convenience init(_ proto: BackupProtos_GroupCallChatUpdate) throws {
-        guard proto.hasStartedCallAci else {
-            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: startedCallAci")
-        }
-        let startedCallAci = proto.startedCallAci
-
         guard proto.hasStartedCallTimestamp else {
             throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: startedCallTimestamp")
         }
         let startedCallTimestamp = proto.startedCallTimestamp
 
         self.init(proto: proto,
-                  startedCallAci: startedCallAci,
                   startedCallTimestamp: startedCallTimestamp)
     }
 
@@ -11395,14 +11585,17 @@ public class BackupProtoGroupCallChatUpdate: NSObject, Codable, NSSecureCoding {
 
 extension BackupProtoGroupCallChatUpdate {
     @objc
-    public static func builder(startedCallAci: Data, startedCallTimestamp: UInt64) -> BackupProtoGroupCallChatUpdateBuilder {
-        return BackupProtoGroupCallChatUpdateBuilder(startedCallAci: startedCallAci, startedCallTimestamp: startedCallTimestamp)
+    public static func builder(startedCallTimestamp: UInt64) -> BackupProtoGroupCallChatUpdateBuilder {
+        return BackupProtoGroupCallChatUpdateBuilder(startedCallTimestamp: startedCallTimestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> BackupProtoGroupCallChatUpdateBuilder {
-        let builder = BackupProtoGroupCallChatUpdateBuilder(startedCallAci: startedCallAci, startedCallTimestamp: startedCallTimestamp)
+        let builder = BackupProtoGroupCallChatUpdateBuilder(startedCallTimestamp: startedCallTimestamp)
+        if let _value = startedCallAci {
+            builder.setStartedCallAci(_value)
+        }
         builder.setInCallAcis(inCallAcis)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -11420,10 +11613,9 @@ public class BackupProtoGroupCallChatUpdateBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(startedCallAci: Data, startedCallTimestamp: UInt64) {
+    fileprivate init(startedCallTimestamp: UInt64) {
         super.init()
 
-        setStartedCallAci(startedCallAci)
         setStartedCallTimestamp(startedCallTimestamp)
     }
 
@@ -12483,6 +12675,7143 @@ extension BackupProtoSessionSwitchoverChatUpdate {
 extension BackupProtoSessionSwitchoverChatUpdateBuilder {
     @objc
     public func buildIgnoringErrors() -> BackupProtoSessionSwitchoverChatUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupChangeChatUpdateUpdate
+
+@objc
+public class BackupProtoGroupChangeChatUpdateUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupChangeChatUpdate.Update
+
+    @objc
+    public let genericGroupUpdate: BackupProtoGenericGroupUpdate?
+
+    @objc
+    public let groupCreationUpdate: BackupProtoGroupCreationUpdate?
+
+    @objc
+    public let groupNameUpdate: BackupProtoGroupNameUpdate?
+
+    @objc
+    public let groupAvatarUpdate: BackupProtoGroupAvatarUpdate?
+
+    @objc
+    public let groupDescriptionUpdate: BackupProtoGroupDescriptionUpdate?
+
+    @objc
+    public let groupMembershipAccessLevelChangeUpdate: BackupProtoGroupMembershipAccessLevelChangeUpdate?
+
+    @objc
+    public let groupAttributesAccessLevelChangeUpdate: BackupProtoGroupAttributesAccessLevelChangeUpdate?
+
+    @objc
+    public let groupAnnouncementOnlyChangeUpdate: BackupProtoGroupAnnouncementOnlyChangeUpdate?
+
+    @objc
+    public let groupAdminStatusUpdate: BackupProtoGroupAdminStatusUpdate?
+
+    @objc
+    public let groupMemberLeftUpdate: BackupProtoGroupMemberLeftUpdate?
+
+    @objc
+    public let groupMemberRemovedUpdate: BackupProtoGroupMemberRemovedUpdate?
+
+    @objc
+    public let selfInvitedToGroupUpdate: BackupProtoSelfInvitedToGroupUpdate?
+
+    @objc
+    public let selfInvitedOtherUserToGroupUpdate: BackupProtoSelfInvitedOtherUserToGroupUpdate?
+
+    @objc
+    public let groupUnknownInviteeUpdate: BackupProtoGroupUnknownInviteeUpdate?
+
+    @objc
+    public let groupInvitationAcceptedUpdate: BackupProtoGroupInvitationAcceptedUpdate?
+
+    @objc
+    public let groupInvitationDeclinedUpdate: BackupProtoGroupInvitationDeclinedUpdate?
+
+    @objc
+    public let groupMemberJoinedUpdate: BackupProtoGroupMemberJoinedUpdate?
+
+    @objc
+    public let groupMemberAddedUpdate: BackupProtoGroupMemberAddedUpdate?
+
+    @objc
+    public let groupSelfInvitationRevokedUpdate: BackupProtoGroupSelfInvitationRevokedUpdate?
+
+    @objc
+    public let groupInvitationRevokedUpdate: BackupProtoGroupInvitationRevokedUpdate?
+
+    @objc
+    public let groupJoinRequestUpdate: BackupProtoGroupJoinRequestUpdate?
+
+    @objc
+    public let groupJoinRequestApprovalUpdate: BackupProtoGroupJoinRequestApprovalUpdate?
+
+    @objc
+    public let groupJoinRequestCanceledUpdate: BackupProtoGroupJoinRequestCanceledUpdate?
+
+    @objc
+    public let groupInviteLinkResetUpdate: BackupProtoGroupInviteLinkResetUpdate?
+
+    @objc
+    public let groupInviteLinkEnabledUpdate: BackupProtoGroupInviteLinkEnabledUpdate?
+
+    @objc
+    public let groupInviteLinkAdminApprovalUpdate: BackupProtoGroupInviteLinkAdminApprovalUpdate?
+
+    @objc
+    public let groupInviteLinkDisabledUpdate: BackupProtoGroupInviteLinkDisabledUpdate?
+
+    @objc
+    public let groupMemberJoinedByLinkUpdate: BackupProtoGroupMemberJoinedByLinkUpdate?
+
+    @objc
+    public let groupV2MigrationUpdate: BackupProtoGroupV2MigrationUpdate?
+
+    @objc
+    public let groupV2MigrationSelfInvitedUpdate: BackupProtoGroupV2MigrationSelfInvitedUpdate?
+
+    @objc
+    public let groupV2MigrationInvitedMembersUpdate: BackupProtoGroupV2MigrationInvitedMembersUpdate?
+
+    @objc
+    public let groupV2MigrationDroppedMembersUpdate: BackupProtoGroupV2MigrationDroppedMembersUpdate?
+
+    @objc
+    public let groupSequenceOfRequestsAndCancelsUpdate: BackupProtoGroupSequenceOfRequestsAndCancelsUpdate?
+
+    @objc
+    public let groupExpirationTimerUpdate: BackupProtoGroupExpirationTimerUpdate?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupChangeChatUpdate.Update,
+                 genericGroupUpdate: BackupProtoGenericGroupUpdate?,
+                 groupCreationUpdate: BackupProtoGroupCreationUpdate?,
+                 groupNameUpdate: BackupProtoGroupNameUpdate?,
+                 groupAvatarUpdate: BackupProtoGroupAvatarUpdate?,
+                 groupDescriptionUpdate: BackupProtoGroupDescriptionUpdate?,
+                 groupMembershipAccessLevelChangeUpdate: BackupProtoGroupMembershipAccessLevelChangeUpdate?,
+                 groupAttributesAccessLevelChangeUpdate: BackupProtoGroupAttributesAccessLevelChangeUpdate?,
+                 groupAnnouncementOnlyChangeUpdate: BackupProtoGroupAnnouncementOnlyChangeUpdate?,
+                 groupAdminStatusUpdate: BackupProtoGroupAdminStatusUpdate?,
+                 groupMemberLeftUpdate: BackupProtoGroupMemberLeftUpdate?,
+                 groupMemberRemovedUpdate: BackupProtoGroupMemberRemovedUpdate?,
+                 selfInvitedToGroupUpdate: BackupProtoSelfInvitedToGroupUpdate?,
+                 selfInvitedOtherUserToGroupUpdate: BackupProtoSelfInvitedOtherUserToGroupUpdate?,
+                 groupUnknownInviteeUpdate: BackupProtoGroupUnknownInviteeUpdate?,
+                 groupInvitationAcceptedUpdate: BackupProtoGroupInvitationAcceptedUpdate?,
+                 groupInvitationDeclinedUpdate: BackupProtoGroupInvitationDeclinedUpdate?,
+                 groupMemberJoinedUpdate: BackupProtoGroupMemberJoinedUpdate?,
+                 groupMemberAddedUpdate: BackupProtoGroupMemberAddedUpdate?,
+                 groupSelfInvitationRevokedUpdate: BackupProtoGroupSelfInvitationRevokedUpdate?,
+                 groupInvitationRevokedUpdate: BackupProtoGroupInvitationRevokedUpdate?,
+                 groupJoinRequestUpdate: BackupProtoGroupJoinRequestUpdate?,
+                 groupJoinRequestApprovalUpdate: BackupProtoGroupJoinRequestApprovalUpdate?,
+                 groupJoinRequestCanceledUpdate: BackupProtoGroupJoinRequestCanceledUpdate?,
+                 groupInviteLinkResetUpdate: BackupProtoGroupInviteLinkResetUpdate?,
+                 groupInviteLinkEnabledUpdate: BackupProtoGroupInviteLinkEnabledUpdate?,
+                 groupInviteLinkAdminApprovalUpdate: BackupProtoGroupInviteLinkAdminApprovalUpdate?,
+                 groupInviteLinkDisabledUpdate: BackupProtoGroupInviteLinkDisabledUpdate?,
+                 groupMemberJoinedByLinkUpdate: BackupProtoGroupMemberJoinedByLinkUpdate?,
+                 groupV2MigrationUpdate: BackupProtoGroupV2MigrationUpdate?,
+                 groupV2MigrationSelfInvitedUpdate: BackupProtoGroupV2MigrationSelfInvitedUpdate?,
+                 groupV2MigrationInvitedMembersUpdate: BackupProtoGroupV2MigrationInvitedMembersUpdate?,
+                 groupV2MigrationDroppedMembersUpdate: BackupProtoGroupV2MigrationDroppedMembersUpdate?,
+                 groupSequenceOfRequestsAndCancelsUpdate: BackupProtoGroupSequenceOfRequestsAndCancelsUpdate?,
+                 groupExpirationTimerUpdate: BackupProtoGroupExpirationTimerUpdate?) {
+        self.proto = proto
+        self.genericGroupUpdate = genericGroupUpdate
+        self.groupCreationUpdate = groupCreationUpdate
+        self.groupNameUpdate = groupNameUpdate
+        self.groupAvatarUpdate = groupAvatarUpdate
+        self.groupDescriptionUpdate = groupDescriptionUpdate
+        self.groupMembershipAccessLevelChangeUpdate = groupMembershipAccessLevelChangeUpdate
+        self.groupAttributesAccessLevelChangeUpdate = groupAttributesAccessLevelChangeUpdate
+        self.groupAnnouncementOnlyChangeUpdate = groupAnnouncementOnlyChangeUpdate
+        self.groupAdminStatusUpdate = groupAdminStatusUpdate
+        self.groupMemberLeftUpdate = groupMemberLeftUpdate
+        self.groupMemberRemovedUpdate = groupMemberRemovedUpdate
+        self.selfInvitedToGroupUpdate = selfInvitedToGroupUpdate
+        self.selfInvitedOtherUserToGroupUpdate = selfInvitedOtherUserToGroupUpdate
+        self.groupUnknownInviteeUpdate = groupUnknownInviteeUpdate
+        self.groupInvitationAcceptedUpdate = groupInvitationAcceptedUpdate
+        self.groupInvitationDeclinedUpdate = groupInvitationDeclinedUpdate
+        self.groupMemberJoinedUpdate = groupMemberJoinedUpdate
+        self.groupMemberAddedUpdate = groupMemberAddedUpdate
+        self.groupSelfInvitationRevokedUpdate = groupSelfInvitationRevokedUpdate
+        self.groupInvitationRevokedUpdate = groupInvitationRevokedUpdate
+        self.groupJoinRequestUpdate = groupJoinRequestUpdate
+        self.groupJoinRequestApprovalUpdate = groupJoinRequestApprovalUpdate
+        self.groupJoinRequestCanceledUpdate = groupJoinRequestCanceledUpdate
+        self.groupInviteLinkResetUpdate = groupInviteLinkResetUpdate
+        self.groupInviteLinkEnabledUpdate = groupInviteLinkEnabledUpdate
+        self.groupInviteLinkAdminApprovalUpdate = groupInviteLinkAdminApprovalUpdate
+        self.groupInviteLinkDisabledUpdate = groupInviteLinkDisabledUpdate
+        self.groupMemberJoinedByLinkUpdate = groupMemberJoinedByLinkUpdate
+        self.groupV2MigrationUpdate = groupV2MigrationUpdate
+        self.groupV2MigrationSelfInvitedUpdate = groupV2MigrationSelfInvitedUpdate
+        self.groupV2MigrationInvitedMembersUpdate = groupV2MigrationInvitedMembersUpdate
+        self.groupV2MigrationDroppedMembersUpdate = groupV2MigrationDroppedMembersUpdate
+        self.groupSequenceOfRequestsAndCancelsUpdate = groupSequenceOfRequestsAndCancelsUpdate
+        self.groupExpirationTimerUpdate = groupExpirationTimerUpdate
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupChangeChatUpdate.Update(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupChangeChatUpdate.Update) throws {
+        var genericGroupUpdate: BackupProtoGenericGroupUpdate?
+        if proto.hasGenericGroupUpdate {
+            genericGroupUpdate = BackupProtoGenericGroupUpdate(proto.genericGroupUpdate)
+        }
+
+        var groupCreationUpdate: BackupProtoGroupCreationUpdate?
+        if proto.hasGroupCreationUpdate {
+            groupCreationUpdate = BackupProtoGroupCreationUpdate(proto.groupCreationUpdate)
+        }
+
+        var groupNameUpdate: BackupProtoGroupNameUpdate?
+        if proto.hasGroupNameUpdate {
+            groupNameUpdate = BackupProtoGroupNameUpdate(proto.groupNameUpdate)
+        }
+
+        var groupAvatarUpdate: BackupProtoGroupAvatarUpdate?
+        if proto.hasGroupAvatarUpdate {
+            groupAvatarUpdate = try BackupProtoGroupAvatarUpdate(proto.groupAvatarUpdate)
+        }
+
+        var groupDescriptionUpdate: BackupProtoGroupDescriptionUpdate?
+        if proto.hasGroupDescriptionUpdate {
+            groupDescriptionUpdate = BackupProtoGroupDescriptionUpdate(proto.groupDescriptionUpdate)
+        }
+
+        var groupMembershipAccessLevelChangeUpdate: BackupProtoGroupMembershipAccessLevelChangeUpdate?
+        if proto.hasGroupMembershipAccessLevelChangeUpdate {
+            groupMembershipAccessLevelChangeUpdate = BackupProtoGroupMembershipAccessLevelChangeUpdate(proto.groupMembershipAccessLevelChangeUpdate)
+        }
+
+        var groupAttributesAccessLevelChangeUpdate: BackupProtoGroupAttributesAccessLevelChangeUpdate?
+        if proto.hasGroupAttributesAccessLevelChangeUpdate {
+            groupAttributesAccessLevelChangeUpdate = BackupProtoGroupAttributesAccessLevelChangeUpdate(proto.groupAttributesAccessLevelChangeUpdate)
+        }
+
+        var groupAnnouncementOnlyChangeUpdate: BackupProtoGroupAnnouncementOnlyChangeUpdate?
+        if proto.hasGroupAnnouncementOnlyChangeUpdate {
+            groupAnnouncementOnlyChangeUpdate = try BackupProtoGroupAnnouncementOnlyChangeUpdate(proto.groupAnnouncementOnlyChangeUpdate)
+        }
+
+        var groupAdminStatusUpdate: BackupProtoGroupAdminStatusUpdate?
+        if proto.hasGroupAdminStatusUpdate {
+            groupAdminStatusUpdate = try BackupProtoGroupAdminStatusUpdate(proto.groupAdminStatusUpdate)
+        }
+
+        var groupMemberLeftUpdate: BackupProtoGroupMemberLeftUpdate?
+        if proto.hasGroupMemberLeftUpdate {
+            groupMemberLeftUpdate = try BackupProtoGroupMemberLeftUpdate(proto.groupMemberLeftUpdate)
+        }
+
+        var groupMemberRemovedUpdate: BackupProtoGroupMemberRemovedUpdate?
+        if proto.hasGroupMemberRemovedUpdate {
+            groupMemberRemovedUpdate = try BackupProtoGroupMemberRemovedUpdate(proto.groupMemberRemovedUpdate)
+        }
+
+        var selfInvitedToGroupUpdate: BackupProtoSelfInvitedToGroupUpdate?
+        if proto.hasSelfInvitedToGroupUpdate {
+            selfInvitedToGroupUpdate = BackupProtoSelfInvitedToGroupUpdate(proto.selfInvitedToGroupUpdate)
+        }
+
+        var selfInvitedOtherUserToGroupUpdate: BackupProtoSelfInvitedOtherUserToGroupUpdate?
+        if proto.hasSelfInvitedOtherUserToGroupUpdate {
+            selfInvitedOtherUserToGroupUpdate = try BackupProtoSelfInvitedOtherUserToGroupUpdate(proto.selfInvitedOtherUserToGroupUpdate)
+        }
+
+        var groupUnknownInviteeUpdate: BackupProtoGroupUnknownInviteeUpdate?
+        if proto.hasGroupUnknownInviteeUpdate {
+            groupUnknownInviteeUpdate = try BackupProtoGroupUnknownInviteeUpdate(proto.groupUnknownInviteeUpdate)
+        }
+
+        var groupInvitationAcceptedUpdate: BackupProtoGroupInvitationAcceptedUpdate?
+        if proto.hasGroupInvitationAcceptedUpdate {
+            groupInvitationAcceptedUpdate = try BackupProtoGroupInvitationAcceptedUpdate(proto.groupInvitationAcceptedUpdate)
+        }
+
+        var groupInvitationDeclinedUpdate: BackupProtoGroupInvitationDeclinedUpdate?
+        if proto.hasGroupInvitationDeclinedUpdate {
+            groupInvitationDeclinedUpdate = BackupProtoGroupInvitationDeclinedUpdate(proto.groupInvitationDeclinedUpdate)
+        }
+
+        var groupMemberJoinedUpdate: BackupProtoGroupMemberJoinedUpdate?
+        if proto.hasGroupMemberJoinedUpdate {
+            groupMemberJoinedUpdate = try BackupProtoGroupMemberJoinedUpdate(proto.groupMemberJoinedUpdate)
+        }
+
+        var groupMemberAddedUpdate: BackupProtoGroupMemberAddedUpdate?
+        if proto.hasGroupMemberAddedUpdate {
+            groupMemberAddedUpdate = try BackupProtoGroupMemberAddedUpdate(proto.groupMemberAddedUpdate)
+        }
+
+        var groupSelfInvitationRevokedUpdate: BackupProtoGroupSelfInvitationRevokedUpdate?
+        if proto.hasGroupSelfInvitationRevokedUpdate {
+            groupSelfInvitationRevokedUpdate = BackupProtoGroupSelfInvitationRevokedUpdate(proto.groupSelfInvitationRevokedUpdate)
+        }
+
+        var groupInvitationRevokedUpdate: BackupProtoGroupInvitationRevokedUpdate?
+        if proto.hasGroupInvitationRevokedUpdate {
+            groupInvitationRevokedUpdate = BackupProtoGroupInvitationRevokedUpdate(proto.groupInvitationRevokedUpdate)
+        }
+
+        var groupJoinRequestUpdate: BackupProtoGroupJoinRequestUpdate?
+        if proto.hasGroupJoinRequestUpdate {
+            groupJoinRequestUpdate = try BackupProtoGroupJoinRequestUpdate(proto.groupJoinRequestUpdate)
+        }
+
+        var groupJoinRequestApprovalUpdate: BackupProtoGroupJoinRequestApprovalUpdate?
+        if proto.hasGroupJoinRequestApprovalUpdate {
+            groupJoinRequestApprovalUpdate = try BackupProtoGroupJoinRequestApprovalUpdate(proto.groupJoinRequestApprovalUpdate)
+        }
+
+        var groupJoinRequestCanceledUpdate: BackupProtoGroupJoinRequestCanceledUpdate?
+        if proto.hasGroupJoinRequestCanceledUpdate {
+            groupJoinRequestCanceledUpdate = try BackupProtoGroupJoinRequestCanceledUpdate(proto.groupJoinRequestCanceledUpdate)
+        }
+
+        var groupInviteLinkResetUpdate: BackupProtoGroupInviteLinkResetUpdate?
+        if proto.hasGroupInviteLinkResetUpdate {
+            groupInviteLinkResetUpdate = BackupProtoGroupInviteLinkResetUpdate(proto.groupInviteLinkResetUpdate)
+        }
+
+        var groupInviteLinkEnabledUpdate: BackupProtoGroupInviteLinkEnabledUpdate?
+        if proto.hasGroupInviteLinkEnabledUpdate {
+            groupInviteLinkEnabledUpdate = try BackupProtoGroupInviteLinkEnabledUpdate(proto.groupInviteLinkEnabledUpdate)
+        }
+
+        var groupInviteLinkAdminApprovalUpdate: BackupProtoGroupInviteLinkAdminApprovalUpdate?
+        if proto.hasGroupInviteLinkAdminApprovalUpdate {
+            groupInviteLinkAdminApprovalUpdate = try BackupProtoGroupInviteLinkAdminApprovalUpdate(proto.groupInviteLinkAdminApprovalUpdate)
+        }
+
+        var groupInviteLinkDisabledUpdate: BackupProtoGroupInviteLinkDisabledUpdate?
+        if proto.hasGroupInviteLinkDisabledUpdate {
+            groupInviteLinkDisabledUpdate = BackupProtoGroupInviteLinkDisabledUpdate(proto.groupInviteLinkDisabledUpdate)
+        }
+
+        var groupMemberJoinedByLinkUpdate: BackupProtoGroupMemberJoinedByLinkUpdate?
+        if proto.hasGroupMemberJoinedByLinkUpdate {
+            groupMemberJoinedByLinkUpdate = try BackupProtoGroupMemberJoinedByLinkUpdate(proto.groupMemberJoinedByLinkUpdate)
+        }
+
+        var groupV2MigrationUpdate: BackupProtoGroupV2MigrationUpdate?
+        if proto.hasGroupV2MigrationUpdate {
+            groupV2MigrationUpdate = BackupProtoGroupV2MigrationUpdate(proto.groupV2MigrationUpdate)
+        }
+
+        var groupV2MigrationSelfInvitedUpdate: BackupProtoGroupV2MigrationSelfInvitedUpdate?
+        if proto.hasGroupV2MigrationSelfInvitedUpdate {
+            groupV2MigrationSelfInvitedUpdate = BackupProtoGroupV2MigrationSelfInvitedUpdate(proto.groupV2MigrationSelfInvitedUpdate)
+        }
+
+        var groupV2MigrationInvitedMembersUpdate: BackupProtoGroupV2MigrationInvitedMembersUpdate?
+        if proto.hasGroupV2MigrationInvitedMembersUpdate {
+            groupV2MigrationInvitedMembersUpdate = try BackupProtoGroupV2MigrationInvitedMembersUpdate(proto.groupV2MigrationInvitedMembersUpdate)
+        }
+
+        var groupV2MigrationDroppedMembersUpdate: BackupProtoGroupV2MigrationDroppedMembersUpdate?
+        if proto.hasGroupV2MigrationDroppedMembersUpdate {
+            groupV2MigrationDroppedMembersUpdate = try BackupProtoGroupV2MigrationDroppedMembersUpdate(proto.groupV2MigrationDroppedMembersUpdate)
+        }
+
+        var groupSequenceOfRequestsAndCancelsUpdate: BackupProtoGroupSequenceOfRequestsAndCancelsUpdate?
+        if proto.hasGroupSequenceOfRequestsAndCancelsUpdate {
+            groupSequenceOfRequestsAndCancelsUpdate = try BackupProtoGroupSequenceOfRequestsAndCancelsUpdate(proto.groupSequenceOfRequestsAndCancelsUpdate)
+        }
+
+        var groupExpirationTimerUpdate: BackupProtoGroupExpirationTimerUpdate?
+        if proto.hasGroupExpirationTimerUpdate {
+            groupExpirationTimerUpdate = try BackupProtoGroupExpirationTimerUpdate(proto.groupExpirationTimerUpdate)
+        }
+
+        self.init(proto: proto,
+                  genericGroupUpdate: genericGroupUpdate,
+                  groupCreationUpdate: groupCreationUpdate,
+                  groupNameUpdate: groupNameUpdate,
+                  groupAvatarUpdate: groupAvatarUpdate,
+                  groupDescriptionUpdate: groupDescriptionUpdate,
+                  groupMembershipAccessLevelChangeUpdate: groupMembershipAccessLevelChangeUpdate,
+                  groupAttributesAccessLevelChangeUpdate: groupAttributesAccessLevelChangeUpdate,
+                  groupAnnouncementOnlyChangeUpdate: groupAnnouncementOnlyChangeUpdate,
+                  groupAdminStatusUpdate: groupAdminStatusUpdate,
+                  groupMemberLeftUpdate: groupMemberLeftUpdate,
+                  groupMemberRemovedUpdate: groupMemberRemovedUpdate,
+                  selfInvitedToGroupUpdate: selfInvitedToGroupUpdate,
+                  selfInvitedOtherUserToGroupUpdate: selfInvitedOtherUserToGroupUpdate,
+                  groupUnknownInviteeUpdate: groupUnknownInviteeUpdate,
+                  groupInvitationAcceptedUpdate: groupInvitationAcceptedUpdate,
+                  groupInvitationDeclinedUpdate: groupInvitationDeclinedUpdate,
+                  groupMemberJoinedUpdate: groupMemberJoinedUpdate,
+                  groupMemberAddedUpdate: groupMemberAddedUpdate,
+                  groupSelfInvitationRevokedUpdate: groupSelfInvitationRevokedUpdate,
+                  groupInvitationRevokedUpdate: groupInvitationRevokedUpdate,
+                  groupJoinRequestUpdate: groupJoinRequestUpdate,
+                  groupJoinRequestApprovalUpdate: groupJoinRequestApprovalUpdate,
+                  groupJoinRequestCanceledUpdate: groupJoinRequestCanceledUpdate,
+                  groupInviteLinkResetUpdate: groupInviteLinkResetUpdate,
+                  groupInviteLinkEnabledUpdate: groupInviteLinkEnabledUpdate,
+                  groupInviteLinkAdminApprovalUpdate: groupInviteLinkAdminApprovalUpdate,
+                  groupInviteLinkDisabledUpdate: groupInviteLinkDisabledUpdate,
+                  groupMemberJoinedByLinkUpdate: groupMemberJoinedByLinkUpdate,
+                  groupV2MigrationUpdate: groupV2MigrationUpdate,
+                  groupV2MigrationSelfInvitedUpdate: groupV2MigrationSelfInvitedUpdate,
+                  groupV2MigrationInvitedMembersUpdate: groupV2MigrationInvitedMembersUpdate,
+                  groupV2MigrationDroppedMembersUpdate: groupV2MigrationDroppedMembersUpdate,
+                  groupSequenceOfRequestsAndCancelsUpdate: groupSequenceOfRequestsAndCancelsUpdate,
+                  groupExpirationTimerUpdate: groupExpirationTimerUpdate)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupChangeChatUpdateUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupChangeChatUpdateUpdateBuilder {
+        return BackupProtoGroupChangeChatUpdateUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupChangeChatUpdateUpdateBuilder {
+        let builder = BackupProtoGroupChangeChatUpdateUpdateBuilder()
+        if let _value = genericGroupUpdate {
+            builder.setGenericGroupUpdate(_value)
+        }
+        if let _value = groupCreationUpdate {
+            builder.setGroupCreationUpdate(_value)
+        }
+        if let _value = groupNameUpdate {
+            builder.setGroupNameUpdate(_value)
+        }
+        if let _value = groupAvatarUpdate {
+            builder.setGroupAvatarUpdate(_value)
+        }
+        if let _value = groupDescriptionUpdate {
+            builder.setGroupDescriptionUpdate(_value)
+        }
+        if let _value = groupMembershipAccessLevelChangeUpdate {
+            builder.setGroupMembershipAccessLevelChangeUpdate(_value)
+        }
+        if let _value = groupAttributesAccessLevelChangeUpdate {
+            builder.setGroupAttributesAccessLevelChangeUpdate(_value)
+        }
+        if let _value = groupAnnouncementOnlyChangeUpdate {
+            builder.setGroupAnnouncementOnlyChangeUpdate(_value)
+        }
+        if let _value = groupAdminStatusUpdate {
+            builder.setGroupAdminStatusUpdate(_value)
+        }
+        if let _value = groupMemberLeftUpdate {
+            builder.setGroupMemberLeftUpdate(_value)
+        }
+        if let _value = groupMemberRemovedUpdate {
+            builder.setGroupMemberRemovedUpdate(_value)
+        }
+        if let _value = selfInvitedToGroupUpdate {
+            builder.setSelfInvitedToGroupUpdate(_value)
+        }
+        if let _value = selfInvitedOtherUserToGroupUpdate {
+            builder.setSelfInvitedOtherUserToGroupUpdate(_value)
+        }
+        if let _value = groupUnknownInviteeUpdate {
+            builder.setGroupUnknownInviteeUpdate(_value)
+        }
+        if let _value = groupInvitationAcceptedUpdate {
+            builder.setGroupInvitationAcceptedUpdate(_value)
+        }
+        if let _value = groupInvitationDeclinedUpdate {
+            builder.setGroupInvitationDeclinedUpdate(_value)
+        }
+        if let _value = groupMemberJoinedUpdate {
+            builder.setGroupMemberJoinedUpdate(_value)
+        }
+        if let _value = groupMemberAddedUpdate {
+            builder.setGroupMemberAddedUpdate(_value)
+        }
+        if let _value = groupSelfInvitationRevokedUpdate {
+            builder.setGroupSelfInvitationRevokedUpdate(_value)
+        }
+        if let _value = groupInvitationRevokedUpdate {
+            builder.setGroupInvitationRevokedUpdate(_value)
+        }
+        if let _value = groupJoinRequestUpdate {
+            builder.setGroupJoinRequestUpdate(_value)
+        }
+        if let _value = groupJoinRequestApprovalUpdate {
+            builder.setGroupJoinRequestApprovalUpdate(_value)
+        }
+        if let _value = groupJoinRequestCanceledUpdate {
+            builder.setGroupJoinRequestCanceledUpdate(_value)
+        }
+        if let _value = groupInviteLinkResetUpdate {
+            builder.setGroupInviteLinkResetUpdate(_value)
+        }
+        if let _value = groupInviteLinkEnabledUpdate {
+            builder.setGroupInviteLinkEnabledUpdate(_value)
+        }
+        if let _value = groupInviteLinkAdminApprovalUpdate {
+            builder.setGroupInviteLinkAdminApprovalUpdate(_value)
+        }
+        if let _value = groupInviteLinkDisabledUpdate {
+            builder.setGroupInviteLinkDisabledUpdate(_value)
+        }
+        if let _value = groupMemberJoinedByLinkUpdate {
+            builder.setGroupMemberJoinedByLinkUpdate(_value)
+        }
+        if let _value = groupV2MigrationUpdate {
+            builder.setGroupV2MigrationUpdate(_value)
+        }
+        if let _value = groupV2MigrationSelfInvitedUpdate {
+            builder.setGroupV2MigrationSelfInvitedUpdate(_value)
+        }
+        if let _value = groupV2MigrationInvitedMembersUpdate {
+            builder.setGroupV2MigrationInvitedMembersUpdate(_value)
+        }
+        if let _value = groupV2MigrationDroppedMembersUpdate {
+            builder.setGroupV2MigrationDroppedMembersUpdate(_value)
+        }
+        if let _value = groupSequenceOfRequestsAndCancelsUpdate {
+            builder.setGroupSequenceOfRequestsAndCancelsUpdate(_value)
+        }
+        if let _value = groupExpirationTimerUpdate {
+            builder.setGroupExpirationTimerUpdate(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupChangeChatUpdateUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupChangeChatUpdate.Update()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGenericGroupUpdate(_ valueParam: BackupProtoGenericGroupUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.genericGroupUpdate = valueParam.proto
+    }
+
+    public func setGenericGroupUpdate(_ valueParam: BackupProtoGenericGroupUpdate) {
+        proto.genericGroupUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupCreationUpdate(_ valueParam: BackupProtoGroupCreationUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupCreationUpdate = valueParam.proto
+    }
+
+    public func setGroupCreationUpdate(_ valueParam: BackupProtoGroupCreationUpdate) {
+        proto.groupCreationUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupNameUpdate(_ valueParam: BackupProtoGroupNameUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupNameUpdate = valueParam.proto
+    }
+
+    public func setGroupNameUpdate(_ valueParam: BackupProtoGroupNameUpdate) {
+        proto.groupNameUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupAvatarUpdate(_ valueParam: BackupProtoGroupAvatarUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupAvatarUpdate = valueParam.proto
+    }
+
+    public func setGroupAvatarUpdate(_ valueParam: BackupProtoGroupAvatarUpdate) {
+        proto.groupAvatarUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupDescriptionUpdate(_ valueParam: BackupProtoGroupDescriptionUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupDescriptionUpdate = valueParam.proto
+    }
+
+    public func setGroupDescriptionUpdate(_ valueParam: BackupProtoGroupDescriptionUpdate) {
+        proto.groupDescriptionUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMembershipAccessLevelChangeUpdate(_ valueParam: BackupProtoGroupMembershipAccessLevelChangeUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMembershipAccessLevelChangeUpdate = valueParam.proto
+    }
+
+    public func setGroupMembershipAccessLevelChangeUpdate(_ valueParam: BackupProtoGroupMembershipAccessLevelChangeUpdate) {
+        proto.groupMembershipAccessLevelChangeUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupAttributesAccessLevelChangeUpdate(_ valueParam: BackupProtoGroupAttributesAccessLevelChangeUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupAttributesAccessLevelChangeUpdate = valueParam.proto
+    }
+
+    public func setGroupAttributesAccessLevelChangeUpdate(_ valueParam: BackupProtoGroupAttributesAccessLevelChangeUpdate) {
+        proto.groupAttributesAccessLevelChangeUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupAnnouncementOnlyChangeUpdate(_ valueParam: BackupProtoGroupAnnouncementOnlyChangeUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupAnnouncementOnlyChangeUpdate = valueParam.proto
+    }
+
+    public func setGroupAnnouncementOnlyChangeUpdate(_ valueParam: BackupProtoGroupAnnouncementOnlyChangeUpdate) {
+        proto.groupAnnouncementOnlyChangeUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupAdminStatusUpdate(_ valueParam: BackupProtoGroupAdminStatusUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupAdminStatusUpdate = valueParam.proto
+    }
+
+    public func setGroupAdminStatusUpdate(_ valueParam: BackupProtoGroupAdminStatusUpdate) {
+        proto.groupAdminStatusUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMemberLeftUpdate(_ valueParam: BackupProtoGroupMemberLeftUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMemberLeftUpdate = valueParam.proto
+    }
+
+    public func setGroupMemberLeftUpdate(_ valueParam: BackupProtoGroupMemberLeftUpdate) {
+        proto.groupMemberLeftUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMemberRemovedUpdate(_ valueParam: BackupProtoGroupMemberRemovedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMemberRemovedUpdate = valueParam.proto
+    }
+
+    public func setGroupMemberRemovedUpdate(_ valueParam: BackupProtoGroupMemberRemovedUpdate) {
+        proto.groupMemberRemovedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setSelfInvitedToGroupUpdate(_ valueParam: BackupProtoSelfInvitedToGroupUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.selfInvitedToGroupUpdate = valueParam.proto
+    }
+
+    public func setSelfInvitedToGroupUpdate(_ valueParam: BackupProtoSelfInvitedToGroupUpdate) {
+        proto.selfInvitedToGroupUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setSelfInvitedOtherUserToGroupUpdate(_ valueParam: BackupProtoSelfInvitedOtherUserToGroupUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.selfInvitedOtherUserToGroupUpdate = valueParam.proto
+    }
+
+    public func setSelfInvitedOtherUserToGroupUpdate(_ valueParam: BackupProtoSelfInvitedOtherUserToGroupUpdate) {
+        proto.selfInvitedOtherUserToGroupUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupUnknownInviteeUpdate(_ valueParam: BackupProtoGroupUnknownInviteeUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupUnknownInviteeUpdate = valueParam.proto
+    }
+
+    public func setGroupUnknownInviteeUpdate(_ valueParam: BackupProtoGroupUnknownInviteeUpdate) {
+        proto.groupUnknownInviteeUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInvitationAcceptedUpdate(_ valueParam: BackupProtoGroupInvitationAcceptedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInvitationAcceptedUpdate = valueParam.proto
+    }
+
+    public func setGroupInvitationAcceptedUpdate(_ valueParam: BackupProtoGroupInvitationAcceptedUpdate) {
+        proto.groupInvitationAcceptedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInvitationDeclinedUpdate(_ valueParam: BackupProtoGroupInvitationDeclinedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInvitationDeclinedUpdate = valueParam.proto
+    }
+
+    public func setGroupInvitationDeclinedUpdate(_ valueParam: BackupProtoGroupInvitationDeclinedUpdate) {
+        proto.groupInvitationDeclinedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMemberJoinedUpdate(_ valueParam: BackupProtoGroupMemberJoinedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMemberJoinedUpdate = valueParam.proto
+    }
+
+    public func setGroupMemberJoinedUpdate(_ valueParam: BackupProtoGroupMemberJoinedUpdate) {
+        proto.groupMemberJoinedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMemberAddedUpdate(_ valueParam: BackupProtoGroupMemberAddedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMemberAddedUpdate = valueParam.proto
+    }
+
+    public func setGroupMemberAddedUpdate(_ valueParam: BackupProtoGroupMemberAddedUpdate) {
+        proto.groupMemberAddedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupSelfInvitationRevokedUpdate(_ valueParam: BackupProtoGroupSelfInvitationRevokedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupSelfInvitationRevokedUpdate = valueParam.proto
+    }
+
+    public func setGroupSelfInvitationRevokedUpdate(_ valueParam: BackupProtoGroupSelfInvitationRevokedUpdate) {
+        proto.groupSelfInvitationRevokedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInvitationRevokedUpdate(_ valueParam: BackupProtoGroupInvitationRevokedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInvitationRevokedUpdate = valueParam.proto
+    }
+
+    public func setGroupInvitationRevokedUpdate(_ valueParam: BackupProtoGroupInvitationRevokedUpdate) {
+        proto.groupInvitationRevokedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupJoinRequestUpdate(_ valueParam: BackupProtoGroupJoinRequestUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupJoinRequestUpdate = valueParam.proto
+    }
+
+    public func setGroupJoinRequestUpdate(_ valueParam: BackupProtoGroupJoinRequestUpdate) {
+        proto.groupJoinRequestUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupJoinRequestApprovalUpdate(_ valueParam: BackupProtoGroupJoinRequestApprovalUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupJoinRequestApprovalUpdate = valueParam.proto
+    }
+
+    public func setGroupJoinRequestApprovalUpdate(_ valueParam: BackupProtoGroupJoinRequestApprovalUpdate) {
+        proto.groupJoinRequestApprovalUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupJoinRequestCanceledUpdate(_ valueParam: BackupProtoGroupJoinRequestCanceledUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupJoinRequestCanceledUpdate = valueParam.proto
+    }
+
+    public func setGroupJoinRequestCanceledUpdate(_ valueParam: BackupProtoGroupJoinRequestCanceledUpdate) {
+        proto.groupJoinRequestCanceledUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInviteLinkResetUpdate(_ valueParam: BackupProtoGroupInviteLinkResetUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInviteLinkResetUpdate = valueParam.proto
+    }
+
+    public func setGroupInviteLinkResetUpdate(_ valueParam: BackupProtoGroupInviteLinkResetUpdate) {
+        proto.groupInviteLinkResetUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInviteLinkEnabledUpdate(_ valueParam: BackupProtoGroupInviteLinkEnabledUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInviteLinkEnabledUpdate = valueParam.proto
+    }
+
+    public func setGroupInviteLinkEnabledUpdate(_ valueParam: BackupProtoGroupInviteLinkEnabledUpdate) {
+        proto.groupInviteLinkEnabledUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInviteLinkAdminApprovalUpdate(_ valueParam: BackupProtoGroupInviteLinkAdminApprovalUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInviteLinkAdminApprovalUpdate = valueParam.proto
+    }
+
+    public func setGroupInviteLinkAdminApprovalUpdate(_ valueParam: BackupProtoGroupInviteLinkAdminApprovalUpdate) {
+        proto.groupInviteLinkAdminApprovalUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupInviteLinkDisabledUpdate(_ valueParam: BackupProtoGroupInviteLinkDisabledUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupInviteLinkDisabledUpdate = valueParam.proto
+    }
+
+    public func setGroupInviteLinkDisabledUpdate(_ valueParam: BackupProtoGroupInviteLinkDisabledUpdate) {
+        proto.groupInviteLinkDisabledUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupMemberJoinedByLinkUpdate(_ valueParam: BackupProtoGroupMemberJoinedByLinkUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMemberJoinedByLinkUpdate = valueParam.proto
+    }
+
+    public func setGroupMemberJoinedByLinkUpdate(_ valueParam: BackupProtoGroupMemberJoinedByLinkUpdate) {
+        proto.groupMemberJoinedByLinkUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupV2MigrationUpdate(_ valueParam: BackupProtoGroupV2MigrationUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupV2MigrationUpdate = valueParam.proto
+    }
+
+    public func setGroupV2MigrationUpdate(_ valueParam: BackupProtoGroupV2MigrationUpdate) {
+        proto.groupV2MigrationUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupV2MigrationSelfInvitedUpdate(_ valueParam: BackupProtoGroupV2MigrationSelfInvitedUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupV2MigrationSelfInvitedUpdate = valueParam.proto
+    }
+
+    public func setGroupV2MigrationSelfInvitedUpdate(_ valueParam: BackupProtoGroupV2MigrationSelfInvitedUpdate) {
+        proto.groupV2MigrationSelfInvitedUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupV2MigrationInvitedMembersUpdate(_ valueParam: BackupProtoGroupV2MigrationInvitedMembersUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupV2MigrationInvitedMembersUpdate = valueParam.proto
+    }
+
+    public func setGroupV2MigrationInvitedMembersUpdate(_ valueParam: BackupProtoGroupV2MigrationInvitedMembersUpdate) {
+        proto.groupV2MigrationInvitedMembersUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupV2MigrationDroppedMembersUpdate(_ valueParam: BackupProtoGroupV2MigrationDroppedMembersUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupV2MigrationDroppedMembersUpdate = valueParam.proto
+    }
+
+    public func setGroupV2MigrationDroppedMembersUpdate(_ valueParam: BackupProtoGroupV2MigrationDroppedMembersUpdate) {
+        proto.groupV2MigrationDroppedMembersUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupSequenceOfRequestsAndCancelsUpdate(_ valueParam: BackupProtoGroupSequenceOfRequestsAndCancelsUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupSequenceOfRequestsAndCancelsUpdate = valueParam.proto
+    }
+
+    public func setGroupSequenceOfRequestsAndCancelsUpdate(_ valueParam: BackupProtoGroupSequenceOfRequestsAndCancelsUpdate) {
+        proto.groupSequenceOfRequestsAndCancelsUpdate = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGroupExpirationTimerUpdate(_ valueParam: BackupProtoGroupExpirationTimerUpdate?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupExpirationTimerUpdate = valueParam.proto
+    }
+
+    public func setGroupExpirationTimerUpdate(_ valueParam: BackupProtoGroupExpirationTimerUpdate) {
+        proto.groupExpirationTimerUpdate = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupChangeChatUpdateUpdate {
+        return try BackupProtoGroupChangeChatUpdateUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupChangeChatUpdateUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupChangeChatUpdateUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupChangeChatUpdateUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupChangeChatUpdateUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupChangeChatUpdate
+
+@objc
+public class BackupProtoGroupChangeChatUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupChangeChatUpdate
+
+    @objc
+    public let updates: [BackupProtoGroupChangeChatUpdateUpdate]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupChangeChatUpdate,
+                 updates: [BackupProtoGroupChangeChatUpdateUpdate]) {
+        self.proto = proto
+        self.updates = updates
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupChangeChatUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupChangeChatUpdate) throws {
+        var updates: [BackupProtoGroupChangeChatUpdateUpdate] = []
+        updates = try proto.updates.map { try BackupProtoGroupChangeChatUpdateUpdate($0) }
+
+        self.init(proto: proto,
+                  updates: updates)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupChangeChatUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupChangeChatUpdateBuilder {
+        return BackupProtoGroupChangeChatUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupChangeChatUpdateBuilder {
+        let builder = BackupProtoGroupChangeChatUpdateBuilder()
+        builder.setUpdates(updates)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupChangeChatUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupChangeChatUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func addUpdates(_ valueParam: BackupProtoGroupChangeChatUpdateUpdate) {
+        proto.updates.append(valueParam.proto)
+    }
+
+    @objc
+    public func setUpdates(_ wrappedItems: [BackupProtoGroupChangeChatUpdateUpdate]) {
+        proto.updates = wrappedItems.map { $0.proto }
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupChangeChatUpdate {
+        return try BackupProtoGroupChangeChatUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupChangeChatUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupChangeChatUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupChangeChatUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupChangeChatUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGenericGroupUpdate
+
+@objc
+public class BackupProtoGenericGroupUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GenericGroupUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GenericGroupUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GenericGroupUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GenericGroupUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGenericGroupUpdate {
+    @objc
+    public static func builder() -> BackupProtoGenericGroupUpdateBuilder {
+        return BackupProtoGenericGroupUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGenericGroupUpdateBuilder {
+        let builder = BackupProtoGenericGroupUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGenericGroupUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GenericGroupUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGenericGroupUpdate {
+        return BackupProtoGenericGroupUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGenericGroupUpdate {
+        return BackupProtoGenericGroupUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGenericGroupUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGenericGroupUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGenericGroupUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGenericGroupUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupCreationUpdate
+
+@objc
+public class BackupProtoGroupCreationUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupCreationUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupCreationUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupCreationUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupCreationUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupCreationUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupCreationUpdateBuilder {
+        return BackupProtoGroupCreationUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupCreationUpdateBuilder {
+        let builder = BackupProtoGroupCreationUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupCreationUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupCreationUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupCreationUpdate {
+        return BackupProtoGroupCreationUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupCreationUpdate {
+        return BackupProtoGroupCreationUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupCreationUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupCreationUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupCreationUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupCreationUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupNameUpdate
+
+@objc
+public class BackupProtoGroupNameUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupNameUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    @objc
+    public var newGroupName: String? {
+        guard hasNewGroupName else {
+            return nil
+        }
+        return proto.newGroupName
+    }
+    @objc
+    public var hasNewGroupName: Bool {
+        return proto.hasNewGroupName
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupNameUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupNameUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupNameUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupNameUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupNameUpdateBuilder {
+        return BackupProtoGroupNameUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupNameUpdateBuilder {
+        let builder = BackupProtoGroupNameUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = newGroupName {
+            builder.setNewGroupName(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupNameUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupNameUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewGroupName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.newGroupName = valueParam
+    }
+
+    public func setNewGroupName(_ valueParam: String) {
+        proto.newGroupName = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupNameUpdate {
+        return BackupProtoGroupNameUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupNameUpdate {
+        return BackupProtoGroupNameUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupNameUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupNameUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupNameUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupNameUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupAvatarUpdate
+
+@objc
+public class BackupProtoGroupAvatarUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupAvatarUpdate
+
+    @objc
+    public let wasRemoved: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupAvatarUpdate,
+                 wasRemoved: Bool) {
+        self.proto = proto
+        self.wasRemoved = wasRemoved
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupAvatarUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupAvatarUpdate) throws {
+        guard proto.hasWasRemoved else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: wasRemoved")
+        }
+        let wasRemoved = proto.wasRemoved
+
+        self.init(proto: proto,
+                  wasRemoved: wasRemoved)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupAvatarUpdate {
+    @objc
+    public static func builder(wasRemoved: Bool) -> BackupProtoGroupAvatarUpdateBuilder {
+        return BackupProtoGroupAvatarUpdateBuilder(wasRemoved: wasRemoved)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupAvatarUpdateBuilder {
+        let builder = BackupProtoGroupAvatarUpdateBuilder(wasRemoved: wasRemoved)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupAvatarUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupAvatarUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(wasRemoved: Bool) {
+        super.init()
+
+        setWasRemoved(wasRemoved)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setWasRemoved(_ valueParam: Bool) {
+        proto.wasRemoved = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupAvatarUpdate {
+        return try BackupProtoGroupAvatarUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupAvatarUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupAvatarUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupAvatarUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupAvatarUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupDescriptionUpdate
+
+@objc
+public class BackupProtoGroupDescriptionUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupDescriptionUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    @objc
+    public var newDescription: String? {
+        guard hasNewDescription else {
+            return nil
+        }
+        return proto.newDescription
+    }
+    @objc
+    public var hasNewDescription: Bool {
+        return proto.hasNewDescription
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupDescriptionUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupDescriptionUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupDescriptionUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupDescriptionUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupDescriptionUpdateBuilder {
+        return BackupProtoGroupDescriptionUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupDescriptionUpdateBuilder {
+        let builder = BackupProtoGroupDescriptionUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = newDescription {
+            builder.setNewDescription(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupDescriptionUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupDescriptionUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewDescription(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.newDescription = valueParam
+    }
+
+    public func setNewDescription(_ valueParam: String) {
+        proto.newDescription = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupDescriptionUpdate {
+        return BackupProtoGroupDescriptionUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupDescriptionUpdate {
+        return BackupProtoGroupDescriptionUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupDescriptionUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupDescriptionUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupDescriptionUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupDescriptionUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMembershipAccessLevelChangeUpdate
+
+@objc
+public class BackupProtoGroupMembershipAccessLevelChangeUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMembershipAccessLevelChangeUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var accessLevel: BackupProtoGroupV2AccessLevel? {
+        guard hasAccessLevel else {
+            return nil
+        }
+        return BackupProtoGroupV2AccessLevelWrap(proto.accessLevel)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedAccessLevel: BackupProtoGroupV2AccessLevel {
+        if !hasAccessLevel {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupMembershipAccessLevelChangeUpdate.accessLevel.")
+        }
+        return BackupProtoGroupV2AccessLevelWrap(proto.accessLevel)
+    }
+    @objc
+    public var hasAccessLevel: Bool {
+        return proto.hasAccessLevel
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMembershipAccessLevelChangeUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMembershipAccessLevelChangeUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMembershipAccessLevelChangeUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMembershipAccessLevelChangeUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder {
+        return BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder {
+        let builder = BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = accessLevel {
+            builder.setAccessLevel(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMembershipAccessLevelChangeUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setAccessLevel(_ valueParam: BackupProtoGroupV2AccessLevel) {
+        proto.accessLevel = BackupProtoGroupV2AccessLevelUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMembershipAccessLevelChangeUpdate {
+        return BackupProtoGroupMembershipAccessLevelChangeUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupMembershipAccessLevelChangeUpdate {
+        return BackupProtoGroupMembershipAccessLevelChangeUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMembershipAccessLevelChangeUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMembershipAccessLevelChangeUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMembershipAccessLevelChangeUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMembershipAccessLevelChangeUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupAttributesAccessLevelChangeUpdate
+
+@objc
+public class BackupProtoGroupAttributesAccessLevelChangeUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupAttributesAccessLevelChangeUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var accessLevel: BackupProtoGroupV2AccessLevel? {
+        guard hasAccessLevel else {
+            return nil
+        }
+        return BackupProtoGroupV2AccessLevelWrap(proto.accessLevel)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedAccessLevel: BackupProtoGroupV2AccessLevel {
+        if !hasAccessLevel {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupAttributesAccessLevelChangeUpdate.accessLevel.")
+        }
+        return BackupProtoGroupV2AccessLevelWrap(proto.accessLevel)
+    }
+    @objc
+    public var hasAccessLevel: Bool {
+        return proto.hasAccessLevel
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupAttributesAccessLevelChangeUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupAttributesAccessLevelChangeUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupAttributesAccessLevelChangeUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupAttributesAccessLevelChangeUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder {
+        return BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder {
+        let builder = BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = accessLevel {
+            builder.setAccessLevel(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupAttributesAccessLevelChangeUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setAccessLevel(_ valueParam: BackupProtoGroupV2AccessLevel) {
+        proto.accessLevel = BackupProtoGroupV2AccessLevelUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupAttributesAccessLevelChangeUpdate {
+        return BackupProtoGroupAttributesAccessLevelChangeUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupAttributesAccessLevelChangeUpdate {
+        return BackupProtoGroupAttributesAccessLevelChangeUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupAttributesAccessLevelChangeUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupAttributesAccessLevelChangeUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupAttributesAccessLevelChangeUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupAttributesAccessLevelChangeUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupAnnouncementOnlyChangeUpdate
+
+@objc
+public class BackupProtoGroupAnnouncementOnlyChangeUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupAnnouncementOnlyChangeUpdate
+
+    @objc
+    public let isAnnouncementOnly: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupAnnouncementOnlyChangeUpdate,
+                 isAnnouncementOnly: Bool) {
+        self.proto = proto
+        self.isAnnouncementOnly = isAnnouncementOnly
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupAnnouncementOnlyChangeUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupAnnouncementOnlyChangeUpdate) throws {
+        guard proto.hasIsAnnouncementOnly else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: isAnnouncementOnly")
+        }
+        let isAnnouncementOnly = proto.isAnnouncementOnly
+
+        self.init(proto: proto,
+                  isAnnouncementOnly: isAnnouncementOnly)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupAnnouncementOnlyChangeUpdate {
+    @objc
+    public static func builder(isAnnouncementOnly: Bool) -> BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder {
+        return BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder(isAnnouncementOnly: isAnnouncementOnly)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder {
+        let builder = BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder(isAnnouncementOnly: isAnnouncementOnly)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupAnnouncementOnlyChangeUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(isAnnouncementOnly: Bool) {
+        super.init()
+
+        setIsAnnouncementOnly(isAnnouncementOnly)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setIsAnnouncementOnly(_ valueParam: Bool) {
+        proto.isAnnouncementOnly = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupAnnouncementOnlyChangeUpdate {
+        return try BackupProtoGroupAnnouncementOnlyChangeUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupAnnouncementOnlyChangeUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupAnnouncementOnlyChangeUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupAnnouncementOnlyChangeUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupAnnouncementOnlyChangeUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupAdminStatusUpdate
+
+@objc
+public class BackupProtoGroupAdminStatusUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupAdminStatusUpdate
+
+    @objc
+    public let memberAci: Data
+
+    @objc
+    public let wasAdminStatusGranted: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupAdminStatusUpdate,
+                 memberAci: Data,
+                 wasAdminStatusGranted: Bool) {
+        self.proto = proto
+        self.memberAci = memberAci
+        self.wasAdminStatusGranted = wasAdminStatusGranted
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupAdminStatusUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupAdminStatusUpdate) throws {
+        guard proto.hasMemberAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: memberAci")
+        }
+        let memberAci = proto.memberAci
+
+        guard proto.hasWasAdminStatusGranted else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: wasAdminStatusGranted")
+        }
+        let wasAdminStatusGranted = proto.wasAdminStatusGranted
+
+        self.init(proto: proto,
+                  memberAci: memberAci,
+                  wasAdminStatusGranted: wasAdminStatusGranted)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupAdminStatusUpdate {
+    @objc
+    public static func builder(memberAci: Data, wasAdminStatusGranted: Bool) -> BackupProtoGroupAdminStatusUpdateBuilder {
+        return BackupProtoGroupAdminStatusUpdateBuilder(memberAci: memberAci, wasAdminStatusGranted: wasAdminStatusGranted)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupAdminStatusUpdateBuilder {
+        let builder = BackupProtoGroupAdminStatusUpdateBuilder(memberAci: memberAci, wasAdminStatusGranted: wasAdminStatusGranted)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupAdminStatusUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupAdminStatusUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(memberAci: Data, wasAdminStatusGranted: Bool) {
+        super.init()
+
+        setMemberAci(memberAci)
+        setWasAdminStatusGranted(wasAdminStatusGranted)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMemberAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.memberAci = valueParam
+    }
+
+    public func setMemberAci(_ valueParam: Data) {
+        proto.memberAci = valueParam
+    }
+
+    @objc
+    public func setWasAdminStatusGranted(_ valueParam: Bool) {
+        proto.wasAdminStatusGranted = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupAdminStatusUpdate {
+        return try BackupProtoGroupAdminStatusUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupAdminStatusUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupAdminStatusUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupAdminStatusUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupAdminStatusUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMemberLeftUpdate
+
+@objc
+public class BackupProtoGroupMemberLeftUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMemberLeftUpdate
+
+    @objc
+    public let aci: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMemberLeftUpdate,
+                 aci: Data) {
+        self.proto = proto
+        self.aci = aci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMemberLeftUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMemberLeftUpdate) throws {
+        guard proto.hasAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: aci")
+        }
+        let aci = proto.aci
+
+        self.init(proto: proto,
+                  aci: aci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMemberLeftUpdate {
+    @objc
+    public static func builder(aci: Data) -> BackupProtoGroupMemberLeftUpdateBuilder {
+        return BackupProtoGroupMemberLeftUpdateBuilder(aci: aci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMemberLeftUpdateBuilder {
+        let builder = BackupProtoGroupMemberLeftUpdateBuilder(aci: aci)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMemberLeftUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMemberLeftUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(aci: Data) {
+        super.init()
+
+        setAci(aci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aci = valueParam
+    }
+
+    public func setAci(_ valueParam: Data) {
+        proto.aci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMemberLeftUpdate {
+        return try BackupProtoGroupMemberLeftUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMemberLeftUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMemberLeftUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMemberLeftUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMemberLeftUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMemberRemovedUpdate
+
+@objc
+public class BackupProtoGroupMemberRemovedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMemberRemovedUpdate
+
+    @objc
+    public let removedAci: Data
+
+    @objc
+    public var removerAci: Data? {
+        guard hasRemoverAci else {
+            return nil
+        }
+        return proto.removerAci
+    }
+    @objc
+    public var hasRemoverAci: Bool {
+        return proto.hasRemoverAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMemberRemovedUpdate,
+                 removedAci: Data) {
+        self.proto = proto
+        self.removedAci = removedAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMemberRemovedUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMemberRemovedUpdate) throws {
+        guard proto.hasRemovedAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: removedAci")
+        }
+        let removedAci = proto.removedAci
+
+        self.init(proto: proto,
+                  removedAci: removedAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMemberRemovedUpdate {
+    @objc
+    public static func builder(removedAci: Data) -> BackupProtoGroupMemberRemovedUpdateBuilder {
+        return BackupProtoGroupMemberRemovedUpdateBuilder(removedAci: removedAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMemberRemovedUpdateBuilder {
+        let builder = BackupProtoGroupMemberRemovedUpdateBuilder(removedAci: removedAci)
+        if let _value = removerAci {
+            builder.setRemoverAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMemberRemovedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMemberRemovedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(removedAci: Data) {
+        super.init()
+
+        setRemovedAci(removedAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRemoverAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.removerAci = valueParam
+    }
+
+    public func setRemoverAci(_ valueParam: Data) {
+        proto.removerAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRemovedAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.removedAci = valueParam
+    }
+
+    public func setRemovedAci(_ valueParam: Data) {
+        proto.removedAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMemberRemovedUpdate {
+        return try BackupProtoGroupMemberRemovedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMemberRemovedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMemberRemovedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMemberRemovedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMemberRemovedUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoSelfInvitedToGroupUpdate
+
+@objc
+public class BackupProtoSelfInvitedToGroupUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_SelfInvitedToGroupUpdate
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_SelfInvitedToGroupUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_SelfInvitedToGroupUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_SelfInvitedToGroupUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoSelfInvitedToGroupUpdate {
+    @objc
+    public static func builder() -> BackupProtoSelfInvitedToGroupUpdateBuilder {
+        return BackupProtoSelfInvitedToGroupUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoSelfInvitedToGroupUpdateBuilder {
+        let builder = BackupProtoSelfInvitedToGroupUpdateBuilder()
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoSelfInvitedToGroupUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_SelfInvitedToGroupUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoSelfInvitedToGroupUpdate {
+        return BackupProtoSelfInvitedToGroupUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoSelfInvitedToGroupUpdate {
+        return BackupProtoSelfInvitedToGroupUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoSelfInvitedToGroupUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoSelfInvitedToGroupUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoSelfInvitedToGroupUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoSelfInvitedToGroupUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoSelfInvitedOtherUserToGroupUpdate
+
+@objc
+public class BackupProtoSelfInvitedOtherUserToGroupUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_SelfInvitedOtherUserToGroupUpdate
+
+    @objc
+    public let inviteeServiceID: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_SelfInvitedOtherUserToGroupUpdate,
+                 inviteeServiceID: Data) {
+        self.proto = proto
+        self.inviteeServiceID = inviteeServiceID
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_SelfInvitedOtherUserToGroupUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_SelfInvitedOtherUserToGroupUpdate) throws {
+        guard proto.hasInviteeServiceID else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: inviteeServiceID")
+        }
+        let inviteeServiceID = proto.inviteeServiceID
+
+        self.init(proto: proto,
+                  inviteeServiceID: inviteeServiceID)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoSelfInvitedOtherUserToGroupUpdate {
+    @objc
+    public static func builder(inviteeServiceID: Data) -> BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder {
+        return BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder(inviteeServiceID: inviteeServiceID)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder {
+        let builder = BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder(inviteeServiceID: inviteeServiceID)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_SelfInvitedOtherUserToGroupUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(inviteeServiceID: Data) {
+        super.init()
+
+        setInviteeServiceID(inviteeServiceID)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviteeServiceID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteeServiceID = valueParam
+    }
+
+    public func setInviteeServiceID(_ valueParam: Data) {
+        proto.inviteeServiceID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoSelfInvitedOtherUserToGroupUpdate {
+        return try BackupProtoSelfInvitedOtherUserToGroupUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoSelfInvitedOtherUserToGroupUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoSelfInvitedOtherUserToGroupUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoSelfInvitedOtherUserToGroupUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoSelfInvitedOtherUserToGroupUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupUnknownInviteeUpdate
+
+@objc
+public class BackupProtoGroupUnknownInviteeUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupUnknownInviteeUpdate
+
+    @objc
+    public let inviteeCount: UInt32
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupUnknownInviteeUpdate,
+                 inviteeCount: UInt32) {
+        self.proto = proto
+        self.inviteeCount = inviteeCount
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupUnknownInviteeUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupUnknownInviteeUpdate) throws {
+        guard proto.hasInviteeCount else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: inviteeCount")
+        }
+        let inviteeCount = proto.inviteeCount
+
+        self.init(proto: proto,
+                  inviteeCount: inviteeCount)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupUnknownInviteeUpdate {
+    @objc
+    public static func builder(inviteeCount: UInt32) -> BackupProtoGroupUnknownInviteeUpdateBuilder {
+        return BackupProtoGroupUnknownInviteeUpdateBuilder(inviteeCount: inviteeCount)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupUnknownInviteeUpdateBuilder {
+        let builder = BackupProtoGroupUnknownInviteeUpdateBuilder(inviteeCount: inviteeCount)
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupUnknownInviteeUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupUnknownInviteeUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(inviteeCount: UInt32) {
+        super.init()
+
+        setInviteeCount(inviteeCount)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    @objc
+    public func setInviteeCount(_ valueParam: UInt32) {
+        proto.inviteeCount = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupUnknownInviteeUpdate {
+        return try BackupProtoGroupUnknownInviteeUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupUnknownInviteeUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupUnknownInviteeUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupUnknownInviteeUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupUnknownInviteeUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInvitationAcceptedUpdate
+
+@objc
+public class BackupProtoGroupInvitationAcceptedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInvitationAcceptedUpdate
+
+    @objc
+    public let newMemberAci: Data
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInvitationAcceptedUpdate,
+                 newMemberAci: Data) {
+        self.proto = proto
+        self.newMemberAci = newMemberAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInvitationAcceptedUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInvitationAcceptedUpdate) throws {
+        guard proto.hasNewMemberAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: newMemberAci")
+        }
+        let newMemberAci = proto.newMemberAci
+
+        self.init(proto: proto,
+                  newMemberAci: newMemberAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInvitationAcceptedUpdate {
+    @objc
+    public static func builder(newMemberAci: Data) -> BackupProtoGroupInvitationAcceptedUpdateBuilder {
+        return BackupProtoGroupInvitationAcceptedUpdateBuilder(newMemberAci: newMemberAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInvitationAcceptedUpdateBuilder {
+        let builder = BackupProtoGroupInvitationAcceptedUpdateBuilder(newMemberAci: newMemberAci)
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInvitationAcceptedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInvitationAcceptedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(newMemberAci: Data) {
+        super.init()
+
+        setNewMemberAci(newMemberAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewMemberAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.newMemberAci = valueParam
+    }
+
+    public func setNewMemberAci(_ valueParam: Data) {
+        proto.newMemberAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInvitationAcceptedUpdate {
+        return try BackupProtoGroupInvitationAcceptedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInvitationAcceptedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInvitationAcceptedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInvitationAcceptedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInvitationAcceptedUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInvitationDeclinedUpdate
+
+@objc
+public class BackupProtoGroupInvitationDeclinedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInvitationDeclinedUpdate
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    @objc
+    public var inviteeAci: Data? {
+        guard hasInviteeAci else {
+            return nil
+        }
+        return proto.inviteeAci
+    }
+    @objc
+    public var hasInviteeAci: Bool {
+        return proto.hasInviteeAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInvitationDeclinedUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInvitationDeclinedUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInvitationDeclinedUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInvitationDeclinedUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupInvitationDeclinedUpdateBuilder {
+        return BackupProtoGroupInvitationDeclinedUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInvitationDeclinedUpdateBuilder {
+        let builder = BackupProtoGroupInvitationDeclinedUpdateBuilder()
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = inviteeAci {
+            builder.setInviteeAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInvitationDeclinedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInvitationDeclinedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviteeAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteeAci = valueParam
+    }
+
+    public func setInviteeAci(_ valueParam: Data) {
+        proto.inviteeAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInvitationDeclinedUpdate {
+        return BackupProtoGroupInvitationDeclinedUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupInvitationDeclinedUpdate {
+        return BackupProtoGroupInvitationDeclinedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInvitationDeclinedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInvitationDeclinedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInvitationDeclinedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInvitationDeclinedUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMemberJoinedUpdate
+
+@objc
+public class BackupProtoGroupMemberJoinedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMemberJoinedUpdate
+
+    @objc
+    public let newMemberAci: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMemberJoinedUpdate,
+                 newMemberAci: Data) {
+        self.proto = proto
+        self.newMemberAci = newMemberAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMemberJoinedUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMemberJoinedUpdate) throws {
+        guard proto.hasNewMemberAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: newMemberAci")
+        }
+        let newMemberAci = proto.newMemberAci
+
+        self.init(proto: proto,
+                  newMemberAci: newMemberAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMemberJoinedUpdate {
+    @objc
+    public static func builder(newMemberAci: Data) -> BackupProtoGroupMemberJoinedUpdateBuilder {
+        return BackupProtoGroupMemberJoinedUpdateBuilder(newMemberAci: newMemberAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMemberJoinedUpdateBuilder {
+        let builder = BackupProtoGroupMemberJoinedUpdateBuilder(newMemberAci: newMemberAci)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMemberJoinedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMemberJoinedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(newMemberAci: Data) {
+        super.init()
+
+        setNewMemberAci(newMemberAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewMemberAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.newMemberAci = valueParam
+    }
+
+    public func setNewMemberAci(_ valueParam: Data) {
+        proto.newMemberAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMemberJoinedUpdate {
+        return try BackupProtoGroupMemberJoinedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMemberJoinedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMemberJoinedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMemberJoinedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMemberJoinedUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMemberAddedUpdate
+
+@objc
+public class BackupProtoGroupMemberAddedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMemberAddedUpdate
+
+    @objc
+    public let newMemberAci: Data
+
+    @objc
+    public let hadOpenInvitation: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMemberAddedUpdate,
+                 newMemberAci: Data,
+                 hadOpenInvitation: Bool) {
+        self.proto = proto
+        self.newMemberAci = newMemberAci
+        self.hadOpenInvitation = hadOpenInvitation
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMemberAddedUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMemberAddedUpdate) throws {
+        guard proto.hasNewMemberAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: newMemberAci")
+        }
+        let newMemberAci = proto.newMemberAci
+
+        guard proto.hasHadOpenInvitation else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: hadOpenInvitation")
+        }
+        let hadOpenInvitation = proto.hadOpenInvitation
+
+        self.init(proto: proto,
+                  newMemberAci: newMemberAci,
+                  hadOpenInvitation: hadOpenInvitation)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMemberAddedUpdate {
+    @objc
+    public static func builder(newMemberAci: Data, hadOpenInvitation: Bool) -> BackupProtoGroupMemberAddedUpdateBuilder {
+        return BackupProtoGroupMemberAddedUpdateBuilder(newMemberAci: newMemberAci, hadOpenInvitation: hadOpenInvitation)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMemberAddedUpdateBuilder {
+        let builder = BackupProtoGroupMemberAddedUpdateBuilder(newMemberAci: newMemberAci, hadOpenInvitation: hadOpenInvitation)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMemberAddedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMemberAddedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(newMemberAci: Data, hadOpenInvitation: Bool) {
+        super.init()
+
+        setNewMemberAci(newMemberAci)
+        setHadOpenInvitation(hadOpenInvitation)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewMemberAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.newMemberAci = valueParam
+    }
+
+    public func setNewMemberAci(_ valueParam: Data) {
+        proto.newMemberAci = valueParam
+    }
+
+    @objc
+    public func setHadOpenInvitation(_ valueParam: Bool) {
+        proto.hadOpenInvitation = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMemberAddedUpdate {
+        return try BackupProtoGroupMemberAddedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMemberAddedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMemberAddedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMemberAddedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMemberAddedUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupSelfInvitationRevokedUpdate
+
+@objc
+public class BackupProtoGroupSelfInvitationRevokedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupSelfInvitationRevokedUpdate
+
+    @objc
+    public var revokerAci: Data? {
+        guard hasRevokerAci else {
+            return nil
+        }
+        return proto.revokerAci
+    }
+    @objc
+    public var hasRevokerAci: Bool {
+        return proto.hasRevokerAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupSelfInvitationRevokedUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupSelfInvitationRevokedUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupSelfInvitationRevokedUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupSelfInvitationRevokedUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupSelfInvitationRevokedUpdateBuilder {
+        return BackupProtoGroupSelfInvitationRevokedUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupSelfInvitationRevokedUpdateBuilder {
+        let builder = BackupProtoGroupSelfInvitationRevokedUpdateBuilder()
+        if let _value = revokerAci {
+            builder.setRevokerAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupSelfInvitationRevokedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupSelfInvitationRevokedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRevokerAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.revokerAci = valueParam
+    }
+
+    public func setRevokerAci(_ valueParam: Data) {
+        proto.revokerAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupSelfInvitationRevokedUpdate {
+        return BackupProtoGroupSelfInvitationRevokedUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupSelfInvitationRevokedUpdate {
+        return BackupProtoGroupSelfInvitationRevokedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupSelfInvitationRevokedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupSelfInvitationRevokedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupSelfInvitationRevokedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupSelfInvitationRevokedUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInvitationRevokedUpdateInvitee
+
+@objc
+public class BackupProtoGroupInvitationRevokedUpdateInvitee: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInvitationRevokedUpdate.Invitee
+
+    @objc
+    public var inviterAci: Data? {
+        guard hasInviterAci else {
+            return nil
+        }
+        return proto.inviterAci
+    }
+    @objc
+    public var hasInviterAci: Bool {
+        return proto.hasInviterAci
+    }
+
+    @objc
+    public var inviteeAci: Data? {
+        guard hasInviteeAci else {
+            return nil
+        }
+        return proto.inviteeAci
+    }
+    @objc
+    public var hasInviteeAci: Bool {
+        return proto.hasInviteeAci
+    }
+
+    @objc
+    public var inviteePni: Data? {
+        guard hasInviteePni else {
+            return nil
+        }
+        return proto.inviteePni
+    }
+    @objc
+    public var hasInviteePni: Bool {
+        return proto.hasInviteePni
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInvitationRevokedUpdate.Invitee) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInvitationRevokedUpdate.Invitee(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInvitationRevokedUpdate.Invitee) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInvitationRevokedUpdateInvitee {
+    @objc
+    public static func builder() -> BackupProtoGroupInvitationRevokedUpdateInviteeBuilder {
+        return BackupProtoGroupInvitationRevokedUpdateInviteeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInvitationRevokedUpdateInviteeBuilder {
+        let builder = BackupProtoGroupInvitationRevokedUpdateInviteeBuilder()
+        if let _value = inviterAci {
+            builder.setInviterAci(_value)
+        }
+        if let _value = inviteeAci {
+            builder.setInviteeAci(_value)
+        }
+        if let _value = inviteePni {
+            builder.setInviteePni(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInvitationRevokedUpdateInviteeBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInvitationRevokedUpdate.Invitee()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviterAci = valueParam
+    }
+
+    public func setInviterAci(_ valueParam: Data) {
+        proto.inviterAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviteeAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteeAci = valueParam
+    }
+
+    public func setInviteeAci(_ valueParam: Data) {
+        proto.inviteeAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setInviteePni(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteePni = valueParam
+    }
+
+    public func setInviteePni(_ valueParam: Data) {
+        proto.inviteePni = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInvitationRevokedUpdateInvitee {
+        return BackupProtoGroupInvitationRevokedUpdateInvitee(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupInvitationRevokedUpdateInvitee {
+        return BackupProtoGroupInvitationRevokedUpdateInvitee(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInvitationRevokedUpdateInvitee(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInvitationRevokedUpdateInvitee {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInvitationRevokedUpdateInviteeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInvitationRevokedUpdateInvitee? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInvitationRevokedUpdate
+
+@objc
+public class BackupProtoGroupInvitationRevokedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInvitationRevokedUpdate
+
+    @objc
+    public let invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee]
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInvitationRevokedUpdate,
+                 invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee]) {
+        self.proto = proto
+        self.invitees = invitees
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInvitationRevokedUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInvitationRevokedUpdate) {
+        var invitees: [BackupProtoGroupInvitationRevokedUpdateInvitee] = []
+        invitees = proto.invitees.map { BackupProtoGroupInvitationRevokedUpdateInvitee($0) }
+
+        self.init(proto: proto,
+                  invitees: invitees)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInvitationRevokedUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupInvitationRevokedUpdateBuilder {
+        return BackupProtoGroupInvitationRevokedUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInvitationRevokedUpdateBuilder {
+        let builder = BackupProtoGroupInvitationRevokedUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        builder.setInvitees(invitees)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInvitationRevokedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInvitationRevokedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func addInvitees(_ valueParam: BackupProtoGroupInvitationRevokedUpdateInvitee) {
+        proto.invitees.append(valueParam.proto)
+    }
+
+    @objc
+    public func setInvitees(_ wrappedItems: [BackupProtoGroupInvitationRevokedUpdateInvitee]) {
+        proto.invitees = wrappedItems.map { $0.proto }
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInvitationRevokedUpdate {
+        return BackupProtoGroupInvitationRevokedUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupInvitationRevokedUpdate {
+        return BackupProtoGroupInvitationRevokedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInvitationRevokedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInvitationRevokedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInvitationRevokedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInvitationRevokedUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupJoinRequestUpdate
+
+@objc
+public class BackupProtoGroupJoinRequestUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupJoinRequestUpdate
+
+    @objc
+    public let requestorAci: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupJoinRequestUpdate,
+                 requestorAci: Data) {
+        self.proto = proto
+        self.requestorAci = requestorAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupJoinRequestUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupJoinRequestUpdate) throws {
+        guard proto.hasRequestorAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestorAci")
+        }
+        let requestorAci = proto.requestorAci
+
+        self.init(proto: proto,
+                  requestorAci: requestorAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupJoinRequestUpdate {
+    @objc
+    public static func builder(requestorAci: Data) -> BackupProtoGroupJoinRequestUpdateBuilder {
+        return BackupProtoGroupJoinRequestUpdateBuilder(requestorAci: requestorAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupJoinRequestUpdateBuilder {
+        let builder = BackupProtoGroupJoinRequestUpdateBuilder(requestorAci: requestorAci)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupJoinRequestUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupJoinRequestUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(requestorAci: Data) {
+        super.init()
+
+        setRequestorAci(requestorAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRequestorAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.requestorAci = valueParam
+    }
+
+    public func setRequestorAci(_ valueParam: Data) {
+        proto.requestorAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupJoinRequestUpdate {
+        return try BackupProtoGroupJoinRequestUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupJoinRequestUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupJoinRequestUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupJoinRequestUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupJoinRequestUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupJoinRequestApprovalUpdate
+
+@objc
+public class BackupProtoGroupJoinRequestApprovalUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupJoinRequestApprovalUpdate
+
+    @objc
+    public let requestorAci: Data
+
+    @objc
+    public let wasApproved: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupJoinRequestApprovalUpdate,
+                 requestorAci: Data,
+                 wasApproved: Bool) {
+        self.proto = proto
+        self.requestorAci = requestorAci
+        self.wasApproved = wasApproved
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupJoinRequestApprovalUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupJoinRequestApprovalUpdate) throws {
+        guard proto.hasRequestorAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestorAci")
+        }
+        let requestorAci = proto.requestorAci
+
+        guard proto.hasWasApproved else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: wasApproved")
+        }
+        let wasApproved = proto.wasApproved
+
+        self.init(proto: proto,
+                  requestorAci: requestorAci,
+                  wasApproved: wasApproved)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupJoinRequestApprovalUpdate {
+    @objc
+    public static func builder(requestorAci: Data, wasApproved: Bool) -> BackupProtoGroupJoinRequestApprovalUpdateBuilder {
+        return BackupProtoGroupJoinRequestApprovalUpdateBuilder(requestorAci: requestorAci, wasApproved: wasApproved)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupJoinRequestApprovalUpdateBuilder {
+        let builder = BackupProtoGroupJoinRequestApprovalUpdateBuilder(requestorAci: requestorAci, wasApproved: wasApproved)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupJoinRequestApprovalUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupJoinRequestApprovalUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(requestorAci: Data, wasApproved: Bool) {
+        super.init()
+
+        setRequestorAci(requestorAci)
+        setWasApproved(wasApproved)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRequestorAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.requestorAci = valueParam
+    }
+
+    public func setRequestorAci(_ valueParam: Data) {
+        proto.requestorAci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setWasApproved(_ valueParam: Bool) {
+        proto.wasApproved = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupJoinRequestApprovalUpdate {
+        return try BackupProtoGroupJoinRequestApprovalUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupJoinRequestApprovalUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupJoinRequestApprovalUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupJoinRequestApprovalUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupJoinRequestApprovalUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupJoinRequestCanceledUpdate
+
+@objc
+public class BackupProtoGroupJoinRequestCanceledUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupJoinRequestCanceledUpdate
+
+    @objc
+    public let requestorAci: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupJoinRequestCanceledUpdate,
+                 requestorAci: Data) {
+        self.proto = proto
+        self.requestorAci = requestorAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupJoinRequestCanceledUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupJoinRequestCanceledUpdate) throws {
+        guard proto.hasRequestorAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestorAci")
+        }
+        let requestorAci = proto.requestorAci
+
+        self.init(proto: proto,
+                  requestorAci: requestorAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupJoinRequestCanceledUpdate {
+    @objc
+    public static func builder(requestorAci: Data) -> BackupProtoGroupJoinRequestCanceledUpdateBuilder {
+        return BackupProtoGroupJoinRequestCanceledUpdateBuilder(requestorAci: requestorAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupJoinRequestCanceledUpdateBuilder {
+        let builder = BackupProtoGroupJoinRequestCanceledUpdateBuilder(requestorAci: requestorAci)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupJoinRequestCanceledUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupJoinRequestCanceledUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(requestorAci: Data) {
+        super.init()
+
+        setRequestorAci(requestorAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRequestorAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.requestorAci = valueParam
+    }
+
+    public func setRequestorAci(_ valueParam: Data) {
+        proto.requestorAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupJoinRequestCanceledUpdate {
+        return try BackupProtoGroupJoinRequestCanceledUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupJoinRequestCanceledUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupJoinRequestCanceledUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupJoinRequestCanceledUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupJoinRequestCanceledUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupSequenceOfRequestsAndCancelsUpdate
+
+@objc
+public class BackupProtoGroupSequenceOfRequestsAndCancelsUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupSequenceOfRequestsAndCancelsUpdate
+
+    @objc
+    public let requestorAci: Data
+
+    @objc
+    public let count: UInt32
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupSequenceOfRequestsAndCancelsUpdate,
+                 requestorAci: Data,
+                 count: UInt32) {
+        self.proto = proto
+        self.requestorAci = requestorAci
+        self.count = count
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupSequenceOfRequestsAndCancelsUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupSequenceOfRequestsAndCancelsUpdate) throws {
+        guard proto.hasRequestorAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestorAci")
+        }
+        let requestorAci = proto.requestorAci
+
+        guard proto.hasCount else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: count")
+        }
+        let count = proto.count
+
+        self.init(proto: proto,
+                  requestorAci: requestorAci,
+                  count: count)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupSequenceOfRequestsAndCancelsUpdate {
+    @objc
+    public static func builder(requestorAci: Data, count: UInt32) -> BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder {
+        return BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder(requestorAci: requestorAci, count: count)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder {
+        let builder = BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder(requestorAci: requestorAci, count: count)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupSequenceOfRequestsAndCancelsUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(requestorAci: Data, count: UInt32) {
+        super.init()
+
+        setRequestorAci(requestorAci)
+        setCount(count)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRequestorAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.requestorAci = valueParam
+    }
+
+    public func setRequestorAci(_ valueParam: Data) {
+        proto.requestorAci = valueParam
+    }
+
+    @objc
+    public func setCount(_ valueParam: UInt32) {
+        proto.count = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupSequenceOfRequestsAndCancelsUpdate {
+        return try BackupProtoGroupSequenceOfRequestsAndCancelsUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupSequenceOfRequestsAndCancelsUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupSequenceOfRequestsAndCancelsUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupSequenceOfRequestsAndCancelsUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupSequenceOfRequestsAndCancelsUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInviteLinkResetUpdate
+
+@objc
+public class BackupProtoGroupInviteLinkResetUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInviteLinkResetUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInviteLinkResetUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInviteLinkResetUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInviteLinkResetUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInviteLinkResetUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupInviteLinkResetUpdateBuilder {
+        return BackupProtoGroupInviteLinkResetUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInviteLinkResetUpdateBuilder {
+        let builder = BackupProtoGroupInviteLinkResetUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInviteLinkResetUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInviteLinkResetUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInviteLinkResetUpdate {
+        return BackupProtoGroupInviteLinkResetUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupInviteLinkResetUpdate {
+        return BackupProtoGroupInviteLinkResetUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInviteLinkResetUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInviteLinkResetUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInviteLinkResetUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInviteLinkResetUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInviteLinkEnabledUpdate
+
+@objc
+public class BackupProtoGroupInviteLinkEnabledUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInviteLinkEnabledUpdate
+
+    @objc
+    public let linkRequiresAdminApproval: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInviteLinkEnabledUpdate,
+                 linkRequiresAdminApproval: Bool) {
+        self.proto = proto
+        self.linkRequiresAdminApproval = linkRequiresAdminApproval
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInviteLinkEnabledUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInviteLinkEnabledUpdate) throws {
+        guard proto.hasLinkRequiresAdminApproval else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: linkRequiresAdminApproval")
+        }
+        let linkRequiresAdminApproval = proto.linkRequiresAdminApproval
+
+        self.init(proto: proto,
+                  linkRequiresAdminApproval: linkRequiresAdminApproval)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInviteLinkEnabledUpdate {
+    @objc
+    public static func builder(linkRequiresAdminApproval: Bool) -> BackupProtoGroupInviteLinkEnabledUpdateBuilder {
+        return BackupProtoGroupInviteLinkEnabledUpdateBuilder(linkRequiresAdminApproval: linkRequiresAdminApproval)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInviteLinkEnabledUpdateBuilder {
+        let builder = BackupProtoGroupInviteLinkEnabledUpdateBuilder(linkRequiresAdminApproval: linkRequiresAdminApproval)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInviteLinkEnabledUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInviteLinkEnabledUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(linkRequiresAdminApproval: Bool) {
+        super.init()
+
+        setLinkRequiresAdminApproval(linkRequiresAdminApproval)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setLinkRequiresAdminApproval(_ valueParam: Bool) {
+        proto.linkRequiresAdminApproval = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInviteLinkEnabledUpdate {
+        return try BackupProtoGroupInviteLinkEnabledUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInviteLinkEnabledUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInviteLinkEnabledUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInviteLinkEnabledUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInviteLinkEnabledUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInviteLinkAdminApprovalUpdate
+
+@objc
+public class BackupProtoGroupInviteLinkAdminApprovalUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInviteLinkAdminApprovalUpdate
+
+    @objc
+    public let linkRequiresAdminApproval: Bool
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInviteLinkAdminApprovalUpdate,
+                 linkRequiresAdminApproval: Bool) {
+        self.proto = proto
+        self.linkRequiresAdminApproval = linkRequiresAdminApproval
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInviteLinkAdminApprovalUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInviteLinkAdminApprovalUpdate) throws {
+        guard proto.hasLinkRequiresAdminApproval else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: linkRequiresAdminApproval")
+        }
+        let linkRequiresAdminApproval = proto.linkRequiresAdminApproval
+
+        self.init(proto: proto,
+                  linkRequiresAdminApproval: linkRequiresAdminApproval)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInviteLinkAdminApprovalUpdate {
+    @objc
+    public static func builder(linkRequiresAdminApproval: Bool) -> BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder {
+        return BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder(linkRequiresAdminApproval: linkRequiresAdminApproval)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder {
+        let builder = BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder(linkRequiresAdminApproval: linkRequiresAdminApproval)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInviteLinkAdminApprovalUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(linkRequiresAdminApproval: Bool) {
+        super.init()
+
+        setLinkRequiresAdminApproval(linkRequiresAdminApproval)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    @objc
+    public func setLinkRequiresAdminApproval(_ valueParam: Bool) {
+        proto.linkRequiresAdminApproval = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInviteLinkAdminApprovalUpdate {
+        return try BackupProtoGroupInviteLinkAdminApprovalUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInviteLinkAdminApprovalUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInviteLinkAdminApprovalUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInviteLinkAdminApprovalUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInviteLinkAdminApprovalUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupInviteLinkDisabledUpdate
+
+@objc
+public class BackupProtoGroupInviteLinkDisabledUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupInviteLinkDisabledUpdate
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupInviteLinkDisabledUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupInviteLinkDisabledUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupInviteLinkDisabledUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupInviteLinkDisabledUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupInviteLinkDisabledUpdateBuilder {
+        return BackupProtoGroupInviteLinkDisabledUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupInviteLinkDisabledUpdateBuilder {
+        let builder = BackupProtoGroupInviteLinkDisabledUpdateBuilder()
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupInviteLinkDisabledUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupInviteLinkDisabledUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupInviteLinkDisabledUpdate {
+        return BackupProtoGroupInviteLinkDisabledUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupInviteLinkDisabledUpdate {
+        return BackupProtoGroupInviteLinkDisabledUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupInviteLinkDisabledUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupInviteLinkDisabledUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupInviteLinkDisabledUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupInviteLinkDisabledUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupMemberJoinedByLinkUpdate
+
+@objc
+public class BackupProtoGroupMemberJoinedByLinkUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupMemberJoinedByLinkUpdate
+
+    @objc
+    public let newMemberAci: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupMemberJoinedByLinkUpdate,
+                 newMemberAci: Data) {
+        self.proto = proto
+        self.newMemberAci = newMemberAci
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupMemberJoinedByLinkUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupMemberJoinedByLinkUpdate) throws {
+        guard proto.hasNewMemberAci else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: newMemberAci")
+        }
+        let newMemberAci = proto.newMemberAci
+
+        self.init(proto: proto,
+                  newMemberAci: newMemberAci)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupMemberJoinedByLinkUpdate {
+    @objc
+    public static func builder(newMemberAci: Data) -> BackupProtoGroupMemberJoinedByLinkUpdateBuilder {
+        return BackupProtoGroupMemberJoinedByLinkUpdateBuilder(newMemberAci: newMemberAci)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupMemberJoinedByLinkUpdateBuilder {
+        let builder = BackupProtoGroupMemberJoinedByLinkUpdateBuilder(newMemberAci: newMemberAci)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupMemberJoinedByLinkUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupMemberJoinedByLinkUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(newMemberAci: Data) {
+        super.init()
+
+        setNewMemberAci(newMemberAci)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNewMemberAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.newMemberAci = valueParam
+    }
+
+    public func setNewMemberAci(_ valueParam: Data) {
+        proto.newMemberAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupMemberJoinedByLinkUpdate {
+        return try BackupProtoGroupMemberJoinedByLinkUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupMemberJoinedByLinkUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupMemberJoinedByLinkUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupMemberJoinedByLinkUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupMemberJoinedByLinkUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupV2MigrationUpdate
+
+@objc
+public class BackupProtoGroupV2MigrationUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupV2MigrationUpdate
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupV2MigrationUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupV2MigrationUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupV2MigrationUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupV2MigrationUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupV2MigrationUpdateBuilder {
+        return BackupProtoGroupV2MigrationUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupV2MigrationUpdateBuilder {
+        let builder = BackupProtoGroupV2MigrationUpdateBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupV2MigrationUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupV2MigrationUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupV2MigrationUpdate {
+        return BackupProtoGroupV2MigrationUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupV2MigrationUpdate {
+        return BackupProtoGroupV2MigrationUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupV2MigrationUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupV2MigrationUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupV2MigrationUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupV2MigrationUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupV2MigrationSelfInvitedUpdate
+
+@objc
+public class BackupProtoGroupV2MigrationSelfInvitedUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupV2MigrationSelfInvitedUpdate
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupV2MigrationSelfInvitedUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupV2MigrationSelfInvitedUpdate(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupV2MigrationSelfInvitedUpdate) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupV2MigrationSelfInvitedUpdate {
+    @objc
+    public static func builder() -> BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder {
+        return BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder {
+        let builder = BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupV2MigrationSelfInvitedUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupV2MigrationSelfInvitedUpdate {
+        return BackupProtoGroupV2MigrationSelfInvitedUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> BackupProtoGroupV2MigrationSelfInvitedUpdate {
+        return BackupProtoGroupV2MigrationSelfInvitedUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupV2MigrationSelfInvitedUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupV2MigrationSelfInvitedUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupV2MigrationSelfInvitedUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupV2MigrationSelfInvitedUpdate? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupV2MigrationInvitedMembersUpdate
+
+@objc
+public class BackupProtoGroupV2MigrationInvitedMembersUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupV2MigrationInvitedMembersUpdate
+
+    @objc
+    public let invitedMembersCount: UInt32
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupV2MigrationInvitedMembersUpdate,
+                 invitedMembersCount: UInt32) {
+        self.proto = proto
+        self.invitedMembersCount = invitedMembersCount
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupV2MigrationInvitedMembersUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupV2MigrationInvitedMembersUpdate) throws {
+        guard proto.hasInvitedMembersCount else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: invitedMembersCount")
+        }
+        let invitedMembersCount = proto.invitedMembersCount
+
+        self.init(proto: proto,
+                  invitedMembersCount: invitedMembersCount)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupV2MigrationInvitedMembersUpdate {
+    @objc
+    public static func builder(invitedMembersCount: UInt32) -> BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder {
+        return BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder(invitedMembersCount: invitedMembersCount)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder {
+        let builder = BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder(invitedMembersCount: invitedMembersCount)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupV2MigrationInvitedMembersUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(invitedMembersCount: UInt32) {
+        super.init()
+
+        setInvitedMembersCount(invitedMembersCount)
+    }
+
+    @objc
+    public func setInvitedMembersCount(_ valueParam: UInt32) {
+        proto.invitedMembersCount = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupV2MigrationInvitedMembersUpdate {
+        return try BackupProtoGroupV2MigrationInvitedMembersUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupV2MigrationInvitedMembersUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupV2MigrationInvitedMembersUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupV2MigrationInvitedMembersUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupV2MigrationInvitedMembersUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupV2MigrationDroppedMembersUpdate
+
+@objc
+public class BackupProtoGroupV2MigrationDroppedMembersUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupV2MigrationDroppedMembersUpdate
+
+    @objc
+    public let droppedMembersCount: UInt32
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupV2MigrationDroppedMembersUpdate,
+                 droppedMembersCount: UInt32) {
+        self.proto = proto
+        self.droppedMembersCount = droppedMembersCount
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupV2MigrationDroppedMembersUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupV2MigrationDroppedMembersUpdate) throws {
+        guard proto.hasDroppedMembersCount else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: droppedMembersCount")
+        }
+        let droppedMembersCount = proto.droppedMembersCount
+
+        self.init(proto: proto,
+                  droppedMembersCount: droppedMembersCount)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupV2MigrationDroppedMembersUpdate {
+    @objc
+    public static func builder(droppedMembersCount: UInt32) -> BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder {
+        return BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder(droppedMembersCount: droppedMembersCount)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder {
+        let builder = BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder(droppedMembersCount: droppedMembersCount)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupV2MigrationDroppedMembersUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(droppedMembersCount: UInt32) {
+        super.init()
+
+        setDroppedMembersCount(droppedMembersCount)
+    }
+
+    @objc
+    public func setDroppedMembersCount(_ valueParam: UInt32) {
+        proto.droppedMembersCount = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupV2MigrationDroppedMembersUpdate {
+        return try BackupProtoGroupV2MigrationDroppedMembersUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupV2MigrationDroppedMembersUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupV2MigrationDroppedMembersUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupV2MigrationDroppedMembersUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupV2MigrationDroppedMembersUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - BackupProtoGroupExpirationTimerUpdate
+
+@objc
+public class BackupProtoGroupExpirationTimerUpdate: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: BackupProtos_GroupExpirationTimerUpdate
+
+    @objc
+    public let expiresInMs: UInt32
+
+    @objc
+    public var updaterAci: Data? {
+        guard hasUpdaterAci else {
+            return nil
+        }
+        return proto.updaterAci
+    }
+    @objc
+    public var hasUpdaterAci: Bool {
+        return proto.hasUpdaterAci
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: BackupProtos_GroupExpirationTimerUpdate,
+                 expiresInMs: UInt32) {
+        self.proto = proto
+        self.expiresInMs = expiresInMs
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try BackupProtos_GroupExpirationTimerUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: BackupProtos_GroupExpirationTimerUpdate) throws {
+        guard proto.hasExpiresInMs else {
+            throw BackupProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: expiresInMs")
+        }
+        let expiresInMs = proto.expiresInMs
+
+        self.init(proto: proto,
+                  expiresInMs: expiresInMs)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension BackupProtoGroupExpirationTimerUpdate {
+    @objc
+    public static func builder(expiresInMs: UInt32) -> BackupProtoGroupExpirationTimerUpdateBuilder {
+        return BackupProtoGroupExpirationTimerUpdateBuilder(expiresInMs: expiresInMs)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> BackupProtoGroupExpirationTimerUpdateBuilder {
+        let builder = BackupProtoGroupExpirationTimerUpdateBuilder(expiresInMs: expiresInMs)
+        if let _value = updaterAci {
+            builder.setUpdaterAci(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class BackupProtoGroupExpirationTimerUpdateBuilder: NSObject {
+
+    private var proto = BackupProtos_GroupExpirationTimerUpdate()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(expiresInMs: UInt32) {
+        super.init()
+
+        setExpiresInMs(expiresInMs)
+    }
+
+    @objc
+    public func setExpiresInMs(_ valueParam: UInt32) {
+        proto.expiresInMs = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUpdaterAci(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.updaterAci = valueParam
+    }
+
+    public func setUpdaterAci(_ valueParam: Data) {
+        proto.updaterAci = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> BackupProtoGroupExpirationTimerUpdate {
+        return try BackupProtoGroupExpirationTimerUpdate(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try BackupProtoGroupExpirationTimerUpdate(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BackupProtoGroupExpirationTimerUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension BackupProtoGroupExpirationTimerUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> BackupProtoGroupExpirationTimerUpdate? {
         return try! self.build()
     }
 }
