@@ -409,7 +409,7 @@ public class DependenciesBridge {
                 recipientDatabaseTable: self.recipientDatabaseTable
             )
 
-            self.callRecordStore = CallRecordStoreImpl()
+            self.callRecordStore = CallRecordStoreImpl(schedulers: self.schedulers)
             self.callRecordQuerier = CallRecordQuerierImpl()
 
             self.groupCallRecordManager = GroupCallRecordManagerImpl(

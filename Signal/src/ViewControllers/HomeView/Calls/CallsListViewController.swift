@@ -109,10 +109,49 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         noSearchResultsView.autoPinEdge(toSuperviewMargin: .top, withInset: 80)
 
         applyTheme()
+        attachNotificationObservers()
 
         // [CallsTab] TODO: make ourselves a CallServiceObserver, so we know when calls change
 
         loadCallRecordsAnew(animated: false)
+    }
+
+    private func attachNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(callRecordWasInserted),
+            name: .callRecordWasInserted,
+            object: nil
+        )
+    }
+
+    /// When a call record is inserted, we'll try loading newer records.
+    ///
+    /// The 99% case for a call record being inserted is that a new call was
+    /// started – which is to say, the inserted call record is the most recent
+    /// call. For this case, by loading newer calls we'll load that new call and
+    /// present it at the top.
+    ///
+    /// It is possible that we'll have a call inserted into the middle of our
+    /// existing calls, for example if we receive a delayed sync message about a
+    /// call from a while ago that we somehow never learned about on this
+    /// device. If that happens, we won't load and live-update with that call –
+    /// instead, we'll see it the next time this view is reloaded.
+    @objc
+    private func callRecordWasInserted() {
+        /// Only attempt to load newer calls if the top row is visible. If not,
+        /// we'll load newer calls when the user scrolls up anyway.
+        let shouldLoadNewerCalls: Bool = {
+            guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
+                return true
+            }
+
+            return visibleIndexPaths.contains(.indexPathForPrimarySection(row: 0))
+        }()
+
+        if shouldLoadNewerCalls {
+            loadMoreCalls(direction: .newer, animated: true)
+        }
     }
 
     override func themeDidChange() {
@@ -245,7 +284,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         } else {
             (0..<numberOfRows)
                 .lazy
-                .map { IndexPath(row: $0, section: 0) }
+                .map { .indexPathForPrimarySection(row: $0) }
                 .forEach { tableView.selectRow(at: $0, animated: false, scrollPosition: .none) }
         }
         updateMultiselectToolbarButtons()
@@ -548,8 +587,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: - Table view
 
-    enum Section: Hashable {
-        case primary
+    enum Section: Int, Hashable {
+        case primary = 0
     }
 
     struct CallViewModel: Hashable, Identifiable {
@@ -735,7 +774,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             emptyStateMessageView.layer.opacity = 0
         }
     }
+}
 
+private extension IndexPath {
+    static func indexPathForPrimarySection(row: Int) -> IndexPath {
+        return IndexPath(
+            row: row,
+            section: CallsListViewController.Section.primary.rawValue
+        )
+    }
 }
 
 // MARK: UITableViewDelegate

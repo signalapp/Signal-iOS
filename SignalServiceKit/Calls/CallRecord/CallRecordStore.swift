@@ -7,11 +7,18 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
+public extension NSNotification.Name {
+    static let callRecordWasInserted: NSNotification.Name = .init("CallRecordStore.callRecordWasInserted")
+}
+
 /// Performs SQL operations related to a single ``CallRecord``.
 ///
 /// For queries over the ``CallRecord`` table, please see ``CallRecordQuerier``.
 public protocol CallRecordStore {
     /// Insert the given call record.
+    /// - Important
+    /// Posts an ``NSNotification`` with name ``callRecordWasInserted`` when a
+    /// record is inserted.
     /// - Returns
     /// True if the record was successfully inserted. False otherwise.
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool
@@ -78,12 +85,29 @@ public protocol CallRecordStore {
 }
 
 class CallRecordStoreImpl: CallRecordStore {
-    init() {}
+    private let schedulers: Schedulers
+
+    init(schedulers: Schedulers) {
+        self.schedulers = schedulers
+    }
 
     // MARK: - Protocol methods
 
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool {
-        insert(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
+        let insertedSuccessfully = insert(
+            callRecord: callRecord,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+
+        if insertedSuccessfully {
+            tx.addAsyncCompletion(on: schedulers.main) {
+                NotificationCenter.default.post(
+                    name: .callRecordWasInserted, object: nil
+                )
+            }
+        }
+
+        return insertedSuccessfully
     }
 
     func updateRecordStatus(

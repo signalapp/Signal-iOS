@@ -14,7 +14,9 @@ final class CallRecordStoreTest: XCTestCase {
     private var callRecordStore: ExplainingCallRecordStoreImpl!
 
     override func setUp() {
-        callRecordStore = ExplainingCallRecordStoreImpl()
+        callRecordStore = ExplainingCallRecordStoreImpl(
+            schedulers: TestSchedulers(scheduler: TestScheduler())
+        )
     }
 
     private func makeCallRecord(
