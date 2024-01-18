@@ -113,6 +113,13 @@ extension FixedWidthInteger {
         self = selfValue
     }
 
+    init?(littleEndianData: Data) {
+        guard let (selfValue, _) = Self.from(littleEndianData: littleEndianData) else {
+            return nil
+        }
+        self = selfValue
+    }
+
     /// Parses a big endian `Data` value into an integer.
     ///
     /// If `bigEndianData.count` is larger than the size of the underlying
@@ -130,7 +137,28 @@ extension FixedWidthInteger {
         return (Self(bigEndian: bigEndianValue), count)
     }
 
+    /// Parses a little endian `Data` value into an integer.
+    ///
+    /// If `littleEndianData.count` is larger than the size of the underlying
+    /// integer, extra bytes are ignored.
+    ///
+    /// - Parameter littleEndianData: The data for a big endian integer.
+    /// - Returns: A tuple consisting of the integer itself and the number of
+    ///   bytes consumed from `littleEndianData`.
+    static func from(littleEndianData: Data) -> (Self, byteCount: Int)? {
+        var littleEndianValue = Self()
+        let count = withUnsafeMutableBytes(of: &littleEndianValue) { littleEndianData.copyBytes(to: $0) }
+        guard count == MemoryLayout<Self>.size else {
+            return nil
+        }
+        return (Self(littleEndian: littleEndianValue), count)
+    }
+
     var bigEndianData: Data {
         return withUnsafeBytes(of: bigEndian) { Data($0) }
+    }
+
+    public var littleEndianData: Data {
+        return withUnsafeBytes(of: littleEndian) { Data($0) }
     }
 }

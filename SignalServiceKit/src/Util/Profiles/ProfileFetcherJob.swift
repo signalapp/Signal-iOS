@@ -423,27 +423,20 @@ public class ProfileFetcherJob: NSObject {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
 
-        var givenName: String?
-        var familyName: String?
-        var bio: String?
-        var bioEmoji: String?
-        var paymentAddress: TSPaymentAddress?
-        if let decryptedProfile = fetchedProfile.decryptedProfile {
-            givenName = decryptedProfile.givenName?.nilIfEmpty
-            familyName = decryptedProfile.familyName?.nilIfEmpty
-            bio = decryptedProfile.bio?.nilIfEmpty
-            bioEmoji = decryptedProfile.bioEmoji?.nilIfEmpty
-            paymentAddress = decryptedProfile.paymentAddress
-        }
+        let givenName = fetchedProfile.decryptedProfile?.givenName
+        let familyName = fetchedProfile.decryptedProfile?.familyName
+        let bio = fetchedProfile.decryptedProfile?.bio
+        let bioEmoji = fetchedProfile.decryptedProfile?.bioEmoji
+        let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
 
         if DebugFlags.internalLogging {
             let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
             let hasAvatar = profile.avatarUrlPath != nil
             let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
-            let hasGivenName = givenName?.nilIfEmpty != nil
-            let hasFamilyName = familyName?.nilIfEmpty != nil
-            let hasBio = bio?.nilIfEmpty != nil
-            let hasBioEmoji = bioEmoji?.nilIfEmpty != nil
+            let hasGivenName = givenName != nil
+            let hasFamilyName = familyName != nil
+            let hasBio = bio != nil
+            let hasBioEmoji = bioEmoji != nil
             let hasPaymentAddress = paymentAddress != nil
             let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 
@@ -576,13 +569,12 @@ public class ProfileFetcherJob: NSObject {
 
 // MARK: -
 
-public struct DecryptedProfile: Dependencies {
+public struct DecryptedProfile {
     public let givenName: String?
     public let familyName: String?
     public let bio: String?
     public let bioEmoji: String?
     public let paymentAddressData: Data?
-    public let identityKey: IdentityKey
 }
 
 // MARK: -
@@ -591,45 +583,37 @@ public struct FetchedProfile {
     let profile: SignalServiceProfile
     let profileKey: OWSAES256Key?
     public let decryptedProfile: DecryptedProfile?
+    public let identityKey: IdentityKey
 
     init(profile: SignalServiceProfile, profileKey: OWSAES256Key?) {
         self.profile = profile
         self.profileKey = profileKey
         self.decryptedProfile = Self.decrypt(profile: profile, profileKey: profileKey)
+        self.identityKey = profile.identityKey
     }
 
     private static func decrypt(profile: SignalServiceProfile, profileKey: OWSAES256Key?) -> DecryptedProfile? {
-        guard let profileKey = profileKey else {
+        guard let profileKey else {
             return nil
         }
-        var givenName: String?
-        var familyName: String?
-        var bio: String?
-        var bioEmoji: String?
-        var paymentAddressData: Data?
-        let profileName = profile.profileNameEncrypted.flatMap {
+        let nameComponents = profile.profileNameEncrypted.flatMap {
             OWSUserProfile.decrypt(profileNameData: $0, profileKey: profileKey)
         }
-        if let profileName {
-            givenName = profileName.givenName
-            familyName = profileName.familyName
+        let bio = profile.bioEncrypted.flatMap {
+            OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
         }
-        if let bioEncrypted = profile.bioEncrypted {
-            bio = OWSUserProfile.decrypt(profileStringData: bioEncrypted, profileKey: profileKey)
+        let bioEmoji = profile.bioEmojiEncrypted.flatMap {
+            OWSUserProfile.decrypt(profileStringData: $0, profileKey: profileKey)
         }
-        if let bioEmojiEncrypted = profile.bioEmojiEncrypted {
-            bioEmoji = OWSUserProfile.decrypt(profileStringData: bioEmojiEncrypted, profileKey: profileKey)
-        }
-        if let paymentAddressEncrypted = profile.paymentAddressEncrypted {
-            paymentAddressData = OWSUserProfile.decrypt(profileData: paymentAddressEncrypted, profileKey: profileKey)
+        let paymentAddressData = profile.paymentAddressEncrypted.flatMap {
+            OWSUserProfile.decrypt(profileData: $0, profileKey: profileKey)
         }
         return DecryptedProfile(
-            givenName: givenName,
-            familyName: familyName,
+            givenName: nameComponents?.givenName,
+            familyName: nameComponents?.familyName,
             bio: bio,
             bioEmoji: bioEmoji,
-            paymentAddressData: paymentAddressData,
-            identityKey: profile.identityKey
+            paymentAddressData: paymentAddressData
         )
     }
 }
@@ -637,28 +621,23 @@ public struct FetchedProfile {
 // MARK: -
 
 public extension DecryptedProfile {
-
-    var paymentAddress: TSPaymentAddress? {
-        guard paymentsHelper.arePaymentsEnabled else {
-            return nil
-        }
-        guard let paymentAddressDataWithLength = paymentAddressData else {
+    func paymentAddress(identityKey: IdentityKey) -> TSPaymentAddress? {
+        guard var paymentAddressData = paymentAddressData else {
             return nil
         }
 
         do {
-            let byteParser = ByteParser(data: paymentAddressDataWithLength, littleEndian: true)
-            let length = byteParser.nextUInt32()
-            guard length > 0 else {
+            guard let (dataLength, dataLengthCount) = UInt32.from(littleEndianData: paymentAddressData) else {
                 return nil
             }
-            guard let paymentAddressDataWithoutLength = byteParser.readBytes(UInt(length)) else {
-                owsFailDebug("Invalid payment address.")
+            paymentAddressData = paymentAddressData.dropFirst(dataLengthCount)
+            paymentAddressData = paymentAddressData.prefix(Int(dataLength))
+            guard paymentAddressData.count == dataLength else {
+                owsFailDebug("Invalid paymentAddressData.")
                 return nil
             }
-            let proto = try SSKProtoPaymentAddress(serializedData: paymentAddressDataWithoutLength)
-            let paymentAddress = try TSPaymentAddress.fromProto(proto, identityKey: identityKey)
-            return paymentAddress
+            let proto = try SSKProtoPaymentAddress(serializedData: paymentAddressData)
+            return try TSPaymentAddress.fromProto(proto, identityKey: identityKey)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil

@@ -150,10 +150,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 return nil
             }
             var result = Data()
-            var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))
-            withUnsafePointer(to: &littleEndian) { pointer in
-                result.append(UnsafeBufferPointer(start: pointer, count: 1))
-            }
+            result.append(UInt32(addressProtoData.count).littleEndianData)
             result.append(addressProtoData)
             return result
         }()

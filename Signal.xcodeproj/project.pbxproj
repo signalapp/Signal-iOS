@@ -169,7 +169,6 @@
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
 		3420CF6D26327B1A00E7DCB0 /* CVBackgroundContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */; };
 		3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */; };
-		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34235F3824213550008C74CB /* ConversationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34235F3724213550008C74CB /* ConversationSettingsViewController.swift */; };
 		3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A365255C854A0036407F /* CVItemViewModelImpl.swift */; };
 		3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A367255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift */; };
@@ -2282,7 +2281,6 @@
 		F9C5CDDE289453B400548EEE /* OWS2FAManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0C289453B200548EEE /* OWS2FAManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0D289453B200548EEE /* ImageQuality.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDE1289453B400548EEE /* ByteParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB0F289453B200548EEE /* ByteParser.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB10289453B200548EEE /* ThreadBacked.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB11289453B200548EEE /* MailtoLink.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB12289453B200548EEE /* StorageService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2341,7 +2339,6 @@
 		F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB53289453B200548EEE /* AppReadiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB54289453B200548EEE /* UserProfileFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE28289453B400548EEE /* ByteParser.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB56289453B200548EEE /* ByteParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB57289453B200548EEE /* ModelReadCache.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* FeatureFlags.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2696,7 +2693,6 @@
 		341D392825472F3B00996E7B /* CVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewState.swift; sourceTree = "<group>"; };
 		3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVBackgroundContainer.swift; sourceTree = "<group>"; };
 		3420CF6E2638A01A00E7DCB0 /* CVWallpaperBlurView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVWallpaperBlurView.swift; sourceTree = "<group>"; };
-		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
 		34235F3724213550008C74CB /* ConversationSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationSettingsViewController.swift; sourceTree = "<group>"; };
 		3426A365255C854A0036407F /* CVItemViewModelImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVItemViewModelImpl.swift; sourceTree = "<group>"; };
 		3426A367255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+MessageActionsDelegate.swift"; sourceTree = "<group>"; };
@@ -5033,7 +5029,6 @@
 		F9C5CB0C289453B200548EEE /* OWS2FAManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FAManager.m; sourceTree = "<group>"; };
 		F9C5CB0D289453B200548EEE /* ImageQuality.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageQuality.swift; sourceTree = "<group>"; };
 		F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DarwinNotificationCenter.m; sourceTree = "<group>"; };
-		F9C5CB0F289453B200548EEE /* ByteParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ByteParser.m; sourceTree = "<group>"; };
 		F9C5CB10289453B200548EEE /* ThreadBacked.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadBacked.swift; sourceTree = "<group>"; };
 		F9C5CB11289453B200548EEE /* MailtoLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailtoLink.swift; sourceTree = "<group>"; };
 		F9C5CB12289453B200548EEE /* StorageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -5092,7 +5087,6 @@
 		F9C5CB53289453B200548EEE /* AppReadiness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppReadiness.h; sourceTree = "<group>"; };
 		F9C5CB54289453B200548EEE /* UserProfileFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileFinder.swift; sourceTree = "<group>"; };
 		F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DarwinNotificationCenter.h; sourceTree = "<group>"; };
-		F9C5CB56289453B200548EEE /* ByteParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ByteParser.h; sourceTree = "<group>"; };
 		F9C5CB57289453B200548EEE /* ModelReadCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCache.swift; sourceTree = "<group>"; };
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		F9C5CB59289453B200548EEE /* FeatureFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -8244,7 +8238,6 @@
 				6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */,
 				F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */,
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
-				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				4C9D347923679C13006A4307 /* ContactStreamTest.swift */,
 				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
@@ -10207,8 +10200,6 @@
 				F9C5CB40289453B200548EEE /* Bench.swift */,
 				668FE09A28B923A4008B9071 /* Bool+SSK.swift */,
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
-				F9C5CB56289453B200548EEE /* ByteParser.h */,
-				F9C5CB0F289453B200548EEE /* ByteParser.m */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
@@ -10476,7 +10467,6 @@
 				F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */,
 				F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
-				F9C5CE28289453B400548EEE /* ByteParser.h in Headers */,
 				F9C5CD3A289453B300548EEE /* CallKitIdStore.h in Headers */,
 				F9C5CCC9289453B300548EEE /* Contact.h in Headers */,
 				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
@@ -12669,7 +12659,6 @@
 				D99ABC742A3D0BE10034CD3B /* BitmapsImageParsingTest.swift in Sources */,
 				D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */,
 				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
-				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */,
 				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
@@ -12772,7 +12761,6 @@
 				D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */,
 				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
-				F9C5CDE1289453B400548EEE /* ByteParser.m in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				D99A2A852AAB9AB9003388D1 /* CallRecord.swift in Sources */,
 				D979CC272AD3933B006AAC49 /* CallRecordIncomingSyncMessageManager.swift in Sources */,
