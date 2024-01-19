@@ -1414,11 +1414,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 isEnabled: isDifferentSubscriptionLevelSelected(monthly.currentSubscription)
             )
             buttons.append(doomedContinueButton)
-        } else if
-            let currentSubscription = monthly.currentSubscription,
-            currentSubscription.active
-        {
-            if Self.canMakeNewDonations(forDonateMode: .monthly) {
+        } else if let currentSubscription = monthly.currentSubscription {
+            if
+                currentSubscription.active,
+                Self.canMakeNewDonations(forDonateMode: .monthly)
+            {
                 let updateTitle = OWSLocalizedString(
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",
                     comment: "On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button."

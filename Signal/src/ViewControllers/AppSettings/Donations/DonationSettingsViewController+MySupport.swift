@@ -471,10 +471,12 @@ extension DonationSettingsViewController {
             message: actionSheetMessage
         )
 
-        actionSheet.addAction(showDonateAndClearErrorAction(
-            title: .tryAgain,
-            preferredDonateMode: preferredDonateMode
-        ))
+        switch preferredDonateMode {
+        case .monthly:
+            actionSheet.addAction(showDonateAndCancelSubscriptionAction(title: .tryAgain))
+        case .oneTime:
+            actionSheet.addAction(showOneTimeDonateAndClearErrorAction(title: .tryAgain))
+        }
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         self.presentActionSheet(actionSheet, animated: true)
@@ -506,10 +508,7 @@ extension DonationSettingsViewController {
             message: actionSheetMessage
         )
 
-        actionSheet.addAction(showDonateAndClearErrorAction(
-            title: .renewSubscription,
-            preferredDonateMode: .monthly
-        ))
+        actionSheet.addAction(showDonateAndCancelSubscriptionAction(title: .renewSubscription))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         self.presentActionSheet(actionSheet, animated: true)
@@ -535,20 +534,13 @@ extension DonationSettingsViewController {
         }
     }
 
-    private func showDonateAndClearErrorAction(
-        title: ShowDonateActionTitle,
-        preferredDonateMode: DonateViewController.DonateMode
+    private func showOneTimeDonateAndClearErrorAction(
+        title: ShowDonateActionTitle
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             self.databaseStorage.write { tx in
-                switch preferredDonateMode {
-                case .oneTime:
-                    DependenciesBridge.shared.receiptCredentialResultStore
-                        .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
-                case .monthly:
-                    DependenciesBridge.shared.receiptCredentialResultStore
-                        .clearRequestErrorForAnyRecurringSubscription(tx: tx.asV2Write)
-                }
+                DependenciesBridge.shared.receiptCredentialResultStore
+                    .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
             }
 
             // Not ideal, because this makes network requests. However, this
@@ -556,8 +548,28 @@ extension DonationSettingsViewController {
             // methods for updating the state outside the normal loading flow.
             self.loadAndUpdateState().done(on: DispatchQueue.main) { [weak self] in
                 guard let self else { return }
-                self.showDonateViewController(preferredDonateMode: preferredDonateMode)
+                self.showDonateViewController(preferredDonateMode: .oneTime)
             }
+        }
+    }
+
+    private func showDonateAndCancelSubscriptionAction(
+        title: ShowDonateActionTitle
+    ) -> ActionSheetAction {
+        return ActionSheetAction(title: title.localizedTitle) { _ in
+            firstly(on: DispatchQueue.global()) {
+                self.databaseStorage.read { tx in
+                    SubscriptionManagerImpl.getSubscriberID(transaction: tx)
+                }
+            }.then(on: DispatchQueue.global()) { subscriberID in
+                guard let subscriberID else { return Promise.value(())}
+                return SubscriptionManagerImpl.cancelSubscription(for: subscriberID)
+            }.then(on: DispatchQueue.main) {
+                self.loadAndUpdateState()
+            }.done(on: DispatchQueue.main) { [weak self] in
+                guard let self else { return }
+                self.showDonateViewController(preferredDonateMode: .monthly)
+            }.cauterize()
         }
     }
 

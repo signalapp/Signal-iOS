@@ -404,17 +404,39 @@ public class SubscriptionManagerImpl: NSObject {
     public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
         Logger.info("[Donations] Cancelling subscription")
 
-        let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            switch response.responseStatusCode {
-            case 200, 404:
-                break
-            default:
-                throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
+        return firstly(on: DispatchQueue.global())  {
+            // Fetch the latest subscription state
+            self.getCurrentSubscriptionStatus(for: subscriberID)
+        }.then(on: DispatchQueue.global()) { subscription in
+            guard let subscription else {
+                return Promise.value(())
             }
 
+            // Check the subscription is in a state that can be cancelled
+            // If the state isn't in active or pastDue, skip deleting the
+            // subscription on the backend, and continue to clearing out the
+            // local subscription information.
+            switch subscription.status {
+            case .active, .pastDue:
+                break
+            case .canceled, .incomplete, .incompleteExpired, .trialing, .unpaid, .unknown:
+                return Promise.value(())
+            }
+
+            let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
+            return firstly(on: DispatchQueue.global()) {
+                networkManager.makePromise(request: request)
+            }.map(on: DispatchQueue.global()) { response in
+                switch response.responseStatusCode {
+                case 200, 404:
+                    break
+                default:
+                    throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
+                }
+            }.done(on: DispatchQueue.global()) {
+                Logger.info("[Donations] Deleted remote subscription.")
+            }
+        }.done(on: DispatchQueue.global()) {
             databaseStorage.write { transaction in
                 self.setSubscriberID(nil, transaction: transaction)
                 self.setSubscriberCurrencyCode(nil, transaction: transaction)
@@ -429,6 +451,7 @@ public class SubscriptionManagerImpl: NSObject {
             }
 
             self.storageServiceManager.recordPendingLocalAccountUpdates()
+            Logger.info("[Donations] Deleted local subscription.")
         }
     }
 
