@@ -116,7 +116,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
-        hideUsernameLinkTooltip(permanently: false)
+        hideUsernameLinkTooltip(permanently: false, animated: false)
 
         let contents = OWSTableContents()
 
@@ -341,16 +341,22 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             willDisplayBlock: { [weak self] cell in
                 guard let self else { return }
 
-                self.hideUsernameLinkTooltip(permanently: false)
-
                 if self.shouldShowUsernameLinkTooltip {
                     self.currentUsernameLinkTooltip = UsernameLinkTooltipView(
                         fromView: self.view,
                         referenceView: cell,
                         hInsetFromReferenceView: self.cellPillFrame(view: cell).x + 16,
                         onDismiss: { [weak self] in
-                            self?.hideUsernameLinkTooltip(permanently: true)
+                            self?.hideUsernameLinkTooltip(
+                                permanently: true,
+                                animated: true
+                            )
                         }
+                    )
+                } else {
+                    self.hideUsernameLinkTooltip(
+                        permanently: false,
+                        animated: true
                     )
                 }
             },
@@ -560,13 +566,20 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             ),
             animated: true
         ) {
-            self.hideUsernameLinkTooltip(permanently: true)
+            self.hideUsernameLinkTooltip(permanently: true, animated: false)
         }
     }
 
-    private func hideUsernameLinkTooltip(permanently: Bool) {
+    private func hideUsernameLinkTooltip(
+        permanently: Bool,
+        animated: Bool
+    ) {
         if let currentUsernameLinkTooltip {
-            currentUsernameLinkTooltip.removeFromSuperview()
+            if animated {
+                currentUsernameLinkTooltip.dismissWithAnimation()
+            } else {
+                currentUsernameLinkTooltip.removeFromSuperview()
+            }
             self.currentUsernameLinkTooltip = nil
         }
 

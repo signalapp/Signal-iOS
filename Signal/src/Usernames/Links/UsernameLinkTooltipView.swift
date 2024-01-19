@@ -183,9 +183,9 @@ class UsernameLinkTooltipView: TooltipView {
 
     // MARK: Animation
 
-    override func removeFromSuperview() {
+    func dismissWithAnimation() {
         guard CurrentAppContext().isAppForegroundAndActive() else {
-            return super.removeFromSuperview()
+            return self.removeFromSuperview()
         }
 
         let animator = self.transitionAnimator()
@@ -197,7 +197,7 @@ class UsernameLinkTooltipView: TooltipView {
             self.layer.opacity = .zero
         }
         animator.addCompletion { _ in
-            super.removeFromSuperview()
+            self.removeFromSuperview()
         }
         animator.startAnimation()
     }

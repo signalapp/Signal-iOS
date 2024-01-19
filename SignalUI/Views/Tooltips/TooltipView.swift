@@ -151,7 +151,7 @@ open class TooltipView: UIView {
         setupContentView()
     }
 
-    public var verticalConstraint: NSLayoutConstraint?
+    public weak var verticalConstraint: NSLayoutConstraint?
 
     open func setupRelationshipWithSuperview(
         superview: UIView,
