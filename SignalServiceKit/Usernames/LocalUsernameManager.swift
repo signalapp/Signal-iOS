@@ -415,7 +415,6 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
-            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
@@ -538,7 +537,6 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
-            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
@@ -613,7 +611,6 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: currentUsernameLink.entropy
             )
         } catch let error {
-            owsFailDebug("Error generating encrypted username: \(error)")
             return Promise(error: error)
         }
 
