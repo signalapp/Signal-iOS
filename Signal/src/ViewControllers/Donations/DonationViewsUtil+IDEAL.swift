@@ -144,11 +144,7 @@ extension DonationViewsUtil {
                     donationType: donationType,
                     databaseStorage: databaseStorage
                 )
-            ).then(on: DispatchQueue.main) {
-                // refresh the local state upon completing the donation
-                // to refresh any pending donation messages
-                return donationsVC.loadAndUpdateState()
-            }.done(on: DispatchQueue.main) {
+            ).done(on: DispatchQueue.main) {
                 // Do this after the `wrapPromiseInProgressView` completes
                 // to dismiss the progress spinner.  Then display the
                 // result of the donation.
@@ -171,6 +167,10 @@ extension DonationViewsUtil {
                     owsFailDebug("[Donations] Failed to load donation badge")
                 }
                 throw error
+            }.ensure(on: DispatchQueue.main) {
+                // refresh the local state upon completing the donation
+                // to refresh any pending donation messages
+                _ = donationsVC.loadAndUpdateState()
             }
         }
     }

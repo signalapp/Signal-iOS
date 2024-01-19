@@ -117,94 +117,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    /// Check if there is a pending iDEAL payment awaiting authorization.  If so, check how old the
-    /// payment is and display a message that either it still needs external authorization or the payment
-    /// failed and can be tried again.
-    private func showPendingIDEALAuthorizationSheetIfNeeded() -> Bool {
-        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        let expiration = kDayInterval
-
-        func showError(title: String, message: String) {
-            let actionSheet = ActionSheetController(
-                title: title,
-                message: message
-            )
-
-            actionSheet.addAction(.init(
-                title: CommonStrings.okayButton,
-                style: .cancel,
-                handler: nil
-            ))
-
-            presentActionSheet(actionSheet)
-        }
-
-        let (pendingOneTime, pendingSubscription) = databaseStorage.read { tx in
-            let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx.asV2Read)
-            let subscription = idealStore.getPendingSubscription(tx: tx.asV2Read)
-            return (oneTimeDonation, subscription)
-        }
-
-        if let pendingOneTime {
-            if abs(pendingOneTime.createDate.timeIntervalSinceNow) > expiration {
-                let title = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment failed."
-                )
-                let message = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed."
-                )
-                showError(title: title, message: message)
-
-                // cleanup
-                databaseStorage.write { tx in
-                    idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
-                }
-            } else {
-                let title = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
-                )
-                let messageFormat = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
-                )
-                let message = String(format: messageFormat, DonationUtilities.format(money: pendingOneTime.amount))
-                showError(title: title, message: message)
-            }
-            return true
-        } else if let pendingSubscription {
-            if abs(pendingSubscription.createDate.timeIntervalSinceNow) > expiration {
-                let title = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment failed."
-                )
-                let message = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed."
-                )
-                showError(title: title, message: message)
-                databaseStorage.write { tx in
-                    idealStore.clearPendingSubscription(tx: tx.asV2Write)
-                }
-            } else {
-                let title = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
-                )
-                let messageFormat = OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}."
-                )
-                let message = String(format: messageFormat, DonationUtilities.format(money: pendingSubscription.amount))
-                showError(title: title, message: message)
-            }
-            return true
-        }
-        return false
-    }
-
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
         let subscriberID = databaseStorage.read { SubscriptionManagerImpl.getSubscriberID(transaction: $0) }
@@ -629,6 +541,164 @@ class DonationSettingsViewController: OWSTableViewController2 {
             // We've shown it, so don't show it again.
             SubscriptionManagerImpl.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
         }.cauterize()
+    }
+
+    // MARK: - IDEAL support methods
+
+    /// Check if there is a pending iDEAL payment awaiting authorization.  If so, check how old the
+    /// payment is and display a message that either it still needs external authorization or the payment
+    /// failed and can be tried again.
+    private func showPendingIDEALAuthorizationSheetIfNeeded() -> Bool {
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+        let expiration = 15 * kMinuteInterval
+
+        func showError(title: String, message: String, donationMode: DonateViewController.DonateMode) {
+            let actionSheet = ActionSheetController(
+                title: title,
+                message: message
+            )
+
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
+                    comment: "Title for a button asking the user to try their donation again, because something went wrong."
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donationMode)
+                }
+            ))
+
+            actionSheet.addAction(.init(
+                title: CommonStrings.okayButton,
+                style: .cancel,
+                handler: nil
+            ))
+
+            presentActionSheet(actionSheet)
+        }
+
+        let (pendingOneTime, pendingSubscription) = databaseStorage.read { tx in
+            let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx.asV2Read)
+            let subscription = idealStore.getPendingSubscription(tx: tx.asV2Read)
+            return (oneTimeDonation, subscription)
+        }
+
+        if let pendingOneTime {
+            if abs(pendingOneTime.createDate.timeIntervalSinceNow) > expiration {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment failed."
+                )
+                let message = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed."
+                )
+                showError(title: title, message: message, donationMode: .oneTime)
+
+                // cleanup
+                databaseStorage.write { tx in
+                    idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                }
+            } else {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let messageFormat = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let message = String(format: messageFormat, DonationUtilities.format(money: pendingOneTime.amount))
+                showError(title: title, message: message, donationMode: .oneTime)
+            }
+            return true
+        } else if let pendingSubscription {
+            if abs(pendingSubscription.createDate.timeIntervalSinceNow) > expiration {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment failed."
+                )
+                let message = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed."
+                )
+                showError(title: title, message: message, donationMode: .monthly)
+                databaseStorage.write { tx in
+                    idealStore.clearPendingSubscription(tx: tx.asV2Write)
+                }
+            } else {
+                let title = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
+                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                )
+                let messageFormat = OWSLocalizedString(
+                    "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT",
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}."
+                )
+                let message = String(format: messageFormat, DonationUtilities.format(money: pendingSubscription.amount))
+                showError(title: title, message: message, donationMode: .monthly)
+            }
+            return true
+        }
+        return false
+    }
+
+    func presentAwaitingIDEALAuthorizationActionSheet(donateMode: DonateViewController.DonateMode) {
+        let actionSheet = ActionSheetController(
+            title: nil,
+            message: OWSLocalizedString(
+                "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE",
+                comment: "Prompt confirming the user wants to abandon the current donation flow and start a new donation."
+            )
+        )
+
+        actionSheet.addAction(showDonateAndClearPendingIDEALDonation(
+            title: OWSLocalizedString(
+                "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION",
+                comment: "Button title confirming the user wants to begin a new donation."
+            ),
+            preferredDonateMode: donateMode
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        self.presentActionSheet(actionSheet, animated: true)
+    }
+
+    private func showDonateAndClearPendingIDEALDonation(
+        title: String,
+        preferredDonateMode: DonateViewController.DonateMode
+    ) -> ActionSheetAction {
+        return clearErrorAndShowDonateAction(title: title, donateMode: preferredDonateMode) { tx in
+            switch preferredDonateMode {
+            case .oneTime:
+                DependenciesBridge.shared.externalPendingIDEALDonationStore
+                    .clearPendingOneTimeDonation(tx: tx.asV2Write)
+            case .monthly:
+                DependenciesBridge.shared.externalPendingIDEALDonationStore
+                    .clearPendingSubscription(tx: tx.asV2Write)
+            }
+        }
+    }
+
+    func clearErrorAndShowDonateAction(
+        title: String,
+        donateMode: DonateViewController.DonateMode,
+        clearErrorBlock: @escaping (SDSAnyWriteTransaction) -> Void
+    ) -> ActionSheetAction {
+        return ActionSheetAction(title: title) { _ in
+            self.databaseStorage.write { tx in
+                clearErrorBlock(tx)
+            }
+
+            // Not ideal, because this makes network requests. However, this
+            // should be rare, and doing it this way avoids us needing to add
+            // methods for updating the state outside the normal loading flow.
+            self.loadAndUpdateState().done(on: DispatchQueue.main) { [weak self] in
+                guard let self else { return }
+                self.showDonateViewController(preferredDonateMode: donateMode)
+            }
+        }
     }
 }
 

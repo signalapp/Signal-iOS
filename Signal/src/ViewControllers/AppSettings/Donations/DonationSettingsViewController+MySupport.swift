@@ -280,8 +280,7 @@ extension DonationSettingsViewController {
                         donateMode: .monthly
                     )
                 case .awaitingIDEALAuthorization:
-                    self.presentPaymentProcessingActionSheet(
-                        paymentMethod: .ideal,
+                    self.presentAwaitingIDEALAuthorizationSheet(
                         donateMode: .monthly
                     )
                 case let .paymentFailed(chargeFailureCode, paymentMethod):
@@ -361,8 +360,7 @@ extension DonationSettingsViewController {
                         donateMode: .oneTime
                     )
                 case .awaitingIDEALAuthorization:
-                    self.presentPaymentProcessingActionSheet(
-                        paymentMethod: .ideal,
+                    self.presentAwaitingIDEALAuthorizationSheet(
                         donateMode: .oneTime
                     )
                 case let .paymentFailed(chargeFailureCode, paymentMethod):
@@ -385,7 +383,7 @@ extension DonationSettingsViewController {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
             actionSheet = DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
-        case .sepa:
+        case .sepa, .ideal:
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE",
@@ -409,38 +407,35 @@ extension DonationSettingsViewController {
                 }
             ))
             actionSheet.addAction(OWSActionSheets.okayAction)
-        case .ideal:
-            actionSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE",
-                    comment: "Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization."
-                ),
-                message: OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE",
-                    comment: "Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation."
-                )
-            )
-
-            actionSheet.addAction(OWSActionSheets.okayAction)
-            #if DEBUG
-            actionSheet.addAction(ActionSheetAction(
-                title: "DEBUG: Clear donation",
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-                    self.databaseStorage.write { tx in
-                        switch donateMode {
-                        case .monthly:
-                            idealStore.clearPendingSubscription(tx: tx.asV2Write)
-                        case .oneTime:
-                            idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
-                        }
-                    }
-                }
-            ))
-            #endif
         }
 
+        self.presentActionSheet(actionSheet, animated: true)
+    }
+
+    private func presentAwaitingIDEALAuthorizationSheet(
+        donateMode: DonateViewController.DonateMode
+    ) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
+                comment: "Title for a sheet explaining that a payment needs confirmation."
+            ),
+            message: OWSLocalizedString(
+                "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE",
+                comment: "Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again."
+            )
+        )
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
+                comment: "Title for a button asking the user to try their donation again, because something went wrong."
+            ),
+            handler: { [weak self] _ in
+                guard let self else { return }
+                self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donateMode)
+            }
+        ))
         self.presentActionSheet(actionSheet, animated: true)
     }
 
@@ -534,28 +529,14 @@ extension DonationSettingsViewController {
         }
     }
 
-    private func showOneTimeDonateAndClearErrorAction(
-        title: ShowDonateActionTitle
-    ) -> ActionSheetAction {
-        return ActionSheetAction(title: title.localizedTitle) { _ in
-            self.databaseStorage.write { tx in
-                DependenciesBridge.shared.receiptCredentialResultStore
-                    .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
-            }
-
-            // Not ideal, because this makes network requests. However, this
-            // should be rare, and doing it this way avoids us needing to add
-            // methods for updating the state outside the normal loading flow.
-            self.loadAndUpdateState().done(on: DispatchQueue.main) { [weak self] in
-                guard let self else { return }
-                self.showDonateViewController(preferredDonateMode: .oneTime)
-            }
+    private func showOneTimeDonateAndClearErrorAction(title: ShowDonateActionTitle) -> ActionSheetAction {
+        clearErrorAndShowDonateAction(title: title.localizedTitle, donateMode: .oneTime) { tx in
+            DependenciesBridge.shared.receiptCredentialResultStore
+                .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
         }
     }
 
-    private func showDonateAndCancelSubscriptionAction(
-        title: ShowDonateActionTitle
-    ) -> ActionSheetAction {
+    private func showDonateAndCancelSubscriptionAction(title: ShowDonateActionTitle) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             firstly(on: DispatchQueue.global()) {
                 self.databaseStorage.read { tx in
