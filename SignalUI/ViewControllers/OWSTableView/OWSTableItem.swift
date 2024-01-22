@@ -57,6 +57,7 @@ public class OWSTableItem {
 
     public convenience init(
         text: String,
+        textColor: UIColor? = nil,
         actionBlock: (() -> Void)?,
         accessoryText: String? = nil,
         accessoryType: UITableViewCell.AccessoryType,
@@ -66,6 +67,7 @@ public class OWSTableItem {
             customCellBlock: {
                 return OWSTableItem.buildCell(
                     itemName: text,
+                    textColor: textColor,
                     accessoryText: accessoryText,
                     accessoryType: accessoryType,
                     accessibilityIdentifier: accessibilityIdentifier

@@ -59,9 +59,21 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         findByNumberSection.footerTitle = phoneNumberDiscoverability.descriptionForDiscoverability
         findByNumberSection.add(discoverabilityItem(.everybody))
 
-        if phoneNumberSharingMode != .everybody {
-            // By design, only include the 'nobody' option if
-            // phone number sharing is disabled.
+        switch phoneNumberSharingMode! {
+        case .everybody:
+            // Create disabled "nobody" option
+            findByNumberSection.add(OWSTableItem(
+                text: PhoneNumberDiscoverability.nobody.nameForDiscoverability,
+                textColor: Theme.secondaryTextAndIconColor,
+                actionBlock: { [weak self] in
+                    self?.presentToast(text: OWSLocalizedString(
+                        "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST",
+                        comment: "A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed."
+                    ))
+                },
+                accessoryType: .none
+            ))
+        case .nobody:
             findByNumberSection.add(discoverabilityItem(.nobody))
         }
 
