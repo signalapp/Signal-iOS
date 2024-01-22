@@ -283,7 +283,7 @@ private class ReceiptCredentialRedemptionJobRunner: JobRunner, Dependencies {
         guard delay > 0 else {
             return nil
         }
-        owsAssertDebug(priorError.paymentMethod == .sepa)
+        owsAssertDebug(priorError.paymentMethod == .sepa || priorError.paymentMethod == .ideal)
         return delay
     }
 
