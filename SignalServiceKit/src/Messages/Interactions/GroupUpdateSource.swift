@@ -83,6 +83,9 @@ extension TSInfoMessage {
             return .unknown
         }
         if let aci = address.serviceId as? Aci {
+            if isKnownLocalUser() {
+                return .localUser(originalSource: .aci(aci))
+            }
             return .aci(aci)
         } else if let pni = address.serviceId as? Pni {
             // When GroupUpdateSource was introduced, the _only_ way to have
