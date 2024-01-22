@@ -5309,10 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
+
+/* Footer below the usernames section of the profile settings explaining username visibility. */
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxy Address";

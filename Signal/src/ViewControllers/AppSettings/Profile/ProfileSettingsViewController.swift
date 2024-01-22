@@ -132,16 +132,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         contents.add(avatarSection)
 
         let mainSection = OWSTableSection()
-        mainSection.footerAttributedTitle = NSAttributedString.composed(of: [
-            OWSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION",
-                              comment: "Description of the user profile."),
-            " ",
-            CommonStrings.learnMore.styled(
-                with: .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!)
-            )
-        ]).styled(
-            with: .font(.dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor)
+        mainSection.footerTitle = OWSLocalizedString(
+            "PROFILE_VIEW_PROFILE_DESCRIPTION",
+            comment: "Description of the user profile."
         )
         mainSection.add(.disclosureItem(
             icon: .profileName,
@@ -160,24 +153,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-
-        if FeatureFlags.usernames, let localUsernameState {
-            switch localUsernameState {
-            case .unset:
-                mainSection.add(usernameUnsetTableItem())
-            case let .available(username, usernameLink):
-                mainSection.add(usernameAvailableTableItem(username: username))
-                mainSection.add(usernameLinkAvailableTableItem(
-                    username: username,
-                    usernameLink: usernameLink
-                ))
-            case let .linkCorrupted(username):
-                mainSection.add(usernameAvailableTableItem(username: username))
-                mainSection.add(usernameLinkCorruptedTableItem())
-            case .usernameAndLinkCorrupted:
-                mainSection.add(usernameCorruptedTableItem())
-            }
-        }
 
         mainSection.add(.disclosureItem(
             icon: .profileAbout,
@@ -222,6 +197,30 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             ))
         }
         contents.add(mainSection)
+
+        let usernameSection = OWSTableSection()
+        usernameSection.footerTitle = OWSLocalizedString(
+            "PROFILE_VIEW_USERNAME_DESCRIPTION",
+            comment: "Footer below the usernames section of the profile settings explaining username visibility."
+        )
+        if FeatureFlags.usernames, let localUsernameState {
+            switch localUsernameState {
+            case .unset:
+                usernameSection.add(usernameUnsetTableItem())
+            case let .available(username, usernameLink):
+                usernameSection.add(usernameAvailableTableItem(username: username))
+                usernameSection.add(usernameLinkAvailableTableItem(
+                    username: username,
+                    usernameLink: usernameLink
+                ))
+            case let .linkCorrupted(username):
+                usernameSection.add(usernameAvailableTableItem(username: username))
+                usernameSection.add(usernameLinkCorruptedTableItem())
+            case .usernameAndLinkCorrupted:
+                usernameSection.add(usernameCorruptedTableItem())
+            }
+        }
+        contents.add(usernameSection)
 
         self.contents = contents
     }
