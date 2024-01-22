@@ -18,7 +18,6 @@ private protocol CallCellDelegate: AnyObject {
 // MARK: - CallsListViewController
 
 class CallsListViewController: OWSViewController, HomeTabViewController {
-
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
 
@@ -487,6 +486,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
         let callId = callRecord.callId
         let callBeganTimestamp = callRecord.callBeganTimestamp
+        let callThreadRowId = callRecord.threadRowId
 
         let callDirection: CallViewModel.Direction = {
             if callRecord.callStatus.isMissedCall {
@@ -559,6 +559,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
             return CallViewModel(
                 callId: callId,
+                threadRowId: callThreadRowId,
                 title: deps.contactsManager.displayName(
                     for: contactThread.contactAddress,
                     transaction: tx
@@ -574,6 +575,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         } else if let groupThread = callThread as? TSGroupThread {
             return CallViewModel(
                 callId: callId,
+                threadRowId: callThreadRowId,
                 title: groupThread.groupModel.groupNameOrDefault,
                 recipientType: .group(groupThread: groupThread),
                 direction: callDirection,
@@ -628,7 +630,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        var callId: ID
+        var callId: UInt64
+        var threadRowId: Int64
+
         var title: String
         var recipientType: RecipientType
         var direction: Direction
@@ -670,8 +674,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
 
         // MARK: Identifiable
 
-        typealias ID = UInt64
-        var id: UInt64 { callId }
+        struct ID: Hashable {
+            let callId: UInt64
+            let threadRowId: Int64
+        }
+
+        var id: ID {
+            ID(callId: callId, threadRowId: threadRowId)
+        }
     }
 
     let tableView = UITableView(frame: .zero, style: .plain)
