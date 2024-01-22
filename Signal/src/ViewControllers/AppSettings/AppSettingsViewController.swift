@@ -383,7 +383,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
     private func profileCellAvatarImageView() -> UIView {
         let avatarImageView = ConversationAvatarView(
-            sizeClass: .sixtyFour,
+            sizeClass: .customDiameter(72),
             localUserDisplayMode: .asUser
         )
 
@@ -418,32 +418,57 @@ class AppSettingsViewController: OWSTableViewController2 {
             nameLabel.textColor = Theme.accentBlueColor
         }
 
-        func addSubtitleLabel(text: String?, isLast: Bool = false) {
-            guard let text = text, !text.isEmpty else { return }
+        @discardableResult
+        func addSubtitleLabel(
+            text: String,
+            textColor: UIColor
+        ) -> UIView? {
+            guard !text.isEmpty else { return nil }
 
             let label = UILabel()
             label.font = .dynamicTypeFootnoteClamped
             label.text = text
-            label.textColor = Theme.secondaryTextAndIconColor
+            label.textColor = textColor
 
             let containerView = UIView()
-            containerView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: isLast ? 0 : 2, right: 0)
+            containerView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 0)
             containerView.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 
             profileInfoStack.addArrangedSubview(containerView)
+            return containerView
         }
-
-        addSubtitleLabel(text: OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji))
 
         if let phoneNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber {
             addSubtitleLabel(
                 text: PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber),
-                isLast: true
+                textColor: Theme.primaryTextColor
             )
         } else {
             owsFailDebug("Missing local number")
         }
+
+        if FeatureFlags.usernames, let localUsernameState {
+            switch localUsernameState {
+            case let .available(username, _):
+                addSubtitleLabel(
+                    text: username,
+                    textColor: Theme.primaryTextColor
+                )
+            case .unset, .usernameAndLinkCorrupted, .linkCorrupted:
+                break
+            }
+        }
+
+        if let bioText = OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji) {
+            let bioLabel = addSubtitleLabel(
+                text: bioText,
+                textColor: Theme.secondaryTextAndIconColor
+            )
+            bioLabel?.layoutMargins.top = 8
+        }
+
+        profileInfoStack.arrangedSubviews.last?.layoutMargins.bottom = 2
 
         return profileInfoStack
     }
