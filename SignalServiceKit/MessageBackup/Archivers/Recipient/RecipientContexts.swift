@@ -36,22 +36,39 @@ extension MessageBackup {
         public enum Address {
             public typealias GroupId = Data
 
-            case localAddress
             case contact(ContactAddress)
             case group(GroupId)
         }
 
+        public let localRecipientId: RecipientId
+
         internal let localIdentifiers: LocalIdentifiers
 
-        private var currentRecipientId: RecipientId = 1
-        private var localAddressId: RecipientId?
+        private var currentRecipientId: RecipientId
         private let groupIdMap = SharedMap<Address.GroupId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
 
-        internal init(localIdentifiers: LocalIdentifiers) {
+        internal init(
+            localIdentifiers: LocalIdentifiers,
+            localRecipientId: RecipientId
+        ) {
             self.localIdentifiers = localIdentifiers
+            self.localRecipientId = localRecipientId
+
+            // Start after the local recipient id.
+            currentRecipientId = RecipientId(localRecipientId.value + 1)
+
+            // Also insert the local identifiers, just in case we try and look
+            // up the local recipient by .contact enum case.
+            contactAciMap[localIdentifiers.aci] = localRecipientId
+            if let pni = localIdentifiers.pni {
+                contactPniMap[pni] = localRecipientId
+            }
+            if let e164 = E164(localIdentifiers.phoneNumber) {
+                contactE164ap[e164] = currentRecipientId
+            }
         }
 
         internal func assignRecipientId(to address: Address) -> RecipientId {
@@ -59,20 +76,6 @@ extension MessageBackup {
                 currentRecipientId = RecipientId(currentRecipientId.value + 1)
             }
             switch address {
-            case .localAddress:
-                owsAssertDebug(self.localAddressId == nil)
-                let localRecipientId = currentRecipientId
-                localAddressId = localRecipientId
-
-                // Also insert the local identifiers, just in case we try and look
-                // up by .contact enum case instead of .localAddress.
-                contactAciMap[localIdentifiers.aci] = localRecipientId
-                if let pni = localIdentifiers.pni {
-                    contactPniMap[pni] = localRecipientId
-                }
-                if let e164 = E164(localIdentifiers.phoneNumber) {
-                    contactE164ap[e164] = currentRecipientId
-                }
             case .group(let groupId):
                 groupIdMap[groupId] = currentRecipientId
             case .contact(let contactAddress):
@@ -94,8 +97,6 @@ extension MessageBackup {
             // swiftlint:disable:next implicit_getter
             get {
                 switch address {
-                case .localAddress:
-                    return localAddressId
                 case .group(let groupId):
                     return groupIdMap[groupId]
                 case .contact(let contactAddress):

@@ -78,7 +78,21 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 - (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage
 {
-    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread messageBody:nil]];
+    self = [self initWithThread:thread timestamp:0 messageType:infoMessage];
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                   messageType:(TSInfoMessageType)infoMessage
+{
+    TSMessageBuilder *builder;
+    if (timestamp > 0) {
+        builder = [TSMessageBuilder messageBuilderWithThread:thread timestamp:timestamp messageBody:nil];
+    } else {
+        builder = [TSMessageBuilder messageBuilderWithThread:thread messageBody:nil];
+    }
+    self = [super initMessageWithBuilder:builder];
     if (!self) {
         return self;
     }
@@ -112,7 +126,16 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                    messageType:(TSInfoMessageType)infoMessageType
            infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
 {
-    self = [self initWithThread:thread messageType:infoMessageType];
+    self = [self initWithThread:thread timestamp:0 messageType:infoMessageType infoMessageUserInfo:infoMessageUserInfo];
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                   messageType:(TSInfoMessageType)infoMessageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+{
+    self = [self initWithThread:thread timestamp:timestamp messageType:infoMessageType];
     if (!self) {
         return self;
     }

@@ -58,9 +58,7 @@ extension MessageBackup {
         enum DirectionalDetails {
             case incoming(BackupProtoChatItemIncomingMessageDetails)
             case outgoing(BackupProtoChatItemOutgoingMessageDetails)
-            // TODO: do we need to modify the proto schema for local
-            // messages that are neither incoming nor outgoing?
-            // Or do we just call them outgoing, with no recipients?
+            case directionless(BackupProtoChatItemDirectionlessMessageDetails)
         }
 
         let author: RecipientId
@@ -75,6 +73,15 @@ extension MessageBackup {
         let type: ChatItemMessageType
     }
 
+    enum SkippableGroupUpdate {
+        /// This is a group update from back when we kept raw strings on disk, instead
+        /// of metadata required to construct the string. We knowingly drop these.
+        case legacyRawString
+        /// In backups, we collapse the `inviteFriendsToNewlyCreatedGroup` into
+        /// the `createdByLocalUser`; the former is just omitted from backups.
+        case inviteFriendsToNewlyCreatedGroup
+    }
+
     internal enum ArchiveInteractionResult<Component> {
         typealias Error = MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error
 
@@ -85,6 +92,10 @@ extension MessageBackup {
         /// This is a past revision that was since edited; can be safely skipped, as its
         /// contents will be represented in the latest revision.
         case isPastRevision
+
+        /// Some group updates are deliberately skipped; see sub-enum for reasons.
+        case skippableGroupUpdate(SkippableGroupUpdate)
+
         // TODO: remove this once we flesh out implementation for all interactions.
         case notYetImplemented
 
@@ -185,6 +196,8 @@ extension MessageBackup.ArchiveInteractionResult {
         // These types are just bubbled up as-is
         case .isPastRevision:
             return .bubbleUpError(.isPastRevision)
+        case .skippableGroupUpdate(let groupUpdate):
+            return .bubbleUpError(.skippableGroupUpdate(groupUpdate))
         case .notYetImplemented:
             return .bubbleUpError(.notYetImplemented)
         case .completeFailure(let error):

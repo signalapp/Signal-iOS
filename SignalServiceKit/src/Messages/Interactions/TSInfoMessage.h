@@ -94,7 +94,11 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage;
+
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                   messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
 
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithThread:(TSThread *)thread
@@ -103,6 +107,12 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
                    messageType:(TSInfoMessageType)infoMessage
            infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
 

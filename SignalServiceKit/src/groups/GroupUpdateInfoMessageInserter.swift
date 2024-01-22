@@ -30,13 +30,16 @@ public protocol GroupUpdateInfoMessageInserter {
 }
 
 class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
+    private let dateProvider: DateProvider
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let notificationsManager: NotificationsProtocol
 
     init(
+        dateProvider: @escaping DateProvider,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         notificationsManager: NotificationsProtocol
     ) {
+        self.dateProvider = dateProvider
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.notificationsManager = notificationsManager
     }
@@ -182,30 +185,15 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             }
         }
 
-        var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
-
-        userInfoForNewMessage[.newGroupModel] = newGroupModel
-        userInfoForNewMessage[.newDisappearingMessageToken] = newDisappearingMessageToken
-
         /// This is true because the list of group update items we
         /// compute above will never be empty. Even if we get a strange group
         /// update that somehow doesn't produce a diff, we'll get back a list
         /// with a single "generic group update" item in it.
         owsAssert(!updateItemsForNewMessage.isEmpty)
-        userInfoForNewMessage[.groupUpdateItems] = TSInfoMessage.PersistableGroupUpdateItemsWrapper(updateItemsForNewMessage)
-
-        if let oldGroupModel = oldGroupModel {
-            userInfoForNewMessage[.oldGroupModel] = oldGroupModel
-        }
-
-        if let oldDisappearingMessageToken = oldDisappearingMessageToken {
-            userInfoForNewMessage[.oldDisappearingMessageToken] = oldDisappearingMessageToken
-        }
-
-        let infoMessage = TSInfoMessage(
-            thread: groupThread,
-            messageType: .typeGroupUpdate,
-            infoMessageUserInfo: userInfoForNewMessage
+        let infoMessage = TSInfoMessage.newGroupUpdateInfoMessage(
+            timestamp: dateProvider().ows_millisecondsSince1970,
+            groupThread: groupThread,
+            updateItems: updateItemsForNewMessage
         )
         infoMessage.anyInsert(transaction: sdsTransaction)
 

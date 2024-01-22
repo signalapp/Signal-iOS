@@ -325,11 +325,14 @@ public class DependenciesBridge {
             )
         )
 
+        let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
+            contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
+            signalRecipientStore: signalRecipientStore
+        )
+
         self.groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
-            groupUpdateItemBuilder: GroupUpdateItemBuilderImpl(
-                contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
-                signalRecipientStore: signalRecipientStore
-            ),
+            dateProvider: dateProvider,
+            groupUpdateItemBuilder: groupUpdateItemBuilder,
             notificationsManager: notificationsManager
         )
 
@@ -640,6 +643,7 @@ public class DependenciesBridge {
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
+                groupUpdateItemBuilder: groupUpdateItemBuilder,
                 interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
@@ -647,6 +651,7 @@ public class DependenciesBridge {
             ),
             dateProvider: dateProvider,
             db: db,
+            localRecipientArchiver: MessageBackupLocalRecipientArchiverImpl(),
             recipientArchiver: MessageBackupRecipientArchiverImpl(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 groupsV2: groupsV2,

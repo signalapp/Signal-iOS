@@ -10,6 +10,26 @@ import LibSignalClient
 
 public extension TSInfoMessage {
 
+    static func newGroupUpdateInfoMessage(
+        timestamp: UInt64,
+        groupThread: TSGroupThread,
+        updateItems: [PersistableGroupUpdateItem]
+    ) -> TSInfoMessage {
+        owsAssert(!updateItems.isEmpty)
+
+        var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
+
+        userInfoForNewMessage[.groupUpdateItems] = PersistableGroupUpdateItemsWrapper(updateItems)
+
+        let infoMessage = TSInfoMessage(
+            thread: groupThread,
+            timestamp: timestamp,
+            messageType: .typeGroupUpdate,
+            infoMessageUserInfo: userInfoForNewMessage
+        )
+        return infoMessage
+    }
+
     @objc
     func groupUpdateDescription(transaction tx: SDSAnyReadTransaction) -> NSAttributedString {
         let localIdentifiers: LocalIdentifiers? =

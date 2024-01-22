@@ -132,17 +132,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
 
-        guard let recipientId = context.recipientContext[.localAddress] else {
-            return .partialSuccess([.init(
-                objectId: chatId,
-                error: .referencedIdMissing(.recipient(.localAddress))
-            )])
-        }
-
         return archiveThread(
             thread,
             chatId: chatId,
-            recipientId: recipientId,
+            recipientId: context.recipientContext.localRecipientId,
             stream: stream,
             context: context,
             tx: tx

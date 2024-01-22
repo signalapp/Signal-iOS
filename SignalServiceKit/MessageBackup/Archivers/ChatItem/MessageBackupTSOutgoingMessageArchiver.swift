@@ -53,14 +53,6 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             return errorResult
         }
 
-        guard let author = context.recipientContext[.localAddress] else {
-            partialErrors.append(.init(
-                objectId: interaction.chatItemId,
-                error: .referencedIdMissing(.recipient(.localAddress))
-            ))
-            return .messageFailure(partialErrors)
-        }
-
         let contentsResult = contentsArchiver.archiveMessageContents(
             message,
             context: context.recipientContext,
@@ -75,7 +67,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         }
 
         let details = Details(
-            author: author,
+            author: context.recipientContext.localRecipientId,
             directionalDetails: directionalDetails,
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
@@ -202,8 +194,6 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
     // MARK: - Restoring
 
     static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool {
-        // TODO: will e.g. info messages have an incoming or outgoing field set?
-        // if so we need some other differentiator.
         return chatItem.outgoing != nil
     }
 

@@ -35,6 +35,9 @@ extension MessageBackup {
         /// A reaction has an invalid or missing author address information, causing the
         /// reaction to be skipped.
         case invalidReactionAddress
+
+        /// A group update message with no updates actually inside it, which is invalid.
+        case emptyGroupUpdate
     }
 
     /// Note the "multi"; covers the archiving of multiple frames, typically

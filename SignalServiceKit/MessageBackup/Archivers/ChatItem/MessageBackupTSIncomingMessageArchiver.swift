@@ -109,8 +109,6 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     // MARK: - Restoring
 
     static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool {
-        // TODO: will e.g. info messages have an incoming or outgoing field set?
-        // if so we need some other differentiator.
         return chatItem.incoming != nil
     }
 

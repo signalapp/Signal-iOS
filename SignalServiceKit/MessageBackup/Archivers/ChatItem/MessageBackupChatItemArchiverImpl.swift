@@ -9,6 +9,7 @@ import LibSignalClient
 public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
     private let dateProvider: DateProvider
+    private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let interactionStore: InteractionStore
     private let reactionStore: ReactionStore
     private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
@@ -16,12 +17,14 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
     public init(
         dateProvider: @escaping DateProvider,
+        groupUpdateItemBuilder: GroupUpdateItemBuilder,
         interactionStore: InteractionStore,
         reactionStore: ReactionStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
     ) {
         self.dateProvider = dateProvider
+        self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.interactionStore = interactionStore
         self.reactionStore = reactionStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
@@ -44,6 +47,10 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             contentsArchiver: contentsArchiver,
             interactionStore: interactionStore,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver
+        ),
+        MessageBackupGroupUpdateMessageArchiver(
+            groupUpdateBuilder: groupUpdateItemBuilder,
+            interactionStore: interactionStore
         )
         // TODO: need for info messages. not story messages, those are skipped.
         // are there other message types? what about e.g. payment messages?
@@ -135,7 +142,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         case .success(let deets):
             details = deets
 
-        case .isPastRevision, .notYetImplemented:
+        case .isPastRevision, .skippableGroupUpdate, .notYetImplemented:
             // Skip! Say it succeeded so we ignore it.
             return .success
 
@@ -181,6 +188,15 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             chatItemBuilder.setRemoteDeletedMessage(msg)
         case .chatUpdate(let msg):
             chatItemBuilder.setUpdateMessage(msg)
+        }
+
+        switch details.directionalDetails {
+        case .incoming(let backupProtoChatItemIncomingMessageDetails):
+            chatItemBuilder.setIncoming(backupProtoChatItemIncomingMessageDetails)
+        case .outgoing(let backupProtoChatItemOutgoingMessageDetails):
+            chatItemBuilder.setOutgoing(backupProtoChatItemOutgoingMessageDetails)
+        case .directionless(let backupProtoChatItemDirectionlessMessageDetails):
+            chatItemBuilder.setDirectionless(backupProtoChatItemDirectionlessMessageDetails)
         }
 
         if let expireStartDate = details.expireStartDate {

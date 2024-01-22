@@ -14,6 +14,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let dateProvider: DateProvider
     private let db: DB
+    private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let recipientArchiver: MessageBackupRecipientArchiver
     private let streamProvider: MessageBackupProtoStreamProvider
     private let tsAccountManager: TSAccountManager
@@ -23,6 +24,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         chatItemArchiver: MessageBackupChatItemArchiver,
         dateProvider: @escaping DateProvider,
         db: DB,
+        localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         recipientArchiver: MessageBackupRecipientArchiver,
         streamProvider: MessageBackupProtoStreamProvider,
         tsAccountManager: TSAccountManager
@@ -31,6 +33,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.chatItemArchiver = chatItemArchiver
         self.dateProvider = dateProvider
         self.db = db
+        self.localRecipientArchiver = localRecipientArchiver
         self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
         self.tsAccountManager = tsAccountManager
@@ -80,11 +83,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             throw OWSAssertionError("No local identifiers!")
         }
-        let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
-            localIdentifiers: localIdentifiers
-        )
 
         try writeHeader(stream: stream, tx: tx)
+
+        let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
+            stream: stream
+        )
+        let localRecipientId: MessageBackup.RecipientId
+        switch localRecipientResult {
+        case .success(let success):
+            localRecipientId = success
+        case .failure(let failure):
+            Logger.error("Failed to archive local recipient!")
+            throw failure
+        }
+
+        let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
+            localIdentifiers: localIdentifiers,
+            localRecipientId: localRecipientId
+        )
 
         let recipientArchiveResult = recipientArchiver.archiveRecipients(
             stream: stream,
@@ -201,11 +218,20 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 throw error
             }
             if let recipient = frame.recipient {
-                let recipientResult = recipientArchiver.restore(
-                    recipient,
-                    context: recipientContext,
-                    tx: tx
-                )
+                let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
+                if type(of: localRecipientArchiver).canRestore(recipient) {
+                    recipientResult = localRecipientArchiver.restore(
+                        recipient,
+                        context: recipientContext,
+                        tx: tx
+                    )
+                } else {
+                    recipientResult = recipientArchiver.restore(
+                        recipient,
+                        context: recipientContext,
+                        tx: tx
+                    )
+                }
                 switch recipientResult {
                 case .success:
                     continue

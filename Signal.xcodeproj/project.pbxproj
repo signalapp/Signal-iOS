@@ -822,6 +822,9 @@
 		6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */; };
 		6619A1CD2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */; };
 		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
+		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
+		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
+		662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -972,7 +975,7 @@
 		66CD25722B07EE3A00139E17 /* SharedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25712B07EE3A00139E17 /* SharedMap.swift */; };
 		66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25742B0807BC00139E17 /* MessageBackupProtoInputStream.swift */; };
 		66CD25772B0807C700139E17 /* MessageBackupProtoOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25762B0807C700139E17 /* MessageBackupProtoOutputStream.swift */; };
-		66CD25792B0832A400139E17 /* MessageBackupNoteToSelfRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25782B0832A400139E17 /* MessageBackupNoteToSelfRecipientArchiver.swift */; };
+		66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25782B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift */; };
 		66CD257B2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD257A2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift */; };
 		66CD257D2B0C1DAA00139E17 /* RecipientContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD257C2B0C1DAA00139E17 /* RecipientContexts.swift */; };
 		66CD257F2B0D67F300139E17 /* ChatContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD257E2B0D67F300139E17 /* ChatContexts.swift */; };
@@ -3469,6 +3472,9 @@
 		6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContactAddress.swift; sourceTree = "<group>"; };
 		6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceUnknownFieldMigrator.swift; sourceTree = "<group>"; };
 		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
+		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
+		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
+		662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -3622,7 +3628,7 @@
 		66CD25712B07EE3A00139E17 /* SharedMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMap.swift; sourceTree = "<group>"; };
 		66CD25742B0807BC00139E17 /* MessageBackupProtoInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoInputStream.swift; sourceTree = "<group>"; };
 		66CD25762B0807C700139E17 /* MessageBackupProtoOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoOutputStream.swift; sourceTree = "<group>"; };
-		66CD25782B0832A400139E17 /* MessageBackupNoteToSelfRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupNoteToSelfRecipientArchiver.swift; sourceTree = "<group>"; };
+		66CD25782B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupLocalRecipientArchiver.swift; sourceTree = "<group>"; };
 		66CD257A2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupRecipientArchiver.swift; sourceTree = "<group>"; };
 		66CD257C2B0C1DAA00139E17 /* RecipientContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContexts.swift; sourceTree = "<group>"; };
 		66CD257E2B0D67F300139E17 /* ChatContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatContexts.swift; sourceTree = "<group>"; };
@@ -7012,6 +7018,24 @@
 			path = SentMessageTranscriptReceiver;
 			sourceTree = "<group>";
 		};
+		662590C82B599467001FDCDD /* InfoMessages */ = {
+			isa = PBXGroup;
+			children = (
+				662590C92B599474001FDCDD /* GroupUpdates */,
+			);
+			path = InfoMessages;
+			sourceTree = "<group>";
+		};
+		662590C92B599474001FDCDD /* GroupUpdates */ = {
+			isa = PBXGroup;
+			children = (
+				662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */,
+				662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */,
+				662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */,
+			);
+			path = GroupUpdates;
+			sourceTree = "<group>";
+		};
 		662C44142A1D20EB001F83E2 /* SVR2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -7310,7 +7334,7 @@
 				6619A1CA2B2D176E004B38FE /* MessageBackupContactAddress.swift */,
 				66CD256D2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift */,
 				66CD257A2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift */,
-				66CD25782B0832A400139E17 /* MessageBackupNoteToSelfRecipientArchiver.swift */,
+				66CD25782B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift */,
 				66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */,
 				66CD256F2B06E29B00139E17 /* MessageBackupRecipientDestinationArchiver.swift */,
 				66CD257C2B0C1DAA00139E17 /* RecipientContexts.swift */,
@@ -7338,6 +7362,7 @@
 		66CD255D2B06886800139E17 /* ChatItem */ = {
 			isa = PBXGroup;
 			children = (
+				662590C82B599467001FDCDD /* InfoMessages */,
 				66CD25672B06960F00139E17 /* MessageBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift */,
 				66CD258C2B0EB3A700139E17 /* MessageBackupInteractionArchiver.swift */,
@@ -12967,11 +12992,14 @@
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
 				66CD257B2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift in Sources */,
+				662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */,
+				662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */,
+				662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackupInteractionArchiver.swift in Sources */,
+				66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */,
 				665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */,
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,
-				66CD25792B0832A400139E17 /* MessageBackupNoteToSelfRecipientArchiver.swift in Sources */,
 				66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */,
 				66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* MessageBackupProtoOutputStream.swift in Sources */,

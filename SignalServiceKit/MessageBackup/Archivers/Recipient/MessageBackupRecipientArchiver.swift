@@ -88,8 +88,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             profileManager: profileManager,
             storyStore: storyStore,
             threadStore: threadStore
-        ),
-        MessageBackupNoteToSelfRecipientArchiver()
+        )
         // TODO: add missing archivers:
         // * story distribution list (BackupDistributionList)
         // * release notes thread (BackupReleaseNotes)
