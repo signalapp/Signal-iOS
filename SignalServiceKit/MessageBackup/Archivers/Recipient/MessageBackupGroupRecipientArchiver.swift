@@ -34,14 +34,14 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         self.threadStore = threadStore
     }
 
-    private typealias GroupId = MessageBackup.RecipientArchivingContext.Address.GroupId
+    private typealias GroupId = MessageBackup.GroupId
 
     public func archiveRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var errors = [ArchiveMultiFrameResult.Error]()
+        var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
         do {
             try threadStore.enumerateGroupThreads(tx: tx) { groupThread, _ in
@@ -55,7 +55,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             }
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.
-            return .completeFailure(error)
+            return .completeFailure(.threadIteratorError(error))
         }
 
         if errors.isEmpty {
@@ -69,7 +69,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         _ groupThread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveMultiFrameResult.Error],
+        errors: inout [ArchiveMultiFrameResult.ArchiveFrameError],
         tx: DBReadTransaction
     ) {
         guard
@@ -87,7 +87,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupsV2Model.secretParamsData))
             groupMasterKey = try groupSecretParams.getMasterKey().serialize().asData
         } catch {
-            errors.append(.init(objectId: recipientId, error: .groupMasterKeyError(error)))
+            errors.append(.groupMasterKeyError(.group(groupId), error))
             return
         }
 
@@ -109,13 +109,17 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
 
         let recipientBuilder = BackupProtoRecipient.builder(id: recipientId.value)
 
-        Self.writeFrameToStream(stream, frameBuilder: { frameBuilder in
-            let groupProto = try groupBuilder.build()
-            recipientBuilder.setGroup(groupProto)
-            let recipientProto = try recipientBuilder.build()
-            frameBuilder.setRecipient(recipientProto)
-            return try frameBuilder.build()
-        }).map { errors.append($0.asArchiveFramesError(objectId: recipientId)) }
+        Self.writeFrameToStream(
+            stream,
+            objectId: .group(groupId),
+            frameBuilder: { frameBuilder in
+                let groupProto = try groupBuilder.build()
+                recipientBuilder.setGroup(groupProto)
+                let recipientProto = try recipientBuilder.build()
+                frameBuilder.setRecipient(recipientProto)
+                return try frameBuilder.build()
+            }
+        ).map { errors.append($0) }
     }
 
     static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
@@ -128,20 +132,29 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
         guard let groupProto = recipient.group else {
-            owsFail("Invalid proto for class")
+            return .failure(
+                [.developerError(
+                    recipient.recipientId,
+                    OWSAssertionError("Invalid proto for class")
+                )]
+            )
         }
 
         let masterKey = groupProto.masterKey
 
         guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-            return .failure(recipient.recipientId, [.invalidProtoData])
+            return .failure(
+                [.invalidProtoData(recipient.recipientId, .invalidGV2MasterKey)]
+            )
         }
 
         let groupContextInfo: GroupV2ContextInfo
         do {
             groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
         } catch {
-            return .failure(recipient.recipientId, [.invalidProtoData])
+            return .failure(
+                [.invalidProtoData(recipient.recipientId, .invalidGV2MasterKey)]
+            )
         }
         let groupId = groupContextInfo.groupId
 
@@ -153,7 +166,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         // For now, assume this is called from the debug UI after we have synced
         // with storage service and have all the groups locally.
         guard let localThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
-            return .failure(recipient.recipientId, [.databaseInsertionFailed(OWSAssertionError("Unimplemented"))])
+            return .failure([.unimplemented(recipient.recipientId)])
         }
         let localStorySendMode = localThread.storyViewMode.storageServiceMode
         switch (groupProto.storySendMode, localThread.storyViewMode) {

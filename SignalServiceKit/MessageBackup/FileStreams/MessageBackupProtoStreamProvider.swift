@@ -47,7 +47,6 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
     public func openOutputFileStream() -> MessageBackup.OpenProtoOutputStreamResult {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
-            owsFailDebug("Could not open outputStream.")
             return .unableToOpenFileStream
         }
         let outputStreamDelegate = StreamDelegate()
@@ -56,7 +55,6 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         outputStream.schedule(in: streamRunloop, forMode: .default)
         outputStream.open()
         guard outputStream.streamStatus == .open else {
-            owsFailDebug("Could not open outputStream.")
             return .unableToOpenFileStream
         }
 
@@ -71,11 +69,9 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
 
     public func openInputFileStream(fileURL: URL) -> MessageBackup.OpenProtoInputStreamResult {
         guard OWSFileSystem.fileOrFolderExists(url: fileURL) else {
-            owsFailDebug("Missing file!")
             return .fileNotFound
         }
         guard let inputStream = InputStream(url: fileURL) else {
-            owsFailDebug("Unable to open input stream")
             return .unableToOpenFileStream
         }
         let inputStreamDelegate = StreamDelegate()
@@ -84,7 +80,6 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         inputStream.schedule(in: streamRunloop, forMode: .default)
         inputStream.open()
         guard inputStream.streamStatus == .open else {
-            owsFailDebug("Could not open input stream.")
             return .unableToOpenFileStream
         }
 

@@ -67,8 +67,8 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var completeFailureError: Error?
-        var partialFailures = [ArchiveMultiFrameResult.Error]()
+        var completeFailureError: MessageBackup.FatalArchivingError?
+        var partialFailures = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
         func archiveInteraction(
             _ interaction: TSInteraction,
@@ -99,7 +99,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         } catch let error {
             // Errors thrown here are from the iterator's SQL query,
             // not the individual interaction handler.
-            return .completeFailure(error)
+            return .completeFailure(.interactionIteratorError(error))
         }
 
         if let completeFailureError {
@@ -137,12 +137,12 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var partialErrors = [ArchiveMultiFrameResult.Error]()
+        var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
         guard let chatId = context[interaction.uniqueThreadIdentifier] else {
-            partialErrors.append(.init(
-                objectId: interaction.chatItemId,
-                error: .referencedIdMissing(.thread(interaction.uniqueThreadIdentifier))
+            partialErrors.append(.referencedThreadIdMissing(
+                interaction.uniqueInteractionId,
+                interaction.uniqueThreadIdentifier
             ))
             return .partialSuccess(partialErrors)
         }
@@ -235,7 +235,10 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
         chatItemBuilder.setRevisions(details.revisions)
 
-        let error = Self.writeFrameToStream(stream) { frameBuilder in
+        let error = Self.writeFrameToStream(
+            stream,
+            objectId: interaction.uniqueInteractionId
+        ) { frameBuilder in
             let chatItemProto = try chatItemBuilder.build()
             let frameBuilder = BackupProtoFrame.builder()
             frameBuilder.setChatItem(chatItemProto)
@@ -243,7 +246,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         }
 
         if let error {
-            partialErrors.append(.init(objectId: interaction.chatItemId, error: error))
+            partialErrors.append(error)
             return .partialSuccess(partialErrors)
         } else if partialErrors.isEmpty {
             return .success
@@ -265,16 +268,13 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         }
 
         guard let threadUniqueId = context[chatItem.chatId] else {
-            return .failure(chatItem.id, [.identifierNotFound(.chat(chatItem.chatId))])
+            return .failure([.invalidProtoData(chatItem.id, .chatIdNotFound(chatItem.chatId))])
         }
 
         guard
             let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
         else {
-            return .failure(
-                chatItem.id,
-                [.referencedDatabaseObjectNotFound(.thread(threadUniqueId))]
-            )
+            return .failure([.referencedChatThreadNotFound(chatItem.id, threadUniqueId)])
         }
 
         let thread: MessageBackup.ChatThread
@@ -283,10 +283,12 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         } else if let groupThread = threadRaw as? TSGroupThread, groupThread.isGroupV2Thread {
             thread = .groupV2(groupThread)
         } else {
-            return .failure(
+            // It should be enforced by ChatRestoringContext that any
+            // thread ID in it maps to a valid TSContact- or TSGroup- thread.
+            return .failure([.developerError(
                 chatItem.id,
-                [.invalidProtoData]
-            )
+                OWSAssertionError("Invalid TSThread type for chatId")
+            )])
         }
 
         let result = archiver.restoreChatItem(
@@ -300,9 +302,9 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         case .success:
             return .success
         case .partialRestore(_, let errors):
-            return .partialRestore(chatItem.id, errors)
+            return .partialRestore(errors)
         case .messageFailure(let errors):
-            return .failure(chatItem.id, errors)
+            return .failure(errors)
         }
     }
 }

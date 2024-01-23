@@ -10,7 +10,7 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
 
     typealias ChatItemId = MessageBackup.ChatItemId
 
-    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<ChatItemId>
+    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.InteractionUniqueId>
 
     /// Archive all ``TSInteraction``s (they map to ``BackupProtoChatItem`` and ``BackupProtoCall``).
     ///

@@ -12,8 +12,9 @@ import Foundation
 public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
 
     typealias RecipientId = MessageBackup.RecipientId
+    typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
 
-    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientId>
+    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
 
     /// Archive all recipients.
     ///
@@ -99,7 +100,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var partialErrors = [ArchiveMultiFrameResult.Error]()
+        var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
         for archiver in destinationArchivers {
             let archiverResults = archiver.archiveRecipients(
                 stream: stream,
@@ -129,6 +130,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             }
             return archiver.restore(recipient, context: context, tx: tx)
         }
-        return .failure(recipient.recipientId, [.unknownFrameType])
+        return .failure([.invalidProtoData(
+            recipient.recipientId,
+            .unrecognizedRecipientType
+        )])
     }
 }

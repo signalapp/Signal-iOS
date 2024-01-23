@@ -7,6 +7,20 @@ import Foundation
 
 extension MessageBackup {
 
+    public struct InteractionUniqueId: ExpressibleByStringLiteral, Hashable {
+        public typealias StringLiteralType = String
+
+        internal let value: String
+
+        public init(stringLiteral value: String) {
+            self.value = value
+        }
+
+        public init(_ value: String) {
+            self.value = value
+        }
+    }
+
     public struct ChatItemId: ExpressibleByIntegerLiteral, Hashable {
 
         public typealias IntegerLiteralType = UInt64
@@ -48,7 +62,6 @@ extension MessageBackup {
             } else if let updateMessage = chatItem.updateMessage {
                 self = .chatUpdate(updateMessage)
             } else {
-                owsFailDebug("Unknown chat item type!")
                 return nil
             }
         }
@@ -83,7 +96,7 @@ extension MessageBackup {
     }
 
     internal enum ArchiveInteractionResult<Component> {
-        typealias Error = MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error
+        typealias ArchiveFrameError = MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError
 
         case success(Component)
 
@@ -103,22 +116,22 @@ extension MessageBackup {
 
         /// Some portion of the interaction failed to archive, but we can still archive the rest of it.
         /// e.g. some recipient details are missing, so we archive without that recipient.
-        case partialFailure(Component, [Error])
+        case partialFailure(Component, [ArchiveFrameError])
         /// The entire message failed and should be skipped.
         /// Other messages are unaffected.
-        case messageFailure([Error])
+        case messageFailure([ArchiveFrameError])
         /// Catastrophic failure, which should stop _all_ message archiving.
-        case completeFailure(Swift.Error)
+        case completeFailure(FatalArchivingError)
     }
 
     internal enum RestoreInteractionResult<Component> {
         case success(Component)
         /// Some portion of the interaction failed to restore, but we can still restore the rest of it.
         /// e.g. a reaction failed to parse, so we just drop that reaction.
-        case partialRestore(Component, [RestoringFrameError])
+        case partialRestore(Component, [RestoreFrameError<ChatItemId>])
         /// The entire message failed and should be skipped.
         /// Other messages are unaffected.
-        case messageFailure([RestoringFrameError])
+        case messageFailure([RestoreFrameError<ChatItemId>])
     }
 }
 
@@ -180,7 +193,7 @@ extension MessageBackup.ArchiveInteractionResult {
     /// }
     func bubbleUp<ErrorResultType>(
         _ resultType: ErrorResultType.Type = ErrorResultType.self,
-        partialErrors: inout [Error]
+        partialErrors: inout [ArchiveFrameError]
     ) -> BubbleUp<Component, ErrorResultType> {
         switch self {
         case .success(let value):
@@ -233,7 +246,9 @@ extension MessageBackup.RestoreInteractionResult {
     /// guard let myVar = someResult.unwrap(&partialErrors) else {
     ///   return .messageFailure(partialErrors)
     /// }
-    func unwrap(partialErrors: inout [MessageBackup.RestoringFrameError]) -> Component? {
+    func unwrap(
+        partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]
+    ) -> Component? {
         switch self {
         case .success(let component):
             return component
@@ -252,7 +267,9 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
     /// Returns false for ``RestoreInteractionResult.messageFailure``, otherwise
     /// returns true. Regardless, accumulates any errors so that the caller
     /// can return the passed in ``partialErrors`` array in the final result.
-    func unwrap(partialErrors: inout [MessageBackup.RestoringFrameError]) -> Bool {
+    func unwrap(
+        partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]
+    ) -> Bool {
         switch self {
         case .success:
             return true
@@ -279,7 +296,23 @@ extension BackupProtoChatItem {
 
 extension TSInteraction {
 
+    var uniqueInteractionId: MessageBackup.InteractionUniqueId {
+        return .init(self.uniqueId)
+    }
+
     var chatItemId: MessageBackup.ChatItemId {
         return .init(interaction: self)
     }
+}
+
+extension MessageBackup.InteractionUniqueId: MessageBackupLoggableId {
+    public var typeLogString: String { "TSInteraction" }
+
+    public var idLogString: String { value }
+}
+
+extension MessageBackup.ChatItemId: MessageBackupLoggableId {
+    public var typeLogString: String { "BackupProtoChatItem" }
+
+    public var idLogString: String { "timestamp: \(value)" }
 }

@@ -10,9 +10,9 @@ extension MessageBackup {
         case success
         /// Unable to serialize the provided proto object.
         /// Should never happen, and catastrophic if it does.
-        case protoSerializationError(Error)
+        case protoSerializationError(Swift.Error)
         /// Failure writing at file I/O level.
-        case fileIOError(Error)
+        case fileIOError(Swift.Error)
     }
 }
 

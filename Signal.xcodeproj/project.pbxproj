@@ -826,6 +826,7 @@
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
 		662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */; };
 		662590CF2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */; };
+		662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
@@ -3477,6 +3478,7 @@
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
 		662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
 		662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInteractionArchiverType.swift; sourceTree = "<group>"; };
+		662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupErrors.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
@@ -7324,6 +7326,7 @@
 				66CD255D2B06886800139E17 /* ChatItem */,
 				66CD255A2B06884700139E17 /* Recipient */,
 				66CD255F2B06888800139E17 /* StickerPack */,
+				662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */,
 				66CD25582B0685E000139E17 /* MessageBackupProtoArchiver.swift */,
 				66CD25712B07EE3A00139E17 /* SharedMap.swift */,
 			);
@@ -12994,6 +12997,7 @@
 				66CD25912B0EC20800139E17 /* MessageBackupConstants.swift in Sources */,
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
+				662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */,
 				66CD257B2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift in Sources */,
 				662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */,
 				662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */,

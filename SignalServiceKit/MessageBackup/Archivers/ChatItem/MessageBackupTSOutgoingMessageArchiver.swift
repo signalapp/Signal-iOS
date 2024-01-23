@@ -33,10 +33,12 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let message = interaction as? TSOutgoingMessage else {
             // Should be impossible.
-            return .completeFailure(OWSAssertionError("Invalid interaction type"))
+            return .completeFailure(.developerError(
+                OWSAssertionError("Invalid interaction type")
+            ))
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
+        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
 
         let wasAnySendSealedSender: Bool
         let directionalDetails: Details.DirectionalDetails
@@ -88,23 +90,22 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         _ message: TSOutgoingMessage,
         recipientContext: MessageBackup.RecipientArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<OutgoingMessageDetails> {
-        var perRecipientErrors = [MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails>.Error]()
+        var perRecipientErrors = [MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails>.ArchiveFrameError]()
 
         var wasAnySendSealedSender = false
         let outgoingMessageProtoBuilder = BackupProtoChatItemOutgoingMessageDetails.builder()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
-                perRecipientErrors.append(.init(
-                    objectId: message.chatItemId,
-                    error: .invalidMessageAddress
+                perRecipientErrors.append(.invalidOutgoingMessageRecipient(
+                    message.uniqueInteractionId
                 ))
                 continue
             }
             guard let recipientId = recipientContext[recipientAddress] else {
-                perRecipientErrors.append(.init(
-                    objectId: message.chatItemId,
-                    error: .referencedIdMissing(.recipient(recipientAddress))
+                perRecipientErrors.append(.referencedRecipientIdMissing(
+                    message.uniqueInteractionId,
+                    recipientAddress
                 ))
                 continue
             }
@@ -153,9 +154,10 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
                 let sendStatus = try sendStatusBuilder.build()
                 outgoingMessageProtoBuilder.addSendStatus(sendStatus)
             } catch let error {
-                perRecipientErrors.append(
-                    .init(objectId: message.chatItemId, error: .protoSerializationError(error))
-                )
+                perRecipientErrors.append(.protoSerializationError(
+                    message.uniqueInteractionId,
+                    error
+                ))
             }
 
             if sendState.wasSentByUD.negated {
@@ -168,7 +170,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             outgoingMessageProto = try outgoingMessageProtoBuilder.build()
         } catch let error {
             return .messageFailure(
-                [.init(objectId: message.chatItemId, error: .protoSerializationError(error))]
+                [.protoSerializationError(message.uniqueInteractionId, error)]
                 + perRecipientErrors
             )
         }
@@ -199,18 +201,22 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         guard let outgoingDetails = chatItem.outgoing else {
             // Should be impossible.
-            return .messageFailure([.invalidProtoData])
+            return .messageFailure([.developerError(
+                chatItem.id,
+                OWSAssertionError("OutgoingMessageArchiver given non-outgoing message!")
+            )])
         }
 
         guard let messageType = chatItem.messageType else {
             // Unrecognized item type!
-            return .messageFailure([.unknownFrameType])
+            return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
         }
 
-        var partialErrors = [MessageBackup.RestoringFrameError]()
+        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
         let contentsResult = contentsArchiver.restoreContents(
             messageType,
+            chatItemId: chatItem.id,
             thread: thread,
             context: context,
             tx: tx
@@ -245,12 +251,13 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             }
             message = outgoingMessage
         case .failure(let error):
-            partialErrors.append(.databaseInsertionFailed(error))
+            partialErrors.append(.databaseInsertionFailed(chatItem.id, error))
             return .messageFailure(partialErrors)
         }
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
             message: message,
+            chatItemId: chatItem.id,
             restoredContents: contents,
             context: context,
             tx: tx

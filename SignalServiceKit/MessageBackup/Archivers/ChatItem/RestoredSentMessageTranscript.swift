@@ -68,7 +68,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             storyAuthorAci: nil
         )
 
-        var partialErrors = [MessageBackup.RestoringFrameError]()
+        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
         var recipientStates = [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
@@ -78,15 +78,27 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
                 recipientAddress = address.asInteropAddress()
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
-                partialErrors.append(.identifierNotFound(.recipient(chatItem.authorRecipientId)))
+                partialErrors.append(.invalidProtoData(
+                    chatItem.id,
+                    .recipientIdNotFound(chatItem.authorRecipientId)
+                ))
                 continue
             case .localAddress, .group:
                 // Recipients can only be contacts.
-                partialErrors.append(.invalidProtoData)
+                partialErrors.append(.invalidProtoData(
+                    chatItem.id,
+                    .outgoingNonContactMessageRecipient
+                ))
                 continue
             }
 
-            guard let recipientState = recipientState(for: sendStatus, partialErrors: &partialErrors) else {
+            guard
+                let recipientState = recipientState(
+                    for: sendStatus,
+                    partialErrors: &partialErrors,
+                    chatItemId: chatItem.id
+                )
+            else {
                 continue
             }
 
@@ -113,10 +125,14 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
     private static func recipientState(
         for sendStatus: BackupProtoSendStatus,
-        partialErrors: inout [MessageBackup.RestoringFrameError]
+        partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>],
+        chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {
         guard let recipientState = TSOutgoingMessageRecipientState() else {
-            partialErrors.append(.databaseInsertionFailed(OWSAssertionError("Unable to create recipient state!")))
+            partialErrors.append(.databaseInsertionFailed(
+                chatItemId,
+                OWSAssertionError("Unable to create recipient state!")
+            ))
             return nil
         }
 
@@ -124,7 +140,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
         switch sendStatus.deliveryStatus {
         case .none, .unknown:
-            partialErrors.append(.invalidProtoData)
+            partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedMessageSendStatus))
             return nil
         case .pending:
             recipientState.state = .pending

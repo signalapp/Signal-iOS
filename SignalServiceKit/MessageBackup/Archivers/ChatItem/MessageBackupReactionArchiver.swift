@@ -25,7 +25,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveInteractionResult<[BackupProtoReaction]> {
         let reactions = reactionStore.allReactions(messageId: message.uniqueId, tx: tx)
 
-        var errors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
+        var errors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
         var reactionProtos = [BackupProtoReaction]()
 
         for reaction in reactions {
@@ -36,14 +36,14 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 )?.asArchivingAddress()
             else {
                 // Skip this reaction.
-                errors.append(.init(objectId: message.chatItemId, error: .invalidReactionAddress))
+                errors.append(.invalidReactionAddress(message.uniqueInteractionId))
                 continue
             }
 
             guard let authorId = context[authorAddress] else {
-                errors.append(.init(
-                    objectId: message.chatItemId,
-                    error: .referencedIdMissing(.recipient(authorAddress))
+                errors.append(.referencedRecipientIdMissing(
+                    message.uniqueInteractionId,
+                    authorAddress
                 ))
                 continue
             }
@@ -59,9 +59,9 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 let proto = try protoBuilder.build()
                 reactionProtos.append(proto)
             } catch {
-                errors.append(.init(
-                    objectId: message.chatItemId,
-                    error: .protoSerializationError(error)
+                errors.append(.protoSerializationError(
+                    message.uniqueInteractionId,
+                    error
                 ))
                 continue
             }
@@ -78,11 +78,12 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
 
     func restoreReactions(
         _ reactions: [BackupProtoReaction],
+        chatItemId: MessageBackup.ChatItemId,
         message: TSMessage,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        var reactionErrors = [MessageBackup.RestoringFrameError]()
+        var reactionErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
         for reaction in reactions {
             let reactorAddress = context[reaction.authorRecipientId]
 
@@ -116,15 +117,22 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                         tx: tx
                     )
                 } else {
-                    reactionErrors.append(.invalidProtoData)
+                    reactionErrors.append(
+                        .invalidProtoData(chatItemId, .reactionNotFromAciOrE164)
+                    )
                     continue
                 }
             case .group:
                 // Referencing a group as the author is invalid.
-                reactionErrors.append(.invalidProtoData)
+                reactionErrors.append(
+                    .invalidProtoData(chatItemId, .reactionNotFromAciOrE164)
+                )
                 continue
             case nil:
-                reactionErrors.append(.identifierNotFound(.recipient(reaction.authorRecipientId)))
+                reactionErrors.append(.invalidProtoData(
+                    chatItemId,
+                    .recipientIdNotFound(reaction.authorRecipientId)
+                ))
                 continue
             }
 

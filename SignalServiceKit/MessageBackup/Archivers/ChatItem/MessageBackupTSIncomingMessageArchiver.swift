@@ -30,10 +30,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let message = interaction as? TSIncomingMessage else {
             // Should be impossible.
-            return .completeFailure(OWSAssertionError("Invalid interaction type"))
+            return .completeFailure(.developerError(
+                OWSAssertionError("Invalid interaction type")
+            ))
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
+        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
 
         let directionalDetails: Details.DirectionalDetails
         switch buildIncomingMessageDetails(message).bubbleUp(Details.self, partialErrors: &partialErrors) {
@@ -51,12 +53,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             )?.asArchivingAddress()
         else {
             // This is an invalid message.
-            return .messageFailure([.init(objectId: message.chatItemId, error: .invalidMessageAddress)])
+            return .messageFailure([.invalidIncomingMessageAuthor(message.uniqueInteractionId)])
         }
         guard let author = context.recipientContext[authorAddress] else {
-            return .messageFailure([.init(
-                objectId: message.chatItemId,
-                error: .referencedIdMissing(.recipient(authorAddress))
+            return .messageFailure([.referencedRecipientIdMissing(
+                message.uniqueInteractionId,
+                authorAddress
             )])
         }
 
@@ -100,7 +102,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             let incomingMessageProto = try incomingMessageProtoBuilder.build()
             return .success(.incoming(incomingMessageProto))
         } catch let error {
-            return .messageFailure([.init(objectId: message.chatItemId, error: .protoSerializationError(error))])
+            return .messageFailure([.protoSerializationError(message.uniqueInteractionId, error)])
         }
     }
 
@@ -114,7 +116,10 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         guard let incomingDetails = chatItem.incoming else {
             // Should be impossible.
-            return .messageFailure([.invalidProtoData])
+            return .messageFailure([.developerError(
+                chatItem.id,
+                OWSAssertionError("IncomingMessageArchiver given non-incoming message!")
+            )])
         }
 
         let authorAci: Aci?
@@ -130,18 +135,21 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
                 fallthrough
             }
         default:
-            return .messageFailure([.invalidProtoData])
+            return .messageFailure([
+                .invalidProtoData(chatItem.id, .incomingMessageNotFromAciOrE164)
+            ])
         }
 
         guard let messageType = chatItem.messageType else {
             // Unrecognized item type!
-            return .messageFailure([.unknownFrameType])
+            return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
         }
 
-        var partialErrors = [MessageBackup.RestoringFrameError]()
+        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
         let contentsResult = contentsArchiver.restoreContents(
             messageType,
+            chatItemId: chatItem.id,
             thread: thread,
             context: context,
             tx: tx
@@ -185,6 +193,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
             message: message,
+            chatItemId: chatItem.id,
             restoredContents: contents,
             context: context,
             tx: tx

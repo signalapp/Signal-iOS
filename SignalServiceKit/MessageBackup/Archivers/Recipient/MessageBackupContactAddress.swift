@@ -161,6 +161,19 @@ extension MessageBackup.ContactAddress {
     }
 }
 
+extension MessageBackup.ContactAddress: MessageBackupLoggableId {
+    public var typeLogString: String {
+        return "SignalRecipient"
+    }
+
+    public var idLogString: String {
+        return "aci:\(aci?.logString ?? "?") "
+            + "pni:\(pni?.logString ?? "?") "
+            // Rely on the log scrubber to scrub the e164.
+            + "e164:\(e164?.stringValue ?? "?")"
+    }
+}
+
 extension MessageBackup.InteropAddress {
 
     /// Warning: when using this method, you will get an aci or a pni but not both, even if we
@@ -171,17 +184,6 @@ extension MessageBackup.InteropAddress {
             aci: serviceId as? Aci,
             pni: serviceId as? Pni,
             e164: e164
-        )
-    }
-}
-
-extension BackupProtoContact {
-
-    var address: MessageBackup.ContactAddress? {
-        return .init(
-            aci: aci.map(UUID.from(data:))?.map(\.0).map(Aci.init(fromUUID:)),
-            pni: pni.map(UUID.from(data:))?.map(\.0).map(Pni.init(fromUUID:)),
-            e164: E164(e164)
         )
     }
 }

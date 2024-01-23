@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 public class NotImplementedError: Error {}
+public class BackupError: Error {}
 
 public class MessageBackupManagerImpl: MessageBackupManager {
 
@@ -93,9 +94,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         switch localRecipientResult {
         case .success(let success):
             localRecipientId = success
-        case .failure(let failure):
-            Logger.error("Failed to archive local recipient!")
-            throw failure
+        case .failure(let error):
+            MessageBackup.log([error])
+            throw OWSAssertionError("Failed to archive local recipient!")
         }
 
         let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
@@ -112,10 +113,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            // TODO: how many failures is too many?
-            Logger.warn("Failed to serialize \(partialFailures.count) recipients")
+            try processArchiveFrameErrors(errors: partialFailures)
         case .completeFailure(let error):
-            throw error
+            try processFatalArchivingError(error: error)
         }
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
@@ -130,10 +130,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            // TODO: how many failures is too many?
-            Logger.warn("Failed to serialize \(partialFailures.count) chats")
+            try processArchiveFrameErrors(errors: partialFailures)
         case .completeFailure(let error):
-            throw error
+            try processFatalArchivingError(error: error)
         }
         let chatItemArchiveResult = chatItemArchiver.archiveInteractions(
             stream: stream,
@@ -144,10 +143,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .success:
             break
         case .partialSuccess(let partialFailures):
-            // TODO: how many failures is too many?
-            Logger.warn("Failed to serialize \(partialFailures.count) chat items")
+            try processArchiveFrameErrors(errors: partialFailures)
         case .completeFailure(let error):
-            throw error
+            try processFatalArchivingError(error: error)
         }
 
         return stream.closeFileStream()
@@ -164,6 +162,23 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .fileIOError(let error), .protoSerializationError(let error):
             throw error
         }
+    }
+
+    private func processArchiveFrameErrors<IdType>(
+        errors: [MessageBackup.ArchiveFrameError<IdType>]
+    ) throws {
+        MessageBackup.log(errors)
+        // At time of writing, we want to fail for every single error.
+        if errors.isEmpty.negated {
+            throw BackupError()
+        }
+    }
+
+    private func processFatalArchivingError(
+        error: MessageBackup.FatalArchivingError
+    ) throws {
+        MessageBackup.log([error])
+        throw BackupError()
     }
 
     private func _importBackup(_ fileUrl: URL, tx: DBWriteTransaction) throws {
@@ -214,7 +229,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             case .invalidByteLengthDelimiter:
                 throw OWSAssertionError("invalid byte length delimiter on header")
             case .protoDeserializationError(let error):
-                // TODO: should we fail the whole thing if we fail to deserialize one frame?
+                // fail the whole thing if we fail to deserialize one frame
+                owsFailDebug("Failed to deserialize proto frame!")
                 throw error
             }
             if let recipient = frame.recipient {
@@ -235,10 +251,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 switch recipientResult {
                 case .success:
                     continue
-                case .partialRestore(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
-                case .failure(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
+                case .partialRestore(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                case .failure(let errors):
+                    try processRestoreFrameErrors(errors: errors)
                 }
             } else if let chat = frame.chat {
                 let chatResult = chatArchiver.restore(
@@ -249,10 +265,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 switch chatResult {
                 case .success:
                     continue
-                case .partialRestore(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
-                case .failure(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
+                case .partialRestore(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                case .failure(let errors):
+                    try processRestoreFrameErrors(errors: errors)
                 }
             } else if let chatItem = frame.chatItem {
                 let chatItemResult = chatItemArchiver.restore(
@@ -263,10 +279,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 switch chatItemResult {
                 case .success:
                     continue
-                case .partialRestore(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
-                case .failure(let id, let errors):
-                    try processRestoreFrameErrors(id: id, errors: errors, context: chatContext)
+                case .partialRestore(let errors):
+                    try processRestoreFrameErrors(errors: errors)
+                case .failure(let errors):
+                    try processRestoreFrameErrors(errors: errors)
                 }
             }
         }
@@ -275,40 +291,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private func processRestoreFrameErrors<IdType>(
-        id: IdType,
-        errors: [MessageBackup.RestoringFrameError],
-        context: MessageBackup.ChatRestoringContext
+        errors: [MessageBackup.RestoreFrameError<IdType>]
     ) throws {
-        try errors.forEach { error in
-            // TODO: we shouldn't throw on every error, especially
-            // those from successWithWarnings cases.
-            switch error {
-            case .databaseInsertionFailed(let dbError):
-                throw dbError
-            case .invalidProtoData:
-                throw OWSAssertionError("Invalid proto data for id: \(id)")
-            case .identifierNotFound(let referencedId):
-                // TODO: aggregate these errors; at the end we should be able to say
-                // some set of IDs were referenced but not found or failed to process.
-                switch referencedId {
-                case .chat(let chatId):
-                    throw OWSAssertionError("Did not find chat id: \(chatId) referenced from: \(id)")
-                case .recipient(let recipientId):
-                    throw OWSAssertionError("Did not find recipient id: \(recipientId) referenced from: \(id)")
-                }
-            case .referencedDatabaseObjectNotFound(let referencedId):
-                switch referencedId {
-                case .thread(let threadUniqueId):
-                    throw OWSAssertionError("Did not find thread: \(threadUniqueId) referenced from: \(id)")
-                case .groupThread(let groupId):
-                    throw OWSAssertionError("Did not find thread with group id: \(groupId) referenced from: \(id)")
-                }
-            case .unknownFrameType:
-                throw OWSAssertionError("Found unrecognized frame type with id: \(id)")
-            case .unimplemented:
-                // Ignore unimplemented errors.
-                break
-            }
+        MessageBackup.log(errors)
+        // At time of writing, we want to fail for every single error.
+        if errors.isEmpty.negated {
+            throw BackupError()
         }
     }
 }

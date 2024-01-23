@@ -33,7 +33,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         // We should never be putting our pni in the backup as it can change,
         // we only ever insert our aci and use special cases for our pni.
         localUserAci: Aci,
-        chatItemId: MessageBackup.ChatItemId
+        interactionId: MessageBackup.InteractionUniqueId
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdateUpdate> {
         var localAciData = localUserAci.rawUUID.data
         func aciData(_ aci: AciUuid) -> Data {
@@ -48,7 +48,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
         let updateBuilder = BackupProtoGroupChangeChatUpdateUpdate.builder()
 
-        var protoBuildError: Error?
+        var protoBuildError: MessageBackup.RawError?
 
         func setUpdate<Proto, Builder>(
             _ builder: Builder,
@@ -1412,10 +1412,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
         if let protoBuildError {
             return .messageFailure([
-                .init(
-                    objectId: chatItemId,
-                    error: .protoSerializationError(protoBuildError)
-                )
+                .protoSerializationError(interactionId, protoBuildError)
             ])
         }
 
@@ -1424,10 +1421,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             update = try updateBuilder.build()
         } catch let error {
             return .messageFailure([
-                .init(
-                    objectId: chatItemId,
-                    error: .protoSerializationError(error)
-                )
+                .protoSerializationError(interactionId, error)
             ])
         }
 

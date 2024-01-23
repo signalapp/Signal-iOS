@@ -23,6 +23,8 @@ extension MessageBackup {
         }
     }
 
+    public typealias GroupId = Data
+
     /**
      * As we go archiving recipients, we use this object to track mappings from the addressing we use in the app
      * to the ID addressing system of the backup protos.
@@ -34,7 +36,6 @@ extension MessageBackup {
      */
     public class RecipientArchivingContext {
         public enum Address {
-            public typealias GroupId = Data
 
             case contact(ContactAddress)
             case group(GroupId)
@@ -45,7 +46,7 @@ extension MessageBackup {
         internal let localIdentifiers: LocalIdentifiers
 
         private var currentRecipientId: RecipientId
-        private let groupIdMap = SharedMap<Address.GroupId, RecipientId>()
+        private let groupIdMap = SharedMap<GroupId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
@@ -117,8 +118,6 @@ extension MessageBackup {
 
     public class RecipientRestoringContext {
         public enum Address {
-            public typealias GroupId = RecipientArchivingContext.Address.GroupId
-
             case localAddress
             case contact(ContactAddress)
             case group(GroupId)
@@ -135,6 +134,33 @@ extension MessageBackup {
         internal subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
             set(newValue) { map[id] = newValue }
+        }
+    }
+}
+
+extension MessageBackup.RecipientId: MessageBackupLoggableId {
+    public var typeLogString: String { "BackupProtoRecipient" }
+
+    public var idLogString: String { "\(self.value)" }
+}
+
+extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggableId {
+    public var typeLogString: String {
+        switch self {
+        case .contact(let address):
+            return address.typeLogString
+        case .group:
+            return "TSGroupThread"
+        }
+    }
+
+    public var idLogString: String {
+        switch self {
+        case .contact(let contactAddress):
+            return contactAddress.idLogString
+        case .group(let groupId):
+            // Rely on the scrubber to scrub the id.
+            return groupId.base64EncodedString()
         }
     }
 }

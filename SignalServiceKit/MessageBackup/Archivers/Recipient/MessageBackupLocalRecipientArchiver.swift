@@ -5,6 +5,19 @@
 
 import Foundation
 
+extension MessageBackup {
+
+    public struct LocalRecipientId: MessageBackupLoggableId {
+        public var typeLogString: String { "Local Recipient" }
+        public var idLogString: String { "" }
+    }
+
+    public enum ArchiveLocalRecipientResult {
+        case success(RecipientId)
+        case failure(ArchiveFrameError<LocalRecipientId>)
+    }
+}
+
 /**
  * Archiver for the ``BackupProtoSelfRecipient`` recipient, a.k.a. the local user author/recipient.
  * Used as the recipient for the Note To Self chat.
@@ -14,7 +27,7 @@ public protocol MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver 
     typealias RecipientId = MessageBackup.RecipientId
 
     /// Archive the local recipient.
-    func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> Swift.Result<RecipientId, Error>
+    func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult
 
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
 
@@ -37,13 +50,16 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
 
     private static let localRecipientId = RecipientId(integerLiteral: 1)
 
-    public func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> Swift.Result<RecipientId, Error> {
+    public func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult {
         let selfRecipientBuilder = BackupProtoSelfRecipient.builder()
         let recipientBuilder = BackupProtoRecipient.builder(
             id: Self.localRecipientId.value
         )
 
-        let error = Self.writeFrameToStream(stream) { frameBuilder in
+        let error = Self.writeFrameToStream(
+            stream,
+            objectId: MessageBackup.LocalRecipientId()
+        ) { frameBuilder in
             let selfRecipientProto = try selfRecipientBuilder.build()
             recipientBuilder.setSelfRecipient(selfRecipientProto)
             let recipientProto = try recipientBuilder.build()
@@ -66,8 +82,11 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard let noteToSelfRecipient = recipient.selfRecipient else {
-            owsFail("Invalid proto for class")
+        guard recipient.selfRecipient != nil else {
+            return .failure([.developerError(
+                recipient.recipientId,
+                OWSAssertionError("Non self recipient sent to local recipient archiver")
+            )])
         }
 
         context[recipient.recipientId] = .localAddress

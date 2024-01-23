@@ -33,8 +33,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let infoMessage = interaction as? TSInfoMessage else {
             // Should be impossible.
-            // TODO: should start strongly typing these errors.
-            return .completeFailure(OWSAssertionError("Invalid interaction type"))
+            return .completeFailure(.developerError(
+                OWSAssertionError("Invalid interaction type")
+            ))
         }
         let groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem]
         switch infoMessage.groupUpdateMetadata(
@@ -42,7 +43,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         ) {
         case .nonGroupUpdate:
             // Should be impossible.
-            return .completeFailure(OWSAssertionError("Invalid interaction type"))
+            return .completeFailure(.developerError(
+                OWSAssertionError("Invalid interaction type")
+            ))
         case .legacyRawString:
             return .skippableGroupUpdate(.legacyRawString)
         case .newGroup(let groupModel, let updateMetadata):
@@ -67,11 +70,11 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             groupUpdateItems = persistableGroupUpdateItemsWrapper.updateItems
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]()
+        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
 
         let contentsResult = Self.archiveGroupUpdates(
             groupUpdates: groupUpdateItems,
-            chatItemId: infoMessage.chatItemId,
+            interactionId: infoMessage.uniqueInteractionId,
             localIdentifiers: context.recipientContext.localIdentifiers,
             partialErrors: &partialErrors
         )
@@ -89,20 +92,20 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         do {
             chatUpdate = try chatUpdateBuilder.build()
         } catch let error {
-            return .messageFailure([.init(
-                objectId: infoMessage.chatItemId,
-                error: .protoSerializationError(error))
-            ])
+            return .messageFailure([.protoSerializationError(
+                infoMessage.uniqueInteractionId,
+                error
+            )])
         }
 
         let directionlessDetails: BackupProtoChatItemDirectionlessMessageDetails
         do {
             directionlessDetails = try .builder().build()
         } catch let error {
-            return .messageFailure([.init(
-                objectId: infoMessage.chatItemId,
-                error: .protoSerializationError(error))
-            ])
+            return .messageFailure([.protoSerializationError(
+                infoMessage.uniqueInteractionId,
+                error
+            )])
         }
 
         let details = Details(
@@ -123,9 +126,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
 
     private static func archiveGroupUpdates(
         groupUpdates: [TSInfoMessage.PersistableGroupUpdateItem],
-        chatItemId: MessageBackup.ChatItemId,
+        interactionId: MessageBackup.InteractionUniqueId,
         localIdentifiers: LocalIdentifiers,
-        partialErrors: inout [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.Error]
+        partialErrors: inout [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]
     ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdate> {
         var updates = [BackupProtoGroupChangeChatUpdateUpdate]()
 
@@ -136,7 +139,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
                 .archiveGroupUpdate(
                     groupUpdate: groupUpdate,
                     localUserAci: localIdentifiers.aci,
-                    chatItemId: chatItemId
+                    interactionId: interactionId
                 )
             switch result.bubbleUp(
                 BackupProtoGroupChangeChatUpdate.self,
@@ -161,10 +164,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
                 // Its ok; we just skipped everything.
                 return .skippableGroupUpdate(latestSkipError)
             }
-            return .messageFailure(partialErrors + [.init(
-                objectId: chatItemId,
-                error: .emptyGroupUpdate
-            )])
+            return .messageFailure(partialErrors + [.emptyGroupUpdate(interactionId)])
         }
 
         let builder = BackupProtoGroupChangeChatUpdate.builder()
@@ -174,10 +174,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         do {
             update = try builder.build()
         } catch let error {
-            return .messageFailure([.init(
-                objectId: chatItemId,
-                error: .protoSerializationError(error))
-            ])
+            return .messageFailure([.protoSerializationError(interactionId, error)])
         }
         if partialErrors.isEmpty {
             return .success(update)
@@ -195,7 +192,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         let groupThread: TSGroupThread
         switch thread {
         case .contact:
-            return .messageFailure([.invalidProtoData])
+            return .messageFailure([
+                .invalidProtoData(chatItem.id, .groupUpdateMessageInNonGroupChat)
+            ])
         case .groupV2(let tSGroupThread):
             groupThread = tSGroupThread
         }
@@ -208,16 +207,20 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             }
             groupUpdate = groupChange
         default:
-            return .messageFailure([.unknownFrameType])
+            return .messageFailure([.developerError(
+                chatItem.id,
+                OWSAssertionError("Got non group update in GroupUpdate archiver!")
+            )])
         }
 
-        var partialErrors = [MessageBackup.RestoringFrameError]()
+        var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
         let result = MessageBackupGroupUpdateProtoToSwiftConverter
             .restoreGroupUpdates(
                 groupUpdates: groupUpdate.updates,
                 localUserAci: context.recipientContext.localIdentifiers.aci,
-                partialErrors: &partialErrors
+                partialErrors: &partialErrors,
+                chatItemId: chatItem.id
             )
         guard var persistableUpdates =
                 result.unwrap(partialErrors: &partialErrors)
@@ -227,7 +230,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
 
         guard persistableUpdates.isEmpty.negated else {
             // We can't have an empty array of updates!
-            return .messageFailure(partialErrors + [.invalidProtoData])
+            return .messageFailure(partialErrors + [
+                .invalidProtoData(chatItem.id, .emptyGroupUpdates)
+            ])
         }
 
         // FIRST, try and do any collapsing. This might collapse

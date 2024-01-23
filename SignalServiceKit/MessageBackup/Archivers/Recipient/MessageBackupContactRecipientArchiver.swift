@@ -45,20 +45,21 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         let whitelistedAddresses = Set(profileManager.allWhitelistedRegisteredAddresses(tx: tx))
         let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
 
-        var errors = [ArchiveMultiFrameResult.Error]()
+        var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
         recipientStore.enumerateAll(tx: tx) { recipient in
             guard
-                let recipientAddress = MessageBackup.ContactAddress(
+                let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
                     pni: recipient.pni,
                     e164: E164(recipient.phoneNumber)
-                )?.asArchivingAddress()
+                )
             else {
                 // Skip but don't add to the list of errors.
                 Logger.warn("Skipping empty recipient")
                 return
             }
+            let recipientAddress = contactAddress.asArchivingAddress()
 
             let recipientId = context.assignRecipientId(to: recipientAddress)
 
@@ -96,13 +97,17 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             profile?.unfilteredFamilyName.map(contactBuilder.setProfileFamilyName(_:))
             // TODO: joined name?
 
-            Self.writeFrameToStream(stream, frameBuilder: { frameBuilder in
-                let contact = try contactBuilder.build()
-                recipientBuilder.setContact(contact)
-                let protoRecipient = try recipientBuilder.build()
-                frameBuilder.setRecipient(protoRecipient)
-                return try frameBuilder.build()
-            }).map { errors.append($0.asArchiveFramesError(objectId: recipientId)) }
+            Self.writeFrameToStream(
+                stream,
+                objectId: .contact(contactAddress),
+                frameBuilder: { frameBuilder in
+                    let contact = try contactBuilder.build()
+                    recipientBuilder.setContact(contact)
+                    let protoRecipient = try recipientBuilder.build()
+                    frameBuilder.setRecipient(protoRecipient)
+                    return try frameBuilder.build()
+                }
+            ).map { errors.append($0) }
         }
 
         if errors.isEmpty {
@@ -122,7 +127,12 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
         guard let contactProto = recipientProto.contact else {
-            owsFail("Invalid proto for class")
+            return .failure(
+                [.developerError(
+                    recipientProto.recipientId,
+                    OWSAssertionError("Invalid proto for class")
+                )]
+            )
         }
 
         let isRegistered: Bool?
@@ -139,9 +149,59 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             unregisteredTimestamp = contactProto.unregisteredTimestamp
         }
 
-        guard let address = contactProto.address else {
+        let aci: Aci?
+        let pni: Pni?
+        let e164: E164?
+        if let aciRaw = contactProto.aci {
+            guard let aciUuid = UUID(data: aciRaw) else {
+                return .failure(
+                    [.invalidProtoData(
+                        recipientProto.recipientId,
+                        .invalidAci(protoClass: BackupProtoContact.self)
+                    )]
+                )
+            }
+            aci = Aci.init(fromUUID: aciUuid)
+        } else {
+            aci = nil
+        }
+        if let pniRaw = contactProto.pni {
+            guard let pniUuid = UUID(data: pniRaw) else {
+                return .failure(
+                    [.invalidProtoData(
+                        recipientProto.recipientId,
+                        .invalidPni(protoClass: BackupProtoContact.self)
+                    )]
+                )
+            }
+            pni = Pni.init(fromUUID: pniUuid)
+        } else {
+            pni = nil
+        }
+        if contactProto.hasE164, contactProto.e164 != 0 {
+            guard let protoE164 = E164(contactProto.e164) else {
+                return .failure(
+                    [.invalidProtoData(
+                        recipientProto.recipientId,
+                        .invalidE164(protoClass: BackupProtoContact.self)
+                    )]
+                )
+            }
+            e164 = protoE164
+        } else {
+            e164 = nil
+        }
+
+        guard
+            let address = MessageBackup.ContactAddress(aci: aci, pni: pni, e164: e164)
+        else {
             // Need at least one identifier!
-            return .failure(recipientProto.recipientId, [.invalidProtoData])
+            return .failure(
+                [.invalidProtoData(
+                    recipientProto.recipientId,
+                    .contactWithoutIdentifiers
+                )]
+            )
         }
         context[recipientProto.recipientId] = .contact(address)
 
@@ -163,7 +223,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             do {
                 try recipientStore.insert(recipient, tx: tx)
             } catch let error {
-                return .failure(recipientProto.recipientId, [.databaseInsertionFailed(error)])
+                return .failure([.databaseInsertionFailed(recipientProto.recipientId, error)])
             }
         }
 
@@ -180,7 +240,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             do {
                 try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
             } catch let error {
-                return .failure(recipientProto.recipientId, [.databaseInsertionFailed(error)])
+                return .failure([.databaseInsertionFailed(recipientProto.recipientId, error)])
             }
         }
 

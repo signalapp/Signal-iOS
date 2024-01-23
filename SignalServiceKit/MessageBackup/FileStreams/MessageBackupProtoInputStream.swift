@@ -9,7 +9,7 @@ extension MessageBackup {
     public enum ProtoInputStreamReadResult<T> {
         case success(T, moreBytesAvailable: Bool)
         case invalidByteLengthDelimiter
-        case protoDeserializationError(Error)
+        case protoDeserializationError(Swift.Error)
     }
 }
 
