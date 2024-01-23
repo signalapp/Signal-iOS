@@ -7,8 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol ProfileBioViewControllerDelegate: AnyObject {
-    func profileBioViewDidComplete(bio: String?,
-                                   bioEmoji: String?)
+    func profileBioViewDidComplete(bio: String?, bioEmoji: String?)
 }
 
 // MARK: -
@@ -64,15 +63,11 @@ class ProfileBioViewController: OWSTableViewController2 {
     }
 
     private var normalizedProfileBio: String? {
-        let normalizedProfileBio = bioTextField.text?.ows_stripped()
-        if normalizedProfileBio?.isEmpty == true { return nil }
-        return normalizedProfileBio
+        return bioTextField.text?.strippedOrNil
     }
 
     private var normalizedProfileBioEmoji: String? {
-        let normalizedProfileBioEmoji = bioEmojiLabel.text?.ows_stripped()
-        if normalizedProfileBioEmoji?.isEmpty == true { return nil }
-        return normalizedProfileBioEmoji
+        return bioEmojiLabel.text?.strippedOrNil
     }
 
     private var hasUnsavedChanges: Bool {
@@ -85,12 +80,12 @@ class ProfileBioViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
-        if bioTextField.isFirstResponder,
-           let normalizedProfileBio = self.normalizedProfileBio,
-           !normalizedProfileBio.isEmpty {
+        if bioTextField.isFirstResponder, let normalizedProfileBio {
             let remainingGlyphCount = max(0, OWSUserProfile.kMaxBioLengthGlyphs - normalizedProfileBio.glyphCount)
-            let titleFormat = OWSLocalizedString("PROFILE_BIO_VIEW_TITLE_FORMAT",
-                                                comment: "Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}.")
+            let titleFormat = OWSLocalizedString(
+                "PROFILE_BIO_VIEW_TITLE_FORMAT",
+                comment: "Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}."
+            )
             title = String(format: titleFormat, OWSFormat.formatInt(remainingGlyphCount))
         } else {
             title = OWSLocalizedString("PROFILE_BIO_VIEW_TITLE", comment: "Title for the profile bio view.")
@@ -306,8 +301,7 @@ class ProfileBioViewController: OWSTableViewController2 {
 
     @objc
     private func didTapDone() {
-        profileDelegate?.profileBioViewDidComplete(bio: normalizedProfileBio,
-                                                   bioEmoji: normalizedProfileBioEmoji)
+        profileDelegate?.profileBioViewDidComplete(bio: normalizedProfileBio, bioEmoji: normalizedProfileBioEmoji)
 
         dismiss(animated: true)
     }

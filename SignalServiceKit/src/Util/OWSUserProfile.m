@@ -416,18 +416,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 #pragma mark - Update With... Methods
 
-+ (BOOL)shouldReuploadProtectedProfileName
-{
-    // Only re-upload once per launch.
-    //
-    // This value will only be accessed within write transactions,
-    // so it is thread-safe.
-    static BOOL hasReuploaded = NO;
-    BOOL canReupload = !hasReuploaded;
-    hasReuploaded = YES;
-    return canReupload;
-}
-
 // Similar in spirit to anyUpdateWithTransaction,
 // but with significant differences.
 //
@@ -644,80 +632,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                                equalTo:profile.avatarFileName];
             if (!givenNameDidChange && !familyNameDidChange) {
                 shouldReindex = NO;
-            }
-
-            if (isLocalUserProfile) {
-                BOOL shouldReupload = NO;
-
-                BOOL hasValidProfileNameBefore = givenNameBefore.length > 0;
-                BOOL hasValidProfileNameAfter = profile.givenName.length > 0;
-                if (hasValidProfileNameBefore && !hasValidProfileNameAfter) {
-                    OWSFailDebug(@"Restoring local profile name: %@, %@.",
-                                 changes.updateMethodName,
-                                 NSStringForUserProfileWriter(userProfileWriter));
-                    // Profile names are required; never clear the profile
-                    // name for the local user.
-                    profile.givenName = givenNameBefore;
-                    shouldReupload = YES;
-                }
-
-                // If db state that is "owned" by storage service doesn't
-                // match profile fetch state, re-upload.
-                if (userProfileWriter == UserProfileWriter_ProfileFetch) {
-                    BOOL givenNameDoesNotMatch
-                    = ![NSObject isNullableObject:[changes.givenName.value ows_nilIfEmpty]
-                                          equalTo:[profile.givenName ows_nilIfEmpty]];
-                    BOOL familyNameDoesNotMatch
-                    = ![NSObject isNullableObject:[changes.familyName.value ows_nilIfEmpty]
-                                          equalTo:[profile.familyName ows_nilIfEmpty]];
-                    BOOL avatarUrlPathDoesNotMatch = ![NSObject
-                                                       isNullableObject:[changes.avatarUrlPath.value ows_nilIfEmpty]
-                                                       equalTo:[profile.avatarUrlPath ows_nilIfEmpty]];
-                    BOOL avatarFileNameDoesNotMatch = ![NSObject
-                                                        isNullableObject:[changes.avatarFileName.value ows_nilIfEmpty]
-                                                        equalTo:[profile.avatarFileName ows_nilIfEmpty]];
-                    if (givenNameDoesNotMatch || familyNameDoesNotMatch
-                        || avatarUrlPathDoesNotMatch) {
-                        OWSLogWarn(@"Local profile state from database and profile fetch "
-                                   @"differ: %@, %@, "
-                                   @"isLocalUserProfile: %d, givenName: %d -> %d (%d), "
-                                   @"familyName: %d -> %d (%d), avatarUrlPath: %d -> %d (%d), "
-                                   @"avatarFileName: %d -> %d (%d).",
-                                   changes.updateMethodName,
-                                   NSStringForUserProfileWriter(userProfileWriter),
-                                   isLocalUserProfile,
-                                   profile.givenName.length > 0,
-                                   changes.givenName.value.length > 0,
-                                   givenNameDoesNotMatch,
-                                   profile.familyName.length > 0,
-                                   changes.familyName.value.length > 0,
-                                   familyNameDoesNotMatch,
-                                   profile.avatarUrlPath.length > 0,
-                                   changes.avatarUrlPath.value.length > 0,
-                                   avatarUrlPathDoesNotMatch,
-                                   profile.avatarFileName.length > 0,
-                                   changes.avatarFileName.value.length > 0,
-                                   avatarFileNameDoesNotMatch);
-                        shouldReupload = YES;
-                    }
-                }
-
-                BOOL isUpdatingDatabaseInstance = self != profile;
-                if (shouldReupload && [TSAccountManagerObjcBridge isPrimaryDeviceWith:transaction]
-                    && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
-                    // shouldReuploadProtectedProfileName has side effects,
-                    // so only invoke it if shouldReupload is true.
-                    if (!OWSUserProfile.shouldReuploadProtectedProfileName) {
-                        OWSLogVerbose(@"Skipping re-upload.");
-                    } else if (profile.avatarUrlPath != nil && profile.avatarFileName == nil) {
-                        OWSLogWarn(@"Skipping re-upload; profile avatar not downloaded.");
-                    } else {
-                        OWSLogInfo(@"Re-uploading local profile to update profile credential.");
-                        [transaction addAsyncCompletionOffMain:^{
-                            [self.profileManagerObjC reuploadLocalProfileWithAuthedAccount:authedAccount];
-                        }];
-                    }
-                }
             }
 
             NSString *profileKeyDescription;

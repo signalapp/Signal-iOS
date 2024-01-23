@@ -117,8 +117,8 @@ public protocol RegistrationCoordinator {
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
     func setProfileInfo(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) -> Guarantee<RegistrationStep>

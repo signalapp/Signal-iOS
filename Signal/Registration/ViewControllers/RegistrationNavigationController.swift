@@ -518,8 +518,8 @@ extension RegistrationNavigationController: RegistrationTransferChoicePresenter 
 
 extension RegistrationNavigationController: RegistrationProfilePresenter {
     func goToNextStep(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) {

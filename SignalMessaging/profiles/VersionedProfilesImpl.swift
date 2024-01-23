@@ -120,8 +120,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     // MARK: - Update
 
     public func updateProfile(
-        profileGivenName: String?,
-        profileFamilyName: String?,
+        profileGivenName: OWSUserProfile.NameComponent?,
+        profileFamilyName: OWSUserProfile.NameComponent?,
         profileBio: String?,
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,
@@ -159,31 +159,18 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             guard let profileGivenName else {
                 return nil
             }
-            var nameComponents = PersonNameComponents()
-            nameComponents.givenName = profileGivenName
-            nameComponents.familyName = profileFamilyName
-
-            guard let encryptedValue = OWSUserProfile.encrypt(
-                profileNameComponents: nameComponents,
+            return try OWSUserProfile.encrypt(
+                givenName: profileGivenName,
+                familyName: profileFamilyName,
                 profileKey: profileKey
-            ) else {
-                throw OWSAssertionError("Could not encrypt profile name.")
-            }
-            return encryptedValue
+            )
         }()
 
         func encryptOptionalData(_ value: Data?, paddedLengths: [Int]) throws -> ProfileValue? {
             guard let value, !value.isEmpty else {
                 return nil
             }
-            guard let encryptedValue = OWSUserProfile.encrypt(
-                data: value,
-                profileKey: profileKey,
-                paddedLengths: paddedLengths
-            ) else {
-                throw OWSAssertionError("Could not encrypt profile value.")
-            }
-            return encryptedValue
+            return try OWSUserProfile.encrypt(data: value, profileKey: profileKey, paddedLengths: paddedLengths)
         }
 
         func encryptOptionalString(_ value: String?, paddedLengths: [Int]) throws -> ProfileValue? {
@@ -199,9 +186,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
         func encryptBoolean(_ value: Bool) throws -> ProfileValue {
             let encodedValue = Data([value ? 1 : 0])
-            guard let encryptedData = OWSUserProfile.encrypt(profileData: encodedValue, profileKey: profileKey) else {
-                throw OWSAssertionError("Couldn't encrypt profie value.")
-            }
+            let encryptedData = try OWSUserProfile.encrypt(profileData: encodedValue, profileKey: profileKey)
             return ProfileValue(encryptedData: encryptedData)
         }
 
@@ -251,9 +236,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         case .clearAvatar:
             avatarUrlPath = .setTo(nil)
         case .changeAvatar(let avatarData):
-            guard let encryptedAvatarData = OWSUserProfile.encrypt(profileData: avatarData, profileKey: profileKey) else {
-                throw OWSAssertionError("Could not encrypt profile avatar.")
-            }
+            let encryptedAvatarData = try OWSUserProfile.encrypt(profileData: avatarData, profileKey: profileKey)
             avatarUrlPath = .setTo(try await uploadAvatar(
                 formResponse: response.responseBodyJson,
                 encryptedAvatarData: encryptedAvatarData

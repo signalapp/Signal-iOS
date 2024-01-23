@@ -146,8 +146,8 @@ public extension OWSUserProfile {
 
     // MARK: - Encryption
 
-    class func encrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        return try? Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
+    class func encrypt(profileData: Data, profileKey: OWSAES256Key) throws -> Data {
+        return try Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
     }
 
     class func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
@@ -195,15 +195,13 @@ public extension OWSUserProfile {
     }
 
     @nonobjc
-    class func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> ProfileValue? {
-        let givenName: String? = profileNameComponents.givenName?.trimToGlyphCount(maxNameLengthGlyphs)
-        guard var paddedNameData = givenName?.data(using: .utf8) else { return nil }
-        if let familyName = profileNameComponents.familyName?.trimToGlyphCount(maxNameLengthGlyphs) {
-            // Insert a null separator
-            paddedNameData.count += 1
-            guard let familyNameData = familyName.data(using: .utf8) else { return nil }
-            paddedNameData.append(familyNameData)
-        }
+    class func encrypt(
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
+        profileKey: OWSAES256Key
+    ) throws -> ProfileValue {
+        let encodedValues: [Data] = [givenName.dataValue, familyName?.dataValue].compacted()
+        let encodedValue = Data(encodedValues.joined(separator: Data([0])))
 
         // Two names plus null separator.
         let totalNameMaxLength = Int(maxNameLengthBytes) * 2 + 1
@@ -211,38 +209,25 @@ public extension OWSUserProfile {
         owsAssertDebug(totalNameMaxLength == 257)
         paddedLengths = [53, 257]
 
-        return encrypt(data: paddedNameData, profileKey: profileKey, paddedLengths: paddedLengths)
+        return try encrypt(data: encodedValue, profileKey: profileKey, paddedLengths: paddedLengths)
     }
 
     @nonobjc
-    class func encrypt(data unpaddedData: Data, profileKey: OWSAES256Key, paddedLengths: [Int]) -> ProfileValue? {
+    class func encrypt(data unpaddedData: Data, profileKey: OWSAES256Key, paddedLengths: [Int]) throws -> ProfileValue {
         guard paddedLengths == paddedLengths.sorted() else {
-            owsFailDebug("paddedLengths have incorrect ordering.")
-            return nil
+            throw OWSAssertionError("paddedLengths have incorrect ordering.")
         }
 
-        guard let paddedData = ({ () -> Data? in
-            guard let paddedLength = paddedLengths.first(where: { $0 >= unpaddedData.count }) else {
-                owsFailDebug("Oversize value: \(unpaddedData.count) > \(paddedLengths)")
-                return nil
-            }
-
-            var paddedData = unpaddedData
-            let paddingByteCount = paddedLength - paddedData.count
-            paddedData.count += paddingByteCount
-
-            assert(paddedData.count == paddedLength)
-            return paddedData
-        }()) else {
-            owsFailDebug("Could not pad value.")
-            return nil
+        guard let paddedLength = paddedLengths.first(where: { $0 >= unpaddedData.count }) else {
+            throw OWSAssertionError("Oversize value: \(unpaddedData.count) > \(paddedLengths)")
         }
 
-        guard let encryptedData = encrypt(profileData: paddedData, profileKey: profileKey) else {
-            owsFailDebug("Could not encrypt.")
-            return nil
-        }
-        return ProfileValue(encryptedData: encryptedData)
+        var paddedData = unpaddedData
+        let paddingByteCount = paddedLength - paddedData.count
+        paddedData.count += paddingByteCount
+        assert(paddedData.count == paddedLength)
+
+        return ProfileValue(encryptedData: try encrypt(profileData: paddedData, profileKey: profileKey))
     }
 
     // MARK: - Indexing
@@ -371,6 +356,56 @@ public extension OWSUserProfile {
 
 // MARK: -
 
+extension OWSUserProfile {
+    public struct NameComponent: Equatable {
+        public let stringValue: StrippedNonEmptyString
+        public let dataValue: Data
+
+        private init(stringValue: StrippedNonEmptyString, dataValue: Data) {
+            self.stringValue = stringValue
+            self.dataValue = dataValue
+        }
+
+        public init?(truncating: String) {
+            guard let (parsedValue, _) = Self.parse(truncating: truncating) else {
+                return nil
+            }
+            self = parsedValue
+        }
+
+        public static func parse(truncating: String) -> (Self, didTruncate: Bool)? {
+            // We need to truncate to the required limit. Before doing so, we strip the
+            // string in case there's any leading whitespace. For example, if the limit
+            // is 3 characters, " Alice" should become "Ali" instead of "Al".
+            let strippedString = truncating.stripped
+            let truncatedString = strippedString
+                .trimToGlyphCount(OWSUserProfile.maxNameLengthGlyphs)
+                .trimToUtf8ByteCount(OWSUserProfile.maxNameLengthBytes)
+            // After trimming, we need to strip AGAIN. If the string starts with a
+            // control character, has a series of whitespaces, and then has
+            // user-visible characters, and if we truncate those user visible
+            // characters, we'll be left with a value that's now considered empty.
+            guard let strippedTruncatedString = StrippedNonEmptyString(rawValue: truncatedString) else {
+                return nil
+            }
+            guard let dataValue = strippedTruncatedString.rawValue.data(using: .utf8) else {
+                return nil
+            }
+            return (
+                NameComponent(stringValue: strippedTruncatedString, dataValue: dataValue),
+                didTruncate: truncatedString != strippedString
+            )
+        }
+
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            // Don't check `dataValue` because it's essentially a computed property.
+            return lhs.stringValue == rhs.stringValue
+        }
+    }
+}
+
+// MARK: -
+
 public struct ProfileValue {
     let encryptedData: Data
 
@@ -462,7 +497,6 @@ public class UserProfileChanges: NSObject {
 
 @objc
 public extension OWSUserProfile {
-
     @objc(updateWithGivenName:familyName:userProfileWriter:authedAccount:transaction:completion:)
     func update(
         givenName: String?,

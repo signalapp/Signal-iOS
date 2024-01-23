@@ -273,8 +273,8 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
     var localProfileKey: OWSAES256Key { get }
 
     func updateLocalProfile(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
@@ -293,8 +293,8 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     public var localProfileKey: OWSAES256Key { manager.localProfileKey() }
 
     public func updateLocalProfile(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction

@@ -41,8 +41,8 @@ extension OWSProfileManager: ProfileManager {
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
     public func updateLocalProfile(
-        profileGivenName: OptionalChange<String?>,
-        profileFamilyName: OptionalChange<String?>,
+        profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
+        profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalChange<Data?>,
@@ -829,8 +829,24 @@ extension OWSProfileManager: ProfileManager {
                 throw OWSAssertionError("Can't upload profile without profileKey.")
             }
 
-            let newGivenName = profileChanges.profileGivenName.orExistingValue(userProfile.unfilteredGivenName)
-            let newFamilyName = profileChanges.profileFamilyName.orExistingValue(userProfile.unfilteredFamilyName)
+            // It's important that the value we compute for
+            // `newGivenName`/`newFamilyName` exactly match what we put in our
+            // encrypted profile. If they don't match (eg one trims the value and the
+            // other doesn't), then `LocalProfileChecker` may enter an infinite loop
+            // trying to fix the profile.
+
+            let newGivenName: OWSUserProfile.NameComponent?
+            switch profileChanges.profileGivenName {
+            case .setTo(let newValue):
+                newGivenName = newValue
+            case .noChange:
+                // This is the *only* place that can clear our own name, and it only does
+                // so when the name we think we have (which should be valid) isn't valid.
+                newGivenName = userProfile.unfilteredGivenName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+            }
+            let newFamilyName = profileChanges.profileFamilyName.orExistingValue(
+                userProfile.unfilteredFamilyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+            )
             let newBio = profileChanges.profileBio.orExistingValue(userProfile.bio)
             let newBioEmoji = profileChanges.profileBioEmoji.orExistingValue(userProfile.bioEmoji)
             let newVisibleBadgeIds = profileChanges.visibleBadgeIds.orExistingValue(userProfile.visibleBadges.map { $0.badgeId })
@@ -854,8 +870,8 @@ extension OWSProfileManager: ProfileManager {
                     transaction: tx
                 )
                 userProfile.update(
-                    givenName: newGivenName,
-                    familyName: newFamilyName,
+                    givenName: newGivenName?.stringValue.rawValue,
+                    familyName: newFamilyName?.stringValue.rawValue,
                     bio: newBio,
                     bioEmoji: newBioEmoji,
                     avatarUrlPath: versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath),
@@ -928,7 +944,7 @@ extension OWSProfileManager: ProfileManager {
                 return (.clearAvatar, .setTo(nil))
             }
             // We aren't changing the avatar, so use the existing value.
-            if localProfileAvatarData() != nil {
+            if localUserProfile().avatarUrlPath != nil {
                 return (.keepAvatar, .noChange)
             }
             return (.clearAvatar, .setTo(nil))
@@ -951,8 +967,8 @@ extension OWSProfileManager: ProfileManager {
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
     private func enqueueProfileUpdate(
-        profileGivenName: OptionalChange<String?>,
-        profileFamilyName: OptionalChange<String?>,
+        profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
+        profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalChange<Data?>,
@@ -1081,9 +1097,8 @@ extension OWSProfileManager: ProfileManager {
 class PendingProfileUpdate: NSObject, NSCoding {
     let id: UUID
 
-    // If nil, we are clearing the profile given name.
-    let profileGivenName: OptionalChange<String?>
-    let profileFamilyName: OptionalChange<String?>
+    let profileGivenName: OptionalChange<OWSUserProfile.NameComponent>
+    let profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>
     let profileBio: OptionalChange<String?>
     let profileBioEmoji: OptionalChange<String?>
     let profileAvatarData: OptionalChange<Data?>
@@ -1092,8 +1107,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
     let userProfileWriter: UserProfileWriter
 
     init(
-        profileGivenName: OptionalChange<String?>,
-        profileFamilyName: OptionalChange<String?>,
+        profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
+        profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalChange<Data?>,
@@ -1101,7 +1116,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         userProfileWriter: UserProfileWriter
     ) {
         self.id = UUID()
-        self.profileGivenName = Self.normalizeGivenName(profileGivenName)
+        self.profileGivenName = profileGivenName
         self.profileFamilyName = profileFamilyName
         self.profileBio = profileBio
         self.profileBioEmoji = profileBioEmoji
@@ -1112,10 +1127,6 @@ class PendingProfileUpdate: NSObject, NSCoding {
 
     func hasSameIdAs(_ other: PendingProfileUpdate) -> Bool {
         return self.id == other.id
-    }
-
-    private static func normalizeGivenName(_ givenName: OptionalChange<String?>) -> OptionalChange<String?> {
-        return givenName.map { $0?.nilIfEmpty }
     }
 
     private static func normalizeAvatar(_ avatarData: OptionalChange<Data?>) -> OptionalChange<Data?> {
@@ -1159,8 +1170,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
 
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(id.uuidString, forKey: NSCodingKeys.id.rawValue)
-        Self.encodeOptionalChange(profileGivenName, for: .profileGivenName, with: aCoder)
-        Self.encodeOptionalChange(profileFamilyName, for: .profileFamilyName, with: aCoder)
+        Self.encodeOptionalChange(profileGivenName.map { $0.stringValue.rawValue }, for: .profileGivenName, with: aCoder)
+        Self.encodeOptionalChange(profileFamilyName.map { $0?.stringValue.rawValue }, for: .profileFamilyName, with: aCoder)
         Self.encodeOptionalChange(profileBio, for: .profileBio, with: aCoder)
         Self.encodeOptionalChange(profileBioEmoji, for: .profileBioEmoji, with: aCoder)
         Self.encodeOptionalChange(profileAvatarData, for: .profileAvatarData, with: aCoder)
@@ -1173,6 +1184,42 @@ class PendingProfileUpdate: NSObject, NSCoding {
             return .noChange
         }
         return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
+    }
+
+    private static func decodeOptionalNameChange(
+        for codingKey: NSCodingKeys,
+        with aDecoder: NSCoder
+    ) -> OptionalChange<OWSUserProfile.NameComponent?> {
+        let stringChange: OptionalChange<String?> = decodeOptionalChange(for: codingKey, with: aDecoder)
+        switch stringChange {
+        case .noChange:
+            return .noChange
+        case .setTo(.none):
+            return .setTo(nil)
+        case .setTo(.some(let value)):
+            // We shouldn't be able to encode an invalid value. If we do, fall back to
+            // `.noChange` rather than clearing it.
+            guard let nameComponent = OWSUserProfile.NameComponent(truncating: value) else {
+                return .noChange
+            }
+            return .setTo(nameComponent)
+        }
+    }
+
+    private static func decodeRequiredNameChange(
+        for codingKey: NSCodingKeys,
+        with aDecoder: NSCoder
+    ) -> OptionalChange<OWSUserProfile.NameComponent> {
+        switch decodeOptionalNameChange(for: codingKey, with: aDecoder) {
+        case .noChange:
+            return .noChange
+        case .setTo(.none):
+            // Don't allow the value to be cleared. Fall back to `.noChange` rather
+            // than throwing an error.
+            return .noChange
+        case .setTo(.some(let value)):
+            return .setTo(value)
+        }
     }
 
     private static func decodeVisibleBadgeIds(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<[String]> {
@@ -1191,8 +1238,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
             return nil
         }
         self.id = id
-        self.profileGivenName = Self.normalizeGivenName(Self.decodeOptionalChange(for: .profileGivenName, with: aDecoder))
-        self.profileFamilyName = Self.decodeOptionalChange(for: .profileFamilyName, with: aDecoder)
+        self.profileGivenName = Self.decodeRequiredNameChange(for: .profileGivenName, with: aDecoder)
+        self.profileFamilyName = Self.decodeOptionalNameChange(for: .profileFamilyName, with: aDecoder)
         self.profileBio = Self.decodeOptionalChange(for: .profileBio, with: aDecoder)
         self.profileBioEmoji = Self.decodeOptionalChange(for: .profileBioEmoji, with: aDecoder)
         self.profileAvatarData = Self.normalizeAvatar(Self.decodeOptionalChange(for: .profileAvatarData, with: aDecoder))

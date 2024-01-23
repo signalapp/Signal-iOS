@@ -41,8 +41,8 @@ public protocol VersionedProfiles: AnyObject {
 public protocol VersionedProfilesSwift: VersionedProfiles {
 
     func updateProfile(
-        profileGivenName: String?,
-        profileFamilyName: String?,
+        profileGivenName: OWSUserProfile.NameComponent?,
+        profileFamilyName: OWSUserProfile.NameComponent?,
         profileBio: String?,
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,
@@ -108,8 +108,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
     public func didFetchProfile(profile: SignalServiceProfile, profileRequest: VersionedProfileRequest) async {}
 
     public func updateProfile(
-        profileGivenName: String?,
-        profileFamilyName: String?,
+        profileGivenName: OWSUserProfile.NameComponent?,
+        profileFamilyName: OWSUserProfile.NameComponent?,
         profileBio: String?,
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,

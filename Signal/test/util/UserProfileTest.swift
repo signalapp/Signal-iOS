@@ -105,3 +105,21 @@ class UserProfileTest: SignalBaseTest {
         }
     }
 }
+
+final class UserProfile2Test: XCTestCase {
+    func testNameComponent() {
+        XCTAssertEqual(
+            OWSUserProfile.NameComponent(truncating: String(repeating: "A", count: 27))?.stringValue.rawValue,
+            String(repeating: "A", count: 26)
+        )
+        XCTAssertEqual(
+            OWSUserProfile.NameComponent(truncating: String(repeating: "👨‍👩‍👧‍👦", count: 6))?.stringValue.rawValue,
+            String(repeating: "👨‍👩‍👧‍👦", count: 5)
+        )
+        // If you strip and then truncate this string, the resulting string would
+        // become empty if you strip it again. While you'd normally expect a
+        // stripped string to start with a non-strippable character, control
+        // characters are treated fairly strangely.
+        XCTAssertNil(OWSUserProfile.NameComponent(truncating: "\0" + String(repeating: " ", count: 25) + "A"))
+    }
+}

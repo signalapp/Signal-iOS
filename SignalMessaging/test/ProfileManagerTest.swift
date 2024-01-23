@@ -68,8 +68,8 @@ class ProfileManagerTest: XCTestCase {
         let testCases: [(PendingProfileUpdate, String)] = [
             (
                 PendingProfileUpdate(
-                    profileGivenName: .setTo("Alice"),
-                    profileFamilyName: .setTo("Johnson"),
+                    profileGivenName: .setTo(.init(truncating: "Alice")!),
+                    profileFamilyName: .setTo(.init(truncating: "Johnson")!),
                     profileBio: .setTo("A short bio."),
                     profileBioEmoji: .setTo("💙"),
                     profileAvatarData: .setTo(Data(1...3)),
@@ -80,8 +80,8 @@ class ProfileManagerTest: XCTestCase {
             ),
             (
                 PendingProfileUpdate(
-                    profileGivenName: .setTo("Alice"),
-                    profileFamilyName: .setTo("Johnson"),
+                    profileGivenName: .setTo(.init(truncating: "Alice")!),
+                    profileFamilyName: .setTo(.init(truncating: "Johnson")!),
                     profileBio: .setTo("A short bio."),
                     profileBioEmoji: .setTo("💙"),
                     profileAvatarData: .setTo(Data(1...3)),

@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 protocol ProfileNameViewControllerDelegate: AnyObject {
-    func profileNameViewDidComplete(givenName: String?, familyName: String?)
+    func profileNameViewDidComplete(givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?)
 }
 
 // MARK: -
@@ -52,21 +52,21 @@ class ProfileNameViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private var normalizedGivenName: String? {
-        let normalizedGivenName = givenNameTextField.text?.ows_stripped()
-        if normalizedGivenName?.isEmpty == true { return nil }
-        return normalizedGivenName
+    private func givenNameComponent() -> (value: OWSUserProfile.NameComponent, didTruncate: Bool)? {
+        givenNameTextField.text.flatMap { OWSUserProfile.NameComponent.parse(truncating: $0) }
     }
 
-    private var normalizedFamilyName: String? {
-        let normalizedFamilyName = familyNameTextField.text?.ows_stripped()
-        if normalizedFamilyName?.isEmpty == true { return nil }
-        return normalizedFamilyName
+    private func familyNameComponent() -> (value: OWSUserProfile.NameComponent, didTruncate: Bool)? {
+        familyNameTextField.text.flatMap { OWSUserProfile.NameComponent.parse(truncating: $0) }
     }
 
     private var hasUnsavedChanges: Bool {
-        (normalizedGivenName != originalGivenName) || (normalizedFamilyName != originalFamilyName)
+        return (
+            givenNameComponent()?.value.stringValue.rawValue != originalGivenName
+            || familyNameComponent()?.value.stringValue.rawValue != originalFamilyName
+        )
     }
+
     // Don't allow interactive dismiss when there are unsaved changes.
     override var isModalInPresentation: Bool {
         get { hasUnsavedChanges }
@@ -120,7 +120,6 @@ class ProfileNameViewController: OWSTableViewController2 {
             comment: "Default text for the given name field of the profile view."
         )
         givenNameTextField.delegate = self
-        givenNameTextField.accessibilityIdentifier = "given_name_textfield"
         givenNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
         familyNameTextField.returnKeyType = .done
@@ -131,7 +130,6 @@ class ProfileNameViewController: OWSTableViewController2 {
             comment: "Default text for the family name field of the profile view."
         )
         familyNameTextField.delegate = self
-        familyNameTextField.accessibilityIdentifier = "family_name_textfield"
         familyNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
 
@@ -199,7 +197,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
     @objc
     private func didTapDone() {
-        if normalizedGivenName?.isEmpty != false {
+        guard let (givenName, didTruncateGivenName) = givenNameComponent() else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
                 comment: "Error message shown when user tries to update profile without a given name"
@@ -207,7 +205,7 @@ class ProfileNameViewController: OWSTableViewController2 {
             return
         }
 
-        if profileManagerImpl.isProfileNameTooLong(normalizedGivenName) {
+        if didTruncateGivenName {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a given name that is too long."
@@ -215,7 +213,8 @@ class ProfileNameViewController: OWSTableViewController2 {
             return
         }
 
-        if profileManagerImpl.isProfileNameTooLong(normalizedFamilyName) {
+        let familyNameComponent = self.familyNameComponent()
+        if let familyNameComponent, familyNameComponent.didTruncate {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                 comment: "Error message shown when user tries to update profile with a family name that is too long."
@@ -223,7 +222,7 @@ class ProfileNameViewController: OWSTableViewController2 {
             return
         }
 
-        profileDelegate?.profileNameViewDidComplete(givenName: normalizedGivenName, familyName: normalizedFamilyName)
+        profileDelegate?.profileNameViewDidComplete(givenName: givenName, familyName: familyNameComponent?.value)
         dismiss(animated: true)
     }
 }
@@ -240,19 +239,8 @@ extension ProfileNameViewController: UITextFieldDelegate {
         NSLocale.current.isCJKV ? givenNameTextField : familyNameTextField
     }
 
-    public func textField(_ textField: UITextField,
-                          shouldChangeCharactersIn range: NSRange,
-                          replacementString string: String) -> Bool {
-        TextFieldHelper.textField(
-            textField,
-            shouldChangeCharactersInRange: range,
-            replacementString: string.withoutBidiControlCharacters,
-            maxByteCount: OWSUserProfile.maxNameLengthBytes
-        )
-    }
-
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == firstTextField {
+        if textField === firstTextField {
             secondTextField.becomeFirstResponder()
         } else {
             didTapDone()

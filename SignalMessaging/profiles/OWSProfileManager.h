@@ -82,8 +82,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
     NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
 
-- (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
-
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
 #pragma mark - Local Profile Updates

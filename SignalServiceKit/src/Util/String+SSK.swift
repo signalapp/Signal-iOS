@@ -5,6 +5,7 @@
 
 import Foundation
 import NaturalLanguage
+import SignalCoreKit
 
 public extension String {
     /// A version of the string that only contains digits.
@@ -847,4 +848,17 @@ public extension NSString {
     /// Checks if the value starts with a "+" and has [1, 19] digits.
     @objc
     var isStructurallyValidE164: Bool { (self as String).isStructurallyValidE164 }
+}
+
+// MARK: - StrippedNonEmptyString
+
+/// A String that's been fed through `strippedOrNil` and isn't `nil`.
+public struct StrippedNonEmptyString: Equatable {
+    public let rawValue: String
+    public init?(rawValue: String) {
+        guard let strippedValue = rawValue.strippedOrNil else {
+            return nil
+        }
+        self.rawValue = strippedValue
+    }
 }

@@ -1244,12 +1244,39 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             needsUpdate = true
         }
 
-        // Given name can never be cleared, so ignore all info
-        // about the profile if there's no given name.
-        if record.hasGivenName && (localGivenName != record.givenName || localFamilyName != record.familyName || localAvatarUrl != record.avatarURL) {
+        // We normalize the names based on what we'd eventually send to the server
+        // when uploading our profile. If we don't, then we'd eventually change our
+        // profile name when reuploading anyways (this isn't that bad). However! If
+        // the normalized version becomes nil/empty, then reuploading would cause
+        // us to clear our profile name, and that's bad. Therefore, we must ensure
+        // values from Storage Service are valid before accepting them.
+        let remoteGivenName = record.givenName
+        let remoteFamilyName = record.familyName
+
+        let remoteGivenNameComponent = remoteGivenName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+        let remoteFamilyNameComponent = remoteFamilyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+
+        let normalizedRemoteGivenName = remoteGivenNameComponent?.stringValue.rawValue
+        let normalizedRemoteFamilyName = remoteFamilyNameComponent?.stringValue.rawValue
+
+        // If we had to normalize the values, we need to put the normalized
+        // versions back into Storage Service for our other devices. Note: If all
+        // of our linked devices are properly enforcing the name length limits &
+        // stripping behaviors, this should be impossible.
+        if remoteGivenName != normalizedRemoteGivenName || remoteFamilyName != normalizedRemoteFamilyName {
+            needsUpdate = true
+        }
+
+        // Given name can never be cleared, so ignore all info about the profile if
+        // there's no given name.
+        if let normalizedRemoteGivenName, (
+            localGivenName != normalizedRemoteGivenName
+            || localFamilyName != normalizedRemoteFamilyName
+            || localAvatarUrl != record.avatarURL
+        ) {
             profileManager.setProfileGivenName(
-                record.givenName,
-                familyName: record.familyName,
+                normalizedRemoteGivenName,
+                familyName: normalizedRemoteFamilyName,
                 avatarUrlPath: record.avatarURL,
                 for: localAddress,
                 userProfileWriter: .storageService,

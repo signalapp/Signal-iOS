@@ -8,24 +8,66 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
+private protocol Changeable<Value> {
+    associatedtype Value: Equatable
+
+    var oldValue: Value { get }
+    var newValue: Value? { get }
+}
+
+extension Changeable {
+    var currentValue: Value { newValue ?? oldValue }
+    var hasUnsavedChanges: Bool { currentValue != oldValue }
+}
+
+private struct ChangeableValue<Value: Equatable>: Changeable {
+    var oldValue: Value
+    var changedValue: OptionalChange<Value>
+    var newValue: Value? {
+        switch changedValue {
+        case .setTo(let newValue):
+            return newValue
+        case .noChange:
+            return nil
+        }
+    }
+}
+
+private struct ChangeableRequiredName: Changeable {
+    var oldValue: String?
+    var changedValue: OptionalChange<OWSUserProfile.NameComponent>
+    var newValue: String?? {
+        switch changedValue {
+        case .setTo(let newValue):
+            return newValue.stringValue.rawValue
+        case .noChange:
+            return nil
+        }
+    }
+}
+
+private struct ChangeableOptionalName: Changeable {
+    var oldValue: String?
+    var changedValue: OptionalChange<OWSUserProfile.NameComponent?>
+    var newValue: String?? {
+        switch changedValue {
+        case .setTo(let newValue):
+            return newValue?.stringValue.rawValue
+        case .noChange:
+            return nil
+        }
+    }
+}
+
 class ProfileSettingsViewController: OWSTableViewController2 {
 
     private let context: ViewControllerContext = .shared
 
     private var hasUnsavedChanges: Bool { profileValues.hasUnsavedChanges }
 
-    private struct ChangeableValue<T: Equatable> {
-        var oldValue: T
-        var changedValue: OptionalChange<T>
-
-        var currentValue: T { changedValue.orExistingValue(oldValue) }
-
-        var hasUnsavedChanges: Bool { currentValue != oldValue }
-    }
-
     private struct ProfileValues {
-        var givenName: ChangeableValue<String?>
-        var familyName: ChangeableValue<String?>
+        var givenName: ChangeableRequiredName
+        var familyName: ChangeableOptionalName
         var bio: ChangeableValue<String?>
         var bioEmoji: ChangeableValue<String?>
         var avatarData: ChangeableValue<Data?>
@@ -784,17 +826,17 @@ extension ProfileSettingsViewController {
 
 extension ProfileSettingsViewController: ProfileBioViewControllerDelegate {
     public func profileBioViewDidComplete(bio: String?, bioEmoji: String?) {
-        profileValues.bio.changedValue = .setTo(bio?.strippedOrNil)
-        profileValues.bioEmoji.changedValue = .setTo(bioEmoji?.strippedOrNil)
+        profileValues.bio.changedValue = .setTo(bio)
+        profileValues.bioEmoji.changedValue = .setTo(bioEmoji)
         updateTableContents()
         updateNavigationItem()
     }
 }
 
 extension ProfileSettingsViewController: ProfileNameViewControllerDelegate {
-    func profileNameViewDidComplete(givenName: String?, familyName: String?) {
-        profileValues.givenName.changedValue = .setTo(givenName?.strippedOrNil)
-        profileValues.familyName.changedValue = .setTo(familyName?.strippedOrNil)
+    func profileNameViewDidComplete(givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?) {
+        profileValues.givenName.changedValue = .setTo(givenName)
+        profileValues.familyName.changedValue = .setTo(familyName)
         updateTableContents()
         updateNavigationItem()
     }

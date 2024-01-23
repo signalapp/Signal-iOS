@@ -74,6 +74,7 @@ public class DependenciesBridge {
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
+    let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
 
     public let masterKeySyncManager: MasterKeySyncManager
@@ -669,5 +670,18 @@ public class DependenciesBridge {
 
         self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
+
+        // TODO: Move this into ProfileFetcherJob.
+        // Ideally, this would be a private implementation detail of that class.
+        // However, that class is currently implemented mostly as static methods,
+        // so there's no place to store it. Once it's protocolized, this type
+        // should be initialized in its initializer.
+        self.localProfileChecker = LocalProfileChecker(
+            db: self.db,
+            messageProcessor: messageProcessor,
+            profileManager: profileManager,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: self.tsAccountManager
+        )
     }
 }

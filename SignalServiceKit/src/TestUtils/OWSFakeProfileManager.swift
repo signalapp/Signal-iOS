@@ -22,8 +22,8 @@ extension OWSFakeProfileManager: ProfileManager {
     }
 
     public func updateLocalProfile(
-        profileGivenName: OptionalChange<String?>,
-        profileFamilyName: OptionalChange<String?>,
+        profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
+        profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalChange<Data?>,

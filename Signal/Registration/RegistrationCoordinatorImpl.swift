@@ -409,8 +409,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func setProfileInfo(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         phoneNumberDiscoverability: PhoneNumberDiscoverability
     ) -> Guarantee<RegistrationStep> {
@@ -551,7 +551,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var wasReglockEnabledBeforeStarting = false
         var hasSetReglock = false
 
-        var pendingProfileInfo: (givenName: String, familyName: String?, avatarData: Data?)?
+        var pendingProfileInfo: (givenName: OWSUserProfile.NameComponent, familyName: OWSUserProfile.NameComponent?, avatarData: Data?)?
 
         // TSAccountManager state
         var registrationId: UInt32!

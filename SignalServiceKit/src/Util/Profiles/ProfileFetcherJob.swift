@@ -171,14 +171,17 @@ public class ProfileFetcherJob: NSObject {
             backgroundTask.end()
         }
 
-        let fetchedProfile = try await requestProfile()
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: options.authedAccount)
+
+        let fetchedProfile = try await requestProfile(localIdentifiers: localIdentifiers)
         if options.shouldUpdateStore {
-            try await updateProfile(fetchedProfile: fetchedProfile, authedAccount: options.authedAccount)
+            try await updateProfile(fetchedProfile: fetchedProfile, localIdentifiers: localIdentifiers)
         }
         return fetchedProfile
     }
 
-    private func requestProfile() async throws -> FetchedProfile {
+    private func requestProfile(localIdentifiers: LocalIdentifiers) async throws -> FetchedProfile {
 
         guard !options.mainAppOnly || CurrentAppContext().isMainApp else {
             // We usually only refresh profiles in the MainApp to decrease the
@@ -205,16 +208,16 @@ public class ProfileFetcherJob: NSObject {
             recordLastFetchDate()
         }
 
-        return try await requestProfileWithRetries()
+        return try await requestProfileWithRetries(localIdentifiers: localIdentifiers)
     }
 
     private static var throttledProfileFetchFrequency: TimeInterval {
         kMinuteInterval * 2.0
     }
 
-    private func requestProfileWithRetries(retryCount: Int = 0) async throws -> FetchedProfile {
+    private func requestProfileWithRetries(localIdentifiers: LocalIdentifiers, retryCount: Int = 0) async throws -> FetchedProfile {
         do {
-            return try await requestProfileAttempt()
+            return try await requestProfileAttempt(localIdentifiers: localIdentifiers)
         } catch {
             if error.httpStatusCode == 401 {
                 throw ProfileFetchError.unauthorized
@@ -242,16 +245,16 @@ public class ProfileFetcherJob: NSObject {
                     throw error
                 }
 
-                return try await requestProfileWithRetries(retryCount: retryCount + 1)
+                return try await requestProfileWithRetries(localIdentifiers: localIdentifiers, retryCount: retryCount + 1)
             }
         }
     }
 
-    private func requestProfileAttempt() async throws -> FetchedProfile {
+    private func requestProfileAttempt(localIdentifiers: LocalIdentifiers) async throws -> FetchedProfile {
         let serviceId = self.serviceId
 
         let udAccess: OWSUDAccess?
-        if self.isFetchForLocalAccount(authedAccount: options.authedAccount) {
+        if localIdentifiers.contains(serviceId: serviceId) {
             // Don't use UD for "self" profile fetches.
             udAccess = nil
         } else {
@@ -310,21 +313,6 @@ public class ProfileFetcherJob: NSObject {
         )
     }
 
-    private func isFetchForLocalAccount(authedAccount: AuthedAccount) -> Bool {
-        let localIdentifiers: LocalIdentifiers
-        switch authedAccount.info {
-        case .explicit(let info):
-            localIdentifiers = info.localIdentifiers
-        case .implicit:
-            guard let implicitLocalIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-                owsFailDebug("Fetching without localIdentifiers.")
-                return false
-            }
-            localIdentifiers = implicitLocalIdentifiers
-        }
-        return localIdentifiers.contains(serviceId: serviceId)
-    }
-
     private func fetchedProfile(
         for profile: SignalServiceProfile,
         profileKeyFromVersionedRequest: OWSAES256Key?
@@ -348,19 +336,16 @@ public class ProfileFetcherJob: NSObject {
 
     private func updateProfile(
         fetchedProfile: FetchedProfile,
-        authedAccount: AuthedAccount
+        localIdentifiers: LocalIdentifiers
     ) async throws {
         await updateProfile(
             fetchedProfile: fetchedProfile,
-            localAvatarUrlIfDownloaded: try await downloadAvatarIfNeeded(fetchedProfile, authedAccount: authedAccount),
-            authedAccount: authedAccount
+            localAvatarUrlIfDownloaded: try await downloadAvatarIfNeeded(fetchedProfile),
+            localIdentifiers: localIdentifiers
         )
     }
 
-    private func downloadAvatarIfNeeded(
-        _ fetchedProfile: FetchedProfile,
-        authedAccount: AuthedAccount
-    ) async throws -> URL? {
+    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) async throws -> URL? {
         guard let newAvatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
             return nil
@@ -375,7 +360,7 @@ public class ProfileFetcherJob: NSObject {
             let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
                 for: profileAddress,
                 downloadIfMissing: false,
-                authedAccount: authedAccount,
+                authedAccount: options.authedAccount,
                 transaction: transaction
             )
             return (
@@ -418,7 +403,7 @@ public class ProfileFetcherJob: NSObject {
     private func updateProfile(
         fetchedProfile: FetchedProfile,
         localAvatarUrlIfDownloaded: URL?,
-        authedAccount: AuthedAccount
+        localIdentifiers: LocalIdentifiers
     ) async {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
@@ -492,9 +477,13 @@ public class ProfileFetcherJob: NSObject {
                 lastFetch: Date(),
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
-                authedAccount: authedAccount,
+                authedAccount: self.options.authedAccount,
                 transaction: transaction
             )
+
+            if localIdentifiers.contains(serviceId: serviceId) {
+                self.reconcileLocalProfileIfNeeded(fetchedProfile: fetchedProfile)
+            }
 
             let identityManager = DependenciesBridge.shared.identityManager
             identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction.asV2Write)
@@ -542,6 +531,23 @@ public class ProfileFetcherJob: NSObject {
             return .enabled
         }()
         udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: tx)
+    }
+
+    private func reconcileLocalProfileIfNeeded(fetchedProfile: FetchedProfile) {
+        guard let decryptedProfile = fetchedProfile.decryptedProfile else {
+            return
+        }
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
+            return
+        }
+        DependenciesBridge.shared.localProfileChecker.didFetchLocalProfile(LocalProfileChecker.RemoteProfile(
+            avatarUrlPath: fetchedProfile.profile.avatarUrlPath,
+            decryptedProfile: decryptedProfile
+        ))
     }
 
     private func lastFetchDate() -> Date? {

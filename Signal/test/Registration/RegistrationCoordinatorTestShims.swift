@@ -184,16 +184,16 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
     public var localProfileKey: OWSAES256Key { return localProfileKeyMock() }
 
     public var updateLocalProfileMock: ((
-        _ givenName: String,
-        _ familyName: String?,
+        _ givenName: OWSUserProfile.NameComponent,
+        _ familyName: OWSUserProfile.NameComponent?,
         _ avatarData: Data?,
         _ authedAccount: AuthedAccount,
         _ tx: DBWriteTransaction
     ) -> Promise<Void>)?
 
     public func updateLocalProfile(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction

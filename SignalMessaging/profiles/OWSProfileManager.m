@@ -1383,19 +1383,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 }
 
-#pragma mark - Profile Encryption
-
-- (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
-{
-    OWSAssertIsOnMainThread();
-
-    if (profileName.glyphCount > OWSUserProfile.maxNameLengthGlyphs) {
-        return YES;
-    }
-    NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
-    return nameData.length > (NSUInteger)OWSUserProfile.maxNameLengthBytes;
-}
-
 #pragma mark - Avatar Disk Cache
 
 - (nullable NSData *)loadProfileAvatarDataWithFilename:(NSString *)filename

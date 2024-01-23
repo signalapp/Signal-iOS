@@ -18,8 +18,8 @@ public struct RegistrationProfileState: Equatable {
 
 protocol RegistrationProfilePresenter: AnyObject {
     func goToNextStep(
-        givenName: String,
-        familyName: String?,
+        givenName: OWSUserProfile.NameComponent,
+        familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         phoneNumberDiscoverability: PhoneNumberDiscoverability
     )
@@ -50,19 +50,17 @@ class RegistrationProfileViewController: OWSViewController {
 
     private weak var presenter: RegistrationProfilePresenter?
 
-    private var normalizedGivenName: String {
-        return (givenNameTextField.text ?? "").ows_stripped()
+    private var givenNameComponent: OWSUserProfile.NameComponent? {
+        return OWSUserProfile.NameComponent(truncating: givenNameTextField.text ?? "")
     }
 
-    private var normalizedFamilyName: String? {
-        return (familyNameTextField.text ?? "").ows_stripped().nilIfEmpty
+    private var familyNameComponent: OWSUserProfile.NameComponent? {
+        return OWSUserProfile.NameComponent(truncating: familyNameTextField.text ?? "")
     }
 
     private var avatarData: Data? {
         didSet { render() }
     }
-
-    private var canSubmit: Bool { !normalizedGivenName.isEmpty }
 
     // MARK: Rendering
 
@@ -295,7 +293,7 @@ class RegistrationProfileViewController: OWSViewController {
     }
 
     private func render() {
-        navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil
+        navigationItem.rightBarButtonItem = givenNameComponent != nil ? nextBarButton : nil
 
         avatarView.image = avatarData?.asImage ?? Self.databaseStorage.read { transaction in
             Self.avatarBuilder.defaultAvatarImageForLocalUser(
@@ -344,18 +342,20 @@ class RegistrationProfileViewController: OWSViewController {
     @objc
     private func didTapNext() {
         Logger.info("")
-
-        guard canSubmit else { return }
-
-        goToNextStep()
+        goToNextStepIfPossible()
     }
 
-    private func goToNextStep() {
+    private func goToNextStepIfPossible() {
         Logger.info("")
 
+        guard let givenNameComponent else {
+            // This can happen if you try to advance via the keyboard.
+            return
+        }
+
         presenter?.goToNextStep(
-            givenName: normalizedGivenName,
-            familyName: normalizedFamilyName,
+            givenName: givenNameComponent,
+            familyName: familyNameComponent,
             avatarData: avatarData,
             phoneNumberDiscoverability: state.phoneNumberDiscoverability
         )
@@ -408,7 +408,7 @@ extension RegistrationProfileViewController: UITextFieldDelegate {
         case firstTextField:
             secondTextField.becomeFirstResponder()
         case secondTextField:
-            if canSubmit { goToNextStep() }
+            goToNextStepIfPossible()
         default:
             owsFailBeta("Got a \"return\" event for an unexpected text field")
         }
