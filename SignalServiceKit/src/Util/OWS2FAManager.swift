@@ -41,9 +41,9 @@ extension OWS2FAManager {
         )
     }
 
-    public func requestEnable2FA(withPin pin: String, mode: OWS2FAMode, rotateMasterKey: Bool = false) -> Promise<Void> {
+    public func requestEnable2FA(withPin pin: String, mode: OWS2FAMode) -> Promise<Void> {
         return Promise { future in
-            requestEnable2FA(withPin: pin, mode: mode, rotateMasterKey: rotateMasterKey, success: {
+            requestEnable2FA(withPin: pin, mode: mode, success: {
                 future.resolve()
             }) { error in
                 future.reject(error)
@@ -239,10 +239,10 @@ extension OWS2FAManager {
         return DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
     }
 
-    @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
+    @objc(generateAndBackupKeysWithPin:)
     @available(swift, obsoleted: 1.0)
-    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
-        let promise = DependenciesBridge.shared.svr.generateAndBackupKeys(pin: pin, authMethod: .implicit, rotateMasterKey: rotateMasterKey)
+    public func generateAndBackupKeys(with pin: String) -> AnyPromise {
+        let promise = DependenciesBridge.shared.svr.generateAndBackupKeys(pin: pin, authMethod: .implicit)
         return AnyPromise(promise)
     }
 

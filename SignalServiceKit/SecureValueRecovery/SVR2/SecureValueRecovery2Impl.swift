@@ -268,19 +268,20 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
-    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
-        let promise: Promise<Data> = self.generateAndBackupKeys(pin: pin, authMethod: authMethod, rotateMasterKey: rotateMasterKey)
+    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
+        let promise: Promise<Data> = self.generateAndBackupKeys(pin: pin, authMethod: authMethod)
         return promise.asVoid(on: schedulers.sync)
     }
 
-    internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Data> {
-        Logger.info("backing up, rotating master key? \(rotateMasterKey)")
+    internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Data> {
+        Logger.info("backing up")
         return firstly(on: scheduler) { [weak self] () -> Promise<Data> in
             guard let self else {
                 return .init(error: SVR.SVRError.assertion)
             }
             let masterKey: Data = {
-                if !rotateMasterKey, let masterKey = self.db.read(block: { tx in self.localStorage.getMasterKey(tx) }) {
+                // We never change the master key once stored (on the primary).
+                if let masterKey = self.db.read(block: { tx in self.localStorage.getMasterKey(tx) }) {
                     return masterKey
                 }
                 return self.generateMasterKey()

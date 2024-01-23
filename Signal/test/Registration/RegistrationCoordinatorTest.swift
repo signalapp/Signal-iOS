@@ -363,11 +363,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+        svr.generateAndBackupKeysMock = { pin, authMethod in
             XCTAssertEqual(pin, Stubs.pinCode)
             // We don't have a SVR auth credential, it should use chat server creds.
             XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-            XCTAssertFalse(rotateMasterKey)
             self.svr.hasMasterKey = true
             return .value(())
         }
@@ -513,11 +512,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // We haven't done a SVR backup; that should happen now.
-            svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            svr.generateAndBackupKeysMock = { pin, authMethod in
                 XCTAssertEqual(pin, Stubs.pinCode)
                 // We don't have a SVR auth credential, it should use chat server creds.
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-                XCTAssertFalse(rotateMasterKey)
                 self.svr.hasMasterKey = true
                 return .value(())
             }
@@ -1004,12 +1002,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // We haven't done a SVR backup; that should happen at t=6. Succeed at t=7.
-            svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            svr.generateAndBackupKeysMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 6)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 // We don't have a SVR auth credential, it should use chat server creds.
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-                XCTAssertFalse(rotateMasterKey)
                 self.svr.hasMasterKey = true
                 return self.scheduler.promise(resolvingWith: (), atTime: 7)
             }
@@ -1224,14 +1221,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // At t=4 once we create pre-keys, we should back up to svr.
-            svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) in
+            svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod) in
                 XCTAssertEqual(self.scheduler.currentTime, 4)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 XCTAssertEqual(authMethod, .svrAuth(
                     Stubs.svr2AuthCredential,
                     backup: .chatServerAuth(expectedAuthedAccount())
                 ))
-                XCTAssertFalse(rotateMasterKey)
                 return self.scheduler.promise(resolvingWith: (), atTime: 5)
             }
 
@@ -1609,11 +1605,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
             // Finish the validation at t=1.
-            svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
+            svr.generateAndBackupKeysMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
-                XCTAssertFalse(rotateMasterKey)
                 return self.scheduler.promise(resolvingWith: (), atTime: 1)
             }
 
@@ -3380,7 +3375,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             nextStep = coordinator.skipPINCode()
 
             // When we skip the pin, it should skip any SVR backups.
-            svr.generateAndBackupKeysMock = { _, _, _ in
+            svr.generateAndBackupKeysMock = { _, _ in
                 XCTFail("Shouldn't talk to SVR with skipped PIN!")
                 return .value(())
 

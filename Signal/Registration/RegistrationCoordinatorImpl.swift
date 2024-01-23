@@ -2890,8 +2890,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return deps.svr
             .generateAndBackupKeys(
                 pin: pin,
-                authMethod: authMethod,
-                rotateMasterKey: false
+                authMethod: authMethod
             )
             .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep>  in
                 guard let strongSelf = self else {

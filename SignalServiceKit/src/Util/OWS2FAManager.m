@@ -163,7 +163,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)requestEnable2FAWithPin:(NSString *)pin
                            mode:(OWS2FAMode)mode
-                rotateMasterKey:(BOOL)rotateMasterKey
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure
 {
@@ -175,7 +174,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         case OWS2FAMode_V2: {
             // Enabling V2 2FA doesn't inherently enable registration lock,
             // it's managed by a separate setting.
-            [self generateAndBackupKeysWithPin:pin rotateMasterKey:rotateMasterKey]
+            [self generateAndBackupKeysWithPin:pin]
                 .done(^(id value) {
                     OWSAssertIsOnMainThread();
 
