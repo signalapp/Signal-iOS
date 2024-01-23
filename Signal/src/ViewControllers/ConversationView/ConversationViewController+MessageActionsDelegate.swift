@@ -166,8 +166,7 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl) {
-        guard let message = itemViewModel.interaction as? TSMessage else { return }
-        message.presentDeletionActionSheet(from: self)
+        itemViewModel.interaction.presentDeletionActionSheet(from: self)
     }
 
     func messageActionsSpeakItem(_ itemViewModel: CVItemViewModelImpl) {

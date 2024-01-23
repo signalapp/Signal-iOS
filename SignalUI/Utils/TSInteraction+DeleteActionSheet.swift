@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 import UIKit
 
-public extension TSMessage {
+public extension TSInteraction {
     func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {
         let actionSheetController = ActionSheetController(
             message: OWSLocalizedString(
@@ -22,12 +22,15 @@ public extension TSMessage {
             style: .destructive
         ) { _ in
             Self.databaseStorage.asyncWrite { tx in
-                TSMessage.anyFetchMessage(uniqueId: self.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                TSInteraction.anyFetch(uniqueId: self.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
             }
         }
         actionSheetController.addAction(deleteForMeAction)
 
-        if canBeRemotelyDeleted, let outgoingMessage = self as? TSOutgoingMessage {
+        if
+            let outgoingMessage = self as? TSOutgoingMessage,
+            outgoingMessage.canBeRemotelyDeleted
+        {
             let deleteForEveryoneAction = ActionSheetAction(
                 title: OWSLocalizedString(
                     "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
