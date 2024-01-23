@@ -75,7 +75,16 @@ extension TSInteraction {
             case .threadMerge: return false
             case .sessionSwitchover: return false
             case .typeGroupUpdate:
-                guard let updates = infoMessage.computedGroupUpdateItems(tx: transaction) else {
+                guard
+                    let localIdentifiers = DependenciesBridge.shared.tsAccountManager
+                        .localIdentifiers(
+                            tx: transaction.asV2Read
+                        ),
+                    let updates = infoMessage.computedGroupUpdateItems(
+                        localIdentifiers: localIdentifiers,
+                        tx: transaction
+                    )
+                else {
                     return true
                 }
                 return updates.contains { $0.shouldAppearInInbox }

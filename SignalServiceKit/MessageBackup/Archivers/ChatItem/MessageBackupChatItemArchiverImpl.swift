@@ -41,25 +41,26 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         reactionArchiver: reactionArchiver
     )
 
-    private lazy var interactionArchivers: [MessageBackupInteractionArchiver] = [
+    private lazy var incomingMessageArchiver =
         MessageBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
             interactionStore: interactionStore
-        ),
+        )
+    private lazy var outgoingMessageArchiver =
         MessageBackupTSOutgoingMessageArchiver(
             contentsArchiver: contentsArchiver,
             interactionStore: interactionStore,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver
-        ),
+        )
+    private lazy var groupUpdateMessageArchiver =
         MessageBackupGroupUpdateMessageArchiver(
             groupUpdateBuilder: groupUpdateItemBuilder,
             groupUpdateHelper: groupUpdateHelper,
             interactionStore: interactionStore
         )
-        // TODO: need for info messages. not story messages, those are skipped.
-        // are there other message types? what about e.g. payment messages?
-        // anything that isnt a TSOutgoingMessage or TSIncomingMessage.
-    ]
+    // TODO: need for info messages. not story messages, those are skipped.
+    // are there other message types? what about e.g. payment messages?
+    // anything that isnt a TSOutgoingMessage or TSIncomingMessage.
 
     public func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
@@ -110,6 +111,26 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         }
     }
 
+    // TODO: once we have a complete set of archivers, this
+    // should return a non-optional value.
+    private func archiver(
+        for archiverType: MessageBackup.InteractionArchiverType
+    ) -> MessageBackupInteractionArchiver? {
+        let archiver: MessageBackupInteractionArchiver
+        switch archiverType {
+        case .incomingMessage:
+            archiver = incomingMessageArchiver
+        case .outgoingMessage:
+            archiver = outgoingMessageArchiver
+        case .groupUpdateInfoMessage:
+            archiver = groupUpdateMessageArchiver
+        case .unimplemented:
+            return nil
+        }
+        owsAssertDebug(archiverType == type(of: archiver).archiverType)
+        return archiver
+    }
+
     private func archiveInteraction(
         _ interaction: TSInteraction,
         stream: MessageBackupProtoOutputStream,
@@ -126,9 +147,11 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             return .partialSuccess(partialErrors)
         }
 
-        guard let archiver = interactionArchivers.first(where: {
-            type(of: $0).canArchiveInteraction(interaction)
-        }) else {
+        guard let archiver = self.archiver(
+            for: interaction.archiverType(
+                localIdentifiers: context.recipientContext.localIdentifiers
+            )
+        ) else {
             // TODO: when we have a complete set of archivers, this should
             // maybe be considered a catastrophic failure?
             // For now there's interactions we don't handle; just ignore it.
@@ -234,9 +257,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard let archiver = interactionArchivers.first(where: {
-            type(of: $0).canRestoreChatItem(chatItem)
-        }) else {
+        guard let archiver = self.archiver(for: chatItem.archiverType) else {
             // TODO: when we have a complete set of archivers, this should
             // maybe be considered a catastrophic failure?
             // For now there's interactions we don't handle; just ignore it.

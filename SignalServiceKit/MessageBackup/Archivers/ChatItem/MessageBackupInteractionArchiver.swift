@@ -126,15 +126,13 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
 
     typealias Details = MessageBackup.InteractionArchiveDetails
 
-    static func canArchiveInteraction(_ interaction: TSInteraction) -> Bool
+    static var archiverType: MessageBackup.InteractionArchiverType { get }
 
     func archiveInteraction(
         _ interaction: TSInteraction,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details>
-
-    static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool
 
     func restoreChatItem(
         _ chatItem: BackupProtoChatItem,

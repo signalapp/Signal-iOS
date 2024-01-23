@@ -19,11 +19,9 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         self.interactionStore = interactionStore
     }
 
-    // MARK: - Archiving
+    static let archiverType = MessageBackup.InteractionArchiverType.incomingMessage
 
-    static func canArchiveInteraction(_ interaction: TSInteraction) -> Bool {
-        return interaction is TSIncomingMessage
-    }
+    // MARK: - Archiving
 
     func archiveInteraction(
         _ interaction: TSInteraction,
@@ -107,10 +105,6 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     }
 
     // MARK: - Restoring
-
-    static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool {
-        return chatItem.incoming != nil
-    }
 
     func restoreChatItem(
         _ chatItem: BackupProtoChatItem,

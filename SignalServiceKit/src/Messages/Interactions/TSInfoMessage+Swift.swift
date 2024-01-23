@@ -32,10 +32,12 @@ public extension TSInfoMessage {
 
     @objc
     func groupUpdateDescription(transaction tx: SDSAnyReadTransaction) -> NSAttributedString {
-        let localIdentifiers: LocalIdentifiers? =
-            DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
-
         let fallback = DisplayableGroupUpdateItem.genericUpdateByUnknownUser.localizedText
+
+        guard let localIdentifiers: LocalIdentifiers =
+                DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            return fallback
+        }
 
         let updateItems: [DisplayableGroupUpdateItem]
 
@@ -48,10 +50,6 @@ public extension TSInfoMessage {
             return NSAttributedString(string: string)
 
         case .newGroup, .modelDiff, .precomputed:
-            guard let localIdentifiers else {
-                return fallback
-            }
-
             guard let items = buildGroupUpdateItems(
                 localIdentifiers: localIdentifiers,
                 tx: tx.asV2Read,
@@ -86,12 +84,9 @@ public extension TSInfoMessage {
     }
 
     func computedGroupUpdateItems(
-        localIdentifiers: LocalIdentifiers? = nil,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyReadTransaction
     ) -> [PersistableGroupUpdateItem]? {
-        let localIdentifiers = localIdentifiers ?? DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-            tx: tx.asV2Read
-        )
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .legacyRawString, .nonGroupUpdate:
             return nil
@@ -113,11 +108,9 @@ public extension TSInfoMessage {
     }
 
     func displayableGroupUpdateItems(
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyReadTransaction
     ) -> [DisplayableGroupUpdateItem]? {
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-            tx: tx.asV2Read
-        )
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .legacyRawString, .nonGroupUpdate:
             return nil
@@ -482,7 +475,7 @@ extension TSInfoMessage {
         case nonGroupUpdate
     }
 
-    public func groupUpdateMetadata(localIdentifiers: LocalIdentifiers?) -> GroupUpdateMetadata {
+    public func groupUpdateMetadata(localIdentifiers: LocalIdentifiers) -> GroupUpdateMetadata {
         if let precomputed: PersistableGroupUpdateItemsWrapper =
             infoMessageValue(forKey: .groupUpdateItems)
         {
@@ -583,19 +576,5 @@ extension TSInfoMessage {
 
     public func setGroupUpdateItemsWrapper(_ updateItemsWrapper: PersistableGroupUpdateItemsWrapper) {
         setInfoMessageValue(updateItemsWrapper, forKey: .groupUpdateItems)
-    }
-
-    /// New group update info messages do not keep a copy of the group model on themselves. Older
-    /// instances do; this method updates the group model for older instances and leaves newer ones untouched.
-    public func setNewGroupModelForLegacyMessage(_ newGroupModel: TSGroupModel) {
-        // No need to pass local identifiers because we don't care about the
-        // contents, just what type of update metadata it is.
-        switch groupUpdateMetadata(localIdentifiers: nil) {
-        case .legacyRawString, .nonGroupUpdate, .precomputed:
-            owsFailDebug("Should not be updating group model!")
-            return
-        case .newGroup, .modelDiff:
-            setInfoMessageValue(newGroupModel, forKey: .newGroupModel)
-        }
     }
 }

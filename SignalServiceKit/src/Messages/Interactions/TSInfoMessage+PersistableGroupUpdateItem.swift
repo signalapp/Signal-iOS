@@ -134,7 +134,7 @@ extension TSInfoMessage {
         func toNewItem(
             updater: GroupUpdateSource,
             oldGroupModel: TSGroupModel?,
-            localIdentifiers: LocalIdentifiers?
+            localIdentifiers: LocalIdentifiers
         ) -> PersistableGroupUpdateItem? {
             switch self {
             case .sequenceOfInviteLinkRequestAndCancels(let count, let isTail):
@@ -187,7 +187,7 @@ extension TSInfoMessage {
                 )
 
                 if wasLocalUser {
-                    if wasRejectedInvite || (localIdentifiers?.contains(serviceId: remover) ?? false) {
+                    if wasRejectedInvite || localIdentifiers.contains(serviceId: remover) {
                         // Local user invite that was rejected.
                         if let inviterAci {
                             return .localUserDeclinedInviteFromInviter(
@@ -208,7 +208,7 @@ extension TSInfoMessage {
                     if wasRejectedInvite || invitee.wrappedValue == remover {
                         // Other user rejected an invite.
                         if let inviterAci {
-                            if inviterAci == localIdentifiers?.aci {
+                            if inviterAci == localIdentifiers.aci {
                                 return .otherUserDeclinedInviteFromLocalUser(invitee: invitee)
                             } else {
                                 return .otherUserDeclinedInviteFromInviter(
@@ -222,7 +222,7 @@ extension TSInfoMessage {
                     } else {
                         // Other user's invite was revoked.
                         if let removerAci = remover as? Aci {
-                            if removerAci == localIdentifiers?.aci {
+                            if removerAci == localIdentifiers.aci {
                                 return .otherUserInviteRevokedByLocalUser(invitee: invitee)
                             } else {
                                 return .unnamedUserInvitesWereRevokedByOtherUser(

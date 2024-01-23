@@ -628,7 +628,13 @@ extension CVComponentSystemMessage {
         if
             let infoMessage = interaction as? TSInfoMessage,
             infoMessage.messageType == .typeGroupUpdate,
-            let displayableGroupUpdates = infoMessage.displayableGroupUpdateItems(tx: transaction),
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+                tx: transaction.asV2Read
+            ),
+            let displayableGroupUpdates = infoMessage.displayableGroupUpdateItems(
+                localIdentifiers: localIdentifiers,
+                tx: transaction
+            ),
             !displayableGroupUpdates.isEmpty
         {
 
@@ -1140,7 +1146,14 @@ extension CVComponentSystemMessage {
             return nil
         case .typeGroupUpdate:
             let thread = { infoMessage.thread(tx: transaction) as? TSGroupThread }
-            guard let items = infoMessage.computedGroupUpdateItems(tx: transaction) else {
+            guard
+                let localIdentifiers = DependenciesBridge.shared.tsAccountManager
+                    .localIdentifiers(tx: transaction.asV2Read),
+                let items = infoMessage.computedGroupUpdateItems(
+                    localIdentifiers: localIdentifiers,
+                    tx: transaction
+                )
+            else {
                 return nil
             }
             return TSInfoMessage.PersistableGroupUpdateItem.cvComponentAction(

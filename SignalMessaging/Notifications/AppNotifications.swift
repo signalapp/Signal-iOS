@@ -1031,9 +1031,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             }
 
             if let infoMessage = tsInteraction as? TSInfoMessage {
-                let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
                     tx: transaction.asV2Read
-                )
+                ) else {
+                    owsFailDebug("Missing local identifiers!")
+                    return
+                }
                 switch infoMessage.messageType {
                 case .typeGroupUpdate:
                     let groupUpdateAuthor: SignalServiceAddress?

@@ -24,24 +24,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         self.interactionStore = interactionStore
     }
 
-    static func canArchiveInteraction(_ interaction: TSInteraction) -> Bool {
-        guard let infoMessage = interaction as? TSInfoMessage else {
-            return false
-        }
-
-        // Ok to use nil local identifiers; we just need to know the type not
-        // accurate contents.
-        switch infoMessage.groupUpdateMetadata(localIdentifiers: nil) {
-        case .nonGroupUpdate:
-            return false
-        case .legacyRawString:
-            // Declare that we can archive this, so that its not unhandled.
-            // We won't actually archive it though; we just drop these.
-            return true
-        case .precomputed, .modelDiff, .newGroup:
-            return true
-        }
-    }
+    static let archiverType = MessageBackup.InteractionArchiverType.groupUpdateInfoMessage
 
     func archiveInteraction(
         _ interaction: TSInteraction,
@@ -200,15 +183,6 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             return .success(update)
         } else {
             return .partialFailure(update, partialErrors)
-        }
-    }
-
-    static func canRestoreChatItem(_ chatItem: BackupProtoChatItem) -> Bool {
-        switch chatItem.messageType {
-        case .chatUpdate(let chatUpdate):
-            return chatUpdate.groupChange != nil
-        default:
-            return false
         }
     }
 
