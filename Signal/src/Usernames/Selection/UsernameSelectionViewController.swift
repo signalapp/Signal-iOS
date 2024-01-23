@@ -359,8 +359,12 @@ private extension UsernameSelectionViewController {
         updateNavigationItems()
         updateHeaderViewContent()
         updateUsernameTextFieldContent()
-        updateErrorTextViewContent()
         updateFooterTextViewContent()
+        // If this is done synchronously with `updateUsernameTextFieldContent`,
+        // there will be unwanted animations on the text field.
+        DispatchQueue.main.async {
+            self.updateErrorTextViewContent()
+        }
     }
 
     /// Update the contents of navigation items for the current internal

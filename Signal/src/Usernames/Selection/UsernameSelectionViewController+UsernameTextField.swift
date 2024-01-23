@@ -83,12 +83,12 @@ extension UsernameSelectionViewController {
                 addArrangedSubviews([
                     spinnerView,
                     separatorView,
-                    discriminatorContainer,
+                    discriminatorTextField,
                 ])
 
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapDiscriminator))
                 tapGesture.delegate = self
-                discriminatorContainer.addGestureRecognizer(tapGesture)
+                discriminatorTextField.addGestureRecognizer(tapGesture)
 
                 spacing = Constants.spacing
                 isLayoutMarginsRelativeArrangement = true
@@ -129,21 +129,6 @@ extension UsernameSelectionViewController {
                 textField.keyboardType = .numberPad
                 return textField
             }()
-            // Set a minimum width for the view to the width of two characters
-            // in the given Dynamic Type size so it doesn't change when rolling
-            // new 2-digit discriminators.
-            private lazy var discriminatorContainer: UILabel = {
-                let label = UILabel()
-
-                label.numberOfLines = 1
-                label.text = "00"
-                label.textColor = .clear
-                label.isUserInteractionEnabled = true
-                label.addSubview(discriminatorTextField)
-                discriminatorTextField.autoPinEdgesToSuperviewEdges()
-
-                return label
-            }()
 
             // MARK: Configure views
 
@@ -155,7 +140,6 @@ extension UsernameSelectionViewController {
             func updateFontsForCurrentPreferredContentSize() {
                 let discriminatorFont = UIFont.dynamicTypeBodyClamped
                 discriminatorTextField.font = discriminatorFont
-                discriminatorContainer.font = discriminatorFont
             }
 
             /// Configure which subviews to present based on the current mode.
@@ -167,14 +151,12 @@ extension UsernameSelectionViewController {
                     isHidden = true
                 case .spinning:
                     isHidden = false
-                    spinnerView.isHidden = false
+                    spinnerView.isHiddenInStackView = false
                     separatorView.isHiddenInStackView = true
                     discriminatorTextField.isHiddenInStackView = true
                 case let .spinningWithDiscriminator(discriminatorValue):
                     isHidden = false
-                    // Using isHiddenInStackView for spinnerView here causes an
-                    // an unwanted slide-in animation for some reason.
-                    spinnerView.isHidden = false
+                    spinnerView.isHiddenInStackView = false
                     separatorView.isHiddenInStackView = false
                     discriminatorTextField.isHiddenInStackView = false
                     setDiscriminatorValue(to: discriminatorValue)
