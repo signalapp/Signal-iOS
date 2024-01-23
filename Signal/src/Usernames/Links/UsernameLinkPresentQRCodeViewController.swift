@@ -244,7 +244,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                         didCopyUsername: { [weak self] in
                             guard let self else { return }
                             self.dismiss(animated: true) {
-                                self.showUsernameCopiedToast()
+                                self.showUsernameLinkCopiedToast()
                             }
                         }
                     )
@@ -595,6 +595,13 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         self.presentToast(text: OWSLocalizedString(
             "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
             comment: "Text presented in a toast notifying the user that their username was copied to the system clipboard."
+        ))
+    }
+
+    private func showUsernameLinkCopiedToast() {
+        self.presentToast(text: OWSLocalizedString(
+            "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED",
+            comment: "Text presented in a toast notifying the user that their username link was copied to the system clipboard."
         ))
     }
 
