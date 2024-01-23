@@ -643,6 +643,7 @@ public class DependenciesBridge {
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImp(
                 dateProvider: dateProvider,
+                groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 interactionStore: InteractionStoreImpl(),
                 reactionStore: ReactionStoreImpl(),

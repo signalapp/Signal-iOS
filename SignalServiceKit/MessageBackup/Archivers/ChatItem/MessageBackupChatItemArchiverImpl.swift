@@ -9,6 +9,7 @@ import LibSignalClient
 public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
     private let dateProvider: DateProvider
+    private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let interactionStore: InteractionStore
     private let reactionStore: ReactionStore
@@ -17,6 +18,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
 
     public init(
         dateProvider: @escaping DateProvider,
+        groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         interactionStore: InteractionStore,
         reactionStore: ReactionStore,
@@ -24,6 +26,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         threadStore: ThreadStore
     ) {
         self.dateProvider = dateProvider
+        self.groupUpdateHelper = groupUpdateHelper
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.interactionStore = interactionStore
         self.reactionStore = reactionStore
@@ -50,6 +53,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         ),
         MessageBackupGroupUpdateMessageArchiver(
             groupUpdateBuilder: groupUpdateItemBuilder,
+            groupUpdateHelper: groupUpdateHelper,
             interactionStore: interactionStore
         )
         // TODO: need for info messages. not story messages, those are skipped.

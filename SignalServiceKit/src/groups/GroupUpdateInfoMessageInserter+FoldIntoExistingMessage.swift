@@ -33,10 +33,11 @@ extension GroupUpdateInfoMessageInserterImpl {
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
         guard
-            let (mostRecentInfoMsg, secondMostRecentInfoMsgMaybe) = mostRecentVisibleInteractionsAsInfoMessages(
-                forGroupThread: groupThread,
-                withTransaction: transaction
-            )
+            let (mostRecentInfoMsg, secondMostRecentInfoMsgMaybe) =
+                Self.mostRecentVisibleInteractionsAsInfoMessages(
+                    forGroupThread: groupThread,
+                    withTransaction: transaction
+                )
         else {
             return nil
         }
@@ -210,11 +211,50 @@ extension GroupUpdateInfoMessageInserterImpl {
     }
 
     /// See ``GroupUpdateInfoMessageInserterBackupHelper``.
-    public static func maybeUpdate(
-        mostRecentInfoMsg: TSInfoMessage,
-        joinRequestFromBackup requestingAci: Aci,
-        localIdentifiers: LocalIdentifiers
+    public static func collapseFromBackupIfNeeded(
+        updates: inout [TSInfoMessage.PersistableGroupUpdateItem],
+        localIdentifiers: LocalIdentifiers,
+        groupThread: TSGroupThread,
+        transaction: SDSAnyWriteTransaction
     ) {
+        if
+            updates.count == 2,
+            let (sequenceRequestor, count) = updates[0]
+                .representsSequenceOfRequestsAndCancels(),
+            let singleRequestor = updates[1]
+                .representsCollapsibleSingleRequestToJoin(),
+            sequenceRequestor == singleRequestor
+        {
+            // These updates are collapsible in isolation.
+            // Mark the first one as not the tail; thats the only change
+            // we need to make to "collapse" this one.
+            updates[0] =
+                .sequenceOfInviteLinkRequestAndCancels(
+                    requester: sequenceRequestor.codableUuid,
+                    count: count,
+                    isTail: false
+                )
+            return
+        }
+
+        guard
+            updates.count == 1,
+            let requestingAci = updates[0].representsCollapsibleSingleRequestToJoin()
+        else {
+            // No change needed.
+            return
+        }
+
+        // This latest message is collapsible; try and collapse it.
+
+        guard let (mostRecentInfoMsg, _) =
+            mostRecentVisibleInteractionsAsInfoMessages(
+                forGroupThread: groupThread,
+                withTransaction: transaction
+            )
+        else {
+            return
+        }
 
         guard let (mostRecentMsgAci, count) = mostRecentInfoMsg
             .representsSingleSequenceOfRequestsAndCancels(
@@ -225,18 +265,25 @@ extension GroupUpdateInfoMessageInserterImpl {
             return
         }
 
-        mostRecentInfoMsg.setSingleUpdateItem(
-            singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
-                requester: mostRecentMsgAci.codableUuid,
-                // Count stays the same.
-                count: count,
-                // Its not the tail because of the subsequent request.
-                isTail: false
-            )
+        mostRecentInfoMsg.anyUpdateInfoMessage(
+            transaction: transaction,
+            block: {
+                $0.setSingleUpdateItem(
+                    singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
+                        requester: mostRecentMsgAci.codableUuid,
+                        // Count stays the same.
+                        count: count,
+                        // Its not the tail because of the subsequent request.
+                        isTail: false
+                    )
+                )
+            }
         )
+        // No need to change the updates in the new info message.
+        return
     }
 
-    private func mostRecentVisibleInteractionsAsInfoMessages(
+    private static func mostRecentVisibleInteractionsAsInfoMessages(
         forGroupThread groupThread: TSGroupThread,
         withTransaction transaction: SDSAnyReadTransaction
     ) -> (first: TSInfoMessage, second: TSInfoMessage?)? {
@@ -329,13 +376,9 @@ private extension TSInfoMessage {
             // This is a phenomenon exclusive to precomputed cases.
             return nil
         case .precomputed(let precomputedItems):
-            guard
-                let item = precomputedItems.asSingleUpdateItem,
-                case let .sequenceOfInviteLinkRequestAndCancels(requester, count, _) = item
-            else {
-                return nil
-            }
-            return (requester.wrappedValue, count)
+            return precomputedItems
+                .asSingleUpdateItem?
+                .representsSequenceOfRequestsAndCancels()
         }
     }
 
@@ -387,6 +430,15 @@ private extension TSInfoMessage {
 }
 
 public extension TSInfoMessage.PersistableGroupUpdateItem {
+
+    func representsSequenceOfRequestsAndCancels() -> (Aci, count: UInt)? {
+        guard
+            case let .sequenceOfInviteLinkRequestAndCancels(requester, count, _) = self
+        else {
+            return nil
+        }
+        return (requester.wrappedValue, count)
+    }
 
     func representsCollapsibleSingleRequestToJoin() -> Aci? {
         switch self {

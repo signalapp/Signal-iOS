@@ -14,24 +14,29 @@ public protocol GroupUpdateInfoMessageInserterBackupHelper {
      * (``GroupSequenceOfRequestsAndCancelsUpdate`` proto, which becomes
      * ``TSInfoMessage.PersistableGroupUpdateItem.sequenceOfInviteLinkRequestAndCancels``).
      *
-     * If we do, and it is immediately followed by a request to join, either within the same TSInfoMessage
-     * or in the subsequent one in the same group, we have to update the prior collapsed sequence message
-     * to mark it as _not_ the tail (isTail = false). This method is a helper for that, which co-locates the code
-     * with the same code for processing incoming group updates during normal app functioning.
+     * If we do, and it is immediately followed by a request to join by the same user in the same group,
+     * we have to update the prior collapsed sequence message to mark it as _not_ the tail (isTail = false).
+     * This method is a helper for that, which co-locates the code with the same code for processing
+     * incoming group updates during normal app functioning.
      *
-     * Note: this method MUST be called before the join request is added to the TSInfoMessage. If the
-     * sequence and the final request are on the same message in the backup, first create the message
-     * with the first sequence item, then call this, then append the request item.
+     * This method handles two cases:
+     * 1. The sequence and subsequent request occur in the same TSInfoMessage, meaning they are both
+     * in the passed-in updates. In this case it updates the sequence's isTail to false, and returns the
+     * modified updates without touching the database.
+     * 2. The sequence is in the most recently inserted TSInfoMessage, and the passed-in updates have just
+     * the new request from the same user. In this case it updates the most recent TSInfoMessage in the db
+     * and returns the same update(s).
      *
-     * - parameter mostRecentInfoMsg: the most recent info message in the same group. Can be
-     * the same info message the new request update belongs to (but this message does not insert the
-     * new request, just updates the existing sequence item).
-     * - parameter requestingAci: the aci from the subsequent request
+     * MUST BE CALLED BEFORE INSERTING THE NEW TSINFOMESSAGE.
+     *
+     * - parameter updates: the updates pulled from the backup that we are about to generate
+     * a new TSInfoMessage for. This method may modify the updates.
      */
-    func maybeUpdate(
-        mostRecentInfoMsg: TSInfoMessage,
-        joinRequestFromBackup requestingAci: Aci,
-        localIdentifiers: LocalIdentifiers
+    func collapseIfNeeded(
+        updates: inout [TSInfoMessage.PersistableGroupUpdateItem],
+        localIdentifiers: LocalIdentifiers,
+        groupThread: TSGroupThread,
+        tx: DBWriteTransaction
     )
 }
 
@@ -39,15 +44,18 @@ public class GroupUpdateInfoMessageInserterBackupHelperImpl: GroupUpdateInfoMess
 
     public init() {}
 
-    public func maybeUpdate(
-        mostRecentInfoMsg: TSInfoMessage,
-        joinRequestFromBackup requestingAci: Aci,
-        localIdentifiers: LocalIdentifiers
+    public func collapseIfNeeded(
+        updates: inout [TSInfoMessage.PersistableGroupUpdateItem],
+        localIdentifiers: LocalIdentifiers,
+        groupThread: TSGroupThread,
+        tx: DBWriteTransaction
     ) {
-        GroupUpdateInfoMessageInserterImpl.maybeUpdate(
-            mostRecentInfoMsg: mostRecentInfoMsg,
-            joinRequestFromBackup: requestingAci,
-            localIdentifiers: localIdentifiers
-        )
+        return GroupUpdateInfoMessageInserterImpl
+            .collapseFromBackupIfNeeded(
+                updates: &updates,
+                localIdentifiers: localIdentifiers,
+                groupThread: groupThread,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
     }
 }

@@ -69,14 +69,25 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             // Note: isTail is dropped from the backup.
             // It is reconstructed at restore time from the presence, or lack thereof,
             // of a subsequent join request.
-            setUpdate(
-                BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.builder(
-                    requestorAci: aciData(requester),
-                    count: .init(clamping: count)
-                ),
-                build: { $0.build },
-                set: { $0.setGroupSequenceOfRequestsAndCancelsUpdate }
-            )
+            if count == 0 {
+                // If the count is 0, its actually just a request to join.
+                setUpdate(
+                    BackupProtoGroupJoinRequestUpdate.builder(
+                        requestorAci: aciData(requester)
+                    ),
+                    build: { $0.build },
+                    set: { $0.setGroupJoinRequestUpdate(_:) }
+                )
+            } else {
+                setUpdate(
+                    BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.builder(
+                        requestorAci: aciData(requester),
+                        count: .init(clamping: count)
+                    ),
+                    build: { $0.build },
+                    set: { $0.setGroupSequenceOfRequestsAndCancelsUpdate }
+                )
+            }
         case .invitedPniPromotedToFullMemberAci(let newMember, let inviter):
             setUpdate(
                 BackupProtoGroupInvitationAcceptedUpdate.builder(
@@ -1028,8 +1039,6 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 set: { $0.setGroupJoinRequestUpdate(_:) }
             )
         case .otherUserRequestedToJoin(let userAci):
-            // TODO: check against the preceding sequence of requests
-            // and joins, to mark it as not tail.
             setUpdate(
                 BackupProtoGroupJoinRequestUpdate.builder(
                     requestorAci: aciData(userAci)
