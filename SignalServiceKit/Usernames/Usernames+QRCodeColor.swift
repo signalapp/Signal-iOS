@@ -63,6 +63,28 @@ public extension Usernames {
             }
         }
 
+        /// Background color for the QR code share image.
+        public var canvas: UIColor {
+            switch self {
+            case .blue:
+                return UIColor(rgbHex: 0xEDF0FA)
+            case .white:
+                return UIColor(rgbHex: 0xF5F5F5)
+            case .grey:
+                return UIColor(rgbHex: 0xF0F0F1)
+            case .olive:
+                return UIColor(rgbHex: 0xF6F5F2)
+            case .green:
+                return UIColor(rgbHex: 0xF2F5F0)
+            case .orange:
+                return UIColor(rgbHex: 0xFCF1EB)
+            case .pink:
+                return UIColor(rgbHex: 0xFCF1F5)
+            case .purple:
+                return UIColor(rgbHex: 0xF5F3FA)
+            }
+        }
+
         /// Border color for the padding around the QR code.
         public var paddingBorder: UIColor {
             switch self {

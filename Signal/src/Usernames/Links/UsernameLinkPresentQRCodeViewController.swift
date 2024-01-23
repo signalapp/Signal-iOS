@@ -266,29 +266,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             ),
             icon: .buttonShare,
             block: { [weak self] actionButton in
-                guard
-                    let self,
-                    let (usernameLink, _) = self.usernameLinkState.linkParams
-                else { return }
-
-                // Generate a color-over-white QR code and share.
-                guard
-                    let qrCodeToShare = UsernameLinkQRCodeGenerator(
-                        foregroundColor: self.qrCodeColor.foreground,
-                        backgroundColor: .ows_white
-                    ).generateQRCode(url: usernameLink.url)
-                else {
-                    return
-                }
-
-                ShareActivityUtil.present(
-                    activityItems: [qrCodeToShare],
-                    from: self,
-                    sourceView: actionButton,
-                    completion: { [weak self] in
-                        self?.setMaxBrightness()
-                    }
-                )
+                self?.shareQRCode(sourceView: actionButton)
             }
         )
 
@@ -328,6 +306,90 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         usernameLinkButton.autoPinWidth(toWidthOf: colorQRCodeButton)
 
         return stackView
+    }
+
+    /// Generate a color-over-white QR code and share.
+    private func shareQRCode(sourceView: UIView) {
+        let qrCodeBackgroundColor = UIColor.ows_white
+
+        guard
+            let (usernameLink, _) = self.usernameLinkState.linkParams,
+            let qrCode = UsernameLinkQRCodeGenerator(
+                foregroundColor: self.qrCodeColor.foreground,
+                backgroundColor: qrCodeBackgroundColor
+            ).generateQRCode(url: usernameLink.url),
+            let screen = view.window?.windowScene?.screen
+        else {
+            return
+        }
+
+        let canvas = UIView()
+        canvas.frame.size = screen.bounds.size
+        canvas.backgroundColor = self.qrCodeColor.canvas
+        canvas.layoutMargins = .init(top: 0, left: 48, bottom: 10, right: 48)
+
+        let stackView = UIStackView()
+        canvas.addSubview(stackView)
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 56
+        stackView.autoPinWidthToSuperviewMargins()
+        stackView.autoVCenterInSuperview()
+
+        let card = UIStackView()
+        stackView.addArrangedSubview(card)
+        card.axis = .vertical
+        card.spacing = 16
+        card.alignment = .center
+        card.backgroundColor = self.qrCodeColor.background
+        card.layer.cornerRadius = 32
+        card.layoutMargins = .init(top: 32, left: 40, bottom: 34, right: 40)
+        card.isLayoutMarginsRelativeArrangement = true
+
+        let qrCodeBackground = UIView()
+        card.addArrangedSubview(qrCodeBackground)
+        qrCodeBackground.backgroundColor = qrCodeBackgroundColor
+        qrCodeBackground.layoutMargins = .init(margin: 16)
+        qrCodeBackground.layer.cornerRadius = 12
+        qrCodeBackground.layer.borderWidth = 2
+        qrCodeBackground.layer.borderColor = self.qrCodeColor.paddingBorder.cgColor
+
+        let qrCodeView = UIImageView(image: qrCode)
+        qrCodeBackground.addSubview(qrCodeView)
+        qrCodeView.autoPinEdgesToSuperviewMargins()
+        qrCodeView.autoPinToSquareAspectRatio()
+
+        let usernameLabel = UILabel()
+        card.addArrangedSubview(usernameLabel)
+        usernameLabel.font = .semiboldFont(ofSize: 20)
+        usernameLabel.textColor = self.qrCodeColor.username
+        usernameLabel.numberOfLines = 0
+        usernameLabel.textAlignment = .center
+        usernameLabel.text = self.username
+
+        let instructionsLabel = UILabel()
+        stackView.addArrangedSubview(instructionsLabel)
+        instructionsLabel.font = .systemFont(ofSize: 14)
+        instructionsLabel.textColor = Theme.lightThemeSecondaryTextAndIconColor
+        instructionsLabel.numberOfLines = 0
+        instructionsLabel.textAlignment = .center
+        instructionsLabel.text = OWSLocalizedString(
+            "USERNAME_QR_CODE_EXPORT_INSTRUCTIONS",
+            comment: "Instructions that appear below the username QR code on a sharable exported image."
+        )
+
+        canvas.setNeedsLayout()
+        canvas.layoutIfNeeded()
+        let output = canvas.renderAsImage()
+
+        ShareActivityUtil.present(
+            activityItems: [output],
+            from: self,
+            sourceView: sourceView,
+            completion: { [weak self] in
+                self?.setMaxBrightness()
+            }
+        )
     }
 
     // MARK: Disclaimer text
