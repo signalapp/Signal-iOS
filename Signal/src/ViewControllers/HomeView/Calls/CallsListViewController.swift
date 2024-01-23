@@ -17,7 +17,7 @@ private protocol CallCellDelegate: AnyObject {
 
 // MARK: - CallsListViewController
 
-class CallsListViewController: OWSViewController, HomeTabViewController {
+class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceObserver {
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.ID>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.ID>
 
@@ -108,49 +108,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         noSearchResultsView.autoPinEdge(toSuperviewMargin: .top, withInset: 80)
 
         applyTheme()
-        attachNotificationObservers()
-
-        // [CallsTab] TODO: make ourselves a CallServiceObserver, so we know when calls change
+        attachSelfAsObservers()
 
         loadCallRecordsAnew(animated: false)
-    }
-
-    private func attachNotificationObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(callRecordWasInserted),
-            name: .callRecordWasInserted,
-            object: nil
-        )
-    }
-
-    /// When a call record is inserted, we'll try loading newer records.
-    ///
-    /// The 99% case for a call record being inserted is that a new call was
-    /// started – which is to say, the inserted call record is the most recent
-    /// call. For this case, by loading newer calls we'll load that new call and
-    /// present it at the top.
-    ///
-    /// It is possible that we'll have a call inserted into the middle of our
-    /// existing calls, for example if we receive a delayed sync message about a
-    /// call from a while ago that we somehow never learned about on this
-    /// device. If that happens, we won't load and live-update with that call –
-    /// instead, we'll see it the next time this view is reloaded.
-    @objc
-    private func callRecordWasInserted() {
-        /// Only attempt to load newer calls if the top row is visible. If not,
-        /// we'll load newer calls when the user scrolls up anyway.
-        let shouldLoadNewerCalls: Bool = {
-            guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
-                return true
-            }
-
-            return visibleIndexPaths.contains(.indexPathForPrimarySection(row: 0))
-        }()
-
-        if shouldLoadNewerCalls {
-            loadMoreCalls(direction: .newer, animated: true)
-        }
     }
 
     override func themeDidChange() {
@@ -371,6 +331,103 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         FilterMode(rawValue: tabPicker.selectedSegmentIndex) ?? .all
     }
 
+    // MARK: - Observers and Notifications
+
+    private func attachSelfAsObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(groupCallInteractionWasUpdated),
+            name: GroupCallInteractionUpdatedNotification.name,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(callRecordWasInserted),
+            name: .callRecordWasInserted,
+            object: nil
+        )
+
+        // No need to sync state since we're still setting up the view.
+        deps.callService.addObserver(
+            observer: self,
+            syncStateImmediately: false
+        )
+    }
+
+    /// When a group call interaction changes, we'll reload the row for the call
+    /// it represents (if that row is loaded) so as to reflect the latest state
+    /// for that group call.
+    ///
+    /// Recall that we track "is a group call ongoing" as a property on the
+    /// interaction representing that group call, so we need this so we reload
+    /// when the call ends.
+    ///
+    /// Note also that the ``didUpdateCall(from:to:)`` hook below is hit during
+    /// the group-call-join process but before we have actually joined the call,
+    /// due to the asynchronous nature of group calls. Consequently, we also
+    /// need this hook to reload when we ourselves have joined the call, as us
+    /// joining updates the "joined members" property also tracked on the group
+    /// call interaction.
+    @objc
+    private func groupCallInteractionWasUpdated(_ notification: NSNotification) {
+        guard let notification = GroupCallInteractionUpdatedNotification(notification) else {
+            owsFail("Unexpectedly failed to instantiate group call interaction updated notification!")
+        }
+
+        let viewModelIdForGroupCall = CallViewModel.ID(
+            callId: notification.callId,
+            threadRowId: notification.groupThreadRowId
+        )
+
+        reloadRows(forIdentifiers: [viewModelIdForGroupCall])
+    }
+
+    /// When a call record is inserted, we'll try loading newer records.
+    ///
+    /// The 99% case for a call record being inserted is that a new call was
+    /// started – which is to say, the inserted call record is the most recent
+    /// call. For this case, by loading newer calls we'll load that new call and
+    /// present it at the top.
+    ///
+    /// It is possible that we'll have a call inserted into the middle of our
+    /// existing calls, for example if we receive a delayed sync message about a
+    /// call from a while ago that we somehow never learned about on this
+    /// device. If that happens, we won't load and live-update with that call –
+    /// instead, we'll see it the next time this view is reloaded.
+    @objc
+    private func callRecordWasInserted(_: NSNotification) {
+        /// Only attempt to load newer calls if the top row is visible. If not,
+        /// we'll load newer calls when the user scrolls up anyway.
+        let shouldLoadNewerCalls: Bool = {
+            guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
+                return true
+            }
+
+            return visibleIndexPaths.contains(.indexPathForPrimarySection(row: 0))
+        }()
+
+        if shouldLoadNewerCalls {
+            loadMoreCalls(direction: .newer, animated: true)
+        }
+    }
+
+    // MARK: CallServiceObserver
+
+    /// When we learn that this device has joined or left a call, we'll reload
+    /// any rows related to that call so that we show the latest state in this
+    /// view.
+    ///
+    /// Recall that any 1:1 call we are not actively joined to has ended, and
+    /// that that is not the case for group calls.
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        let callViewModelIdsToReload = [oldValue, newValue].compactMap { call -> CallViewModel.ID? in
+            return call?.callViewModelId
+        }
+
+        reloadRows(forIdentifiers: callViewModelIdsToReload)
+    }
+
     // MARK: - Call Record Loading
 
     /// Loads call records that we convert to ``CallViewModel``s. Configured on
@@ -391,7 +448,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }()
 
         // Throw away all our existing calls.
-        calls = []
+        calls = Calls(models: [])
 
         // Rebuild the loader.
         callRecordLoader = CallRecordLoader(
@@ -421,9 +478,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
             let loaderLoadDirection: CallRecordLoader.LoadDirection = {
                 switch loadDirection {
                 case .older:
-                    return .older(oldestCallTimestamp: calls.last?.callBeganTimestamp)
+                    return .older(oldestCallTimestamp: calls.viewModels.last?.callBeganTimestamp)
                 case .newer:
-                    guard let newestCall = calls.first else {
+                    guard let newestCall = calls.viewModels.first else {
                         // A little weird, but if we have no calls these are
                         // equivalent anyway.
                         return .older(oldestCallTimestamp: nil)
@@ -439,28 +496,34 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
                 tx: tx.asV2Read
             )
 
-            let newCalls: [CallViewModel] = newCallRecords.map { callRecord -> CallViewModel in
-                createCallViewModel(callRecord: callRecord, tx: tx)
+            let newCallModels: [Calls.Models] = newCallRecords.map { callRecord in
+                return (
+                    createCallViewModel(callRecord: callRecord, tx: tx),
+                    callRecord
+                )
             }
 
-            let combinedCalls: [CallViewModel] = {
+            let combinedCallModels: [Calls.Models] = {
                 switch loadDirection {
-                case .older: return calls + newCalls
-                case .newer: return newCalls + calls
+                case .older: return calls.models + newCallModels
+                case .newer: return newCallModels + calls.models
                 }
             }()
 
-            guard combinedCalls.count > Constants.maxCallsToHoldAtOnce else {
-                calls = combinedCalls
-                return
-            }
+            if combinedCallModels.count <= Constants.maxCallsToHoldAtOnce {
+                calls = Calls(models: combinedCallModels)
+            } else {
+                let clampedModels: [Calls.Models] = {
+                    let overage = combinedCallModels.count - Constants.maxCallsToHoldAtOnce
+                    switch loadDirection {
+                    case .older:
+                        return Array(combinedCallModels.dropFirst(overage))
+                    case .newer:
+                        return Array(combinedCallModels.dropLast(overage))
+                    }
+                }()
 
-            let overage = combinedCalls.count - Constants.maxCallsToHoldAtOnce
-            switch loadDirection {
-            case .older:
-                calls = Array(combinedCalls.dropFirst(overage))
-            case .newer:
-                calls = Array(combinedCalls.dropLast(overage))
+                calls = Calls(models: clampedModels)
             }
         }
 
@@ -500,16 +563,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }()
 
         let callState: CallViewModel.State = {
-            let currentCallId: UInt64? = {
-                guard let currentCall = deps.callService.currentCall else { return nil }
-
-                switch currentCall.mode {
-                case .individual(let individualCall):
-                    return individualCall.callId
-                case .group(let groupCall):
-                    return groupCall.peekInfo?.eraId.map { callIdFromEra($0) }
-                }
-            }()
+            let currentCallId: UInt64? = deps.callService.currentCall?.callId
 
             switch callRecord.callStatus {
             case .individual:
@@ -705,18 +759,70 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         set { _searchTerm = newValue?.nilIfEmpty }
     }
 
-    /// Ordered list of all call view models that might be displayed.
-    private var calls: [CallViewModel] = [] {
-        didSet {
-            callViewModelsByID = Dictionary(
-                calls.map { callViewModel in (callViewModel.id, callViewModel) },
-                uniquingKeysWith: { _, new in new }
-            )
+    private struct Calls {
+        typealias Models = (CallViewModel, CallRecord)
+
+        private(set) var viewModels: [CallViewModel]
+        private let callRecords: [CallRecord]
+        private let modelIndicesByViewModelIds: [CallViewModel.ID: Int]
+
+        var models: [Models] {
+            owsAssert(viewModels.count == callRecords.count)
+            return viewModels.enumerated().map { idx, viewModel -> (CallViewModel, CallRecord) in
+                return (viewModel, callRecords[idx])
+            }
+        }
+
+        init(models: [Models]) {
+            var viewModels = [CallViewModel]()
+            var callRecords = [CallRecord]()
+            var modelIndicesByViewModelIds = [CallViewModel.ID: Int]()
+
+            for (idx, (viewModel, callRecord)) in models.enumerated() {
+                viewModels.append(viewModel)
+                callRecords.append(callRecord)
+                modelIndicesByViewModelIds[viewModel.id] = idx
+            }
+
+            self.viewModels = viewModels
+            self.callRecords = callRecords
+            self.modelIndicesByViewModelIds = modelIndicesByViewModelIds
+        }
+
+        subscript(id id: CallViewModel.ID) -> CallViewModel? {
+            guard let index = modelIndicesByViewModelIds[id] else { return nil }
+            return viewModels[index]
+        }
+
+        /// Recreates the view model for the given ID, by calling the given
+        /// block with the ``CallRecord`` backing that view model's ID. If a
+        /// given ID is not currently loaded, it is ignored.
+        ///
+        /// - Returns
+        /// The IDs for the view models that were recreated. Note that this will
+        /// not include any IDs that were ignored.
+        mutating func recreateViewModels(
+            ids: [CallViewModel.ID],
+            createViewModelBlock: (CallRecord) -> CallViewModel
+        ) -> [CallViewModel.ID] {
+            let indicesToReload: [(Int, CallViewModel.ID)] = ids.compactMap { viewModelId in
+                guard let index = modelIndicesByViewModelIds[viewModelId] else {
+                    return nil
+                }
+
+                return (index, viewModelId)
+            }
+
+            for (indexToReload, _) in indicesToReload {
+                let newViewModel = createViewModelBlock(callRecords[indexToReload])
+                viewModels[indexToReload] = newViewModel
+            }
+
+            return indicesToReload.map { $0.1 }
         }
     }
 
-    /// The view model for a given call ID.
-    private var callViewModelsByID = [CallViewModel.ID: CallViewModel]()
+    private var calls: Calls!
 
     private static var callCellReuseIdentifier = "callCell"
 
@@ -728,7 +834,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
         }
 
         callCell.delegate = self
-        callCell.viewModel = self?.callViewModelsByID[modelID]
+        callCell.viewModel = self?.calls[id: modelID]
 
         return callCell
     }
@@ -736,13 +842,34 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
         snapshot.appendSections([.primary])
-        snapshot.appendItems(calls.map(\.id))
+        snapshot.appendItems(calls.viewModels.map(\.id))
         return snapshot
     }
 
     private func updateSnapshot(animated: Bool) {
         dataSource.apply(getSnapshot(), animatingDifferences: animated)
         updateEmptyStateMessage()
+    }
+
+    /// Reload the rows for the given view model IDs that are currently loaded.
+    private func reloadRows(forIdentifiers identifiersToReload: [CallViewModel.ID]) {
+        // Recreate the view models, so when the data source reloads the rows
+        // it'll reflect the new underlying state for that row.
+        //
+        // This step will also drop any IDs for models that are not currently
+        // loaded, which should not be included in the snapshot.
+        let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
+            return calls.recreateViewModels(
+                ids: identifiersToReload,
+                createViewModelBlock: { callRecord -> CallViewModel in
+                    createCallViewModel(callRecord: callRecord, tx: tx)
+                }
+            )
+        }
+
+        var snapshot = getSnapshot()
+        snapshot.reloadItems(identifiersToReload)
+        dataSource.apply(snapshot)
     }
 
     private func reloadAllRows() {
@@ -752,7 +879,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController {
     }
 
     private func updateEmptyStateMessage() {
-        switch (calls.count, searchTerm) {
+        switch (calls.viewModels.count, searchTerm) {
         case (0, .some(let searchTerm)) where !searchTerm.isEmpty:
             noSearchResultsView.text = "No results found for '\(searchTerm)'" // [CallsTab] TODO: Localize
             noSearchResultsView.layer.opacity = 1
@@ -795,12 +922,41 @@ private extension IndexPath {
     }
 }
 
+private extension SignalCall {
+    var callId: UInt64? {
+        switch mode {
+        case .individual(let individualCall):
+            return individualCall.callId
+        case .group(let groupCall):
+            return groupCall.peekInfo?.eraId.map { callIdFromEra($0) }
+        }
+    }
+
+    var callViewModelId: CallsListViewController.CallViewModel.ID? {
+        guard let callId else { return nil }
+        return .init(callId: callId, threadRowId: threadRowId)
+    }
+
+    private var threadRowId: Int64 {
+        guard let threadRowId = thread.sqliteRowId else {
+            owsFail("How did we get a call whose thread does not exist in the DB?")
+        }
+
+        return threadRowId
+    }
+}
+
 // MARK: UITableViewDelegate
 
 extension CallsListViewController: UITableViewDelegate {
 
     private func viewModel(forRowAt indexPath: IndexPath) -> CallViewModel? {
-        return calls[safe: indexPath.row]
+        owsAssert(
+            indexPath.section == Section.primary.rawValue,
+            "Unexpected section for index path: \(indexPath.section)"
+        )
+
+        return calls.viewModels[safe: indexPath.row]
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -813,7 +969,7 @@ extension CallsListViewController: UITableViewDelegate {
             }
         }
 
-        if indexPath.row == calls.count - 1 {
+        if indexPath.row == calls.viewModels.count - 1 {
             // Try and load the next page if we're about to hit the bottom.
             DispatchQueue.main.async {
                 self.loadMoreCalls(direction: .older, animated: false)

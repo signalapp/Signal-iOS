@@ -68,10 +68,17 @@ public extension InteractionStore {
 
     /// Update the joined members and creator of a group call on the associated
     /// group-call interaction.
+    ///
+    /// - Parameter notificationScheduler
+    /// A scheduler on which to post a ``GroupCallInteractionUpdatedNotification``
+    /// about the update.
     func updateGroupCallInteractionAcis(
         groupCallInteraction: OWSGroupCallMessage,
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
+        callId: UInt64,
+        groupThreadRowId: Int64,
+        notificationScheduler: Scheduler,
         tx: DBWriteTransaction
     ) {
         updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
@@ -79,5 +86,56 @@ public extension InteractionStore {
             groupCallInteraction.creatorUuid = creatorAci.serviceIdUppercaseString
             groupCallInteraction.joinedMemberUuids = joinedMemberAcis.map { $0.serviceIdUppercaseString }
         }
+
+        tx.addAsyncCompletion(on: notificationScheduler) {
+            NotificationCenter.default.post(GroupCallInteractionUpdatedNotification(
+                callId: callId,
+                groupThreadRowId: groupThreadRowId
+            ).asNotification)
+        }
+    }
+}
+
+// MARK: - Group call interaction updated notification
+
+public struct GroupCallInteractionUpdatedNotification {
+    private enum UserInfoKeys {
+        static let callId: String = "callId"
+        static let groupThreadRowId: String = "groupThreadRowId"
+    }
+
+    public static let name: NSNotification.Name = .init("GroupCallInteractionUpdatedNotification")
+
+    public let callId: UInt64
+    public let groupThreadRowId: Int64
+
+    init(
+        callId: UInt64,
+        groupThreadRowId: Int64
+    ) {
+        self.callId = callId
+        self.groupThreadRowId = groupThreadRowId
+    }
+
+    public init?(_ notification: NSNotification) {
+        guard
+            notification.name == Self.name,
+            let callId = notification.userInfo?[UserInfoKeys.callId] as? UInt64,
+            let groupThreadRowId = notification.userInfo?[UserInfoKeys.groupThreadRowId] as? Int64
+        else {
+            return nil
+        }
+
+        self.init(callId: callId, groupThreadRowId: groupThreadRowId)
+    }
+
+    var asNotification: Notification {
+        Notification(
+            name: Self.name,
+            userInfo: [
+                UserInfoKeys.callId: callId,
+                UserInfoKeys.groupThreadRowId: groupThreadRowId
+            ]
+        )
     }
 }

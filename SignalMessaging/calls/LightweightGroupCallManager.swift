@@ -37,6 +37,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
     private var callRecordStore: CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var groupCallRecordManager: GroupCallRecordManager { DependenciesBridge.shared.groupCallRecordManager }
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
+    private var schedulers: Schedulers { DependenciesBridge.shared.schedulers }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     private var logger: PrefixedLogger { CallRecordLogger.shared }
@@ -188,6 +189,9 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 groupCallInteraction: interactionToUpdate,
                 joinedMemberAcis: joinedMemberAcis,
                 creatorAci: creatorAci,
+                callId: currentCallId,
+                groupThreadRowId: groupThreadRowId,
+                notificationScheduler: self.schedulers.main,
                 tx: tx.asV2Write
             )
 
