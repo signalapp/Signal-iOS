@@ -7,23 +7,22 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
-public extension NSNotification.Name {
-    static let callRecordWasInserted: NSNotification.Name = .init("CallRecordStore.callRecordWasInserted")
-}
-
 /// Performs SQL operations related to a single ``CallRecord``.
 ///
 /// For queries over the ``CallRecord`` table, please see ``CallRecordQuerier``.
 public protocol CallRecordStore {
     /// Insert the given call record.
     /// - Important
-    /// Posts an ``NSNotification`` with name ``callRecordWasInserted`` when a
-    /// record is inserted.
+    /// Posts a ``CallRecordStoreNotification`` with the "inserted" update
+    /// type when a record is inserted.
     /// - Returns
     /// True if the record was successfully inserted. False otherwise.
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool
 
     /// Update the status of the given call record.
+    /// - Important
+    /// Posts a ``CallRecordStoreNotification`` with the "status updated"
+    /// update type when a record's status is updated.
     /// - Returns
     /// True if the record was successfully updated. False otherwise.
     func updateRecordStatus(
@@ -100,11 +99,11 @@ class CallRecordStoreImpl: CallRecordStore {
         )
 
         if insertedSuccessfully {
-            tx.addAsyncCompletion(on: schedulers.main) {
-                NotificationCenter.default.post(
-                    name: .callRecordWasInserted, object: nil
-                )
-            }
+            postNotification(
+                callRecord: callRecord,
+                updateType: .inserted,
+                tx: tx
+            )
         }
 
         return insertedSuccessfully
@@ -115,11 +114,21 @@ class CallRecordStoreImpl: CallRecordStore {
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
     ) -> Bool {
-        updateRecordStatus(
+        let updatedSuccessfully = updateRecordStatus(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
             db: SDSDB.shimOnlyBridge(tx).database
         )
+
+        if updatedSuccessfully {
+            postNotification(
+                callRecord: callRecord,
+                updateType: .statusUpdated,
+                tx: tx
+            )
+        }
+
+        return updatedSuccessfully
     }
 
     func updateDirection(
@@ -185,6 +194,24 @@ class CallRecordStoreImpl: CallRecordStore {
             interactionRowId: interactionRowId,
             db: SDSDB.shimOnlyBridge(tx).database
         )
+    }
+
+    // MARK: - Notification posting
+
+    private func postNotification(
+        callRecord: CallRecord,
+        updateType: CallRecordStoreNotification.UpdateType,
+        tx: DBWriteTransaction
+    ) {
+        tx.addAsyncCompletion(on: schedulers.main) {
+            NotificationCenter.default.post(
+                CallRecordStoreNotification(
+                    callId: callRecord.callId,
+                    threadRowId: callRecord.threadRowId,
+                    updateType: updateType
+                ).asNotification
+            )
+        }
     }
 
     // MARK: - Mutations (impl)

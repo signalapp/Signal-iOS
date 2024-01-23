@@ -1429,6 +1429,7 @@
 		D91A39E32AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */; };
 		D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */; };
 		D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */; };
+		D91AC9302B5F31BB00814975 /* CallRecordStoreNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC92F2B5F31BB00814975 /* CallRecordStoreNotification.swift */; };
 		D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */; };
 		D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */; };
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
@@ -4163,6 +4164,7 @@
 		D9170EEE2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJobRecord.swift; sourceTree = "<group>"; };
 		D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSYapDatabaseObject+SQLiteRowId.swift"; sourceTree = "<group>"; };
 		D91A39E82AE2F4C000F57A61 /* DonationPaymentProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentProcessor.swift; sourceTree = "<group>"; };
+		D91AC92F2B5F31BB00814975 /* CallRecordStoreNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStoreNotification.swift; sourceTree = "<group>"; };
 		D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegateTest.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
@@ -8528,6 +8530,7 @@
 				D979CC222AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift */,
 				D93108032B30F7E3006A034E /* CallRecordQuerier.swift */,
 				D95A79A72AB125D80013DB00 /* CallRecordStore.swift */,
+				D91AC92F2B5F31BB00814975 /* CallRecordStoreNotification.swift */,
 				D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */,
 				D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */,
 				D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */,
@@ -12800,6 +12803,7 @@
 				D979CC292AD3933B006AAC49 /* CallRecordOutgoingSyncMessageManager.swift in Sources */,
 				D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */,
 				D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */,
+				D91AC9302B5F31BB00814975 /* CallRecordStoreNotification.swift in Sources */,
 				17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */,
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
 				76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */,

@@ -26,6 +26,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private struct Dependencies {
         let callService: CallService
         let callRecordQuerier: CallRecordQuerier
+        let callRecordStore: CallRecordStore
         let contactsManager: ContactsManagerProtocol
         let db: SDSDatabaseStorage
         let fullTextSearchFinder: CallRecordLoader.Shims.FullTextSearchFinder
@@ -36,6 +37,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private lazy var deps: Dependencies = Dependencies(
         callService: NSObject.callService,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
+        callRecordStore: DependenciesBridge.shared.callRecordStore,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
         fullTextSearchFinder: CallRecordLoader.Wrappers.FullTextSearchFinder(),
@@ -343,8 +345,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(callRecordWasInserted),
-            name: .callRecordWasInserted,
+            selector: #selector(receivedCallRecordStoreNotification),
+            name: CallRecordStoreNotification.name,
             object: nil
         )
 
@@ -383,6 +385,23 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reloadRows(forIdentifiers: [viewModelIdForGroupCall])
     }
 
+    @objc
+    private func receivedCallRecordStoreNotification(_ notification: NSNotification) {
+        guard let callRecordStoreNotification = CallRecordStoreNotification(notification) else {
+            owsFail("Unexpected notification! \(type(of: notification))")
+        }
+
+        switch callRecordStoreNotification.updateType {
+        case .inserted:
+            newCallRecordWasInserted()
+        case .statusUpdated:
+            callRecordStatusWasUpdated(
+                callId: callRecordStoreNotification.callId,
+                threadRowId: callRecordStoreNotification.threadRowId
+            )
+        }
+    }
+
     /// When a call record is inserted, we'll try loading newer records.
     ///
     /// The 99% case for a call record being inserted is that a new call was
@@ -395,8 +414,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// call from a while ago that we somehow never learned about on this
     /// device. If that happens, we won't load and live-update with that call –
     /// instead, we'll see it the next time this view is reloaded.
-    @objc
-    private func callRecordWasInserted(_: NSNotification) {
+    private func newCallRecordWasInserted() {
         /// Only attempt to load newer calls if the top row is visible. If not,
         /// we'll load newer calls when the user scrolls up anyway.
         let shouldLoadNewerCalls: Bool = {
@@ -410,6 +428,26 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         if shouldLoadNewerCalls {
             loadMoreCalls(direction: .newer, animated: true)
         }
+    }
+
+    /// When the status of a call record changes, we'll reload the row it
+    /// represents (if that row is loaded) so as to reflect the latest state for
+    /// that record.
+    ///
+    /// For example, imagine a ringing call that is declined on this device and
+    /// accepted on another device. The other device will tell us it accepted
+    /// via a sync message, and we should update this view to reflect the
+    /// accepted call.
+    private func callRecordStatusWasUpdated(
+        callId: UInt64,
+        threadRowId: Int64
+    ) {
+        let viewModelIdForUpdatedRecord = CallViewModel.ID(
+            callId: callId,
+            threadRowId: threadRowId
+        )
+
+        reloadRows(forIdentifiers: [viewModelIdForUpdatedRecord])
     }
 
     // MARK: CallServiceObserver
@@ -763,7 +801,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         typealias Models = (CallViewModel, CallRecord)
 
         private(set) var viewModels: [CallViewModel]
-        private let callRecords: [CallRecord]
+        private var callRecords: [CallRecord]
         private let modelIndicesByViewModelIds: [CallViewModel.ID: Int]
 
         var models: [Models] {
@@ -803,7 +841,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         /// not include any IDs that were ignored.
         mutating func recreateViewModels(
             ids: [CallViewModel.ID],
-            createViewModelBlock: (CallRecord) -> CallViewModel
+            recreateModelsBlock: (CallViewModel.ID) -> Models
         ) -> [CallViewModel.ID] {
             let indicesToReload: [(Int, CallViewModel.ID)] = ids.compactMap { viewModelId in
                 guard let index = modelIndicesByViewModelIds[viewModelId] else {
@@ -813,9 +851,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 return (index, viewModelId)
             }
 
-            for (indexToReload, _) in indicesToReload {
-                let newViewModel = createViewModelBlock(callRecords[indexToReload])
-                viewModels[indexToReload] = newViewModel
+            for (index, viewModelId) in indicesToReload {
+                let (newViewModel, newCallRecord) = recreateModelsBlock(viewModelId)
+
+                viewModels[index] = newViewModel
+                callRecords[index] = newCallRecord
             }
 
             return indicesToReload.map { $0.1 }
@@ -859,12 +899,20 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         // This step will also drop any IDs for models that are not currently
         // loaded, which should not be included in the snapshot.
         let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
-            return calls.recreateViewModels(
-                ids: identifiersToReload,
-                createViewModelBlock: { callRecord -> CallViewModel in
-                    createCallViewModel(callRecord: callRecord, tx: tx)
+            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> Calls.Models in
+                guard let freshCallRecord = deps.callRecordStore.fetch(
+                    callId: viewModelId.callId,
+                    threadRowId: viewModelId.threadRowId,
+                    tx: tx.asV2Read
+                ) else {
+                    owsFail("Unexpectedly missing call record while reloading!")
                 }
-            )
+
+                return (
+                    createCallViewModel(callRecord: freshCallRecord, tx: tx),
+                    freshCallRecord
+                )
+            }
         }
 
         var snapshot = getSnapshot()
