@@ -415,6 +415,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
+            UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
             return Promise(error: error)
         }
 
@@ -537,6 +538,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: nil
             )
         } catch let error {
+            UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
             return Promise(error: error)
         }
 
@@ -611,6 +613,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                 existingEntropy: currentUsernameLink.entropy
             )
         } catch let error {
+            UsernameLogger.shared.error("Failed to generate encrypted username! \(error)")
             return Promise(error: error)
         }
 
