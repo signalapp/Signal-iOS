@@ -429,6 +429,9 @@ private struct PendingMutations {
 
 class StorageServiceOperation: OWSOperation {
 
+    private static let migrationStore: SDSKeyValueStore = SDSKeyValueStore(collection: "StorageServiceMigration")
+    private static let versionKey = "Version"
+
     public static var keyValueStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
     }
@@ -1311,15 +1314,24 @@ class StorageServiceOperation: OWSOperation {
     // MARK: - Clean Up
 
     private func cleanUpUnknownData() {
-        var state = databaseStorage.read { tx in
+        var (state, migrationVersion) = databaseStorage.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)
-            return state
+            return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx))
         }
 
         self.cleanUpUnknownIdentifiers(in: &state)
         self.cleanUpRecordsWithUnknownFields(in: &state)
         self.cleanUpOrphanedAccounts(in: &state)
+
+        switch migrationVersion {
+        case 0:
+            self.recordPendingMutationsForContactsWithPNIs(in: &state)
+            databaseStorage.write { tx in Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx) }
+            fallthrough
+        default:
+            break
+        }
 
         return self.reportSuccess()
     }
@@ -1477,27 +1489,34 @@ class StorageServiceOperation: OWSOperation {
         // was a period of time we didn't, and we need to cleanup after ourselves.
 
         let currentDate = Date()
+        recordPendingAccountMutations(in: &state, shouldUpdate: {
+            return $0?.shouldBeInStorageService(currentDate: currentDate) != true
+        })
+    }
 
-        func shouldRecipientBeInStorageService(accountId: AccountId, tx: SDSAnyReadTransaction) -> Bool {
-            guard let storageServiceContact = StorageServiceContact.fetch(for: accountId, tx: tx) else {
-                return false
-            }
-            return storageServiceContact.shouldBeInStorageService(currentDate: currentDate)
+    private func recordPendingMutationsForContactsWithPNIs(in state: inout State) {
+        // We stored invalid PNIs, so run a one-off migration to fix them.
+        recordPendingAccountMutations(in: &state, shouldUpdate: { $0?.pni != nil })
+    }
+
+    private func recordPendingAccountMutations(
+        in state: inout State,
+        caller: String = #function,
+        shouldUpdate: (StorageServiceContact?) -> Bool
+    ) {
+        let accountIds = databaseStorage.read { tx in
+            state.accountIdToIdentifierMap.keys.filter { shouldUpdate(StorageServiceContact.fetch(for: $0, tx: tx)) }
         }
 
-        let orphanedAccountIds = databaseStorage.read { tx in
-            state.accountIdToIdentifierMap.keys.filter { !shouldRecipientBeInStorageService(accountId: $0, tx: tx) }
-        }
-
-        if orphanedAccountIds.isEmpty {
+        if accountIds.isEmpty {
             return
         }
 
-        Logger.info("Marking \(orphanedAccountIds.count) orphaned account(s) for deletion.")
+        Logger.info("Marking \(accountIds.count) contact records as mutated via \(caller)")
 
         databaseStorage.write { tx in
             var pendingMutations = PendingMutations()
-            pendingMutations.updatedAccountIds.formUnion(orphanedAccountIds)
+            pendingMutations.updatedAccountIds.formUnion(accountIds)
             Self.recordPendingMutations(pendingMutations, in: &state, transaction: tx)
             state.save(transaction: tx)
         }

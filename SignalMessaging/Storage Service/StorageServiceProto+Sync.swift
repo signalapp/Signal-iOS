@@ -130,9 +130,9 @@ struct StorageServiceContact {
             unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
         }
         self.init(
-            aci: contactRecord.aci.flatMap { try? Aci.parseFrom(serviceIdString: $0) },
+            aci: contactRecord.aci.flatMap { Aci.parseFrom(aciString: $0) },
             phoneNumber: E164.expectNilOrValid(stringValue: contactRecord.e164),
-            pni: contactRecord.pni.flatMap { try? Pni.parseFrom(serviceIdString: $0) },
+            pni: contactRecord.pni.flatMap { Pni.parseFrom(pniString: $0) },
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
@@ -255,7 +255,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             usernameBetterIdentifierChecker.add(e164: phoneNumber.stringValue)
         }
         if let pni = contact.pni {
-            builder.setPni(pni.serviceIdString)
+            builder.setPni(pni.rawUUID.uuidString.lowercased())
         }
 
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
