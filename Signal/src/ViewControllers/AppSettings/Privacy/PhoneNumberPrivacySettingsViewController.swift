@@ -31,7 +31,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         databaseStorage.read { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx.asV2Read).orDefault
-            phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: tx).orDefault
+            phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
         }
     }
 

@@ -140,7 +140,7 @@ public protocol OWSUDManager {
 
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
 
-    func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode?
+    func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
 
     func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
@@ -517,8 +517,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private static var phoneNumberSharingModeKey: String { "phoneNumberSharingMode" }
 
-    public func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode? {
-        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: tx) else {
+    public func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
+        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: SDSDB.shimOnlyBridge(tx)) else {
             return nil
         }
         return PhoneNumberSharingMode(rawValue: rawMode)

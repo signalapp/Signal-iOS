@@ -12,19 +12,22 @@ final class LocalProfileChecker {
     private let profileManager: any ProfileManager
     private let storageServiceManager: any StorageServiceManager
     private let tsAccountManager: any TSAccountManager
+    private let udManager: any OWSUDManager
 
     init(
         db: any DB,
         messageProcessor: MessageProcessor,
         profileManager: any ProfileManager,
         storageServiceManager: any StorageServiceManager,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
+        udManager: any OWSUDManager
     ) {
         self.db = db
         self.messageProcessor = messageProcessor
         self.profileManager = profileManager
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
+        self.udManager = udManager
     }
 
     struct RemoteProfile {
@@ -109,6 +112,10 @@ final class LocalProfileChecker {
             }
             if localProfile.unfilteredFamilyName != mostRecentRemoteProfile.decryptedProfile.familyName {
                 mismatchedProperties.append("familyName")
+            }
+            let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx) == .everybody
+            if localPhoneNumberSharing != mostRecentRemoteProfile.decryptedProfile.phoneNumberSharing {
+                mismatchedProperties.append("phoneNumberSharing")
             }
 
             if mismatchedProperties.isEmpty {

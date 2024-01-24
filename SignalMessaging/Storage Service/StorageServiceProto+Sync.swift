@@ -1138,7 +1138,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
 
-        let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
+        let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
         builder.setNotDiscoverableByPhoneNumber(
@@ -1365,7 +1365,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             SSKPreferences.setAreLegacyLinkPreviewsEnabled(record.proxiedLinkPreviews, transaction: transaction)
         }
 
-        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
+        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
         if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
             if let localMode = record.phoneNumberSharingMode?.asLocalMode {
                 udManager.setPhoneNumberSharingMode(localMode, updateStorageServiceAndProfile: false, tx: transaction)

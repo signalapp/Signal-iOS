@@ -864,7 +864,7 @@ public class MessageSender: Dependencies {
             }
 
             let senderCertificate: SenderCertificate = {
-                switch self.udManager.phoneNumberSharingMode(tx: tx).orDefault {
+                switch self.udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:

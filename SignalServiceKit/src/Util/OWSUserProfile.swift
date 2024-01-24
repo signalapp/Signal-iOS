@@ -195,6 +195,18 @@ public extension OWSUserProfile {
     }
 
     @nonobjc
+    class func decrypt(profileBooleanData: Data, profileKey: OWSAES256Key) -> Bool? {
+        switch decrypt(profileData: profileBooleanData, profileKey: profileKey) {
+        case Data([1]):
+            return true
+        case Data([0]):
+            return false
+        default:
+            return nil
+        }
+    }
+
+    @nonobjc
     class func encrypt(
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,

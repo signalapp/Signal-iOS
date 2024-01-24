@@ -413,6 +413,7 @@ public class ProfileFetcherJob: NSObject {
         let bio = fetchedProfile.decryptedProfile?.bio
         let bioEmoji = fetchedProfile.decryptedProfile?.bioEmoji
         let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
+        let phoneNumberSharing = fetchedProfile.decryptedProfile?.phoneNumberSharing
 
         if DebugFlags.internalLogging {
             let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
@@ -423,6 +424,7 @@ public class ProfileFetcherJob: NSObject {
             let hasBio = bio != nil
             let hasBioEmoji = bioEmoji != nil
             let hasPaymentAddress = paymentAddress != nil
+            let hasPhoneNumberSharing = phoneNumberSharing != nil
             let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 
             Logger.info(
@@ -434,6 +436,7 @@ public class ProfileFetcherJob: NSObject {
                 "hasBio: \(hasBio), " +
                 "hasBioEmoji: \(hasBioEmoji), " +
                 "hasPaymentAddress: \(hasPaymentAddress), " +
+                "hasPhoneNumberSharing: \(hasPhoneNumberSharing), " +
                 "profileKey: \(profileKeyDescription), " +
                 "badges: \(badges)"
             )
@@ -581,6 +584,7 @@ public struct DecryptedProfile {
     public let bio: String?
     public let bioEmoji: String?
     public let paymentAddressData: Data?
+    public let phoneNumberSharing: Bool?
 }
 
 // MARK: -
@@ -614,12 +618,16 @@ public struct FetchedProfile {
         let paymentAddressData = profile.paymentAddressEncrypted.flatMap {
             OWSUserProfile.decrypt(profileData: $0, profileKey: profileKey)
         }
+        let phoneNumberSharing = profile.phoneNumberSharingEncrypted.flatMap {
+            OWSUserProfile.decrypt(profileBooleanData: $0, profileKey: profileKey)
+        }
         return DecryptedProfile(
             givenName: nameComponents?.givenName,
             familyName: nameComponents?.familyName,
             bio: bio,
             bioEmoji: bioEmoji,
-            paymentAddressData: paymentAddressData
+            paymentAddressData: paymentAddressData,
+            phoneNumberSharing: phoneNumberSharing
         )
     }
 }

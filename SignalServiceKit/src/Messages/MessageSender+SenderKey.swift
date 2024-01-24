@@ -294,7 +294,7 @@ extension MessageSender {
     }
 
     private static func senderCertificate(from senderCertificates: SenderCertificates, tx: SDSAnyReadTransaction) -> SenderCertificate {
-        switch udManager.phoneNumberSharingMode(tx: tx).orDefault {
+        switch udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
         case .everybody:
             return senderCertificates.defaultCert
         case .nobody:

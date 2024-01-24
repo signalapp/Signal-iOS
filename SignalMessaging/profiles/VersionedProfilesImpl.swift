@@ -194,7 +194,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
         let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
         let phoneNumberSharingValue = try encryptBoolean(databaseStorage.read { tx in
-            udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
+            udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault == .everybody
         })
 
         let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)

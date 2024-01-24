@@ -24,6 +24,7 @@ public class SignalServiceProfile {
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
     public let isPniCapable: Bool
+    public let phoneNumberSharingEncrypted: Data?
 
     public init(serviceId: ServiceId, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
@@ -52,6 +53,8 @@ public class SignalServiceProfile {
         self.credential = try params.optionalBase64EncodedData(key: "credential")
 
         self.isPniCapable = Self.parseCapabilityFlag(capabilityKey: "pni", params: params, requireCapability: true)
+
+        self.phoneNumberSharingEncrypted = try params.optionalBase64EncodedData(key: "phoneNumberSharing")
 
         if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             self.badges = badgeArray.compactMap {

@@ -681,7 +681,8 @@ public class DependenciesBridge {
             messageProcessor: messageProcessor,
             profileManager: profileManager,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: self.tsAccountManager
+            tsAccountManager: self.tsAccountManager,
+            udManager: udManager
         )
     }
 }
