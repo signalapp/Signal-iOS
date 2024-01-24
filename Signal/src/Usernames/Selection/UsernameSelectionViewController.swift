@@ -7,6 +7,12 @@ import BonMot
 import SignalMessaging
 import SignalUI
 
+protocol UsernameSelectionDelegate: AnyObject {
+    /// Called after the `UsernameSelectionViewController` dismisses after a
+    /// successful username confirmation.
+    func usernameSelectionDidDismissAfterConfirmation(username: String)
+}
+
 /// Provides UX allowing a user to select or delete a username for their
 /// account.
 ///
@@ -142,20 +148,26 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     /// A pre-existing username this controller was seeded with.
     private let existingUsername: ParsedUsername?
 
+    /// If the user is attempting to recover a corrupted username.
+    private var isAttemptingRecovery: Bool
+
     /// Injected dependencies.
     private let context: Context
 
     // MARK: Public members
 
     weak var usernameChangeDelegate: UsernameChangeDelegate?
+    weak var usernameSelectionDelegate: (any UsernameSelectionDelegate)?
 
     // MARK: Init
 
     init(
         existingUsername: ParsedUsername?,
+        isAttemptingRecovery: Bool,
         context: Context
     ) {
         self.existingUsername = existingUsername
+        self.isAttemptingRecovery = isAttemptingRecovery
         self.context = context
 
         super.init()
@@ -656,7 +668,7 @@ private extension UsernameSelectionViewController {
     }
 
     private func confirmNewUsername(reservedUsername: Usernames.HashedUsername) {
-        if existingUsername == nil {
+        if existingUsername == nil, !isAttemptingRecovery {
             self.confirmReservationBehindModalActivityIndicator(
                 reservedUsername: reservedUsername
             )
@@ -706,7 +718,9 @@ private extension UsernameSelectionViewController {
                     UsernameLogger.shared.info("Confirmed username!")
 
                     modal.dismiss {
-                        self.dismiss(animated: true)
+                        self.dismiss(animated: true) {
+                            self.usernameSelectionDelegate?.usernameSelectionDidDismissAfterConfirmation(username: reservedUsername.usernameString)
+                        }
                     }
                 case .rejected:
                     UsernameLogger.shared.error("Failed to confirm the username, server rejected.")

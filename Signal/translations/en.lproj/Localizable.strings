@@ -5267,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
-
-/* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+
+/* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
@@ -5628,6 +5628,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "The phone number you are trying to register has already been registered on another server, please unregister from there and try again.";
+
+/* Button below the warning to fix a corrupted username. */
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
@@ -7710,6 +7713,9 @@
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
 "USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+
+/* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Username cannot begin with a number.";

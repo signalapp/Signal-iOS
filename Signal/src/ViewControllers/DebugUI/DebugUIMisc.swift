@@ -27,6 +27,12 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         }
 
         items += [
+            OWSTableItem(title: "Corrupt username", actionBlock: {
+                SDSDatabaseStorage.shared.write { tx in
+                    DependenciesBridge.shared.localUsernameManager.setLocalUsernameCorrupted(tx: tx.asV2Write)
+                }
+            }),
+
             OWSTableItem(title: "Re-register", actionBlock: {
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",

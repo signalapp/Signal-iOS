@@ -300,7 +300,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 guard let self else { return }
-                self.presentUsernameSelection(currentUsername: nil)
+                self.presentUsernameSelection(
+                    currentUsername: nil,
+                    isAttemptingRecovery: false
+                )
             }
         )
     }
@@ -318,7 +321,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     ),
                     image: Theme.iconImage(.contextMenuEdit),
                     handler: { [weak self] _ in
-                        self?.presentUsernameSelection(currentUsername: username)
+                        self?.presentUsernameSelection(
+                            currentUsername: username,
+                            isAttemptingRecovery: false
+                        )
                     }
                 )
 
@@ -482,11 +488,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
-                "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE",
-                comment: "Title for an action sheet button allowing users to create a new username when their current one is corrupted."
+                "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE",
+                comment: "Title for an action sheet button allowing users to fix their username when their current one is corrupted."
             ),
             handler: { [weak self] _ in
-                self?.presentUsernameSelection(currentUsername: nil)
+                self?.presentUsernameSelection(
+                    currentUsername: nil,
+                    isAttemptingRecovery: true
+                )
             }
         ))
 
@@ -519,9 +528,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func presentUsernameSelection(currentUsername: String?) {
+    private func presentUsernameSelection(
+        currentUsername: String?,
+        isAttemptingRecovery: Bool
+    ) {
         let usernameSelectionCoordinator = UsernameSelectionCoordinator(
             currentUsername: currentUsername,
+            isAttemptingRecovery: isAttemptingRecovery,
             usernameChangeDelegate: self,
             context: .init(
                 databaseStorage: databaseStorage,

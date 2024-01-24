@@ -17,18 +17,24 @@ class UsernameSelectionCoordinator {
     }
 
     private let currentUsername: String?
+    private let isAttemptingRecovery: Bool
 
     private weak var usernameChangeDelegate: UsernameChangeDelegate?
+    private weak var usernameSelectionDelegate: (any UsernameSelectionDelegate)?
 
     private let context: Context
 
     init(
         currentUsername: String?,
+        isAttemptingRecovery: Bool = false,
         usernameChangeDelegate: UsernameChangeDelegate? = nil,
+        usernameSelectionDelegate: (any UsernameSelectionDelegate)? = nil,
         context: Context
     ) {
         self.currentUsername = currentUsername
+        self.isAttemptingRecovery = isAttemptingRecovery
         self.usernameChangeDelegate = usernameChangeDelegate
+        self.usernameSelectionDelegate = usernameSelectionDelegate
         self.context = context
     }
 
@@ -69,6 +75,7 @@ class UsernameSelectionCoordinator {
     private func presentUsernameSelection(fromViewController: UIViewController) {
         let vc = UsernameSelectionViewController(
             existingUsername: .init(rawUsername: currentUsername),
+            isAttemptingRecovery: isAttemptingRecovery,
             context: .init(
                 networkManager: context.networkManager,
                 databaseStorage: context.databaseStorage,
@@ -79,6 +86,7 @@ class UsernameSelectionCoordinator {
         )
 
         vc.usernameChangeDelegate = usernameChangeDelegate
+        vc.usernameSelectionDelegate = usernameSelectionDelegate
 
         fromViewController.presentFormSheet(
             OWSNavigationController(rootViewController: vc),
