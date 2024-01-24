@@ -128,7 +128,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Afleveringsprobleem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of leesbevestiging van %1$@ kon niet aan jou worden afgeleverd. Het kan zijn dat deze persoon iets naar je probeerde te verzenden in een één-op-één-gesprek of in een groepsgesprek.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of leesbevestiging van %1$@ kon niet aan jou worden afgeleverd. Het kan zijn dat deze persoon iets naar je probeerde te verzenden in een één-op-één-chat of in een groepschat.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Verwerpen";
@@ -4496,10 +4496,10 @@
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signaal werkt niet meer op dit apparaat. Als je Signal weer wilt gebruiken, werk je je apparaat bij naar een nieuwere versie van iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal werkt niet meer op dit apparaat. Als je Signal weer wilt gebruiken, werk je je apparaat bij naar een nieuwere versie van iOS.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signaal werkt niet meer op dit apparaat. Schakel over naar een nieuwer apparaat om Signal weer te gebruiken.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal werkt niet meer op dit apparaat. Schakel over naar een nieuwer apparaat om Signal weer te gebruiken.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
 "OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Nu bijwerken";
@@ -6173,7 +6173,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Video's";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Bekijk en deel wanneer berichten worden gelezen of getypt. Als leesbevestingen of typindicatoren zijn uitgeschakeld, kun je ook geen leesbevestigingen of typindicatoren van anderen zien.";
+"SETTINGS_MESSAGING_FOOTER" = "Bekijk en deel wanneer berichten worden gelezen of getypt. Als leesbevestigingen of typindicatoren zijn uitgeschakeld, kun je ook geen leesbevestigingen of typindicatoren van anderen zien.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Instellingen";
@@ -6410,7 +6410,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Verzonden";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Overgemaakt naar %%1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Overgemaakt naar %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
@@ -6458,7 +6458,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Gebruik Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Touch ID aan te zetten. In instellingen kun je deze optie uitzetten.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help voorkomen dat iemand met je telefoon toegang heeft tot jouw geld door Face ID aan te zetten. In instellingen kun je deze optie uitzetten.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help voorkomen dat iemand met jouw telefoon toegang heeft tot jouw geld door je toegangscode te gebruiken. In instellingen kun je deze optie uitzetten.";

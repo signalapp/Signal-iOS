@@ -218,7 +218,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%%@ مىنۇت ئىلگىرى</string>
+			<string>%1$d مىنۇت ئىلگىرى</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>

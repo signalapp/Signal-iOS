@@ -1712,10 +1712,10 @@
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Gerät erneut registrieren";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv %1$@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv: %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Gekoppelt %1$@";
+"DEVICE_LINKED_AT_LABEL" = "Gekoppelt: %1$@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Geräteliste konnte nicht aktualisiert werden.";
@@ -1847,7 +1847,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "Tage";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bei Aktivierung verschwinden versendete und empfangene neue Nachrichten in diesem Chat nach dem Lesen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bei Aktivierung verschwinden versendete und empfangene Nachrichten in diesem Chat nach dem Lesen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Derzeit verschwinden Nachrichten nach %1$@";
@@ -2024,7 +2024,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Eingelöst";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Unterstütze Signal, indem du für einen Freund oder ein Familienmitglied, das Signal nutzt, spendest. Sie erhalten die Möglichkeit, ihre Unterstützung in ihrem Profil zu zeigen.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Unterstütze Signal, indem du für einen Signal-Kontakt spendest. Der Kontakt erhält ein Abzeichen, das er im Profil anzeigen kann.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Für einen Freund spenden";
@@ -2168,7 +2168,7 @@
 "DONATION_SCREENS_HEADER_READ_MORE" = "Weiterlesen";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Datenschutz geht über Gewinn.";
+"DONATION_SCREENS_HEADER_TITLE" = "Datenschutz statt Gewinn.";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Regelmäßige Spende verlängern";
@@ -4601,22 +4601,22 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte versuche es später erneut.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Zahlungssperre zu verwenden.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange deinen Passcode oder Touch ID, um Geld zu senden";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange deinen Code oder Touch ID, um Geld zu senden";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange Face ID, um Geld zu senden.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange deinen Passcode, um Geld zu senden.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange deinen Code, um Geld zu senden.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Füge eine zusätzliche Sicherheitsebene hinzu und verlange Touch ID, um Geld zu senden.";
@@ -4625,19 +4625,19 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Zahlungssperre für zukünftige Spenden aktivieren?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Verlange zum Senden deinen Passcode oder Touch ID";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Verlange zum Senden deinen Code oder Touch ID";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Verlange zum Senden Face ID";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Verlange zum Senden den Passcode deines Mobiltelefons";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Verlange zum Senden den Code deines Mobiltelefons";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Verlange zum Senden Touch ID";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Die Authentifizierung war nicht erfolgreich. Vergewissere dich, dass biometrische Funktionen auf deinem Gerät aktiviert sind und ein Passcode festgelegt wurde.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Die Authentifizierung war nicht erfolgreich. Vergewissere dich, dass biometrische Funktionen auf deinem Gerät aktiviert sind und ein Code festgelegt wurde.";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometrische Authentifizierung fehlgeschlagen";
@@ -5303,7 +5303,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil kann nur aktualisiert werden, wenn eine Verbindung zum Internet besteht.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dein Profil ist Ende-zu-Ende-verschlüsselt. Dein Profil und Änderungen daran sind sichtbar für deine Kontakte und bei Beginn oder Annahme neuer Chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dein Profil ist Ende-zu-Ende-verschlüsselt. Dein Profil und Änderungen daran sind für deine Kontakte sichtbar und bei Beginn oder Annahme neuer Chats.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
@@ -5708,13 +5708,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zu viele gescheiterte Authentifizierungsversuche. Bitte versuche es später erneut.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du musst einen Passcode in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du musst einen Code in deinen iOS-Einstellungen festlegen, um die Bildschirmsperre zu verwenden.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authentifizieren, um Signal zu öffnen.";
@@ -6119,7 +6119,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardablaufzeit für verschwindende Nachrichten aller von dir begonnenen neuen Chats fest.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardablaufzeit für verschwindende Nachrichten fest. Diese gilt für alle von dir begonnenen neuen Chats.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "An Signal spenden";
@@ -6443,7 +6443,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "»Face ID aktivieren« überspringen?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "»Passcode aktivieren« überspringen?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "»Code aktivieren« überspringen?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "»Touch ID aktivieren« überspringen?";
@@ -6452,7 +6452,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Verwende Face ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Passcode verwenden";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Code verwenden";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Touch ID verwenden";
@@ -6461,7 +6461,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Verhindere, dass eine Person mit deinem Mobiltelefon auf dein Geld zugreifen kann, indem du Face ID aktivierst. Du kannst diese Option in Einstellungen deaktivieren.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Verhindere, dass eine Person mit deinem Mobiltelefon auf dein Geld zugreifen kann, indem du deinen Passcode verwendest. Du kannst diese Option in Einstellungen deaktivieren.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Verhindere, dass eine Person mit deinem Mobiltelefon auf dein Geld zugreifen kann, indem du deinen Code verwendest. Du kannst diese Option in Einstellungen deaktivieren.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Verhindere, dass eine Person mit deinem Mobiltelefon auf dein Geld zugreifen kann, indem du Touch ID aktivierst. Du kannst diese Option in Einstellungen deaktivieren.";
@@ -6572,13 +6572,13 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR-Code einscannen";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Verlange deinen Passcode oder Touch ID, um Geld zu überweisen.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Verlange deinen Code oder Touch ID, um Geld zu überweisen.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Verlange Face ID, um Geld zu überweisen.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Verlange den Passcode deines Mobiltelefons, um Geld zu überweisen.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Verlange den Code deines Mobiltelefons, um Geld zu überweisen.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Verlange Touch ID, um Geld zu überweisen.";
@@ -6770,16 +6770,16 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Anrufe";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Verwende Touch-ID, Face-ID oder den Passcode deines iOS-Geräts, um Signal zu entsperren.";
+"SETTINGS_SECURITY_DETAIL" = "Verwende Touch ID, Face ID oder den Code deines iOS-Geräts, um Signal zu entsperren.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Face-ID zum Entsperren von Signal verwenden.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Face ID zum Entsperren von Signal verwenden.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Gerätepasscode zum Entsperren von Signal verwenden.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Code des Geräts zum Entsperren von Signal verwenden.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Touch-ID zum Entsperren von Signal verwenden.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Touch ID zum Entsperren von Signal verwenden.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App-Sicherheit";
@@ -6803,7 +6803,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrierungssperre";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal-PIN erforderlich machen, sobald du deine Rufnummer erneut bei Signal registrierst.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal-PIN Eingabe erforderlich machen, sobald du deine Telefonnummer erneut bei Signal registrierst.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Tipp-Indikatoren";
@@ -7052,7 +7052,7 @@
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Ausschalten und Storys löschen";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Wenn du dich von Storys abmeldest, kannst du keine Storys mehr teilen oder betrachten.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Wenn du Storys ausschaltest, kannst du keine Storys mehr teilen oder ansehen.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Storys ausschalten";
@@ -7637,7 +7637,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Teile deinen QR-Code und Link nur mit Personen, denen du vertraust. Wenn du diese freigibst, können andere deinen Nutzernamen sehen und einen Chat mit dir beginnen.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-Code und Link nicht festgelegt. Überprüfe deine Netzverbindung und versuche es erneut.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-Code und Link konnte nicht festgelegt werden. Überprüfe deine Netzverbindung und versuche es erneut.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Zurücksetzen";

@@ -7037,7 +7037,7 @@
 "STORIES_SAVE_FAILED" = "Error al guardar la història";
 
 /* Context menu action to save the selected story */
-"STORIES_SAVE_STORY_ACTION" = "Desats";
+"STORIES_SAVE_STORY_ACTION" = "Desar";
 
 /* Footer for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_FOOTER" = "Les actualitzacions d'històries desapareixeran automàticament després de 24 hores. Tria qui pot veure la teva història o crea noves històries amb espectadors o grups específics.";

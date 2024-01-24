@@ -7589,7 +7589,7 @@
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Confirmer";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Mette le contact à jour";
+"UPDATE_CONTACT_ACTION" = "Mettre le contact à jour";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Le groupe n’a pas pu être mis à jour.";
