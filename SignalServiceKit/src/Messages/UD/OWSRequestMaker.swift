@@ -158,7 +158,7 @@ public final class RequestMaker: Dependencies {
                 self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
             }
             if !self.options.contains(.isProfileFetch) {
-                self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
+                ProfileFetcherJob.fetchProfile(address: self.address, authedAccount: self.authedAccount)
             }
 
             if self.options.contains(.allowIdentifiedFallback) {
@@ -198,7 +198,7 @@ public final class RequestMaker: Dependencies {
             // If this request isn't a profile fetch, kick off a profile fetch. If it
             // is a profile fetch, don't bother fetching it *again*.
             DispatchQueue.main.async {
-                self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
+                ProfileFetcherJob.fetchProfile(address: self.address, authedAccount: self.authedAccount)
             }
         }
     }

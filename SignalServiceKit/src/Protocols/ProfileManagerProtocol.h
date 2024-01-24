@@ -136,8 +136,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
-
 // Profile fetches will make a best effort to download and decrypt avatar
 // data, but optionalAvatarFileUrl may not be populated due to network
 // failures, decryption errors, service issues, etc.

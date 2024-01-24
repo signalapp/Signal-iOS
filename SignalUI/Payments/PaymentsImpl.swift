@@ -324,11 +324,7 @@ public extension PaymentsImpl {
 
     private func fetchPublicAddress(for recipientAci: Aci) -> Promise<MobileCoin.PublicAddress> {
         return firstly {
-            ProfileFetcherJob.fetchProfilePromise(
-                serviceId: recipientAci,
-                mainAppOnly: false,
-                ignoreThrottling: true
-            )
+            ProfileFetcherJob.fetchProfilePromise(serviceId: recipientAci, mainAppOnly: false)
         }.map(on: DispatchQueue.global()) { (fetchedProfile: FetchedProfile) -> MobileCoin.PublicAddress in
             guard let decryptedProfile = fetchedProfile.decryptedProfile else {
                 throw PaymentsError.userHasNoPublicAddress

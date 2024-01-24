@@ -24,7 +24,6 @@ extension OWSProfileManager: ProfileManager {
             return ProfileFetcherJob.fetchProfilePromise(
                 serviceId: try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
                 mainAppOnly: mainAppOnly,
-                ignoreThrottling: true,
                 authedAccount: authedAccount
             )
         } catch {
@@ -573,7 +572,7 @@ extension OWSProfileManager: ProfileManager {
         if !isLocalAddress, let serviceId = address.serviceId {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: tx)
             tx.addAsyncCompletionOffMain {
-                self.fetchProfile(for: address, authedAccount: authedAccount)
+                ProfileFetcherJob.fetchProfile(address: address, authedAccount: authedAccount)
             }
         }
 

@@ -390,11 +390,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return data;
 }
 
-- (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount
-{
-    [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES authedAccount:authedAccount];
-}
-
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
 {
     [self reuploadLocalProfileWithSneakyTransactionWithAuthedAccount:authedAccount]

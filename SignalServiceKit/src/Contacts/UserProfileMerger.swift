@@ -29,7 +29,7 @@ class UserProfileMerger: RecipientMergeObserver {
                     authedAccount: .implicit(),
                     transaction: SDSDB.shimOnlyBridge(tx),
                     completion: {
-                        NSObject.profileManager.fetchProfile(for: userProfile.internalAddress, authedAccount: .implicit())
+                        ProfileFetcherJob.fetchProfile(address: userProfile.internalAddress, authedAccount: .implicit())
                     }
                 )
             }

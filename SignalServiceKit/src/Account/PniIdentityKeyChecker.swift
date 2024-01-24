@@ -118,20 +118,17 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
         return ProfileFetcherJob.fetchProfilePromise(
             serviceId: localPni,
             mainAppOnly: true,
-            ignoreThrottling: true,
             shouldUpdateStore: false
         ).map(on: schedulers.sync) { fetchedProfile -> IdentityKey in
             return fetchedProfile.profile.identityKey
         }.recover(on: schedulers.sync) { error throws -> Promise<IdentityKey?> in
             switch error {
-            case ProfileFetchError.missing:
+            case ProfileRequestError.notFound:
                 logger.warn("Server does not have a profile for the given PNI.")
                 return .value(nil)
             case ParamParser.ParseError.missingField("identityKey"):
                 logger.warn("Server does not have a PNI identity key.")
                 return .value(nil)
-            case ProfileFetchError.notMainApp:
-                throw OWSGenericError("Could not check remote identity key outside main app.")
             default:
                 throw error
             }

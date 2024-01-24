@@ -60,8 +60,7 @@ class DebugUIProfile: DebugUIPage, Dependencies {
             },
             OWSTableItem(title: "Fetch Local Profile") {
                 ProfileFetcherJob.fetchProfile(
-                    address: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress,
-                    ignoreThrottling: true
+                    address: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress
                 )
             }
         ].compactMap { $0 }

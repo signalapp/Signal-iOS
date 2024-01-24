@@ -7,50 +7,25 @@ import Foundation
 import LibSignalClient
 import SignalCoreKit
 
-@objc
-public enum ProfileFetchError: Int, Error {
-    case missing
-    case throttled
-    case notMainApp
+public enum ProfileRequestError: Error {
+    case notAuthorized
+    case notFound
     case rateLimit
-    case unauthorized
-}
-
-// MARK: -
-
-extension ProfileFetchError: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .missing:
-            return "ProfileFetchError.missing"
-        case .throttled:
-            return "ProfileFetchError.throttled"
-        case .notMainApp:
-            return "ProfileFetchError.notMainApp"
-        case .rateLimit:
-            return "ProfileFetchError.rateLimit"
-        case .unauthorized:
-            return "ProfileFetchError.unauthorized"
-        }
-    }
 }
 
 // MARK: -
 
 private struct ProfileFetchOptions {
     let mainAppOnly: Bool
-    let ignoreThrottling: Bool
     let shouldUpdateStore: Bool
     let authedAccount: AuthedAccount
 
     init(
         mainAppOnly: Bool = true,
-        ignoreThrottling: Bool = false,
         shouldUpdateStore: Bool = true,
         authedAccount: AuthedAccount
     ) {
         self.mainAppOnly = mainAppOnly
-        self.ignoreThrottling = ignoreThrottling || DebugFlags.aggressiveProfileFetching.get()
         self.shouldUpdateStore = shouldUpdateStore
         self.authedAccount = authedAccount
     }
@@ -60,58 +35,17 @@ private struct ProfileFetchOptions {
 
 @objc
 public class ProfileFetcherJob: NSObject {
-
-    private static var fetchDateMap = LRUCache<ServiceId, Date>(maxSize: 256)
-
     private let serviceId: ServiceId
     private let options: ProfileFetchOptions
-
-    private var backgroundTask: OWSBackgroundTask?
-
-    @objc
-    public class func fetchProfilePromiseObjc(
-        serviceId: ServiceIdObjC,
-        mainAppOnly: Bool,
-        ignoreThrottling: Bool,
-        authedAccount: AuthedAccount
-    ) -> AnyPromise {
-        return AnyPromise(fetchProfilePromise(
-            serviceId: serviceId.wrappedValue,
-            mainAppOnly: mainAppOnly,
-            ignoreThrottling: ignoreThrottling,
-            authedAccount: authedAccount
-        ))
-    }
-
-    public class func fetchProfilePromise(
-        address: SignalServiceAddress,
-        mainAppOnly: Bool = true,
-        ignoreThrottling: Bool = false,
-        shouldUpdateStore: Bool = true,
-        authedAccount: AuthedAccount = .implicit()
-    ) -> Promise<FetchedProfile> {
-        guard let serviceId = address.serviceId else {
-            return Promise(error: ProfileFetchError.missing)
-        }
-        return fetchProfilePromise(
-            serviceId: serviceId,
-            mainAppOnly: mainAppOnly,
-            ignoreThrottling: ignoreThrottling,
-            shouldUpdateStore: shouldUpdateStore,
-            authedAccount: authedAccount
-        )
-    }
 
     public class func fetchProfilePromise(
         serviceId: ServiceId,
         mainAppOnly: Bool = true,
-        ignoreThrottling: Bool = false,
         shouldUpdateStore: Bool = true,
         authedAccount: AuthedAccount = .implicit()
     ) -> Promise<FetchedProfile> {
         let options = ProfileFetchOptions(
             mainAppOnly: mainAppOnly,
-            ignoreThrottling: ignoreThrottling,
             shouldUpdateStore: shouldUpdateStore,
             authedAccount: authedAccount
         )
@@ -119,41 +53,25 @@ public class ProfileFetcherJob: NSObject {
     }
 
     @objc
-    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool, authedAccount: AuthedAccount = .implicit()) {
-        Task { await _fetchProfile(serviceId: address.serviceId, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount) }
+    public class func fetchProfile(address: SignalServiceAddress, authedAccount: AuthedAccount = .implicit()) {
+        Task { await _fetchProfile(serviceId: address.serviceId, authedAccount: authedAccount) }
     }
 
-    @objc
-    public class func fetchProfile(serviceId: ServiceIdObjC, ignoreThrottling: Bool, authedAccount: AuthedAccount = .implicit()) {
-        Task { await _fetchProfile(serviceId: serviceId.wrappedValue, ignoreThrottling: ignoreThrottling, authedAccount: authedAccount) }
-    }
-
-    private class func _fetchProfile(serviceId: ServiceId?, ignoreThrottling: Bool, authedAccount: AuthedAccount) async {
+    private class func _fetchProfile(serviceId: ServiceId?, authedAccount: AuthedAccount) async {
         do {
             guard let serviceId else {
-                throw ProfileFetchError.missing
+                throw ProfileRequestError.notFound
             }
             try await ProfileFetcherJob(
                 serviceId: serviceId,
-                options: ProfileFetchOptions(ignoreThrottling: ignoreThrottling, authedAccount: authedAccount)
+                options: ProfileFetchOptions(authedAccount: authedAccount)
             ).run()
+        } catch where error.isNetworkFailureOrTimeout {
+            Logger.warn("Error: \(error)")
+        } catch let error as ProfileRequestError {
+            Logger.warn("Error: \(error)")
         } catch {
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Error: \(error)")
-            } else {
-                switch error {
-                case ProfileFetchError.missing:
-                    Logger.warn("Error: \(error)")
-                case ProfileFetchError.unauthorized:
-                    if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                        owsFailDebug("Error: \(error)")
-                    } else {
-                        Logger.warn("Error: \(error)")
-                    }
-                default:
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+            owsFailDebug("Error: \(error)")
         }
     }
 
@@ -187,66 +105,23 @@ public class ProfileFetcherJob: NSObject {
             // We usually only refresh profiles in the MainApp to decrease the
             // chance of missed SN notifications in the AppExtension for our users
             // who choose not to verify contacts.
-            throw ProfileFetchError.notMainApp
-        }
-
-        // Check throttling _before_ possible retries.
-        if !options.ignoreThrottling {
-            if let lastDate = lastFetchDate() {
-                let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-                // Don't check a profile more often than every N seconds.
-                //
-                // Throttle less in debug to make it easier to test problems
-                // with our fetching logic.
-                guard lastTimeInterval > Self.throttledProfileFetchFrequency else {
-                    throw ProfileFetchError.throttled
-                }
-            }
-        }
-
-        if options.shouldUpdateStore {
-            recordLastFetchDate()
+            throw OWSGenericError("Not allowed in App Extensions.")
         }
 
         return try await requestProfileWithRetries(localIdentifiers: localIdentifiers)
     }
 
-    private static var throttledProfileFetchFrequency: TimeInterval {
-        kMinuteInterval * 2.0
-    }
-
     private func requestProfileWithRetries(localIdentifiers: LocalIdentifiers, retryCount: Int = 0) async throws -> FetchedProfile {
         do {
             return try await requestProfileAttempt(localIdentifiers: localIdentifiers)
-        } catch {
-            if error.httpStatusCode == 401 {
-                throw ProfileFetchError.unauthorized
-            }
-            if error.httpStatusCode == 404 {
-                throw ProfileFetchError.missing
-            }
-            if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
-                throw ProfileFetchError.rateLimit
-            }
-
-            switch error {
-            case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
-                // These errors should only be thrown at a higher level.
-                owsFailDebug("Unexpected error: \(error)")
-                throw error
-            case let error as SignalServiceProfile.ValidationError:
-                // This should not be retried.
-                owsFailDebug("skipping updateProfile retry. Invalid profile for: \(serviceId) error: \(error)")
-                throw error
-            default:
-                let maxRetries = 3
-                guard retryCount < maxRetries else {
-                    Logger.warn("failed to get profile with error: \(error)")
-                    throw error
-                }
-
-                return try await requestProfileWithRetries(localIdentifiers: localIdentifiers, retryCount: retryCount + 1)
-            }
+        } catch where error.httpStatusCode == 401 {
+            throw ProfileRequestError.notAuthorized
+        } catch where error.httpStatusCode == 404 {
+            throw ProfileRequestError.notFound
+        } catch where error.httpStatusCode == 413 || error.httpStatusCode == 429 {
+            throw ProfileRequestError.rateLimit
+        } catch where error.isRetryable && retryCount < 3 {
+            return try await requestProfileWithRetries(retryCount: retryCount + 1)
         }
     }
 
@@ -527,14 +402,6 @@ public class ProfileFetcherJob: NSObject {
             avatarUrlPath: fetchedProfile.profile.avatarUrlPath,
             decryptedProfile: decryptedProfile
         ))
-    }
-
-    private func lastFetchDate() -> Date? {
-        ProfileFetcherJob.fetchDateMap[serviceId]
-    }
-
-    private func recordLastFetchDate() {
-        ProfileFetcherJob.fetchDateMap[serviceId] = Date()
     }
 
     private func addBackgroundTask() -> OWSBackgroundTask {

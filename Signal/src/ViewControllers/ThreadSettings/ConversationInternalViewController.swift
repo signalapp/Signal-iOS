@@ -83,7 +83,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             let section = actionSection
 
             section.add(.actionItem(withText: "Fetch Profile") {
-                ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
+                ProfileFetcherJob.fetchProfile(address: address)
             })
 
             contents.add(actionSection)

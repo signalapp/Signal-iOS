@@ -1292,14 +1292,9 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         for aciToFetch in acisToFetch {
             let promise = ProfileFetcherJob.fetchProfilePromise(
                 serviceId: aciToFetch,
-                mainAppOnly: false,
-                ignoreThrottling: true
+                mainAppOnly: false
             ).asVoid().recover(on: DispatchQueue.global()) { error throws -> Promise<Void> in
-                if
-                    case ProfileFetchError.missing = error,
-                    ignoreMissingProfiles
-                {
-                    Logger.info("Ignoring missing profile: \(error)")
+                if case ProfileRequestError.notFound = error, ignoreMissingProfiles {
                     return Promise.value(())
                 }
 

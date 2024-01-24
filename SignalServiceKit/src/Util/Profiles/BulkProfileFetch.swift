@@ -15,12 +15,10 @@ public actor BulkProfileFetch {
     private struct UpdateOutcome {
         let outcome: Outcome
         enum Outcome {
-            case networkFailure
-            case retryLimit
-            case noProfile
-            case serviceError
             case success
-            case throttled
+            case networkFailure
+            case requestFailure(ProfileRequestError)
+            case otherFailure
         }
         let date: Date
 
@@ -200,34 +198,15 @@ public actor BulkProfileFetch {
         do {
             try await ProfileFetcherJob.fetchProfilePromise(serviceId: serviceId).asVoid().awaitable()
             lastOutcomeMap[serviceId] = UpdateOutcome(.success)
-        } catch ProfileFetchError.missing {
-            lastOutcomeMap[serviceId] = UpdateOutcome(.noProfile)
-        } catch ProfileFetchError.throttled {
-            lastOutcomeMap[serviceId] = UpdateOutcome(.throttled)
-        } catch ProfileFetchError.rateLimit {
-            Logger.error("Rate limit error")
-            lastOutcomeMap[serviceId] = UpdateOutcome(.retryLimit)
+        } catch ProfileRequestError.rateLimit {
             lastRateLimitErrorDate = Date()
+            lastOutcomeMap[serviceId] = UpdateOutcome(.requestFailure(.rateLimit))
+        } catch let error as ProfileRequestError {
+            lastOutcomeMap[serviceId] = UpdateOutcome(.requestFailure(error))
+        } catch where error.isNetworkFailureOrTimeout {
+            lastOutcomeMap[serviceId] = UpdateOutcome(.networkFailure)
         } catch {
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Error: \(error)")
-                lastOutcomeMap[serviceId] = UpdateOutcome(.networkFailure)
-            } else if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
-                Logger.error("Error: \(error)")
-                lastOutcomeMap[serviceId] = UpdateOutcome(.retryLimit)
-                lastRateLimitErrorDate = Date()
-            } else if error.httpStatusCode == 404 {
-                Logger.error("Error: \(error)")
-                lastOutcomeMap[serviceId] = UpdateOutcome(.noProfile)
-            } else {
-                // TODO: We may need to handle more status codes.
-                if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                    owsFailDebug("Error: \(error)")
-                } else {
-                    Logger.warn("Error: \(error)")
-                }
-                lastOutcomeMap[serviceId] = UpdateOutcome(.serviceError)
-            }
+            lastOutcomeMap[serviceId] = UpdateOutcome(.otherFailure)
         }
     }
 
@@ -236,29 +215,27 @@ public actor BulkProfileFetch {
             return true
         }
 
-        let minElapsedSeconds: TimeInterval
-        let elapsedSeconds = abs(lastOutcome.date.timeIntervalSinceNow)
-
+        let retryDelay: TimeInterval
         if DebugFlags.aggressiveProfileFetching.get() {
-            minElapsedSeconds = 0
+            retryDelay = 0
         } else {
             switch lastOutcome.outcome {
-            case .networkFailure:
-                minElapsedSeconds = 1 * kMinuteInterval
-            case .retryLimit:
-                minElapsedSeconds = 5 * kMinuteInterval
-            case .throttled:
-                minElapsedSeconds = 2 * kMinuteInterval
-            case .noProfile:
-                minElapsedSeconds = 6 * kHourInterval
-            case .serviceError:
-                minElapsedSeconds = 30 * kMinuteInterval
             case .success:
-                minElapsedSeconds = 2 * kMinuteInterval
+                retryDelay = 2 * kMinuteInterval
+            case .networkFailure:
+                retryDelay = 1 * kMinuteInterval
+            case .requestFailure(.notAuthorized):
+                retryDelay = 30 * kMinuteInterval
+            case .requestFailure(.notFound):
+                retryDelay = 6 * kHourInterval
+            case .requestFailure(.rateLimit):
+                retryDelay = 5 * kMinuteInterval
+            case .otherFailure:
+                retryDelay = 30 * kMinuteInterval
             }
         }
 
-        return elapsedSeconds >= minElapsedSeconds
+        return -lastOutcome.date.timeIntervalSinceNow >= retryDelay
     }
 
     private func fetchMissingAndStaleProfiles() {
