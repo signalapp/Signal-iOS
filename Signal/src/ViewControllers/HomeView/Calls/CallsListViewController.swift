@@ -534,30 +534,27 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 tx: tx.asV2Read
             )
 
-            let newCallModels: [Calls.Models] = newCallRecords.map { callRecord in
-                return (
-                    createCallViewModel(callRecord: callRecord, tx: tx),
-                    callRecord
-                )
+            let newViewModels: [CallViewModel] = newCallRecords.map { callRecord in
+                return createCallViewModel(callRecord: callRecord, tx: tx)
             }
 
-            let combinedCallModels: [Calls.Models] = {
+            let combinedViewModels: [CallViewModel] = {
                 switch loadDirection {
-                case .older: return calls.models + newCallModels
-                case .newer: return newCallModels + calls.models
+                case .older: return calls.viewModels + newViewModels
+                case .newer: return newViewModels + calls.viewModels
                 }
             }()
 
-            if combinedCallModels.count <= Constants.maxCallsToHoldAtOnce {
-                calls = Calls(models: combinedCallModels)
+            if combinedViewModels.count <= Constants.maxCallsToHoldAtOnce {
+                calls = Calls(models: combinedViewModels)
             } else {
-                let clampedModels: [Calls.Models] = {
-                    let overage = combinedCallModels.count - Constants.maxCallsToHoldAtOnce
+                let clampedModels: [CallViewModel] = {
+                    let overage = combinedViewModels.count - Constants.maxCallsToHoldAtOnce
                     switch loadDirection {
                     case .older:
-                        return Array(combinedCallModels.dropFirst(overage))
+                        return Array(combinedViewModels.dropFirst(overage))
                     case .newer:
-                        return Array(combinedCallModels.dropLast(overage))
+                        return Array(combinedViewModels.dropLast(overage))
                     }
                 }()
 
@@ -584,10 +581,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         ) else {
             owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
         }
-
-        let callId = callRecord.callId
-        let callBeganTimestamp = callRecord.callBeganTimestamp
-        let callThreadRowId = callRecord.threadRowId
 
         let callDirection: CallViewModel.Direction = {
             if callRecord.callStatus.isMissedCall {
@@ -650,29 +643,22 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }()
 
             return CallViewModel(
-                callId: callId,
-                threadRowId: callThreadRowId,
+                backingCallRecord: callRecord,
                 title: deps.contactsManager.displayName(
                     for: contactThread.contactAddress,
                     transaction: tx
                 ),
-                recipientType: .individual(
-                    type: callType,
-                    contactThread: contactThread
-                ),
+                recipientType: .individual(type: callType, contactThread: contactThread),
                 direction: callDirection,
-                state: callState,
-                callBeganTimestamp: callBeganTimestamp
+                state: callState
             )
         } else if let groupThread = callThread as? TSGroupThread {
             return CallViewModel(
-                callId: callId,
-                threadRowId: callThreadRowId,
+                backingCallRecord: callRecord,
                 title: groupThread.groupModel.groupNameOrDefault,
                 recipientType: .group(groupThread: groupThread),
                 direction: callDirection,
-                state: callState,
-                callBeganTimestamp: callBeganTimestamp
+                state: callState
             )
         } else {
             owsFail("Call thread was neither contact nor group! This should be impossible.")
@@ -681,11 +667,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     // MARK: - Table view
 
-    enum Section: Int, Hashable {
+    fileprivate enum Section: Int, Hashable {
         case primary = 0
     }
 
-    struct CallViewModel: Hashable, Identifiable {
+    fileprivate struct CallViewModel: Hashable, Identifiable {
         enum Direction: Hashable {
             case outgoing
             case incoming
@@ -722,17 +708,31 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }
 
-        var callId: UInt64
-        var threadRowId: Int64
+        private let backingCallRecord: CallRecord
 
-        var title: String
-        var recipientType: RecipientType
-        var direction: Direction
-        var image: UIImage?
-        var state: State
+        let title: String
+        let recipientType: RecipientType
+        let direction: Direction
+        let state: State
 
-        var callBeganTimestamp: UInt64
+        var callId: UInt64 { backingCallRecord.callId }
+        var threadRowId: Int64 { backingCallRecord.threadRowId }
+        var callBeganTimestamp: UInt64 { backingCallRecord.callBeganTimestamp }
         var callBeganDate: Date { Date(millisecondsSince1970: callBeganTimestamp) }
+
+        init(
+            backingCallRecord: CallRecord,
+            title: String,
+            recipientType: RecipientType,
+            direction: Direction,
+            state: State
+        ) {
+            self.backingCallRecord = backingCallRecord
+            self.title = title
+            self.recipientType = recipientType
+            self.direction = direction
+            self.state = state
+        }
 
         var callType: RecipientType.CallType {
             switch recipientType {
@@ -762,6 +762,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case .missed:
                 return true
             }
+        }
+
+        // MARK: Hashable: Equatable
+
+        static func == (lhs: CallViewModel, rhs: CallViewModel) -> Bool {
+            return lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            id.hash(into: &hasher)
         }
 
         // MARK: Identifiable
@@ -798,32 +808,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private struct Calls {
-        typealias Models = (CallViewModel, CallRecord)
-
         private(set) var viewModels: [CallViewModel]
-        private var callRecords: [CallRecord]
         private let modelIndicesByViewModelIds: [CallViewModel.ID: Int]
 
-        var models: [Models] {
-            owsAssert(viewModels.count == callRecords.count)
-            return viewModels.enumerated().map { idx, viewModel -> (CallViewModel, CallRecord) in
-                return (viewModel, callRecords[idx])
-            }
-        }
-
-        init(models: [Models]) {
+        init(models: [CallViewModel]) {
             var viewModels = [CallViewModel]()
-            var callRecords = [CallRecord]()
             var modelIndicesByViewModelIds = [CallViewModel.ID: Int]()
 
-            for (idx, (viewModel, callRecord)) in models.enumerated() {
+            for (idx, viewModel) in models.enumerated() {
                 viewModels.append(viewModel)
-                callRecords.append(callRecord)
                 modelIndicesByViewModelIds[viewModel.id] = idx
             }
 
             self.viewModels = viewModels
-            self.callRecords = callRecords
             self.modelIndicesByViewModelIds = modelIndicesByViewModelIds
         }
 
@@ -832,16 +829,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             return viewModels[index]
         }
 
-        /// Recreates the view model for the given ID, by calling the given
-        /// block with the ``CallRecord`` backing that view model's ID. If a
-        /// given ID is not currently loaded, it is ignored.
+        /// Recreates the view model for the given ID by calling the given
+        /// block. If a given ID is not currently loaded, it is ignored.
         ///
         /// - Returns
         /// The IDs for the view models that were recreated. Note that this will
         /// not include any IDs that were ignored.
         mutating func recreateViewModels(
             ids: [CallViewModel.ID],
-            recreateModelsBlock: (CallViewModel.ID) -> Models
+            recreateModelBlock: (CallViewModel.ID) -> CallViewModel
         ) -> [CallViewModel.ID] {
             let indicesToReload: [(Int, CallViewModel.ID)] = ids.compactMap { viewModelId in
                 guard let index = modelIndicesByViewModelIds[viewModelId] else {
@@ -852,10 +848,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
 
             for (index, viewModelId) in indicesToReload {
-                let (newViewModel, newCallRecord) = recreateModelsBlock(viewModelId)
-
+                let newViewModel = recreateModelBlock(viewModelId)
                 viewModels[index] = newViewModel
-                callRecords[index] = newCallRecord
             }
 
             return indicesToReload.map { $0.1 }
@@ -899,7 +893,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         // This step will also drop any IDs for models that are not currently
         // loaded, which should not be included in the snapshot.
         let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
-            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> Calls.Models in
+            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> CallViewModel in
                 guard let freshCallRecord = deps.callRecordStore.fetch(
                     callId: viewModelId.callId,
                     threadRowId: viewModelId.threadRowId,
@@ -908,10 +902,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     owsFail("Unexpectedly missing call record while reloading!")
                 }
 
-                return (
-                    createCallViewModel(callRecord: freshCallRecord, tx: tx),
-                    freshCallRecord
-                )
+                return createCallViewModel(callRecord: freshCallRecord, tx: tx)
             }
         }
 
