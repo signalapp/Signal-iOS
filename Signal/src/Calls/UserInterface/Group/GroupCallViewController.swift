@@ -34,7 +34,7 @@ class GroupCallViewController: UIViewController {
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
 
     private let localMemberView = GroupCallLocalMemberView()
-    private let speakerView = GroupCallRemoteMemberView(mode: .speaker)
+    private let speakerView = GroupCallRemoteMemberView(context: .speaker)
 
     private var didUserEverSwipeToSpeakerView = true
     private var didUserEverSwipeToScreenShare = true

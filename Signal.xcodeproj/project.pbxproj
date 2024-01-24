@@ -1189,7 +1189,7 @@
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88588D18252D312800405414 /* GroupCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D17252D312800405414 /* GroupCallViewController.swift */; };
 		88588D1B252D3DFF00405414 /* CallControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1A252D3DFF00405414 /* CallControls.swift */; };
-		88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */; };
+		88588D1D252D5D3D00405414 /* CallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* CallMemberView.swift */; };
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessagePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessagePresenter.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
@@ -1601,6 +1601,7 @@
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
+		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
 		E17283DE2B2A713C00302DC7 /* CallControlsConfirmationToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
@@ -3858,7 +3859,7 @@
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88588D17252D312800405414 /* GroupCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallViewController.swift; sourceTree = "<group>"; };
 		88588D1A252D3DFF00405414 /* CallControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControls.swift; sourceTree = "<group>"; };
-		88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
+		88588D1C252D5D3D00405414 /* CallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberView.swift; sourceTree = "<group>"; };
 		88588D25252E59CE00405414 /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessagePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePresenter.swift; sourceTree = "<group>"; };
 		885C354F2370DFD50004BA35 /* OWSSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncManager.swift; sourceTree = "<group>"; };
@@ -4349,6 +4350,7 @@
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
+		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsConfirmationToast.swift; sourceTree = "<group>"; };
 		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
@@ -7769,7 +7771,7 @@
 			children = (
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
 				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
-				88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */,
+				E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */,
 				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
 				328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */,
 				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
@@ -8119,6 +8121,7 @@
 				88588D1A252D3DFF00405414 /* CallControls.swift */,
 				E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
+				88588D1C252D5D3D00405414 /* CallMemberView.swift */,
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				1700E33E28B856FB0073D949 /* IncomingCallControls.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
@@ -12107,6 +12110,7 @@
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
+				88588D1D252D5D3D00405414 /* CallMemberView.swift in Sources */,
 				D93108092B337A23006A034E /* CallRecordLoader.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */,
@@ -12358,7 +12362,7 @@
 				32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
-				88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */,
+				E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */,
 				88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */,
 				D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,

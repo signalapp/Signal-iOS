@@ -121,7 +121,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
 
 class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
-    private let memberView = GroupCallRemoteMemberView(mode: .videoGrid)
+    private let memberView = GroupCallRemoteMemberView(context: .videoGrid)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

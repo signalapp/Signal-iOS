@@ -225,7 +225,7 @@ extension GroupCallVideoOverflow: CallObserver {
 
 class GroupCallVideoOverflowCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoOverflowCell"
-    private let memberView = GroupCallRemoteMemberView(mode: .videoOverflow)
+    private let memberView = GroupCallRemoteMemberView(context: .videoOverflow)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

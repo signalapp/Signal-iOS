@@ -255,13 +255,10 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
     }
 
-    let mode: Mode
-    enum Mode: Equatable {
-        case videoGrid, videoOverflow, speaker
-    }
+    let context: CallMemberVisualContext
 
-    init(mode: Mode) {
-        self.mode = mode
+    init(context: CallMemberVisualContext) {
+        self.context = context
         super.init()
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
@@ -298,7 +295,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         backgroundAvatarView.image = profileImage
 
-        muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true
+        muteIndicatorImage.isHidden = context == .speaker || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
@@ -380,7 +377,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     func configureRemoteVideo(device: RemoteDeviceState) {
         if videoView?.superview == self { videoView?.removeFromSuperview() }
-        let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, mode: mode)
+        let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, context: context)
         insertSubview(newVideoView, belowSubview: muteIndicatorImage)
         newVideoView.frame = bounds
         newVideoView.isScreenShare = device.sharingScreen == true

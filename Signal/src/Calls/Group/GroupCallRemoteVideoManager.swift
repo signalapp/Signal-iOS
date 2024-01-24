@@ -14,22 +14,22 @@ class GroupCallRemoteVideoManager: Dependencies {
     }
 
     // MARK: - Remote Video Views
-    private var videoViews = [UInt32: [GroupCallRemoteMemberView.Mode: GroupCallRemoteVideoView]]()
+    private var videoViews = [UInt32: [CallMemberVisualContext: GroupCallRemoteVideoView]]()
 
-    func remoteVideoView(for device: RemoteDeviceState, mode: GroupCallRemoteMemberView.Mode) -> GroupCallRemoteVideoView {
+    func remoteVideoView(for device: RemoteDeviceState, context: CallMemberVisualContext) -> GroupCallRemoteVideoView {
         AssertIsOnMainThread()
 
         var currentVideoViewsDevice = videoViews[device.demuxId] ?? [:]
 
-        if let current = currentVideoViewsDevice[mode] { return current }
+        if let current = currentVideoViewsDevice[context] { return current }
 
         let videoView = GroupCallRemoteVideoView(demuxId: device.demuxId)
         videoView.sizeDelegate = self
         videoView.isGroupCall = true
 
-        if mode == .speaker { videoView.isFullScreen = true }
+        if context == .speaker { videoView.isFullScreen = true }
 
-        currentVideoViewsDevice[mode] = videoView
+        currentVideoViewsDevice[context] = videoView
         videoViews[device.demuxId] = currentVideoViewsDevice
 
         return videoView
