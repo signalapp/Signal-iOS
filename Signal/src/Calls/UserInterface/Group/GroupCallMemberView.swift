@@ -10,7 +10,7 @@ import SignalRingRTC
 import SignalUI
 
 protocol GroupCallMemberViewDelegate: AnyObject {
-    func memberView(_: GroupCallMemberView, userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
+    func memberView(userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
 }
 
 class GroupCallMemberView: UIView {
@@ -415,9 +415,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             guard let self = self else { return }
 
             if isBlocked {
-                self.delegate?.memberView(self, userRequestedInfoAboutError: .blocked(address))
+                self.delegate?.memberView(userRequestedInfoAboutError: .blocked(address))
             } else {
-                self.delegate?.memberView(self, userRequestedInfoAboutError: .noMediaKeys(address))
+                self.delegate?.memberView(userRequestedInfoAboutError: .noMediaKeys(address))
             }
         }
     }

@@ -996,7 +996,7 @@ extension GroupCallViewController: CallControlsDelegate {
 }
 
 extension GroupCallViewController: GroupCallMemberViewDelegate {
-    func memberView(_ view: GroupCallMemberView, userRequestedInfoAboutError error: GroupCallMemberView.ErrorState) {
+    func memberView(userRequestedInfoAboutError error: GroupCallMemberView.ErrorState) {
         let title: String
         let message: String
 
