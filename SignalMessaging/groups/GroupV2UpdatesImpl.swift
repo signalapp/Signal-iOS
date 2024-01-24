@@ -697,7 +697,7 @@ private extension GroupV2UpdatesImpl {
                     applyResult.wasLocalUserAddedByChange
                 {
                     owsAssertDebug(
-                        localUserWasAddedBy == .unknown || (index == 0 && localUserWasAddedBy == applyResult.changeAuthor),
+                        localUserWasAddedBy == .unknown || applyResult.changeAuthor == .unknown || (index == 0 && localUserWasAddedBy == applyResult.changeAuthor),
                         "Multiple change actions added the user to the group"
                     )
                     localUserWasAddedBy = applyResult.changeAuthor
