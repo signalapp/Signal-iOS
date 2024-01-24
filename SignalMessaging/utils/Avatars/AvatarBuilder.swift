@@ -76,7 +76,7 @@ public class AvatarBuilder: NSObject {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(otherUsersProfileDidChange(notification:)),
-            name: .otherUsersProfileDidChange,
+            name: UserProfileNotifications.otherUsersProfileDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -88,7 +88,7 @@ public class AvatarBuilder: NSObject {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(localUsersProfileDidChange(notification:)),
-            name: .localProfileDidChange,
+            name: UserProfileNotifications.localProfileDidChange,
             object: nil
         )
     }
@@ -102,7 +102,7 @@ public class AvatarBuilder: NSObject {
     @objc
     private func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
-        if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress {
+        if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress {
             addressToAvatarIdentifierCache.removeObject(forKey: address)
         }
     }

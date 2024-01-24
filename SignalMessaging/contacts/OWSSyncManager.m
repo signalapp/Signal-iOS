@@ -77,7 +77,7 @@ NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManager
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileKeyDidChange:)
-                                                 name:kNSNotificationNameLocalProfileKeyDidChange
+                                                 name:UserProfileNotifications.localProfileKeyDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)

@@ -69,7 +69,7 @@ public class ContactsViewHelper: Dependencies {
                 }
             ),
             NotificationCenter.default.addObserver(
-                forName: .profileWhitelistDidChange,
+                forName: UserProfileNotifications.profileWhitelistDidChange,
                 object: nil,
                 queue: nil,
                 using: { [weak self] _ in

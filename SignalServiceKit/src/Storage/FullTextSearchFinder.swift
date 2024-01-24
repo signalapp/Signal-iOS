@@ -244,8 +244,7 @@ public enum GRDBFullTextSearchFinder {
         owsAssert(isIndexable)
         #endif
 
-        if let userProfile = model as? OWSUserProfile,
-           OWSUserProfile.isLocalProfileAddress(userProfile.address) {
+        if let userProfile = model as? OWSUserProfile, OWSUserProfile.isLocalProfileAddress(userProfile.internalAddress) {
             // We don't need to index the user profile for the local user.
             return false
         }
@@ -253,8 +252,7 @@ public enum GRDBFullTextSearchFinder {
             // We don't need to index the signal recipient for the local user.
             return false
         }
-        if let contactThread = model as? TSContactThread,
-           contactThread.contactPhoneNumber == kLocalProfileInvariantPhoneNumber {
+        if let contactThread = model as? TSContactThread, contactThread.contactPhoneNumber == OWSUserProfile.Constants.localProfilePhoneNumber {
             // We don't need to index the contact thread for the "local invariant phone number".
             // We do want to index the contact thread for the local user; that will have a
             // different address.
@@ -668,7 +666,7 @@ class AnySearchIndexer: Dependencies {
                 return nil
             }
 
-            guard phoneNumberString != kLocalProfileInvariantPhoneNumber else {
+            guard phoneNumberString != OWSUserProfile.Constants.localProfilePhoneNumber else {
                 return nil
             }
 

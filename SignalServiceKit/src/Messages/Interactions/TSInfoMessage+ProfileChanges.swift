@@ -60,10 +60,10 @@ public class ProfileChanges: MTLModel {
     }
 
     init(oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
-        address = newProfile.address
+        address = newProfile.internalAddress
 
-        oldNameComponents = oldProfile.nameComponents
-        newNameComponents = newProfile.nameComponents
+        oldNameComponents = oldProfile.filteredNameComponents
+        newNameComponents = newProfile.filteredNameComponents
 
         // TODO: Eventually, we'll want to track profile
         // photo and username changes here too.

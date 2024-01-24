@@ -2316,7 +2316,6 @@
 		F9C5CE01289453B400548EEE /* OWSError.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2F289453B200548EEE /* OWSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE02289453B400548EEE /* OWSBackgroundTask.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB30289453B200548EEE /* OWSBackgroundTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE07289453B400548EEE /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB35289453B200548EEE /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE08289453B400548EEE /* Math+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB36289453B200548EEE /* Math+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB37289453B200548EEE /* NSData+Image.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB38289453B200548EEE /* Array+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2367,11 +2366,9 @@
 		F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6C289453B200548EEE /* NSString+SSK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6E289453B200548EEE /* FunctionalUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6F289453B200548EEE /* AppExpiry.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE42289453B400548EEE /* SSKAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB71289453B200548EEE /* SSKAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB72289453B200548EEE /* OrderedDictionary.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB74289453B200548EEE /* OWSUserProfile.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE49289453B400548EEE /* OWSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB78289453B200548EEE /* OWSError.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB79289453B200548EEE /* DecodableDefaults.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4C289453B400548EEE /* Sequence+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -5072,7 +5069,6 @@
 		F9C5CB2F289453B200548EEE /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
 		F9C5CB30289453B200548EEE /* OWSBackgroundTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackgroundTask.h; sourceTree = "<group>"; };
 		F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncManagerProtocol.swift; sourceTree = "<group>"; };
-		F9C5CB35289453B200548EEE /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
 		F9C5CB36289453B200548EEE /* Math+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Math+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB37289453B200548EEE /* NSData+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSData+Image.swift"; sourceTree = "<group>"; };
 		F9C5CB38289453B200548EEE /* Array+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+SSK.swift"; sourceTree = "<group>"; };
@@ -5123,11 +5119,9 @@
 		F9C5CB6C289453B200548EEE /* NSString+SSK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SSK.h"; sourceTree = "<group>"; };
 		F9C5CB6E289453B200548EEE /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
 		F9C5CB6F289453B200548EEE /* AppExpiry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExpiry.swift; sourceTree = "<group>"; };
-		F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSUserProfile+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CB71289453B200548EEE /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
 		F9C5CB72289453B200548EEE /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+IsRetryable.swift"; sourceTree = "<group>"; };
-		F9C5CB74289453B200548EEE /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		F9C5CB78289453B200548EEE /* OWSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSError.swift; sourceTree = "<group>"; };
 		F9C5CB79289453B200548EEE /* DecodableDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableDefaults.swift; sourceTree = "<group>"; };
 		F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+OWS.swift"; sourceTree = "<group>"; };
@@ -10313,9 +10307,6 @@
 				F9C5CB3F289453B200548EEE /* OWSOperation.m */,
 				F9C5CB0A289453B200548EEE /* OWSOperation.swift */,
 				F9C5CAF9289453B200548EEE /* OWSQueues.h */,
-				F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */,
-				F9C5CB35289453B200548EEE /* OWSUserProfile.h */,
-				F9C5CB74289453B200548EEE /* OWSUserProfile.m */,
 				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CAFB289453B200548EEE /* ParamParser.swift */,
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
@@ -10591,7 +10582,6 @@
 				F9C5CC42289453B300548EEE /* OWSUnknownProtocolVersionMessage.h in Headers */,
 				F9C5CDBD289453B400548EEE /* OWSUpload.h in Headers */,
 				F9C5CDAE289453B400548EEE /* OWSUploadOperation.h in Headers */,
-				F9C5CE07289453B400548EEE /* OWSUserProfile.h in Headers */,
 				F9C5CBFA289453B300548EEE /* OWSVerificationStateChangeMessage.h in Headers */,
 				F9C5CD0A289453B300548EEE /* OWSVerificationStateSyncMessage.h in Headers */,
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
@@ -13214,8 +13204,6 @@
 				669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */,
 				503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */,
 				F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */,
-				F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */,
-				F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */,
 				F9C5CDD0289453B400548EEE /* OWSUserProfile.swift in Sources */,
 				F9C5CBCD289453B300548EEE /* OWSVerificationStateChangeMessage+SDS.swift in Sources */,
 				F9C5CBDE289453B300548EEE /* OWSVerificationStateChangeMessage.m in Sources */,

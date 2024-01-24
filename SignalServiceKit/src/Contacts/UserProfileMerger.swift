@@ -24,12 +24,12 @@ class UserProfileMerger: RecipientMergeObserver {
             userProfileStore: userProfileStore,
             setProfileKeyShim: { userProfile, profileKey, tx in
                 userProfile.update(
-                    profileKey: profileKey,
+                    profileKey: .setTo(profileKey),
                     userProfileWriter: .localUser,
                     authedAccount: .implicit(),
                     transaction: SDSDB.shimOnlyBridge(tx),
                     completion: {
-                        NSObject.profileManager.fetchProfile(for: userProfile.address, authedAccount: .implicit())
+                        NSObject.profileManager.fetchProfile(for: userProfile.internalAddress, authedAccount: .implicit())
                     }
                 )
             }
@@ -62,8 +62,8 @@ class UserProfileMerger: RecipientMergeObserver {
         // One of these might not be set, or one of them might have a non-canonical
         // representation (eg upper vs. lowercase ServiceId). Make sure both of
         // these are updated to reflect that latest (ACI/PNI, E164) pair.
-        userProfileToMergeInto.recipientUUID = (recipient.aci ?? recipient.pni)?.serviceIdUppercaseString
-        userProfileToMergeInto.recipientPhoneNumber = recipient.phoneNumber
+        userProfileToMergeInto.serviceIdString = (recipient.aci ?? recipient.pni)?.serviceIdUppercaseString
+        userProfileToMergeInto.phoneNumber = recipient.phoneNumber
         userProfileStore.updateUserProfile(userProfileToMergeInto, tx: tx)
 
         for userProfileToMergeFrom in userProfiles.dropFirst() {
@@ -77,8 +77,8 @@ class UserProfileMerger: RecipientMergeObserver {
     private func fetchAndExpungeUserProfiles(for recipient: SignalRecipient, tx: DBWriteTransaction) -> [OWSUserProfile] {
         return UniqueRecipientObjectMerger.fetchAndExpunge(
             for: recipient,
-            serviceIdField: \.recipientUUID,
-            phoneNumberField: \.recipientPhoneNumber,
+            serviceIdField: \.serviceIdString,
+            phoneNumberField: \.phoneNumber,
             uniqueIdField: \.uniqueId,
             fetchObjectsForServiceId: { userProfileStore.fetchUserProfiles(for: $0, tx: tx) },
             fetchObjectsForPhoneNumber: { userProfileStore.fetchUserProfiles(for: $0, tx: tx) },

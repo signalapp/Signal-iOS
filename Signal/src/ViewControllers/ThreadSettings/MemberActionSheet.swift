@@ -329,7 +329,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
                 contactsManager.shortDisplayName(for: address, transaction: transaction)
             )
         }
-        guard let primaryBadge = profile?.visibleBadges.first?.badge else { return }
+        guard let primaryBadge = profile?.primaryBadge?.badge else { return }
         let owner: BadgeDetailsSheet.Owner
         if address.isLocalAddress {
             owner = .local(shortName: shortName)

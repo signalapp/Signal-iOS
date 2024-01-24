@@ -37,7 +37,6 @@
 		"TSOutgoingMessage.outgoingMessageSchemaVersion",
 		"OWSUnknownProtocolVersionMessage.unknownProtocolVersionMessageSchemaVersion",
 		"OWSRecipientIdentity.recipientIdentitySchemaVersion",
-		"OWSUserProfile.userProfileSchemaVersion",
 		"TSRecipientReadReceipt.recipientReadReceiptSchemaVersion",
 		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion",
 		"TSOutgoingMessage.changeActionsProtoData"
@@ -52,8 +51,7 @@
 		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.didReadInstalledSticker",
 		"TSThread": "Self.modelReadCaches.threadReadCache.didReadThread",
 		"TSInteraction": "Self.modelReadCaches.interactionReadCache.didReadInteraction",
-		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.didReadAttachment",
-		"OWSUserProfile": "Self.modelReadCaches.userProfileReadCache.didReadUserProfile"
+		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.didReadAttachment"
 	},
 	"class_to_skip_serialization": [
 		"OWSContactOffersInteraction",

@@ -30,7 +30,7 @@ class UserProfileMergerTest: XCTestCase {
         let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000bbb")
         let phoneNumber = E164("+16505550100")!
 
-        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
+        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: OWSUserProfile.Constants.localProfilePhoneNumber, profileKey: nil)
         let otherProfile = buildUserProfile(serviceId: Aci.randomForTesting(), phoneNumber: nil, profileKey: nil)
 
         userProfileStore.userProfiles = [
@@ -60,7 +60,7 @@ class UserProfileMergerTest: XCTestCase {
         let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000bbb")
         let phoneNumber = E164("+16505550100")!
 
-        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
+        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: OWSUserProfile.Constants.localProfilePhoneNumber, profileKey: nil)
         let otherAciProfile = buildUserProfile(serviceId: Aci.randomForTesting(), phoneNumber: phoneNumber.stringValue, profileKey: nil)
         let otherPniProfile = buildUserProfile(serviceId: pni, phoneNumber: "+16505550101", profileKey: nil)
         let finalProfile = buildUserProfile(serviceId: aci, phoneNumber: nil, profileKey: nil)
@@ -87,32 +87,30 @@ class UserProfileMergerTest: XCTestCase {
             )
         }
 
-        finalProfile.recipientPhoneNumber = phoneNumber.stringValue
+        finalProfile.phoneNumber = phoneNumber.stringValue
         finalProfile.setValue(OWSAES256Key(data: Data(repeating: 2, count: 32))!, forKey: "profileKey")
-        otherAciProfile.recipientPhoneNumber = nil
-        otherPniProfile.recipientUUID = nil
+        otherAciProfile.phoneNumber = nil
+        otherPniProfile.serviceIdString = nil
         XCTAssertEqual(userProfileStore.userProfiles, [localProfile, finalProfile, otherAciProfile, otherPniProfile])
     }
 
     private func buildUserProfile(serviceId: ServiceId?, phoneNumber: String?, profileKey: Data?) -> OWSUserProfile {
-        OWSUserProfile(
-            grdbId: 0,
+        return OWSUserProfile(
+            id: nil,
             uniqueId: UUID().uuidString,
+            serviceIdString: serviceId?.serviceIdUppercaseString,
+            phoneNumber: phoneNumber,
             avatarFileName: nil,
             avatarUrlPath: nil,
+            profileKey: profileKey.map { OWSAES256Key(data: $0)! },
+            givenName: nil,
+            familyName: nil,
             bio: nil,
             bioEmoji: nil,
-            canReceiveGiftBadges: false,
-            familyName: nil,
-            isPniCapable: false,
-            isStoriesCapable: false,
+            badges: [],
             lastFetchDate: nil,
             lastMessagingDate: nil,
-            profileBadgeInfo: nil,
-            profileKey: profileKey.map { OWSAES256Key(data: $0)! },
-            profileName: nil,
-            recipientPhoneNumber: phoneNumber,
-            recipientUUID: serviceId?.serviceIdUppercaseString
+            isPniCapable: false
         )
     }
 }

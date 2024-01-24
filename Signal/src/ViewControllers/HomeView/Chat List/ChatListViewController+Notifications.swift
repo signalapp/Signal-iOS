@@ -40,15 +40,15 @@ extension ChatListViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(localProfileDidChange),
-                                               name: .localProfileDidChange,
+                                               name: UserProfileNotifications.localProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(profileWhitelistDidChange),
-                                               name: .profileWhitelistDidChange,
+                                               name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherProfileDidChange(_:)),
-                                               name: .otherUsersProfileDidChange,
+                                               name: UserProfileNotifications.otherUsersProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
@@ -171,8 +171,8 @@ extension ChatListViewController {
 
         // If profile whitelist just changed, we need to update the associated
         // thread to reflect the latest message request state.
-        let address: SignalServiceAddress? = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress
-        let groupId: Data? = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data
+        let address: SignalServiceAddress? = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress
+        let groupId: Data? = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data
 
         let changedThreadId: String? = databaseStorage.read { transaction in
             if let address = address,
@@ -195,7 +195,7 @@ extension ChatListViewController {
     private func otherProfileDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress
+        let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress
 
         let changedThreadId: String? = databaseStorage.read { readTx in
             if let address = address, address.isValid {

@@ -408,39 +408,15 @@ public class ProfileFetcherJob: NSObject {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
 
+        if let decryptedProfile = fetchedProfile.decryptedProfile, decryptedProfile.givenName == nil {
+            Logger.warn("Decrypted a profile that was missing its givenName.")
+        }
+
         let givenName = fetchedProfile.decryptedProfile?.givenName
         let familyName = fetchedProfile.decryptedProfile?.familyName
         let bio = fetchedProfile.decryptedProfile?.bio
         let bioEmoji = fetchedProfile.decryptedProfile?.bioEmoji
         let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
-        let phoneNumberSharing = fetchedProfile.decryptedProfile?.phoneNumberSharing
-
-        if DebugFlags.internalLogging {
-            let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
-            let hasAvatar = profile.avatarUrlPath != nil
-            let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
-            let hasGivenName = givenName != nil
-            let hasFamilyName = familyName != nil
-            let hasBio = bio != nil
-            let hasBioEmoji = bioEmoji != nil
-            let hasPaymentAddress = paymentAddress != nil
-            let hasPhoneNumberSharing = phoneNumberSharing != nil
-            let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
-
-            Logger.info(
-                "serviceId: \(serviceId), " +
-                "hasAvatar: \(hasAvatar), " +
-                "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
-                "hasGivenName: \(hasGivenName), " +
-                "hasFamilyName: \(hasFamilyName), " +
-                "hasBio: \(hasBio), " +
-                "hasBioEmoji: \(hasBioEmoji), " +
-                "hasPaymentAddress: \(hasPaymentAddress), " +
-                "hasPhoneNumberSharing: \(hasPhoneNumberSharing), " +
-                "profileKey: \(profileKeyDescription), " +
-                "badges: \(badges)"
-            )
-        }
 
         await databaseStorage.awaitableWrite { transaction in
             Self.updateUnidentifiedAccess(

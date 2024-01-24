@@ -195,21 +195,21 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertNil(newMessage.authorPhoneNumber)
 
             XCTAssertEqual(newProfile.uniqueId, oldPhoneNumberProfile.uniqueId)
-            XCTAssertEqual(newProfile.recipientPhoneNumber, newPhoneNumber.stringValue)
-            XCTAssertEqual(newProfile.recipientUUID, aci.serviceIdUppercaseString)
+            XCTAssertEqual(newProfile.phoneNumber, newPhoneNumber.stringValue)
+            XCTAssertEqual(newProfile.serviceIdString, aci.serviceIdUppercaseString)
             XCTAssertNil(OWSUserProfile.anyFetch(uniqueId: newPhoneNumberProfile.uniqueId, transaction: transaction))
 
             XCTAssertNil(newAccount)
         }
     }
 
-    func testHighTrustUUIDChange() {
+    func testHighTrustUUIDChange() throws {
         let oldAci = Aci.randomForTesting()
         let newAci = Aci.randomForTesting()
         let phoneNumber = E164("+16505550101")!
         let oldAddress = SignalServiceAddress(serviceId: oldAci, phoneNumber: phoneNumber.stringValue)
 
-        write { transaction in
+        try write { transaction in
             let oldThread = TSContactThread.getOrCreateThread(
                 withContactAddress: oldAddress,
                 transaction: transaction
@@ -223,7 +223,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldProfile = OWSUserProfile.getOrBuildUserProfile(
+            var oldProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: oldAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -273,11 +273,11 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertNil(newMessage.authorPhoneNumber)
             XCTAssertNotEqual(newAddress, newMessage.authorAddress)
 
-            oldProfile.anyReload(transaction: transaction)
+            oldProfile = try XCTUnwrap(OWSUserProfile.anyFetch(uniqueId: oldProfile.uniqueId, transaction: transaction))
             XCTAssertNotEqual(oldProfile.uniqueId, newProfile.uniqueId)
-            XCTAssertNil(oldProfile.recipientPhoneNumber)
-            XCTAssertEqual(newAddress, newProfile.address)
-            XCTAssertNotEqual(newAddress, oldProfile.address)
+            XCTAssertNil(oldProfile.phoneNumber)
+            XCTAssertEqual(newAddress, newProfile.internalAddress)
+            XCTAssertNotEqual(newAddress, oldProfile.internalAddress)
 
             XCTAssertEqual(newAccount.uniqueId, oldAccount.uniqueId)
             XCTAssertEqual(newAccount.recipientPhoneNumber, phoneNumber.stringValue)

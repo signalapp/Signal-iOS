@@ -107,10 +107,10 @@ final class LocalProfileChecker {
             if localProfile.avatarUrlPath != mostRecentRemoteProfile.avatarUrlPath {
                 mismatchedProperties.append("avatarUrlPath")
             }
-            if localProfile.unfilteredGivenName != mostRecentRemoteProfile.decryptedProfile.givenName {
+            if localProfile.givenName != mostRecentRemoteProfile.decryptedProfile.givenName {
                 mismatchedProperties.append("givenName")
             }
-            if localProfile.unfilteredFamilyName != mostRecentRemoteProfile.decryptedProfile.familyName {
+            if localProfile.familyName != mostRecentRemoteProfile.decryptedProfile.familyName {
                 mismatchedProperties.append("familyName")
             }
             let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx) == .everybody

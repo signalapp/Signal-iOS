@@ -140,7 +140,7 @@ public class CVLoadCoordinator: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(profileWhitelistDidChange),
-                                               name: .profileWhitelistDidChange,
+                                               name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
@@ -148,11 +148,11 @@ public class CVLoadCoordinator: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(localProfileDidChange),
-                                               name: .localProfileDidChange,
+                                               name: UserProfileNotifications.localProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
-                                               name: .otherUsersProfileDidChange,
+                                               name: UserProfileNotifications.otherUsersProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(skipContactAvatarBlurDidChange(notification:)),
@@ -221,7 +221,7 @@ public class CVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
 
         if let contactThread = thread as? TSContactThread {
-            guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+            guard let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
                   address.isValid else {
                 owsFailDebug("Missing or invalid address.")
                 return

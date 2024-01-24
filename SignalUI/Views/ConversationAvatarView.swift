@@ -543,12 +543,12 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             if dataSource.contactAddress?.isLocalAddress == true {
                 NotificationCenter.default.addObserver(self,
                                                        selector: #selector(localUsersProfileDidChange(notification:)),
-                                                       name: .localProfileDidChange,
+                                                       name: UserProfileNotifications.localProfileDidChange,
                                                        object: nil)
             } else {
                 NotificationCenter.default.addObserver(self,
                                                        selector: #selector(otherUsersProfileDidChange(notification:)),
-                                                       name: .otherUsersProfileDidChange,
+                                                       name: UserProfileNotifications.otherUsersProfileDidChange,
                                                        object: nil)
             }
 
@@ -682,7 +682,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     @objc
     private func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
-        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress, changedAddress.isValid else {
+        guard let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress, changedAddress.isValid else {
             owsFailDebug("changedAddress was unexpectedly nil")
             return
         }

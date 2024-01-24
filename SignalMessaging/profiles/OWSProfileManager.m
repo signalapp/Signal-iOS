@@ -17,7 +17,6 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSUpload.h>
-#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -149,10 +148,14 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [self logLocalAvatarStatus:self.localUserProfile label:@"cached copy"];
 
         __block OWSUserProfile *_Nullable localUserProfile;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            localUserProfile = [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                            transaction:transaction];
-        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+        [self.databaseStorage
+            readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                localUserProfile = [OWSUserProfile getUserProfileFor:OWSUserProfile.localProfileAddress
+                                                         transaction:transaction];
+            }
+                     file:__FILE__
+                 function:__FUNCTION__
+                     line:__LINE__];
         [self logLocalAvatarStatus:localUserProfile label:@"database copy"];
     });
 }
@@ -165,7 +168,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
     BOOL hasAvatarFileOnDisk = NO;
     if (localUserProfile.avatarFileName.length > 0) {
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:localUserProfile.avatarFileName];
+        NSString *filePath = [OWSUserProfile profileAvatarFilePathFor:localUserProfile.avatarFileName];
         hasAvatarFileOnDisk = [OWSFileSystem fileOrFolderExistsAtPath:filePath];
     }
 
@@ -173,7 +176,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         OWSLogInfo(
             @"Local user profile (%@). address: %@, avatarUrlPath: %@, avatarFileName: %@, hasAvatarFileOnDisk: %d",
             label,
-            localUserProfile.address,
+            localUserProfile.internalAddress,
             localUserProfile.avatarUrlPath,
             localUserProfile.avatarFileName,
             hasAvatarFileOnDisk);
@@ -181,7 +184,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         OWSLogInfo(
             @"Local user profile (%@). address: %@, avatarUrlPath: %d, avatarFileName: %d, hasAvatarFileOnDisk: %d",
             label,
-            localUserProfile.address,
+            localUserProfile.internalAddress,
             localUserProfile.avatarUrlPath.length > 0,
             localUserProfile.avatarFileName.length > 0,
             hasAvatarFileOnDisk);
@@ -262,8 +265,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         }
     }
 
-    OWSUserProfile *_Nullable localUserProfile =
-        [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+    OWSUserProfile *_Nullable localUserProfile = [OWSUserProfile getUserProfileFor:OWSUserProfile.localProfileAddress
+                                                                       transaction:transaction];
 
     if (migrationsAreComplete) {
         @synchronized(self) {
@@ -284,7 +287,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [OWSUserProfile localUserProfileExistsWithTransaction:transaction];
+    return [OWSUserProfile doesLocalProfileExistWithTransaction:transaction];
 }
 
 - (OWSAES256Key *)localProfileKey
@@ -306,17 +309,17 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (nullable NSString *)localGivenName
 {
-    return self.localUserProfile.givenName;
+    return self.localUserProfile.filteredGivenName;
 }
 
 - (nullable NSString *)localFamilyName
 {
-    return self.localUserProfile.familyName;
+    return self.localUserProfile.filteredFamilyName;
 }
 
 - (nullable NSString *)localFullName
 {
-    return self.localUserProfile.fullName;
+    return self.localUserProfile.filteredFullName;
 }
 
 - (nullable UIImage *)localProfileAvatarImage
@@ -335,7 +338,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo
 {
-    return self.localUserProfile.profileBadgeInfo;
+    return self.localUserProfile.badges;
 }
 
 - (BOOL)localProfileIsPniCapable
@@ -348,13 +351,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
 }
 
-#ifdef USE_DEBUG_UI
-- (void)logLocalProfile
-{
-    OWSLogVerbose(@"Local profile: %@", self.localUserProfile.dictionaryValue);
-}
-#endif
-
 - (OWSProfileSnapshot *)profileSnapshotForUserProfile:(OWSUserProfile *)userProfile
                                   shouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
@@ -362,13 +358,13 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (shouldIncludeAvatar && userProfile.avatarFileName.length > 0) {
         avatarData = [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
     }
-    return [[OWSProfileSnapshot alloc] initWithGivenName:userProfile.givenName
-                                              familyName:userProfile.familyName
-                                                fullName:userProfile.fullName
+    return [[OWSProfileSnapshot alloc] initWithGivenName:userProfile.filteredGivenName
+                                              familyName:userProfile.filteredFamilyName
+                                                fullName:userProfile.filteredFullName
                                                      bio:userProfile.bio
                                                 bioEmoji:userProfile.bioEmoji
                                               avatarData:avatarData
-                                        profileBadgeInfo:userProfile.profileBadgeInfo];
+                                        profileBadgeInfo:userProfile.badges];
 }
 
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image
@@ -482,11 +478,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSUserProfile *userProfile = self.localUserProfile;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey]
-                       userProfileWriter:UserProfileWriter_Debugging
-                           authedAccount:AuthedAccount.implicit
-                             transaction:transaction
-                              completion:nil];
+        [userProfile clearProfileWithProfileKey:[OWSAES256Key generateRandomKey]
+                              userProfileWriter:UserProfileWriter_Debugging
+                                  authedAccount:AuthedAccount.implicit
+                                    transaction:transaction
+                                     completion:nil];
     });
     [AccountAttributesUpdaterObjcBridge updateAccountAttributes].catch(
         ^(NSError *error) { OWSLogError(@"Error: %@.", error); });
@@ -682,16 +678,16 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [tx addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
-        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
+        if ([OWSUserProfile shouldUpdateStorageServiceForUserProfileWriter:userProfileWriter]) {
             [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
             [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                postNotificationNameAsync:UserProfileNotifications.profileWhitelistDidChange
                                    object:nil
                                  userInfo:@{
-                                     kNSNotificationKey_ProfileAddress : address,
+                                     UserProfileNotifications.profileAddressKey : address,
                                      kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                                  }];
         }
@@ -726,16 +722,16 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [tx addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
-        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
+        if ([OWSUserProfile shouldUpdateStorageServiceForUserProfileWriter:userProfileWriter]) {
             [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
             [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+                postNotificationNameAsync:UserProfileNotifications.profileWhitelistDidChange
                                    object:nil
                                  userInfo:@{
-                                     kNSNotificationKey_ProfileAddress : address,
+                                     UserProfileNotifications.profileAddressKey : address,
                                      kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                                  }];
         }
@@ -819,15 +815,15 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [transaction addSyncCompletion:^{
         // Mark the group for update
-        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
+        if ([OWSUserProfile shouldUpdateStorageServiceForUserProfileWriter:userProfileWriter]) {
             [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
         [[NSNotificationCenter defaultCenter]
-            postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+            postNotificationNameAsync:UserProfileNotifications.profileWhitelistDidChange
                                object:nil
                              userInfo:@{
-                                 kNSNotificationKey_ProfileGroupId : groupId,
+                                 UserProfileNotifications.profileGroupIdKey : groupId,
                                  kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                              }];
     }];
@@ -851,15 +847,15 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     [transaction addSyncCompletion:^{
         // Mark the group for update
-        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
+        if ([OWSUserProfile shouldUpdateStorageServiceForUserProfileWriter:userProfileWriter]) {
             [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
         [[NSNotificationCenter defaultCenter]
-            postNotificationNameAsync:kNSNotificationNameProfileWhitelistDidChange
+            postNotificationNameAsync:UserProfileNotifications.profileWhitelistDidChange
                                object:nil
                              userInfo:@{
-                                 kNSNotificationKey_ProfileGroupId : groupId,
+                                 UserProfileNotifications.profileGroupIdKey : groupId,
                                  kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                              }];
     }];
@@ -935,28 +931,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark - Other User's Profiles
 
-- (void)logUserProfiles
-{
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        OWSLogError(@"logUserProfiles: %ld", (unsigned long)[OWSUserProfile anyCountWithTransaction:transaction]);
-
-        [OWSUserProfile
-            anyEnumerateWithTransaction:transaction
-                                batched:YES
-                                  block:^(OWSUserProfile *userProfile, BOOL *stop) {
-                                      OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                  @"avatar file: %d, given name: %@, family name: %@, badges: %@",
-                                          userProfile.publicAddress,
-                                          userProfile.profileKey != nil,
-                                          userProfile.avatarUrlPath != nil,
-                                          userProfile.avatarFileName != nil,
-                                          userProfile.givenName,
-                                          userProfile.familyName,
-                                          userProfile.profileBadgeInfo);
-                                  }];
-    }];
-}
-
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
         userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -1030,7 +1004,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
               authedAccount:(AuthedAccount *)authedAccount
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
     if ([authedAccount isAddressForLocalUser:address]) {
         address = [OWSUserProfile localProfileAddress];
     }
@@ -1055,7 +1029,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
               authedAccount:(AuthedAccount *)authedAccount
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
     if ([authedAccount isAddressForLocalUser:address]) {
         address = [OWSUserProfile localProfileAddress];
     }
@@ -1100,7 +1074,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.unfilteredGivenName;
+    return userProfile.givenName;
 }
 
 - (nullable NSString *)givenNameForAddress:(SignalServiceAddress *)address
@@ -1110,7 +1084,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.givenName;
+    return userProfile.filteredGivenName;
 }
 
 - (nullable NSString *)unfilteredFamilyNameForAddress:(SignalServiceAddress *)address
@@ -1120,7 +1094,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.unfilteredFamilyName;
+    return userProfile.familyName;
 }
 
 
@@ -1131,7 +1105,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.familyName;
+    return userProfile.filteredFamilyName;
 }
 
 - (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
@@ -1141,7 +1115,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.nameComponents;
+    return userProfile.filteredNameComponents;
 }
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
@@ -1151,7 +1125,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    return userProfile.fullName;
+    return userProfile.filteredFullName;
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
@@ -1181,7 +1155,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (userProfile.avatarFileName.length < 1) {
         return NO;
     } else {
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+        NSString *filePath = [OWSUserProfile profileAvatarFilePathFor:userProfile.avatarFileName];
         return [OWSFileSystem fileOrFolderExistsAtPath:filePath];
     }
 }
@@ -1240,7 +1214,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
     OWSAssertDebug(address.isValid);
 
     // For "local reads", use the local user profile.
@@ -1260,7 +1234,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     NSString *filename = [self generateAvatarFilename];
-    NSString *avatarPath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
+    NSString *avatarPath = [OWSUserProfile profileAvatarFilePathFor:filename];
     NSURL *avatarUrl = [NSURL fileURLWithPath:avatarPath];
     if (!avatarUrl) {
         OWSFailDebug(@"Invalid URL for avatarPath %@", avatarPath);
@@ -1304,24 +1278,12 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                   authedAccount:(AuthedAccount *)authedAccount
                     transaction:(SDSAnyWriteTransaction *)writeTx
 {
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
     if ([authedAccount isAddressForLocalUser:address]) {
         address = [OWSUserProfile localProfileAddress];
     }
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(NSThread.isMainThread == NO);
-
-    OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
-                @"avatarFile: %@, userProfileWriter: %@",
-        addressParam,
-        address,
-        givenName,
-        familyName,
-        bio,
-        bioEmoji,
-        avatarUrlPath,
-        optionalAvatarFileUrl,
-        NSStringForUserProfileWriter(userProfileWriter));
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
                                                                     authedAccount:authedAccount
@@ -1360,27 +1322,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                              transaction:writeTx
                               completion:nil];
     }
-
-    if (userProfile.profileKey && userProfile.avatarFileName.length > 0) {
-        NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
-        if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-            OWSLogError(@"downloaded file is missing for profile: %@, userProfileWriter: %@",
-                userProfile.address,
-                NSStringForUserProfileWriter(userProfileWriter));
-            [userProfile updateWithAvatarFileName:nil
-                                userProfileWriter:userProfileWriter
-                                    authedAccount:authedAccount
-                                      transaction:writeTx];
-        }
-    }
-
-    // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
-    // So if avatarUrlPath is set and avatarFileName is not set, we should to
-    // download this avatar. downloadAvatarForUserProfile will de-bounce
-    // downloads.
-    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-        [self downloadAndDecryptAvatarIfNeededObjCWithUserProfile:userProfile authedAccount:authedAccount];
-    }
 }
 
 #pragma mark - Avatar Disk Cache
@@ -1389,7 +1330,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSAssertDebug(filename.length > 0);
 
-    NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
+    NSString *filePath = [OWSUserProfile profileAvatarFilePathFor:filename];
     NSData *_Nullable avatarData = [NSData dataWithContentsOfFile:filePath];
 
     if (![avatarData ows_isValidImage]) {
@@ -1439,7 +1380,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         return;
     }
 
-    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
@@ -1492,29 +1433,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self rotateLocalProfileKeyIfNecessary]; });
 }
 
-#ifdef USE_DEBUG_UI
-+ (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    NSArray<OWSUserProfile *> *userProfiles = [OWSUserProfile anyFetchAllWithTransaction:transaction];
-    for (OWSUserProfile *userProfile in userProfiles) {
-        if ([OWSUserProfile isLocalProfileAddress:userProfile.address]) {
-            continue;
-        }
-        if (userProfile.profileKey == nil) {
-            continue;
-        }
-        [userProfile discardProfileKeyWithUserProfileWriter:UserProfileWriter_Debugging
-                                              authedAccount:AuthedAccount.implicit
-                                                transaction:transaction];
-    }
-}
-#endif
-
 #pragma mark - Clean Up
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [OWSUserProfile allProfileAvatarFilePathsWithTransaction:transaction];
+    return [OWSUserProfile allProfileAvatarFilePathsWithTx:transaction];
 }
 
 @end

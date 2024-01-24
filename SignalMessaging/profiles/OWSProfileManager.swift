@@ -15,7 +15,7 @@ class OWSProfileManagerSwiftValues {
 
 extension OWSProfileManager: ProfileManager {
     public func fullNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [String?] {
-        return userProfilesRefinery(for: addresses, tx: tx).values.map { $0?.fullName }
+        return userProfilesRefinery(for: addresses, tx: tx).values.map { $0?.filteredFullName }
     }
 
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
@@ -544,7 +544,7 @@ extension OWSProfileManager: ProfileManager {
         authedAccount: AuthedAccount,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        let address = OWSUserProfile.resolve(addressParam)
+        let address = OWSUserProfile.internalAddress(for: addressParam)
 
         guard let profileKey = OWSAES256Key(data: profileKeyData) else {
             owsFailDebug("Invalid profile key data.")
@@ -578,7 +578,7 @@ extension OWSProfileManager: ProfileManager {
         }
 
         userProfile.update(
-            profileKey: profileKey,
+            profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,
@@ -589,7 +589,7 @@ extension OWSProfileManager: ProfileManager {
     // MARK: - Bulk Fetching
 
     private func userProfilesRefinery(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
-        let resolvedAddresses = addresses.map { OWSUserProfile.resolve($0) }
+        let resolvedAddresses = addresses.map { OWSUserProfile.internalAddress(for: $0) }
 
         return .init(resolvedAddresses).refine(condition: { address in
             OWSUserProfile.isLocalProfileAddress(address)
@@ -842,10 +842,10 @@ extension OWSProfileManager: ProfileManager {
             case .noChange:
                 // This is the *only* place that can clear our own name, and it only does
                 // so when the name we think we have (which should be valid) isn't valid.
-                newGivenName = userProfile.unfilteredGivenName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+                newGivenName = userProfile.givenName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
             }
             let newFamilyName = profileChanges.profileFamilyName.orExistingValue(
-                userProfile.unfilteredFamilyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+                userProfile.familyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
             )
             let newBio = profileChanges.profileBio.orExistingValue(userProfile.bio)
             let newBioEmoji = profileChanges.profileBioEmoji.orExistingValue(userProfile.bioEmoji)
@@ -870,12 +870,12 @@ extension OWSProfileManager: ProfileManager {
                     transaction: tx
                 )
                 userProfile.update(
-                    givenName: newGivenName?.stringValue.rawValue,
-                    familyName: newFamilyName?.stringValue.rawValue,
-                    bio: newBio,
-                    bioEmoji: newBioEmoji,
-                    avatarUrlPath: versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath),
-                    avatarFileName: avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName),
+                    givenName: .setTo(newGivenName?.stringValue.rawValue),
+                    familyName: .setTo(newFamilyName?.stringValue.rawValue),
+                    bio: .setTo(newBio),
+                    bioEmoji: .setTo(newBioEmoji),
+                    avatarUrlPath: .setTo(versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath)),
+                    avatarFileName: .setTo(avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName)),
                     userProfileWriter: profileChanges.userProfileWriter,
                     authedAccount: authedAccount,
                     transaction: tx,
@@ -953,7 +953,7 @@ extension OWSProfileManager: ProfileManager {
 
     private func writeProfileAvatarToDisk(avatarData: Data) throws -> String {
         let filename = self.generateAvatarFilename()
-        let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
+        let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
         do {
             try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
         } catch {
@@ -1273,11 +1273,11 @@ extension OWSProfileManager {
     public func downloadAndDecryptAvatarIfNeeded(userProfile: OWSUserProfile, authedAccount: AuthedAccount) async throws {
         let backgroundTask = OWSBackgroundTask(label: #function)
         defer { backgroundTask.end() }
-        try await _downloadAndDecryptAvatarIfNeeded(internalAddress: userProfile.address, authedAccount: authedAccount)
+        try await _downloadAndDecryptAvatarIfNeeded(internalAddress: userProfile.internalAddress, authedAccount: authedAccount)
     }
 
     private func _downloadAndDecryptAvatarIfNeeded(internalAddress: SignalServiceAddress, authedAccount: AuthedAccount) async throws {
-        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getFor(internalAddress, transaction: tx) }
+        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: internalAddress, transaction: tx) }
         guard
             let oldProfile,
             let profileKey = oldProfile.profileKey,
@@ -1290,7 +1290,7 @@ extension OWSProfileManager {
         let shouldRetry: Bool
         do {
             let filename = generateAvatarFilename()
-            let filePath = OWSUserProfile.profileAvatarFilepath(withFilename: filename)
+            let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
             let avatarData = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: profileKey).awaitable()
             try avatarData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
             var didConsumeFilePath = false
@@ -1310,10 +1310,11 @@ extension OWSProfileManager {
                     return (true, false)
                 }
                 newProfile.update(
-                    avatarFileName: filename,
+                    avatarFileName: .setTo(filename),
                     userProfileWriter: .avatarDownload,
                     authedAccount: authedAccount,
-                    transaction: tx
+                    transaction: tx,
+                    completion: nil
                 )
                 return (false, true)
             }

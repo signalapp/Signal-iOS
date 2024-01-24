@@ -36,11 +36,11 @@ class MockUserProfileStore: UserProfileStore {
     var userProfiles = [OWSUserProfile]()
 
     func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
-        return userProfiles.filter { $0.recipientUUID == serviceId.serviceIdUppercaseString }.map { $0.shallowCopy() }
+        return userProfiles.filter { $0.serviceIdString == serviceId.serviceIdUppercaseString }.map { $0.shallowCopy() }
     }
 
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
-        return userProfiles.filter { $0.recipientPhoneNumber == phoneNumber.stringValue }.map { $0.shallowCopy() }
+        return userProfiles.filter { $0.phoneNumber == phoneNumber.stringValue }.map { $0.shallowCopy() }
     }
 
     func updateUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {

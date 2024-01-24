@@ -81,7 +81,7 @@ class ProfileBioViewController: OWSTableViewController2 {
 
     private func updateNavigation() {
         if bioTextField.isFirstResponder, let normalizedProfileBio {
-            let remainingGlyphCount = max(0, OWSUserProfile.kMaxBioLengthGlyphs - normalizedProfileBio.glyphCount)
+            let remainingGlyphCount = max(0, OWSUserProfile.Constants.maxBioLengthGlyphs - normalizedProfileBio.glyphCount)
             let titleFormat = OWSLocalizedString(
                 "PROFILE_BIO_VIEW_TITLE_FORMAT",
                 comment: "Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}."
@@ -353,8 +353,8 @@ extension ProfileBioViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            maxByteCount: OWSUserProfile.kMaxBioLengthBytes,
-            maxGlyphCount: OWSUserProfile.kMaxBioLengthGlyphs
+            maxByteCount: OWSUserProfile.Constants.maxBioLengthBytes,
+            maxGlyphCount: OWSUserProfile.Constants.maxBioLengthGlyphs
         )
     }
 

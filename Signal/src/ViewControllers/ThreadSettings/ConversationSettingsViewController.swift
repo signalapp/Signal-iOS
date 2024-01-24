@@ -85,11 +85,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
-                                               name: .otherUsersProfileDidChange,
+                                               name: UserProfileNotifications.otherUsersProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(profileWhitelistDidChange(notification:)),
-                                               name: .profileWhitelistDidChange,
+                                               name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blocklistDidChange(notification:)),
@@ -956,7 +956,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     private func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
-        guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+        guard let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
             address.isValid else {
                 owsFailDebug("Missing or invalid address.")
                 return
@@ -975,13 +975,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         AssertIsOnMainThread()
 
         // If profile whitelist just changed, we may need to refresh the view.
-        if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+        if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
             let contactThread = thread as? TSContactThread,
             contactThread.contactAddress == address {
             updateTableContents()
         }
 
-        if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
+        if let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
             let groupThread = thread as? TSGroupThread,
             groupThread.groupModel.groupId == groupId {
             updateTableContents()

@@ -248,7 +248,7 @@ public extension DatabaseRecovery {
             // We should try to copy thread data.
             OWSReaction.databaseTableName,
             OWSRecipientIdentity.table.tableName,
-            OWSUserProfile.table.tableName,
+            OWSUserProfile.databaseTableName,
             SignalAccount.databaseTableName,
             SignalRecipient.databaseTableName,
             StoryMessage.databaseTableName,

@@ -31,13 +31,9 @@ class DebugUIProfile: DebugUIPage, Dependencies {
             OWSTableItem(title: "Log Profile Whitelist") {
                 Self.profileManagerImpl.logProfileWhitelist()
             },
-            OWSTableItem(title: "Log User Profiles") {
-                Self.profileManagerImpl.logUserProfiles()
-            },
             OWSTableItem(title: "Log Profile Key") {
                 let localProfileKey = Self.profileManagerImpl.localProfileKey()
                 Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
-                Self.profileManagerImpl.logUserProfiles()
             },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
                 Self.profileManagerImpl.debug_regenerateLocalProfileWithSneakyTransaction()
@@ -61,9 +57,6 @@ class DebugUIProfile: DebugUIPage, Dependencies {
             },
             OWSTableItem(title: "Re-upload Profile") {
                 Self.profileManagerImpl.reuploadLocalProfile(authedAccount: .implicit())
-            },
-            OWSTableItem(title: "Log Local Profile") {
-                Self.profileManagerImpl.logLocalProfile()
             },
             OWSTableItem(title: "Fetch Local Profile") {
                 ProfileFetcherJob.fetchProfile(

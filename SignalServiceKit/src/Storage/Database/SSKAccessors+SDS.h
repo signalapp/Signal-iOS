@@ -156,14 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSUserProfile (SDS)
-
-@property (atomic, nullable, readonly) NSString *profileName;
-
-@end
-
-#pragma mark -
-
 @interface OWSGroupCallMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;

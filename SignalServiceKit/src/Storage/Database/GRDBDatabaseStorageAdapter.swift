@@ -160,7 +160,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSMessageContentJob.table,
             OWSRecipientIdentity.table,
             OWSDisappearingMessagesConfiguration.table,
-            OWSUserProfile.table,
             TestModel.table,
             IncomingGroupsV2MessageJob.table,
             TSPaymentModel.table
@@ -195,7 +194,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             SignalRecipient.self,
             HiddenRecipient.self,
             TSPaymentsActivationRequestModel.self,
-            CallRecord.self
+            CallRecord.self,
+            OWSUserProfile.self,
         ]
     }
 

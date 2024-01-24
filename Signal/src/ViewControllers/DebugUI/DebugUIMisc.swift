@@ -121,9 +121,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             OWSTableItem(title: "Remove local PNI identity key", actionBlock: {
                 DebugUIMisc.removeLocalPniIdentityKey()
             }),
-            OWSTableItem(title: "Discard All Profile Keys", actionBlock: {
-                DebugUIMisc.discardAllProfileKeys()
-            }),
 
             OWSTableItem(title: "Log all sticker suggestions", actionBlock: {
                 DebugUIMisc.logStickerSuggestions()
@@ -349,12 +346,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
         databaseStorage.write { transaction in
             let identityManager = DependenciesBridge.shared.identityManager
             identityManager.setIdentityKeyPair(nil, for: .pni, tx: transaction.asV2Write)
-        }
-    }
-
-    private static func discardAllProfileKeys() {
-        databaseStorage.write { transaction in
-            OWSProfileManager.discardAllProfileKeys(with: transaction)
         }
     }
 

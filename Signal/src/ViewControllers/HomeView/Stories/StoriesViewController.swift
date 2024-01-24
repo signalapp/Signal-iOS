@@ -56,7 +56,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         dataSource.reloadStories()
         dataSource.beginObservingDatabase()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: .localProfileDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: UserProfileNotifications.localProfileDidChange, object: nil)
     }
 
     var tableViewIfLoaded: UITableView? {

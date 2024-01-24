@@ -757,7 +757,7 @@ public extension GroupMembership {
 
             var memberStates = self.memberStates
 
-            let localProfileInvariantAddress = SignalServiceAddress(phoneNumber: kLocalProfileInvariantPhoneNumber)
+            let localProfileInvariantAddress = OWSUserProfile.localProfileAddress
             if memberStates[localProfileInvariantAddress] != nil {
                 owsFailDebug("Removing localProfileInvariantAddress.")
                 memberStates.removeValue(forKey: localProfileInvariantAddress)

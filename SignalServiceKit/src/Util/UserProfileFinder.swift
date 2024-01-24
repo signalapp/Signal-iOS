@@ -26,20 +26,20 @@ public class UserProfileFinder: NSObject {
         var userProfiles = [OWSUserProfile]()
         if let serviceId = address.serviceId {
             userProfiles.append(contentsOf: userProfilesWhere(
-                column: "\(userProfileColumn: .recipientUUID)",
+                column: "\(userProfileColumn: .serviceIdString)",
                 anyValueIn: [serviceId.serviceIdUppercaseString],
                 tx: tx
             ))
         }
         if let phoneNumber = address.phoneNumber {
             userProfiles.append(contentsOf: userProfilesWhere(
-                column: "\(userProfileColumn: .recipientPhoneNumber)",
+                column: "\(userProfileColumn: .phoneNumber)",
                 anyValueIn: [phoneNumber],
                 tx: tx
             ))
         }
         let result = userProfiles.removingDuplicates(uniquingElementsBy: \.uniqueId)
-        result.forEach { $0.loadBadgeContent(with: tx) }
+        result.forEach { $0.loadBadgeContent(tx: tx) }
         return result
     }
 
@@ -50,29 +50,29 @@ public class UserProfileFinder: NSObject {
             return userProfilesFor(phoneNumbers: addresses.map { $0.phoneNumber }, tx: tx)
         }.values
 
-        userProfiles.forEach { $0?.loadBadgeContent(with: tx) }
+        userProfiles.forEach { $0?.loadBadgeContent(tx: tx) }
         return userProfiles
     }
 
     func fetchUserProfiles(serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
         let userProfiles = userProfilesWhere(
-            column: "\(userProfileColumn: .recipientUUID)",
+            column: "\(userProfileColumn: .serviceIdString)",
             anyValueIn: [serviceId.serviceIdUppercaseString],
             tx: tx
         )
 
-        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        userProfiles.forEach { $0.loadBadgeContent(tx: tx) }
         return userProfiles
     }
 
     func fetchUserProfiles(phoneNumber: String, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
         let userProfiles = userProfilesWhere(
-            column: "\(userProfileColumn: .recipientPhoneNumber)",
+            column: "\(userProfileColumn: .phoneNumber)",
             anyValueIn: [phoneNumber],
             tx: tx
         )
 
-        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        userProfiles.forEach { $0.loadBadgeContent(tx: tx) }
         return userProfiles
     }
 
@@ -83,12 +83,12 @@ public class UserProfileFinder: NSObject {
         return Refinery<ServiceId?, OWSUserProfile>(optionalServiceIds)
             .refineNonnilKeys { (serviceIds: AnySequence<ServiceId>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
-                    column: "\(userProfileColumn: .recipientUUID)",
+                    column: "\(userProfileColumn: .serviceIdString)",
                     anyValueIn: Array(serviceIds.map { $0.serviceIdUppercaseString }),
                     tx: tx
                 )
 
-                let index = Dictionary(grouping: profiles) { $0?.recipientUUID }
+                let index = Dictionary(grouping: profiles) { $0?.serviceIdString }
                 return serviceIds.map { serviceId in
                     let maybeArray = index[serviceId.serviceIdUppercaseString]
                     return maybeArray?[0]
@@ -103,12 +103,12 @@ public class UserProfileFinder: NSObject {
         return Refinery<String?, OWSUserProfile>(optionalPhoneNumbers)
             .refineNonnilKeys { (phoneNumbers: AnySequence<String>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
-                    column: "\(userProfileColumn: .recipientPhoneNumber)",
+                    column: "\(userProfileColumn: .phoneNumber)",
                     anyValueIn: Array(phoneNumbers),
                     tx: tx
                 )
 
-                let index = Dictionary(grouping: profiles) { $0?.recipientPhoneNumber }
+                let index = Dictionary(grouping: profiles) { $0?.phoneNumber }
                 return phoneNumbers.map { phoneNumber in
                     let maybeArray = index[phoneNumber]
                     return maybeArray?[0]
@@ -122,17 +122,12 @@ public class UserProfileFinder: NSObject {
         tx: SDSAnyReadTransaction
     ) -> [OWSUserProfile] {
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(column) in (\(qms))"
-        do {
-            return try OWSUserProfile.grdbFetchCursor(
-                sql: sql,
-                arguments: StatementArguments(values),
-                transaction: tx.unwrapGrdbRead
-            ).all()
-        } catch {
-            owsFailDebug("Error fetching profiles where \(column) in \(values): \(error)")
-            return []
+        let sql = "SELECT * FROM \(OWSUserProfile.databaseTableName) WHERE \(column) in (\(qms))"
+        var userProfiles = [OWSUserProfile]()
+        OWSUserProfile.anyEnumerate(transaction: tx, sql: sql, arguments: StatementArguments(values)) { userProfile, _ in
+            userProfiles.append(userProfile)
         }
+        return userProfiles
     }
 }
 
@@ -168,7 +163,7 @@ extension UserProfileFinder {
         //   we need to explicitly test for NULL.
         let sql = """
         SELECT *
-        FROM \(UserProfileRecord.databaseTableName)
+        FROM \(OWSUserProfile.databaseTableName)
         WHERE \(userProfileColumn: .lastMessagingDate) > ?
         AND (
             \(userProfileColumn: .lastFetchDate) < ? OR
@@ -178,18 +173,8 @@ extension UserProfileFinder {
         LIMIT 50
         """
         let arguments: StatementArguments = [convertDateForGrdb(activeDate), convertDateForGrdb(staleDate)]
-        let cursor = OWSUserProfile.grdbFetchCursor(
-            sql: sql,
-            arguments: arguments,
-            transaction: tx.unwrapGrdbRead
-        )
-
-        do {
-            while let userProfile = try cursor.next() {
-                block(userProfile)
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
+        OWSUserProfile.anyEnumerate(transaction: tx, sql: sql, arguments: arguments) { userProfile, _ in
+            block(userProfile)
         }
     }
 }

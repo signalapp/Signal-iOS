@@ -40,11 +40,11 @@ extension ConversationViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange),
-                                               name: .otherUsersProfileDidChange,
+                                               name: UserProfileNotifications.otherUsersProfileDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(profileWhitelistDidChange),
-                                               name: .profileWhitelistDidChange,
+                                               name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
@@ -54,7 +54,7 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         guard
-            let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+            let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
             address.isValid,
             thread.recipientAddressesWithSneakyTransaction.contains(address)
         else {
@@ -79,12 +79,12 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-        if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+        if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
            address.isValid,
            thread.recipientAddressesWithSneakyTransaction.contains(address) {
             ensureBannerState()
             showMessageRequestDialogIfRequired()
-        } else if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
+        } else if let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
                   !groupId.isEmpty,
                   let groupThread = thread as? TSGroupThread,
                   groupThread.groupModel.groupId == groupId {

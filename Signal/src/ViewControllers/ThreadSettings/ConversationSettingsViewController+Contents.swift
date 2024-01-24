@@ -159,7 +159,7 @@ extension ConversationSettingsViewController {
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
 
         let (visibleBadges, shortName) = databaseStorage.read { readTx -> ([OWSUserProfileBadgeInfo], String) in
-            let profile = OWSUserProfile.getFor(contactAddress, transaction: readTx)
+            let profile = OWSUserProfile.getUserProfile(for: contactAddress, transaction: readTx)
             let shortName = contactsManager.shortDisplayName(for: contactAddress, transaction: readTx)
             return (profile?.visibleBadges ?? [], shortName)
         }

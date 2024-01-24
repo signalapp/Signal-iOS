@@ -432,7 +432,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         if address.serviceId != nil {
             return true
         }
-        if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
+        if address.phoneNumber == OWSUserProfile.Constants.localProfilePhoneNumber {
             owsAssertDebug(address.serviceId == nil)
             return true
         }
@@ -589,16 +589,16 @@ public class UserProfileReadCache: NSObject {
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            OWSUserProfile.getFor(key, transaction: transaction)
+            OWSUserProfile.getUserProfile(for: key, transaction: transaction)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.resolve(value.address)
+            OWSUserProfile.internalAddress(for: value.internalAddress)
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
             // Resolve key for local user to the invariant key.
-            ModelCacheKey(key: OWSUserProfile.resolve(key))
+            ModelCacheKey(key: OWSUserProfile.internalAddress(for: key))
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -626,7 +626,7 @@ public class UserProfileReadCache: NSObject {
 
     @objc
     public func getUserProfile(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        let address = OWSUserProfile.resolve(address)
+        let address = OWSUserProfile.internalAddress(for: address)
         let cacheKey = adapter.cacheKey(forKey: address)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
@@ -653,7 +653,7 @@ public class UserProfileReadCache: NSObject {
 
     public func getUserProfiles(for addresses: AnySequence<SignalServiceAddress>,
                                 transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: OWSUserProfile.resolve($0)) }
+        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: OWSUserProfile.internalAddress(for: $0)) }
         return cache.getValues(for: cacheKeys, transaction: transaction)
     }
 }

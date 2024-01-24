@@ -91,10 +91,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             recipient.address.e164.map(\.uint64Value).map(contactBuilder.setE164)
             // TODO: username?
 
-            let profile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
-            profile?.profileKey.map(\.keyData).map(contactBuilder.setProfileKey(_:))
-            profile?.unfilteredGivenName.map(contactBuilder.setProfileGivenName(_:))
-            profile?.unfilteredFamilyName.map(contactBuilder.setProfileFamilyName(_:))
+            let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
+            userProfile?.profileKey.map(\.keyData).map(contactBuilder.setProfileKey(_:))
+            userProfile?.givenName.map(contactBuilder.setProfileGivenName(_:))
+            userProfile?.familyName.map(contactBuilder.setProfileFamilyName(_:))
             // TODO: joined name?
 
             Self.writeFrameToStream(

@@ -183,21 +183,5 @@
     "ThreadRecord.mutedUntilTimestampObsolete": 17,
     "ThreadRecord.name": 20,
     "ThreadRecord.shouldThreadBeVisible": 7,
-    "ThreadRecord.storyViewMode": 22,
-    "UserProfileRecord.avatarFileName": 1,
-    "UserProfileRecord.avatarUrlPath": 2,
-    "UserProfileRecord.bio": 11,
-    "UserProfileRecord.bioEmoji": 12,
-    "UserProfileRecord.canReceiveGiftBadges": 15,
-    "UserProfileRecord.familyName": 8,
-    "UserProfileRecord.isPniCapable": 16,
-    "UserProfileRecord.isStoriesCapable": 14,
-    "UserProfileRecord.lastFetchDate": 9,
-    "UserProfileRecord.lastMessagingDate": 10,
-    "UserProfileRecord.profileBadgeInfo": 13,
-    "UserProfileRecord.profileKey": 3,
-    "UserProfileRecord.profileName": 4,
-    "UserProfileRecord.recipientPhoneNumber": 5,
-    "UserProfileRecord.recipientUUID": 6,
-    "UserProfileRecord.username": 7
+    "ThreadRecord.storyViewMode": 22
 }

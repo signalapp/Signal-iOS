@@ -267,7 +267,7 @@ public class ContactCellView: ManualStackView {
         if case .address = configuration?.dataSource {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(otherUsersProfileChanged(notification:)),
-                                                   name: .otherUsersProfileDidChange,
+                                                   name: UserProfileNotifications.otherUsersProfileDidChange,
                                                    object: nil)
         }
     }
@@ -335,7 +335,7 @@ public class ContactCellView: ManualStackView {
         guard let configuration = self.configuration else {
             return
         }
-        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+        guard let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
               changedAddress.isValid else {
             owsFailDebug("changedAddress was unexpectedly nil")
             return

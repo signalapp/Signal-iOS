@@ -12,7 +12,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.profileWhitelistDidChange(notification:)),
-                                                   name: .profileWhitelistDidChange,
+                                                   name: UserProfileNotifications.profileWhitelistDidChange,
                                                    object: nil)
 
             DispatchQueue.global().async {
@@ -290,24 +290,24 @@ fileprivate extension Notification {
     }
 
     func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
-        if let address = userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress {
+        if let address = userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress {
             guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction.asAnyRead) else {
                 Logger.debug("No existing contact thread for address: \(address)")
                 return nil
             }
             return contactThread
         } else {
-            assert(userInfo?[kNSNotificationKey_ProfileAddress] == nil)
+            assert(userInfo?[UserProfileNotifications.profileAddressKey] == nil)
         }
 
-        if let groupId = userInfo?[kNSNotificationKey_ProfileGroupId] as? Data {
+        if let groupId = userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction.asAnyRead) else {
                 Logger.debug("No existing group thread for groupId: \(groupId)")
                 return nil
             }
             return groupThread
         } else {
-            assert(userInfo?[kNSNotificationKey_ProfileGroupId] == nil)
+            assert(userInfo?[UserProfileNotifications.profileGroupIdKey] == nil)
         }
 
         owsFailDebug("no thread details in notification")

@@ -18,7 +18,7 @@ private class FakeAdapter: ModelCacheAdapter<SignalServiceAddress, OWSUserProfil
     }
 
     override func key(forValue value: ValueType) -> KeyType {
-        return value.address
+        return value.internalAddress
     }
 
     override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -208,7 +208,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 adapter.storage.removeValue(forKey: alice)
                 let actual = cache.getValue(for: key, transaction: transaction)
                 let expected = OWSUserProfile(address: alice)
-                XCTAssertEqual(actual?.recipientUUID, expected.recipientUUID)
+                XCTAssertEqual(actual?.serviceIdString, expected.serviceIdString)
             }
         }
     }
@@ -279,8 +279,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 adapter.storage = [:]
                 let actual = cache.getValues(for: keys, transaction: transaction)
                 let expected = addresses.map { OWSUserProfile(address: $0) }
-                XCTAssertEqual(actual.map { $0?.recipientUUID },
-                               expected.map { $0.recipientUUID})
+                XCTAssertEqual(actual.map { $0?.serviceIdString }, expected.map { $0.serviceIdString })
             }
         }
     }

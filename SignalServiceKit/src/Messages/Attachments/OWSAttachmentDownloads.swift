@@ -92,7 +92,7 @@ public class OWSAttachmentDownloads: NSObject {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(profileWhitelistDidChange(notification:)),
-            name: .profileWhitelistDidChange,
+            name: UserProfileNotifications.profileWhitelistDidChange,
             object: nil
         )
 
@@ -114,12 +114,12 @@ public class OWSAttachmentDownloads: NSObject {
         // downloads that were pending on a message request.
         Self.databaseStorage.read { transaction in
             guard let whitelistedThread = ({ () -> TSThread? in
-                if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+                if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
                    address.isValid,
                    Self.profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
                     return TSContactThread.getWithContactAddress(address, transaction: transaction)
                 }
-                if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
+                if let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
                    Self.profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
                     return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
                 }

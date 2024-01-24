@@ -105,9 +105,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Other User's Profiles
 
-// This method is for debugging.
-- (void)logUserProfiles;
-
 - (nullable NSString *)unfilteredGivenNameForAddress:(SignalServiceAddress *)address
                                          transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -140,12 +137,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (NSString *)generateAvatarFilename;
 
 - (NSString *)groupKeyForGroupId:(NSData *)groupId;
-
-#ifdef USE_DEBUG_UI
-+ (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)logLocalProfile;
-#endif
 
 #pragma mark - Internals exposed for Swift
 

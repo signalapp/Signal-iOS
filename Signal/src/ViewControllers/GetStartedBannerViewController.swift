@@ -85,7 +85,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(localProfileDidChange),
-            name: .localProfileDidChange,
+            name: UserProfileNotifications.localProfileDidChange,
             object: nil)
     }
 
