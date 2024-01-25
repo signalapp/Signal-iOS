@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Resposta de pagament no vàlida. Si us plau, torna-ho a provar.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "No s'ha pogut processar la teva donació. Comprova la connexió i torna-ho a provar.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Fer donació";
@@ -2170,17 +2170,20 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Privacitat per sobre dels beneficis";
 
+/* Button title confirming the user wants to begin a new donation. */
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+
+/* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Renova la subscripció";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Proveu de nou";
 
-/* Your bank transfer is awaiting authorization. Check your banking app to approve your iDEAL donation. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "La teva transferència bancària està pendent d'autorització. Comprova la teva app bancària per aprovar la teva donació a través d'iDEAL.";
-
-/* Title for an alert explaining that a one-time payment made via bank transfer is awaiting authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_TITLE" = "Donació pendent d'autorització";
+/* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "La teva transferència bancària està pendent. Les transferències bancàries solen trigar 1 dia laborable a processar-se.";
@@ -3267,6 +3270,9 @@
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "Aquest grup s'ha actualitzat a un grup nou.";
+
+/* Message indicating that the local user was invited after the group was migrated. */
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Heu abandonat el grup.";
@@ -4916,13 +4922,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Tothom";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Qualsevol persona que tingui el teu número de telèfon guardat als seus contactes podrà veure't com a contacte a Signal. Les altres persones podran posar-se en contacte amb tu a través del teu número de telèfon quan comencin un nou xat o grup.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ningú";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Ningú a Signal podrà posar-se en contacte amb tu a través del teu número de telèfon.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple: %1$@";
@@ -4931,13 +4937,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Tothom";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "El vostre número de telèfon serà visible per a totes les persones i grups a qui envieu un missatge. Les persones que tinguin el vostre número als contactes del telèfon també el veuran al Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Ningú";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Ningú no veurà el vostre número de telèfon al Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5261,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nom";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "S'ha produït un error amb el teu àlies, ja no està assignat al teu compte.";
-
-/* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Crea un nom d'usuari";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Elimina el nom d'usuari";
+
+/* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Això eliminarà el teu àlies i desactivarà el teu codi QR i enllaç. \"%1$@\" estarà disponible perquè altres puguin utilitzar-lo. Segur que vols fer això?";
@@ -5303,10 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Només es pot actualitzar el perfil quan s'estigui connectat a Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil està xifrat d'extrem a extrem. El perfil i els canvis seran visibles per als teus contactes quan comencis o acceptis xats nous.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Perfil";
+
+/* Footer below the usernames section of the profile settings explaining username visibility. */
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Adreça intermediària";
@@ -5619,6 +5628,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "El número de telèfon que voleu registrar ja s'ha registrat en un altre servidor, cancel·leu aquell registre i proveu-ho de nou.";
+
+/* Button below the warning to fix a corrupted username. */
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "S'ha produït un error amb el teu àlies, ja no està assignat al teu compte. Pots provar de configurar-lo de nou o triar-ne un de diferent.";
@@ -6679,6 +6691,9 @@
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "La vostra adreça de Wallet";
 
+/* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Qui pot trobar-me a través del meu número";
 
@@ -7037,7 +7052,7 @@
 "STORIES_SAVE_FAILED" = "Error al guardar la història";
 
 /* Context menu action to save the selected story */
-"STORIES_SAVE_STORY_ACTION" = "Desats";
+"STORIES_SAVE_STORY_ACTION" = "Desar";
 
 /* Footer for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_FOOTER" = "Les actualitzacions d'històries desapareixeran automàticament després de 24 hores. Tria qui pot veure la teva història o crea noves històries amb espectadors o grups específics.";
@@ -7657,6 +7672,9 @@
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "S'ha copiat el nom d'usuari";
 
+/* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Escaneja el codi QR del dispositiu del teu contacte.";
 
@@ -7692,6 +7710,12 @@
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari";
+
+/* Instructions that appear below the username QR code on a sharable exported image. */
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+
+/* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Els àlies no poden començar amb un número.";
