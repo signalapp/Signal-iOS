@@ -397,9 +397,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
                                                                          comment: "label for accepting incoming calls")
 
         videoAnswerIncomingAudioOnlyButton.text = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-                                                                    comment: "label for accepting incoming video calls as audio  only")
+                                                                    comment: "label for accepting incoming video calls as audio only")
         videoAnswerIncomingAudioOnlyButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-                                                                                comment: "label for accepting incoming video calls as audio  only")
+                                                                                comment: "label for accepting incoming video calls as audio only")
 
         videoDeclineIncomingButton.text = OWSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                                                             comment: "label for declining incoming calls")

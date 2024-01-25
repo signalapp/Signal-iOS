@@ -163,7 +163,7 @@ extension ConversationViewController {
                         ? OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE",
                                             comment: "Message for UI warning about an unknown group thread.")
                         : OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE",
-                                            comment: "Message for UI  warning about an unknown contact thread."))
+                                            comment: "Message for UI warning about an unknown contact thread."))
         let actionSheet = ActionSheetController(message: message)
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE",

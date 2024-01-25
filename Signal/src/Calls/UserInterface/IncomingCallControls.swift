@@ -67,7 +67,7 @@ class IncomingCallControls: UIView {
     private lazy var answerWithoutVideoButton: CallButton = {
         let accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-            comment: "label for accepting incoming video calls as audio  only"
+            comment: "label for accepting incoming video calls as audio only"
         )
         let button = createButton(
             iconName: "video-slash-fill-28",
