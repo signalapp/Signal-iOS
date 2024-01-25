@@ -119,8 +119,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
         // UnknownThreadWarning are the second item in the thread
         if messageLoader.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction) {
-            Logger.debug("adding UnknownThreadWarning")
-
             // The "Unknown Thread Warning" should have a stable timestamp.
             let timestamp: UInt64
             if let firstInteraction = messageLoader.loadedInteractions.first {

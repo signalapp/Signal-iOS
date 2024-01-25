@@ -817,8 +817,6 @@ public class OWSWebSocket: NSObject {
             }
         }
 
-        Logger.info("Creating new websocket: \(webSocketType)")
-
         let signalServiceType: SignalServiceType
         switch webSocketType {
         case .identified:

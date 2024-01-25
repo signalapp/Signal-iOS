@@ -49,7 +49,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NBPhoneNumber *nbPhoneNumber = [self.phoneNumberUtil parse:text defaultRegion:regionCode error:&parseError];
 
     if (parseError) {
-        OWSLogVerbose(@"parseError: %@", parseError);
         return nil;
     }
 

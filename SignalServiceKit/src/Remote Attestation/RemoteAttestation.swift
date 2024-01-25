@@ -77,10 +77,6 @@ fileprivate extension RemoteAttestation.Auth {
         forService service: RemoteAttestation.Service,
         auth: ChatServiceAuth
     ) -> Promise<RemoteAttestation.Auth> {
-        if DebugFlags.internalLogging {
-            Logger.info("service: \(service)")
-        }
-
         let request = service.authRequest()
 
         switch auth.credentials {
@@ -98,12 +94,6 @@ fileprivate extension RemoteAttestation.Auth {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             if DebugFlags.internalLogging {
-                let statusCode = response.responseStatusCode
-                Logger.info("statusCode: \(statusCode)")
-                for (header, headerValue) in response.responseHeaders {
-                    Logger.info("Header: \(header) -> \(headerValue)")
-                }
-
                 #if TESTABLE_BUILD
                 HTTPUtils.logCurl(for: request as URLRequest)
                 #endif
@@ -114,10 +104,6 @@ fileprivate extension RemoteAttestation.Auth {
             }
 
             return try RemoteAttestation.Auth(authParams: json)
-        }.recover(on: DispatchQueue.global()) { error -> Promise<RemoteAttestation.Auth> in
-            let statusCode = error.httpStatusCode ?? 0
-            Logger.verbose("Remote attestation auth failure: \(statusCode)")
-            throw error
         }
     }
 }

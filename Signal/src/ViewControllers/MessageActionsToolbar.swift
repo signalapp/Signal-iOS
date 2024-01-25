@@ -105,10 +105,6 @@ public class MessageActionsToolbar: UIToolbar {
     }
     private let mode: Mode
 
-    deinit {
-        Logger.verbose("")
-    }
-
     required init(mode: Mode) {
         self.mode = mode
 

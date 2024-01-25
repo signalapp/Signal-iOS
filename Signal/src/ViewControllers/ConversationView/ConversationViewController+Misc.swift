@@ -400,8 +400,6 @@ extension ConversationViewController {
             return
         }
 
-        Logger.verbose("reloading conversation view contents.")
-
         // Auto-load more if necessary...
         if !autoLoadMoreIfNecessary() {
             // ...Otherwise, reload everything.

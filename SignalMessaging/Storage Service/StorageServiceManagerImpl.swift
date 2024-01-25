@@ -159,8 +159,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             managerState.pendingRestore = nil
             managerState.mostRecentRestoreError = nil
 
-            Logger.debug("Fetching with \(pendingRestore.futures.count) coalesced request(s).")
-
             let restoreOperation = buildOperation(
                 managerState: managerState,
                 mode: .restoreOrCreate,
@@ -380,8 +378,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     // Schedule a one-time backup. By default, this will happen `backupDebounceInterval`
     // seconds after the first pending change is recorded.
     private func startBackupTimer() -> Timer {
-        Logger.info("")
-
         let timer = Timer(
             timeInterval: StorageServiceManagerImpl.backupDebounceInterval,
             target: self,
@@ -398,8 +394,6 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     @objc
     private func backupTimerFired(_ timer: Timer) {
         AssertIsOnMainThread()
-
-        Logger.info("")
 
         backupPendingChanges(authedDevice: .implicit)
     }
@@ -817,11 +811,11 @@ class StorageServiceOperation: OWSOperation {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
                     if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
-                        Logger.info("Manifest decryption failed, recreating manifest.")
+                        Logger.warn("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
 
-                    Logger.info("Manifest decryption failed, clearing storage service keys.")
+                    Logger.warn("Manifest decryption failed, clearing storage service keys.")
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
@@ -838,7 +832,7 @@ class StorageServiceOperation: OWSOperation {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
                     // re-encrypt the social graph with data we have locally.
-                    Logger.info("Manifest deserialization failed, recreating manifest.")
+                    Logger.warn("Manifest deserialization failed, recreating manifest.")
                     return self.createNewManifest(version: previousManifestVersion + 1)
                 }
 
@@ -1058,7 +1052,6 @@ class StorageServiceOperation: OWSOperation {
                 guard let item = item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
                     // fetch a linked device has updated the manifest.
-                    Logger.verbose("remote manifest contained an identifier for the local account that doesn't exist, mark it for update")
                     state.localAccountChangeState = .updated
                     return
                 }
@@ -1201,11 +1194,11 @@ class StorageServiceOperation: OWSOperation {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
                     if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
-                        Logger.info("Item decryption failed, recreating manifest.")
+                        Logger.warn("Item decryption failed, recreating manifest.")
                         return self.createNewManifest(version: manifest.version + 1)
                     }
 
-                    Logger.info("Item decryption failed, clearing storage service keys.")
+                    Logger.warn("Item decryption failed, clearing storage service keys.")
 
                     // If this is a linked device, give up and request the latest storage
                     // service key from the primary device.
@@ -1222,7 +1215,7 @@ class StorageServiceOperation: OWSOperation {
                     // If decryption succeeded but proto deserialization failed, we somehow ended up with
                     // byte garbage in storage service. Our only recourse is to throw everything away and
                     // re-encrypt the social graph with data we have locally.
-                    Logger.info("Item deserialization failed, recreating manifest.")
+                    Logger.warn("Item deserialization failed, recreating manifest.")
                     return self.createNewManifest(version: manifest.version + 1)
                 }
 

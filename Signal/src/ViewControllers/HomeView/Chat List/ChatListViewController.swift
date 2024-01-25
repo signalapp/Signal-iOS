@@ -648,7 +648,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         Self.callCount += 1
 
         if hasEverAppeared && Self.callCount > 25 {
-            Logger.debug("requesting review")
             // In Debug this pops up *every* time, which is helpful, but annoying.
             // In Production this will pop up at most 3 times per 365 days.
     #if !DEBUG
@@ -659,8 +658,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 Self.reviewRequested = true
             }
     #endif
-        } else {
-            Logger.debug("not requesting review")
         }
     }
 
