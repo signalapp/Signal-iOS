@@ -96,8 +96,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
-                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                     requestPqKeys:(BOOL)requestPqKeys;
+                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 
 + (TSRequest *)registerSignedPrekeyRequestForIdentity:(OWSIdentity)identity

@@ -145,9 +145,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                     requestPqKeys:(BOOL)requestPqKeys
 {
-    NSString *format = requestPqKeys ? @"%@/%@/%u?pq=true" : @"%@/%@/%u";
+    NSString *format = @"%@/%@/%u";
     NSString *path = [NSString stringWithFormat:format, self.textSecureKeysAPI, serviceId.serviceIdString, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];

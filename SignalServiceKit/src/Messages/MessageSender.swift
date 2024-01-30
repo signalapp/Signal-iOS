@@ -148,8 +148,7 @@ public class MessageSender: Dependencies {
                 return OWSRequestFactory.recipientPreKeyRequest(
                     withServiceId: ServiceIdObjC.wrapValue(serviceId),
                     deviceId: deviceId,
-                    udAccessKey: udAccessKeyForRequest,
-                    requestPqKeys: true
+                    udAccessKey: udAccessKeyForRequest
                 )
             },
             serviceId: serviceId,
