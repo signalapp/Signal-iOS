@@ -1033,12 +1033,14 @@ private struct NewGroupUpdateItemBuilder {
                 return .localUserAddedByOtherUser(
                     updaterAci: updaterAci.codableUuid
                 )
-            default:
-                if newGroupModel.didJustAddSelfViaGroupLink {
+            case .localUser:
+                if newGroupModel.didJustAddSelfViaGroupLink || newGroupMembership.didJoinFromInviteLink(forFullMember: localIdentifiers.aciAddress) {
                     return .localUserJoined
                 } else {
-                    return .localUserAddedByUnknownUser
+                    return .localUserAddedByLocalUser
                 }
+            default:
+                return .localUserAddedByUnknownUser
             }
         case .invited(invitedBy: let inviterAci):
             if let inviterAci {

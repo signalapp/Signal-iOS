@@ -1326,6 +1326,9 @@ public extension GroupsProtoGroupChangeActions {
         let serviceId = try groupV2Params.serviceId(for: changeAuthorUserId)
         switch serviceId.concreteType {
         case .aci(let aci):
+            if localIdentifiers.aci == aci {
+                return (.localUser(originalSource: .aci(aci)), aci)
+            }
             return (.aci(aci), aci)
         case .pni(let pni):
             // As of now, the only update with a pni author is
