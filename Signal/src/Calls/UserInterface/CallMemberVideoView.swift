@@ -45,6 +45,15 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     }
     private var callViewWrapper: CallViewWrapper?
 
+    func remoteVideoViewIfApplicable() -> RemoteVideoView? {
+        switch callViewWrapper {
+        case .remoteInIndividual(let remoteVideoView):
+            return remoteVideoView
+        default:
+            return nil
+        }
+    }
+
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,

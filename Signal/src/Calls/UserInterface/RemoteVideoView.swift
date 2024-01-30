@@ -8,8 +8,7 @@ import SignalServiceKit
 import SignalUI
 import WebRTC
 
-class RemoteVideoView: UIView {
-
+class RemoteVideoView: UIView, CallMemberView_IndividualRemoteBridge {
     private lazy var rtcMetalView = RTCMTLVideoView(frame: bounds)
 
     override init(frame: CGRect) {
@@ -186,4 +185,8 @@ extension RemoteVideoView: RTCVideoRenderer {
             }
         }
     }
+
+    // MARK: CallMemberView_IndividualRemoteBridge
+
+    var remoteVideoView: RemoteVideoView? { return self }
 }

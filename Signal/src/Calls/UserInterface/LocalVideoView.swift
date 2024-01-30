@@ -7,7 +7,7 @@ import AVFoundation
 import SignalServiceKit
 import WebRTC
 
-class LocalVideoView: UIView {
+class LocalVideoView: UIView, CallMemberView_IndividualLocalBridge {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
     private let shouldUseAutolayout: Bool
@@ -90,6 +90,10 @@ class LocalVideoView: UIView {
             break
         }
     }
+
+    // MARK: - CallMemberView_IndividualLocalBridge
+
+    func configure(call: SignalCall, isFullScreen: Bool, memberType: CallMemberView.ConfigurationType) {}
 }
 
 extension RTCCameraPreviewView {

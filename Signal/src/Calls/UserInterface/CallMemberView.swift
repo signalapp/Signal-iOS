@@ -24,7 +24,7 @@ protocol CallMemberComposableView: UIView {
     func clearConfiguration()
 }
 
-class CallMemberView: UIView, CallMemberView_GroupBridge {
+class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_IndividualRemoteBridge, CallMemberView_IndividualLocalBridge {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberVideoView: CallMemberVideoView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView
@@ -173,6 +173,59 @@ class CallMemberView: UIView, CallMemberView_GroupBridge {
     var isCallMinimized: Bool = false
 
     var delegate: GroupCallMemberViewDelegate?
+
+    // MARK: CallMemberView_IndividualRemoteBridge
+
+    var isGroupCall: Bool {
+        get {
+            if let remoteVideoView {
+                return remoteVideoView.isGroupCall
+            }
+            return false
+        }
+        set {
+            if let remoteVideoView {
+                remoteVideoView.isGroupCall = newValue
+            }
+        }
+    }
+
+    var isScreenShare: Bool {
+        get {
+            if let remoteVideoView {
+                return remoteVideoView.isScreenShare
+            }
+            return false
+        }
+        set {
+            if let remoteVideoView {
+                remoteVideoView.isScreenShare = newValue
+            }
+        }
+    }
+
+    var isFullScreen: Bool {
+        get {
+            if let remoteVideoView {
+                return remoteVideoView.isFullScreen
+            }
+            return false
+        }
+        set {
+            if let remoteVideoView {
+                remoteVideoView.isFullScreen = newValue
+            }
+        }
+    }
+
+    var remoteVideoView: RemoteVideoView? {
+        if let remoteVideoView = self.callMemberVideoView.remoteVideoViewIfApplicable() {
+            return remoteVideoView
+        } else {
+            owsFailDebug("Attempting to get remote video view for a group or remote individual call member, which shouldn't be needed!")
+            return nil
+        }
+    }
 }
 
 /// For both local and remote call member views in group calls.
@@ -182,4 +235,19 @@ protocol CallMemberView_GroupBridge: UIView {
     func cleanupVideoViews()
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext)
     func clearConfiguration()
+}
+
+protocol CallMemberView_IndividualRemoteBridge: UIView {
+    var isGroupCall: Bool { get set }
+    var isScreenShare: Bool { get set }
+    var isFullScreen: Bool { get set }
+    var remoteVideoView: RemoteVideoView? { get }
+}
+
+protocol CallMemberView_IndividualLocalBridge: UIView {
+    func configure(
+        call: SignalCall,
+        isFullScreen: Bool,
+        memberType: CallMemberView.ConfigurationType
+    )
 }
