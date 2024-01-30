@@ -195,9 +195,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             callBeganTimestamp: callEventTimestamp
         )
 
-        guard callRecordStore.insert(
-            callRecord: newCallRecord, tx: tx
-        ) else { return nil }
+        callRecordStore.insert(callRecord: newCallRecord, tx: tx)
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
@@ -221,6 +219,11 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) {
+        guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
+            logger.error("Missing group call status while trying to update record!")
+            return
+        }
+
         /// Any time we're updating a group call record, we should check for a
         /// call-began timestamp earlier than the one we're aware of.
         updateCallBeganTimestampIfEarlier(
@@ -230,16 +233,11 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         )
 
         if existingCallRecord.callDirection != newCallDirection {
-            guard callRecordStore.updateDirection(
+            callRecordStore.updateDirection(
                 callRecord: existingCallRecord,
                 newCallDirection: newCallDirection,
                 tx: tx
-            ) else { return }
-        }
-
-        guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
-            logger.error("Missing group call status while trying to update record!")
-            return
+            )
         }
 
         guard statusTransitionManager.isStatusTransitionAllowed(
@@ -250,20 +248,20 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             return
         }
 
-        guard callRecordStore.updateRecordStatus(
+        callRecordStore.updateRecordStatus(
             callRecord: existingCallRecord,
             newCallStatus: .group(newGroupCallStatus),
             tx: tx
-        ) else { return }
+        )
 
         // Important to do this after we update the record status, since we need
         // the record to be in a "ringing"-related state before setting this.
         if let newGroupCallRingerAci {
-            guard callRecordStore.updateGroupCallRingerAci(
+            callRecordStore.updateGroupCallRingerAci(
                 callRecord: existingCallRecord,
                 newGroupCallRingerAci: newGroupCallRingerAci,
                 tx: tx
-            ) else { return }
+            )
         }
 
         if shouldSendSyncMessage {
@@ -285,7 +283,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             return
         }
 
-        _ = callRecordStore.updateTimestamp(
+        callRecordStore.updateTimestamp(
             callRecord: existingCallRecord,
             newCallBeganTimestamp: callEventTimestamp,
             tx: tx

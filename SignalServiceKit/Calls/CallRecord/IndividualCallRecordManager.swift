@@ -180,9 +180,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             callBeganTimestamp: individualCallInteraction.timestamp
         )
 
-        guard callRecordStore.insert(
-            callRecord: callRecord, tx: tx
-        ) else { return }
+        callRecordStore.insert(callRecord: callRecord, tx: tx)
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
@@ -213,11 +211,11 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             return
         }
 
-        guard callRecordStore.updateRecordStatus(
+        callRecordStore.updateRecordStatus(
             callRecord: existingCallRecord,
             newCallStatus: .individual(newIndividualCallStatus),
             tx: tx
-        ) else { return }
+        )
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(

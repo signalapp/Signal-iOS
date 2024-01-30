@@ -173,9 +173,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         )
 
         mockDB.write { tx in
-            XCTAssertTrue(mockCallRecordStore.insert(
-                callRecord: existingCallRecord, tx: tx
-            ))
+            mockCallRecordStore.insert(callRecord: existingCallRecord, tx: tx)
         }
 
         return (existingCallRecord, thread.groupId)

@@ -15,51 +15,41 @@ public protocol CallRecordStore {
     /// - Important
     /// Posts a ``CallRecordStoreNotification`` with the "inserted" update
     /// type when a record is inserted.
-    /// - Returns
-    /// True if the record was successfully inserted. False otherwise.
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction)
 
     /// Update the status of the given call record.
     /// - Important
     /// Posts a ``CallRecordStoreNotification`` with the "status updated"
     /// update type when a record's status is updated.
-    /// - Returns
-    /// True if the record was successfully updated. False otherwise.
     func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 
     /// Update the direction of the given call record.
-    /// - Returns
-    /// True if the record was successfully updated. False otherwise.
     func updateDirection(
         callRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 
     /// Update the group call ringer of the given call record.
     /// - Important
     /// Note that the group call ringer may only be set for call records
     /// referring to a ringing group call.
-    /// - Returns
-    /// True if the record was successfully updated. False otherwise.
     func updateGroupCallRingerAci(
         callRecord: CallRecord,
         newGroupCallRingerAci: Aci,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 
     /// Update the call-began timestamp of the given call record.
-    /// - Returns
-    /// True if the record was successfully updated. False otherwise.
     func updateTimestamp(
         callRecord: CallRecord,
         newCallBeganTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 
     /// Update all relevant records in response to a thread merge.
     /// - Parameter fromThreadRowId
@@ -92,50 +82,42 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Protocol methods
 
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool {
-        let insertedSuccessfully = insert(
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
+        insert(
             callRecord: callRecord,
             db: SDSDB.shimOnlyBridge(tx).database
         )
 
-        if insertedSuccessfully {
-            postNotification(
-                callRecord: callRecord,
-                updateType: .inserted,
-                tx: tx
-            )
-        }
-
-        return insertedSuccessfully
+        postNotification(
+            callRecord: callRecord,
+            updateType: .inserted,
+            tx: tx
+        )
     }
 
     func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction
-    ) -> Bool {
-        let updatedSuccessfully = updateRecordStatus(
+    ) {
+        updateRecordStatus(
             callRecord: callRecord,
             newCallStatus: newCallStatus,
             db: SDSDB.shimOnlyBridge(tx).database
         )
 
-        if updatedSuccessfully {
-            postNotification(
-                callRecord: callRecord,
-                updateType: .statusUpdated,
-                tx: tx
-            )
-        }
-
-        return updatedSuccessfully
+        postNotification(
+            callRecord: callRecord,
+            updateType: .statusUpdated,
+            tx: tx
+        )
     }
 
     func updateDirection(
         callRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         tx: DBWriteTransaction
-    ) -> Bool {
+    ) {
         updateDirection(
             callRecord: callRecord,
             newCallDirection: newCallDirection,
@@ -147,7 +129,7 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newGroupCallRingerAci: Aci,
         tx: DBWriteTransaction
-    ) -> Bool {
+    ) {
         updateGroupCallRingerAci(
             callRecord: callRecord,
             newGroupCallRingerAci: newGroupCallRingerAci,
@@ -159,7 +141,7 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newCallBeganTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> Bool {
+    ) {
         updateTimestamp(
             callRecord: callRecord,
             newCallBeganTimestamp: newCallBeganTimestamp,
@@ -216,13 +198,11 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Mutations (impl)
 
-    func insert(callRecord: CallRecord, db: Database) -> Bool {
+    func insert(callRecord: CallRecord, db: Database) {
         do {
             try callRecord.insert(db)
-            return true
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
-            return false
         }
     }
 
@@ -230,7 +210,7 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         db: Database
-    ) -> Bool {
+    ) {
         let logger = CallRecordLogger.shared.suffixed(with: " \(callRecord.callStatus) -> \(newCallStatus)")
 
         logger.info("Updating existing call record.")
@@ -238,10 +218,8 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord.callStatus = newCallStatus
         do {
             try callRecord.update(db)
-            return true
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
-            return false
         }
     }
 
@@ -249,14 +227,12 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newCallDirection: CallRecord.CallDirection,
         db: Database
-    ) -> Bool {
+    ) {
         callRecord.callDirection = newCallDirection
         do {
             try callRecord.update(db)
-            return true
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
-            return false
         }
     }
 
@@ -264,14 +240,12 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newGroupCallRingerAci: Aci,
         db: Database
-    ) -> Bool {
+    ) {
         callRecord.groupCallRingerAci = newGroupCallRingerAci
         do {
             try callRecord.update(db)
-            return true
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
-            return false
         }
     }
 
@@ -279,14 +253,12 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         newCallBeganTimestamp: UInt64,
         db: Database
-    ) -> Bool {
+    ) {
         callRecord.callBeganTimestamp = newCallBeganTimestamp
         do {
             try callRecord.update(db)
-            return true
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
-            return false
         }
     }
 

@@ -11,9 +11,8 @@ import LibSignalClient
 
 class MockCallRecordStore: CallRecordStore {
     var callRecords = [CallRecord]()
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool {
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
         callRecords.append(callRecord)
-        return true
     }
 
     func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
@@ -25,27 +24,23 @@ class MockCallRecordStore: CallRecordStore {
     }
 
     var askedToUpdateRecordStatusTo: CallRecord.CallStatus?
-    func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool {
+    func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) {
         askedToUpdateRecordStatusTo = newCallStatus
-        return true
     }
 
     var askedToUpdateRecordDirectionTo: CallRecord.CallDirection?
-    func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) -> Bool {
+    func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) {
         askedToUpdateRecordDirectionTo = newCallDirection
-        return true
     }
 
     var askedToUpdateGroupCallRingerAciTo: Aci?
-    func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) -> Bool {
+    func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) {
         askedToUpdateGroupCallRingerAciTo = newGroupCallRingerAci
-        return true
     }
 
     var askedToUpdateTimestampTo: UInt64?
-    func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) -> Bool {
+    func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) {
         askedToUpdateTimestampTo = newCallBeganTimestamp
-        return true
     }
 
     func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {}

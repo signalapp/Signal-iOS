@@ -92,11 +92,11 @@ final class ThreadMergerTest: XCTestCase {
             merged = (from: fromRowId, into: intoRowId)
         }
 
-        func insert(callRecord: CallRecord, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
-        func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
-        func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
-        func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
-        func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) -> Bool { owsFail("Not implemented!") }
+        func insert(callRecord: CallRecord, tx: DBWriteTransaction) { owsFail("Not implemented!") }
+        func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) { owsFail("Not implemented!") }
+        func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) { owsFail("Not implemented!") }
+        func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) { owsFail("Not implemented!") }
+        func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) { owsFail("Not implemented!") }
         func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
         func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
     }

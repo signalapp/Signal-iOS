@@ -89,7 +89,7 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
+            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         let fetchedByCallId = inMemoryDB.read { tx in
@@ -115,15 +115,15 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord(callStatus: .group(.generic))
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
+            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.updateRecordStatus(
+            callRecordStore.updateRecordStatus(
                 callRecord: callRecord,
                 newCallStatus: .group(.joined),
                 db: InMemoryDB.shimOnlyBridge(tx).db
-            ))
+            )
         }
 
         let fetched = inMemoryDB.read { tx in
@@ -145,7 +145,7 @@ final class CallRecordStoreTest: XCTestCase {
         let (newThreadRowId, _) = insertThreadAndInteraction()
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
+            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         inMemoryDB.write { tx in
@@ -176,7 +176,7 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
+            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         inMemoryDB.write { tx in
@@ -204,7 +204,7 @@ final class CallRecordStoreTest: XCTestCase {
         let callRecord = makeCallRecord()
 
         inMemoryDB.write { tx in
-            XCTAssertTrue(callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db))
+            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         try inMemoryDB.write { tx in
