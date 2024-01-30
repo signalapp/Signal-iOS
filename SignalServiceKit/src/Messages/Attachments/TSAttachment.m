@@ -315,11 +315,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return @"TSAttachements";
 }
 
-- (BOOL)isVoiceMessageIncludingLegacyMessages
-{
-    return self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0;
-}
-
 - (NSString *)description {
     NSString *attachmentString;
 
@@ -341,9 +336,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
             @"Short text label for a video attachment, used for thread preview and on the lock screen");
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
-        // a missing filename is the legacy way to determine if an audio attachment is
-        // a voice note vs. other arbitrary audio attachments.
-        if (self.isVoiceMessageIncludingLegacyMessages) {
+        if (self.isVoiceMessage) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
         } else {
@@ -361,9 +354,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 - (NSString *)emoji
 {
     if ([MIMETypeUtil isAudio:self.contentType]) {
-        // a missing filename is the legacy way to determine if an audio attachment is
-        // a voice note vs. other arbitrary audio attachments.
-        if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
+        if (self.isVoiceMessage) {
             return @"🎤";
         }
     }
@@ -434,7 +425,15 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isVoiceMessage
 {
-    return self.attachmentType == TSAttachmentTypeVoiceMessage;
+    // a missing filename is the legacy way to determine if an audio attachment is
+    // a voice note vs. other arbitrary audio attachments.
+    if (self.attachmentType == TSAttachmentTypeVoiceMessage) {
+        return YES;
+    }
+    if ([MIMETypeUtil isAudio:self.contentType]) {
+        return !self.sourceFilename || self.sourceFilename.length == 0;
+    }
+    return NO;
 }
 
 - (BOOL)isBorderless

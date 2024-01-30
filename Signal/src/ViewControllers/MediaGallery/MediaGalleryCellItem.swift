@@ -67,7 +67,7 @@ struct MediaGalleryCellItemAudio {
         case voiceMessage
     }
     var attachmentType: AttachmentType {
-        let isVoiceMessage = attachmentStream.isVoiceMessageIncludingLegacyMessages
+        let isVoiceMessage = attachmentStream.isVoiceMessage
         return isVoiceMessage ? .voiceMessage : .file
     }
 
