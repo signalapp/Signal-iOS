@@ -130,7 +130,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     private weak var remoteVideoTrack: RTCVideoTrack?
 
     private lazy var localVideoView: LocalVideoView = {
-        let localVideoView = LocalVideoView()
+        let localVideoView = LocalVideoView(shouldUseAutolayout: false)
         localVideoView.captureSession = call.videoCaptureController.captureSession
         return localVideoView
     }()

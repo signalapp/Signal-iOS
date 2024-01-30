@@ -1607,6 +1607,9 @@
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1C2A54B2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */; };
+		E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */; };
+		E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */; };
+		E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
@@ -4354,6 +4357,9 @@
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1C2A54A2A8FCB0D00AEC4DA /* DeleteSystemContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteSystemContactViewController.swift; sourceTree = "<group>"; };
+		E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberChromeOverlayView.swift; sourceTree = "<group>"; };
+		E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberCameraOffView.swift; sourceTree = "<group>"; };
+		E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMemberVideoView.swift; sourceTree = "<group>"; };
 		E27EBB962FA58BAC64DD64A3 /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
@@ -8115,6 +8121,9 @@
 				88588D1A252D3DFF00405414 /* CallControls.swift */,
 				E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
+				E1E78CAE2B573BD100B6FC2D /* CallMemberCameraOffView.swift */,
+				E1E78CAC2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift */,
+				E1E78CB32B575C2700B6FC2D /* CallMemberVideoView.swift */,
 				88588D1C252D5D3D00405414 /* CallMemberView.swift */,
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				1700E33E28B856FB0073D949 /* IncomingCallControls.swift */,
@@ -12100,6 +12109,9 @@
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
+				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
+				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,
+				E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */,
 				88588D1D252D5D3D00405414 /* CallMemberView.swift in Sources */,
 				D93108092B337A23006A034E /* CallRecordLoader.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,

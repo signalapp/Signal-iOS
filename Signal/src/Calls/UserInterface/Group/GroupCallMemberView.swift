@@ -105,7 +105,7 @@ class GroupCallMemberView: UIView {
 }
 
 class GroupCallLocalMemberView: GroupCallMemberView {
-    let videoView = LocalVideoView()
+    let videoView = LocalVideoView(shouldUseAutolayout: false)
 
     let videoOffIndicatorImage = UIImageView()
 
