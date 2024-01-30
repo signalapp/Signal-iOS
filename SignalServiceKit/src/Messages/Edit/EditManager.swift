@@ -285,7 +285,7 @@ public class EditManager {
             // Remove existing long text messages. Any new long text
             // attachments should be added as part of the message sending
             messageBuilder.attachmentIds = attachments
-                .filter { !$0.isOversizeText }
+                .filter { !$0.isOversizeTextMimeType }
                 .map { $0.uniqueId  }
 
             messageBuilder.timestamp = NSDate.ows_millisecondTimeStamp()
@@ -515,7 +515,7 @@ public class EditManager {
         )
 
         // check for any oversized text in the edit
-        let oversizeText = newAttachments.filter({ $0.isOversizeText }).first
+        let oversizeText = newAttachments.filter({ $0.isOversizeTextMimeType }).first
 
         // check for existing oversized text
         let existingText = context.dataStore.getOversizedTextAttachments(

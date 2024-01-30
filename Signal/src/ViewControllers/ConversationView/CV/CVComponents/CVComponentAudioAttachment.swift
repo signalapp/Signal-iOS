@@ -65,7 +65,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             }
         }
 
-        owsAssertDebug(attachment.isAudio)
+        owsAssertDebug(attachment.isAudioMimeType)
         let presentation = AudioMessagePresenter(
             isIncoming: isIncoming,
             audioAttachment: audioAttachment,

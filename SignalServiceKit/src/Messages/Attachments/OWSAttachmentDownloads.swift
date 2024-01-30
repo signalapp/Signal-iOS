@@ -441,7 +441,7 @@ public class OWSAttachmentDownloads: NSObject {
             return true
         }
 
-        guard attachmentPointer.isVisualMedia, message.messageSticker == nil, !message.isViewOnceMessage else {
+        guard attachmentPointer.isVisualMediaMimeType, message.messageSticker == nil, !message.isViewOnceMessage else {
             return false
         }
 
@@ -1178,15 +1178,15 @@ public extension OWSAttachmentDownloads {
                 continue
             }
             let category: AttachmentCategory = {
-                if attachment.isImage {
+                if attachment.isImageMimeType {
                     return .bodyMediaImage
-                } else if attachment.isVideo {
+                } else if attachment.isVideoMimeType {
                     return .bodyMediaVideo
                 } else if attachment.isVoiceMessage {
                     return .bodyAudioVoiceMemo
-                } else if attachment.isAudio {
+                } else if attachment.isAudioMimeType {
                     return .bodyAudioOther
-                } else if attachment.isOversizeText {
+                } else if attachment.isOversizeTextMimeType {
                     return .bodyOversizeText
                 } else {
                     return .bodyFile
@@ -1664,15 +1664,15 @@ public extension OWSAttachmentDownloads {
 
 private extension TSAttachment {
     var downloadCategory: OWSAttachmentDownloads.AttachmentCategory {
-        if isImage {
+        if isImageMimeType {
             return .bodyMediaImage
-        } else if isVideo {
+        } else if isVideoMimeType {
             return .bodyMediaVideo
         } else if isVoiceMessage {
             return .bodyAudioVoiceMemo
-        } else if isAudio {
+        } else if isAudioMimeType {
             return .bodyAudioOther
-        } else if isOversizeText {
+        } else if isOversizeTextMimeType {
             return .bodyOversizeText
         } else {
             return .bodyFile

@@ -214,7 +214,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             } else {
                 view = buildPlaceholderView()
             }
-        } else if attachmentStream.shouldBeRenderedByYY {
+        } else if attachmentStream.isAnimatedContent {
             if attachmentStream.isValidImage, let filePath = attachmentStream.originalFilePath {
                 let animatedGif = YYImage(contentsOfFile: filePath)
                 view = YYAnimatedImageView(image: animatedGif)
@@ -340,7 +340,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private var hasAutoPlayedVideo = false
 
-    private var isVideo: Bool { attachmentStream.isVideo && !attachmentStream.isLoopingVideo }
+    private var isVideo: Bool { attachmentStream.isVideoMimeType && !attachmentStream.isLoopingVideo }
 
     private func playVideo() {
         guard let videoPlayerView else {

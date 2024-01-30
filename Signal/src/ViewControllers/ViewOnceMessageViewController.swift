@@ -122,11 +122,11 @@ class ViewOnceMessageViewController: OWSViewController {
             let viewOnceType: Content.ContentType
             if attachmentStream.isLoopingVideo {
                 viewOnceType = .loopingVideo
-            } else if attachmentStream.shouldBeRenderedByYY {
+            } else if attachmentStream.isAnimatedContent {
                 viewOnceType = .animatedImage
-            } else if attachmentStream.isImage {
+            } else if attachmentStream.isImageMimeType {
                 viewOnceType = .stillImage
-            } else if attachmentStream.isVideo {
+            } else if attachmentStream.isVideoMimeType {
                 viewOnceType = .video
             } else {
                 owsFailDebug("Unexpected content type.")

@@ -40,7 +40,6 @@ extern NSString *const kLottieStickerFileExtension;
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedAudioMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedImageMIMEType:(NSString *)contentType;
-+ (BOOL)isSupportedAnimatedMIMEType:(NSString *)contentType;
 
 + (BOOL)isSupportedVideoFile:(NSString *)filePath;
 + (BOOL)isSupportedAudioFile:(NSString *)filePath;
@@ -52,7 +51,8 @@ extern NSString *const kLottieStickerFileExtension;
 + (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType;
 + (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType;
 
-+ (BOOL)isAnimated:(NSString *)contentType;
++ (BOOL)isDefinitelyAnimated:(NSString *)contentType;
++ (BOOL)isMaybeAnimated:(NSString *)contentType;
 + (BOOL)isImage:(NSString *)contentType;
 + (BOOL)isVideo:(NSString *)contentType;
 + (BOOL)isAudio:(NSString *)contentType;

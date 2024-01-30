@@ -192,12 +192,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isValidImage;
 @property (nonatomic, readonly) BOOL isValidVideo;
 @property (nonatomic, readonly) BOOL isValidVisualMedia;
+// Might check the contents themselves, if the MIME type is ambiguous.
+@property (nonatomic, readonly) BOOL isAnimatedContent;
 
 - (BOOL)isValidImageIgnoringSize:(BOOL)ignoreSize;
 - (BOOL)isValidVideoIgnoringSize:(BOOL)ignoreSize;
 - (BOOL)isValidVisualMediaIgnoringSize:(BOOL)ignoreSize;
-
-@property (nonatomic, readonly) BOOL shouldBeRenderedByYY;
 
 #pragma mark - Update With... Methods
 

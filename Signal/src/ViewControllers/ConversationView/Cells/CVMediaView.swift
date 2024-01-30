@@ -68,11 +68,11 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
         if attachmentStream.isLoopingVideo {
             configureForLoopingVideo(attachmentStream: attachmentStream)
-        } else if attachmentStream.shouldBeRenderedByYY {
+        } else if attachmentStream.isAnimatedContent {
             configureForAnimatedImage(attachmentStream: attachmentStream)
-        } else if attachmentStream.isImage {
+        } else if attachmentStream.isImageMimeType {
             configureForStillImage(attachmentStream: attachmentStream)
-        } else if attachmentStream.isVideo {
+        } else if attachmentStream.isVideoMimeType {
             configureForVideo(attachmentStream: attachmentStream)
         } else {
             owsFailDebug("Attachment has unexpected type.")
@@ -193,7 +193,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        let isAnimated = attachmentStream.isAnimatedContent
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -205,7 +205,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     private func configureForStillImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        let isAnimated = attachmentStream.isAnimatedContent
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -218,7 +218,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        let isAnimated = attachmentStream.isAnimatedContent
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return

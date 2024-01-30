@@ -21,11 +21,6 @@ public class VideoAttachmentDetection: NSObject {
         return Set(MIMETypeUtil.supportedImageMIMETypesToExtensionTypes().keys.compactMap { $0 as? String })
     }()
 
-    private func isVideo(_ attachment: TSAttachment) -> Bool {
-        let mimeTypes = Self.videoMimeTypes
-        return mimeTypes.contains(attachment.contentType)
-    }
-
     private var isVideoSQL: String {
         let mimeTypes = Self.videoMimeTypes.map { "\"\($0)\"" }
         return "\(attachmentColumn: .contentType) in (\(mimeTypes.joined(separator: ",")))"
@@ -33,7 +28,7 @@ public class VideoAttachmentDetection: NSObject {
 
     @objc
     public func attachmentIsLoopingVideo(_ attachment: TSAttachment) -> Bool {
-        return attachment.attachmentType == .GIF && isVideo(attachment)
+        return attachment.attachmentType == .GIF && isVideoMimeType(attachment.contentType)
     }
 
     private var attachmentIsLoopingVideoSQL: String {
@@ -45,18 +40,18 @@ public class VideoAttachmentDetection: NSObject {
     }
 
     @objc
-    public func attachmentIsVideo(_ attachment: TSAttachment) -> Bool {
-        return isVideo(attachment)
+    public func isVideoMimeType(_ mimeType: String) -> Bool {
+        return Self.videoMimeTypes.contains(mimeType)
     }
 
     @objc
-    public func attachmentIsGIF(_ attachment: TSAttachment) -> Bool {
-        return attachment.contentType == OWSMimeTypeImageGif
+    public func attachmentIsDefinitelyAnimatedMimeType(_ attachment: TSAttachment) -> Bool {
+        return MIMETypeUtil.isDefinitelyAnimated(attachment.contentType)
     }
 
     @objc
     public func attachmentStreamIsAnimated(_ attachmentStream: TSAttachmentStream) -> Bool {
-        return attachmentIsGIF(attachmentStream) || attachmentStream.hasNonGIFAnimatedImageContent
+        return attachmentIsDefinitelyAnimatedMimeType(attachmentStream) || attachmentStream.hasNonGIFAnimatedImageContent
     }
 
     public var attachmentIsNonGIFImageSQL: String {
@@ -75,7 +70,7 @@ public class VideoAttachmentDetection: NSObject {
 
 fileprivate extension TSAttachmentStream {
     var hasNonGIFAnimatedImageContent: Bool {
-        if contentType != OWSMimeTypeImageWebp && contentType != OWSMimeTypeImagePng {
+        guard MIMETypeUtil.isMaybeAnimated(contentType) else {
             return false
         }
         guard let filePath = originalFilePath else {

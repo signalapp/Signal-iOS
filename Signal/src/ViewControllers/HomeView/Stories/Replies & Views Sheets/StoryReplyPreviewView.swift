@@ -114,7 +114,7 @@ class StoryReplyPreviewView: UIView {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
                 comment: "Indicates this message is a quoted reply to a video file.")
-        } else if let contentType = contentType, MIMETypeUtil.isAnimated(contentType) {
+        } else if let contentType = contentType, MIMETypeUtil.isDefinitelyAnimated(contentType) {
             if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
                 return OWSLocalizedString(
                     "QUOTED_REPLY_TYPE_GIF",

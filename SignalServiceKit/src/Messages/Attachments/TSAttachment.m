@@ -323,7 +323,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 - (NSString *)description {
     NSString *attachmentString;
 
-    if (self.isAnimated || self.isLoopingVideo) {
+    if ([MIMETypeUtil isMaybeAnimated:self.contentType] || self.isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
         BOOL isLoopingVideo = self.isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
 
@@ -373,7 +373,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (NSString *)emojiForMimeType
 {
-    if (self.isAnimated || self.isLoopingVideo) {
+    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType] || self.isLoopingVideo) {
         return @"🎡";
     } else if ([MIMETypeUtil isImage:self.contentType]) {
         return @"📷";
@@ -394,42 +394,42 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         return @"🎥";
     } else if ([MIMETypeUtil isAudio:contentType]) {
         return @"🎧";
-    } else if ([MIMETypeUtil isAnimated:contentType]) {
+    } else if ([MIMETypeUtil isMaybeAnimated:contentType]) {
         return @"🎡";
     } else {
         return @"📎";
     }
 }
 
-- (BOOL)isImage
+- (BOOL)isImageMimeType
 {
     return [MIMETypeUtil isImage:self.contentType];
 }
 
-- (BOOL)isWebpImage
+- (BOOL)isWebpImageMimeType
 {
     return [self.contentType isEqualToString:OWSMimeTypeImageWebp];
 }
 
-- (BOOL)isVideo
+- (BOOL)isVideoMimeType
 {
-    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsVideo:self];
+    return [OWSVideoAttachmentDetection.sharedInstance isVideoMimeType:self.contentType];
 }
 
-- (BOOL)isAudio
+- (BOOL)isAudioMimeType
 {
     return [MIMETypeUtil isAudio:self.contentType];
 }
 
-- (BOOL)isAnimated
+- (TSAnimatedMimeType)isIsAnimatedMimeType
 {
-    // TSAttachmentStream overrides this method and discriminates based on the actual content.
-    return self.hasAnimatedContentType;
-}
-
-- (BOOL)hasAnimatedContentType
-{
-    return [MIMETypeUtil isAnimated:self.contentType];
+    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
+        return TSAnimatedMimeTypeAnimated;
+    } else if ([MIMETypeUtil isMaybeAnimated:self.contentType]) {
+        return TSAnimatedMimeTypeMaybeAnimated;
+    } else {
+        return TSAnimatedMimeTypeNotAnimated;
+    }
 }
 
 - (BOOL)isVoiceMessage
@@ -447,12 +447,12 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:self];
 }
 
-- (BOOL)isVisualMedia
+- (BOOL)isVisualMediaMimeType
 {
     return [MIMETypeUtil isVisualMedia:self.contentType];
 }
 
-- (BOOL)isOversizeText
+- (BOOL)isOversizeTextMimeType
 {
     return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];
 }

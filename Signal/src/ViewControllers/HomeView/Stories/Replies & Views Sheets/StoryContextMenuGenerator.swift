@@ -591,7 +591,7 @@ extension StoryThumbnailView.Attachment {
         case .text:
             return true
         case .file(let attachment):
-            return (attachment as? TSAttachmentStream)?.isVisualMedia ?? false
+            return (attachment as? TSAttachmentStream)?.isVisualMediaMimeType ?? false
         }
     }
 
@@ -604,7 +604,7 @@ extension StoryThumbnailView.Attachment {
         case .file(let attachment):
             guard
                 let attachment = attachment as? TSAttachmentStream,
-                attachment.isVisualMedia,
+                attachment.isVisualMediaMimeType,
                 let mediaURL = attachment.originalMediaURL
             else { break }
 
@@ -614,9 +614,9 @@ extension StoryThumbnailView.Attachment {
                 }
 
                 PHPhotoLibrary.shared().performChanges({
-                    if attachment.isImage {
+                    if attachment.isImageMimeType {
                         PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: mediaURL)
-                    } else if attachment.isVideo {
+                    } else if attachment.isVideoMimeType {
                         PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: mediaURL)
                     }
                 }, completionHandler: { didSucceed, error in

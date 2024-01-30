@@ -480,7 +480,7 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     let imageView: UIImageView
 
     public init(attachmentStream: TSAttachmentStream) {
-        self.shouldBeRenderedByYY = attachmentStream.shouldBeRenderedByYY
+        self.shouldBeRenderedByYY = attachmentStream.isAnimatedContent
         self.attachmentStream = attachmentStream
 
         if shouldBeRenderedByYY {

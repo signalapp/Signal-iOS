@@ -204,10 +204,10 @@ extension CVItemViewModelImpl {
                 guard attachment.isValidVisualMedia else {
                     return false
                 }
-                if attachment.isImage || attachment.isAnimated {
+                if attachment.isImageMimeType || attachment.isAnimatedMimeType == .animated {
                     return true
                 }
-                if attachment.isVideo,
+                if attachment.isVideoMimeType,
                    let filePath = attachment.originalFilePath,
                    UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(filePath) {
                     return true

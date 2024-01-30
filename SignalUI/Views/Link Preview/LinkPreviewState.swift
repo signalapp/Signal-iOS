@@ -250,7 +250,7 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return .loading
         }
-        guard attachmentStream.isImage,
+        guard attachmentStream.isImageMimeType,
             attachmentStream.isValidImage else {
             return .invalid
         }
@@ -265,7 +265,7 @@ public class LinkPreviewSent: LinkPreviewState {
             return
         }
         DispatchQueue.global().async {
-            guard attachmentStream.isImage,
+            guard attachmentStream.isImageMimeType,
                   attachmentStream.isValidImage else {
                 return
             }
@@ -273,7 +273,7 @@ public class LinkPreviewSent: LinkPreviewState {
                 owsFailDebug("Invalid image.")
                 return
             }
-            if attachmentStream.shouldBeRenderedByYY {
+            if attachmentStream.isAnimatedContent {
                 guard let imageFilepath = attachmentStream.originalFilePath else {
                     owsFailDebug("Attachment is missing file path.")
                     return

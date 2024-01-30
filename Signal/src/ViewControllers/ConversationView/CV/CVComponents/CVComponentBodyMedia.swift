@@ -23,10 +23,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     private var areAllItemsImages: Bool {
         for item in items {
-            if item.attachment.isAnimated {
+            // This potentially reads the image data on disk.
+            // We will eventually have better guarantees about this
+            // state being cached and not requiring a disk read.
+            if let stream = item.attachmentStream, stream.isAnimatedContent {
                 return false
             }
-            if !item.attachment.isImage {
+            if !item.attachment.isImageMimeType {
                 return false
             }
         }
@@ -205,11 +208,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
-                        if firstAttachmentPointer.isAnimated || firstAttachmentPointer.isLoopingVideo {
+                        if firstAttachmentPointer.isAnimatedMimeType == .animated || firstAttachmentPointer.isLoopingVideo {
                             // Do nothing.
-                        } else if firstAttachmentPointer.isImage {
+                        } else if firstAttachmentPointer.isImageMimeType {
                             downloadSizeText.append(CommonStrings.attachmentTypePhoto)
-                        } else if firstAttachmentPointer.isVideo {
+                        } else if firstAttachmentPointer.isVideoMimeType {
                             downloadSizeText.append(CommonStrings.attachmentTypeVideo)
                         }
                     }

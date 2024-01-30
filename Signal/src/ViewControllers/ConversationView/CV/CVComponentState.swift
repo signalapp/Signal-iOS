@@ -976,7 +976,12 @@ fileprivate extension CVComponentState.Builder {
                 }
             } else if let attachmentStream = mediaAttachment as? TSAttachmentStream {
                 if attachmentStream.isValidVisualMedia
-                    && (attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isVideo) {
+                    && (
+                        attachmentStream.isImageMimeType
+                        || attachmentStream.isAnimatedMimeType != .notAnimated
+                        || attachmentStream.isVideoMimeType
+                    )
+                {
                     return buildViewOnce(viewOnceState: .incomingAvailable(attachmentStream: attachmentStream))
                 }
             }
@@ -1103,7 +1108,7 @@ fileprivate extension CVComponentState.Builder {
 
         var mediaAlbumItems = [CVMediaAlbumItem]()
         for attachment in mediaAttachments {
-            guard attachment.isVisualMedia else {
+            guard attachment.isVisualMediaMimeType else {
                 // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
                 // Since we're not coped to handle a mix of media, return @[]
                 owsAssertDebug(mediaAlbumItems.count == 0)
@@ -1169,7 +1174,7 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing attachment.")
         }
 
-        if attachment.isAudio, let audioAttachment = AudioAttachment(attachment: attachment, owningMessage: interaction as? TSMessage, metadata: nil) {
+        if attachment.isAudioMimeType, let audioAttachment = AudioAttachment(attachment: attachment, owningMessage: interaction as? TSMessage, metadata: nil) {
             self.audioAttachment = audioAttachment
             return
         }
@@ -1238,7 +1243,7 @@ fileprivate extension CVComponentState.Builder {
                     owsFailDebug("Could not load link preview image attachment.")
                     return nil
                 }
-                guard linkPreviewAttachment.isImage else {
+                guard linkPreviewAttachment.isImageMimeType else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }

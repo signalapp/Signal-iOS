@@ -366,10 +366,14 @@ fileprivate extension CVComponentViewOnce {
             return .unknown
         }
 
-        if attachmentStream.isVideo {
+        if attachmentStream.isVideoMimeType {
             return .video
         } else {
-            owsAssertDebug(attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isLoopingVideo)
+            owsAssertDebug(
+                attachmentStream.isImageMimeType
+                || attachmentStream.isAnimatedMimeType != .notAnimated
+                || attachmentStream.isLoopingVideo
+            )
             return .photo
         }
     }

@@ -343,7 +343,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable NSString *)audioWaveformPath
 {
-    if (!self.isAudio) {
+    if (!self.isAudioMimeType) {
         return nil;
     }
 
@@ -358,7 +358,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         return nil;
     }
 
-    if (!self.isImage && !self.isVideo && !self.isAnimated) {
+    if (!self.isImageMimeType && !self.isVideoMimeType && self.isAnimatedMimeType == TSAnimatedMimeTypeNotAnimated) {
         return nil;
     }
 
@@ -446,15 +446,15 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidVisualMediaIgnoringSize:(BOOL)ignoreSize
 {
-    if (self.isImage && [self isValidImageIgnoringSize:ignoreSize]) {
+    if (self.isImageMimeType && [self isValidImageIgnoringSize:ignoreSize]) {
         return YES;
     }
 
-    if (self.isVideo && [self isValidVideoIgnoringSize:ignoreSize]) {
+    if (self.isVideoMimeType && [self isValidVideoIgnoringSize:ignoreSize]) {
         return YES;
     }
 
-    if (self.isAnimated && [self isValidImageIgnoringSize:ignoreSize]) {
+    if (self.isAnimatedMimeType != TSAnimatedMimeTypeNotAnimated && [self isValidImageIgnoringSize:ignoreSize]) {
         return YES;
     }
 
@@ -474,7 +474,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidImageIgnoringSize:(BOOL)ignoreSize
 {
-    OWSAssertDebug(self.isImage || self.isAnimated);
+    OWSAssertDebug(self.isImageMimeType || self.isAnimatedMimeType != TSAnimatedMimeTypeNotAnimated);
 
     BOOL result;
     BOOL didUpdateCache = NO;
@@ -513,7 +513,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidVideoIgnoringSize:(BOOL)ignoreSize
 {
-    OWSAssertDebug(self.isVideo);
+    OWSAssertDebug(self.isVideoMimeType);
 
     BOOL result;
     BOOL didUpdateCache = NO;
@@ -538,18 +538,13 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     return result;
 }
 
-- (BOOL)isAnimated
-{
-    return [self isAnimatedWithGenerator:^BOOL { return [self hasAnimatedImageContent]; }];
-}
-
-- (BOOL)isAnimatedWithGenerator:(BOOL (^)(void))generator
+- (BOOL)isAnimatedContent
 {
     BOOL result;
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isAnimatedCached) {
-            self.isAnimatedCached = @(generator());
+            self.isAnimatedCached = @([self hasAnimatedImageContent]);
             didUpdateCache = YES;
         }
         result = self.isAnimatedCached.boolValue;
@@ -565,11 +560,10 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)shouldBeRenderedByYY
 {
-    if ([self.contentType isEqualToString:OWSMimeTypeImageWebp] ||
-        [self.contentType isEqualToString:OWSMimeTypeImageGif]) {
+    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
         return YES;
     }
-    return self.isAnimated;
+    return self.isAnimatedContent;
 }
 
 - (BOOL)hasAnimatedImageContent
@@ -581,9 +575,9 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable UIImage *)originalImage
 {
-    if ([self isVideo]) {
+    if ([self isVideoMimeType]) {
         return [self videoStillImage];
-    } else if ([self isImage] || [self isAnimated]) {
+    } else if ([self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
         NSString *_Nullable originalFilePath = self.originalFilePath;
         if (!originalFilePath) {
             return nil;
@@ -592,7 +586,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             return nil;
         }
         UIImage *_Nullable image;
-        if (self.isWebpImage) {
+        if (self.isWebpImageMimeType) {
             image = [[YYImage alloc] initWithContentsOfFile:originalFilePath];
         } else {
             image = [[UIImage alloc] initWithContentsOfFile:originalFilePath];
@@ -609,11 +603,11 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable NSData *)validStillImageData
 {
-    if ([self isVideo]) {
+    if ([self isVideoMimeType]) {
         OWSFailDebug(@"isVideo was unexpectedly true");
         return nil;
     }
-    if ([self isAnimated]) {
+    if ([self isAnimatedMimeType] == TSAnimatedMimeTypeAnimated) {
         OWSFailDebug(@"isAnimated was unexpectedly true");
         return nil;
     }
@@ -629,7 +623,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType
 {
     return ([MIMETypeUtil isVideo:contentType] || [MIMETypeUtil isImage:contentType] ||
-        [MIMETypeUtil isAnimated:contentType]);
+        [MIMETypeUtil isMaybeAnimated:contentType]);
 }
 
 - (nullable UIImage *)videoStillImage
@@ -669,12 +663,12 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (CGSize)calculateImageSizePixels
 {
-    if ([self isVideo]) {
+    if ([self isVideoMimeType]) {
         if (![self isValidVideo]) {
             return CGSizeZero;
         }
         return [[self videoStillImage] pixelSize];
-    } else if ([self isImage] || [self isAnimated]) {
+    } else if ([self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
         // imageSizeForFilePath checks validity.
         return [NSData imageSizeForFilePath:self.originalFilePath mimeType:self.contentType];
     } else {
@@ -684,7 +678,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)shouldHaveImageSize
 {
-    return ([self isVideo] || [self isImage] || [self isAnimated]);
+    return (
+        [self isVideoMimeType] || [self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated);
 }
 
 - (CGSize)imageSizePixels
@@ -761,7 +756,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (NSTimeInterval)calculateAudioDurationSeconds
 {
-    OWSAssertDebug([self isAudio]);
+    OWSAssertDebug([self isAudioMimeType]);
 
     if (CurrentAppContext().isRunningTests) {
         // Return an arbitrary non-zero value to avoid
@@ -871,7 +866,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             }
 
             if (originalSizePoints.width <= thumbnailDimensionPoints
-                && originalSizePoints.height <= thumbnailDimensionPoints && self.isImage) {
+                && originalSizePoints.height <= thumbnailDimensionPoints && self.isImageMimeType) {
                 // There's no point in generating a thumbnail if the original is smaller than the
                 // thumbnail size. Only do this for images. We still need to generate thumbnails
                 // for videos.
@@ -1106,7 +1101,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;
     } else if (self.isBorderless) {
         builder.flags = SSKProtoAttachmentPointerFlagsBorderless;
-    } else if (self.isLoopingVideo || self.isAnimated) {
+    } else if (self.isLoopingVideo || self.isAnimatedContent) {
         builder.flags = SSKProtoAttachmentPointerFlagsGif;
     } else {
         builder.flags = 0;

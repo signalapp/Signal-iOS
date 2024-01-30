@@ -33,7 +33,7 @@ public class AudioWaveformManager: NSObject {
         unfairLock.withLock {
             let attachmentId = attachment.uniqueId
 
-            guard attachment.isAudio else {
+            guard attachment.isAudioMimeType else {
                 owsFailDebug("Not audio.")
                 return nil
             }

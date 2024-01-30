@@ -826,7 +826,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                            filterBlock:^(TSAttachment *attachment) {
                                                // We can only discriminate oversize text attachments at the
                                                // last minute by consulting the attachment model.
-                                               if (attachment.isOversizeText) {
+                                               if (attachment.isOversizeTextMimeType) {
                                                    OWSLogVerbose(@"Removing oversize text attachment.");
                                                    return shouldRemoveBodyText;
                                                } else {

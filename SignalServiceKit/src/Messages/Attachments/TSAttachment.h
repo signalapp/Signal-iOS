@@ -18,6 +18,16 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
     TSAttachmentTypeGIF = 3,
 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
+    /// The MIME type is for something that doesn't support animated images.
+    TSAnimatedMimeTypeNotAnimated = 0,
+    /// The MIME type is for images that may or may not be animated, e.g. "png".
+    /// Check the contents to determine if its actually animated.
+    TSAnimatedMimeTypeMaybeAnimated = 1,
+    /// The MIME type is exclusive to animated images
+    TSAnimatedMimeTypeAnimated = 2,
+};
+
 @interface TSAttachment : BaseModel
 
 // TSAttachment is a base class for TSAttachmentPointer (a yet-to-be-downloaded
@@ -131,19 +141,23 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)upgradeAttachmentSchemaVersionIfNecessary;
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
-@property (nonatomic, readonly) BOOL isAnimated;
-@property (nonatomic, readonly) BOOL isImage;
-@property (nonatomic, readonly) BOOL isWebpImage;
-@property (nonatomic, readonly) BOOL isVideo;
-@property (nonatomic, readonly) BOOL isAudio;
+@property (nonatomic, readonly) TSAnimatedMimeType isAnimatedMimeType;
+@property (nonatomic, readonly) BOOL isImageMimeType;
+@property (nonatomic, readonly) BOOL isWebpImageMimeType;
+@property (nonatomic, readonly) BOOL isVideoMimeType;
+@property (nonatomic, readonly) BOOL isAudioMimeType;
 // This is meant for new-style messages only.
+// TODO: This is a property of the containing message.
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 // This will tell you if old-style messages are voice messages.
+// TODO: This is a property of the containing message.
 @property (nonatomic, readonly) BOOL isVoiceMessageIncludingLegacyMessages;
+// TODO: This is a property of the containing message.
 @property (nonatomic, readonly) BOOL isBorderless;
+// TODO: This is a property of the containing message AND the attachment.
 @property (nonatomic, readonly) BOOL isLoopingVideo;
-@property (nonatomic, readonly) BOOL isVisualMedia;
-@property (nonatomic, readonly) BOOL isOversizeText;
+@property (nonatomic, readonly) BOOL isVisualMediaMimeType;
+@property (nonatomic, readonly) BOOL isOversizeTextMimeType;
 
 // nil: no value cached
 // NaN: not a video, broken video, or duration otherwise impossible to ascertain.

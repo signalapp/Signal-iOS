@@ -859,15 +859,15 @@ class StoryItemMediaView: UIView {
             container.addSubview(backgroundImageView)
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
-            if stream.isVideo {
+            if stream.isVideoMimeType {
                 let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
-            } else if stream.shouldBeRenderedByYY {
+            } else if stream.isAnimatedContent {
                 let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(yyImageView)
                 yyImageView.autoPinEdgesToSuperviewEdges()
-            } else if stream.isImage {
+            } else if stream.isImageMimeType {
                 let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()

@@ -488,18 +488,23 @@ public extension TSMessage {
                     "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
                     comment: "inbox cell and notification text for an already viewed view-once media message."
                 ))
-            } else if mediaAttachment?.isVideo == true {
+            } else if mediaAttachment?.isVideoMimeType == true {
                 return .viewOnceMessage(OWSLocalizedString(
                     "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW",
                     comment: "inbox cell and notification text for a view-once video."
                 ))
             } else {
                 // Make sure that if we add new types we cover them here.
-                owsAssertDebug(
-                    mediaAttachment?.isImage == true
-                    || mediaAttachment?.isLoopingVideo == true
-                    || mediaAttachment?.isAnimated == true
-                )
+                switch mediaAttachment?.isAnimatedMimeType {
+                case nil, .notAnimated:
+                    owsAssertDebug(
+                        mediaAttachment?.isImageMimeType == true
+                        || mediaAttachment?.isLoopingVideo == true
+                    )
+                case .maybeAnimated, .animated:
+                    break
+                }
+
                 return .viewOnceMessage(OWSLocalizedString(
                     "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW",
                     comment: "inbox cell and notification text for a view-once photo."

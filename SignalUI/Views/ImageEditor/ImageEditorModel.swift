@@ -72,7 +72,7 @@ class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
         guard MIMETypeUtil.isImage(mimeType),
-              !MIMETypeUtil.isAnimated(mimeType) else {
+              !MIMETypeUtil.isMaybeAnimated(mimeType) else {
             Logger.error("Invalid MIME type: \(mimeType).")
             throw ImageEditorError.invalidInput
         }

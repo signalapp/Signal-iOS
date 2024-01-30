@@ -75,15 +75,15 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     }
 
     var isVideo: Bool {
-        return attachmentStream.isVideo && !attachmentStream.isLoopingVideo
+        return attachmentStream.isVideoMimeType && !attachmentStream.isLoopingVideo
     }
 
     var isAnimated: Bool {
-        return attachmentStream.isAnimated || attachmentStream.isLoopingVideo
+        return attachmentStream.isAnimatedMimeType == .animated || attachmentStream.isLoopingVideo
     }
 
     var isImage: Bool {
-        return attachmentStream.isImage
+        return attachmentStream.isImageMimeType
     }
 
     // TODO: Add units to name.

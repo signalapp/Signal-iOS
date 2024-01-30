@@ -45,7 +45,7 @@ public final class OutgoingAttachmentInfo {
             attachmentStream.attachmentType = .voiceMessage
         } else if isBorderless {
             attachmentStream.attachmentType = .borderless
-        } else if isLoopingVideo || attachmentStream.isAnimated {
+        } else if isLoopingVideo || attachmentStream.isAnimatedContent {
             attachmentStream.attachmentType = .GIF
         }
 

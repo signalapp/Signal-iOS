@@ -110,7 +110,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return result;
 }
 
-+ (NSDictionary *)supportedAnimatedMIMETypesToExtensionTypes {
++ (NSDictionary *)supportedDefinitelyAnimatedMIMETypesToExtensionTypes
+{
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -118,11 +119,23 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
             OWSMimeTypeImageGif : @"gif",
             OWSMimeTypeImageApng1 : @"png",
             OWSMimeTypeImageApng2 : @"png",
-            OWSMimeTypeImageWebp : @"webp"
         } mutableCopy];
         if (SSKFeatureFlags.supportAnimatedStickers_Lottie) {
             value[OWSMimeTypeLottieSticker] = kLottieStickerFileExtension;
         }
+        result = [value copy];
+    });
+    return result;
+}
+
++ (NSDictionary *)supportedMaybeAnimatedMIMETypesToExtensionTypes
+{
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableDictionary<NSString *, NSString *> *value =
+            [[MIMETypeUtil supportedDefinitelyAnimatedMIMETypesToExtensionTypes] mutableCopy];
+        value[OWSMimeTypeImageWebp] = @"webp";
         result = [value copy];
     });
     return result;
@@ -235,10 +248,6 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
     return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
-+ (BOOL)isSupportedAnimatedMIMEType:(NSString *)contentType {
-    return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
-}
-
 + (BOOL)isSupportedBinaryDataMIMEType:(NSString *)contentType
 {
     return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
@@ -278,7 +287,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 + (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType
 {
-    return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
+    return [[self supportedMaybeAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
 + (nullable NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
@@ -288,8 +297,14 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 #pragma mark - Full attachment utilities
 
-+ (BOOL)isAnimated:(NSString *)contentType {
-    return [MIMETypeUtil isSupportedAnimatedMIMEType:contentType];
++ (BOOL)isDefinitelyAnimated:(NSString *)contentType
+{
+    return [[self supportedDefinitelyAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
+}
+
++ (BOOL)isMaybeAnimated:(NSString *)contentType
+{
+    return [[self supportedMaybeAnimatedMIMETypesToExtensionTypes] objectForKey:contentType] != nil;
 }
 
 + (BOOL)isBinaryData:(NSString *)contentType
@@ -319,7 +334,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         return YES;
     }
 
-    if ([self isAnimated:contentType]) {
+    if ([self isMaybeAnimated:contentType]) {
         return YES;
     }
 
@@ -388,7 +403,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         return [MIMETypeUtil filePathForAudio:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isImage:contentType]) {
         return [MIMETypeUtil filePathForImage:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([self isAnimated:contentType]) {
+    } else if ([self isMaybeAnimated:contentType]) {
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isBinaryData:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
@@ -562,9 +577,8 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
 {
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        result = [self utiTypesForMIMETypes:[self supportedAnimatedMIMETypesToExtensionTypes].allKeys];
-    });
+    dispatch_once(&onceToken,
+        ^{ result = [self utiTypesForMIMETypes:[self supportedMaybeAnimatedMIMETypesToExtensionTypes].allKeys]; });
     return result;
 }
 

@@ -42,7 +42,7 @@ public class BlurHash: NSObject {
                 future.resolve()
                 return
             }
-            guard attachmentStream.isVisualMedia else {
+            guard attachmentStream.isVisualMediaMimeType else {
                 // We only generate a blurHash for visual media.
                 future.resolve()
                 return

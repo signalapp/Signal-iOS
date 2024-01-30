@@ -139,7 +139,7 @@ extension TSAttachmentStream: UIActivityItemSource {
         // (e.g. an album with photos and videos) the OS will still incorrectly
         // order the video items. I haven't found any way to work around this
         // since videos may only be shared as URLs.
-        if isImage {
+        if isImageMimeType {
             return UIImage()
         }
         return originalMediaURL as Any
@@ -153,10 +153,10 @@ extension TSAttachmentStream: UIActivityItemSource {
         if contentType == OWSMimeTypeImageWebp {
             return originalImage
         }
-        if isAnimated {
+        if isAnimatedMimeType == .animated {
             return originalMediaURL
         }
-        if isImage {
+        if isImageMimeType {
             return originalImage
         }
         return originalMediaURL
