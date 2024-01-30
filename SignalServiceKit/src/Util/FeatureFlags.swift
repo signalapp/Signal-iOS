@@ -94,6 +94,11 @@ public class FeatureFlags: BaseFlags {
 
     public static let shouldShowCallsTab = build.includes(.internal)
 
+    public static let useCallMemberComposableViewsForLocalUserInGroupCalls = false
+    public static let useCallMemberComposableViewsForLocalUserInIndividualCalls = false
+    public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
+    public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
+
     @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,

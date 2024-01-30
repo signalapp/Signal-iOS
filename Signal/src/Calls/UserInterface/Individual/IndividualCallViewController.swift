@@ -126,14 +126,10 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     // MARK: - Video Views
 
-    private lazy var remoteVideoView = RemoteVideoView()
+    private var remoteMemberView: CallMemberView_IndividualRemoteBridge
     private weak var remoteVideoTrack: RTCVideoTrack?
 
-    private lazy var localVideoView: LocalVideoView = {
-        let localVideoView = LocalVideoView(shouldUseAutolayout: false)
-        localVideoView.captureSession = call.videoCaptureController.captureSession
-        return localVideoView
-    }()
+    private var localVideoView: CallMemberView_IndividualLocalBridge
 
     // MARK: - Gestures
 
@@ -153,6 +149,21 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         owsAssertDebug(call.isIndividualCall)
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.individualCall.remoteAddress)
+
+        if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
+            remoteMemberView = CallMemberView(type: .remote(isGroupCall: false))
+        } else {
+            remoteMemberView = RemoteVideoView()
+        }
+
+        if FeatureFlags.useCallMemberComposableViewsForLocalUserInIndividualCalls {
+            self.localVideoView = CallMemberView(type: .local(call))
+        } else {
+            let localVideoView = LocalVideoView(shouldUseAutolayout: false)
+            localVideoView.captureSession = call.videoCaptureController.captureSession
+            self.localVideoView = localVideoView
+        }
+
         super.init()
 
         NotificationCenter.default.addObserver(self,
@@ -164,7 +175,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     deinit {
         // These views might be in the return to call PIP's hierarchy,
         // we want to remove them so they are free'd when the call ends
-        remoteVideoView.removeFromSuperview()
+        remoteMemberView.removeFromSuperview()
         localVideoView.removeFromSuperview()
     }
 
@@ -293,17 +304,16 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
-        if !remoteVideoView.isHidden {
+        if !remoteMemberView.isHidden {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
     }
 
     func createVideoViews() {
-        remoteVideoView.isUserInteractionEnabled = false
-        remoteVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "remoteVideoView")
-        remoteVideoView.isHidden = true
-        remoteVideoView.isGroupCall = false
-        view.addSubview(remoteVideoView)
+        remoteMemberView.isUserInteractionEnabled = false
+        remoteMemberView.isHidden = true
+        remoteMemberView.isGroupCall = false
+        view.addSubview(remoteMemberView)
 
         // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
         localVideoView.contentMode = .scaleAspectFill
@@ -459,7 +469,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         callStatusLabel.setContentHuggingVerticalHigh()
         callStatusLabel.setCompressionResistanceHigh()
 
-        remoteVideoView.autoPinEdgesToSuperviewEdges()
+        remoteMemberView.autoPinEdgesToSuperviewEdges()
 
         contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarMargin)
         contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -avatarMargin)
@@ -477,7 +487,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     internal func updateRemoteVideoLayout() {
-        remoteVideoView.isHidden = !self.hasRemoteVideoTrack
+        remoteMemberView.isHidden = !self.hasRemoteVideoTrack
         updateCallUI()
     }
 
@@ -509,6 +519,12 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     private var previousOrigin: CGPoint!
     private func updateLocalVideoLayout() {
+        localVideoView.configure(
+            call: call,
+            isFullScreen: isRenderingLocalVanityVideo,
+            memberType: .local
+        )
+
         guard localVideoView.superview == view else { return }
 
         guard !call.individualCall.isEnded else { return }
@@ -698,9 +714,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Rework control state if remote video is available.
-        let hasRemoteVideo = !remoteVideoView.isHidden
-        remoteVideoView.isFullScreen = true
-        remoteVideoView.isScreenShare = call.individualCall.isRemoteSharingScreen
+        let hasRemoteVideo = !remoteMemberView.isHidden
+        remoteMemberView.isFullScreen = true
+        remoteMemberView.isScreenShare = call.individualCall.isRemoteSharingScreen
         contactAvatarView.isHidden = hasRemoteVideo || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
@@ -709,7 +725,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Also hide other controls if user has tapped to hide them.
-        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden
+        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !remoteMemberView.isHidden
         let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
             self.bottomContainerView.isHidden = false
@@ -847,7 +863,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     private var controlTimeoutTimer: Timer?
     private func scheduleControlTimeoutIfNecessary() {
-        if remoteVideoView.isHidden || shouldRemoteVideoControlsBeHidden {
+        if remoteMemberView.isHidden || shouldRemoteVideoControlsBeHidden {
             controlTimeoutTimer?.invalidate()
             controlTimeoutTimer = nil
         }
@@ -867,7 +883,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         controlTimeoutTimer?.invalidate()
         controlTimeoutTimer = nil
 
-        guard !remoteVideoView.isHidden && !shouldRemoteVideoControlsBeHidden else { return }
+        guard !remoteMemberView.isHidden && !shouldRemoteVideoControlsBeHidden else { return }
         shouldRemoteVideoControlsBeHidden = true
     }
 
@@ -953,11 +969,13 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             return
         }
 
-        self.remoteVideoTrack?.remove(remoteVideoView)
-        self.remoteVideoTrack = nil
-        remoteVideoView.renderFrame(nil)
-        self.remoteVideoTrack = remoteVideoTrack
-        self.remoteVideoTrack?.add(remoteVideoView)
+        if let remoteVideoView = remoteMemberView.remoteVideoView {
+            self.remoteVideoTrack?.remove(remoteVideoView)
+            self.remoteVideoTrack = nil
+            remoteVideoView.renderFrame(nil)
+            self.remoteVideoTrack = remoteVideoTrack
+            self.remoteVideoTrack?.add(remoteVideoView)
+        }
 
         shouldRemoteVideoControlsBeHidden = false
 
@@ -1020,7 +1038,7 @@ extension IndividualCallViewController: UIGestureRecognizerDelegate {
 }
 
 extension IndividualCallViewController: CallViewControllerWindowReference {
-    var remoteVideoViewReference: UIView { remoteVideoView }
+    var remoteVideoViewReference: UIView { remoteMemberView }
     var localVideoViewReference: UIView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
 
@@ -1028,7 +1046,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
         // We need to re-add them when we return to this view.
-        guard remoteVideoView.superview != view && localVideoView.superview != view else {
+        guard remoteMemberView.superview != view && localVideoView.superview != view else {
             return owsFailDebug("unexpectedly returned to call while we own the video views")
         }
 
@@ -1040,8 +1058,8 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("failed to snapshot pip")
         }
 
-        view.insertSubview(remoteVideoView, aboveSubview: blurView)
-        remoteVideoView.autoPinEdgesToSuperviewEdges()
+        view.insertSubview(remoteMemberView, aboveSubview: blurView)
+        remoteMemberView.autoPinEdgesToSuperviewEdges()
 
         view.insertSubview(localVideoView, aboveSubview: contactAvatarContainerView)
 

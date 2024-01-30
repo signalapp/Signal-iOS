@@ -33,8 +33,8 @@ class GroupCallViewController: UIViewController {
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
 
-    private let localMemberView = GroupCallLocalMemberView()
-    private let speakerView = GroupCallRemoteMemberView(context: .speaker)
+    private let localMemberView: CallMemberView_GroupBridge
+    private let speakerView: CallMemberView_GroupBridge
 
     private var didUserEverSwipeToSpeakerView = true
     private var didUserEverSwipeToScreenShare = true
@@ -80,6 +80,18 @@ class GroupCallViewController: UIViewController {
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
         owsAssertDebug(call.isGroupCall)
+
+        if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
+            speakerView = CallMemberView(type: .remote(isGroupCall: true))
+        } else {
+            speakerView = GroupCallRemoteMemberView(context: .speaker)
+        }
+
+        if FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls {
+            localMemberView = CallMemberView(type: .local(call))
+        } else {
+            localMemberView = GroupCallLocalMemberView()
+        }
 
         self.call = call
 
@@ -493,16 +505,27 @@ class GroupCallViewController: UIViewController {
 
         let localDevice = groupCall.localDeviceState
 
-        localMemberView.configure(
-            call: call,
-            isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
-        )
+        let isFullScreen = localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
+        if let localMemberView = localMemberView as? CallMemberView {
+            localMemberView.configure(
+                call: call,
+                isFullScreen: isFullScreen,
+                memberType: .local
+            )
+        } else if let localMemberView = localMemberView as? GroupCallLocalMemberView {
+            localMemberView.configure(call: call, isFullScreen: isFullScreen)
+        }
 
         if let speakerState = groupCall.remoteDeviceStates.sortedBySpeakerTime.first {
-            speakerView.configure(
-                call: call,
-                device: speakerState
-            )
+            if let speakerView = speakerView as? CallMemberView {
+                speakerView.configure(
+                    call: call,
+                    memberType: .remote(speakerState, .speaker)
+                    // getting mode based on its old value in init in this file.
+                )
+            } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
+                speakerView.configure(call: call, device: speakerState)
+            }
         } else {
             speakerView.clearConfiguration()
         }

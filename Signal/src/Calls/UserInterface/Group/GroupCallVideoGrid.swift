@@ -121,9 +121,14 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
 
 class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
-    private let memberView = GroupCallRemoteMemberView(context: .videoGrid)
+    private let memberView: CallMemberView_GroupBridge
 
     override init(frame: CGRect) {
+        if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
+            memberView = CallMemberView(type: .remote(isGroupCall: true))
+        } else {
+            memberView = GroupCallRemoteMemberView(context: .videoGrid)
+        }
         super.init(frame: frame)
 
         contentView.addSubview(memberView)
@@ -134,7 +139,11 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     }
 
     func configure(call: SignalCall, device: RemoteDeviceState) {
-        memberView.configure(call: call, device: device)
+        if let memberView = memberView as? CallMemberView {
+            memberView.configure(call: call, memberType: .remote(device, CallMemberVisualContext.videoGrid))
+        } else if let memberView = memberView as? GroupCallRemoteMemberView {
+            memberView.configure(call: call, device: device)
+        }
     }
 
     required init?(coder: NSCoder) {
