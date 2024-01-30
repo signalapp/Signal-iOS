@@ -59,8 +59,8 @@ def ui_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'lottie-ios', :inhibit_warnings => true
 
-  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts', :commit => '5cd4f39a24d06708d1c19aced8384740689d7f61'
-  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift', tag: 'v5.0.0'
+  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts', :commit => '345c49113e5d92e152517f17b605c9b8aef06dca', submodules: true
+  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift', tag: 'v6.0.0'
 end
 
 target 'Signal' do
