@@ -146,7 +146,7 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     }
 
     func configureRemoteVideo(device: RemoteDeviceState) {
-        memberView.configureRemoteVideo(device: device)
+        memberView.configureRemoteVideo(device: device, context: .videoGrid)
     }
 
     func setMemberViewDelegate(_ delegate: GroupCallMemberViewDelegate?) {

@@ -13,7 +13,7 @@ protocol GroupCallMemberViewDelegate: AnyObject {
     func memberView(userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
 }
 
-class GroupCallMemberView: UIView {
+class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
     weak var delegate: GroupCallMemberViewDelegate?
     let noVideoView = UIView()
 
@@ -102,6 +102,16 @@ class GroupCallMemberView: UIView {
     fileprivate func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
         self.muteIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
+
+    // MARK: - CallMemberView_GroupBridge
+
+    // Protocol methods used while migrating from `GroupCallMemberView`
+    // to unified `CallMemberView`.
+
+    var isCallMinimized: Bool = false
+    func cleanupVideoViews() { /* Implemented by subclass if applicable */ }
+    func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) { /* Implemented by subclass if applicable */ }
+    func clearConfiguration() { /* Implemented by subclass if applicable */ }
 }
 
 class GroupCallLocalMemberView: GroupCallMemberView {
@@ -212,7 +222,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     let spinner = UIActivityIndicatorView(style: .large)
     let avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
 
-    var isCallMinimized: Bool = false {
+    override var isCallMinimized: Bool {
         didSet {
             // Currently only updated for the speaker view, since that's the only visible cell
             // while minimized.
@@ -302,7 +312,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         noVideoView.backgroundColor = AvatarTheme.forAddress(device.address).backgroundColor
 
-        configureRemoteVideo(device: device)
+        configureRemoteVideo(device: device, context: context)
         let errorDeferralInterval: TimeInterval = 5.0
         let addedDate = Date(millisecondsSince1970: device.addedTime)
         let connectionDuration = -addedDate.timeIntervalSinceNow
@@ -346,7 +356,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
     }
 
-    func clearConfiguration() {
+    override func clearConfiguration() {
         deferredReconfigTimer?.invalidate()
 
         cleanupVideoViews()
@@ -370,12 +380,12 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
     }
 
-    func cleanupVideoViews() {
+    override func cleanupVideoViews() {
         if videoView?.superview == self { videoView?.removeFromSuperview() }
         videoView = nil
     }
 
-    func configureRemoteVideo(device: RemoteDeviceState) {
+    override func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) {
         if videoView?.superview == self { videoView?.removeFromSuperview() }
         let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, context: context)
         insertSubview(newVideoView, belowSubview: muteIndicatorImage)

@@ -24,7 +24,7 @@ protocol CallMemberComposableView: UIView {
     func clearConfiguration()
 }
 
-class CallMemberView: UIView {
+class CallMemberView: UIView, CallMemberView_GroupBridge {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberVideoView: CallMemberVideoView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView
@@ -45,6 +45,7 @@ class CallMemberView: UIView {
         self.callMemberCameraOffView = CallMemberCameraOffView()
         self.callMemberVideoView = CallMemberVideoView(type: type)
         self.callMemberChromeOverlayView = CallMemberChromeOverlayView()
+
         super.init(frame: .zero)
         switch type {
         case .local:
@@ -155,4 +156,30 @@ class CallMemberView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: CallMemberView_GroupBridge
+
+    func cleanupVideoViews() {
+        self.callMemberVideoView.clearConfiguration()
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) {
+        self.callMemberVideoView.configureRemoteVideo(
+            device: device,
+            context: context
+        )
+    }
+
+    var isCallMinimized: Bool = false
+
+    var delegate: GroupCallMemberViewDelegate?
+}
+
+/// For both local and remote call member views in group calls.
+protocol CallMemberView_GroupBridge: UIView {
+    var isCallMinimized: Bool { get set }
+    var delegate: GroupCallMemberViewDelegate? { get set }
+    func cleanupVideoViews()
+    func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext)
+    func clearConfiguration()
 }
