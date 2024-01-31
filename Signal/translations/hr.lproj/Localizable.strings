@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Potvrda plaćanja nije uspjela. Molimo, pokušajte ponovno.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Plaćanje je odbijeno. Molimo, pokušajte ponovno.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Doniraj";
@@ -2171,10 +2171,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Privatnost prije profita";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Doniraj";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Ako nastavite, poništit ćete svoju nedavnu donaciju. Naplata se neće izvršiti, ali ćete možda primiti zahtjev za plaćanje u svojoj aplikaciji mobilnog bankarstva dok ne poduzmete radnju. Jeste li sigurni da želite izvršiti novu donaciju?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Obnovi pretplatu";
@@ -2183,7 +2183,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Pokušajte ponovo";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Vašu donaciju putem platforme iDEAL nije bilo moguće potvrditi. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili donaciju ili pokušajte ponovno.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Čekamo potvrdu vaše uplate putem bankovnog transfera. Obrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan.";
@@ -3272,7 +3272,7 @@
 "GROUP_WAS_MIGRATED" = "Ova grupa je ažurirana u Novu grupu.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Ne možete biti dodani u Novu grupu, ali ste pozvani da se pridružite.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
@@ -4922,13 +4922,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Svi";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Svi korisnici koji imaju vaš broj telefona vidjet će da ste na Signalu i moći će započeti razgovor s vama.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nitko";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nitko neće moći vidjeti da ste na Signalu, osim ako nekome ne pošaljete poruku ili ako već imate postojeći razgovor s nekime.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Primjer: %1$@";
@@ -4937,13 +4937,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Svi";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Vaš broj telefona bit će vidljiv svim osobama i grupama kojima pošaljete poruku.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nitko";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nitko neće vidjeti vaš broj telefona na Signalu, čak ni kada razmjenjujete poruke.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Ime";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Došlo je do pogreške s vašim korisničkim imenom – nije više povezano s vašim računom. Pokušajte ga ponovno postaviti ili odabrati novo.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Brisanje korisničkog imena";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Ispravi odmah";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ovime ćete ukloniti svoje korisničko ime i poništiti svoj QR kôd i poveznicu. \"%1$@\" bit će dostupno drugima za korištenje. Sigurno želite nastaviti?";
@@ -5309,13 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil se može ažurirati samo ako ste povezani s internetom.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš profil kao i promjene na njemu bit će vidljivi osobama s kojima razmjenjujete poruke, vašim kontaktima i grupama.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Vaše korisničko ime, QR kôd i poveznica ne prikazuju se na vašem profilu. Dijelite svoje korisničko ime samo s osobama kojima vjerujete.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxy adresa";
@@ -5630,7 +5630,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Broj telefona koji pokušavate registrirati je već registriran na drugom poslužitelju. Molimo odjavite ga i pokušajte ponovno.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Ispravi odmah";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Došlo je do pogreške s vašim korisničkim imenom – nije više povezano s vašim računom. Pokušajte ga ponovno postaviti ili odabrati novo.";
@@ -6692,7 +6692,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Vaša adresa novčanika";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Za promjenu ove postavke, postavite opciju \"Tko može vidjeti moj broj\" na \"Nitko\".";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Tko me može pronaći po broju telefona";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Korisničko ime je kopirano";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Poveznica je kopirana";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Skenirajte QR kôd na uređaju vašeg kontakta.";
@@ -7712,10 +7712,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Korisnik nije pronađen";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Skeniraj ovaj QR kôd svojim uređajem i započni razgovor sa mnom na Signalu.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Vaš QR kôd i poveznica su poništeni, a vaše korisničko ime je %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Korisničko ime ne može započeti brojem.";
@@ -7754,7 +7754,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Korisnička imena moraju imati najmanje %1$@ znaka.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Korisnička imena ne mogu završavati na 00. Pokušajte s drugom znamenkom od 1 do 9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Naziv uređaja ne smije biti prazan";

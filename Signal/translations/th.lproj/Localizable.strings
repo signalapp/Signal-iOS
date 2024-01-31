@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "รูปแบบการชำระเงินไม่ถูกต้อง กรุณาลองอีกครั้ง";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "การชำระเงินถูกปฏิเสธ กรุณาลองอีกครั้ง";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "บริจาค";
@@ -2171,10 +2171,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "เพราะความเป็นส่วนตัวสำคัญกว่าผลกำไรใดๆ";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "บริจาค";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "การดำเนินการต่อจะเป็นการยกเลิกการบริจาคครั้งล่าสุดของคุณ คุณจะไม่ถูกเรียกเก็บเงิน แต่อาจจะยังเห็นคำขอการชำระเงินในแอปธนาคาร คุณแน่ใจใช่หรือไม่ว่าต้องการดำเนินการบริจาคครั้งใหม่";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "ต่ออายุการเป็นสมาชิก";
@@ -2183,7 +2183,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "ลองอีกครั้ง";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "ไม่สามารถยืนยันการบริจาคผ่าน iDEAL ของคุณได้ โปรดตรวจสอบแอปธนาคารของคุณเพื่ออนุมัติการบริจาคหรือลองอีกครั้ง";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "กำลังรออนุมัติการโอนเงินผ่านระบบธนาคาร การโอนเงินผ่านระบบธนาคารมักใช้เวลาดำเนินการประมาณ 1 วันทำการ";
@@ -3272,7 +3272,7 @@
 "GROUP_WAS_MIGRATED" = "กลุ่มนี้ได้ปรับรุ่นเป็นกลุ่มแบบใหม่แล้ว";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "ไม่สามารถเพิ่มคุณเข้ากลุ่มแบบใหม่ได้ และคุณถูกเชิญให้เข้าร่วมกลุ่ม";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
@@ -4922,13 +4922,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "ทุกคน";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "ผู้ใช้ที่มีหมายเลขโทรศัพท์ของคุณจะเห็นว่าคุณใช้งาน Signal และจะสามารถเริ่มแชทกับคุณได้";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "คนที่คุณไม่รู้จัก";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "จะไม่มีใครเห็นว่าคุณใช้งาน Signal เว้นแต่ว่าคุณจะส่งข้อความหาหรือเคยแชทกับผู้ใช้คนนั้น";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ตัวอย่าง: %1$@";
@@ -4937,13 +4937,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "ทุกคน";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "ผู้ใช้และกลุ่มที่คุณส่งข้อความหาจะเห็นหมายเลขโทรศัพท์ของคุณ";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "คนที่คุณไม่รู้จัก";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "จะไม่มีใครเห็นหมายเลขโทรศัพท์ของคุณบน Signal แม้แต่ผู้ใช้ที่คุณส่งข้อความหา";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "ชื่อ";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "เกิดข้อผิดพลาดเกี่ยวกับชื่อผู้ใช้ ไม่สามารถใช้ชื่อผู้ใช้นี้กับบัญชีของคุณได้อีกต่อไป โปรดลองใหม่ด้วยการใส่ชื่อผู้ใช้อีกครั้งหรือตั้งชื่อผู้ใช้ใหม่";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "ลบชื่อผู้ใช้";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "แก้ไขตอนนี้";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "การดำเนินการนี้จะลบชื่อผู้ใช้ของคุณ รวมทั้งยกเลิกคิวอาร์โค้ดและลิงก์เดิมของคุณ โดยผู้ใช้คนอื่นจะสามารถนำชื่อ \"%1$@\" ไปใช้ได้ ต้องการดำเนินการต่อหรือไม่";
@@ -5309,13 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ปรับปรุงโปรไฟล์ได้เมื่อเชื่อมต่อกับอินเทอร์เน็ตอยู่เท่านั้น";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ผู้ติดต่อ กลุ่ม และคนที่คุณส่งข้อความหาจะเห็นโปรไฟล์และการเปลี่ยนแปลงในโปรไฟล์ของคุณ";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "โปรไฟล์";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "ชื่อผู้ใช้ คิวอาร์โค้ดและลิงก์จะไม่ปรากฏบนโปรไฟล์ของคุณ เราขอแนะนำให้แชร์ชื่อผู้ใช้ของคุณกับคนที่ไว้วางใจเท่านั้น";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "ที่อยู่พร็อกซี";
@@ -5630,7 +5630,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "หมายเลขโทรศัพท์ที่คุณพยายามจะลงทะเบียน ได้ลงทะเบียนอยู่แล้วบนเซิร์ฟเวอร์อื่น โปรดถอนการลงทะเบียนจากที่นั่นและลองอีกครั้ง";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "แก้ไขตอนนี้";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "เกิดข้อผิดพลาดเกี่ยวกับชื่อผู้ใช้ ไม่สามารถใช้ชื่อผู้ใช้นี้กับบัญชีของคุณได้อีกต่อไป โปรดลองใหม่ด้วยการใส่ชื่อผู้ใช้อีกครั้งหรือตั้งชื่อผู้ใช้ใหม่";
@@ -6692,7 +6692,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "ที่อยู่กระเป๋าเงินของคุณ";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "หากต้องการเปลี่ยนการตั้งค่านี้ ให้ไปที่หัวข้อ “คนที่สามารถเห็นหมายเลขโทรศัพท์ของฉัน” แล้วเลือก “ไม่อนุญาตให้ใครเห็น”";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "คนที่สามารถใช้หมายเลขโทรศัพท์ค้นหาฉันได้";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "คัดลอกชื่อผู้ใช้แล้ว";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "คัดลอกลิงก์แล้ว";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "สแกนคิวอาร์โค้ดบนอุปกรณ์ของผู้ติดต่อของคุณ";
@@ -7712,10 +7712,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ไม่พบผู้ใช้";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "ใช้มือถือสแกนคิวอาร์โค้ดนี้เพื่อพูดคุยกับฉันบน Signal";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "รีเซ็ตคิวอาร์โค้ดและลิงก์ของคุณเรียบร้อยแล้ว โดยชื่อผู้ใช้ของคุณคือ %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ชื่อผู้ใช้ต้องไม่ขึ้นต้นด้วยตัวเลข";
@@ -7754,7 +7754,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ชื่อผู้ใช้ต้องมีอักขระอย่างน้อย %1$@ ตัว";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ไม่สามารถลงท้ายชื่อผู้ใช้ด้วยตัวเลข 00 ได้ โปรดลองอีกครั้งด้วยตัวเลข 1-9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "เว้นว่างชื่ออุปกรณ์ไม่ได้";

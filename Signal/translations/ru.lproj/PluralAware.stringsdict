@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>Участника невозможно было добавить в Новую группу, и он был удалён.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d участников невозможно было добавить в Новую группу, и они были удалены.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d участников невозможно было добавить в Новую группу, и они были удалены.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d участника невозможно было добавить в Новую группу, и они были удалены.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>Участника невозможно было добавить в Новую группу, и ему было отправлено приглашение.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d участников невозможно было добавить в Новую группу, и им было отправлено приглашение.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d участников невозможно было добавить в Новую группу, и им было отправлено приглашение.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d участника невозможно было добавить в Новую группу, и им было отправлено приглашение.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

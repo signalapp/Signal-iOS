@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "अवैध पेमेंट प्रतिसाद. कृपया पुन्हा प्रयत्न करा.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "पेमेंट नाकारले. कृपया पुन्हा प्रयत्न करा.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "देणगी द्या";
@@ -2171,10 +2171,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "फायद्यापेक्षा गोपनीयता";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "देणगी द्या";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "पुढे सुरु ठेवल्याने आपली अलीकडील देणगी रद्द होईल. आपणाकडून शुल्क आकारले जाणार नाही. मात्र आपल्या बॅंकिग ॲपमध्ये आपण कृती करत नाही तोपर्यंत आपणाला पेमेंट विनंती दिसू शकते. आपण खात्रीने नवीन देणगी देऊ इच्छिता?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "सब्स्क्रिप्शन नूतनीकरण करा";
@@ -2183,7 +2183,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "पुन्हा प्रयत्न करा";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "आपल्या iDEAL देणगीची पुष्टी केली जाऊ शकत नाही. आपल्या देणगीला मंजुरी देण्यासाठी आपले बॅकिंग ॲप तपासा किंवा पुन्हा प्रयत्न करा.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपले बँक हस्तांतरण प्रलंबित आहे. बँक हस्तांतरणावर प्रक्रिया होण्यासाठी सामान्यपणे 1 व्यावसायिक दिवसाचा कालावधी लागतो.";
@@ -3272,7 +3272,7 @@
 "GROUP_WAS_MIGRATED" = "हा गट नवीन गटात श्रेणीसुधारित केले गेले होते.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "आपण नवीन गटात जोडला जाऊ शकला नाहीत आणि त्यात सामील होण्यासाठी आमंत्रित केले गेले आहे.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "आपण गट सोडला आहे.";
@@ -4922,13 +4922,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "सर्वजण";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "आपला फोन नंबर असणारा कोणीही आपण Signal वर असल्याचे पाहू शकतो आणि आपणासह चॅट्स सुरु करू शकतो.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "कोणीही नाही";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "आपण त्यांना संदेश पाठवल्याशिवाय किंवा त्यांच्यासोबत सध्याचे चॅट्स असल्यााशिवाय कोणीही आपणाला Signal वर पाहू शकणार नाही.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "उदाहरण: %1$@";
@@ -4937,13 +4937,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "सर्वजण";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "आपण संदेश पाठवलेल्या व्यक्तींना आणि गटांना आपला फोन नंबर दृश्यमान असेल.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "कोणीही नाही";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "अगदी त्यांना संदेश पाठविताना देखील, कोणीही आपला फोन नंबर Signal वर पाहू शकणार नाही.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "नाव";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "आपल्या वापरकर्ता नावासह काहीतरी चुकीचे झाले आहे, ते यापुढे आपल्या अकाऊंटसह नियुक्त केलेले नाही. आपण प्रयत्न करू शकता आणि तो पुन्हा सेट करू शकता किंवा नवीन निवडू शकता.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "वापरकर्तानाव हटवा";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "आत्ता निश्चित करा";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "हे आपले वापरकर्ता नाव हटवेल आणि आपला QR कोड आणि लिंक अक्षम करेल. \"%1$@\" हे इतर दाव्यांसाठी उपलब्ध असेल. आपल्याला खात्री आहे?";
@@ -5309,13 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "इंटरनेटला कनेक्ट केल्यावरच प्रोफाईल अद्यतनित करता येईल.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "आपले प्रोफाइल आणि त्यामधील बदल आपण संदेश करता असे लोक, संपर्क आणि ग्रुप्स यांना दृश्यमान असतील.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "प्रोफाईल";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "आपले वापरकर्ता नाव, QR कोड आणि लिंक आपल्या प्रोफाइलवर दिसणार नाहीत. आपण ज्यांच्यावर विश्वास ठेवता फक्त त्याच्यासह आपले वापरकर्ता नाव शेअर करा.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "प्रॉक्सी पत्ता";
@@ -5630,7 +5630,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "जो फोन नंबर आपण नोंदवण्याचा प्रयत्न करत आहात तो आधीपासून इतर सर्व्हर वर नोंदवलेला आहे, कृपया तिथून नोंदणी काढा आणि पुन्हा प्रयत्न करा.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "आत्ता निश्चित करा";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "आपल्या वापरकर्ता नावासह काहीतरी चुकीचे झाले आहे, ते यापुढे आपल्या अकाऊंटसह नियुक्त केलेले नाही. आपण प्रयत्न करू शकता आणि तो पुन्हा सेट करू शकता किंवा नवीन निवडू शकता.";
@@ -6692,7 +6692,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "आपला वॉलेट पत्ता";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "हे सेटिंग्ज बदलण्यासाठी, \"माझा नंबर कोण पाहू शकतो\" ते \"कोणीही नाही\" ला सेट करा.";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "मला फोन नंबरद्वारे कोण शोधू शकते";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "वापरकर्तानाव कॉपी केले";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "लिंक कॉपी केली";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "आपल्या संपर्काच्या डिव्हाईसवर QR कोड स्कॅन करा.";
@@ -7712,10 +7712,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "वापरकर्ता आढळला नाही";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "माझ्यासोबत Signal वर चॅट करण्यासाठी आपल्या फोनसब हा QR कोड स्कॅन करा.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "आपला QR कोड आणि लिंक रिसेट करण्यात आलेली आहे आणि आपले वापरकर्ता नाव %1$@ आहे";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "वापरकर्तानाव अंकांने सुरु होऊ शकत नाही.";
@@ -7754,7 +7754,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "वापरकर्तानाव हे कमीत कमी %1$@ वर्णानी सुरू होणे आवश्यक आहे.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "वापरकर्ता नाव 00 ने समाप्त होऊ शकत नाही. 1-9 मधील इतर अंक वापरून पहा";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिव्हाईस नाव रिक्त असू शकत नाही";

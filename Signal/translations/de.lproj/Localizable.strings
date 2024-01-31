@@ -2156,7 +2156,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Ungültige Zahlungsmeldung. Bitte versuche es erneut.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Zahlung abgelehnt. Bitte versuche es erneut.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Spenden";
@@ -2171,10 +2171,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Datenschutz statt Gewinn.";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Spenden";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Wenn du fortfährst, wird deine letzte Spende gelöscht. Der Betrag wird dir nicht abgebucht, aber du könntest die Zahlungsaufforderung in deiner Banking-App sehen, bis du aktiv wirst. Bist du sicher, dass du eine neue Spende vornehmen möchtest?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Regelmäßige Spende verlängern";
@@ -2183,7 +2183,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Erneut versuchen";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Deine Spende über iDEAL konnte nicht bestätigt werden. Überprüfe deine Banking-App, um deine Spende zu bestätigen oder versuche es erneut.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine Überweisung wurde noch nicht ausgeführt. Die Bearbeitung von Banküberweisungen dauert in der Regel einen Werktag.";
@@ -3272,7 +3272,7 @@
 "GROUP_WAS_MIGRATED" = "Diese Gruppe wurde auf eine Gruppe neuen Typs aktualisiert.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Du konntest der Neuen Gruppe nicht hinzugefügt werden und wurdest daher eingeladen, beizutreten.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Du hast die Gruppe verlassen.";
@@ -3665,13 +3665,13 @@
 "LINKED_DEVICES_TITLE" = "Gekoppelte Geräte";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Benachrichtigungen zulassen";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Mitteilungen zulassen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Durch das Zulassen von Benachrichtigungen erfährst du, wenn du Nachrichten, Anrufe oder Updates über neue Unterhaltungsaktivitäten erhältst.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Durch das Zulassen von Mitteilungen erfährst du, wenn du Nachrichten, Anrufe oder Updates über neue Unterhaltungsaktivitäten erhältst.";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Benachrichtigungen zulassen";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Mitteilungen zulassen";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Gerät konnte nicht gekoppelt werden";
@@ -4424,7 +4424,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Berechtigungen gewähren";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Die Erlaubnis für Benachrichtigungen und Kontakte ermöglicht, dich über den Eingang von Nachrichten zu informieren, und hilft dir dabei, dir bekannte Personen zu finden. Kontakte sind verschlüsselt, sodass der Signal-Dienst sie nicht sehen kann.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Die Erlaubnis für Mitteilungen und Kontakte ermöglicht, dich über den Eingang von Nachrichten zu informieren, und hilft dir dabei, dir bekannte Personen zu finden. Kontakte sind verschlüsselt, sodass der Signal-Dienst sie nicht sehen kann.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Berechtigungen gewähren";
@@ -4922,13 +4922,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Jeder";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Wer deine Telefonnummer hat, sieht, dass du bei Signal bist und kann mit dir chatten.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kann sehen, dass du auf Signal bist, es sei denn, du schreibst eine Nachricht oder hast mit der Person einen bereits bestehenden Chat.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Beispiel: %1$@";
@@ -4937,13 +4937,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Jeder";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Deine Telefonnummer ist für Personen und Gruppen sichtbar, mit denen du Nachrichten austauscht.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Niemand kann deine Telefonnummer auf Signal sehen, nicht einmal, wenn du der Person Nachrichten schickst.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5267,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Mit deinem Nutzernamen ist etwas schief gelaufen, er ist deinem Konto nicht mehr zugeordnet. Du kannst versuchen, ihn erneut einzugeben oder einen neuen zu wählen.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Nutzername löschen";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Jetzt beheben";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Hierdurch wird dein Nutzername entfernt und dein QR-Code und dein Link werden deaktiviert. »%1$@« kann dann auch von anderen verwendet werden. Bist du dir sicher?";
@@ -5309,13 +5309,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil kann nur aktualisiert werden, wenn eine Verbindung zum Internet besteht.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dein Profil und Änderungen daran sind für Personen, mit denen du Nachrichten austauschst, sowie für deine Kontakte und Gruppen sichtbar.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Dein Nutzername, der QR-Code und der Link sind in deinem Profil nicht sichtbar. Teile deinen Nutzernamen nur mit Leuten, denen du vertraust.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxyadresse";
@@ -5630,7 +5630,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Die eingegebene Rufnummer ist bereits auf einem anderen Server registriert. Lösche bitte zuerst dein Nutzerkonto auf dem Server und versuche es dann erneut.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Jetzt beheben";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Mit deinem Nutzernamen ist etwas schief gelaufen, er ist deinem Konto nicht mehr zugeordnet. Du kannst versuchen, ihn erneut einzugeben oder einen neuen zu wählen.";
@@ -5975,13 +5975,13 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Diagnoseprotokolle";
 
 /* Information on sheet about changing the app icon - first line */
-"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Benachrichtigungen und in der App-Bibliothek angezeigt.";
+"SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Mitteilungen und in der App-Bibliothek angezeigt.";
 
 /* Information on sheet about changing the app icon - second line */
 "SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Du kannst den App-Namen »Signal« auf dem Home-Bildschirm ausblenden, indem du die App in das Dock am unteren Rand des Home-Bildschirms verschiebst.";
 
 /* The footer for the app icon selection settings page. */
-"SETTINGS_APP_ICON_FOOTER" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Benachrichtigungen und in der App-Bibliothek angezeigt.";
+"SETTINGS_APP_ICON_FOOTER" = "Der App-Name »Signal« wird auf dem Home-Bildschirm, in den Mitteilungen und in der App-Bibliothek angezeigt.";
 
 /* The title for the app icon selection settings page. */
 "SETTINGS_APP_ICON_TITLE" = "App-Icon";
@@ -6692,7 +6692,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Deine Wallet-Adresse";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Um diese Einstellung zu ändern, setze »Wer kann meine Nummer sehen« auf »Niemand«.";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer mich anhand der Rufnummer finden kann";
@@ -7673,7 +7673,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username kopiert";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link kopiert";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scanne den QR-Code auf dem Gerät deines Kontaktes ein.";
@@ -7712,10 +7712,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nutzer nicht gefunden";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scanne diesen QR-Code mit deinem Smartphone, um mit mir auf Signal zu chatten.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Dein QR-Code und dein Link wurden neu erstellt. Dein Nutzername lautet %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Der Nutzername darf nicht mit einer Zahl beginnen.";
@@ -7754,7 +7754,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Nutzernamen müssen aus mindestens %1$@ Zeichen bestehen.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Nutzernamen dürfen nicht auf 00 enden. Verwende eine andere Zahl von 1 bis 9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Gerätename darf nicht leer sein";

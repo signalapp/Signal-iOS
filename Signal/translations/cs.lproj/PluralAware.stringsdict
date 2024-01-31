@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>Jednoho člena nebylo možné přidat do Nové skupiny a byl odebrán.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d členy nebylo možné přidat do Nové skupiny a byli odebráni.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d členů nebylo možné přidat do Nové skupiny a byli odebráni.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d členů nebylo možné přidat do Nové skupiny a byli odebráni.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>Člena nebylo možné přidat do nové verze skupiny a byl pozván, aby se připojil.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d členy nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d členů nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d členů nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

@@ -582,7 +582,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d 位无法加入新版群组，已被移除。</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d 位无法加入新版群组，已向其发送入群邀请。</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

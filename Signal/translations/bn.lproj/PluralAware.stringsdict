@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>একজন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং তাকে বাদ দেওয়া হয়েছে।</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d জন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং তাদেরকে বাদ দেওয়া হয়েছে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>একজন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং যোগ দেওয়ার জন্য তাকে আমন্ত্রণ জানানো হয়েছে।</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d জন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং যোগ দেওয়ার জন্য তাদেরকে আমন্ত্রণ জানানো হয়েছে।</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

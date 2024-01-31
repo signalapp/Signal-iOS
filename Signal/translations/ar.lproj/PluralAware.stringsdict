@@ -992,17 +992,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزالته.</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>تعذّر إضافة عضو واحد إلى المجموعة الجديدة وقد تمت إزالته.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت إزالتهما.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت إزالتهم.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>تعذّر إضافة %1$d عضوًا إلى المجموعة الجديدة وقد تمت إزالتهم.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعات الجديدة وقد تمت إزالتهم.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -1016,17 +1016,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوته إليها.</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>تعذّر إضافة عضو واحد إلى المجموعة الجديدة وقد تمت دعوته إليها.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت دعوتهما إليها.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم إليها.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %1$d عضوًا إلى المجموعة الجديدة وقد تمت دعوتهم إليها.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوتهم إليها.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

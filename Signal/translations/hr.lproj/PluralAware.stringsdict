@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>Nije bilo moguće dodati člana u Novu grupu, stoga je uklonjen iz grupe.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d člana nije moguće dodati u Novu grupu, stoga su uklonjeni iz grupe.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d članova nije moguće dodati u Novu grupu, stoga su uklonjeni iz grupe.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d članova nije moguće dodati u Novu grupu, stoga su uklonjeni iz grupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>Nije bilo moguće dodati člana u Novu grupu, stoga je pozvan da se pridruži.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d člana nije bilo moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d članova nije bilo moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d članova nije moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
