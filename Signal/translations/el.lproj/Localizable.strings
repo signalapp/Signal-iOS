@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Εντάξει";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Δεν ήταν δυνατή η παράδοση μηνύματος, αυτοκόλλητου, αντίδρασης, αποδεικτικού ανάγνωσης ή πολυμέσου από τον χρήστη %1$@ σε αυτή τη συνομιλία.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Θέμα κατά την παράδοση";
@@ -142,7 +142,7 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Αποθήκευση";
 
-/* Message for UI  warning about an unknown contact thread. */
+/* Message for UI warning about an unknown contact thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Δεν είσαι σε κοινές ομάδες με αυτό το άτομο. Εξέτασε τα αιτήματα προσεκτικά πριν αποδεχτείς, για να γλιτώσεις ανεπιθύμητα μηνύματα.";
 
 /* Message for UI warning about an unknown group thread. */
@@ -766,7 +766,7 @@
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Αναπάντητη βιντεοκλήση στις %1$@";
 
-/* label for accepting incoming video calls as audio  only */
+/* label for accepting incoming video calls as audio only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Απάντηση χωρίς βίντεο";
 
 /* label for accepting incoming calls */
@@ -1026,6 +1026,15 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Σύνδεση νέας συσκευής";
+
+/* Indicates that another account is in the user's system contacts. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+
+/* A label indicating a user is a signal connection. */
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+
+/* The title for a contact 'about' sheet. */
+"CONTACT_ABOUT_SHEET_TITLE" = "About";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Διεύθυνση";
@@ -2156,7 +2165,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Μη έγκυρη απόκριση πληρωμής. Δοκίμασε ξανά.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Η πληρωμή απορρίφθηκε. Δοκίμασε ξανά.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Δωρεά";
@@ -2171,10 +2180,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Το απόρρητο πάνω από το κέρδος";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Δωρεά";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Αν συνεχίσεις, θα ακυρωθεί η πρόσφατη δωρεά σου. Δεν θα χρεωθείς, αλλά ενδέχεται να δεις το αίτημα πληρωμής στην τραπεζική εφαρμογή μέχρι να προβείς σε κάποια ενέργεια. Θέλεις σίγουρα να κάνεις μια νέα δωρεά;";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Ανανέωση συνδρομής";
@@ -2183,7 +2192,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Ξαναδοκίμασε";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς σου iDEAL. Έλεγξε την εφαρμογή σου στην τράπεζα για να εγκρίνεις τη δωρεά σου ή δοκίμασε ξανά.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Η τραπεζική μεταφορά σου είναι σε εκκρεμότητα. Οι τραπεζικές μεταφορές συνήθως χρειάζονται 1 εργάσιμη ημέρα για να διεκπεραιωθούν.";
@@ -3272,7 +3281,7 @@
 "GROUP_WAS_MIGRATED" = "Αυτή η ομάδα αναβαθμίστηκε σε Ομάδα νέου τύπου.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Δεν ήταν δυνατή η προσθήκη σου στην Ομάδα νέου τύπου, και προσκλήθηκες για να μπεις.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Έφυγες από την ομάδα.";
@@ -3420,6 +3429,15 @@
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Διάλεξε την τράπεζά σου";
+
+/* Fallback title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+
+/* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+
+/* Title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Ζωγράφισε οπουδήποτε για να θολώσεις";
@@ -4922,13 +4940,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Όλοι";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Κανένας";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Κανείς δεν θα μπορεί να δει ότι είσαι στο Signal εκτός και αν στείλεις μήνυμα ή δεν έχεις ήδη μια συνομιλία μαζί του.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Παράδειγμα: %1$@";
@@ -4937,13 +4955,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Όλοι";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Ο αριθμός τηλεφώνου σου θα είναι ορατός στα άτομα και τις ομάδες που στέλνεις μηνύματα.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Κανένας";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Κανείς δεν θα βλέπει τον αριθμό τηλεφώνου σου στο Signal, ακόμα και αν στείλεις μήνυμα.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5285,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Όνομα";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Κάτι πήγε στραβά με το όνομα χρήστη σου, δεν αντιστοιχεί πλέον στον λογαριασμό σου. Μπορείς να δοκιμάσεις να το ρυθμίσεις ξανά ή να επιλέξεις ένα νέο.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Διαγραφή ονόματος χρήστη";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Διόρθωση τώρα";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Αυτό θα καταργήσει το όνομα χρήστη σου και θα απενεργοποιήσει τον κωδικό QR και τον σύνδεσμό σου. Το όνομα χρήστη \"%1$@\" θα είναι διαθέσιμο σε άλλους χρήστες. Είσαι σίγουρος/η;";
@@ -5309,13 +5327,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Το προφίλ μπορεί να ενημερωθεί μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το προφίλ σου και οι αλλαγές σε αυτό θα είναι ορατά στα άτομα στα οποία στέλνεις μηνύματα, στις επαφές και στις ομάδες σου.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Προφίλ";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Το όνομα χρήστη, ο κωδικός QR και ο σύνδεσμός σου δεν είναι ορατά στο προφίλ σου. Να μοιράζεσαι μόνο το όνομα χρήστη σου με άτομα που εμπιστεύεσαι.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Διεύθυνση proxy";
@@ -5630,7 +5648,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Διόρθωση τώρα";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Κάτι πήγε στραβά με το όνομα χρήστη σου, δεν αντιστοιχεί πλέον στον λογαριασμό σου. Μπορείς να δοκιμάσεις να το ρυθμίσεις ξανά ή να επιλέξεις ένα νέο.";
@@ -6692,7 +6710,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Η διεύθυνση πορτοφολιού σας";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Για να αλλάξεις αυτή τη ρύθμιση, όρισε την επιλογή \"Ποιος μπορεί να δει τον αριθμό μου\" σε \"Κανείς\".";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ποιος μπορεί να με βρει με τον αριθμό μου";
@@ -7673,7 +7691,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Το όνομα χρήστη αντιγράφηκε";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Ο σύνδεσμος αντιγράφτηκε";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Σάρωσε τον κωδικό QR στη συσκευή του άλλου χρήστη.";
@@ -7712,10 +7730,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Δεν βρέθηκε χρήστης";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Σάρωσε αυτόν τον κωδικό QR με το τηλέφωνό σου για να συνομιλήσεις μαζί μου στο Signal.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Έχει γίνει επαναφορά του κωδικού QR και του συνδέσμου σου και το όνομα χρήστη σου είναι %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Τα όνομα χρήστη δεν μπορεί να αρχίζει με αριθμό.";
@@ -7754,7 +7772,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$@ χαρακτήρες.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Τα ονόματα χρήστη δεν μπορούν να τελειώνουν σε 00. Δοκίμασε ένα άλλο ψηφίο μεταξύ 1-9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Το όνομα συσκευής δεν μπορεί να είναι κενό";

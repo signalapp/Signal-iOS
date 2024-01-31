@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "بىلدىم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "بۇ پاراڭدا %1$@ ئەۋەتكەن مەلۇم ئۇچۇر، چاپلاق، ئىنكاس، ئوقۇلغانلىق ئۇقتۇرۇشى ياكى مېدىيا سىزگە يەتكۈزۈلمىدى.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "يەتكۈزۈش مەسىلىسى";
@@ -142,7 +142,7 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "ساقلا";
 
-/* Message for UI  warning about an unknown contact thread. */
+/* Message for UI warning about an unknown contact thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "بۇ كىشى بىلەن ئورتاق گۇرۇپپىڭىز يوق. كېرەكسىز ئۇچۇرلاردىن ساقلىنىش ئۈچۈن قوشۇلۇشتىن ئىلگىرى تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* Message for UI warning about an unknown group thread. */
@@ -766,7 +766,7 @@
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 ئېلىنمىغان ۋىدېيولۇق چاقىرىق %1$@";
 
-/* label for accepting incoming video calls as audio  only */
+/* label for accepting incoming video calls as audio only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "سىنسىز جاۋاب";
 
 /* label for accepting incoming calls */
@@ -1026,6 +1026,15 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "يېڭى ئۈسكۈنىگە باغلان";
+
+/* Indicates that another account is in the user's system contacts. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+
+/* A label indicating a user is a signal connection. */
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+
+/* The title for a contact 'about' sheet. */
+"CONTACT_ABOUT_SHEET_TITLE" = "About";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "ئادرېس";
@@ -2156,7 +2165,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "ئىناۋەتسىز چىقىم ئىنكاسى. قايتا سىناڭ.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "پۇل تۆلەش رەت قىلىندى. قايتا سىناڭ.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "ئىئانە قىلىڭ";
@@ -2171,10 +2180,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "پايدا ئەمەس، مەخپىيەتلىك مۇھىم";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "ئىئانە قىلىڭ";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "ئەگەر داۋاملاشتۇرسىڭىز يېقىنقى ئىئانىڭىز بىكار قىلىنىدۇ. سىزدىن پۇل تۇتۇلمايدۇ، لېكىن بانكا ئەپىڭىزدە سىز مەشغۇلات ئېلىپ بارغۇچە پۇل تۆلەش تەلىپى كۆرۈنىدۇ. يېڭى بىر ئىئانە قىلامسىز؟";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "مۇشتەرىلىكنى يېڭىلاش";
@@ -2183,7 +2192,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "قايتا سىنا";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "iDEAL ئىئانىڭىزنى جەزملەشتۈرگىلى بولمىدۇ. بانكا ئەپىڭىزنى تەكشۈرۈپ ئىئانىڭىزگە ئىجازەت بېرىڭ ياكى قايتا سىناڭ.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "بانكىدىن ئاغدۇرغان سوممىڭىزنى بىر تەرەپ قىلىۋاتىدۇ. بانكىدىن ئاغدۇرغان ھېساباتنى تاماملاشقا ئادەتتە 1 كۈن كېتىدۇ.";
@@ -3272,7 +3281,7 @@
 "GROUP_WAS_MIGRATED" = "بۇ گۇرۇپپا «يېڭى گۇرۇپپا»غا يېڭىلاندى.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "تەكلىپ قىلىنمىغۇچە يېڭى گۇرۇپپىغا قوشۇلالمايسىز.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "سىز گۇرۇپپىدىن ئايرىلدىڭىز.";
@@ -3420,6 +3429,15 @@
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "بانكىڭىزنى تاللاڭ";
+
+/* Fallback title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+
+/* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+
+/* Title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "خالىغان جاي سىزىلسا تۇتۇقلىشىدۇ";
@@ -4922,13 +4940,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "ھەممەيلەن";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "ھېچكىم";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "ئەگەر باشقىلارغا ئۇچۇر يوللىسىمىڭىز ياكى باشقىلار بىلەن بۇرۇندىنلا مەۋجۇت پارىڭىڭىز بولمىسا، باشقىلار سىزنىڭ Signal دا ئىكەنلىكىڭىزنى كۆرەلمەيدۇ.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "مىسال: %1$@";
@@ -4937,13 +4955,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "ھەممەيلەن";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "تېلېفون نومۇرىڭىزنى سىز ئۇچۇر يوللىغان كىشىلەر ۋە گۇرۇپپىدىكىلەر كۆرەلەيدۇ.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "ھېچكىم";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "ھېچكىم Signal دا تېلېفون نومۇرىڭىزنى كۆرەلمەيدۇ، ھەتتا ئۇلارغا ئۇچۇر يوللىغان تەقدىردىمۇ كۆرەلمەيدۇ.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5285,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "ئىسمىڭىز";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "ئىشلەتكۈچى نامىڭىزدا خاتالىق كۆرۈلگەن بولۇپ، ئۇ ئەمدى سىزنىڭ ھېساباتىڭىزغا تەۋە ئەمەس. ئۇنى قايتا تەڭشەپ سىناپ باقسىڭىز ياكى يېڭى بىر نام تاللىسىڭىز بولىدۇ.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "ئىشلەتكۈچى نامىنى ئۆچۈرۈش";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "دەرھال ئوڭشاش";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "بۇ سىزنىڭ ئىشلەتكۈچى نامىڭىزنى ئۆچۈرىۋېتىدۇ ۋە QR كودىڭىزۋە ئۇلانمىسىنى بېكار قىلىۋېتىدۇ. \"%1$@\" بولسا باشقىلارنىڭ ئىشلىتىشى ئۈچۈن بېرىلىدۇ. جەزىملەشتۈرەمسىز؟";
@@ -5309,13 +5327,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "تورغا باغلانغان ھالەتتىلا سەپلىمە ھۆججەتنى يېڭىلىغىلى بولىدۇ.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ئارخىپىڭىز ۋە ئۇنىڭغا كىرگۈزگەن ئۆزگەرتىشلىرىڭىزنى سىز ئۇچۇرلاشقانلار، ئالاقىداشلار ۋە گۇرۇپپىدىكىلەر كۆرەلەيدۇ.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ئارخىپ";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "ئىشلەتكۈچى نامىڭىز، QR كودىڭىز ۋە ئۇلانمىڭىز ئارخىپىڭىزدا كۆرۈنمەيدۇ. ئىشلەتكۈچى نامىڭىزنى پەقەت سىز ئىشىنىدىغان كىشىلەر بىلەنلا ئورتاقلىشىڭ.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "ۋاكالەتچى ئادرېس";
@@ -5630,7 +5648,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "سىز تىزىملاتماقچى بولغان تېلېفون نومۇرى باشقا بىر مۇلازىمېتىردا تىزىملىتىلغان. ئۇ مۇلازىمېتىردىن رويخەتتىن ئۆچۈرۈپ ئاندىن قايتا سىناڭ.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "دەرھال ئوڭشاش";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "ئىشلەتكۈچى نامىڭىزدا خاتالىق كۆرۈلگەن بولۇپ، ئۇ ئەمدى سىزنىڭ ھېساباتىڭىزغا تەۋە ئەمەس. ئۇنى قايتا تەڭشەپ سىناپ باقسىڭىز ياكى يېڭى بىر نام تاللىسىڭىز بولىدۇ.";
@@ -6692,7 +6710,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "ھەميان ئادرېسىڭىز";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "بۇ تەڭشەكنى ئۆزگەرتىش ئۈچۈن «تېلېفون نومۇرۇمنى كۆرەلەيدىغانلار» نى «ھېچكىم» گە تەڭشەڭ.";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "تېلېفون نومۇرۇم بىلەن مېنى تاپالايدىغانلار";
@@ -7673,7 +7691,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "ئىشلەتكۈچى نامى كۆچۈرۈلدى";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "ئۇلانما كۆچۈرۈلدى";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "ئالاقىدىشىڭىزنىڭ ئۈسكۈنىسىدىكى QR كودنى سېكاننېرلاڭ.";
@@ -7712,10 +7730,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ئىشلەتكۈچى تېپىلمىدى";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Signal دا مەن بىلەن پاراڭلىشىش ئۈچۈن تېلېفونىڭىز بىلەن بۇ QR كودنى سىكاننېرلاڭ.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "QR كودىڭىز ۋە ئۇلانمىڭىز ئەسلىگە قايتۇرۇلغان بولۇپ، ئىشلەتكۈچى نامىڭىز بولسا %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى رەقەم بىلەن باشلانسا بولمايدۇ.";
@@ -7754,7 +7772,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى ئاز دېگەندە %1$@ ھەرپتىن تۈزۈلگەن بولۇشى كېرەك.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ئىشلەتكۈچى نامى 00 بىلەن ئاياغلاشسا بولمايدۇ. 1-9 ئارىلىقىدىكى باشقا سانلارنى سىناپ بېقىڭ";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ئۈسكۈنە ئىسمى قۇرۇق قالسا بولمايدۇ";

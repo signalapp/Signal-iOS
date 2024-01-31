@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "বুঝতে পেরেছি";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "এই চ্যাটে %1$@-এর কাছ থেকে কোনো ম্যাসেজ, স্টিকার, প্রতিক্রিয়া, রিড রিসিপ্ট বা মিডিয়া আপনাকে পাঠানো যায়নি।";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "পাঠানোর ক্ষেত্রে সমস্যা";
@@ -142,7 +142,7 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "সংরক্ষণ";
 
-/* Message for UI  warning about an unknown contact thread. */
+/* Message for UI warning about an unknown contact thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "আপনার এবং এই ব্যক্তির মধ্যে কোনও কমন গ্রুপ নেই। অনাকাঙ্ক্ষিত মেসেজ পাওয়া এড়াতে গ্রহণ করার পূর্বে অনুরোধগুলো যত্ন সহকারে পর্যালোচনা করুন।";
 
 /* Message for UI warning about an unknown group thread. */
@@ -766,7 +766,7 @@
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ ভিডিও কল মিস্ হয়েছে";
 
-/* label for accepting incoming video calls as audio  only */
+/* label for accepting incoming video calls as audio only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ভিডিও ছাড়াই উত্তর দিন";
 
 /* label for accepting incoming calls */
@@ -1026,6 +1026,15 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "নতুন ডিভাইস যুক্ত করুন";
+
+/* Indicates that another account is in the user's system contacts. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+
+/* A label indicating a user is a signal connection. */
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+
+/* The title for a contact 'about' sheet. */
+"CONTACT_ABOUT_SHEET_TITLE" = "About";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "ঠিকানা";
@@ -2156,7 +2165,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "পেমেন্টের প্রতিক্রিয়া অকার্যকর। অনুগ্রহ করে আবার চেষ্টা করুন।";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "পেমেন্ট বাতিল করা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "ডোনেট করুন";
@@ -2171,10 +2180,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "ব্যবসায়িক লাভের চেয়ে গোপনীয়তার প্রাধান্য বেশি";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "ডোনেট করুন";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "এগিয়ে গেলে আপনার সাম্প্রতিক ডোনেশন বাতিল হয়ে যাবে। আপনাকে চার্জ করা হবে না, তবে আপনি পদক্ষেপ না করা পর্যন্ত আপনার ব্যাংকিং অ্যাপে পেমেন্টের অনুরোধ দেখতে পারবেন। আপনি কি একটি নতুন ডোনেশন করতে চান?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "নতুন করে সাবস্ক্রিপশন নিন";
@@ -2183,7 +2192,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "আবার চেষ্টা করুন";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "আপনার iDEAL ডোনেশন নিশ্চিত করা যায়নি। আপনার ডোনেশন অনুমোদন করতে আপনার ব্যাংকিং অ্যাপ দেখুন বা আবার চেষ্টা করুন।";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "আপনার ব্যাংক ট্রান্সফারটি অনিষ্পন্ন অবস্থায় আছে। ব্যাংক ট্রান্সফার প্রক্রিয়া করতে সাধারণত 1 কার্যদিবস প্রয়োজন হয়।";
@@ -3272,7 +3281,7 @@
 "GROUP_WAS_MIGRATED" = "গ্রুপটি আপগ্রেড হয়ে একটি নতুন গ্রুপ হয়েছে।";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "নতুন গ্রুপটিতে আপনাকে যোগ করা যায়নি এবং আপনাকে গ্রুপটিতে যোগদান করার জন্য আমন্ত্রণ জানানো হয়েছে।";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "আপনি গ্রুপ ত্যাগ করেছেন।";
@@ -3420,6 +3429,15 @@
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "আপনার ব্যাংক বেছে নিন";
+
+/* Fallback title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+
+/* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+
+/* Title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "যেকোনো জায়গা অস্পষ্ট করতে আলতো চেপে টানুন";
@@ -4922,13 +4940,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "সবাই";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "কেউ না";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "আপনি Signal-এ আছেন তা কেউ দেখতে পাবেন না যদি না আপনি তাদের মেসেজ পাঠান বা তাদের সাথে কোনো চ্যাট বিদ্যমান থাকে।";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "উদাহরণ: %1$@";
@@ -4937,13 +4955,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "সবাই";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "আপনার ফোন নম্বরটি সকল মানুষ এবং গ্ৰুপের কাছে দৃশ্যমান হবে।";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "কেউ না";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "কেউ Signal-এ আপনার ফোন নম্বর দেখতে পাবেন না, এমনকি তাদের মেসেজ করা হলেও।";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5285,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "নাম";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "আপনার 'ব্যবহারকারীর নাম' নিয়ে কিছু একটা সমস্যা হয়েছে, এটি আর আপনার অ্যাকাউন্টের জন্য বরাদ্দ করা নেই। আপনি আবার চেষ্টা করে এটি সেট করতে পারেন বা নতুন একটি বেছে নিন।";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "ব্যবহারকারীর নাম মুছে ফেলুন";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "এখনই ঠিক করুন";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "এটি আপনার ব্যবহারকারীর নাম মুছে ফেলবে এবং আপনার QR কোড ও লিংক অকার্যকর করবে। \"%1$@\" অন্যরা দাবি করতে পারবেন। আপনি কি নিশ্চিত?";
@@ -5309,13 +5327,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "শুধুমাত্র ইন্টারনেটে সংযুক্ত থাকলেই প্রোফাইল আপডেট করা যায়।";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "আপনার প্রোফাইল ও এতে করা পরিবর্তনগুলো আপনার মেসেজ, কন্টাক্ট, এবং গ্ৰুপগুলোর কাছে দৃশ্যমান হবে।";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "প্রোফাইল";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "আপনার ব্যবহারকারীর নাম, QR কোড এবং লিংক আপনার প্রোফাইলে দৃশ্যমান নয়। শুধুমাত্র আপনি আস্থা রাখতে পারেন এমন ব্যক্তিদের সাথে আপনার ব্যবহারকারীর নাম শেয়ার করুন।";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "প্রক্সি ঠিকানা";
@@ -5630,7 +5648,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "আপনি যে ফোন নাম্বার নিবন্ধন করার চেষ্টা করছেন সেটি ইতিমধ্যে অন্য সার্ভারে নিবন্ধিত হয়েছে, দয়া করে সেখান থেকে নিবন্ধন মুক্ত করুন এবং আবার চেষ্টা করুন।";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "এখনই ঠিক করুন";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "আপনার 'ব্যবহারকারীর নাম' নিয়ে কিছু একটা সমস্যা হয়েছে, এটি আর আপনার অ্যাকাউন্টের জন্য বরাদ্দ করা নেই। আপনি আবার চেষ্টা করে এটি সেট করতে পারেন বা নতুন একটি বেছে নিন।";
@@ -6692,7 +6710,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "আপনার ওয়ালেট ঠিকানা";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "এই সেটিংসটি পরিবর্তন করতে, \"কে আমার নম্বর দেখতে পারবেন\" তা \"কেউই নয়\"-তে সেট করুন।";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "নম্বরের মাধ্যমে কে আমাকে খুঁজে পাবেন";
@@ -7673,7 +7691,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "ব্যবহারকারীর নাম কপি করা হয়েছে";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "লিংক কপি করা হয়েছে";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "আপনার কন্টাক্টের ডিভাইসে দেখানো QR কোডটি স্ক্যান করুন।";
@@ -7712,10 +7730,10 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "ব্যবহারকারী খুঁজে পাওয়া যায়নি";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Signal-এ আমার সাথে চ্যাট করতে আপনার ফোন দিয়ে এই QR কোডটি স্ক্যান করুন।";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "আপনার QR কোড এবং লিংক রিসেট করা হয়েছে এবং আপনার ব্যবহারকারীর নাম হলো %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "ব্যবহারকারীর নাম সংখ্যা দিয়ে শুরু করা যায় না।";
@@ -7754,7 +7772,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ব্যবহারকারীর নাম কমপক্ষে %1$@-টি অক্ষরের হতে হবে।";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "ব্যবহারকারীর নাম 00-তে শেষ হতে পারবে না। 1-9-এর মধ্যে আরেকটি সংখ্যা দিয়ে চেষ্টা করুন";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ডিভাইস এর নাম খালি থাকা যাবেনা";

@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Begrepen";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie of leesbevestiging van %1$@ kon niet worden afgeleverd aan jou in deze chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Afleveringsprobleem";
@@ -142,14 +142,14 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Opslaan";
 
-/* Message for UI  warning about an unknown contact thread. */
+/* Message for UI warning about an unknown contact thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Je hebt geen gemeenschappelijke groep met deze persoon. Overweeg zorgvuldig of je dit gespreksverzoek wilt accepteren om ongewenste berichten te vermijden.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Er zijn geen leden met wie je al een gesprek voert in deze groep. Overweeg zorgvuldig of je dit gespreksverzoek wilt accepteren om ongewenste berichten te vermijden.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Over gespreksverzoeken en groepsuitnodigingen";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Over gespreksverzoeken";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
@@ -766,7 +766,7 @@
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Gemiste video-oproep op %1$@";
 
-/* label for accepting incoming video calls as audio  only */
+/* label for accepting incoming video calls as audio only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder eigen camera aan te zetten";
 
 /* label for accepting incoming calls */
@@ -1026,6 +1026,15 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Nieuw apparaat koppelen";
+
+/* Indicates that another account is in the user's system contacts. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+
+/* A label indicating a user is a signal connection. */
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+
+/* The title for a contact 'about' sheet. */
+"CONTACT_ABOUT_SHEET_TITLE" = "About";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adres";
@@ -1688,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Verwijderen";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon wordt verwijderd uit je systeemcontactenlijst. Als je zoekt, zal deze persoon niet zichtbaar zijn. Je ontvangt een gespreksverzoek als ze je in de toekomst een bericht sturen.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon wordt verwijderd uit je systeemcontactenlijst. Als je zoekt, zal deze persoon niet zichtbaar zijn. Je ontvangt een gespreksverzoek als diegene je in de toekomst een bericht stuurt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Contact verwijderen en niet meer in je contactenlijst weergeven?";
@@ -2126,7 +2135,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Afschrift delen";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Bedankt dat je Signal steunt. Jouw bijdrage helpt bij het voortzetten van onze missie om open-broncode privacy-technologieën te ontwikkelen waarmee van miljoenen mensen de vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Bewaar dit afschrift als je een inwoner bent van de Verenigde Staten van Amerika, zodat je je donatie kunt opgeven bij je belastingaangifte. Signal Technology Foundation is een van belasting uitgezonderde organisatie zonder winstoogmerk volgens sectie 501c3 van het Internal Revenue Code (het Amerikaanse belastingreglement). Ons federale-belasting-ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Bedankt dat je Signal steunt. Jouw bijdrage helpt bij het voortzetten van onze missie om opensource privacytechnologie te ontwikkelen waarmee van miljoenen mensen de vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Bewaar dit afschrift als je een inwoner bent van de Verenigde Staten van Amerika, zodat je je donatie kunt opgeven bij je belastingaangifte. Signal Technology Foundation is een van belasting uitgezonderde organisatie zonder winstoogmerk volgens sectie 501c3 van het Internal Revenue Code (het Amerikaanse belastingreglement). Ons federale-belasting-ID is 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donatie namens een vriend(in)";
@@ -2156,7 +2165,7 @@
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Ongeldige betalingsrespons. Probeer het opnieuw.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
-"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Payment denied. Please try again.";
+"DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Betaling geweigerd. Probeer het opnieuw.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "Doneren";
@@ -2171,10 +2180,10 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy boven winst";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donate";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Doneren";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Continuing will cancel your recent donation. You won't be charged, but you may see the payment request in your banking app until you take action. Are you sure you want to make a new donation?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Als je doorgaat, wordt je recente donatie geannuleerd. Er wordt niets van je rekening afgeschreven, maar je ziet het betaalverzoek mogelijk in je bankapp totdat je actie onderneemt. Weet je zeker dat je een nieuwe donatie wilt doen?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Maandelijkse donatie vernieuwen";
@@ -2183,7 +2192,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Opnieuw proberen";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Je iDEAL-donatie kan niet worden bevestigd. Controleer je bankapp om je donatie goed te keuren of probeer het opnieuw.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je bankoverschrijving is in behandeling. De verwerking van een bankoverschrijving duurt doorgaans 1 werkdag.";
@@ -2417,7 +2426,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfout. Probeer het later opnieuw.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "De servers vereisen dat de gebruiker zijn telefoonnummer verifieert alvorens hij het bericht kan verzenden, omdat het vermoeden bestaat dat hij spam verzend.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "De servers vereisen dat de gebruiker zijn telefoonnummer verifieert alvorens die het bericht kan verzenden, omdat het vermoeden bestaat dat die spam verzendt.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden.";
@@ -3272,7 +3281,7 @@
 "GROUP_WAS_MIGRATED" = "Deze groep is omgezet in een nieuwe-stijl groep.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "You couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Je kon niet worden toegevoegd aan de nieuwe-stijl groep en hebt daarom een uitnodiging gekregen.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Je hebt de groep verlaten.";
@@ -3353,7 +3362,7 @@
 "HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ verwijderen?";
 
 /* An explanation of the consequences of removing a user. */
-"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Als je zoekt, zal deze persoon niet zichtbaar zijn. Je krijgt een melding als ze je in de toekomst een bericht sturen.";
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Als je zoekt, zal deze persoon niet zichtbaar zijn. Je ontvangt een gespreksverzoek als diegene je in de toekomst een bericht stuurt.";
 
 /* Button label for the 'remove' button */
 "HIDE_RECIPIENT_BUTTON" = "Verwijderen";
@@ -3420,6 +3429,15 @@
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Kies je bank";
+
+/* Fallback title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+
+/* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+
+/* Title confirming recurring donation with bank. */
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Teken waar je maar wilt om iets te vervagen";
@@ -4313,7 +4331,7 @@
 "NOTE_TO_SELF" = "Notitie aan mezelf";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Berichtverzoek";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Gespreksverzoek";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je hebt misschien berichten ontvangen terwijl je %1$@ aan het herstarten was.";
@@ -4922,13 +4940,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Iedereen";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and  can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody will be able to see you're on Signal unless you message them or have an existing chat with them.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kan zien dat je een Signal-gebruiker bent, tenzij je een contact een bericht stuurt of een bestaande chat met iemand hebt.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Voorbeeld: %1$@";
@@ -4937,13 +4955,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Iedereen";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Je telefoonnummer is zichtbaar voor de personen en groepen aan wie je een bericht stuurt.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal, even when you're messaging them.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Niemand ziet je telefoonnummer in Signal, zelfs niet wanneer je hen berichten stuurt.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -5267,13 +5285,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Naam";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Er is iets misgegaan met je gebruikersnaam, deze is niet meer aan je account toegewezen. Je kunt je gebruikersnaam opnieuw proberen in te stellen of een nieuwe kiezen.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Gebruikersnaam verwijderen";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Fix Now";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Nu oplossen";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Dit verwijdert je gebruikersnaam en schakelt je QR-code en link uit. Anderen kunnen \"%1$@\" claimen. Weet je het zeker?";
@@ -5309,13 +5327,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Je profiel kan alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile and changes to it will be visible to people you message, contacts and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Je profiel en wijzigingen daarin zijn zichtbaar voor mensen die je een bericht stuurt en voor contacten en groepen.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profiel";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Your username, QR code and link aren’t visible on your profile. Only share your username with people you trust.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Je gebruikersnaam, QR-code en link zijn niet zichtbaar op je profiel. Deel je gebruikersnaam alleen met mensen die je vertrouwt.";
 
 /* The title for the address of the signal proxy */
 "PROXY_ADDRESS" = "Proxyadres";
@@ -5630,7 +5648,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Het telefoonnummer dat je probeert te registreren is al geregistreerd op een ander apparaat. Deregistreer Signal eerst van het andere apparaat door deze webpagina te gebruiken: https://signal.org/signal/unregister/";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Fix now";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Nu oplossen";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Er is iets misgegaan met je gebruikersnaam, deze is niet meer aan je account toegewezen. Je kunt je gebruikersnaam opnieuw proberen in te stellen of een nieuwe kiezen.";
@@ -6614,7 +6632,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Je kunt niet vanuit Signal overschrijven naar je eigen Signal portemonnee-adres. Vul het portemonnee-adres van je account bij de beurs in.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Je kunt MobileCoin overschrijven door een deel van je krediet te sturen naar het adres van de portemonnee die je via de beurs hebt gekregen. Dat adres bestaat uit nummers en letters en je vind het meestal onder de QR-code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Je kunt MobileCoin overschrijven door een deel van je krediet te sturen naar het adres van de portemonnee die je via de beurs hebt gekregen. Dat adres bestaat uit nummers en letters en je vindt het meestal onder de QR-code.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Ga na dat het portemonnee-adres waarnaar je probeert over te schrijven juist is en probeer het opnieuw.";
@@ -6692,7 +6710,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Het adres van je portemonnee";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "To change this setting, set “Who Can See My Number” to “Nobody”.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Om deze instelling te wijzigen, stel ‘Wie kan mijn nummer zien’ in op ‘Niemand’.";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan mij vinden via mijn nummer";
@@ -7217,19 +7235,19 @@
 "STORY_SENDING" = "Versturen…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Er een gesprek mee te beginnen";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Een chat met ze te beginnen";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Een gespreksverzoek te accepteren";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Een gespreksverzoek van ze te accepteren";
 
 /* Third bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Ze in je systeemcontactenlijst te hebben staan";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Jouw contacten kunnen je naam en foto zien en wat je naar \"Mijn verhaal\" stuurt, tenzij je dit voor hen verbergt.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Je Signal-contacten kunnen jouw profielnaam, -foto en -omschrijving zien en kunnen zien wat je deelt in ‘Mijn verhaal’ tenzij je dat voor hen verbergt.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-contacten</bold> zijn personen die jij aangeeft te vertrouwen door:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-contacten</bold> zijn mensen die je vertrouwt, hetzij door:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Verhalen";
@@ -7631,7 +7649,7 @@
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Telefoonnummerprivacy";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Stel je gebruikersnaam in";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Gebruikersnaam instellen";
 
 /* Title to set up signal username */
 "USERNAME_EDUCATION_TITLE" = "Nieuwe manieren om contact te maken";
@@ -7658,7 +7676,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "QR-code vernieuwen";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code vernieuwd, werken je bestaande QR-code en link niet meer.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Als je je QR-code vernieuwt, werken je bestaande QR-code en link niet meer.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "delen";
@@ -7673,7 +7691,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Gebruikersnaam gekopieerd";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "Link gekopieerd";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
 "USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan de QR-code op het apparaat van je contact.";
@@ -7712,16 +7730,16 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Deze persoon is niet gevonden";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan this QR code with your phone to chat with me on Signal.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scan deze QR-code met je telefoon om met mij te chatten op Signal.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "Your QR code and link have been reset and your username is %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "Je QR-code en link zijn hersteld en je gebruikersnaam is %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Gebruikersnamen mogen niet met een cijfer beginnen.";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Het veranderen van je gebruikersnaam reset je bestaande QR-code en link. Weet je het zeker?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Wanneer je je gebruikersnaam wijzigt, werken je bestaande QR-code en link niet langer en worden deze vernieuwd. Weet je het zeker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Met gebruikersnamen kunnen anderen jou berichten sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een reeks cijfers om je adres privé te houden. %1$@";
@@ -7754,7 +7772,7 @@
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Gebruikersnamen moeten beginnen met minimaal %1$@ tekens.";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Usernames can’t end in 00. Try another digit between 1-9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "Gebruikersnamen kunnen niet eindigen op 00. Probeer een ander cijfer tussen 1-9";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Apparaatnaam mag niet leeg zijn";
@@ -7799,7 +7817,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Je hebt dit bericht al weergegeven.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om er voor te zorgen dat dit bericht wordt verwijderd nadat het is gezien.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om ervoor te zorgen dat dit bericht wordt verwijderd nadat het is gezien.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk verwijderd zodra ze zijn verzonden.";

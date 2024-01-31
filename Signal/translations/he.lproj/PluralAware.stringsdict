@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>חבר/ה לא יכל/ה להתווסף לקבוצה החדשה והוסר/ה.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>חבר/ה לא יכל/ה להתווסף לקבוצה החדשה והוזמן/ה להצטרף.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוזמנו להצטרף.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוזמנו להצטרף.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוזמנו להצטרף.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

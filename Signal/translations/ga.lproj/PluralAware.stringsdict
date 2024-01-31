@@ -910,15 +910,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been removed.</string>
+			<string>Níorbh fhéidir ball a chur leis an nGrúpa Nua agus baineadh é/í.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus baineadh iad.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus baineadh iad.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua agus baineadh iad.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been removed.</string>
+			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua agus baineadh iad.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -932,15 +932,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d member couldn&apos;t be added to the New Group and has been invited to join.</string>
+			<string>Níorbh fhéidir ball a chur leis an nGrúpa Nua agus tugadh cuireadh dó/di chun dul isteach ann.</string>
 			<key>two</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 			<key>few</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 			<key>many</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 			<key>other</key>
-			<string>%1$d members couldn&apos;t be added to the New Group and have been invited to join.</string>
+			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
