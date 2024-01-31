@@ -599,7 +599,7 @@ extension OWSContactsManager {
         }
     }
 
-    private static func buildSignalAccounts(
+    private func buildSignalAccounts(
         for systemContacts: [Contact],
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount] {
@@ -638,139 +638,138 @@ extension OWSContactsManager {
     }
 
     fileprivate func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
-        intersectionQueue.async {
-            let (oldSignalAccounts, newSignalAccounts) = Self.databaseStorage.read { transaction in
-                let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
-                let newSignalAccounts = Self.buildSignalAccounts(for: localSystemContacts, transaction: transaction)
-                return (oldSignalAccounts, newSignalAccounts)
+        assertOnQueue(intersectionQueue)
+
+        let (oldSignalAccounts, newSignalAccounts) = databaseStorage.read { transaction in
+            let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
+            let newSignalAccounts = buildSignalAccounts(for: localSystemContacts, transaction: transaction)
+            return (oldSignalAccounts, newSignalAccounts)
+        }
+        let oldSignalAccountsMap: [SignalServiceAddress: SignalAccount] = Dictionary(
+            oldSignalAccounts.lazy.map { ($0.recipientAddress, $0) },
+            uniquingKeysWith: { _, new in new }
+        )
+        var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
+
+        var signalAccountsToInsert = [SignalAccount]()
+        for newSignalAccount in newSignalAccounts {
+            let address = newSignalAccount.recipientAddress
+
+            // The user might have multiple entries in their address book with the same phone number.
+            if newSignalAccountsMap[address] != nil {
+                Logger.warn("Ignoring redundant signal account: \(address)")
+                continue
             }
-            let oldSignalAccountsMap: [SignalServiceAddress: SignalAccount] = Dictionary(
-                oldSignalAccounts.lazy.map { ($0.recipientAddress, $0) },
-                uniquingKeysWith: { _, new in new }
+
+            let oldSignalAccountToKeep: SignalAccount?
+            switch oldSignalAccountsMap[address] {
+            case .none:
+                oldSignalAccountToKeep = nil
+
+            case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount):
+                // Same content, no need to update.
+                oldSignalAccountToKeep = oldSignalAccount
+
+            case .some:
+                oldSignalAccountToKeep = nil
+            }
+
+            if let oldSignalAccount = oldSignalAccountToKeep {
+                newSignalAccountsMap[address] = oldSignalAccount
+            } else {
+                newSignalAccountsMap[address] = newSignalAccount
+                signalAccountsToInsert.append(newSignalAccount)
+            }
+        }
+
+        // Clean up orphans.
+        var signalAccountsToRemove = [SignalAccount]()
+        for signalAccount in oldSignalAccounts {
+            if newSignalAccountsMap[signalAccount.recipientAddress]?.uniqueId == signalAccount.uniqueId {
+                // If the SignalAccount is going to be inserted or updated, it doesn't need
+                // to be cleaned up.
+                continue
+            }
+            // Clean up instances that have been replaced by another instance or are no
+            // longer in the system contacts.
+            signalAccountsToRemove.append(signalAccount)
+        }
+
+        // Update cached SignalAccounts on disk
+        databaseStorage.write { transaction in
+            func touchContactThread(for signalAccount: SignalAccount) {
+                if
+                    let contactThread = ContactThreadFinder()
+                        .contactThread(for: signalAccount.recipientAddress, tx: transaction),
+                    contactThread.shouldThreadBeVisible
+                {
+                    Logger.info("Touching thread for reindexing: \(signalAccount.recipientAddress)")
+                    databaseStorage.touch(
+                        thread: contactThread,
+                        shouldReindex: true,
+                        transaction: transaction
+                    )
+                }
+            }
+
+            if !signalAccountsToRemove.isEmpty {
+                Logger.info("Removing \(signalAccountsToRemove.count) old SignalAccounts.")
+                for signalAccount in signalAccountsToRemove {
+                    Logger.verbose("Removing old SignalAccount: \(signalAccount.recipientAddress)")
+                    signalAccount.anyRemove(transaction: transaction)
+                    touchContactThread(for: signalAccount)
+                }
+            }
+
+            if signalAccountsToInsert.count > 0 {
+                Logger.info("Saving \(signalAccountsToInsert.count) SignalAccounts.")
+                for signalAccount in signalAccountsToInsert {
+                    Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
+                    signalAccount.anyInsert(transaction: transaction)
+                    touchContactThread(for: signalAccount)
+                }
+            }
+
+            Logger.info("SignalAccount count: \(newSignalAccountsMap.count).")
+
+            // Add system contacts to the profile whitelist immediately so that they do
+            // not see the "message request" UI.
+            profileManager.addUsers(
+                toProfileWhitelist: Array(newSignalAccountsMap.keys),
+                userProfileWriter: .systemContactsFetch,
+                transaction: transaction
             )
-            var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
-
-            var signalAccountsToInsert = [SignalAccount]()
-            for newSignalAccount in newSignalAccounts {
-                let address = newSignalAccount.recipientAddress
-
-                // The user might have multiple entries in their address book with the same phone number.
-                if newSignalAccountsMap[address] != nil {
-                    Logger.warn("Ignoring redundant signal account: \(address)")
-                    continue
-                }
-
-                let oldSignalAccountToKeep: SignalAccount?
-                switch oldSignalAccountsMap[address] {
-                case .none:
-                    oldSignalAccountToKeep = nil
-
-                case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount):
-                    // Same content, no need to update.
-                    oldSignalAccountToKeep = oldSignalAccount
-
-                case .some:
-                    oldSignalAccountToKeep = nil
-                }
-
-                if let oldSignalAccount = oldSignalAccountToKeep {
-                    newSignalAccountsMap[address] = oldSignalAccount
-                } else {
-                    newSignalAccountsMap[address] = newSignalAccount
-                    signalAccountsToInsert.append(newSignalAccount)
-                }
-            }
-
-            // Clean up orphans.
-            var signalAccountsToRemove = [SignalAccount]()
-            for signalAccount in oldSignalAccounts {
-                if newSignalAccountsMap[signalAccount.recipientAddress]?.uniqueId == signalAccount.uniqueId {
-                    // If the SignalAccount is going to be inserted or updated, it doesn't need
-                    // to be cleaned up.
-                    continue
-                }
-                // Clean up instances that have been replaced by another instance or are no
-                // longer in the system contacts.
-                signalAccountsToRemove.append(signalAccount)
-            }
-
-            // Update cached SignalAccounts on disk
-            Self.databaseStorage.write { transaction in
-
-                func touchContactThread(for signalAccount: SignalAccount) {
-                    if
-                        let contactThread = ContactThreadFinder()
-                            .contactThread(for: signalAccount.recipientAddress, tx: transaction),
-                        contactThread.shouldThreadBeVisible
-                    {
-                        Logger.info("Touching thread for reindexing: \(signalAccount.recipientAddress)")
-                        self.databaseStorage.touch(
-                            thread: contactThread,
-                            shouldReindex: true,
-                            transaction: transaction
-                        )
-                    }
-                }
-
-                if !signalAccountsToRemove.isEmpty {
-                    Logger.info("Removing \(signalAccountsToRemove.count) old SignalAccounts.")
-                    for signalAccount in signalAccountsToRemove {
-                        Logger.verbose("Removing old SignalAccount: \(signalAccount.recipientAddress)")
-                        signalAccount.anyRemove(transaction: transaction)
-                        touchContactThread(for: signalAccount)
-                    }
-                }
-
-                if signalAccountsToInsert.count > 0 {
-                    Logger.info("Saving \(signalAccountsToInsert.count) SignalAccounts.")
-                    for signalAccount in signalAccountsToInsert {
-                        Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
-                        signalAccount.anyInsert(transaction: transaction)
-                        touchContactThread(for: signalAccount)
-                    }
-                }
-
-                Logger.info("SignalAccount count: \(newSignalAccountsMap.count).")
-
-                // Add system contacts to the profile whitelist immediately so that they do
-                // not see the "message request" UI.
-                Self.profileManager.addUsers(
-                    toProfileWhitelist: Array(newSignalAccountsMap.keys),
-                    userProfileWriter: .systemContactsFetch,
-                    transaction: transaction
-                )
 
 #if DEBUG
-                let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
-                    $0.recipientAddress
-                }
-                let persistedAddressSet = Set(persistedAddresses)
-                owsAssertDebug(persistedAddresses.count == persistedAddressSet.count)
+            let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
+                $0.recipientAddress
+            }
+            let persistedAddressSet = Set(persistedAddresses)
+            owsAssertDebug(persistedAddresses.count == persistedAddressSet.count)
 #endif
-            }
+        }
 
-            // Once we've persisted new SignalAccount state, we should let
-            // StorageService know.
-            Self.updateStorageServiceForSystemContactsFetch(
-                allSignalAccountsBeforeFetch: oldSignalAccountsMap,
-                allSignalAccountsAfterFetch: newSignalAccountsMap
-            )
+        // Once we've persisted new SignalAccount state, we should let
+        // StorageService know.
+        updateStorageServiceForSystemContactsFetch(
+            allSignalAccountsBeforeFetch: oldSignalAccountsMap,
+            allSignalAccountsAfterFetch: newSignalAccountsMap
+        )
 
-            let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToInsert.isEmpty
-            DispatchQueue.main.async {
-                // Post a notification if something changed or this is the first load since launch.
-                let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
-                self.hasLoadedSystemContacts = true
-                self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(newSignalAccountsMap.values))
-                self.didUpdateSignalAccounts(shouldClearCache: false, shouldNotify: shouldNotify)
-            }
+        let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToInsert.isEmpty
+        DispatchQueue.main.async {
+            // Post a notification if something changed or this is the first load since launch.
+            let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
+            self.hasLoadedSystemContacts = true
+            self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(newSignalAccountsMap.values))
+            self.didUpdateSignalAccounts(shouldClearCache: false, shouldNotify: shouldNotify)
         }
     }
 
     /// Updates StorageService records for any Signal contacts associated with
     /// a system contact that has been added, removed, or modified in a
     /// relevant way. Has no effect when we are a linked device.
-    private static func updateStorageServiceForSystemContactsFetch(
+    private func updateStorageServiceForSystemContactsFetch(
         allSignalAccountsBeforeFetch: [SignalServiceAddress: SignalAccount],
         allSignalAccountsAfterFetch: [SignalServiceAddress: SignalAccount]
     ) {
@@ -879,7 +878,7 @@ extension OWSContactsManager {
 
         intersectContacts(
             addressBookContacts, localNumber: localNumber, isUserRequested: isUserRequested
-        ).done(on: DispatchQueue.global()) {
+        ).done(on: intersectionQueue) {
             self.buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts: contactsMaps.allContacts)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Couldn't intersect contacts: \(error)")
