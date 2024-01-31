@@ -348,12 +348,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             owsFailDebug("Invalid address.")
             return
         }
-        let memberActionSheet = MemberActionSheet(
+        ProfileSheetSheetCoordinator(
             address: memberAddress,
             groupViewHelper: groupViewHelper,
             spoilerState: spoilerState
         )
-        memberActionSheet.present(from: self)
+        .presentAppropriateSheet(from: self)
     }
 
     func showAddToSystemContactsActionSheet(contactThread: TSContactThread) {

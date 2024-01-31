@@ -281,8 +281,12 @@ class StoryInfoSheet: OWSTableSheetViewController {
             return cell
         }, actionBlock: { [weak self] in
             guard let self = self else { return }
-            let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil, spoilerState: self.spoilerState)
-            actionSheet.present(from: self)
+            ProfileSheetSheetCoordinator(
+                address: address,
+                groupViewHelper: nil,
+                spoilerState: self.spoilerState
+            )
+            .presentAppropriateSheet(from: self)
         })
     }
 

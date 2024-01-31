@@ -40,36 +40,16 @@ extension NameCollision {
     private func commonGroupsString(
         for address: SignalServiceAddress,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction) -> String {
-
-        let commonGroups = TSGroupThread.groupThreads(with: address, transaction: transaction)
-        switch (thread, commonGroups.count) {
-        case (_, 2...):
-            let formatString = OWSLocalizedString(
-                "MANY_GROUPS_IN_COMMON_%d", tableName: "PluralAware",
-                comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
-            return String.localizedStringWithFormat(formatString, commonGroups.count)
-
-        case (is TSContactThread, 1):
-            let formatString = OWSLocalizedString(
-                "THREAD_DETAILS_ONE_MUTUAL_GROUP",
-                comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}")
-            return String(format: formatString, commonGroups[0].groupNameOrDefault)
-
-        case (is TSGroupThread, 1):
-            return OWSLocalizedString(
-                "NO_OTHER_GROUPS_IN_COMMON",
-                comment: "A string describing that the user has no groups in common other than the group implied by the current UI context")
-
-        case (is TSContactThread, 0):
-            return OWSLocalizedString(
-                "NO_GROUPS_IN_COMMON",
-                comment: "A string describing that the user has no groups in common with another user")
-
-        default:
-            owsFailDebug("Unexpected common group count")
-            return ""
-        }
+        transaction: SDSAnyReadTransaction
+    ) -> String {
+        let commonGroups = TSGroupThread.groupThreads(
+            with: address,
+            transaction: transaction
+        )
+        return ProfileDetailLabel.mutualGroupsString(
+            for: thread,
+            mutualGroups: commonGroups
+        )
     }
 
     func collisionCellModels(thread: TSThread, transaction: SDSAnyReadTransaction) -> [NameCollisionCellModel] {

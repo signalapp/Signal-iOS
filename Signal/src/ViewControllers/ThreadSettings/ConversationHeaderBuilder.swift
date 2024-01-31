@@ -167,35 +167,7 @@ struct ConversationHeaderBuilder: Dependencies {
             label.textAlignment = .center
         }
 
-        let threadName = delegate.threadName(
-            renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
-            transaction: transaction
-        )
         let recipientAddress = contactThread.contactAddress
-        if let phoneNumber = recipientAddress.phoneNumber {
-            let formattedPhoneNumber =
-                PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
-            if threadName != formattedPhoneNumber {
-                func copyContactPhoneNumber(delegate: ConversationHeaderDelegate?) {
-                    guard let delegate = delegate else {
-                        owsFailDebug("Missing delegate.")
-                        return
-                    }
-                    UIPasteboard.general.string = recipientAddress.phoneNumber
-
-                    let toast = OWSLocalizedString("COPIED_TO_CLIPBOARD",
-                                                  comment: "Indicator that a value has been copied to the clipboard.")
-                    delegate.tableViewController.presentToast(text: toast)
-                }
-                let label = builder.addSubtitleLabel(text: formattedPhoneNumber)
-                label.addTapGesture { [weak delegate] in
-                    copyContactPhoneNumber(delegate: delegate)
-                }
-                label.addLongPressGesture { [weak delegate] in
-                    copyContactPhoneNumber(delegate: delegate)
-                }
-            }
-        }
 
         let identityManager = DependenciesBridge.shared.identityManager
         let isVerified = identityManager.verificationState(for: recipientAddress, tx: transaction.asV2Read) == .verified
@@ -423,7 +395,7 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     func buildThreadNameLabel() -> UILabel {
-        let label = UILabel()
+        let label = OWSLabel()
         label.attributedText = delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
             transaction: transaction
@@ -431,6 +403,11 @@ struct ConversationHeaderBuilder: Dependencies {
         label.numberOfLines = 0
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping
+        if delegate.canTapThreadName {
+            label.addTapGesture { [weak delegate] in
+                delegate?.didTapThreadName()
+            }
+        }
         return label
     }
 
@@ -513,6 +490,9 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
     func didTapUnblockThread(completion: @escaping () -> Void)
 
     func didTapAddGroupDescription()
+
+    var canTapThreadName: Bool { get }
+    func didTapThreadName()
 }
 
 // MARK: -
@@ -555,6 +535,22 @@ extension ConversationHeaderDelegate {
                 heightReference: .pointSize
             )
             attributedString.append(verifiedBadgeAttachment)
+        }
+
+        if
+            self.canTapThreadName,
+            let chevron = UIImage(named: "chevron-right-20")
+        {
+            // Add disclosure chevron
+            attributedString.append(.with(
+                image: chevron,
+                font: .systemFont(ofSize: 24),
+                attributes: [
+                    .foregroundColor: Theme.primaryIconColor
+                ],
+                centerVerticallyRelativeTo: font,
+                heightReference: .pointSize
+            ))
         }
 
         return attributedString
@@ -611,6 +607,18 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
         )
         vc.descriptionDelegate = self
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    }
+
+    var canTapThreadName: Bool {
+        !thread.isGroupThread
+    }
+
+    func didTapThreadName() {
+        guard let contactThread = self.thread as? TSContactThread else {
+            owsFailDebug("Conversation name should only be tappable for contact threads")
+            return
+        }
+        ContactAboutSheet(thread: contactThread).present(from: self)
     }
 }
 

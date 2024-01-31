@@ -294,12 +294,12 @@ public class LongTextViewController: OWSViewController {
                     }
 
                     let address = SignalServiceAddress(mentionItem.mentionAci)
-                    let actionSheet = MemberActionSheet(
+                    ProfileSheetSheetCoordinator(
                         address: address,
                         groupViewHelper: groupViewHelper,
                         spoilerState: spoilerState
                     )
-                    actionSheet.present(from: self)
+                    .presentAppropriateSheet(from: self)
                     return
                 case .unrevealedSpoiler(let unrevealedSpoiler):
                     self.spoilerState.revealState.setSpoilerRevealed(

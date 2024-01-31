@@ -210,7 +210,11 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
 
     private func didSelectViewer(_ address: SignalServiceAddress) {
         // No need to share spoiler state; just start fresh.
-        let sheet = MemberActionSheet(address: address, groupViewHelper: nil, spoilerState: SpoilerRenderState())
-        present(sheet, animated: true)
+        ProfileSheetSheetCoordinator(
+            address: address,
+            groupViewHelper: nil,
+            spoilerState: SpoilerRenderState()
+        )
+        .presentAppropriateSheet(from: self)
     }
 }

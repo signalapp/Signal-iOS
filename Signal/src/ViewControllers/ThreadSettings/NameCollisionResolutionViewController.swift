@@ -221,16 +221,14 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         return OWSTableSection(title: header, items: [
             OWSTableItem(customCellBlock: {
                 NameCollisionCell.createWithModel(model, actions: actions)
-            },
-            actionBlock: { [weak self] in
+            }, actionBlock: { [weak self] in
                 guard let self = self else { return }
-                MemberActionSheet(
+                ProfileSheetSheetCoordinator(
                     address: model.address,
                     groupViewHelper: self.groupViewHelper,
                     spoilerState: SpoilerRenderState() // no need to share
-                ).present(from: self)
-            }
-            )
+                ).presentAppropriateSheet(from: self)
+            })
         ])
     }
 

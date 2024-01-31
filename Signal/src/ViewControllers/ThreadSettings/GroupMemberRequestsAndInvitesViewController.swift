@@ -433,8 +433,12 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func showMemberActionSheet(for address: SignalServiceAddress) {
-        let memberActionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper, spoilerState: spoilerState)
-        memberActionSheet.present(from: self)
+        ProfileSheetSheetCoordinator(
+            address: address,
+            groupViewHelper: groupViewHelper,
+            spoilerState: spoilerState
+        )
+        .presentAppropriateSheet(from: self)
     }
 
     private func presentRequestApprovedToast(address: SignalServiceAddress) {

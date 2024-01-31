@@ -40,6 +40,9 @@ public enum ThemeIcon: UInt {
     case contactInfoSafetyNumber
     case contactInfoUserInContacts
     case contactInfoAddToContacts
+    case contactInfoSignalConnection
+    case contactInfoPhone
+    case contactInfoGroups
     case groupInfoLeaveGroup
     case groupInfoAddMembers
     case groupInfoShowAllMembers
@@ -253,6 +256,12 @@ public extension Theme {
             return "person-circle"
         case .contactInfoAddToContacts:
             return "person-circle-plus"
+        case .contactInfoSignalConnection:
+            return "connections"
+        case .contactInfoPhone:
+            return "phone"
+        case .contactInfoGroups:
+            return "group-resizable"
         case .groupInfoLeaveGroup:
             return "leave"
         case .groupInfoAddMembers:

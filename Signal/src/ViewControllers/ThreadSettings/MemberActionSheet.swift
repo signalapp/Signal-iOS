@@ -7,6 +7,43 @@ import ContactsUI
 import SignalServiceKit
 import SignalUI
 
+struct ProfileSheetSheetCoordinator {
+    private let address: SignalServiceAddress
+    private let groupViewHelper: GroupViewHelper?
+    private let spoilerState: SpoilerRenderState
+
+    init(
+        address: SignalServiceAddress,
+        groupViewHelper: GroupViewHelper?,
+        spoilerState: SpoilerRenderState
+    ) {
+        self.address = address
+        self.groupViewHelper = groupViewHelper
+        self.spoilerState = spoilerState
+    }
+
+    /// Present a ``MemberActionSheet`` for other users, and present a
+    /// ``ContactAboutSheet`` for the local user.
+    func presentAppropriateSheet(from viewController: UIViewController) {
+        let threadViewModel = MemberActionSheet.fetchThreadViewModel(address: address)
+        let thread = threadViewModel.threadRecord
+
+        if thread.isNoteToSelf, let contactThread = thread as? TSContactThread {
+            ContactAboutSheet(thread: contactThread)
+                .present(from: viewController)
+            return
+        }
+
+        MemberActionSheet(
+            threadViewModel: threadViewModel,
+            address: address,
+            groupViewHelper: groupViewHelper,
+            spoilerState: spoilerState
+        )
+        .present(from: viewController)
+    }
+}
+
 class MemberActionSheet: OWSTableSheetViewController {
     private var groupViewHelper: GroupViewHelper?
 
@@ -16,12 +53,13 @@ class MemberActionSheet: OWSTableSheetViewController {
     let address: SignalServiceAddress
     let spoilerState: SpoilerRenderState
 
-    init(
+    fileprivate init(
+        threadViewModel: ThreadViewModel,
         address: SignalServiceAddress,
         groupViewHelper: GroupViewHelper?,
         spoilerState: SpoilerRenderState
     ) {
-        self.threadViewModel = Self.fetchThreadViewModel(address: address)
+        self.threadViewModel = threadViewModel
         self.groupViewHelper = groupViewHelper
         self.address = address
         self.spoilerState = spoilerState
@@ -36,7 +74,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         fatalError("init() has not been implemented")
     }
 
-    static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
+    fileprivate static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
         // Avoid opening a write transaction if we can
         guard let threadViewModel: ThreadViewModel = Self.databaseStorage.read(block: { transaction in
             guard let thread = TSContactThread.getWithContactAddress(
@@ -66,7 +104,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
     private weak var fromViewController: UIViewController?
 
-    func present(from viewController: UIViewController) {
+    fileprivate func present(from viewController: UIViewController) {
         fromViewController = viewController
         viewController.present(self, animated: true)
     }
@@ -356,6 +394,20 @@ extension MemberActionSheet: ConversationHeaderDelegate {
     }
     func didTapAddGroupDescription() {}
     var canEditConversationAttributes: Bool { false }
+
+    var canTapThreadName: Bool { true }
+
+    func didTapThreadName() {
+        guard let contactThread = self.thread as? TSContactThread else {
+            owsFailDebug("How is member sheet not showing a contact?")
+            return
+        }
+        let sheet = ContactAboutSheet(thread: contactThread)
+        dismiss(animated: true) {
+            guard let fromViewController = self.fromViewController else { return }
+            sheet.present(from: fromViewController)
+        }
+    }
 }
 
 extension MemberActionSheet: MediaPresentationContextProvider {

@@ -479,7 +479,8 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     private func contactItem(for address: SignalServiceAddress, accessoryText: String, displayUDIndicator: Bool) -> OWSTableItem {
-        return .init(customCellBlock: { [weak self] in
+        return .init(
+            customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
                 let tableView = self.tableView
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
@@ -498,8 +499,12 @@ class MessageDetailViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 guard let self = self else { return }
-            let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil, spoilerState: self.spoilerState)
-                actionSheet.present(from: self)
+                ProfileSheetSheetCoordinator(
+                    address: address,
+                    groupViewHelper: nil,
+                    spoilerState: self.spoilerState
+                )
+                .presentAppropriateSheet(from: self)
             }
         )
     }

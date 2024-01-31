@@ -8,8 +8,8 @@ import SignalServiceKit
 open class InteractiveSheetViewController: OWSViewController {
 
     public enum Constants {
-        fileprivate static let handleSize = CGSize(width: 36, height: 5)
-        fileprivate static let handleInsideMargin: CGFloat = 12
+        public static let handleSize = CGSize(width: 36, height: 5)
+        public static let handleInsideMargin: CGFloat = 12
 
         /// Max height of the sheet has its top this far from the safe area top of the screen.
         fileprivate static let extraTopPadding: CGFloat = 32

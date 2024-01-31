@@ -414,7 +414,7 @@ extension MyStorySettingsDataSource: UITextViewDelegate {
         guard URL.absoluteString == Constants.learnMoreUrl else {
             return false
         }
-        delegate?.present(MyStorySettingsLearnMoreSheetViewController(), animated: true)
+        delegate?.present(ConnectionsEducationSheetViewController(), animated: true)
         return false
     }
 }
