@@ -109,11 +109,7 @@ extension AppNotificationCategory {
     var actions: [AppNotificationAction] {
         switch self {
         case .incomingMessageWithActions_CanReply:
-            if DebugFlags.reactWithThumbsUpFromLockscreen {
-                return [.markAsRead, .reply, .reactWithThumbsUp]
-            } else {
-                return [.markAsRead, .reply]
-            }
+            return [.markAsRead, .reply, .reactWithThumbsUp]
         case .incomingMessageWithActions_CannotReply:
             return [.markAsRead]
         case .incomingReactionWithActions_CanReply:

@@ -247,9 +247,6 @@ public class DebugFlags: BaseFlags {
     public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
 
     @objc
-    public static let reactWithThumbsUpFromLockscreen = build.includes(.internal)
-
-    @objc
     public static let messageDetailsExtraInfo = build.includes(.internal)
 
     @objc
