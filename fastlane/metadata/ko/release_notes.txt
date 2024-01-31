@@ -1,1 +1,1 @@
-• 몇 가지 사소한 버그를 수정했습니다.
+• Now you can tap on someone's profile photo in a group chat and quickly see additional information like how many groups you have in common. 
