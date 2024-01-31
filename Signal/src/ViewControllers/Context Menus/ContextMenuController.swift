@@ -50,10 +50,6 @@ private class ContextMenuHostView: UIView {
             oldValue?.removeFromSuperview()
             if let view = previewView {
                 addSubview(view)
-
-                if DebugFlags.showContextMenuDebugRects {
-                    view.addBorder(with: UIColor.blue)
-                }
             }
         }
     }
@@ -63,10 +59,6 @@ private class ContextMenuHostView: UIView {
             oldValue?.removeFromSuperview()
             if let view = auxiliaryPreviewView {
                 addSubview(view)
-
-                if DebugFlags.showContextMenuDebugRects {
-                    view.addBorder(with: UIColor.blue)
-                }
             }
         }
     }
@@ -82,10 +74,6 @@ private class ContextMenuHostView: UIView {
             if let newAccessoryViews = accessoryViews {
                 for accessory in newAccessoryViews {
                     addSubview(accessory.accessoryView)
-
-                    if DebugFlags.showContextMenuDebugRects {
-                        accessory.accessoryView.addRedBorder()
-                    }
                 }
             }
         }
@@ -96,10 +84,6 @@ private class ContextMenuHostView: UIView {
             oldValue?.removeFromSuperview()
             if let dismissButton = dismissButton {
                 addSubview(dismissButton)
-
-                if DebugFlags.showContextMenuDebugRects {
-                    dismissButton.addBorder(with: UIColor.blue)
-                }
             }
         }
     }

@@ -241,9 +241,6 @@ public class DebugFlags: BaseFlags {
     public static let logCurlOnSuccess = false
 
     @objc
-    public static let showContextMenuDebugRects = false
-
-    @objc
     public static let verboseNotificationLogging = build.includes(.internal)
 
     @objc
@@ -257,12 +254,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let exposeCensorshipCircumvention = build.includes(.internal)
-
-    @objc
-    public static let allowV1GroupsUpdates = build.includes(.internal)
-
-    @objc
-    public static let forceStories = build.includes(.beta)
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false,
@@ -291,9 +282,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let fastPerfTests = false
-
-    @objc
-    public static let forceSubscriptionMegaphone = build.includes(.internal)
 
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)
