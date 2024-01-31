@@ -133,12 +133,15 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
 
         Task { [weak self, taskManager, targets] in
-            try Task.checkCancellation()
-            try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldPerformPniOp {
+            let task = await Self.taskQueue.enqueue {
                 try Task.checkCancellation()
-                try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
+                try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
+                if shouldPerformPniOp {
+                    try Task.checkCancellation()
+                    try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
+                }
             }
+            try await task.value
             self?.refreshPreKeysDidSucceed()
         }
     }
