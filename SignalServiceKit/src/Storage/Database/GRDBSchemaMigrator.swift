@@ -243,6 +243,7 @@ public class GRDBSchemaMigrator: NSObject {
         case renameIsFromLinkedDevice
         case renameAndDeprecateSourceDeviceId
         case addCallRecordQueryIndices
+        case addDeletedCallRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -302,7 +303,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 63
+    public static let grdbSchemaVersionLatest: UInt = 64
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2421,8 +2422,8 @@ public class GRDBSchemaMigrator: NSObject {
                 options: [.unique]
             )
 
-            // Note that because `threadRowId` and `interactionRowId` are UNIQUE
-            // SQLite will automatically create an index on each of them.
+            // Note that because `interactionRowId` is UNIQUE, SQLite will
+            // automatically create an index on it.
 
             return .success(())
         }
@@ -2534,6 +2535,25 @@ public class GRDBSchemaMigrator: NSObject {
                     "status",
                     "timestamp",
                 ]
+            )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addDeletedCallRecordTable) { tx in
+            try tx.database.create(table: "DeletedCallRecord") { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("callId", .text).notNull()
+                table.column("threadRowId", .integer).notNull()
+                    .references("model_TSThread", column: "id", onDelete: .restrict)
+                table.column("deletedAtTimestamp", .integer).notNull()
+            }
+
+            try tx.database.create(
+                index: "index_deleted_call_record_on_threadRowId_and_callId",
+                on: "DeletedCallRecord",
+                columns: ["threadRowId", "callId"],
+                options: [.unique]
             )
 
             return .success(())

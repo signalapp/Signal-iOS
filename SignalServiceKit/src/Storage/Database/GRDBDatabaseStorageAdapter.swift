@@ -196,6 +196,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             TSPaymentsActivationRequestModel.self,
             CallRecord.self,
             OWSUserProfile.self,
+            DeletedCallRecord.self
         ]
     }
 

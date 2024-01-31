@@ -12,6 +12,7 @@ public struct CallRecordStoreNotification {
 
     public enum UpdateType {
         case inserted
+        case deleted
         case statusUpdated
     }
 

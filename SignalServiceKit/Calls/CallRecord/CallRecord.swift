@@ -28,7 +28,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
 
     /// This record's SQLite row ID, if it represents a record that has already
     /// been inserted.
-    public var id: Int64?
+    public internal(set) var id: Int64?
 
     /// A string representation of the UInt64 ID for this call.
     ///
@@ -308,3 +308,30 @@ extension CallRecord {
         }
     }
 }
+
+#if TESTABLE_BUILD
+
+extension CallRecord {
+    func matches(
+        _ other: CallRecord,
+        overridingThreadRowId: Int64? = nil
+    ) -> Bool {
+        if
+            id == other.id,
+            callId == other.callId,
+            interactionRowId == other.interactionRowId,
+            threadRowId == (overridingThreadRowId ?? other.threadRowId),
+            callType == other.callType,
+            callDirection == other.callDirection,
+            callStatus == other.callStatus,
+            groupCallRingerAci == other.groupCallRingerAci,
+            callBeganTimestamp == other.callBeganTimestamp
+        {
+            return true
+        }
+
+        return false
+    }
+}
+
+#endif

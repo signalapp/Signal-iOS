@@ -126,6 +126,7 @@ class RecipientMergerImpl: RecipientMerger {
         authorMergeHelper: AuthorMergeHelper,
         callRecordStore: CallRecordStore,
         chatColorSettingStore: ChatColorSettingStore,
+        deletedCallRecordStore: DeletedCallRecordStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         groupMemberUpdater: GroupMemberUpdater,
         groupMemberStore: GroupMemberStore,
@@ -153,6 +154,7 @@ class RecipientMergerImpl: RecipientMerger {
             threadMerger: ThreadMerger(
                 callRecordStore: callRecordStore,
                 chatColorSettingStore: chatColorSettingStore,
+                deletedCallRecordStore: deletedCallRecordStore,
                 disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
                 interactionStore: interactionStore,

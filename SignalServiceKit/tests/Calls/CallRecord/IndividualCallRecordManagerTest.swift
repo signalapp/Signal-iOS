@@ -140,6 +140,27 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
     }
 
+    func testCreateOrUpdate_nothingIfRecordRecentlyDeleted() {
+        let (thread, interaction) = createInteraction(callType: .incomingDeclined)
+        let callId = UInt64.maxRandom
+
+        mockCallRecordStore.fetchMock = { .matchDeleted }
+
+        mockDB.write { tx in
+            individualCallRecordManager.createOrUpdateRecordForInteraction(
+                individualCallInteraction: interaction,
+                individualCallInteractionRowId: interaction.sqliteRowId!,
+                contactThread: thread,
+                contactThreadRowId: thread.sqliteRowId!,
+                callId: callId,
+                tx: tx
+            )
+        }
+
+        XCTAssertNil(individualCallRecordManager.didAskToUpdateRecord)
+        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+    }
+
     // MARK: - createRecordForInteraction
 
     func testCreate_noSyncMessage() {

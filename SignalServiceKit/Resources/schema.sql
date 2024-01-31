@@ -1524,3 +1524,23 @@ CREATE
     ,"timestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "DeletedCallRecord" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"callId" TEXT NOT NULL
+            ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                RESTRICT
+                ,"deletedAtTimestamp" INTEGER NOT NULL
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_deleted_call_record_on_threadRowId_and_callId"
+        ON "DeletedCallRecord"("threadRowId"
+    ,"callId"
+)
+;

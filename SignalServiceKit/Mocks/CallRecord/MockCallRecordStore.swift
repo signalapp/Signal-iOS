@@ -1,22 +1,34 @@
 //
-// Copyright 2023 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import LibSignalClient
 
-@testable import SignalServiceKit
-
-// MARK: - MockCallRecordStore
+#if TESTABLE_BUILD
 
 class MockCallRecordStore: CallRecordStore {
     var callRecords = [CallRecord]()
+
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
         callRecords.append(callRecord)
     }
 
-    func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
-        return callRecords.first(where: { $0.callId == callId && $0.threadRowId == threadRowId })
+    func delete(callRecord: CallRecord, tx: DBWriteTransaction) {
+        callRecords.removeAll { $0.matches(callRecord) }
+    }
+
+    var fetchMock: (() -> MaybeDeletedFetchResult)?
+    func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> MaybeDeletedFetchResult {
+        if let fetchMock {
+            return fetchMock()
+        }
+
+        if let match = callRecords.first(where: { $0.callId == callId && $0.threadRowId == threadRowId }) {
+            return .matchFound(match)
+        }
+
+        return .matchNotFound
     }
 
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? {
@@ -43,28 +55,10 @@ class MockCallRecordStore: CallRecordStore {
         askedToUpdateTimestampTo = newCallBeganTimestamp
     }
 
-    func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {}
-}
-
-// MARK: - MockCallRecordOutgoingSyncMessageManager
-
-class MockCallRecordOutgoingSyncMessageManager: CallRecordOutgoingSyncMessageManager {
-    var askedToSendSyncMessage = false
-
-    func sendSyncMessage(
-        conversationId: CallRecordOutgoingSyncMessageConversationId,
-        callRecord: CallRecord,
-        callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) {
-        askedToSendSyncMessage = true
-    }
-
-    func sendSyncMessage(
-        contactThread: TSContactThread,
-        callRecord: CallRecord,
-        tx: DBWriteTransaction
-    ) {
-        askedToSendSyncMessage = true
+    var askedToMergeThread: (from: Int64, into: Int64)?
+    func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {
+        askedToMergeThread = (from: fromRowId, into: intoRowId)
     }
 }
+
+#endif

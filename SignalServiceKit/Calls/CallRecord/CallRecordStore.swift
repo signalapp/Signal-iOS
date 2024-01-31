@@ -7,20 +7,38 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
+/// Represents the result of a ``CallRecordStore`` fetch where a record having
+/// been deleted is distinguishable from it never having been created.
+public enum CallRecordStoreMaybeDeletedFetchResult {
+    /// The fetch found that a matching record was deleted.
+    case matchDeleted
+    /// The fetch found a matching, extant record.
+    case matchFound(CallRecord)
+    /// The fetch found that no matching record exists, nor was a matching
+    /// record deleted.
+    case matchNotFound
+}
+
 /// Performs SQL operations related to a single ``CallRecord``.
 ///
 /// For queries over the ``CallRecord`` table, please see ``CallRecordQuerier``.
 public protocol CallRecordStore {
+    typealias MaybeDeletedFetchResult = CallRecordStoreMaybeDeletedFetchResult
+
     /// Insert the given call record.
     /// - Important
-    /// Posts a ``CallRecordStoreNotification`` with the "inserted" update
-    /// type when a record is inserted.
+    /// Posts an `.inserted` ``CallRecordStoreNotification``.
     func insert(callRecord: CallRecord, tx: DBWriteTransaction)
+
+    /// Deletes the given call record and creates a ``DeletedCallRecord``
+    /// in its place.
+    /// - Important
+    /// Posts a `.deleted` ``CallRecordStoreNotification``.
+    func delete(callRecord: CallRecord, tx: DBWriteTransaction)
 
     /// Update the status of the given call record.
     /// - Important
-    /// Posts a ``CallRecordStoreNotification`` with the "status updated"
-    /// update type when a record's status is updated.
+    /// Posts a `.statusUpdated` ``CallRecordStoreNotification``.
     func updateRecordStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
@@ -66,31 +84,50 @@ public protocol CallRecordStore {
     /// exists.
     func fetch(
         callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
-    ) -> CallRecord?
+    ) -> MaybeDeletedFetchResult
 
     /// Fetch the record referencing the given ``TSInteraction`` SQLite row ID,
     /// if one exists.
+    /// - Note
+    /// This method returns a ``CallRecord`` directly, rather than a
+    /// ``MaybeDeletedFetchResult``, since interactions are deleted alongside
+    /// call records. That implies that any call record being fetched via its
+    /// interaction will not have been deleted.
     func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord?
 }
 
+// MARK: -
+
 class CallRecordStoreImpl: CallRecordStore {
+    private let deletedCallRecordStore: DeletedCallRecordStore
     private let schedulers: Schedulers
 
-    init(schedulers: Schedulers) {
+    init(
+        deletedCallRecordStore: DeletedCallRecordStore,
+        schedulers: Schedulers
+    ) {
+        self.deletedCallRecordStore = deletedCallRecordStore
         self.schedulers = schedulers
     }
 
     // MARK: - Protocol methods
 
     func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
-        insert(
-            callRecord: callRecord,
-            db: SDSDB.shimOnlyBridge(tx).database
-        )
+        insert(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
 
         postNotification(
             callRecord: callRecord,
             updateType: .inserted,
+            tx: tx
+        )
+    }
+
+    func delete(callRecord: CallRecord, tx: DBWriteTransaction) {
+        delete(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
+
+        postNotification(
+            callRecord: callRecord,
+            updateType: .deleted,
             tx: tx
         )
     }
@@ -163,7 +200,7 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func fetch(
         callId: UInt64, threadRowId: Int64, tx: DBReadTransaction
-    ) -> CallRecord? {
+    ) -> MaybeDeletedFetchResult {
         return fetch(
             callId: callId,
             threadRowId: threadRowId,
@@ -203,6 +240,21 @@ class CallRecordStoreImpl: CallRecordStore {
             try callRecord.insert(db)
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
+        }
+    }
+
+    func delete(callRecord: CallRecord, db: Database) {
+        do {
+            try callRecord.delete(db)
+
+            deletedCallRecordStore.insert(
+                deletedCallRecord: DeletedCallRecord(
+                    deletedCallRecord: callRecord
+                ),
+                db: db
+            )
+        } catch let error {
+            owsFailBeta("Failed to delete call record: \(error)")
         }
     }
 
@@ -281,14 +333,24 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func fetch(
         callId: UInt64, threadRowId: Int64, db: Database
-    ) -> CallRecord? {
-        return fetch(
+    ) -> MaybeDeletedFetchResult {
+        if deletedCallRecordStore.contains(
+            callId: callId,
+            threadRowId: threadRowId,
+            db: db
+        ) {
+            return .matchDeleted
+        } else if let found = fetch(
             columnArgs: [
                 (.callIdString, String(callId)),
                 (.threadRowId, threadRowId),
             ],
             db: db
-        )
+        ) {
+            return .matchFound(found)
+        }
+
+        return .matchNotFound
     }
 
     func fetch(interactionRowId: Int64, db: Database) -> CallRecord? {
@@ -338,6 +400,8 @@ private extension SDSAnyReadTransaction {
         return unwrapGrdbRead.database
     }
 }
+
+// MARK: -
 
 #if TESTABLE_BUILD
 

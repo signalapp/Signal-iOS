@@ -102,6 +102,27 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertTrue(snoopingGroupCallRecordManager.didAskToUpdate)
     }
 
+    func testCreateOrUpdate_DoesNothingIfRecentlyDeleted() {
+        let (thread, _) = createInteraction()
+
+        mockCallRecordStore.fetchMock = { .matchDeleted }
+
+        mockDB.write { tx in
+            snoopingGroupCallRecordManager.createOrUpdateCallRecord(
+                callId: .maxRandom,
+                groupThread: thread,
+                groupThreadRowId: thread.sqliteRowId!,
+                callDirection: .incoming,
+                groupCallStatus: .joined,
+                callEventTimestamp: .maxRandomInt64Compat,
+                shouldSendSyncMessage: true,
+                tx: tx
+            )
+        }
+
+        XCTAssertFalse(snoopingGroupCallRecordManager.didAskToUpdate)
+    }
+
     // MARK: - Create group call record
 
     func testCreateGroupCallRecord() {

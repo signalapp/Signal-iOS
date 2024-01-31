@@ -57,6 +57,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     // MARK: - Lifecycle
 
+    private var logger: PrefixedLogger = PrefixedLogger(prefix: "[CallsListVC]")
+
     private lazy var emptyStateMessageView: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -394,6 +396,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         switch callRecordStoreNotification.updateType {
         case .inserted:
             newCallRecordWasInserted()
+        case .deleted:
+            owsFail("Not yet implemented!")
         case .statusUpdated:
             callRecordStatusWasUpdated(
                 callId: callRecordStoreNotification.callId,
@@ -837,22 +841,24 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         /// not include any IDs that were ignored.
         mutating func recreateViewModels(
             ids: [CallViewModel.ID],
-            recreateModelBlock: (CallViewModel.ID) -> CallViewModel
+            recreateModelBlock: (CallViewModel.ID) -> CallViewModel?
         ) -> [CallViewModel.ID] {
-            let indicesToReload: [(Int, CallViewModel.ID)] = ids.compactMap { viewModelId in
-                guard let index = modelIndicesByViewModelIds[viewModelId] else {
+            let indicesToReload: [(Int, CallViewModel)] = ids.compactMap { viewModelId in
+                guard
+                    let index = modelIndicesByViewModelIds[viewModelId],
+                    let newViewModel = recreateModelBlock(viewModelId)
+                else {
                     return nil
                 }
 
-                return (index, viewModelId)
+                return (index, newViewModel)
             }
 
-            for (index, viewModelId) in indicesToReload {
-                let newViewModel = recreateModelBlock(viewModelId)
+            for (index, newViewModel) in indicesToReload {
                 viewModels[index] = newViewModel
             }
 
-            return indicesToReload.map { $0.1 }
+            return indicesToReload.map { $0.1.id }
         }
     }
 
@@ -893,16 +899,18 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         // This step will also drop any IDs for models that are not currently
         // loaded, which should not be included in the snapshot.
         let identifiersToReload = deps.db.read { tx -> [CallViewModel.ID] in
-            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> CallViewModel in
-                guard let freshCallRecord = deps.callRecordStore.fetch(
+            return calls.recreateViewModels(ids: identifiersToReload) { viewModelId -> CallViewModel? in
+                switch deps.callRecordStore.fetch(
                     callId: viewModelId.callId,
                     threadRowId: viewModelId.threadRowId,
                     tx: tx.asV2Read
-                ) else {
-                    owsFail("Unexpectedly missing call record while reloading!")
+                ) {
+                case .matchNotFound, .matchDeleted:
+                    logger.warn("Call record missing while reloading!")
+                    return nil
+                case .matchFound(let freshCallRecord):
+                    return createCallViewModel(callRecord: freshCallRecord, tx: tx)
                 }
-
-                return createCallViewModel(callRecord: freshCallRecord, tx: tx)
             }
         }
 

@@ -269,7 +269,8 @@ public extension DatabaseRecovery {
             EditRecord.databaseTableName,
             TSPaymentsActivationRequestModel.databaseTableName,
             // Okay to best-effort recover calls.
-            CallRecord.databaseTableName
+            CallRecord.databaseTableName,
+            DeletedCallRecord.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

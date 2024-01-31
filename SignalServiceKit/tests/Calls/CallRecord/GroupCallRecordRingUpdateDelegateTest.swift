@@ -251,6 +251,29 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
         }
     }
 
+    // MARK: - Recently deleted call record
+
+    func testReceivedRingUpdateForDeletedCallRecordDoesNothing() {
+        mockCallRecordStore.fetchMock = { .matchDeleted }
+
+        let groupThread: TSGroupThread = .forUnitTest()
+        mockThreadStore.insertThread(groupThread)
+
+        mockGroupCallRecordManager.updateStub = { (_, _) in
+            XCTFail("Shouldn't be trying to update for outgoing call record!")
+        }
+
+        mockDB.write { tx in
+            ringUpdateHandler.didReceiveRingUpdate(
+                groupId: groupThread.groupId,
+                ringId: .maxRandom,
+                ringUpdate: .expiredRing,
+                ringUpdateSender: .randomForTesting(),
+                tx: tx
+            )
+        }
+    }
+
     // MARK: -
 
     private var allRingUpdateCases: [RingUpdate] {

@@ -10,6 +10,7 @@ import SignalCoreKit
 final class ThreadMerger {
     private let callRecordStore: CallRecordStore
     private let chatColorSettingStore: ChatColorSettingStore
+    private let deletedCallRecordStore: DeletedCallRecordStore
     private let disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let interactionStore: InteractionStore
@@ -25,6 +26,7 @@ final class ThreadMerger {
     init(
         callRecordStore: CallRecordStore,
         chatColorSettingStore: ChatColorSettingStore,
+        deletedCallRecordStore: DeletedCallRecordStore,
         disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
@@ -39,6 +41,7 @@ final class ThreadMerger {
     ) {
         self.callRecordStore = callRecordStore
         self.chatColorSettingStore = chatColorSettingStore
+        self.deletedCallRecordStore = deletedCallRecordStore
         self.disappearingMessagesConfigurationManager = disappearingMessagesConfigurationManager
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
@@ -206,6 +209,12 @@ final class ThreadMerger {
         }
 
         callRecordStore.updateWithMergedThread(
+            fromThreadRowId: fromThreadRowId,
+            intoThreadRowId: intoThreadRowId,
+            tx: tx
+        )
+
+        deletedCallRecordStore.updateWithMergedThread(
             fromThreadRowId: fromThreadRowId,
             intoThreadRowId: intoThreadRowId,
             tx: tx
@@ -430,20 +439,6 @@ protocol _ThreadMerger_SDSThreadMergerShim {
 #if TESTABLE_BUILD
 
 extension ThreadMerger {
-    private class MockCallRecordStore: CallRecordStore {
-        private func notImplemented() -> Never { owsFail("Not implemented!") }
-
-        func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {}
-
-        func insert(callRecord: CallRecord, tx: DBWriteTransaction) { notImplemented() }
-        func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) { notImplemented() }
-        func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) { notImplemented() }
-        func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) { notImplemented() }
-        func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) { notImplemented() }
-        func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? { notImplemented() }
-        func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? { notImplemented() }
-    }
-
     static func forUnitTests(
         interactionStore: InteractionStore = MockInteractionStore(),
         keyValueStoreFactory: KeyValueStoreFactory = InMemoryKeyValueStoreFactory(),
@@ -470,6 +465,7 @@ extension ThreadMerger {
         return ThreadMerger(
             callRecordStore: MockCallRecordStore(),
             chatColorSettingStore: chatColorSettingStore,
+            deletedCallRecordStore: MockDeletedCallRecordStore(),
             disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,

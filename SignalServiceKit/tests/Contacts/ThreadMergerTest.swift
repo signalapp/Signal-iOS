@@ -13,6 +13,7 @@ final class ThreadMergerTest: XCTestCase {
     private var callRecordStore: MockCallRecordStore!
     private var chatColorSettingStore: ChatColorSettingStore!
     private var db: MockDB!
+    private var deletedCallRecordStore: MockDeletedCallRecordStore!
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
@@ -41,6 +42,7 @@ final class ThreadMergerTest: XCTestCase {
         callRecordStore = MockCallRecordStore()
         chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         db = MockDB()
+        deletedCallRecordStore = MockDeletedCallRecordStore()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
         pinnedThreadManager = MockPinnedThreadManager()
@@ -66,6 +68,7 @@ final class ThreadMergerTest: XCTestCase {
         threadMerger = ThreadMerger(
             callRecordStore: callRecordStore,
             chatColorSettingStore: chatColorSettingStore,
+            deletedCallRecordStore: deletedCallRecordStore,
             disappearingMessagesConfigurationManager: disappearingMessagesConfigurationManager,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
@@ -85,27 +88,15 @@ final class ThreadMergerTest: XCTestCase {
 
     // MARK: - Call Records
 
-    private class MockCallRecordStore: CallRecordStore {
-        var merged: (from: Int64, into: Int64)?
-
-        func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {
-            merged = (from: fromRowId, into: intoRowId)
-        }
-
-        func insert(callRecord: CallRecord, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func updateRecordStatus(callRecord: CallRecord, newCallStatus: CallRecord.CallStatus, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func updateDirection(callRecord: CallRecord, newCallDirection: CallRecord.CallDirection, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func updateGroupCallRingerAci(callRecord: CallRecord, newGroupCallRingerAci: Aci, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func updateTimestamp(callRecord: CallRecord, newCallBeganTimestamp: UInt64, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-        func fetch(callId: UInt64, threadRowId: Int64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
-        func fetch(interactionRowId: Int64, tx: DBReadTransaction) -> CallRecord? { owsFail("Not implemented!") }
-    }
-
     func testCallRecordsThreadRowIds() {
         threadStore.insertThreads([serviceIdThread, phoneNumberThread])
         performDefaultMerge()
-        XCTAssertEqual(callRecordStore.merged!.from, phoneNumberThread.sqliteRowId!)
-        XCTAssertEqual(callRecordStore.merged!.into, serviceIdThread.sqliteRowId!)
+
+        XCTAssertEqual(callRecordStore.askedToMergeThread!.from, phoneNumberThread.sqliteRowId!)
+        XCTAssertEqual(callRecordStore.askedToMergeThread!.into, serviceIdThread.sqliteRowId!)
+
+        XCTAssertEqual(deletedCallRecordStore.askedToMergeThread!.from, phoneNumberThread.sqliteRowId!)
+        XCTAssertEqual(deletedCallRecordStore.askedToMergeThread!.into, serviceIdThread.sqliteRowId!)
     }
 
     // MARK: - Pinned Threads

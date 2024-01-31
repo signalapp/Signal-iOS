@@ -398,9 +398,16 @@ public class IndividualCall: NSObject {
             return nil
         }
 
-        let callRecord = DependenciesBridge.shared.callRecordStore.fetch(
-            callId: callId, threadRowId: threadRowId, tx: transaction.asV2Read
-        )
+        let callRecord: CallRecord? = {
+            switch DependenciesBridge.shared.callRecordStore.fetch(
+                callId: callId, threadRowId: threadRowId, tx: transaction.asV2Read
+            ) {
+            case .matchFound(let callRecord):
+                return callRecord
+            case .matchDeleted, .matchNotFound:
+                return nil
+            }
+        }()
 
         self.callRecord = callRecord
         return callRecord

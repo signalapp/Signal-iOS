@@ -43,6 +43,7 @@ public class DependenciesBridge {
     public let appExpiry: AppExpiry
     public let authorMergeHelper: AuthorMergeHelper
 
+    let deletedCallRecordStore: DeletedCallRecordStore
     public let callRecordStore: CallRecordStore
     public let callRecordQuerier: CallRecordQuerier
 
@@ -416,7 +417,11 @@ public class DependenciesBridge {
                 recipientDatabaseTable: self.recipientDatabaseTable
             )
 
-            self.callRecordStore = CallRecordStoreImpl(schedulers: self.schedulers)
+            self.deletedCallRecordStore = DeletedCallRecordStoreImpl()
+            self.callRecordStore = CallRecordStoreImpl(
+                deletedCallRecordStore: self.deletedCallRecordStore,
+                schedulers: self.schedulers
+            )
             self.callRecordQuerier = CallRecordQuerierImpl()
 
             self.groupCallRecordManager = GroupCallRecordManagerImpl(
@@ -459,6 +464,7 @@ public class DependenciesBridge {
                 authorMergeHelper: self.authorMergeHelper,
                 callRecordStore: self.callRecordStore,
                 chatColorSettingStore: self.chatColorSettingStore,
+                deletedCallRecordStore: self.deletedCallRecordStore,
                 disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
                 groupMemberUpdater: self.groupMemberUpdater,
                 groupMemberStore: groupMemberStore,

@@ -133,11 +133,14 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         // We never have a group call ringer in this flow.
         let groupCallRingerAci: Aci? = nil
 
-        if let existingCallRecord = callRecordStore.fetch(
+        switch callRecordStore.fetch(
             callId: callId,
             threadRowId: groupThreadRowId,
             tx: tx
         ) {
+        case .matchDeleted:
+            logger.warn("Ignoring: existing record was deleted!")
+        case .matchFound(let existingCallRecord):
             updateGroupCallRecord(
                 groupThread: groupThread,
                 existingCallRecord: existingCallRecord,
@@ -148,7 +151,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 shouldSendSyncMessage: shouldSendSyncMessage,
                 tx: tx
             )
-        } else {
+        case .matchNotFound:
             let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
                 groupThread: groupThread,
                 callEventTimestamp: callEventTimestamp,

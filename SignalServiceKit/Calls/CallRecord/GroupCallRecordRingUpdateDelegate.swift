@@ -79,11 +79,14 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
             }
         }()
 
-        if let existingCallRecord = callRecordStore.fetch(
+        switch callRecordStore.fetch(
             callId: callId,
             threadRowId: groupThreadRowId,
             tx: tx
         ) {
+        case .matchDeleted:
+            ringUpdateLogger.warn("Ignoring ring update: existing record was deleted!")
+        case .matchFound(let existingCallRecord):
             guard case let .group(existingGroupCallStatus) = existingCallRecord.callStatus else {
                 logger.error("Received ring update, but existing record is not a group call!")
                 return
@@ -175,7 +178,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 shouldSendSyncMessage: false,
                 tx: tx
             )
-        } else {
+        case .matchNotFound:
             let groupCallStatus: CallRecord.CallStatus.GroupCallStatus = {
                 switch ringUpdate {
                 case .requested:

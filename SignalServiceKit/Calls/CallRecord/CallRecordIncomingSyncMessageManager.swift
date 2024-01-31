@@ -77,11 +77,15 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 }
             }()
 
-            if let existingCallRecord = callRecordStore.fetch(
+            switch callRecordStore.fetch(
                 callId: incomingSyncMessage.callId,
                 threadRowId: contactThreadRowId,
                 tx: tx
             ) {
+            case .matchDeleted:
+                syncMessageLogger.warn("Ignoring incoming individual call sync message: existing record was deleted!")
+                return
+            case .matchFound(let existingCallRecord):
                 guard let existingCallInteraction: TSCall = interactionStore.fetchAssociatedInteraction(
                     callRecord: existingCallRecord, tx: tx
                 ) else { return }
@@ -96,7 +100,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     syncMessageTimestamp: syncMessageTimestamp,
                     tx: tx
                 )
-            } else {
+            case .matchNotFound:
                 syncMessageLogger.info("Creating record for individual call sync message.")
                 createIndividualCallRecordForIncomingSyncMessage(
                     contactThread: contactThread,
@@ -113,7 +117,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
             }
         case let .group(groupId):
             guard FeatureFlags.groupCallDisposition else {
-                logger.warn("Dropping incoming group call disposition sync message – feature not yet supported!")
+                syncMessageLogger.warn("Dropping incoming group call disposition sync message – feature not yet supported!")
                 return
             }
 
@@ -125,11 +129,14 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 return
             }
 
-            if let existingCallRecord = callRecordStore.fetch(
+            switch callRecordStore.fetch(
                 callId: incomingSyncMessage.callId,
                 threadRowId: groupThreadRowId,
                 tx: tx
             ) {
+            case .matchDeleted:
+                syncMessageLogger.warn("Ignoring incoming group call sync message: existing record was deleted!")
+            case .matchFound(let existingCallRecord):
                 guard let existingCallInteraction: OWSGroupCallMessage = interactionStore.fetchAssociatedInteraction(
                     callRecord: existingCallRecord, tx: tx
                 ) else { return }
@@ -208,7 +215,7 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                     syncMessageTimestamp: syncMessageTimestamp,
                     tx: tx
                 )
-            } else {
+            case .matchNotFound:
                 let groupCallStatus: CallRecord.CallStatus.GroupCallStatus
 
                 switch (incomingSyncMessage.callDirection, incomingSyncMessage.callEvent) {

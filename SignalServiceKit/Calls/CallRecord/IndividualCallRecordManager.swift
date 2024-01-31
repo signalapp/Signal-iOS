@@ -128,11 +128,14 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             )
         else { return }
 
-        if let existingCallRecord = callRecordStore.fetch(
+        switch callRecordStore.fetch(
             callId: callId,
             threadRowId: contactThreadRowId,
             tx: tx
         ) {
+        case .matchDeleted:
+            logger.warn("Ignoring: existing record for call was deleted!")
+        case .matchFound(let existingCallRecord):
             updateRecord(
                 contactThread: contactThread,
                 existingCallRecord: existingCallRecord,
@@ -140,7 +143,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 shouldSendSyncMessage: true,
                 tx: tx
             )
-        } else {
+        case .matchNotFound:
             createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteractionRowId,

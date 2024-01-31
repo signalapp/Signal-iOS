@@ -169,17 +169,18 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
             // may still have a record of that concluded call that has the
             // "current" call ID. If so, we should reuse/update it and its
             // interaction.
-            if let existingCallRecordForCallId = self.callRecordStore.fetch(
+            switch self.callRecordStore.fetch(
                 callId: currentCallId,
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Write
             ) {
+            case .matchNotFound, .matchDeleted:
+                return nil
+            case .matchFound(let existingCallRecordForCallId):
                 return self.interactionStore.fetchAssociatedInteraction(
                     callRecord: existingCallRecordForCallId, tx: tx.asV2Read
                 )
             }
-
-            return nil
         }()
 
         if let interactionToUpdate {
@@ -361,11 +362,14 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 return
             }
 
-            if let existingCallRecord = callRecordStore.fetch(
+            switch callRecordStore.fetch(
                 callId: callId,
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Read
             ) {
+            case .matchDeleted:
+                logger.warn("Ignoring: call record was deleted!")
+            case .matchFound(let existingCallRecord):
                 /// We've already learned about this call, potentially via an
                 /// opportunistic peek. If we're now learning that the call may
                 /// have started earlier than we learned about it, we should
@@ -375,7 +379,7 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     callEventTimestamp: triggerEventTimestamp,
                     tx: tx.asV2Write
                 )
-            } else {
+            case .matchNotFound:
                 logger.info("Inserting placeholder group call message with callId: \(callId)")
 
                 _ = createModelsForNewGroupCall(

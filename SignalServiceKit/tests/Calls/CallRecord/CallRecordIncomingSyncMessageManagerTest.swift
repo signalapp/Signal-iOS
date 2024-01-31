@@ -144,6 +144,41 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 1)
     }
 
+    func testIgnoresIndividualCallIfRecentlyDeleted() {
+        let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
+        let contactServiceId = contactAddress.aci!
+
+        let contactThread = TSContactThread(contactAddress: contactAddress)
+        mockThreadStore.insertThread(contactThread)
+
+        mockDB.write { tx in
+            let recipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
+            mockRecipientDatabaseTable.insertRecipient(recipient, transaction: tx)
+        }
+
+        mockCallRecordStore.fetchMock = { .matchDeleted }
+
+        mockDB.write { tx in
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .individual(contactServiceId: contactServiceId),
+                    callId: .maxRandom,
+                    callTimestamp: .maxRandom,
+                    callEvent: .accepted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+        }
+
+        XCTAssertEqual(mockInteractionStore.insertedInteractions, [])
+        XCTAssertEqual(mockIndividualCallRecordManager.createdRecords, [])
+        XCTAssertEqual(mockIndividualCallRecordManager.updatedRecords, [])
+        XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 0)
+    }
+
     // MARK: - Group calls
 
     private func createGroupCallRecord(
@@ -482,6 +517,31 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
                     conversationType: .group(groupId: groupId),
                     callId: callRecord.callId,
                     callTimestamp: callRecord.callBeganTimestamp - 5,
+                    callEvent: .notAccepted,
+                    callType: .groupCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+        }
+
+        XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 0)
+    }
+
+    func testIgnoresGroupCallIfRecordRecentlyDeleted() {
+        mockGroupCallRecordManager.updateGroupCallStub = { (_, _, _) in
+            XCTFail("Should never be updating!")
+        }
+
+        mockCallRecordStore.fetchMock = { .matchDeleted }
+
+        mockDB.write { tx in
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .group(groupId: Data()),
+                    callId: .maxRandom,
+                    callTimestamp: .maxRandom,
                     callEvent: .notAccepted,
                     callType: .groupCall,
                     callDirection: .outgoing
