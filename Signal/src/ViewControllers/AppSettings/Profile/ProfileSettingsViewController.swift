@@ -240,12 +240,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
         contents.add(mainSection)
 
-        let usernameSection = OWSTableSection()
-        usernameSection.footerTitle = OWSLocalizedString(
-            "PROFILE_VIEW_USERNAME_DESCRIPTION",
-            comment: "Footer below the usernames section of the profile settings explaining username visibility."
-        )
         if FeatureFlags.usernames, let localUsernameState {
+            let usernameSection = OWSTableSection()
+            usernameSection.footerTitle = OWSLocalizedString(
+                "PROFILE_VIEW_USERNAME_DESCRIPTION",
+                comment: "Footer below the usernames section of the profile settings explaining username visibility."
+            )
             switch localUsernameState {
             case .unset:
                 usernameSection.add(usernameUnsetTableItem())
@@ -261,8 +261,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             case .usernameAndLinkCorrupted:
                 usernameSection.add(usernameCorruptedTableItem())
             }
+            contents.add(usernameSection)
         }
-        contents.add(usernameSection)
 
         self.contents = contents
     }
