@@ -70,6 +70,9 @@ NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(address:));
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 
+- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
+                                                        transaction:(SDSAnyReadTransaction *)transaction;
+
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;

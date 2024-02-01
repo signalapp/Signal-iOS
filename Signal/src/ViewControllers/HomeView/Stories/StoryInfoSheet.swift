@@ -159,10 +159,12 @@ class StoryInfoSheet: OWSTableSheetViewController {
         for state in orderedSendingStates {
             guard let recipients = groupedRecipientStates[state], !recipients.isEmpty else { continue }
 
-            let sortedRecipientAddresses = contactsManagerImpl
-                .sortSignalServiceAddressesWithSneakyTransaction(
-                    recipients.compactMap { SignalServiceAddress($0.key) }
+            let sortedRecipientAddresses = databaseStorage.read { tx in
+                return contactsManagerImpl.sortSignalServiceAddresses(
+                    recipients.map { SignalServiceAddress($0.key) },
+                    transaction: tx
                 )
+            }
 
             let section = OWSTableSection()
             section.hasBackground = false

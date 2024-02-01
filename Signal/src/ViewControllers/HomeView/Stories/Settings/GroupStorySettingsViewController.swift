@@ -81,11 +81,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         let totalViewersCount = fullMembers.count
         let maxViewersToShow = 6
 
-        var viewersToRender = databaseStorage.read {
-            self.contactsManagerImpl.sortSignalServiceAddresses(
-                Array(fullMembers),
-                transaction: $0
-            )
+        var viewersToRender = databaseStorage.read { tx in
+            return self.contactsManagerImpl.sortSignalServiceAddresses(fullMembers, transaction: tx)
         }
         let hasMoreViewers = !isShowingAllViewers && viewersToRender.count > maxViewersToShow
         if hasMoreViewers {

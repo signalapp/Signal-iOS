@@ -184,53 +184,58 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *someoneString = OWSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
         @"Text in conversation view for a group call that someone started. We don't know who");
 
+    NSArray<SignalServiceAddress *> *addresses =
+        [self.contactsManager sortSignalServiceAddressesObjC:self.joinedMemberAddresses transaction:transaction];
 
-    // Sort the addresses to prioritize the local user and originator, then the rest of the participants alphabetically
-    NSArray<SignalServiceAddress *> *sortedAddresses = [self.joinedMemberAddresses
-        sortedArrayUsingComparator:^NSComparisonResult(SignalServiceAddress *obj1, SignalServiceAddress *obj2) {
-            if ([obj1 isEqualToAddress:obj2]) {
-                return NSOrderedSame;
-            } else if (obj1.isLocalAddress || obj2.isLocalAddress) {
-                return obj1.isLocalAddress ? NSOrderedAscending : NSOrderedDescending;
-            } else if ([obj1 isEqualToAddress:self.creatorAddress] || [obj2 isEqualToAddress:self.creatorAddress]) {
-                return [obj1 isEqualToAddress:self.creatorAddress] ? NSOrderedAscending : NSOrderedDescending;
-            } else {
-                NSString *compareString1 = [self.contactsManager comparableNameForAddress:obj1 transaction:transaction];
-                NSString *compareString2 = [self.contactsManager comparableNameForAddress:obj2 transaction:transaction];
-                return [compareString1 compare:compareString2];
-            }
-        }];
+    NSUInteger localUserInsertionIndex = 0, creatorInsertionIndex = 0;
+    NSMutableArray<SignalServiceAddress *> *sortedAddresses = [NSMutableArray array];
+
+    for (SignalServiceAddress *address in addresses) {
+        if (address.isLocalAddress) {
+            [sortedAddresses insertObject:address atIndex:localUserInsertionIndex];
+            localUserInsertionIndex++;
+            creatorInsertionIndex++;
+            continue;
+        }
+        if ([address isEqualToAddress:self.creatorAddress]) {
+            [sortedAddresses insertObject:address atIndex:creatorInsertionIndex];
+            creatorInsertionIndex++;
+            continue;
+        }
+        [sortedAddresses addObject:address];
+    }
 
     if (self.hasEnded) {
         return endedString;
+    }
 
-    } else if (sortedAddresses.count >= 3) {
+    if (sortedAddresses.count >= 3) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
         NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
         return [NSString localizedStringWithFormat:threeOrMoreFormat, sortedAddresses.count - 2, firstName, secondName];
-
-    } else if (sortedAddresses.count == 2) {
+    }
+    if (sortedAddresses.count == 2) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
         NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
         return [NSString stringWithFormat:twoFormat, firstName, secondName];
-
-    } else if (sortedAddresses.count == 1 && [sortedAddresses[0] isEqualToAddress:self.creatorAddress]) {
+    }
+    if (sortedAddresses.count == 0) {
+        return someoneString;
+    }
+    if ([sortedAddresses[0] isEqualToAddress:self.creatorAddress]) {
         if (sortedAddresses[0].isLocalAddress) {
             return youCreatedString;
         } else {
             NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
             return [NSString stringWithFormat:onlyCreatorFormat, name];
         }
-
-    } else if (sortedAddresses.count == 1 && sortedAddresses[0].isLocalAddress) {
-        return onlyYouString;
-
-    } else if (sortedAddresses.count == 1) {
-        NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-        return [NSString stringWithFormat:onlyOneFormat, name];
-
     } else {
-        return someoneString;
+        if (sortedAddresses[0].isLocalAddress) {
+            return onlyYouString;
+        } else {
+            NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+            return [NSString stringWithFormat:onlyOneFormat, name];
+        }
     }
 }
 

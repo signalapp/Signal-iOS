@@ -279,7 +279,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         for memberAddress in allMembers {
             verificationStateMap[memberAddress] = identityManager.verificationState(for: memberAddress, tx: tx.asV2Read)
         }
-        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(Array(allMembers), transaction: tx)
+        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(allMembers, transaction: tx)
 
         var membersToRender = [SignalServiceAddress]()
         if groupMembership.isFullMember(localAddress) {

@@ -123,9 +123,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
 
         let groupMembership = groupModel.groupMembership
-        let requestingMembersSorted = databaseStorage.read { transaction in
-            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.requestingMembers),
-                                                                transaction: transaction)
+        let requestingMembersSorted = databaseStorage.read { tx in
+            self.contactsManagerImpl.sortSignalServiceAddresses(groupMembership.requestingMembers, transaction: tx)
         }
 
         let section = OWSTableSection()
@@ -236,7 +235,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.read { tx in
-            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers), transaction: tx)
+            self.contactsManagerImpl.sortSignalServiceAddresses(groupMembership.invitedMembers, transaction: tx)
         }
 
         // Note that these collections retain their sorting from above.
@@ -298,9 +297,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                           comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.")
 
         if membersInvitedByOtherUsers.count > 0 {
-            let inviterAddresses = databaseStorage.read { transaction in
-                self.contactsManagerImpl.sortSignalServiceAddresses(Array(membersInvitedByOtherUsers.keys),
-                                                                    transaction: transaction)
+            let inviterAddresses = databaseStorage.read { tx in
+                self.contactsManagerImpl.sortSignalServiceAddresses(membersInvitedByOtherUsers.keys, transaction: tx)
             }
             for inviterAddress in inviterAddresses {
                 guard let invitedAddresses = membersInvitedByOtherUsers[inviterAddress] else {

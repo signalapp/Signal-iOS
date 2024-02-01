@@ -19,27 +19,7 @@ public class ContactsViewHelper: Dependencies {
 
     public init() {
         AppReadiness.runNowOrWhenUIDidBecomeReadySync {
-            // setup() - especially updateContacts() - can
-            // be expensive, so we don't want to run that
-            // directly in runNowOrWhenAppDidBecomeReadySync().
-            // That could cause 0x8badf00d crashes.
-            //
-            // On the other hand, the user might quickly
-            // open a view (like the compose view) that uses
-            // this helper. If the helper hasn't completed
-            // setup, that view won't be able to display a
-            // list of users to pick from. Therefore, we
-            // can't use runNowOrWhenAppDidBecomeReadyAsync()
-            // which might not run for many seconds after
-            // the app becomes ready.
-            //
-            // Therefore we dispatch async to the main queue.
-            // We'll run very soon after app UI becomes ready,
-            // without introducing the risk of a 0x8badf00d
-            // crash.
-            DispatchQueue.main.async {
-                self.setup()
-            }
+            self.setup()
         }
     }
 
@@ -50,13 +30,12 @@ public class ContactsViewHelper: Dependencies {
     private func setup() {
         guard !CurrentAppContext().isNSE else { return }
 
-        updateContacts()
         setupNotificationObservations()
     }
 
     // MARK: Notifications
 
-    private var notificationObservers = [Any]()
+    private var notificationObservers = [NSObjectProtocol]()
 
     private func setupNotificationObservations() {
         notificationObservers.append(contentsOf: [
@@ -109,89 +88,9 @@ public class ContactsViewHelper: Dependencies {
         observers.add(observer)
     }
 
-    // MARK: Contacts Data
-
-    public private(set) var allSignalAccounts: [SignalAccount] = []
-    private var phoneNumberSignalAccountMap: [String: SignalAccount] = [:]
-    private var serviceIdSignalAccountMap: [ServiceId: SignalAccount] = [:]
-
-    public var hasUpdatedContactsAtLeastOnce: Bool {
-        contactsManagerImpl.hasLoadedSystemContacts
-    }
-
-    public func localAddress() -> SignalServiceAddress? {
-        owsAssertBeta(!CurrentAppContext().isNSE)
-        return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress
-    }
-
-    public func fetchSignalAccount(for address: SignalServiceAddress) -> SignalAccount? {
-        AssertIsOnMainThread()
-        owsAssertBeta(!CurrentAppContext().isNSE)
-
-        if let serviceId = address.serviceId, let signalAccount = serviceIdSignalAccountMap[serviceId] {
-            return signalAccount
-        }
-
-        if let phoneNumber = address.phoneNumber, let signalAccount = phoneNumberSignalAccountMap[phoneNumber] {
-            return signalAccount
-        }
-
-        return nil
-    }
-
-    public func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
-        switch includingLocalUser {
-        case true:
-            return allSignalAccounts
-
-        case false:
-            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-            return allSignalAccounts
-                .filter { !($0.recipientAddress.isLocalAddress || $0.contact?.hasPhoneNumber(localNumber) == true) }
-        }
-    }
-
     private func updateContacts() {
         AssertIsOnMainThread()
         owsAssertDebug(!CurrentAppContext().isNSE)
-
-        let (systemContacts, signalConnections) = databaseStorage.read { tx in
-            // All "System Contact"s that we believe are registered.
-            let systemContacts = self.contactsManagerImpl.unsortedSignalAccounts(transaction: tx)
-
-            // All Signal Connections that we believe are registered. In theory, this
-            // should include your system contacts and the people you chat with.
-            let signalConnections = self.profileManagerImpl.allWhitelistedRegisteredAddresses(tx: tx)
-            return (systemContacts, signalConnections)
-        }
-
-        var signalAccounts = systemContacts
-        var seenAddresses = Set(signalAccounts.lazy.map { $0.recipientAddress })
-        for address in signalConnections {
-            guard seenAddresses.insert(address).inserted else {
-                // We prefer the copy from contactsManager which will appear first in
-                // accountsToProcess; don't overwrite it.
-                continue
-            }
-            signalAccounts.append(SignalAccount(address: address))
-        }
-
-        var phoneNumberMap = [String: SignalAccount]()
-        var serviceIdMap = [ServiceId: SignalAccount]()
-
-        for signalAccount in signalAccounts {
-            if let phoneNumber = signalAccount.recipientPhoneNumber {
-                phoneNumberMap[phoneNumber] = signalAccount
-            }
-            if let serviceId = signalAccount.recipientServiceId {
-                serviceIdMap[serviceId] = signalAccount
-            }
-        }
-
-        phoneNumberSignalAccountMap = phoneNumberMap
-        serviceIdSignalAccountMap = serviceIdMap
-        allSignalAccounts = contactsManagerImpl.sortSignalAccountsWithSneakyTransaction(signalAccounts)
-
         fireDidUpdateContacts()
     }
 

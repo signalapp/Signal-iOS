@@ -43,6 +43,16 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     public var shouldUseAsyncSelection = false
     public var findByPhoneNumberButtonTitle: String?
 
+    // MARK: Signal Connections
+
+    fileprivate struct SignalConnection {
+        var address: SignalServiceAddress
+        var comparableName: String
+    }
+
+    private var signalConnections = [SignalConnection]()
+    private var signalConnectionAddresses = Set<SignalServiceAddress>()
+
     // MARK: Picker
 
     public var pickedRecipients: [PickedRecipient] = [] {
@@ -58,6 +68,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
         title = OWSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "")
 
+        updateSignalConnections()
         contactsViewHelper.addObserver(self)
 
         // Stack View
@@ -295,6 +306,34 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         )
     }()
 
+    // MARK: - Fetching Signal Connections
+
+    private func updateSignalConnections() {
+        databaseStorage.read { tx in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+            // All Signal Connections that we believe are registered. In theory, this
+            // should include your system contacts and the people you chat with.
+            let whitelistedAddresses = Set(profileManager.allWhitelistedRegisteredAddresses(tx: tx))
+            let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
+            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
+
+            var resolvedAddresses = Set(whitelistedAddresses).subtracting(blockedAddresses).subtracting(hiddenAddresses)
+            if shouldHideLocalRecipient, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
+                resolvedAddresses.remove(localIdentifiers.aciAddress)
+            }
+
+            let sortableAddresses = contactsManagerImpl.sortedSortableAddresses(for: resolvedAddresses, tx: tx)
+            signalConnections = sortableAddresses.map { sortableAddress in
+                return SignalConnection(
+                    address: sortableAddress.address,
+                    comparableName: sortableAddress.comparableName
+                )
+            }
+            signalConnectionAddresses = resolvedAddresses
+        }
+    }
+
     // MARK: Table Contents
 
     public func reloadContent() {
@@ -380,11 +419,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         if !pickedRecipients.isEmpty && !isSearching {
             let sectionRecipients = pickedRecipients.filter { recipient in
                 guard let recipientAddress = recipient.address else { return false }
-
-                if shouldHideLocalRecipient && recipientAddress == contactsViewHelper.localAddress() {
-                    return false
-                }
-                if contactsViewHelper.fetchSignalAccount(for: recipientAddress) != nil {
+                if signalConnectionAddresses.contains(recipientAddress) {
                     return false
                 }
                 return true
@@ -492,6 +527,7 @@ extension RecipientPickerViewController: UISearchBarDelegate {
 extension RecipientPickerViewController: ContactsViewHelperObserver {
 
     public func contactsViewHelperDidUpdateContacts() {
+        updateSignalConnections()
         updateTableContents()
         showContactAppropriateViews()
     }
@@ -743,31 +779,6 @@ extension RecipientPickerViewController {
         return result
     }
 
-    private func filteredSignalAccounts() -> [SignalAccount] {
-        Array(lazyFilteredSignalAccounts())
-    }
-
-    /// Fetches the Signal Connections for the recipient picker.
-    ///
-    /// Excludes the local address (if `shouldHideLocalRecipient` is true) as
-    /// well as any addresses that have been blocked.
-    private func lazyFilteredSignalAccounts() -> LazyFilterSequence<[SignalAccount]> {
-        let allSignalAccounts = contactsViewHelper.signalAccounts(includingLocalUser: !shouldHideLocalRecipient)
-        guard allSignalAccounts.isEmpty.negated else {
-            return allSignalAccounts.lazy.filter { _ in true }
-        }
-        let (blockedAddresses, hiddenAddresses) = databaseStorage.read { tx in
-            return (
-                blockingManager.blockedAddresses(transaction: tx),
-                DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
-            )
-        }
-        return allSignalAccounts.lazy.filter {
-            !blockedAddresses.contains($0.recipientAddress) && !hiddenAddresses.contains($0.recipientAddress)
-
-        }
-    }
-
     /// Checks if we should show the dedicated "no contacts" view.
     ///
     /// If you don't have any contacts, there's a special UX we'll show to the
@@ -795,11 +806,11 @@ extension RecipientPickerViewController {
         case .notAllowed where shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction():
             // Return false so `contactAccessReminderSection` is invoked.
             return false
-        case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
+        case .authorized where !contactsManagerImpl.hasLoadedSystemContacts:
             // Return false so `noContactsTableSection` can show a spinner.
             return false
         case .authorized, .notAllowed:
-            if !lazyFilteredSignalAccounts().isEmpty {
+            if !signalConnections.isEmpty {
                 // Return false if we have any contacts; we want to show them!
                 return false
             }
@@ -823,7 +834,7 @@ extension RecipientPickerViewController {
         switch contactsManagerImpl.editingAuthorization {
         case .denied, .restricted:
             return OWSTableSection()
-        case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
+        case .authorized where !contactsManagerImpl.hasLoadedSystemContacts:
             return OWSTableSection(items: [loadingContactsTableItem()])
         case .authorized, .notAllowed:
             return OWSTableSection(items: [noContactsTableItem()])
@@ -951,11 +962,21 @@ extension RecipientPickerViewController {
 // MARK: - Contacts, Connections, & Groups
 
 extension RecipientPickerViewController {
+    private class CollatableSignalConnection: NSObject {
+        private let rawValue: SignalConnection
+
+        init(_ rawValue: SignalConnection) {
+            self.rawValue = rawValue
+        }
+
+        @objc
+        func collationString() -> String {
+            return rawValue.comparableName
+        }
+    }
 
     private func contactsSection() -> [OWSTableSection] {
-        let signalAccountsToShow = filteredSignalAccounts()
-
-        guard !signalAccountsToShow.isEmpty else {
+        guard !signalConnections.isEmpty else {
             return [ noContactsTableSection() ]
         }
 
@@ -966,29 +987,33 @@ extension RecipientPickerViewController {
                     "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                     comment: "Table section header for contact listing when composing a new message"
                 ),
-                items: signalAccountsToShow.map { item(forRecipient: PickedRecipient.for(address: $0.recipientAddress)) }
+                items: signalConnections.map { item(forRecipient: PickedRecipient.for(address: $0.address)) }
             )]
         }
 
-        var collatedSignalAccounts: [[SignalAccount]] = collation.sectionTitles.map { _ in [SignalAccount]() }
-        for signalAccount in signalAccountsToShow {
-            let section = collation.section(for: signalAccount, collationStringSelector: #selector(SignalAccount.stringForCollation))
+        var collatedSignalConnections = collation.sectionTitles.map { _ in return [SignalConnection]() }
+        for signalConnection in signalConnections {
+            let section = collation.section(
+                for: CollatableSignalConnection(signalConnection),
+                collationStringSelector: #selector(CollatableSignalConnection.collationString)
+            )
             guard section >= 0 else {
-                owsFailDebug("Unexpected collation for name:\(signalAccount.stringForCollation())")
                 continue
             }
-            collatedSignalAccounts[section].append(signalAccount)
+            collatedSignalConnections[section].append(signalConnection)
         }
 
-        let contactSections = collatedSignalAccounts.enumerated().map { index, signalAccounts in
+        let contactSections = collatedSignalConnections.enumerated().map { index, signalConnections in
             // Don't show empty sections.
             // To accomplish this we add a section with a blank title rather than omitting the section altogether,
             // in order for section indexes to match up correctly
-            guard !signalAccounts.isEmpty else { return OWSTableSection() }
+            if signalConnections.isEmpty {
+                return OWSTableSection()
+            }
 
             return OWSTableSection(
                 title: collation.sectionTitles[index].uppercased(),
-                items: signalAccounts.map { item(forRecipient: PickedRecipient.for(address: $0.recipientAddress)) }
+                items: signalConnections.map { item(forRecipient: PickedRecipient.for(address: $0.address)) }
             )
         }
 
@@ -1535,13 +1560,5 @@ extension RecipientPickerViewController {
                 }
             )
         }
-    }
-}
-
-fileprivate extension SignalAccount {
-
-    @objc
-    func stringForCollation() -> String {
-        contactsManagerImpl.comparableNameForSignalAccountWithSneakyTransaction(self)
     }
 }

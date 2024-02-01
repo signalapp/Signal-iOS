@@ -666,10 +666,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     let viewState: CLVViewState
 
     private func shouldShowFirstConversationCue() -> Bool {
-        let hasSavedThread = databaseStorage.read { transaction in
-            return SSKPreferences.hasSavedThread(transaction: transaction)
-        }
-        return shouldShowEmptyInboxView && !hasSavedThread
+        return shouldShowEmptyInboxView && !databaseStorage.read(block: SSKPreferences.hasSavedThread(transaction:))
     }
 
     private var shouldShowEmptyInboxView: Bool {
@@ -1404,12 +1401,16 @@ extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 extension ChatListViewController {
 
     func updateFirstConversationLabel() {
-        let signalAccounts = suggestedAccountsForFirstContact(maxCount: 3)
-
-        var contactNames = databaseStorage.read { transaction in
-            signalAccounts.map { account in
-                self.contactsManager.displayName(for: account.recipientAddress, transaction: transaction)
-            }
+        let contactNames = databaseStorage.read { tx in
+            let contactAddresses = contactsManagerImpl.sortSignalServiceAddresses(
+                profileManager.allWhitelistedRegisteredAddresses(tx: tx),
+                transaction: tx
+            )
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+            return Array(contactAddresses.lazy.filter { $0 != localAddress }.prefix(3).map {
+                return self.contactsManager.displayName(for: $0, transaction: tx)
+            })
         }
 
         let formatString = { () -> String in
@@ -1430,16 +1431,13 @@ extension ChatListViewController {
                     comment: "Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}."
                 )
             case 3:
-                break
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
+                    comment: "Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}."
+                )
             default:
-                owsFailDebug("Unexpectedly had \(contactNames.count) names, expected at most 3!")
-                contactNames = Array(contactNames.prefix(3))
+                owsFail("Too many contactNames.")
             }
-
-            return OWSLocalizedString(
-                "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
-                comment: "Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}."
-            )
         }()
 
         let attributedString = NSAttributedString.make(
@@ -1450,9 +1448,5 @@ extension ChatListViewController {
         )
 
         firstConversationLabel.attributedText = attributedString
-    }
-
-    private func suggestedAccountsForFirstContact(maxCount: Int) -> [SignalAccount] {
-        return Array(contactsViewHelper.signalAccounts(includingLocalUser: false).prefix(maxCount))
     }
 }

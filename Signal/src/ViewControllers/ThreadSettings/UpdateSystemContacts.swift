@@ -157,7 +157,9 @@ extension ContactsViewHelper {
         owsAssertDebug(contactsManagerImpl.editingAuthorization == .authorized)
 
         let address = systemContactsFlow.address
-        let signalAccount = fetchSignalAccount(for: address)
+        let signalAccount = databaseStorage.read { tx in
+            return contactsManager.fetchSignalAccount(for: address, transaction: tx)
+        }
         var shouldEditImmediately = systemContactsFlow.editImmediately
 
         var contactViewController: CNContactViewController?

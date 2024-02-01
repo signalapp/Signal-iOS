@@ -508,6 +508,12 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     return data;
 }
 
+- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
+                                                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self _sortSignalServiceAddressesObjC:addresses transaction:transaction];
+}
+
 - (BOOL)shouldSortByGivenName
 {
     return [[CNContactsUserDefaults sharedDefaults] sortOrder] == CNContactSortOrderGivenName;
