@@ -615,18 +615,6 @@ extension CLVTableDataSource: UITableViewDataSource {
         }
 
         cell.configure(cellContentToken: contentToken, spoilerAnimationManager: viewState.spoilerAnimationManager)
-        let cellName: String = {
-            switch contentToken.thread {
-            case let groupThread as TSGroupThread:
-                return "cell-group-\(groupThread.groupModel.groupName ?? "unknown")"
-            case let contactThread as TSContactThread:
-                return "cell-contact-\(contactThread.contactAddress.stringForDisplay)"
-            default:
-                owsFailDebug("invalid-thread-\(contentToken.thread.uniqueId) ")
-                return "Unknown"
-            }
-        }()
-        cell.accessibilityIdentifier = cellName
 
         if isConversationActive(threadUniqueId: contentToken.thread.uniqueId) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)

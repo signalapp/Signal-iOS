@@ -567,9 +567,6 @@ extension ConversationSettingsViewController {
                     cell.configure(configuration: configuration, transaction: transaction)
                 }
 
-                let cellName = "user.\(memberAddress.stringForDisplay)"
-                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: cellName)
-
                 return cell
             }, actionBlock: { [weak self] in
                                         self?.didSelectGroupMember(memberAddress)
