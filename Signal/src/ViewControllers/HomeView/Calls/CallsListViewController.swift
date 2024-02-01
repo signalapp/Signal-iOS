@@ -1319,12 +1319,37 @@ extension CallsListViewController: CallCellDelegate {
 
     private func deleteCalls(from viewModels: [CallViewModel]) {
         deps.db.asyncWrite { tx in
-            // This call will trigger a notification we're listening for to
-            // update the UI, so no need to manually update UI here.
-            self.deps.callRecordStore.delete(
-                callRecords: viewModels.map { $0.backingCallRecord },
-                tx: tx.asV2Write
+            /// It's a little convoluted, but all we need to do here is delete
+            /// the interaction associated with each view model's call record.
+            ///
+            /// Deleting the associated interaction will automatically delete
+            /// the call record. That'll in turn trigger a ``CallRecordStoreNotification``,
+            /// which we're listening to here and will update the UI as
+            /// appropriate.
+
+            let associatedInteractions = viewModels.compactMap { viewModel -> TSInteraction? in
+                self.deps.interactionStore.fetchAssociatedInteraction(
+                    callRecord: viewModel.backingCallRecord,
+                    tx: tx.asV2Write
+                )
+            }
+
+            owsAssertBeta(
+                associatedInteractions.count == viewModels.count,
+                "Unexpectedly missing interactions for view models! \(associatedInteractions.count), \(viewModels.count)"
             )
+
+            for associatedInteraction in associatedInteractions {
+                owsAssert(
+                    associatedInteraction is OWSGroupCallMessage
+                        || associatedInteraction is TSCall,
+                    "Unexpected associated interaction type: \(type(of: associatedInteraction))"
+                )
+
+                self.deps.interactionStore.deleteInteraction(
+                    associatedInteraction, tx: tx.asV2Write
+                )
+            }
         }
     }
 

@@ -7,6 +7,9 @@ import Foundation
 import LibSignalClient
 
 public protocol InteractionStore {
+
+    // MARK: - 
+
     /// Fetch the interaction with the given SQLite row ID, if one exists.
     func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -25,10 +28,18 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) throws -> [TSInteraction]
 
+    func enumerateAllInteractions(
+        tx: DBReadTransaction,
+        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+    ) throws
+
+    // MARK: -
+
     /// Insert the given interaction to the databse.
     func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
 
-    func buildOutgoingMessage(builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) -> TSOutgoingMessage
+    /// Deletes the given interaction from the database.
+    func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
 
     /// Applies the given block to the given already-inserted interaction, and
     /// saves the updated interaction to the database.
@@ -38,10 +49,12 @@ public protocol InteractionStore {
         block: (InteractionType) -> Void
     )
 
-    func enumerateAllInteractions(
-        tx: DBReadTransaction,
-        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
-    ) throws
+    // MARK: -
+
+    func buildOutgoingMessage(
+        builder: TSOutgoingMessageBuilder,
+        tx: DBReadTransaction
+    ) -> TSOutgoingMessage
 
     func insertOrReplacePlaceholder(
         for interaction: TSInteraction,
@@ -65,9 +78,13 @@ public protocol InteractionStore {
     )
 }
 
+// MARK: -
+
 public class InteractionStoreImpl: InteractionStore {
 
     public init() {}
+
+    // MARK: -
 
     public func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -92,31 +109,15 @@ public class InteractionStoreImpl: InteractionStore {
         )
     }
 
-    public func interactions(withTimestamp timestamp: UInt64, tx: DBReadTransaction) throws -> [TSInteraction] {
-        return try InteractionFinder.interactions(withTimestamp: timestamp, filter: { _ in true }, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
-        interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func buildOutgoingMessage(builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) -> TSOutgoingMessage {
-        return TSOutgoingMessage.init(outgoingMessageWithBuilder: builder, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func updateInteraction<InteractionType: TSInteraction>(
-        _ interaction: InteractionType,
-        tx: DBWriteTransaction,
-        block: (InteractionType) -> Void
-    ) {
-        interaction.anyUpdate(transaction: SDSDB.shimOnlyBridge(tx)) { interaction in
-            guard let interaction = interaction as? InteractionType else {
-                owsFailBeta("Interaction of unexpected type! \(type(of: interaction))")
-                return
-            }
-
-            block(interaction)
-        }
+    public func interactions(
+        withTimestamp timestamp: UInt64,
+        tx: DBReadTransaction
+    ) throws -> [TSInteraction] {
+        return try InteractionFinder.interactions(
+            withTimestamp: timestamp,
+            filter: { _ in true },
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
     }
 
     public func enumerateAllInteractions(
@@ -134,6 +135,43 @@ public class InteractionStoreImpl: InteractionStore {
                 break
             }
         }
+    }
+
+    // MARK: -
+
+    public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+        interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+        interaction.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func updateInteraction<InteractionType: TSInteraction>(
+        _ interaction: InteractionType,
+        tx: DBWriteTransaction,
+        block: (InteractionType) -> Void
+    ) {
+        interaction.anyUpdate(transaction: SDSDB.shimOnlyBridge(tx)) { interaction in
+            guard let interaction = interaction as? InteractionType else {
+                owsFailBeta("Interaction of unexpected type! \(type(of: interaction))")
+                return
+            }
+
+            block(interaction)
+        }
+    }
+
+    // MARK: 
+
+    public func buildOutgoingMessage(
+        builder: TSOutgoingMessageBuilder,
+        tx: DBReadTransaction
+    ) -> TSOutgoingMessage {
+        return TSOutgoingMessage(
+            outgoingMessageWithBuilder: builder,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
     }
 
     public func insertOrReplacePlaceholder(
@@ -170,10 +208,14 @@ public class InteractionStoreImpl: InteractionStore {
     }
 }
 
+// MARK: -
+
 #if TESTABLE_BUILD
 
 open class MockInteractionStore: InteractionStore {
     var insertedInteractions = [TSInteraction]()
+
+    // MARK: -
 
     open func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -211,26 +253,11 @@ open class MockInteractionStore: InteractionStore {
             .first
     }
 
-    public func interactions(withTimestamp timestamp: UInt64, tx: DBReadTransaction) throws -> [TSInteraction] {
+    public func interactions(
+        withTimestamp timestamp: UInt64,
+        tx: DBReadTransaction
+    ) throws -> [TSInteraction] {
         return insertedInteractions.filter { $0.timestamp == timestamp }
-    }
-
-    open func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
-        interaction.updateRowId(.random(in: 0...Int64.max))
-        insertedInteractions.append(interaction)
-    }
-
-    open func buildOutgoingMessage(builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) -> TSOutgoingMessage {
-        // Override in a subclass if you want more detailed instantiation.
-        return TSOutgoingMessage(in: builder.thread, messageBody: builder.messageBody, attachmentId: builder.attachmentIds.first)
-    }
-
-    open func updateInteraction<InteractionType: TSInteraction>(
-        _ interaction: InteractionType,
-        tx: DBWriteTransaction,
-        block: (InteractionType) -> Void
-    ) {
-        block(interaction)
     }
 
     open func enumerateAllInteractions(
@@ -244,6 +271,39 @@ open class MockInteractionStore: InteractionStore {
                 break
             }
         }
+    }
+
+    // MARK: -
+
+    open func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+        interaction.updateRowId(.random(in: 0...Int64.max))
+        insertedInteractions.append(interaction)
+    }
+
+    open func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+        _ = insertedInteractions.removeFirst { $0.sqliteRowId! == interaction.sqliteRowId! }
+    }
+
+    open func updateInteraction<InteractionType: TSInteraction>(
+        _ interaction: InteractionType,
+        tx: DBWriteTransaction,
+        block: (InteractionType) -> Void
+    ) {
+        block(interaction)
+    }
+
+    // MARK: -
+
+    open func buildOutgoingMessage(
+        builder: TSOutgoingMessageBuilder,
+        tx: DBReadTransaction
+    ) -> TSOutgoingMessage {
+        // Override in a subclass if you want more detailed instantiation.
+        return TSOutgoingMessage(
+            in: builder.thread,
+            messageBody: builder.messageBody,
+            attachmentId: builder.attachmentIds.first
+        )
     }
 
     open func insertOrReplacePlaceholder(

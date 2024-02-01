@@ -1438,6 +1438,8 @@
 		D91AC9382B62F5D700814975 /* MockDeletedCallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC4B2AD4DECB006AAC49 /* MockDeletedCallRecordStore.swift */; };
 		D91AC93A2B62F79700814975 /* MockCallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC9392B62F79700814975 /* MockCallRecordStore.swift */; };
 		D91AC93C2B62F7C200814975 /* MockCallRecordOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC93B2B62F7C200814975 /* MockCallRecordOutgoingSyncMessageManager.swift */; };
+		D91AC93E2B6337B200814975 /* TSCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC93D2B6337B200814975 /* TSCall.swift */; };
+		D91AC9402B63393300814975 /* OWSGroupCallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91AC93F2B63393300814975 /* OWSGroupCallMessage.swift */; };
 		D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */; };
 		D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */; };
 		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
@@ -4180,6 +4182,8 @@
 		D91AC9352B61C79600814975 /* DeletedCallRecordStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedCallRecordStoreTest.swift; sourceTree = "<group>"; };
 		D91AC9392B62F79700814975 /* MockCallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordStore.swift; sourceTree = "<group>"; };
 		D91AC93B2B62F7C200814975 /* MockCallRecordOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
+		D91AC93D2B6337B200814975 /* TSCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSCall.swift; sourceTree = "<group>"; };
+		D91AC93F2B63393300814975 /* OWSGroupCallMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSGroupCallMessage.swift; sourceTree = "<group>"; };
 		D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegateTest.swift; sourceTree = "<group>"; };
 		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
@@ -8754,6 +8758,7 @@
 				F9C5C956289453B100548EEE /* OWSGroupCallMessage+SDS.swift */,
 				F9C5C945289453B100548EEE /* OWSGroupCallMessage.h */,
 				F9C5C97D289453B100548EEE /* OWSGroupCallMessage.m */,
+				D91AC93F2B63393300814975 /* OWSGroupCallMessage.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -8764,6 +8769,7 @@
 				F9C5C96E289453B100548EEE /* TSCall+SDS.swift */,
 				F9C5C8D3289453B100548EEE /* TSCall.h */,
 				F9C5C96F289453B100548EEE /* TSCall.m */,
+				D91AC93D2B6337B200814975 /* TSCall.swift */,
 			);
 			path = Individual;
 			sourceTree = "<group>";
@@ -13170,6 +13176,7 @@
 				F9C5CBF9289453B300548EEE /* OWSGiftBadge.swift in Sources */,
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,
 				F9C5CC6B289453B300548EEE /* OWSGroupCallMessage.m in Sources */,
+				D91AC9402B63393300814975 /* OWSGroupCallMessage.swift in Sources */,
 				F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */,
 				F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */,
 				F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */,
@@ -13511,6 +13518,7 @@
 				F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */,
 				F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */,
 				F9C5CC5D289453B300548EEE /* TSCall.m in Sources */,
+				D91AC93E2B6337B200814975 /* TSCall.swift in Sources */,
 				F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */,
 				F9C5CCD0289453B300548EEE /* TSContactThread+SDS.swift in Sources */,
 				F9C5CCD4289453B300548EEE /* TSContactThread.m in Sources */,
