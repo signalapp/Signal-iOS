@@ -73,16 +73,12 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
 public class ContactSearchResult: Comparable, Dependencies {
 
-    public let signalAccount: SignalAccount
+    public let recipientAddress: SignalServiceAddress
     private let comparableName: String
 
-    public var recipientAddress: SignalServiceAddress {
-        return signalAccount.recipientAddress
-    }
-
-    init(signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
-        self.signalAccount = signalAccount
-        self.comparableName = Self.contactsManager.comparableName(for: signalAccount, transaction: transaction)
+    init(recipientAddress: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
+        self.recipientAddress = recipientAddress
+        self.comparableName = Self.contactsManager.comparableName(for: recipientAddress, transaction: transaction)
     }
 
     // MARK: Comparable
@@ -226,10 +222,6 @@ public class ComposeScreenSearchResultSet: Equatable {
 
     public let signalContacts: [ContactSearchResult]
 
-    public var signalAccounts: [SignalAccount] {
-        return signalContacts.map { $0.signalAccount }
-    }
-
     public init(searchText: String, groups: [GroupSearchResult], signalContacts: [ContactSearchResult]) {
         self.searchText = searchText
         self.groups = groups
@@ -251,10 +243,10 @@ public class ComposeScreenSearchResultSet: Equatable {
             }
             sections.append("groups: " + splits.joined(separator: ","))
         }
-        if !signalAccounts.isEmpty {
+        if !signalContacts.isEmpty {
             var splits = [String]()
-            for signalAccount in signalAccounts {
-                splits.append(signalAccount.addressComponentsDescription)
+            for signalContact in signalContacts {
+                splits.append(signalContact.recipientAddress.description)
             }
             sections.append("signalAccounts: " + splits.joined(separator: ","))
         }
@@ -264,7 +256,7 @@ public class ComposeScreenSearchResultSet: Equatable {
     public static func == (lhs: ComposeScreenSearchResultSet, rhs: ComposeScreenSearchResultSet) -> Bool {
         guard lhs.searchText == rhs.searchText else { return false }
         guard lhs.groups == rhs.groups else { return false }
-        guard lhs.signalAccounts == rhs.signalAccounts else { return false }
+        guard lhs.signalContacts == rhs.signalContacts else { return false }
         return true
     }
 }
@@ -282,10 +274,6 @@ public class ConversationPickerScreenSearchResultSet: NSObject {
     }
 
     public let signalContacts: [ContactSearchResult]
-
-    public var signalAccounts: [SignalAccount] {
-        return signalContacts.map { $0.signalAccount }
-    }
 
     /// Includes both group threads with stories, and private story threads.
     public let storyResults: [StorySearchResult]
@@ -321,10 +309,10 @@ public class ConversationPickerScreenSearchResultSet: NSObject {
             }
             sections.append("groups: " + splits.joined(separator: ","))
         }
-        if !signalAccounts.isEmpty {
+        if !signalContacts.isEmpty {
             var splits = [String]()
-            for signalAccount in signalAccounts {
-                splits.append(signalAccount.addressComponentsDescription)
+            for signalContact in signalContacts {
+                splits.append(signalContact.recipientAddress.description)
             }
             sections.append("signalAccounts: " + splits.joined(separator: ","))
         }
@@ -419,9 +407,10 @@ public class FullTextSearcher: NSObject {
 
             switch match {
             case let signalAccount as SignalAccount:
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
-                assert(signalContactMap[signalAccount.recipientAddress] == nil)
-                signalContactMap[signalAccount.recipientAddress] = searchResult
+                let address = signalAccount.recipientAddress
+                let searchResult = ContactSearchResult(recipientAddress: address, transaction: transaction)
+                assert(signalContactMap[address] == nil)
+                signalContactMap[address] = searchResult
             case let signalRecipient as SignalRecipient:
                 guard
                     signalRecipient.isRegistered,
@@ -436,8 +425,7 @@ public class FullTextSearcher: NSObject {
                 else {
                     return
                 }
-                let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
+                let searchResult = ContactSearchResult(recipientAddress: signalRecipient.address, transaction: transaction)
                 signalRecipentResults.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(isContactThread: false,
@@ -462,31 +450,31 @@ public class FullTextSearcher: NSObject {
         // Fill in user matches from SignalRecipients, but only if
         // we don't already have a SignalAccount for the same user.
         for signalRecipentResult in signalRecipentResults {
-            if signalContactMap[signalRecipentResult.recipientAddress] == nil {
-                signalContactMap[signalRecipentResult.recipientAddress] = signalRecipentResult
+            let address = signalRecipentResult.recipientAddress
+            guard signalContactMap[address] == nil else {
+                continue
             }
+            let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
+            guard thread?.hasPendingMessageRequest(transaction: transaction) == false else {
+                continue
+            }
+            signalContactMap[address] = signalRecipentResult
         }
 
         if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
-            if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
+            if omitLocalUser {
+                signalContactMap.removeValue(forKey: localAddress)
+            } else if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
                 if signalContactMap[localAddress] == nil {
-                    let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
-                    signalContactMap[localAddress] = localResult
+                    signalContactMap[localAddress] = ContactSearchResult(recipientAddress: localAddress, transaction: transaction)
                 }
             }
         } else {
             owsFailDebug("localAddress was unexpectedly nil")
         }
 
-        // Filter out contact results with pending message requests.
-        var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
-            !self.shouldFilterContactResult(contactResult: contactResult,
-                                            omitLocalUser: omitLocalUser,
-                                            transaction: transaction)
-        }
         // Order contact results by display name.
-        signalContacts.sort()
+        let signalContacts = signalContactMap.values.sorted()
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
@@ -528,15 +516,16 @@ public class FullTextSearcher: NSObject {
 
             switch match {
             case let signalAccount as SignalAccount:
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
-                assert(signalContactMap[signalAccount.recipientAddress] == nil)
-                signalContactMap[signalAccount.recipientAddress] = searchResult
+                let address = signalAccount.recipientAddress
+                let searchResult = ContactSearchResult(recipientAddress: address, transaction: transaction)
+                assert(signalContactMap[address] == nil)
+                signalContactMap[address] = searchResult
             case let signalRecipient as SignalRecipient:
                 guard signalRecipient.isRegistered else {
                     return
                 }
-                let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
+                let address = signalRecipient.address
+                let searchResult = ContactSearchResult(recipientAddress: address, transaction: transaction)
                 signalRecipentResults.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(isContactThread: false,
@@ -577,31 +566,29 @@ public class FullTextSearcher: NSObject {
         // Fill in user matches from SignalRecipients, but only if
         // we don't already have a SignalAccount for the same user.
         for signalRecipentResult in signalRecipentResults {
-            if signalContactMap[signalRecipentResult.recipientAddress] == nil {
-                signalContactMap[signalRecipentResult.recipientAddress] = signalRecipentResult
+            let address = signalRecipentResult.recipientAddress
+            guard signalContactMap[address] == nil else {
+                continue
             }
+            let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
+            guard thread?.hasPendingMessageRequest(transaction: transaction) == false else {
+                continue
+            }
+            signalContactMap[address] = signalRecipentResult
         }
 
         if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
             if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
                 if signalContactMap[localAddress] == nil {
-                    let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
-                    signalContactMap[localAddress] = localResult
+                    signalContactMap[localAddress] = ContactSearchResult(recipientAddress: localAddress, transaction: transaction)
                 }
             }
         } else {
             owsFailDebug("localAddress was unexpectedly nil")
         }
 
-        // Filter out contact results with pending message requests.
-        var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
-            !self.shouldFilterContactResult(contactResult: contactResult,
-                                            omitLocalUser: false,
-                                            transaction: transaction)
-        }
         // Order contact results by display name.
-        signalContacts.sort()
+        let signalContacts = signalContactMap.values.sorted()
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
@@ -615,24 +602,7 @@ public class FullTextSearcher: NSObject {
         )
     }
 
-    func shouldFilterContactResult(contactResult: ContactSearchResult,
-                                   omitLocalUser: Bool,
-                                   transaction: SDSAnyReadTransaction) -> Bool {
-        let address = contactResult.recipientAddress
-        if address.isLocalAddress {
-            return omitLocalUser
-        }
-        if self.contactsManager.isSystemContact(address: address, transaction: transaction) {
-            return false
-        }
-        guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
-            // Filter out users with whom we've never had contact.
-            return true
-        }
-        return thread.hasPendingMessageRequest(transaction: transaction)
-    }
-
-    func matchesNoteToSelf(searchText: String, transaction: SDSAnyReadTransaction) -> Bool {
+    private func matchesNoteToSelf(searchText: String, transaction: SDSAnyReadTransaction) -> Bool {
         guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             return false
         }
@@ -708,12 +678,12 @@ public class FullTextSearcher: NSObject {
             messages[sortKey] = searchResult
         }
 
-        func appendSignalAccount(_ signalAccount: SignalAccount) {
-            guard contactsMap[signalAccount.recipientAddress] == nil else { return }
-            let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
-            contactsMap[searchResult.recipientAddress] = searchResult
+        func appendAddress(_ address: SignalServiceAddress) {
+            guard contactsMap[address] == nil else { return }
+            let searchResult = ContactSearchResult(recipientAddress: address, transaction: transaction)
+            contactsMap[address] = searchResult
 
-            getMentionedMessages(signalAccount.recipientAddress)
+            getMentionedMessages(address)
                 .forEach { message in
                     appendMessage(message, snippet: .messageBody(message.conversationListPreviewText(transaction)))
             }
@@ -836,7 +806,7 @@ public class FullTextSearcher: NSObject {
                 stop = true
                 return
             }
-            appendSignalAccount(account)
+            appendAddress(account.recipientAddress)
         }
 
         guard !isCanceled() else {
@@ -852,11 +822,8 @@ public class FullTextSearcher: NSObject {
                 stop = true
                 return
             }
-
             guard recipient.isRegistered else { return }
-
-            let account = SignalAccount.transientSignalAccount(forSignalRecipient: recipient)
-            appendSignalAccount(account)
+            appendAddress(recipient.address)
         }
 
         guard !isCanceled() else {
@@ -916,8 +883,7 @@ public class FullTextSearcher: NSObject {
                 let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress,
                 contactsMap[localAddress] == nil
             {
-                let localAccount = SignalAccount(address: localAddress)
-                let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
+                let localResult = ContactSearchResult(recipientAddress: localAddress, transaction: transaction)
                 contactsMap[localAddress] = localResult
             } else {
                 owsFailDebug("localAddress was unexpectedly nil")
@@ -1046,13 +1012,5 @@ public class FullTextSearcher: NSObject {
         let displayName = contactsManager.displayName(for: address, transaction: transaction)
 
         return "\(address.phoneNumber ?? "") \(displayName)"
-    }
-}
-
-// MARK: -
-
-extension SignalAccount {
-    public static func transientSignalAccount(forSignalRecipient signalRecipient: SignalRecipient) -> SignalAccount {
-        SignalAccount(address: signalRecipient.address)
     }
 }

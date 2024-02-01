@@ -495,9 +495,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     )
                 }
 
-                let contactItems = searchResults.signalAccounts.compactMap { account -> ContactConversationItem? in
+                let contactItems = searchResults.signalContacts.compactMap { contactResult -> ContactConversationItem? in
                     let isAddressBlocked = self.blockingManager.isAddressBlocked(
-                        account.recipientAddress,
+                        contactResult.recipientAddress,
                         transaction: transaction
                     )
 
@@ -506,7 +506,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     }
 
                     let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
-                        account.recipientAddress,
+                        contactResult.recipientAddress,
                         tx: transaction.asV2Read
                     )
                     if isRecipientHidden {
@@ -514,7 +514,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     }
 
                     return self.buildContactItem(
-                        account.recipientAddress,
+                        contactResult.recipientAddress,
                         isBlocked: isAddressBlocked,
                         transaction: transaction
                     )

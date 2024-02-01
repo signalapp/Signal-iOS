@@ -345,8 +345,7 @@ public class ConversationSearchViewController: UITableViewController {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configureWithSneakyTransaction(address: searchResult.signalAccount.recipientAddress,
-                                                localUserDisplayMode: .noteToSelf)
+            cell.configureWithSneakyTransaction(address: searchResult.recipientAddress, localUserDisplayMode: .noteToSelf)
             return cell
         case .contactThreads, .groupThreads, .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {

@@ -1007,7 +1007,7 @@ extension RecipientPickerViewController {
             let blockedAddresses = self.blockingManager.blockedAddresses(transaction: tx)
             let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
             let addressesToSkip = blockedAddresses.union(hiddenAddresses)
-            for recipientAddress in searchResults.signalAccounts.map({ $0.recipientAddress }) {
+            for recipientAddress in searchResults.signalContacts.map({ $0.recipientAddress }) {
                 guard !addressesToSkip.contains(recipientAddress) else { continue }
 
                 if let phoneNumber = recipientAddress.phoneNumber {
