@@ -30,11 +30,11 @@ public protocol CallRecordStore {
     /// Posts an `.inserted` ``CallRecordStoreNotification``.
     func insert(callRecord: CallRecord, tx: DBWriteTransaction)
 
-    /// Deletes the given call record and creates a ``DeletedCallRecord``
-    /// in its place.
+    /// Deletes the given call records and creates ``DeletedCallRecord``s
+    /// in their place.
     /// - Important
     /// Posts a `.deleted` ``CallRecordStoreNotification``.
-    func delete(callRecord: CallRecord, tx: DBWriteTransaction)
+    func delete(callRecords: [CallRecord], tx: DBWriteTransaction)
 
     /// Update the status of the given call record.
     /// - Important
@@ -116,18 +116,18 @@ class CallRecordStoreImpl: CallRecordStore {
         insert(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
 
         postNotification(
-            callRecord: callRecord,
             updateType: .inserted,
             tx: tx
         )
     }
 
-    func delete(callRecord: CallRecord, tx: DBWriteTransaction) {
-        delete(callRecord: callRecord, db: SDSDB.shimOnlyBridge(tx).database)
+    func delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
+        delete(callRecords: callRecords, db: SDSDB.shimOnlyBridge(tx).database)
 
         postNotification(
-            callRecord: callRecord,
-            updateType: .deleted,
+            updateType: .deleted(
+                records: callRecords.map { CallRecordStoreNotification.CallRecordIdentifier($0) }
+            ),
             tx: tx
         )
     }
@@ -144,8 +144,9 @@ class CallRecordStoreImpl: CallRecordStore {
         )
 
         postNotification(
-            callRecord: callRecord,
-            updateType: .statusUpdated,
+            updateType: .statusUpdated(
+                record: CallRecordStoreNotification.CallRecordIdentifier(callRecord)
+            ),
             tx: tx
         )
     }
@@ -218,17 +219,12 @@ class CallRecordStoreImpl: CallRecordStore {
     // MARK: - Notification posting
 
     private func postNotification(
-        callRecord: CallRecord,
         updateType: CallRecordStoreNotification.UpdateType,
         tx: DBWriteTransaction
     ) {
         tx.addAsyncCompletion(on: schedulers.main) {
             NotificationCenter.default.post(
-                CallRecordStoreNotification(
-                    callId: callRecord.callId,
-                    threadRowId: callRecord.threadRowId,
-                    updateType: updateType
-                ).asNotification
+                CallRecordStoreNotification(updateType: updateType).asNotification
             )
         }
     }
@@ -243,18 +239,20 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
-    func delete(callRecord: CallRecord, db: Database) {
-        do {
-            try callRecord.delete(db)
+    func delete(callRecords: [CallRecord], db: Database) {
+        for callRecord in callRecords {
+            do {
+                try callRecord.delete(db)
 
-            deletedCallRecordStore.insert(
-                deletedCallRecord: DeletedCallRecord(
-                    deletedCallRecord: callRecord
-                ),
-                db: db
-            )
-        } catch let error {
-            owsFailBeta("Failed to delete call record: \(error)")
+                deletedCallRecordStore.insert(
+                    deletedCallRecord: DeletedCallRecord(
+                        deletedCallRecord: callRecord
+                    ),
+                    db: db
+                )
+            } catch let error {
+                owsFailBeta("Failed to delete call record: \(error)")
+            }
         }
     }
 

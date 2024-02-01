@@ -255,7 +255,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     @objc
     private func deleteSelectedCalls() {
-        Logger.debug("Detele selected calls")
+        guard let selectedRows = tableView.indexPathsForSelectedRows else {
+            return
+        }
+
+        let selectedViewModels: [CallViewModel] = selectedRows.compactMap { idxPath in
+            return calls.viewModels[safe: idxPath.row]
+        }
+        owsAssertBeta(selectedRows.count == selectedViewModels.count)
+
+        deleteCalls(from: selectedViewModels)
     }
 
     // MARK: New call button
@@ -396,12 +405,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         switch callRecordStoreNotification.updateType {
         case .inserted:
             newCallRecordWasInserted()
-        case .deleted:
-            owsFail("Not yet implemented!")
-        case .statusUpdated:
+        case .deleted(let callRecordIds):
+            existingCallRecordsWereDeleted(
+                recordIds: callRecordIds
+            )
+        case .statusUpdated(let record):
             callRecordStatusWasUpdated(
-                callId: callRecordStoreNotification.callId,
-                threadRowId: callRecordStoreNotification.threadRowId
+                callId: record.callId,
+                threadRowId: record.threadRowId
             )
         }
     }
@@ -432,6 +443,20 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         if shouldLoadNewerCalls {
             loadMoreCalls(direction: .newer, animated: true)
         }
+    }
+
+    private func existingCallRecordsWereDeleted(
+        recordIds: [CallRecordStoreNotification.CallRecordIdentifier]
+    ) {
+        let deletedViewModelIds: [CallViewModel.ID] = recordIds.map { recordId in
+            CallViewModel.ID(
+                callId: recordId.callId,
+                threadRowId: recordId.threadRowId
+            )
+        }
+
+        calls.dropViewModels(ids: deletedViewModelIds)
+        updateSnapshot(animated: true)
     }
 
     /// When the status of a call record changes, we'll reload the row it
@@ -712,7 +737,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             }
         }
 
-        private let backingCallRecord: CallRecord
+        let backingCallRecord: CallRecord
 
         let title: String
         let recipientType: RecipientType
@@ -813,24 +838,38 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private struct Calls {
         private(set) var viewModels: [CallViewModel]
-        private let modelIndicesByViewModelIds: [CallViewModel.ID: Int]
+        private var viewModelIndicesByIds: [CallViewModel.ID: Int]
 
         init(models: [CallViewModel]) {
-            var viewModels = [CallViewModel]()
-            var modelIndicesByViewModelIds = [CallViewModel.ID: Int]()
+            self.viewModels = models
+            self.viewModelIndicesByIds = Self.viewModelIndicesByIds(viewModels: models)
+        }
 
-            for (idx, viewModel) in models.enumerated() {
-                viewModels.append(viewModel)
-                modelIndicesByViewModelIds[viewModel.id] = idx
-            }
-
-            self.viewModels = viewModels
-            self.modelIndicesByViewModelIds = modelIndicesByViewModelIds
+        private static func viewModelIndicesByIds(
+            viewModels: [CallViewModel]
+        ) -> [CallViewModel.ID: Int] {
+            return Dictionary(
+                viewModels.enumerated().map { (idx, model) -> (CallViewModel.ID, Int) in
+                    return (model.id, idx)
+                },
+                uniquingKeysWith: { _, new in new }
+            )
         }
 
         subscript(id id: CallViewModel.ID) -> CallViewModel? {
-            guard let index = modelIndicesByViewModelIds[id] else { return nil }
+            guard let index = viewModelIndicesByIds[id] else { return nil }
+
             return viewModels[index]
+        }
+
+        mutating func dropViewModels(ids idsToRemove: [CallViewModel.ID]) {
+            let idsToRemove: Set<CallViewModel.ID> = Set(idsToRemove)
+
+            viewModels.removeAll { viewModel in
+                idsToRemove.contains(viewModel.id)
+            }
+
+            viewModelIndicesByIds = Self.viewModelIndicesByIds(viewModels: viewModels)
         }
 
         /// Recreates the view model for the given ID by calling the given
@@ -845,7 +884,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         ) -> [CallViewModel.ID] {
             let indicesToReload: [(Int, CallViewModel)] = ids.compactMap { viewModelId in
                 guard
-                    let index = modelIndicesByViewModelIds[viewModelId],
+                    let index = viewModelIndicesByIds[viewModelId],
                     let newViewModel = recreateModelBlock(viewModelId)
                 else {
                     return nil
@@ -862,7 +901,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    private var calls: Calls!
+    private var _calls: Calls!
+    private var calls: Calls! {
+        get {
+            AssertIsOnMainThread()
+            return _calls
+        }
+        set(newValue) {
+            AssertIsOnMainThread()
+            _calls = newValue
+        }
+    }
 
     private static var callCellReuseIdentifier = "callCell"
 
@@ -1082,7 +1131,7 @@ extension CallsListViewController: UITableViewDelegate {
             image: "trash-fill",
             title: CommonStrings.deleteButton
         ) { [weak self] in
-            self?.deleteCall(from: viewModel)
+            self?.deleteCalls(from: [viewModel])
         }
 
         return .init(actions: [deleteAction])
@@ -1218,7 +1267,7 @@ extension CallsListViewController: UITableViewDelegate {
                 image: Theme.iconImage(.contextMenuDelete),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.deleteCall(from: viewModel)
+                self?.deleteCalls(from: [viewModel])
             }
             actions.append(deleteAction)
         case .participating:
@@ -1268,8 +1317,15 @@ extension CallsListViewController: CallCellDelegate {
         SignalApp.shared.presentConversationForThread(viewModel.thread, action: .compose, animated: false)
     }
 
-    private func deleteCall(from viewModel: CallViewModel) {
-        Logger.debug("Delete call")
+    private func deleteCalls(from viewModels: [CallViewModel]) {
+        deps.db.asyncWrite { tx in
+            // This call will trigger a notification we're listening for to
+            // update the UI, so no need to manually update UI here.
+            self.deps.callRecordStore.delete(
+                callRecords: viewModels.map { $0.backingCallRecord },
+                tx: tx.asV2Write
+            )
+        }
     }
 
     private func selectCall(forRowAt indexPath: IndexPath) {

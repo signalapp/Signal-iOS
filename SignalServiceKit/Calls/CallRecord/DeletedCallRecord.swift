@@ -58,18 +58,23 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
 #if TESTABLE_BUILD
 
 extension DeletedCallRecord {
-    func matches(
-        _ other: DeletedCallRecord,
-        ignoringDeletedAtTimestamp: Bool = false
-    ) -> Bool {
+    func matches(callRecord: CallRecord) -> Bool {
+        if
+            callId == callRecord.callId,
+            threadRowId == callRecord.threadRowId
+        {
+            return true
+        }
+
+        return false
+    }
+
+    func matches(_ other: DeletedCallRecord) -> Bool {
         if
             id == other.id,
             callId == other.callId,
             threadRowId == other.threadRowId,
-            (
-                ignoringDeletedAtTimestamp ||
-                deletedAtTimestamp == other.deletedAtTimestamp
-            )
+            deletedAtTimestamp == other.deletedAtTimestamp
         {
             return true
         }

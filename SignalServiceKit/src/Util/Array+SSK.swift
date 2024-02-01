@@ -6,6 +6,13 @@
 import Foundation
 
 extension Array {
+    /// Analogous to Swift.Collection's built-in `allSatisfy`.
+    func anySatisfy(_ predicate: (Element) throws -> Bool) rethrows -> Bool {
+        return try first(where: predicate) != nil
+    }
+}
+
+extension Array {
     func removingDuplicates<T: Hashable>(uniquingElementsBy uniqueValue: (Element) -> T) -> [Element] {
         var result = [Element]()
         var uniqueValues = Set<T>()

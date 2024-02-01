@@ -116,16 +116,19 @@ final class CallRecordStoreTest: XCTestCase {
     }
 
     func testFetchWhenRecentlyDeleted() {
+        let callId: UInt64 = 1234
+        let threadRowId: Int64 = 5678
+
         mockDeletedCallRecordStore.deletedCallRecords.append(DeletedCallRecord(
-            callId: 1234,
-            threadRowId: 5678,
+            callId: callId,
+            threadRowId: threadRowId,
             deletedAtTimestamp: 9
         ))
 
         inMemoryDB.read { tx in
             switch callRecordStore.fetch(
-                callId: 1234,
-                threadRowId: 5678,
+                callId: callId,
+                threadRowId: threadRowId,
                 db: InMemoryDB.shimOnlyBridge(tx).db
             ) {
             case .matchFound, .matchNotFound:
@@ -140,37 +143,44 @@ final class CallRecordStoreTest: XCTestCase {
     // MARK: - Delete
 
     func testDelete() {
-        let callRecord = makeCallRecord()
+        let callRecord1 = makeCallRecord()
+        let callRecord2 = makeCallRecord()
 
         inMemoryDB.write { tx in
-            callRecordStore.insert(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
+            callRecordStore.insert(callRecord: callRecord1, db: InMemoryDB.shimOnlyBridge(tx).db)
+            callRecordStore.insert(callRecord: callRecord2, db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         inMemoryDB.write { tx in
-            callRecordStore.delete(callRecord: callRecord, db: InMemoryDB.shimOnlyBridge(tx).db)
+            callRecordStore.delete(callRecords: [callRecord1, callRecord2], db: InMemoryDB.shimOnlyBridge(tx).db)
         }
 
         inMemoryDB.read { tx in
-            XCTAssertNil(callRecordStore.fetch(interactionRowId: callRecord.interactionRowId, db: InMemoryDB.shimOnlyBridge(tx).db))
+            for callRecord in [callRecord1, callRecord2] {
+                XCTAssertNil(callRecordStore.fetch(
+                    interactionRowId: callRecord.interactionRowId,
+                    db: InMemoryDB.shimOnlyBridge(tx).db
+                ))
 
-            switch callRecordStore.fetch(
-                callId: callRecord.callId,
-                threadRowId: callRecord.threadRowId,
-                db: InMemoryDB.shimOnlyBridge(tx).db
-            ) {
-            case .matchDeleted:
-                // Test pass
-                break
-            case .matchFound, .matchNotFound:
-                XCTFail("Unexpected fetch result!")
+                switch callRecordStore.fetch(
+                    callId: callRecord.callId,
+                    threadRowId: callRecord.threadRowId,
+                    db: InMemoryDB.shimOnlyBridge(tx).db
+                ) {
+                case .matchDeleted:
+                    // Test pass
+                    break
+                case .matchFound, .matchNotFound:
+                    XCTFail("Unexpected fetch result!")
+                }
             }
         }
 
-        XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 1)
-        XCTAssertTrue(mockDeletedCallRecordStore.deletedCallRecords.first!.matches(
-            DeletedCallRecord(deletedCallRecord: callRecord),
-            ignoringDeletedAtTimestamp: true
-        ))
+        XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 2)
+        XCTAssertTrue(mockDeletedCallRecordStore.deletedCallRecords[0]
+            .matches(callRecord: callRecord1))
+        XCTAssertTrue(mockDeletedCallRecordStore.deletedCallRecords[1]
+            .matches(callRecord: callRecord2))
     }
 
     // MARK: - updateRecordStatus

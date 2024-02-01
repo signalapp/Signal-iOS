@@ -5,58 +5,48 @@
 
 public struct CallRecordStoreNotification {
     private enum UserInfoKeys {
-        static let callId: String = "callId"
-        static let threadRowId: String = "threadRowId"
         static let updateType: String = "updateType"
+    }
+
+    public struct CallRecordIdentifier {
+        public let callId: UInt64
+        public let threadRowId: Int64
+
+        init(_ callRecord: CallRecord) {
+            self.callId = callRecord.callId
+            self.threadRowId = callRecord.threadRowId
+        }
     }
 
     public enum UpdateType {
         case inserted
-        case deleted
-        case statusUpdated
+        case deleted(records: [CallRecordIdentifier])
+        case statusUpdated(record: CallRecordIdentifier)
     }
 
     public static let name: NSNotification.Name = .init("CallRecordStoreNotification")
 
-    public let callId: UInt64
-    public let threadRowId: Int64
     public let updateType: UpdateType
 
-    init(
-        callId: UInt64,
-        threadRowId: Int64,
-        updateType: UpdateType
-    ) {
-        self.callId = callId
-        self.threadRowId = threadRowId
+    init(updateType: UpdateType) {
         self.updateType = updateType
     }
 
     public init?(_ notification: NSNotification) {
         guard
             notification.name == Self.name,
-            let callId = notification.userInfo?[UserInfoKeys.callId] as? UInt64,
-            let threadRowId = notification.userInfo?[UserInfoKeys.threadRowId] as? Int64,
             let updateType = notification.userInfo?[UserInfoKeys.updateType] as? UpdateType
         else {
             return nil
         }
 
-        self.init(
-            callId: callId,
-            threadRowId: threadRowId,
-            updateType: updateType
-        )
+        self.init(updateType: updateType)
     }
 
     var asNotification: Notification {
         Notification(
             name: Self.name,
-            userInfo: [
-                UserInfoKeys.callId: callId,
-                UserInfoKeys.threadRowId: threadRowId,
-                UserInfoKeys.updateType: updateType
-            ]
+            userInfo: [UserInfoKeys.updateType: updateType]
         )
     }
 }

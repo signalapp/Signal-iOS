@@ -14,8 +14,10 @@ class MockCallRecordStore: CallRecordStore {
         callRecords.append(callRecord)
     }
 
-    func delete(callRecord: CallRecord, tx: DBWriteTransaction) {
-        callRecords.removeAll { $0.matches(callRecord) }
+    func delete(callRecords callRecordsToDelete: [CallRecord], tx: DBWriteTransaction) {
+        callRecords.removeAll { callRecord in
+            callRecordsToDelete.anySatisfy { $0.matches(callRecord) }
+        }
     }
 
     var fetchMock: (() -> MaybeDeletedFetchResult)?
