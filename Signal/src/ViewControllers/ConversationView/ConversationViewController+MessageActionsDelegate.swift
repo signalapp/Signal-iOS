@@ -202,7 +202,9 @@ extension ConversationViewController: MessageActionsDelegate {
             owsFailDebug("Should be contact thread")
             return
         }
-        let contactName = self.contactsManager.displayName(for: contactAddress)
+        let contactName = databaseStorage.read { tx in
+            return self.contactsManager.displayName(for: contactAddress, transaction: tx)
+        }
 
         let paymentHistoryItem = PaymentsHistoryItem(paymentModel: model, displayName: contactName)
         let paymentsDetailViewController = PaymentsDetailViewController(

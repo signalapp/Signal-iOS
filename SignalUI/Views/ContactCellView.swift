@@ -297,8 +297,7 @@ public class ContactCellView: ManualStackView {
                                                       transaction: transaction)
             case .groupThread(let thread):
                 // TODO: Ensure nameLabel.textColor.
-                let threadName = contactsManager.displayName(for: thread,
-                                                             transaction: transaction)
+                let threadName = contactsManager.displayName(for: thread, transaction: transaction)
                 if let nameLabelColor = nameLabel.textColor {
                     return threadName.asAttributedString(attributes: [
                         .foregroundColor: nameLabelColor

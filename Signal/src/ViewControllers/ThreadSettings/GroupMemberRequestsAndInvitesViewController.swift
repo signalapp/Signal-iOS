@@ -129,9 +129,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         let section = OWSTableSection()
-        let footerFormat = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT",
-                                                comment: "Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}.")
-        let groupName = self.contactsManager.displayNameWithSneakyTransaction(thread: oldGroupThread)
+        let footerFormat = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT",
+            comment: "Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}."
+        )
+        let groupName = databaseStorage.read { tx in contactsManager.displayName(for: oldGroupThread, transaction: tx) }
         section.footerTitle = String(format: footerFormat, groupName)
 
         if !requestingMembersSorted.isEmpty {
@@ -384,7 +386,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private func showRevokePendingInviteFromLocalUserConfirmation(invitedAddress: SignalServiceAddress) {
 
-        let invitedName = contactsManager.displayName(for: invitedAddress)
+        let invitedName = databaseStorage.read { tx in contactsManager.displayName(for: invitedAddress, transaction: tx) }
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT",
                                        comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}.")
         let alertTitle = String(format: format, invitedName)
@@ -401,7 +403,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func showRevokePendingInviteFromOtherUserConfirmation(invitedAddresses: [SignalServiceAddress],
                                                                   inviterAddress: SignalServiceAddress) {
 
-        let inviterName = contactsManager.displayName(for: inviterAddress)
+        let inviterName = databaseStorage.read { tx in contactsManager.displayName(for: inviterAddress, transaction: tx) }
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d", tableName: "PluralAware",
                                        comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}.")
         let alertTitle = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
@@ -444,7 +446,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func presentRequestApprovedToast(address: SignalServiceAddress) {
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT",
                                        comment: "Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}.")
-        let userName = contactsManager.displayName(for: address)
+        let userName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
         let text = String(format: format, userName)
         presentToast(text: text)
     }
@@ -452,7 +454,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func presentRequestDeniedToast(address: SignalServiceAddress) {
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT",
                                        comment: "Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}.")
-        let userName = contactsManager.displayName(for: address)
+        let userName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
         let text = String(format: format, userName)
         presentToast(text: text)
     }
@@ -508,7 +510,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
     func showAcceptMemberRequestUI(address: SignalServiceAddress) {
 
-        let username = contactsManager.displayName(for: address)
+        let username = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT",
                                        comment: "Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
         let alertTitle = String(format: format, username)
@@ -526,7 +528,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
     func showDenyMemberRequestUI(address: SignalServiceAddress) {
 
-        let username = contactsManager.displayName(for: address)
+        let username = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
         let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT",
                                        comment: "Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
         let alertTitle = String(format: format, username)

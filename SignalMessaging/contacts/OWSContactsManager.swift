@@ -1420,20 +1420,16 @@ extension ContactsManagerProtocol {
                 name = CommonStrings.you
             case .asUser:
                 if short {
-                    name = shortDisplayName(for: address,
-                                            transaction: transaction)
+                    name = shortDisplayName(for: address, transaction: transaction)
                 } else {
-                    name = displayName(for: address,
-                                       transaction: transaction)
+                    name = displayName(for: address, transaction: transaction)
                 }
             }
         } else {
             if short {
-                name = shortDisplayName(for: address,
-                                        transaction: transaction)
+                name = shortDisplayName(for: address, transaction: transaction)
             } else {
-                name = displayName(for: address,
-                                   transaction: transaction)
+                name = displayName(for: address, transaction: transaction)
             }
         }
         return name.asAttributedString

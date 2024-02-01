@@ -44,7 +44,9 @@ class StoryReplyPreviewView: UIView {
         if quotedReplyModel.authorAddress.isLocalAddress {
             authorName = CommonStrings.you
         } else {
-            authorName = contactsManager.displayName(for: quotedReplyModel.authorAddress)
+            authorName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: quotedReplyModel.authorAddress, transaction: tx)
+            }
         }
 
         let authorText: String

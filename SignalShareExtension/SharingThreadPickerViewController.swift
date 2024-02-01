@@ -168,10 +168,13 @@ extension SharingThreadPickerViewController {
             if avatarImageData == nil {
                 let contact = Contact(systemContact: cnContact)
                 for address in contact.registeredAddresses() {
-                    guard let data = contactsManagerImpl.profileImageDataForAddress(
-                        withSneakyTransaction: address
-                    ) else { continue }
-                    avatarImageData = data
+                    let avatarData = databaseStorage.read { tx in
+                        return profileManager.profileAvatarData(for: address, transaction: tx)
+                    }
+                    guard let avatarData else {
+                        continue
+                    }
+                    avatarImageData = avatarData
                     contactShareRecord.isProfileAvatar = true
                     break
                 }
@@ -463,7 +466,9 @@ extension SharingThreadPickerViewController {
                 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
                 comment: "alert body when sharing file failed because of untrusted/changed identity keys"
             )
-            let displayName = self.contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId))
+            let displayName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId), transaction: tx)
+            }
             let failureMessage = String(format: failureFormat, displayName)
 
             let actionSheet = ActionSheetController(title: failureTitle, message: failureMessage)

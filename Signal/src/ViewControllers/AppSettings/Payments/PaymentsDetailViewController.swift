@@ -213,7 +213,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
            !paymentItem.isFailed {
             let title: String
             if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
-                let username = Self.contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci))
+                let username = databaseStorage.read { tx in
+                    return contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), transaction: tx)
+                }
                 let titleFormat: String = {
                     switch paymentItem {
                     case let item where item.isIncoming:
@@ -284,7 +286,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                     return CommonStrings.you
                 }
                 if let senderAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
-                    return Self.contactsManager.displayName(for: SignalServiceAddress(senderAci))
+                    return databaseStorage.read { tx in
+                        return contactsManager.displayName(for: SignalServiceAddress(senderAci), transaction: tx)
+                    }
                 }
                 return Self.contactsManager.unknownUserLabel
             }()

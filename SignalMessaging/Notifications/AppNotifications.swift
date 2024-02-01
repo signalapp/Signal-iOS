@@ -320,7 +320,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
 
@@ -417,7 +417,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -451,7 +451,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -841,7 +841,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -895,7 +895,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            notificationTitle = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
         }
 
         let notificationBody = (presentAtJoin

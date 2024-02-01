@@ -43,7 +43,9 @@ extension GroupViewHelper {
                 }
             )
         }
-        let title = String(format: titleFormat, contactsManager.displayName(for: address))
+        let title = String(format: titleFormat, databaseStorage.read { tx in
+            return contactsManager.displayName(for: address, transaction: tx)
+        })
         let actionSheet = ActionSheetController(title: title)
         actionSheet.addAction(ActionSheetAction(title: actionTitle, style: .default, handler: { _ in actionBlock() }))
         actionSheet.addAction(OWSActionSheets.cancelAction)

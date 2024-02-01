@@ -402,7 +402,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            displayName = self.contactsManager.displayName(for: address)
+            displayName = databaseStorage.read { tx in self.contactsManager.displayName(for: address, transaction: tx) }
         }
 
         let blockFormat = OWSLocalizedString(

@@ -23,7 +23,7 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                     owsFailDebug("thread was unexpectedly nil")
                     return nil
                 }
-                let name = Self.contactsManager.displayNameWithSneakyTransaction(thread: thread)
+                let name = Self.databaseStorage.read { tx in Self.contactsManager.displayName(for: thread, transaction: tx) }
                 return OWSTableItem(title: "Remove “\(name)” from Profile Whitelist") {
                     Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread)
                 }

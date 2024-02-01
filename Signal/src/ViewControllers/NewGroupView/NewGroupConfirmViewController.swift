@@ -303,7 +303,9 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                                              comment: "Message for an alert indicating that some members were invited to a group.")
         } else {
             alertTitle = String.localizedStringWithFormat(alertTitleFormat, 1)
-            let inviteeName = contactsManager.displayName(for: firstPendingMember)
+            let inviteeName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: firstPendingMember, transaction: tx)
+            }
             let alertMessageFormat = OWSLocalizedString("GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT",
                                                      comment: "Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }}")
             alertMessage = String(format: alertMessageFormat, inviteeName)

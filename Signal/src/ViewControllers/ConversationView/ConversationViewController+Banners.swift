@@ -460,7 +460,7 @@ extension ConversationViewController {
 
             case 1:
                 let address = noLongerVerifiedIdentityKeys.first!.key
-                let displayName = contactsManager.displayName(for: address)
+                let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
                 let format = (isGroupConversation
                                 ? OWSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                     comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")

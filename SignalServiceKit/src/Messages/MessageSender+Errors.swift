@@ -201,7 +201,9 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
             "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
             comment: "action sheet header when re-sending message which failed because of untrusted identity keys"
         )
-        return String(format: format, contactsManager.displayName(for: SignalServiceAddress(serviceId)))
+        return String(format: format, databaseStorage.read { tx in
+            return contactsManager.displayName(for: SignalServiceAddress(serviceId), transaction: tx)
+        })
     }
 
     // NSError bridging: the error code within the given domain.
@@ -236,7 +238,9 @@ public class InvalidKeySignatureError: NSObject, CustomNSError, IsRetryableProvi
             "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE",
             comment: "action sheet header when re-sending message which failed because of an invalid key signature"
         )
-        return String(format: format, contactsManager.displayName(for: SignalServiceAddress(serviceId)))
+        return String(format: format, databaseStorage.read { tx in
+            return contactsManager.displayName(for: SignalServiceAddress(serviceId), transaction: tx)
+        })
     }
 
     // NSError bridging: the error code within the given domain.

@@ -69,7 +69,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
             return
         }
 
-        let groupName = contactsManager.displayNameWithSneakyTransaction(thread: groupThread)
+        let groupName = databaseStorage.read { tx in contactsManager.displayName(for: groupThread, transaction: tx) }
         let alertTitle: String
         let alertMessage: String
         let actionTitle: String

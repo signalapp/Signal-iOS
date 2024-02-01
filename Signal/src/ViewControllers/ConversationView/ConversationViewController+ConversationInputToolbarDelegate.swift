@@ -949,7 +949,8 @@ extension ConversationViewController: SendMediaNavDataSource {
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }
 
     var sendMediaNavRecipientNames: [String] {
-        [ Self.contactsManager.displayNameWithSneakyTransaction(thread: thread) ]
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+        return [displayName]
     }
 
     func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {

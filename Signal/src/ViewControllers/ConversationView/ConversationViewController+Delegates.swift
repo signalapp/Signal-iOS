@@ -63,7 +63,8 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
     public var attachmentApprovalTextInputContextIdentifier: String? { textInputContextIdentifier }
 
     public var attachmentApprovalRecipientNames: [String] {
-        [ Self.contactsManager.displayNameWithSneakyTransaction(thread: thread) ]
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
+        return [displayName]
     }
 
     public func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
@@ -101,7 +102,9 @@ extension ConversationViewController: ContactPickerDelegate {
             if avatarImageData != nil {
                 break
             }
-            avatarImageData = contactsManagerImpl.profileImageDataForAddress(withSneakyTransaction: address)
+            avatarImageData = databaseStorage.read { tx in
+                return profileManager.profileAvatarData(for: address, transaction: tx)
+            }
             if avatarImageData != nil {
                 isProfileAvatar = true
             }

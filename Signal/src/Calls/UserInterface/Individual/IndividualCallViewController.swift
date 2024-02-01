@@ -224,7 +224,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = contactsManager.displayName(for: thread.contactAddress)
+        contactNameLabel.text = databaseStorage.read { tx in
+            return contactsManager.displayName(for: thread.contactAddress, transaction: tx)
+        }
         updateAvatarImage()
 
         NotificationCenter.default.addObserver(

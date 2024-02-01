@@ -508,7 +508,9 @@ class MediaPageViewController: UIPageViewController {
     private func senderName(from message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            return self.contactsManager.displayName(for: incomingMessage.authorAddress)
+            return databaseStorage.read { tx in
+                return self.contactsManager.displayName(for: incomingMessage.authorAddress, transaction: tx)
+            }
         case is TSOutgoingMessage:
             return CommonStrings.you
         default:

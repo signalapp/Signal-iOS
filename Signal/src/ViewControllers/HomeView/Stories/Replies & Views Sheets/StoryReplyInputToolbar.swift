@@ -225,7 +225,9 @@ class StoryReplyInputToolbar: UIView {
                     "STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER",
                     comment: "placeholder text for replying to a private story. Embeds {{author name}}"
                 )
-                let authorName = contactsManager.displayName(for: quotedReplyModel.authorAddress)
+                let authorName = databaseStorage.read { tx in
+                    return contactsManager.displayName(for: quotedReplyModel.authorAddress, transaction: tx)
+                }
                 return String(format: format, authorName)
             } else {
                 return OWSLocalizedString(

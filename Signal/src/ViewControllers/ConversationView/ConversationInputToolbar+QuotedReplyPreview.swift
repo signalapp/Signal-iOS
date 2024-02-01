@@ -156,7 +156,9 @@ private class QuotedMessageSnippetView: UIView {
         if quotedMessage.authorAddress.isLocalAddress {
             quotedAuthor = CommonStrings.you
         } else {
-            let authorName = contactsManager.displayName(for: quotedMessage.authorAddress)
+            let authorName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: quotedMessage.authorAddress, transaction: tx)
+            }
             quotedAuthor = String(
                 format: NSLocalizedString(
                     "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

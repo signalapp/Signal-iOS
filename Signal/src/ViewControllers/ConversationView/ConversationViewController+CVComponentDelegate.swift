@@ -505,7 +505,7 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        let displayName = contactsManager.displayName(for: address)
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
         let messageFormat = OWSLocalizedString("UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
                                               comment: "Description for the unverified safety number change. Embeds {name of contact with identity change}")
 
@@ -528,7 +528,9 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {
         AssertIsOnMainThread()
 
-        let keyOwner = contactsManager.displayName(for: message.theirSignalAddress())
+        let keyOwner = databaseStorage.read { tx in
+            return contactsManager.displayName(for: message.theirSignalAddress(), transaction: tx)
+        }
         let titleFormat = OWSLocalizedString("SAFETY_NUMBERS_ACTIONSHEET_TITLE", comment: "Action sheet heading")
         let titleText = String(format: titleFormat, keyOwner)
 
@@ -667,7 +669,9 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        let displayName = contactsManager.displayName(for: contactThread.contactAddress)
+        let displayName = databaseStorage.read { tx in
+            return contactsManager.displayName(for: contactThread.contactAddress, transaction: tx)
+        }
 
         let alert = ActionSheetController(title: CallStrings.callBackAlertTitle,
                                           message: String(format: CallStrings.callBackAlertMessageFormat,
@@ -699,8 +703,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
         let address = contactThread.contactAddress
-
-        let displayName = contactsManager.displayName(for: contactThread.contactAddress)
+        let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, transaction: tx) }
 
         let alert = ActionSheetController(
             title: String(

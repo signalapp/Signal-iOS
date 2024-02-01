@@ -60,7 +60,9 @@ extension ConversationViewController: MessageRequestDelegate {
         })
 
         if let addedByAci = groupMembership.addedByAci(forInvitedMember: invitedAtServiceId) {
-            let addedByName = contactsManager.displayName(for: SignalServiceAddress(addedByAci))
+            let addedByName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: SignalServiceAddress(addedByAci), transaction: tx)
+            }
 
             actionSheet.addAction(ActionSheetAction(
                 title: String(
@@ -341,7 +343,9 @@ extension ConversationViewController: MessageRequestDelegate {
             message = OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", comment: "An explanation of what unblocking a group means.")
         } else if let contactThread = thread as? TSContactThread {
-            threadName = contactsManager.displayName(for: contactThread.contactAddress)
+            threadName = databaseStorage.read { tx in
+                return contactsManager.displayName(for: contactThread.contactAddress, transaction: tx)
+            }
             message = OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE", comment: "An explanation of what unblocking a contact means.")
         } else {
@@ -394,7 +398,7 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
                                                    comment: "Action sheet message to confirm blocking a conversation via a message request.")
         }
 
-        let threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+        let threadName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
         let actionSheetTitle = String(format: actionSheetTitleFormat, threadName)
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
 

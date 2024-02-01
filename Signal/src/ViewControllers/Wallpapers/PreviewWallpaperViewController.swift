@@ -183,7 +183,7 @@ class PreviewWallpaperViewController: UIViewController {
                 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT",
                 comment: "The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}}"
             )
-            let displayName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: thread, transaction: tx) }
             return String(format: formatString, displayName)
         }()
 
