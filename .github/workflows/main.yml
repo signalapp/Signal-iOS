@@ -32,7 +32,7 @@ jobs:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/clone-everything
         with:
@@ -75,7 +75,7 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run genstrings
         run: Scripts/translation/auto-genstrings
@@ -93,7 +93,7 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Fetch base commit
         run: git fetch origin --depth 1 ${{ github.base_ref }}
