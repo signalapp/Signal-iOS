@@ -145,14 +145,10 @@ final public class IndividualCallService: NSObject {
 
     // MARK: - Signaling Functions
 
-    private func allowsInboundCallsInThread(_ thread: TSContactThread,
-                                            transaction: SDSAnyReadTransaction) -> Bool {
-        // IFF one of the following things is true, we can handle inbound call offers
-        // * The thread is in our profile whitelist
-        // * The thread belongs to someone in our system contacts
-        return (self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
-                || self.contactsManager.isSystemContact(address: thread.contactAddress,
-                                                        transaction: transaction))
+    private func allowsInboundCallsInThread(_ thread: TSContactThread, transaction: SDSAnyReadTransaction) -> Bool {
+        // If the thread is in our whitelist, then we've either trusted it manually
+        // or it's a chat with someone in our system contacts.
+        return profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
     }
 
     private struct CallIdentityKeys {

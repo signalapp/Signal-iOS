@@ -1386,11 +1386,7 @@ public class GroupManager: NSObject {
             // Invalid updaters, shouldn't add.
             shouldAddToWhitelist = false
         case .aci(let aci):
-            shouldAddToWhitelist = contactsManager.isSystemContact(
-                address: SignalServiceAddress(aci), transaction: tx
-            ) || profileManager.isUser(
-                inProfileWhitelist: SignalServiceAddress(aci), transaction: tx
-            )
+            shouldAddToWhitelist = profileManager.isUser(inProfileWhitelist: SignalServiceAddress(aci), transaction: tx)
         case .localUser:
             // Always whitelist if its the local user updating.
             shouldAddToWhitelist = true
