@@ -102,22 +102,6 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
-    public func systemContactsWithSignalAccountPhoneNumbers() -> [String] {
-        return dbRecord.systemContactsWithSignalAccountPhoneNumbers()
-    }
-
-    public func systemContactsWithSignalAccountPhoneNumbers(transaction: SDSAnyReadTransaction) -> [String] {
-        return dbRecord.systemContactsWithSignalAccountPhoneNumbers(with: transaction)
-    }
-
-    public func systemContactPhoneNumbers(transaction: SDSAnyReadTransaction) -> [String] {
-        return dbRecord.systemContactPhoneNumbers(with: transaction)
-    }
-
-    public func e164PhoneNumbers() -> [String] {
-        return dbRecord.e164PhoneNumbers()
-    }
-
     public var displayName: String {
         return dbRecord.name.displayName
     }

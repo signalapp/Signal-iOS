@@ -355,10 +355,10 @@ extension ConversationViewController: CVComponentDelegate {
         navigationController?.pushViewController(view, animated: true)
     }
 
-    public func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
+    public func didTapSendMessage(to phoneNumbers: [String]) {
         AssertIsOnMainThread()
 
-        contactShareViewHelper.sendMessage(contactShare: contactShare, from: self)
+        contactShareViewHelper.sendMessage(to: phoneNumbers, from: self)
     }
 
     public func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {

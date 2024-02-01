@@ -531,27 +531,59 @@ public class OWSContact: MTLModel {
 
     private var e164PhoneNumbersCached: [String]?
 
-    public func systemContactsWithSignalAccountPhoneNumbers() -> [String] {
-        let e164PhoneNumbers = e164PhoneNumbers()
-        return e164PhoneNumbers.filter { phoneNumber in
-            let address = SignalServiceAddress(phoneNumber: phoneNumber)
-            return Self.contactsManager.isSystemContactWithSignalAccount(address)
+    public struct PhoneNumberPartition {
+        fileprivate(set) public var sendablePhoneNumbers = [String]()
+        fileprivate(set) public var invitablePhoneNumbers = [String]()
+        fileprivate(set) public var addablePhoneNumbers = [String]()
+
+        public func map<T>(
+            ifSendablePhoneNumbers: ([String]) -> T,
+            elseIfInvitablePhoneNumbers: ([String]) -> T,
+            elseIfAddablePhoneNumbers: ([String]) -> T,
+            elseIfNoPhoneNumbers: () -> T
+        ) -> T {
+            if !sendablePhoneNumbers.isEmpty {
+                return ifSendablePhoneNumbers(sendablePhoneNumbers)
+            }
+            if !invitablePhoneNumbers.isEmpty {
+                return elseIfInvitablePhoneNumbers(invitablePhoneNumbers)
+            }
+            if !addablePhoneNumbers.isEmpty {
+                return elseIfAddablePhoneNumbers(addablePhoneNumbers)
+            }
+            return elseIfNoPhoneNumbers()
         }
     }
 
-    public func systemContactsWithSignalAccountPhoneNumbers(with tx: SDSAnyReadTransaction) -> [String] {
-        let e164PhoneNumbers = e164PhoneNumbers()
-        return e164PhoneNumbers.filter { phoneNumber in
-            let address = SignalServiceAddress(phoneNumber: phoneNumber)
-            return Self.contactsManager.isSystemContactWithSignalAccount(address, transaction: tx)
-        }
+    private struct PhoneNumberStatus {
+        var phoneNumber: String
+        var isSystemContact: Bool
+        var canLinkToSystemContact: Bool
     }
 
-    public func systemContactPhoneNumbers(with tx: SDSAnyReadTransaction) -> [String] {
-        let e164PhoneNumbers = e164PhoneNumbers()
-        return e164PhoneNumbers.filter { phoneNumber in
-            return Self.contactsManager.isSystemContact(phoneNumber: phoneNumber, transaction: tx)
+    public func phoneNumberPartition(tx: SDSAnyReadTransaction) -> PhoneNumberPartition {
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+        let phoneNumberStatuses = e164PhoneNumbers().map { phoneNumber in
+            let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
+            return PhoneNumberStatus(
+                phoneNumber: phoneNumber,
+                isSystemContact: Self.contactsManager.isSystemContact(phoneNumber: phoneNumber, transaction: tx),
+                canLinkToSystemContact: recipient?.isRegistered == true
+            )
         }
+        var result = PhoneNumberPartition()
+        for phoneNumberStatus in phoneNumberStatuses {
+            if phoneNumberStatus.isSystemContact {
+                if phoneNumberStatus.canLinkToSystemContact {
+                    result.sendablePhoneNumbers.append(phoneNumberStatus.phoneNumber)
+                    continue
+                }
+                result.invitablePhoneNumbers.append(phoneNumberStatus.phoneNumber)
+                continue
+            }
+            result.addablePhoneNumbers.append(phoneNumberStatus.phoneNumber)
+        }
+        return result
     }
 
     public func e164PhoneNumbers() -> [String] {

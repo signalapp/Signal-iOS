@@ -1110,8 +1110,8 @@ extension MessageDetailViewController: CVComponentDelegate {
         self.navigationController?.pushViewController(contactViewController, animated: true)
     }
 
-    func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.sendMessage(contactShare: contactShare, from: self)
+    func didTapSendMessage(to phoneNumbers: [String]) {
+        contactShareViewHelper.sendMessage(to: phoneNumbers, from: self)
     }
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {

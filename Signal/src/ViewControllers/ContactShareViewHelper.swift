@@ -27,30 +27,31 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: Actions
 
-    func sendMessage(contactShare: ContactShareViewModel, from viewController: UIViewController) {
+    func sendMessage(to phoneNumbers: [String], from viewController: UIViewController) {
         Logger.info("")
 
-        presentThreadAndPeform(action: .compose, contactShare: contactShare, from: viewController)
+        presentThread(performAction: .compose, to: phoneNumbers, from: viewController)
     }
 
-    func audioCall(contactShare: ContactShareViewModel, from viewController: UIViewController) {
+    func audioCall(to phoneNumbers: [String], from viewController: UIViewController) {
         Logger.info("")
 
-        presentThreadAndPeform(action: .audioCall, contactShare: contactShare, from: viewController)
+        presentThread(performAction: .audioCall, to: phoneNumbers, from: viewController)
     }
 
-    func videoCall(contactShare: ContactShareViewModel, from viewController: UIViewController) {
+    func videoCall(to phoneNumbers: [String], from viewController: UIViewController) {
         Logger.info("")
 
-        presentThreadAndPeform(action: .videoCall, contactShare: contactShare, from: viewController)
+        presentThread(performAction: .videoCall, to: phoneNumbers, from: viewController)
     }
 
-    private func presentThreadAndPeform(action: ConversationViewAction, contactShare: ContactShareViewModel, from viewController: UIViewController) {
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers()
+    private func presentThread(
+        performAction action: ConversationViewAction,
+        to phoneNumbers: [String],
+        from viewController: UIViewController
+    ) {
         guard phoneNumbers.count > 0 else {
-            owsFailDebug("missing Signal recipient id.")
+            owsFailDebug("No registered phone numbers.")
             return
         }
         guard phoneNumbers.count > 1 else {
@@ -93,7 +94,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             OWSActionSheets.showErrorAlert(message: InviteFlow.unsupportedFeatureMessage)
             return
         }
-        let phoneNumbers = contactShare.e164PhoneNumbers()
+        let phoneNumbers = contactShare.dbRecord.e164PhoneNumbers()
         guard phoneNumbers.count > 0 else {
             owsFailDebug("no phone numbers.")
             return

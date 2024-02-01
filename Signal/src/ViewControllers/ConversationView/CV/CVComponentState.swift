@@ -996,33 +996,46 @@ fileprivate extension CVComponentState.Builder {
     // TODO: Should we throw more?
     mutating func buildContact(message: TSMessage, contact: OWSContact) throws -> CVComponentState {
         let contactShare = ContactShareViewModel(contactShareRecord: contact, transaction: transaction)
-        let state = CVContactShareView.buildState(contactShare: contactShare,
-                                                  isIncoming: isIncoming,
-                                                  conversationStyle: conversationStyle,
-                                                  transaction: transaction)
+        let state = CVContactShareView.buildState(
+            contactShare: contactShare,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle,
+            transaction: transaction
+        )
         self.contactShare = ContactShare(state: state)
 
-        let hasSendTextButton = !contactShare.systemContactsWithSignalAccountPhoneNumbers(transaction: transaction).isEmpty
-        let hasInviteButton = !contactShare.systemContactPhoneNumbers(transaction: transaction).isEmpty
-        let hasAddToContactsButton = !contactShare.e164PhoneNumbers().isEmpty
-
-        if hasSendTextButton {
-            let action = CVMessageAction(title: CommonStrings.sendMessage,
-                                         accessibilityIdentifier: "send_message_to_contact_share",
-                                         action: .didTapSendMessage(contactShare: contactShare))
-            bottomButtonsActions.append(action)
-        } else if hasInviteButton {
-            let action = CVMessageAction(title: OWSLocalizedString("ACTION_INVITE",
-                                                                  comment: "Label for 'invite' button in contact view."),
-                                         accessibilityIdentifier: "invite_contact_share",
-                                         action: .didTapSendInvite(contactShare: contactShare))
-            bottomButtonsActions.append(action)
-        } else if hasAddToContactsButton {
-            let action = CVMessageAction(title: OWSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
-                                                                  comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
-                                         accessibilityIdentifier: "add_to_contacts",
-                                         action: .didTapAddToContacts(contactShare: contactShare))
-            bottomButtonsActions.append(action)
+        let phoneNumberPartition = contactShare.dbRecord.phoneNumberPartition(tx: transaction)
+        let phoneNumberAction: CVMessageAction? = phoneNumberPartition.map(
+            ifSendablePhoneNumbers: {
+                // If system contacts are known/linkable, show a "Send" button.
+                return CVMessageAction(
+                    title: CommonStrings.sendMessage,
+                    accessibilityIdentifier: "send_message_to_contact_share",
+                    action: .didTapSendMessage(phoneNumbers: $0)
+                )
+            },
+            elseIfInvitablePhoneNumbers: { _ in
+                // If system contacts aren't registered, show an "Invite" button.
+                return CVMessageAction(
+                    title: OWSLocalizedString("ACTION_INVITE", comment: "Label for 'invite' button in contact view."),
+                    accessibilityIdentifier: "invite_contact_share",
+                    action: .didTapSendInvite(contactShare: contactShare)
+                )
+            },
+            elseIfAddablePhoneNumbers: { _ in
+                // Otherwise, offer to add the number(s) to your address book.
+                return CVMessageAction(
+                    title: OWSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER", comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
+                    accessibilityIdentifier: "add_to_contacts",
+                    action: .didTapAddToContacts(contactShare: contactShare)
+                )
+            },
+            elseIfNoPhoneNumbers: {
+                return nil
+            }
+        )
+        if let phoneNumberAction {
+            bottomButtonsActions.append(phoneNumberAction)
         }
 
         return build()

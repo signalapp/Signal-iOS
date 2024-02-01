@@ -350,7 +350,7 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapContactShare(_ contactShare: ContactShareViewModel) {}
 
-    func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {}
+    func didTapSendMessage(to phoneNumbers: [String]) {}
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {}
 
