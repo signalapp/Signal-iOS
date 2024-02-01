@@ -365,10 +365,6 @@ static void ClearOldTemporaryDirectoriesSync(void)
     }
     NSUInteger fileCount = 0;
     for (NSString *fileName in fileNames) {
-        if (!CurrentAppContext().isAppForegroundAndActive) {
-            // Abort if app not active.
-            break;
-        }
         if ([fileName isEqualToString:currentTempDirName]) {
             continue;
         }

@@ -180,16 +180,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     __block BOOL shouldAbort = NO;
 
-    // We treat _all_ temp files as orphan files.  This is safe
-    // because temp files only need to be retained for the
-    // a single launch of the app.  Since our "date threshold"
-    // for deletion is relative to the current launch time,
-    // all temp files currently in use should be safe.
-    NSArray<NSString *> *_Nullable tempFilePaths = [self getTempFilePaths];
-    if (!tempFilePaths || !self.isMainAppAndActive) {
-        return nil;
-    }
-
     NSString *legacyAttachmentsDirPath = TSAttachmentStream.legacyAttachmentsDirPath;
     NSString *sharedDataAttachmentsDirPath = TSAttachmentStream.sharedDataAttachmentsDirPath;
     NSSet<NSString *> *_Nullable legacyAttachmentFilePaths = [self filePathsInDirectorySafe:legacyAttachmentsDirPath];
@@ -234,7 +224,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allGroupAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
-    [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
     // TODO: Badges?
 
     // This should be redundant, but this will future-proof us against
@@ -795,21 +784,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     }
 
     return YES;
-}
-
-+ (nullable NSArray<NSString *> *)getTempFilePaths
-{
-    NSString *dir1 = OWSTemporaryDirectory();
-    NSArray<NSString *> *_Nullable paths1 = [[self filePathsInDirectorySafe:dir1].allObjects mutableCopy];
-
-    NSString *dir2 = OWSTemporaryDirectoryAccessibleAfterFirstAuth();
-    NSArray<NSString *> *_Nullable paths2 = [[self filePathsInDirectorySafe:dir2].allObjects mutableCopy];
-
-    if (paths1 && paths2) {
-        return [paths1 arrayByAddingObjectsFromArray:paths2];
-    } else {
-        return nil;
-    }
 }
 
 @end
