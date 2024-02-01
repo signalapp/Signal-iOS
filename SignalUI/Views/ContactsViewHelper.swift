@@ -139,21 +139,6 @@ public class ContactsViewHelper: Dependencies {
         return nil
     }
 
-    public func signalAccounts(matching searchText: String, transaction tx: SDSAnyReadTransaction) -> [SignalAccount] {
-        owsAssertBeta(!CurrentAppContext().isNSE)
-
-        // Check for matches against "Note to Self".
-        var signalAccountsToSearch = allSignalAccounts
-        if let localAddress = localAddress() {
-            signalAccountsToSearch.append(SignalAccount(address: localAddress))
-        }
-        return fullTextSearcher.filterSignalAccounts(
-            signalAccountsToSearch,
-            searchText: searchText,
-            transaction: tx
-        )
-    }
-
     public func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
         switch includingLocalUser {
         case true:

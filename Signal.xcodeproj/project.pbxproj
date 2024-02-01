@@ -370,7 +370,6 @@
 		3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC972518E98A00B1F315 /* DebugUIPayments.swift */; };
 		3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */; };
 		34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupMembersViewController.swift */; };
-		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
 		349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */; };
 		349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D21E7268E044700D98870 /* QRCodeParserTest.swift */; };
@@ -482,7 +481,6 @@
 		450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450B0FC829FB301700B9A458 /* AudioMessageView.swift */; };
 		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
-		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGallery.swift */; };
@@ -2909,7 +2907,6 @@
 		3498AC972518E98A00B1F315 /* DebugUIPayments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIPayments.swift; sourceTree = "<group>"; };
 		3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationViewLayout.swift; sourceTree = "<group>"; };
 		34995F172411838C00C70546 /* NewGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersViewController.swift; sourceTree = "<group>"; };
-		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
 		349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugContactsUtils.swift; sourceTree = "<group>"; };
 		349C3636233D198300D52012 /* LaunchJobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchJobs.swift; sourceTree = "<group>"; };
@@ -3133,7 +3130,6 @@
 		453518921FC63DBF00210559 /* SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		453518941FC63DBF00210559 /* SignalMessaging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalMessaging.h; sourceTree = "<group>"; };
 		453518951FC63DBF00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		45360B8C1F9521F800FA666C /* Searcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searcher.swift; sourceTree = "<group>"; };
 		4539B5851F79348F007141FF /* PushRegistrationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushRegistrationManager.swift; sourceTree = "<group>"; };
 		4542DF53208D40AC007B4E76 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
 		454A84032059C787008B8C75 /* MediaTileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileViewController.swift; sourceTree = "<group>"; };
@@ -5641,7 +5637,6 @@
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
-				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 			);
 			path = utils;
@@ -5916,7 +5911,6 @@
 			isa = PBXGroup;
 			children = (
 				3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */,
-				3499997E22EF1E2100654932 /* SearcherTest.swift */,
 			);
 			path = FTS;
 			sourceTree = "<group>";
@@ -12016,7 +12010,6 @@
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* ScreenLock.swift in Sources */,
 				F962FF4929AD0C7C00AFA397 /* ScrubbingLogFormatter.swift in Sources */,
-				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */,
 				66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */,
@@ -12778,7 +12771,6 @@
 				661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */,
 				6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */,
 				F963164B291AE06C00218FB7 /* ScrubbingLogFormatterTest.swift in Sources */,
-				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,
 				505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */,
 				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
 				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */,

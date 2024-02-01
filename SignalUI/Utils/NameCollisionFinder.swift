@@ -72,15 +72,13 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
             return []
         }
 
-        let collisionCandidates = contactsViewHelper.signalAccounts(
-            matching: contactThread.contactAddress.displayName(transaction: transaction),
-            transaction: transaction
-        )
+        var candidateAddresses = Set<SignalServiceAddress>()
+        candidateAddresses.formUnion(profileManager.allWhitelistedRegisteredAddresses(tx: transaction))
+        // Include all SignalAccounts as well (even though most are redundant) to
+        // ensure we check against blocked system contact names.
+        candidateAddresses.formUnion(SignalAccount.anyFetchAll(transaction: transaction).map { $0.recipientAddress })
 
-        // ContactsViewHelper uses substring matching, so it might return false positives
-        // Filter to just the matches that are valid collisions
-        let collidingAddresses = collisionCandidates
-            .map { $0.recipientAddress }
+        let collidingAddresses = candidateAddresses
             .filter { !$0.isLocalAddress }
             .filter { isCollision($0, contactThread.contactAddress, transaction: transaction) }
 

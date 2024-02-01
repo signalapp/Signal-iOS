@@ -980,24 +980,6 @@ public class FullTextSearcher: NSObject {
         return ConversationScreenSearchResultSet(searchText: searchText, messages: sortedMessages)
     }
 
-    // MARK: Filtering Signal accounts
-
-    @objc(filterSignalAccounts:withSearchText:transaction:)
-    public func filterSignalAccounts(_ signalAccounts: [SignalAccount], searchText: String, transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return signalAccounts
-        }
-
-        return signalAccounts.filter { signalAccount in
-            self.signalAccountSearcher.matches(item: signalAccount, query: searchText, transaction: transaction)
-        }
-    }
-
-    private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) in
-        let recipientAddress = signalAccount.recipientAddress
-        return self.conversationIndexingString(address: recipientAddress, transaction: transaction)
-    }
-
     private func conversationIndexingString(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         var result = self.indexingString(address: address, transaction: transaction)
 
