@@ -1016,14 +1016,7 @@ class StorageServiceOperation: OWSOperation {
 
         let localKeysCount = state.allIdentifiers.count
 
-        Logger.info(
-            """
-            Merging with newer remote manifest version \(manifest.version) (\
-            New: \(newOrUpdatedItems.count); \
-            Remote: \(allManifestItems.count); \
-            Local: \(localKeysCount))
-            """
-        )
+        Logger.info("\(manifest.logDescription); merging \(newOrUpdatedItems.count); \(localKeysCount) local; \(allManifestItems.count) remote")
 
         firstly { () -> Promise<Void> in
             // First, fetch the local account record if it has been updated. We give this record
@@ -1043,7 +1036,7 @@ class StorageServiceOperation: OWSOperation {
                 return Promise.value(())
             }
 
-            Logger.info("Merging account record update from manifest version: \(manifest.version).")
+            Logger.info("\(manifest.logDescription); merging account record")
 
             return StorageService.fetchItem(
                 for: newLocalAccountIdentifier,
@@ -1083,12 +1076,9 @@ class StorageServiceOperation: OWSOperation {
                 .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
-            let promise: Promise<State> = self.fetchAndMergeItemsInBatches(
-                identifiers: newOrUpdatedItems,
-                manifest: manifest,
-                state: state
-            )
-            return promise
+            return Promise.wrapAsync {
+                try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
+            }
         }.done(on: DispatchQueue.global()) { updatedState in
             var mutableState = updatedState
             self.databaseStorage.write { transaction in
@@ -1169,12 +1159,12 @@ class StorageServiceOperation: OWSOperation {
 
                 Logger.info(
                     """
-                    Successfully merged remote manifest \(manifest.version) (\
-                    Pending Updates: \(pendingChangesCount); \
-                    Invalid/Missing IDs: \(invalidIdentifierCount); \
-                    Orphaned Accounts: \(orphanedAccountCount); \
-                    Orphaned GV2: \(orphanedGroupV2Count); \
-                    Orphaned DLists: \(orphanedStoryDistributionListCount))
+                    \(manifest.logDescription) finished; \
+                    \(pendingChangesCount) pending updates; \
+                    \(invalidIdentifierCount) missing/invalid ids; \
+                    \(orphanedAccountCount) orphaned accounts; \
+                    \(orphanedGroupV2Count) orphaned gv2; \
+                    \(orphanedStoryDistributionListCount) orphaned dlists
                     """
                 )
 
@@ -1231,77 +1221,66 @@ class StorageServiceOperation: OWSOperation {
         identifiers: [StorageService.StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
         state: State
-    ) -> Promise<State> {
-        var remainingItems = identifiers.count
+    ) async throws -> State {
         var mutableState = state
-        var promise = Promise.value(())
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
-            promise = promise.then(on: DispatchQueue.global()) {
-                StorageService.fetchItems(
-                    for: Array(identifierBatch),
-                    chatServiceAuth: self.authedAccount.chatServiceAuth
+            let items = try await StorageService.fetchItems(
+                for: Array(identifierBatch),
+                chatServiceAuth: self.authedAccount.chatServiceAuth
+            ).awaitable()
+
+            await databaseStorage.awaitableWrite { tx in
+                self.mergeItems(items, mutableState: &mutableState, tx: tx)
+            }
+            Logger.info("\(manifest.logDescription); fetched \(identifierBatch.count) items; processed \(items.count)")
+        }
+        return mutableState
+    }
+
+    private func mergeItems(_ items: some Sequence<StorageService.StorageItem>, mutableState: inout State, tx: SDSAnyWriteTransaction) {
+        let contactUpdater = buildContactUpdater()
+        let groupV1Updater = buildGroupV1Updater()
+        let groupV2Updater = buildGroupV2Updater()
+        let storyDistributionListUpdater = buildStoryDistributionListUpdater()
+        for item in items {
+            func _mergeRecord<StateUpdater: StorageServiceStateUpdater>(
+                _ record: StateUpdater.RecordType,
+                stateUpdater: StateUpdater
+            ) {
+                self.mergeRecord(
+                    record,
+                    identifier: item.identifier,
+                    state: &mutableState,
+                    stateUpdater: stateUpdater,
+                    transaction: tx
                 )
-            }.done(on: DispatchQueue.global()) { items in
-                self.databaseStorage.write { transaction in
-                    let contactUpdater = self.buildContactUpdater()
-                    let groupV1Updater = self.buildGroupV1Updater()
-                    let groupV2Updater = self.buildGroupV2Updater()
-                    let storyDistributionListUpdater = self.buildStoryDistributionListUpdater()
-                    for item in items {
-                        func _mergeRecord<StateUpdater: StorageServiceStateUpdater>(
-                            _ record: StateUpdater.RecordType,
-                            stateUpdater: StateUpdater
-                        ) {
-                            self.mergeRecord(
-                                record,
-                                identifier: item.identifier,
-                                state: &mutableState,
-                                stateUpdater: stateUpdater,
-                                transaction: transaction
-                            )
-                        }
+            }
 
-                        if let contactRecord = item.contactRecord {
-                            _mergeRecord(contactRecord, stateUpdater: contactUpdater)
-                        } else if let groupV1Record = item.groupV1Record {
-                            _mergeRecord(groupV1Record, stateUpdater: groupV1Updater)
-                        } else if let groupV2Record = item.groupV2Record {
-                            _mergeRecord(groupV2Record, stateUpdater: groupV2Updater)
-                        } else if let storyDistributionListRecord = item.storyDistributionListRecord {
-                            _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
-                        } else if case .account = item.identifier.type {
-                            owsFailDebug("unexpectedly found account record in remaining items")
-                        } else {
-                            // This is not a record type we know about yet, so record this identifier in
-                            // our unknown mapping. This allows us to skip fetching it in the future and
-                            // not accidentally blow it away when we push an update.
-                            var unknownIdentifiersOfType = mutableState.unknownIdentifiersTypeMap[item.identifier.type] ?? []
-                            unknownIdentifiersOfType.append(item.identifier)
-                            mutableState.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
-                        }
-                    }
-
-                    remainingItems -= identifierBatch.count
-
-                    Logger.info(
-                        """
-                        Successfully merged remote manifest version \(manifest.version) \
-                        from device \(manifest.hasSourceDevice ? String(manifest.sourceDevice) : "(unspecified") (\
-                        Identifiers: \(identifierBatch.count); \
-                        Items: \(items.count); \
-                        Remaining: \(remainingItems))
-                        """
-                    )
-
-                    // Saving here records the new storage identifiers with the *old* manifest version. This allows us to
-                    // incrementally work through changes in a manifest, even if we fail part way through the update we'll
-                    // continue trying to apply the changes we haven't received yet (since we still know we're on an older
-                    // version overall).
-                    mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
-                }
+            if let contactRecord = item.contactRecord {
+                _mergeRecord(contactRecord, stateUpdater: contactUpdater)
+            } else if let groupV1Record = item.groupV1Record {
+                _mergeRecord(groupV1Record, stateUpdater: groupV1Updater)
+            } else if let groupV2Record = item.groupV2Record {
+                _mergeRecord(groupV2Record, stateUpdater: groupV2Updater)
+            } else if let storyDistributionListRecord = item.storyDistributionListRecord {
+                _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
+            } else if case .account = item.identifier.type {
+                owsFailDebug("unexpectedly found account record in remaining items")
+            } else {
+                // This is not a record type we know about yet, so record this identifier in
+                // our unknown mapping. This allows us to skip fetching it in the future and
+                // not accidentally blow it away when we push an update.
+                var unknownIdentifiersOfType = mutableState.unknownIdentifiersTypeMap[item.identifier.type] ?? []
+                unknownIdentifiersOfType.append(item.identifier)
+                mutableState.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
             }
         }
-        return promise.map { mutableState }
+        // Saving here records the new storage identifiers with the *old* manifest
+        // version. This allows us to incrementally work through changes in a
+        // manifest, even if we fail part way through the update we'll continue
+        // trying to apply the changes we haven't received yet (since we still know
+        // we're on an older version overall).
+        mutableState.save(clearConsecutiveConflicts: true, transaction: tx)
     }
 
     // MARK: - Clean Up
@@ -1955,4 +1934,10 @@ private struct BidirectionalLegacyDecoding<Value: Codable>: Codable {
     func encode(to encoder: Encoder) throws {
         try wrappedValue.encode(to: encoder)
     }
+}
+
+// MARK: - StorageServiceProtoManifestRecord
+
+private extension StorageServiceProtoManifestRecord {
+    var logDescription: String { "v[\(version)].\(sourceDevice)" }
 }
