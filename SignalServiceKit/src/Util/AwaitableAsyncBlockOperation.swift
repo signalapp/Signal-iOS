@@ -47,3 +47,22 @@ public final class AwaitableAsyncBlockOperation: OWSOperation {
         completionContinuation.resume(throwing: error)
     }
 }
+
+public final class AsyncBlockOperation: OWSOperation {
+    private let asyncBlock: () async throws -> Void
+
+    public init(asyncBlock: @escaping () async throws -> Void) {
+        self.asyncBlock = asyncBlock
+    }
+
+    public override func run() {
+        Task {
+            do {
+                try await self.asyncBlock()
+                self.reportSuccess()
+            } catch {
+                self.reportError(error)
+            }
+        }
+    }
+}
