@@ -1467,17 +1467,15 @@ extension CallService: CallManagerDelegate {
     ) {
         let senderAci = Aci(fromUUID: sender)
 
-        if FeatureFlags.groupCallDisposition {
-            /// Let our ``CallRecord`` delegate know we got a ring update.
-            databaseStorage.asyncWrite { tx in
-                self.groupCallRecordRingUpdateDelegate.didReceiveRingUpdate(
-                    groupId: groupId,
-                    ringId: ringId,
-                    ringUpdate: update,
-                    ringUpdateSender: senderAci,
-                    tx: tx.asV2Write
-                )
-            }
+        /// Let our ``CallRecord`` delegate know we got a ring update.
+        databaseStorage.asyncWrite { tx in
+            self.groupCallRecordRingUpdateDelegate.didReceiveRingUpdate(
+                groupId: groupId,
+                ringId: ringId,
+                ringUpdate: update,
+                ringUpdateSender: senderAci,
+                tx: tx.asV2Write
+            )
         }
 
         guard update == .requested else {

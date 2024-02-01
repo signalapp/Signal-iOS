@@ -116,11 +116,6 @@ final class CallRecordIncomingSyncMessageManagerImpl: CallRecordIncomingSyncMess
                 )
             }
         case let .group(groupId):
-            guard FeatureFlags.groupCallDisposition else {
-                syncMessageLogger.warn("Dropping incoming group call disposition sync message – feature not yet supported!")
-                return
-            }
-
             guard
                 let groupThread = fetchThread(groupId: groupId, tx: tx),
                 let groupThreadRowId = groupThread.sqliteRowId

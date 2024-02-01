@@ -134,10 +134,6 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
                 tx: tx
             )
 
-            guard FeatureFlags.groupCallDisposition else {
-                return
-            }
-
             // The group call update message is how we tell other members that
             // we've joined the call. Correspondingly, we'll make its timestamp
             // the "official" timestamp for when we joined the call.
@@ -184,10 +180,6 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
         groupThread: TSGroupThread
     ) {
         AssertIsOnMainThread()
-
-        guard FeatureFlags.groupCallDisposition else {
-            return
-        }
 
         databaseStorage.asyncWrite { tx in
             self.groupCallRecordManager.createOrUpdateCallRecordForDeclinedRing(
