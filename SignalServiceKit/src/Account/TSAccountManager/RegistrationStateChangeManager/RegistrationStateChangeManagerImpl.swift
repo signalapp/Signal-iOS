@@ -15,6 +15,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let identityManager: OWSIdentityManager
     private let notificationPresenter: NotificationsProtocolSwift
     private let paymentsEvents: Shims.PaymentsEvents
+    private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let schedulers: Schedulers
     private let senderKeyStore: Shims.SenderKeyStore
@@ -31,6 +32,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         identityManager: OWSIdentityManager,
         notificationPresenter: NotificationsProtocolSwift,
         paymentsEvents: Shims.PaymentsEvents,
+        recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         schedulers: Schedulers,
         senderKeyStore: Shims.SenderKeyStore,
@@ -46,6 +48,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.identityManager = identityManager
         self.notificationPresenter = notificationPresenter
         self.paymentsEvents = paymentsEvents
+        self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.schedulers = schedulers
         self.senderKeyStore = senderKeyStore
@@ -252,7 +255,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         )
         // At this stage, the device IDs on the self-recipient are irrelevant (and we always
         // append the primary device id anyway), just use the primary regardless of the local device id.
-        recipient.markAsRegisteredAndSave(source: .local, deviceId: OWSDevice.primaryDeviceId, tx: tx)
+        recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
     }
 
     // MARK: Notifications

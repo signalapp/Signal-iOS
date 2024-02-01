@@ -188,6 +188,7 @@ public class AppSetup {
             db: dependenciesBridge.db,
             recipientDatabaseTable: dependenciesBridge.recipientDatabaseTable,
             recipientFetcher: dependenciesBridge.recipientFetcher,
+            recipientManager: dependenciesBridge.recipientManager,
             recipientMerger: dependenciesBridge.recipientMerger,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             udManager: udManager,

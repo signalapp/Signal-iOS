@@ -590,55 +590,6 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ])
     }
 
-    func testUnregisteredTimestamps() {
-        let aci = Aci.randomForTesting()
-        write { tx in
-            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
-            XCTAssertNotNil(recipient.unregisteredAtTimestamp)
-
-            recipient.markAsRegisteredAndSave(tx: tx)
-            XCTAssertNil(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp)
-
-            recipient.markAsUnregisteredAndSave(tx: tx)
-            XCTAssertGreaterThan(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp!, 0)
-
-            recipient.markAsRegisteredAndSave(tx: tx)
-            XCTAssertNil(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp)
-        }
-    }
-
-    func testMarkAsRegistered() {
-        struct TestCase {
-            var initialDeviceIds: Set<UInt32>
-            var addedDeviceId: UInt32
-            var expectedDeviceIds: Set<UInt32>
-        }
-        let testCases: [TestCase] = [
-            TestCase(initialDeviceIds: [], addedDeviceId: 1, expectedDeviceIds: [1]),
-            TestCase(initialDeviceIds: [], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [1], addedDeviceId: 1, expectedDeviceIds: [1]),
-            TestCase(initialDeviceIds: [1], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [3], addedDeviceId: 1, expectedDeviceIds: [1, 3]),
-            TestCase(initialDeviceIds: [3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3]),
-            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
-            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
-            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
-        ]
-        write { tx in
-            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            for testCase in testCases {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx.asV2Write)
-                recipient.modifyAndSave(deviceIdsToAdd: Array(testCase.initialDeviceIds), deviceIdsToRemove: [], tx: tx)
-                recipient.markAsRegisteredAndSave(deviceId: testCase.addedDeviceId, tx: tx)
-                XCTAssertEqual(Set(recipient.deviceIds), testCase.expectedDeviceIds, "\(testCase)")
-            }
-        }
-    }
-
     // MARK: - Helpers
 
     @discardableResult
@@ -755,5 +706,60 @@ final class SignalRecipient2Test: XCTestCase {
         XCTAssertEqual(copiedRecipient, someRecipient)
         XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)
         XCTAssertEqual(Set([someRecipient, copiedRecipient]).count, 1)
+    }
+
+    func testUnregisteredTimestamps() {
+        let aci = Aci.randomForTesting()
+        let mockDb = MockDB()
+        let recipientTable = MockRecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
+        let recipientManager = SignalRecipientManagerImpl(recipientDatabaseTable: recipientTable, storageServiceManager: FakeStorageServiceManager())
+        mockDb.write { tx in
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+            XCTAssertNotNil(recipient.unregisteredAtTimestamp)
+
+            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+            XCTAssertNil(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
+
+            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: false, tx: tx)
+            XCTAssertGreaterThan(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp!, 0)
+
+            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+            XCTAssertNil(recipientTable.fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
+        }
+    }
+
+    func testMarkAsRegistered() {
+        struct TestCase {
+            var initialDeviceIds: Set<UInt32>
+            var addedDeviceId: UInt32
+            var expectedDeviceIds: Set<UInt32>
+        }
+        let testCases: [TestCase] = [
+            TestCase(initialDeviceIds: [], addedDeviceId: 1, expectedDeviceIds: [1]),
+            TestCase(initialDeviceIds: [], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1], addedDeviceId: 1, expectedDeviceIds: [1]),
+            TestCase(initialDeviceIds: [1], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [3], addedDeviceId: 1, expectedDeviceIds: [1, 3]),
+            TestCase(initialDeviceIds: [3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3]),
+            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
+            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
+        ]
+        let mockDb = MockDB()
+        let recipientTable = MockRecipientDatabaseTable()
+        let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientTable)
+        let recipientManager = SignalRecipientManagerImpl(recipientDatabaseTable: recipientTable, storageServiceManager: FakeStorageServiceManager())
+        mockDb.write { tx in
+            for testCase in testCases {
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx)
+                recipientManager.setDeviceIds(testCase.initialDeviceIds, for: recipient, shouldUpdateStorageService: false)
+                recipientManager.markAsRegisteredAndSave(recipient, deviceId: testCase.addedDeviceId, shouldUpdateStorageService: false, tx: tx)
+                XCTAssertEqual(Set(recipient.deviceIds), testCase.expectedDeviceIds, "\(testCase)")
+            }
+        }
     }
 }

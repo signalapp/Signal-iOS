@@ -594,13 +594,16 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         // might produce a visible event and the PNI signature won't.
         handlePniSignatureIfNeeded(in: decryptedEnvelope, localIdentifiers: localIdentifiers, tx: transaction)
 
-        let recipient = DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
+        let recipientMerger = DependenciesBridge.shared.recipientMerger
+        let recipient = recipientMerger.applyMergeFromSealedSender(
             localIdentifiers: localIdentifiers,
             aci: decryptResult.senderAci,
             phoneNumber: E164(decryptResult.senderE164),
             tx: transaction.asV2Write
         )
-        recipient.markAsRegisteredAndSave(deviceId: sourceDeviceId, tx: transaction)
+
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        recipientManager.markAsRegisteredAndSave(recipient, deviceId: sourceDeviceId, shouldUpdateStorageService: true, tx: transaction.asV2Write)
 
         return decryptedEnvelope
     }

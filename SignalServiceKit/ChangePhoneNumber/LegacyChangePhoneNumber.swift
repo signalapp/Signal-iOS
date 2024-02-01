@@ -238,7 +238,8 @@ public class LegacyChangePhoneNumber: NSObject {
             pni: servicePni,
             tx: transaction.asV2Write
         )
-        localRecipient.markAsRegisteredAndSave(tx: transaction)
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        recipientManager.markAsRegisteredAndSave(localRecipient, shouldUpdateStorageService: false, tx: transaction.asV2Write)
 
         if
             serviceE164 != localE164

@@ -14,23 +14,26 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let profileManager: MessageBackup.Shims.ProfileManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientHidingManager: RecipientHidingManager
-    private let recipientStore: SignalRecipientStore
+    private let recipientManager: any SignalRecipientManager
     private let storyStore: StoryStore
     private let tsAccountManager: TSAccountManager
 
     public init(
         blockingManager: MessageBackup.Shims.BlockingManager,
         profileManager: MessageBackup.Shims.ProfileManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
         recipientHidingManager: RecipientHidingManager,
-        recipientStore: SignalRecipientStore,
+        recipientManager: any SignalRecipientManager,
         storyStore: StoryStore,
         tsAccountManager: TSAccountManager
     ) {
         self.blockingManager = blockingManager
         self.profileManager = profileManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
-        self.recipientStore = recipientStore
+        self.recipientManager = recipientManager
         self.storyStore = storyStore
         self.tsAccountManager = tsAccountManager
     }
@@ -47,7 +50,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
         var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
-        recipientStore.enumerateAll(tx: tx) { recipient in
+        recipientDatabaseTable.enumerateAll(tx: tx) { recipient in
             guard
                 let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
@@ -212,19 +215,20 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         )
 
         // TODO: remove this check; we should be starting with an empty database.
-        if let existingRecipient = recipientStore.recipient(for: recipient.address, tx: tx) {
+        if let existingRecipient = recipientDatabaseTable.fetchRecipient(address: recipient.address, tx: tx) {
             recipient = existingRecipient
             if isRegistered == true, !recipient.isRegistered {
-                recipientStore.markAsRegisteredAndSave(recipient, tx: tx)
+                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
             } else if isRegistered == false, recipient.isRegistered, let unregisteredTimestamp {
-                recipientStore.markAsUnregisteredAndSave(recipient, at: unregisteredTimestamp, tx: tx)
+                recipientManager.markAsUnregisteredAndSave(
+                    recipient,
+                    unregisteredAt: .specificTimeFromOtherDevice(unregisteredTimestamp),
+                    shouldUpdateStorageService: false,
+                    tx: tx
+                )
             }
         } else {
-            do {
-                try recipientStore.insert(recipient, tx: tx)
-            } catch let error {
-                return .failure([.databaseInsertionFailed(recipientProto.recipientId, error)])
-            }
+            recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
         }
 
         if contactProto.profileSharing {

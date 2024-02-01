@@ -27,11 +27,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         public static let distantPastUnregisteredTimestamp: UInt64 = 1
     }
 
-    public enum ModifySource: Int {
-        case local
-        case storageService
-    }
-
     public var id: RowId?
     public let uniqueId: String
     /// Represents the ACI for this SignalRecipient.
@@ -47,8 +42,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     /// it's safe to check it at time-of-fetch and throw an error.
     public var pni: Pni?
     public var phoneNumber: String?
-    private(set) public var deviceIds: [UInt32]
-    private(set) public var unregisteredAtTimestamp: UInt64?
+    fileprivate(set) public var deviceIds: [UInt32]
+    fileprivate(set) public var unregisteredAtTimestamp: UInt64?
 
     public var aci: Aci? {
         get { Aci.parseFrom(aciString: aciString) }
@@ -254,103 +249,44 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         return result
     }
 
-    // MARK: - Registered & Device IDs
-
     public var isRegistered: Bool { !deviceIds.isEmpty }
-
-    public func markAsUnregisteredAndSave(
-        at timestamp: UInt64? = nil,
-        source: ModifySource = .local,
-        tx: SDSAnyWriteTransaction
-    ) {
-        guard isRegistered else {
-            return
-        }
-
-        removeAllDevices(unregisteredAtTimestamp: timestamp ?? Date.ows_millisecondTimestamp(), source: source)
-        anyOverwritingUpdate(transaction: tx)
-    }
-
-    public func markAsRegisteredAndSave(
-        source: ModifySource = .local,
-        deviceId: UInt32 = OWSDevice.primaryDeviceId,
-        tx: SDSAnyWriteTransaction
-    ) {
-        // Always add the primary device ID if we're adding any other.
-        let deviceIdsToAdd: Set<UInt32> = [deviceId, OWSDevice.primaryDeviceId]
-
-        let missingDeviceIds = deviceIdsToAdd.filter { !deviceIds.contains($0) }
-
-        guard !missingDeviceIds.isEmpty else {
-            return
-        }
-
-        addDevices(missingDeviceIds, source: source)
-        anyOverwritingUpdate(transaction: tx)
-    }
-
-    public func markAsRegisteredAndSave(
-        source: ModifySource = .local,
-        deviceId: UInt32,
-        tx: DBWriteTransaction
-    ) {
-        self.markAsRegisteredAndSave(source: source, deviceId: deviceId, tx: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func modifyAndSave(deviceIdsToAdd: [UInt32], deviceIdsToRemove: [UInt32], tx: SDSAnyWriteTransaction) {
-        if deviceIdsToAdd.isEmpty, deviceIdsToRemove.isEmpty {
-            return
-        }
-
-        // Add new devices first to avoid an intermediate "empty" state.
-        Logger.info("Adding \(deviceIdsToAdd) to \(address).")
-        addDevices(deviceIdsToAdd, source: .local)
-
-        Logger.info("Removing \(deviceIdsToRemove) from \(address).")
-        removeDevices(deviceIdsToRemove, source: .local)
-
-        anyOverwritingUpdate(transaction: tx)
-    }
-
-    private func addDevices(_ deviceIdsToAdd: some Sequence<UInt32>, source: ModifySource) {
-        deviceIds = Set(deviceIds).union(deviceIdsToAdd).sorted()
-
-        if !deviceIds.isEmpty, unregisteredAtTimestamp != nil {
-            setUnregisteredAtTimestamp(nil, source: source)
-        }
-    }
-
-    private func removeDevices(_ deviceIdsToRemove: some Sequence<UInt32>, source: ModifySource) {
-        deviceIds = Set(deviceIds).subtracting(deviceIdsToRemove).sorted()
-
-        if deviceIds.isEmpty, unregisteredAtTimestamp == nil {
-            setUnregisteredAtTimestamp(Date.ows_millisecondTimestamp(), source: source)
-        }
-    }
-
-    private func removeAllDevices(unregisteredAtTimestamp: UInt64, source: ModifySource) {
-        deviceIds = []
-        setUnregisteredAtTimestamp(unregisteredAtTimestamp, source: source)
-    }
-
-    private func setUnregisteredAtTimestamp(_ unregisteredAtTimestamp: UInt64?, source: ModifySource) {
-        if self.unregisteredAtTimestamp == unregisteredAtTimestamp {
-            return
-        }
-        self.unregisteredAtTimestamp = unregisteredAtTimestamp
-
-        switch source {
-        case .storageService:
-            // Don't need to tell storage service what they just told us.
-            break
-        case .local:
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [uniqueId])
-        }
-    }
 
     @objc
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber)
+    }
+}
+
+// MARK: - SignalRecipientManagerImpl
+
+extension SignalRecipientManagerImpl {
+    func setDeviceIds(
+        _ deviceIds: Set<UInt32>,
+        for recipient: SignalRecipient,
+        shouldUpdateStorageService: Bool
+    ) {
+        recipient.deviceIds = deviceIds.sorted()
+        // Clear the timestamp if we're registered. If we're unregistered, set it if we don't already have one.
+        setUnregisteredAtTimestamp(
+            recipient.isRegistered ? nil : (recipient.unregisteredAtTimestamp ?? NSDate.ows_millisecondTimeStamp()),
+            for: recipient,
+            shouldUpdateStorageService: shouldUpdateStorageService
+        )
+    }
+
+    func setUnregisteredAtTimestamp(
+        _ unregisteredAtTimestamp: UInt64?,
+        for recipient: SignalRecipient,
+        shouldUpdateStorageService: Bool
+    ) {
+        if recipient.unregisteredAtTimestamp == unregisteredAtTimestamp {
+            return
+        }
+        recipient.unregisteredAtTimestamp = unregisteredAtTimestamp
+
+        if shouldUpdateStorageService {
+            storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipient.uniqueId])
+        }
     }
 }
 

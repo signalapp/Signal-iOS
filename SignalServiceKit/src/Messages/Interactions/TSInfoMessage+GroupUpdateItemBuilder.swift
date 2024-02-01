@@ -111,14 +111,14 @@ extension GroupUpdateItemBuilder {
 
 public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
     private let contactsManager: Shims.ContactsManager
-    private let signalRecipientStore: SignalRecipientStore
+    private let recipientDatabaseTable: any RecipientDatabaseTable
 
     init(
         contactsManager: Shims.ContactsManager,
-        signalRecipientStore: SignalRecipientStore
+        recipientDatabaseTable: any RecipientDatabaseTable
     ) {
         self.contactsManager = contactsManager
-        self.signalRecipientStore = signalRecipientStore
+        self.recipientDatabaseTable = recipientDatabaseTable
     }
 
     public func precomputedUpdateItemsForNewGroup(
@@ -128,10 +128,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         groupUpdateSource: GroupUpdateSource,
         tx: DBReadTransaction
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
-        let groupUpdateSource = groupUpdateSource.sanitize(
-            signalRecipientStore: signalRecipientStore,
-            tx: tx
-        )
+        let groupUpdateSource = groupUpdateSource.sanitize(recipientDatabaseTable: recipientDatabaseTable, tx: tx)
 
         var precomputedItems = NewGroupUpdateItemBuilder(
             contactsManager: contactsManager
@@ -184,10 +181,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         tx: DBReadTransaction
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         // Sanitize first so we map e164s to known acis.
-        let groupUpdateSource = groupUpdateSource.sanitize(
-            signalRecipientStore: signalRecipientStore,
-            tx: tx
-        )
+        let groupUpdateSource = groupUpdateSource.sanitize(recipientDatabaseTable: recipientDatabaseTable, tx: tx)
 
         let precomputedItems = DiffingGroupUpdateItemBuilder(
             oldGroupModel: oldGroupModel,
@@ -234,17 +228,14 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
 
 public extension GroupUpdateSource {
 
-    func sanitize(
-        signalRecipientStore: SignalRecipientStore,
-        tx: DBReadTransaction
-    ) -> Self {
+    func sanitize(recipientDatabaseTable: any RecipientDatabaseTable, tx: DBReadTransaction) -> Self {
         switch self {
         case .legacyE164(let e164):
             // If we can map an e164 to an aci, do that. If we can't,
             // most of the time this becomes "unknown" (which only affects
             // gv1 updates)
             if
-                let recipient = signalRecipientStore.recipient(for: .init(e164), tx: tx),
+                let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: e164.stringValue, transaction: tx),
                 let aci = recipient.aci
             {
                 return .aci(aci)

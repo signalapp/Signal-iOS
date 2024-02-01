@@ -49,8 +49,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientHidingManager: RecipientHidingManager
-    private let recipientStore: SignalRecipientStore
+    private let recipientManager: any SignalRecipientManager
     private let storyStore: StoryStore
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -59,8 +60,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         blockingManager: MessageBackup.Shims.BlockingManager,
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
         recipientHidingManager: RecipientHidingManager,
-        recipientStore: SignalRecipientStore,
+        recipientManager: any SignalRecipientManager,
         storyStore: StoryStore,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager
@@ -68,8 +70,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         self.blockingManager = blockingManager
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
-        self.recipientStore = recipientStore
+        self.recipientManager = recipientManager
         self.storyStore = storyStore
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -79,8 +82,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         MessageBackupContactRecipientArchiver(
             blockingManager: blockingManager,
             profileManager: profileManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientHidingManager: recipientHidingManager,
-            recipientStore: recipientStore,
+            recipientManager: recipientManager,
             storyStore: storyStore,
             tsAccountManager: tsAccountManager
         ),

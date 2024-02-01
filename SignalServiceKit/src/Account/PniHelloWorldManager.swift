@@ -37,8 +37,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let profileManager: Shims.ProfileManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
     private let schedulers: Schedulers
-    private let signalRecipientStore: Shims.SignalRecipientStore
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -50,8 +50,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
         profileManager: Shims.ProfileManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
         schedulers: Schedulers,
-        signalRecipientStore: Shims.SignalRecipientStore,
         tsAccountManager: TSAccountManager
     ) {
         self.database = database
@@ -62,8 +62,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.profileManager = profileManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.schedulers = schedulers
-        self.signalRecipientStore = signalRecipientStore
         self.tsAccountManager = tsAccountManager
     }
 
@@ -87,17 +87,13 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx),
             localIdentifiers.pni != nil,
-            let (
-                localAccountId,
-                localUserAllDeviceIds
-            ) = signalRecipientStore.localAccountAndDeviceIds(
-                localAci: localIdentifiers.aci,
-                tx: syncTx
-            )
+            let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: syncTx)
         else {
             logger.warn("Skipping PNI Hello World, missing local account parameters!")
             return
         }
+        let localRecipientId = localRecipient.uniqueId
+        let localDeviceIds = localRecipient.deviceIds
 
         guard profileManager.isLocalProfilePniCapable() else {
             logger.info("Skipping PNI Hello World, profile not yet PNI capable.")
@@ -123,9 +119,9 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
             return self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localIdentifiers.aci,
-                localAccountId: localAccountId,
+                localAccountId: localRecipientId,
                 localDeviceId: localDeviceId,
-                localUserAllDeviceIds: localUserAllDeviceIds,
+                localUserAllDeviceIds: localDeviceIds,
                 localPniIdentityKeyPair: localPniIdentityKeyPair,
                 localE164: localE164,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
@@ -180,14 +176,12 @@ extension PniHelloWorldManagerImpl {
         typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Shim
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
-        typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Shim
     }
 
     enum Wrappers {
         typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Wrapper
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
-        typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper
     }
 }
 
@@ -246,36 +240,5 @@ class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImp
 
     func isLocalProfilePniCapable() -> Bool {
         return profileManager.localProfileIsPniCapable()
-    }
-}
-
-// MARK: SignalRecipientStore
-
-protocol _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
-    func localAccountAndDeviceIds(
-        localAci: Aci,
-        tx: DBReadTransaction
-    ) -> (accountId: String, deviceIds: [UInt32])?
-}
-
-class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
-    func localAccountAndDeviceIds(
-        localAci: Aci,
-        tx: DBReadTransaction
-    ) -> (accountId: String, deviceIds: [UInt32])? {
-        guard
-            let localRecipient = SignalRecipient.fetchRecipient(
-                for: SignalServiceAddress(localAci),
-                onlyIfRegistered: false,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-        else {
-            return nil
-        }
-
-        return (
-            localRecipient.accountId,
-            localRecipient.deviceIds
-        )
     }
 }

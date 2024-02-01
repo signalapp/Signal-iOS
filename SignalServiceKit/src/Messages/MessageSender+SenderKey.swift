@@ -252,8 +252,9 @@ extension MessageSender {
                         // doesn't exist. Therefore, don't use this to mark accounts as registered.
                         if !message.isStorySend {
                             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                            recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx.asV2Write)
-                                .markAsRegisteredAndSave(tx: tx)
+                            let recipient = recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx.asV2Write)
+                            let recipientManager = DependenciesBridge.shared.recipientManager
+                            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx.asV2Write)
                         }
 
                         self.profileManager.didSendOrReceiveMessage(

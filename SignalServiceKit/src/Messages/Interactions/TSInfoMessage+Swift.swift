@@ -150,7 +150,7 @@ public extension TSInfoMessage {
             contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(
                 contactsManager
             ),
-            signalRecipientStore: DependenciesBridge.shared.signalRecipientStore
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         )
 
         let precomputedItems: [PersistableGroupUpdateItem]

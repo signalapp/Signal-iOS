@@ -13,6 +13,7 @@ public struct UsernameQuerier {
     private let localUsernameManager: LocalUsernameManager
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
+    private let recipientManager: any SignalRecipientManager
     private let recipientFetcher: RecipientFetcher
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -31,6 +32,7 @@ public struct UsernameQuerier {
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             networkManager: deps.networkManager,
             profileManager: deps.profileManager,
+            recipientManager: DependenciesBridge.shared.recipientManager,
             recipientFetcher: DependenciesBridge.shared.recipientFetcher,
             schedulers: DependenciesBridge.shared.schedulers,
             storageServiceManager: deps.storageServiceManager,
@@ -47,6 +49,7 @@ public struct UsernameQuerier {
         localUsernameManager: LocalUsernameManager,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
+        recipientManager: any SignalRecipientManager,
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
@@ -60,6 +63,7 @@ public struct UsernameQuerier {
         self.localUsernameManager = localUsernameManager
         self.networkManager = networkManager
         self.profileManager = profileManager
+        self.recipientManager = recipientManager
         self.recipientFetcher = recipientFetcher
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
@@ -223,7 +227,7 @@ public struct UsernameQuerier {
         tx: SDSAnyWriteTransaction
     ) {
         let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
-        recipient.markAsRegisteredAndSave(tx: tx)
+        recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx.asV2Write)
 
         let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
             forRecipient: recipient,

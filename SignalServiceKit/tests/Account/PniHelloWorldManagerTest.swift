@@ -33,7 +33,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
     private var profileManagerMock: ProfileManagerMock!
-    private var signalRecipientStoreMock: SignalRecipientStoreMock!
+    private var recipientDatabaseTableMock: MockRecipientDatabaseTable!
     private var tsAccountManagerMock: MockTSAccountManager!
 
     private let db = MockDB()
@@ -49,7 +49,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         pniSignedPreKeyStoreMock = .init()
         pniKyberPreKeyStoreMock = .init(dateProvider: Date.provider)
         profileManagerMock = .init()
-        signalRecipientStoreMock = .init()
+        recipientDatabaseTableMock = .init()
         tsAccountManagerMock = .init()
 
         let kvStoreFactory = InMemoryKeyValueStoreFactory()
@@ -67,8 +67,8 @@ class PniHelloWorldManagerTest: XCTestCase {
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
             profileManager: profileManagerMock,
+            recipientDatabaseTable: recipientDatabaseTableMock,
             schedulers: schedulers,
-            signalRecipientStore: signalRecipientStoreMock,
             tsAccountManager: tsAccountManagerMock
         )
     }
@@ -88,10 +88,17 @@ class PniHelloWorldManagerTest: XCTestCase {
     private func setMocksForHappyPath(
         includingNetworkRequest mockNetworkRequest: Bool = false
     ) {
+        let localIdentifiers = LocalIdentifiers.forUnitTests
         tsAccountManagerMock.registrationStateMock = { .registered }
-        tsAccountManagerMock.localIdentifiersMock = { .mock }
-        signalRecipientStoreMock.localAccountId = "foobar"
-        signalRecipientStoreMock.deviceIds = [1, 2, 3]
+        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
+        db.write { tx in
+            recipientDatabaseTableMock.insertRecipient(SignalRecipient(
+                aci: localIdentifiers.aci,
+                pni: localIdentifiers.pni,
+                phoneNumber: E164(localIdentifiers.phoneNumber)!,
+                deviceIds: [1, 2, 3]
+            ), transaction: tx)
+        }
         profileManagerMock.isPniCapable = true
 
         let keyPair = ECKeyPair.generateKeyPair()
@@ -154,7 +161,10 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testSkipsIfMissingLocalPni() {
         setMocksForHappyPath()
-        tsAccountManagerMock.localIdentifiersMock = { .missingPni }
+        let localIdentifiers = tsAccountManagerMock.localIdentifiersMock()!
+        tsAccountManagerMock.localIdentifiersMock = {
+            LocalIdentifiers(aci: localIdentifiers.aci, pni: nil, phoneNumber: localIdentifiers.phoneNumber)
+        }
 
         runRunRun()
 
@@ -164,8 +174,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
     func testSkipsIfMissingAccountAndDeviceIds() {
         setMocksForHappyPath()
-        signalRecipientStoreMock.localAccountId = nil
-        signalRecipientStoreMock.deviceIds = nil
+        recipientDatabaseTableMock.recipientTable = [:]
 
         runRunRun()
 
@@ -216,22 +225,6 @@ class PniHelloWorldManagerTest: XCTestCase {
 }
 
 // MARK: - Mocks
-
-// MARK: LocalIdentifiers
-
-private extension LocalIdentifiers {
-    static var mock: LocalIdentifiers {
-        return .withPni(pni: Pni.randomForTesting())
-    }
-
-    static var missingPni: LocalIdentifiers {
-        return .withPni(pni: nil)
-    }
-
-    private static func withPni(pni: Pni?) -> LocalIdentifiers {
-        return LocalIdentifiers(aci: Aci.randomForTesting(), pni: pni, e164: E164("+17735550199")!)
-    }
-}
 
 // MARK: IdentityManager
 
@@ -306,23 +299,5 @@ private class ProfileManagerMock: _PniHelloWorldManagerImpl_ProfileManager_Shim 
 
     func isLocalProfilePniCapable() -> Bool {
         return isPniCapable
-    }
-}
-
-// MARK: SignalRecipientStore
-
-private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
-    var localAccountId: String?
-    var deviceIds: [UInt32]?
-
-    func localAccountAndDeviceIds(
-        localAci: Aci,
-        tx: DBReadTransaction
-    ) -> (accountId: String, deviceIds: [UInt32])? {
-        guard let localAccountId, let deviceIds else {
-            return nil
-        }
-
-        return (localAccountId, deviceIds)
     }
 }

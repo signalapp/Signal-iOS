@@ -188,6 +188,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
         }
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipientManager = DependenciesBridge.shared.recipientManager
         let recipientMerger = DependenciesBridge.shared.recipientMerger
 
         let recipient: SignalRecipient
@@ -200,7 +201,7 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             )
             // Mark as registered only if we have a UUID (we always do in this branch).
             // If we don't have a UUID, contacts can't be registered.
-            recipient.markAsRegisteredAndSave(tx: tx)
+            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx.asV2Write)
         } else if let phoneNumber = contactDetails.phoneNumber {
             recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
         } else {

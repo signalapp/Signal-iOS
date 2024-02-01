@@ -1740,10 +1740,12 @@ public final class MessageReceiver: Dependencies {
 
         // Check if the SignalRecipient (used for sending messages) knows about
         // this device.
-        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
         if !recipient.deviceIds.contains(deviceId) {
+            let recipientManager = DependenciesBridge.shared.recipientManager
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
-            recipient.modifyAndSave(deviceIdsToAdd: [deviceId], deviceIdsToRemove: [], tx: tx)
+            recipientManager.markAsRegisteredAndSave(recipient, deviceId: deviceId, shouldUpdateStorageService: true, tx: tx.asV2Write)
         }
 
         // Check if OWSDevice (ie the "Linked Devices" UI) knows about this device.

@@ -1593,7 +1593,8 @@ public class MessageSender: Dependencies {
                     serviceId: messageSend.serviceId,
                     tx: transaction.asV2Write
                 )
-                recipient.markAsRegisteredAndSave(tx: transaction)
+                let recipientManager = DependenciesBridge.shared.recipientManager
+                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: transaction.asV2Write)
             }
 
             Self.profileManager.didSendOrReceiveMessage(
@@ -1730,7 +1731,10 @@ public class MessageSender: Dependencies {
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)
-        recipient?.markAsUnregisteredAndSave(tx: tx)
+        if let recipient {
+            let recipientManager = DependenciesBridge.shared.recipientManager
+            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+        }
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.
@@ -1781,7 +1785,14 @@ public class MessageSender: Dependencies {
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
-        recipient.modifyAndSave(deviceIdsToAdd: devicesToAdd, deviceIdsToRemove: devicesToRemove, tx: transaction)
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        recipientManager.modifyAndSave(
+            recipient,
+            deviceIdsToAdd: devicesToAdd,
+            deviceIdsToRemove: devicesToRemove,
+            shouldUpdateStorageService: true,
+            tx: transaction.asV2Write
+        )
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")

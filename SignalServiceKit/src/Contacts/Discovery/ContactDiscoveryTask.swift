@@ -15,6 +15,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let db: DB
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
+    private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
@@ -24,6 +25,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         db: DB,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
+        recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
@@ -32,6 +34,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         self.db = db
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
+        self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -84,7 +87,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             guard let recipient else {
                 return
             }
-            recipient.markAsRegisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
+            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
 
             // We process all the results that we were provided, but we only return the
             // recipients that were specifically requested as part of this operation.
@@ -115,7 +118,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             guard let recipient, recipient.aci == nil, recipient.pni == nil else {
                 return
             }
-            recipient.markAsUnregisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
+            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
         }
 
         return registeredRecipients

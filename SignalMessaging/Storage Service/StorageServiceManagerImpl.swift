@@ -1605,6 +1605,7 @@ class StorageServiceOperation: OWSOperation {
                 profileManager: profileManagerImpl,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                recipientManager: DependenciesBridge.shared.recipientManager,
                 recipientMerger: DependenciesBridge.shared.recipientMerger,
                 recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
             ),

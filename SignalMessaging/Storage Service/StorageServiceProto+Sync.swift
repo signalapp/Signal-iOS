@@ -186,6 +186,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let profileManager: OWSProfileManager
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
+    private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
     private let recipientHidingManager: RecipientHidingManager
 
@@ -200,6 +201,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         profileManager: OWSProfileManager,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
+        recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
         recipientHidingManager: RecipientHidingManager
     ) {
@@ -213,6 +215,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
+        self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
         self.recipientHidingManager = recipientHidingManager
     }
@@ -399,9 +402,18 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             tx: transaction.asV2Write
         )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
-            recipient.markAsUnregisteredAndSave(at: unregisteredAtTimestamp, source: .storageService, tx: transaction)
+            recipientManager.markAsUnregisteredAndSave(
+                recipient,
+                unregisteredAt: .specificTimeFromOtherDevice(unregisteredAtTimestamp),
+                shouldUpdateStorageService: false,
+                tx: transaction.asV2Write
+            )
         } else {
-            recipient.markAsRegisteredAndSave(source: .storageService, tx: transaction)
+            recipientManager.markAsRegisteredAndSave(
+                recipient,
+                shouldUpdateStorageService: false,
+                tx: transaction.asV2Write
+            )
         }
 
         guard let serviceIds = AtLeastOneServiceId(aci: recipient.aci, pni: recipient.pni) else {

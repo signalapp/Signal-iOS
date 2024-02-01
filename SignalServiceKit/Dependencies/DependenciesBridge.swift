@@ -92,14 +92,13 @@ public class DependenciesBridge {
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
     public let recipientIdFinder: RecipientIdFinder
+    public let recipientManager: any SignalRecipientManager
     public let recipientMerger: RecipientMerger
     public let registrationSessionManager: RegistrationSessionManager
 
     public let registrationStateChangeManager: RegistrationStateChangeManager
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
-
-    public let signalRecipientStore: SignalRecipientStore
 
     public let socketManager: SocketManager
 
@@ -254,8 +253,11 @@ public class DependenciesBridge {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let signalRecipientStore = SignalRecipientStoreImpl()
-        self.signalRecipientStore = signalRecipientStore
+        let recipientManager = SignalRecipientManagerImpl(
+            recipientDatabaseTable: recipientDatabaseTable,
+            storageServiceManager: storageServiceManager
+        )
+        self.recipientManager = recipientManager
 
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: TSAccountManagerImpl.Wrappers.AppReadiness(),
@@ -329,7 +331,7 @@ public class DependenciesBridge {
 
         let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
             contactsManager: GroupUpdateItemBuilderImpl.Wrappers.ContactsManager(contactsManager),
-            signalRecipientStore: signalRecipientStore
+            recipientDatabaseTable: recipientDatabaseTable
         )
 
         self.groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
@@ -491,6 +493,7 @@ public class DependenciesBridge {
             identityManager: identityManager,
             notificationPresenter: notificationsManager,
             paymentsEvents: RegistrationStateChangeManagerImpl.Wrappers.PaymentsEvents(paymentsEvents),
+            recipientManager: self.recipientManager,
             recipientMerger: recipientMerger,
             schedulers: schedulers,
             senderKeyStore: RegistrationStateChangeManagerImpl.Wrappers.SenderKeyStore(senderKeyStore),
@@ -526,8 +529,8 @@ public class DependenciesBridge {
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
+            recipientDatabaseTable: self.recipientDatabaseTable,
             schedulers: schedulers,
-            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
             tsAccountManager: tsAccountManager
         )
 
@@ -664,8 +667,9 @@ public class DependenciesBridge {
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+                recipientDatabaseTable: self.recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
-                recipientStore: signalRecipientStore,
+                recipientManager: self.recipientManager,
                 storyStore: StoryStoreImpl(),
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager

@@ -10,6 +10,8 @@ public protocol RecipientDatabaseTable {
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient?
 
+    func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void)
+
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
     func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
     func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
@@ -41,6 +43,13 @@ extension RecipientDatabaseTable {
         }
         return nil
     }
+
+    func fetchRecipient(address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
+        return (
+            address.serviceId.flatMap({ fetchRecipient(serviceId: $0, transaction: tx) })
+            ?? address.phoneNumber.flatMap({ fetchRecipient(phoneNumber: $0, transaction: tx) })
+        )
+    }
 }
 
 public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
@@ -52,6 +61,10 @@ public class RecipientDatabaseTableImpl: RecipientDatabaseTable {
 
     public func fetchRecipient(phoneNumber: String, transaction tx: DBReadTransaction) -> SignalRecipient? {
         SignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void) {
+        SignalRecipient.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx), block: { recipient, _ in block(recipient) })
     }
 
     public func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
@@ -79,6 +92,10 @@ class MockRecipientDatabaseTable: RecipientDatabaseTable {
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
         return recipientTable.values.first(where: { $0.phoneNumber == phoneNumber })?.copyRecipient() ?? nil
+    }
+
+    func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void) {
+        recipientTable.forEach({ block($0.value) })
     }
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {

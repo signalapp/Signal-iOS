@@ -46,10 +46,14 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     private func createRecipients(_ serviceIds: [ServiceId]) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let recipientManager = DependenciesBridge.shared.recipientManager
         write { tx in
             for serviceId in serviceIds {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
-                recipient.markAsRegisteredAndSave(tx: tx)
+                recipientManager.markAsRegisteredAndSave(
+                    recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write),
+                    shouldUpdateStorageService: false,
+                    tx: tx.asV2Write
+                )
             }
         }
     }
