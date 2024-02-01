@@ -98,10 +98,17 @@ public class ProfileFetcherJob: NSObject {
             await databaseStorage.awaitableWrite { [serviceId] tx in
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
                 let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Write)
-                if let recipient {
-                    let recipientManager = DependenciesBridge.shared.recipientManager
-                    recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+                guard let recipient else {
+                    return
                 }
+                let recipientManager = DependenciesBridge.shared.recipientManager
+                recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+                let recipientMerger = DependenciesBridge.shared.recipientMerger
+                recipientMerger.splitUnregisteredRecipientIfNeeded(
+                    localIdentifiers: localIdentifiers,
+                    unregisteredRecipient: recipient,
+                    tx: tx.asV2Write
+                )
             }
             throw error
         }

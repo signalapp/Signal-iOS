@@ -1720,24 +1720,33 @@ public class MessageSender: Dependencies {
         thread: TSThread,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        owsAssertDebug(!Thread.isMainThread)
-
-        let address = SignalServiceAddress(serviceId)
+        AssertNotOnMainThread()
 
         if thread.isNonContactThread {
             // Mark as "skipped" group members who no longer have signal accounts.
-            message.update(withSkippedRecipient: address, transaction: tx)
+            message.update(withSkippedRecipient: SignalServiceAddress(serviceId), transaction: tx)
         }
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)
-        if let recipient {
-            let recipientManager = DependenciesBridge.shared.recipientManager
-            recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
+            return
         }
-        // TODO: Should we deleteAllSessionsForContact here?
-        //       If so, we'll need to avoid doing a prekey fetch every
-        //       time we try to send a message to an unregistered user.
+
+        let recipientManager = DependenciesBridge.shared.recipientManager
+        recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            Logger.warn("Can't split recipient because we're not registered.")
+            return
+        }
+
+        let recipientMerger = DependenciesBridge.shared.recipientMerger
+        recipientMerger.splitUnregisteredRecipientIfNeeded(
+            localIdentifiers: localIdentifiers,
+            unregisteredRecipient: recipient,
+            tx: tx.asV2Write
+        )
     }
 
     private func handleMismatchedDevices(for serviceId: ServiceId, response: MessageSendFailureResponse) async {

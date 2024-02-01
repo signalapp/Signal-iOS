@@ -1223,16 +1223,37 @@ class StorageServiceOperation: OWSOperation {
         state: State
     ) async throws -> State {
         var mutableState = state
+        var deferredItems = [StorageService.StorageItem]()
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
-            let items = try await StorageService.fetchItems(
+            let fetchedItems = try await StorageService.fetchItems(
                 for: Array(identifierBatch),
                 chatServiceAuth: self.authedAccount.chatServiceAuth
             ).awaitable()
 
-            await databaseStorage.awaitableWrite { tx in
-                self.mergeItems(items, mutableState: &mutableState, tx: tx)
+            // We process contacts with ACIs before those without ACIs. We do this to
+            // ensure we process split operations first. If we don't, then we'll likely
+            // try to re-populate the ACI based on our local state.
+            var batchItems = [StorageService.StorageItem]()
+            var batchDeferredItemCount = 0
+            for fetchedItem in fetchedItems {
+                if let record = fetchedItem.contactRecord, StorageServiceContactRecordUpdater.shouldDeferMerge(record) {
+                    deferredItems.append(fetchedItem)
+                    batchDeferredItemCount += 1
+                } else {
+                    batchItems.append(fetchedItem)
+                }
             }
-            Logger.info("\(manifest.logDescription); fetched \(identifierBatch.count) items; processed \(items.count)")
+
+            await databaseStorage.awaitableWrite { tx in
+                self.mergeItems(batchItems, mutableState: &mutableState, tx: tx)
+            }
+            Logger.info("\(manifest.logDescription); fetched \(identifierBatch.count) items; processed \(batchItems.count); deferred \(batchDeferredItemCount)")
+        }
+        for deferredBatch in deferredItems.chunked(by: Self.itemsBatchSize) {
+            await databaseStorage.awaitableWrite { tx in
+                self.mergeItems(deferredBatch, mutableState: &mutableState, tx: tx)
+            }
+            Logger.info("\(manifest.logDescription); processed \(deferredBatch.count) deferred items")
         }
         return mutableState
     }

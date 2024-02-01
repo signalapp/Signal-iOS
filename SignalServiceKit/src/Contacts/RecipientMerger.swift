@@ -58,6 +58,13 @@ public protocol RecipientMerger {
         pni: Pni,
         tx: DBWriteTransaction
     )
+
+    /// We learned an ACI is unregistered, so we might need to split the E164/PNI.
+    func splitUnregisteredRecipientIfNeeded(
+        localIdentifiers: LocalIdentifiers,
+        unregisteredRecipient: SignalRecipient,
+        tx: DBWriteTransaction
+    )
 }
 
 protocol RecipientMergeObserver {
@@ -367,6 +374,39 @@ class RecipientMergerImpl: RecipientMerger {
             _ = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
         }
         return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx)
+    }
+
+    func splitUnregisteredRecipientIfNeeded(
+        localIdentifiers: LocalIdentifiers,
+        unregisteredRecipient: SignalRecipient,
+        tx: DBWriteTransaction
+    ) {
+        // We can't split if they're registered or lacking an ACI.
+        guard !unregisteredRecipient.isRegistered, let aci = unregisteredRecipient.aci else {
+            return
+        }
+        // We never touch our own recipient -- that's handled by registration.
+        if localIdentifiers.contains(serviceId: aci) {
+            return
+        }
+        // We can't split if there's no other identifiers.
+        guard unregisteredRecipient.phoneNumber != nil || unregisteredRecipient.pni != nil else {
+            return
+        }
+        mergeAndNotify(
+            existingRecipients: [unregisteredRecipient],
+            mightReplaceNonnilPhoneNumber: true,
+            insertSessionSwitchoverIfNeeded: true,
+            isLocalMerge: false,
+            tx: tx
+        ) {
+            let splitRecipient = SignalRecipient.buildEmptyRecipient(unregisteredAt: NSDate.ows_millisecondTimeStamp())
+            splitRecipient.phoneNumber = unregisteredRecipient.phoneNumber
+            splitRecipient.pni = unregisteredRecipient.pni
+            unregisteredRecipient.phoneNumber = nil
+            unregisteredRecipient.pni = nil
+            return splitRecipient
+        }
     }
 
     /// Performs a merge unless a provided identifier refers to the local user.

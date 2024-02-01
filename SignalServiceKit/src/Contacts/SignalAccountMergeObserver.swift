@@ -74,8 +74,6 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
         // that's the ServiceId that's now associated with that system contact. In
         // the above example, we are replacing the ServiceId for SA2.
         if let newPhoneNumber, let claimedAccount = fetch(for: newPhoneNumber, tx: tx) {
-            let oldServiceId = claimedAccount.recipientServiceId
-            let newServiceId = mergedRecipient.newRecipient.aci ?? mergedRecipient.newRecipient.pni
             // We prefer to use ACIs instead of PNIs. If we're processing an update
             // that adds a PNI to a SignalRecipient whose ACI we already know, that ACI
             // should be on the SignalAccount, and there's no reason to change it.
@@ -83,8 +81,18 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
             // If for some reason the ServiceId on the SignalAccount is wrong
             // (unexpectedly an ACI, the wrong PNI, etc.), `newServiceId` will contain
             // the correct value (the one that `buildSignalAccounts` uses).
-            if let newServiceId, newServiceId != oldServiceId {
+            //
+            // If this is an E164-only recipient that we split from an ACI recipient,
+            // then we'll have no ServiceId and must delete the SignalAccount because
+            // its current ServiceId is wrong.
+            switch mergedRecipient.newRecipient.aci ?? mergedRecipient.newRecipient.pni {
+            case .some(let newServiceId) where newServiceId == claimedAccount.recipientServiceId:
+                // It already matches. Great!
+                break
+            case .some(let newServiceId):
                 claimedAccount.updateServiceId(newServiceId, tx: tx)
+            case .none:
+                claimedAccount.anyRemove(transaction: tx)
             }
         }
     }

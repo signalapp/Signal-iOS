@@ -44,6 +44,7 @@ private class TestDependencies {
     let threadMerger: ThreadMerger
 
     init(observers: [RecipientMergeObserver] = []) {
+        let storageServiceManager = MockStorageServiceManager()
         recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
         aciSessionStore = SSKSessionStore(for: .aci, keyValueStoreFactory: keyValueStoreFactory, recipientIdFinder: recipientIdFinder)
@@ -67,7 +68,7 @@ private class TestDependencies {
             ),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
-            storageServiceManager: MockStorageServiceManager()
+            storageServiceManager: storageServiceManager
         )
     }
 }

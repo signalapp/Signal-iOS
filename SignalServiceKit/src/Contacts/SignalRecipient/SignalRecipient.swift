@@ -74,6 +74,12 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         )
     }
 
+    static func buildEmptyRecipient(unregisteredAt timestamp: UInt64) -> Self {
+        let result = Self(aci: nil, pni: nil, phoneNumber: nil)
+        result.unregisteredAtTimestamp = timestamp
+        return result
+    }
+
     public static func fromBackup(
         _ backupContact: MessageBackup.ContactAddress,
         isRegistered: Bool?,
@@ -267,6 +273,7 @@ extension SignalRecipientManagerImpl {
     ) {
         recipient.deviceIds = deviceIds.sorted()
         // Clear the timestamp if we're registered. If we're unregistered, set it if we don't already have one.
+        // TODO: Should we deleteAllSessionsForContact here?
         setUnregisteredAtTimestamp(
             recipient.isRegistered ? nil : (recipient.unregisteredAtTimestamp ?? NSDate.ows_millisecondTimeStamp()),
             for: recipient,

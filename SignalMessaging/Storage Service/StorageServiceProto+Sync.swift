@@ -380,6 +380,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         return StorageService.StorageItem(identifier: .generate(type: .contact), contact: record)
     }
 
+    static func shouldDeferMerge(_ record: StorageServiceProtoContactRecord) -> Bool {
+        return StorageServiceContact(record)?.aci == nil
+    }
+
     func mergeRecord(
         _ record: StorageServiceProtoContactRecord,
         transaction: SDSAnyWriteTransaction
@@ -408,6 +412,17 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 shouldUpdateStorageService: false,
                 tx: transaction.asV2Write
             )
+            // For Storage Service, we only perform contact splitting if it's an
+            // ACI-only recipient. The recipient returned from
+            // `applyMergeFromStorageService` will have our local state, so we
+            // explicitly check the remote state here.
+            if contact.phoneNumber == nil, contact.pni == nil {
+                recipientMerger.splitUnregisteredRecipientIfNeeded(
+                    localIdentifiers: localIdentifiers,
+                    unregisteredRecipient: recipient,
+                    tx: transaction.asV2Write
+                )
+            }
         } else {
             recipientManager.markAsRegisteredAndSave(
                 recipient,

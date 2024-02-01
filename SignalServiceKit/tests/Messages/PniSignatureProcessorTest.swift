@@ -33,6 +33,10 @@ private class MockRecipientMerger: RecipientMerger {
     func applyMergeFromPniSignature(localIdentifiers: LocalIdentifiers, aci: Aci, pni: Pni, tx: DBWriteTransaction) {
         appliedMergesFromPniSignatures += 1
     }
+
+    func splitUnregisteredRecipientIfNeeded(localIdentifiers: LocalIdentifiers, unregisteredRecipient: SignalRecipient, tx: DBWriteTransaction) {
+        fatalError()
+    }
 }
 
 final class PniSignatureProcessorTest: XCTestCase {
