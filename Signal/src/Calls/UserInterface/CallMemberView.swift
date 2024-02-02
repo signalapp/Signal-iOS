@@ -172,7 +172,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 
     var isCallMinimized: Bool = false
 
-    var delegate: GroupCallMemberViewDelegate?
+    weak var delegate: GroupCallMemberViewDelegate?
 
     // MARK: CallMemberView_IndividualRemoteBridge
 
