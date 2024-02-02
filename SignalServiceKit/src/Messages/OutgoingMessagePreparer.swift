@@ -62,37 +62,6 @@ public class OutgoingMessagePreparer: NSObject {
         }
     }
 
-    public var canBePreparedWithoutTransaction: Bool {
-        assert(!didCompletePrep)
-
-        guard unsavedAttachmentInfos.isEmpty else {
-            return false
-        }
-        guard unpreparedMessage.allAttachmentIds().isEmpty else {
-            return false
-        }
-        guard unpreparedMessage.messageSticker == nil else {
-            return false
-        }
-        guard unpreparedMessage.quotedMessage == nil else {
-            return false
-        }
-        guard !message.hasFailedRecipients() else {
-            return false
-        }
-        return true
-    }
-
-    public func prepareMessageWithoutTransaction() -> TSOutgoingMessage {
-        assert(!didCompletePrep)
-        assert(canBePreparedWithoutTransaction)
-
-        self.savedAttachmentIds = []
-        didCompletePrep = true
-        return message
-    }
-
-    // NOTE: Any changes to this method should be reflected in canBePreparedWithoutTransaction.
     public func prepareMessage(transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
         assert(!didCompletePrep)
 

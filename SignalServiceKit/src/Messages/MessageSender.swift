@@ -492,13 +492,8 @@ public class MessageSender: Dependencies {
     // MARK: - Constructing Message Sends
 
     public func sendMessage(_ outgoingMessagePreparer: OutgoingMessagePreparer) async throws {
-        let message: TSOutgoingMessage
-        if outgoingMessagePreparer.canBePreparedWithoutTransaction {
-            message = outgoingMessagePreparer.prepareMessageWithoutTransaction()
-        } else {
-            message = try await databaseStorage.awaitableWrite { tx in
-                return try outgoingMessagePreparer.prepareMessage(transaction: tx)
-            }
+        let message: TSOutgoingMessage = try await databaseStorage.awaitableWrite { tx in
+            return try outgoingMessagePreparer.prepareMessage(transaction: tx)
         }
 
         if let body = message.body {
