@@ -17,20 +17,6 @@ extension OutgoingStoryMessage {
             switch destination.content {
             case .media(let attachments):
                 for identifiedAttachment in attachments {
-                    let attachment = identifiedAttachment.value
-                    let captionBody = state.approvalMessageBody?
-                        .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
-                        .asStyleOnlyBody()
-                    attachment.captionText = captionBody?.text
-                    let attachmentStream = try attachment
-                        .buildOutgoingAttachmentInfo()
-                        .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
-                    attachmentStream.anyInsert(transaction: transaction)
-
-                    var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
-                    correspondingIdsForAttachment += [attachmentStream.uniqueId]
-                    state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
-
                     let message: OutgoingStoryMessage
                     if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[identifiedAttachment.id] {
                         message = try OutgoingStoryMessage.createUnsentMessage(
@@ -40,12 +26,27 @@ extension OutgoingStoryMessage {
                         )
                     } else {
                         message = try OutgoingStoryMessage.createUnsentMessage(
-                            attachment: .file(StoryMessageFileAttachment(
-                                attachmentId: attachmentStream.uniqueId,
-                                captionStyles: captionBody?.collapsedStyles ?? []
-                            )),
                             thread: destination.thread,
-                            transaction: transaction
+                            transaction: transaction,
+                            attachmentGenerator: { _, storyMessageUniqueId, transaction in
+                                let attachment = identifiedAttachment.value
+                                let captionBody = state.approvalMessageBody?
+                                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
+                                    .asStyleOnlyBody()
+                                attachment.captionText = captionBody?.text
+                                let attachmentStream = try attachment
+                                    .buildOutgoingAttachmentInfo()
+                                    .asStreamConsumingDataSource(isVoiceMessage: attachment.isVoiceMessage)
+                                attachmentStream.anyInsert(transaction: transaction)
+
+                                var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
+                                correspondingIdsForAttachment += [attachmentStream.uniqueId]
+                                state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
+                                return .file(StoryMessageFileAttachment(
+                                    attachmentId: attachmentStream.uniqueId,
+                                    captionStyles: captionBody?.collapsedStyles ?? []
+                                ))
+                            }
                         )
                         if destination.thread is TSPrivateStoryThread {
                             privateStoryMessageIds[identifiedAttachment.id] = message.storyMessageId
@@ -57,16 +58,6 @@ extension OutgoingStoryMessage {
                 }
 
             case .text(let textAttachment):
-                guard let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
-                    throw OWSAssertionError("Invalid text attachment")
-                }
-
-                if let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentId {
-                    var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
-                    correspondingIdsForAttachment += [linkPreviewAttachmentId]
-                    state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment
-                }
-
                 let message: OutgoingStoryMessage
                 if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[textAttachment.id] {
                     message = try OutgoingStoryMessage.createUnsentMessage(
@@ -76,9 +67,20 @@ extension OutgoingStoryMessage {
                     )
                 } else {
                     message = try OutgoingStoryMessage.createUnsentMessage(
-                        attachment: .text(finalTextAttachment),
                         thread: destination.thread,
-                        transaction: transaction
+                        transaction: transaction,
+                        attachmentGenerator: { _, _, transaction in
+                            guard let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
+                                throw OWSAssertionError("Invalid text attachment")
+                            }
+
+                            if let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentId {
+                                var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
+                                correspondingIdsForAttachment += [linkPreviewAttachmentId]
+                                state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment
+                            }
+                            return .text(finalTextAttachment)
+                        }
                     )
                     if destination.thread is TSPrivateStoryThread {
                         privateStoryMessageIds[textAttachment.id] = message.storyMessageId

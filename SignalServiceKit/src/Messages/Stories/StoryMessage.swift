@@ -44,7 +44,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public let direction: Direction
 
     public private(set) var manifest: StoryManifest
-    private let _attachment: SerializedStoryMessageAttachment
+    private var _attachment: SerializedStoryMessageAttachment
     public var attachment: StoryMessageAttachment {
         return _attachment.asPublicAttachment
     }
@@ -154,7 +154,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorAci(authorAci) }
 
-    public init(
+    private init(
         timestamp: UInt64,
         authorAci: Aci,
         groupId: Data?,
@@ -175,6 +175,52 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         self.manifest = manifest
         self._attachment = attachment.asSerializable
         self.replyCount = replyCount
+    }
+
+    public typealias AttachmentGenerator = (
+        _ storyMessageId: Int64,
+        _ storyMessageUniqueID: String,
+        _ tx: SDSAnyWriteTransaction
+    ) throws -> StoryMessageAttachment
+
+    public static func createAndInsert(
+        timestamp: UInt64,
+        authorAci: Aci,
+        groupId: Data?,
+        manifest: StoryManifest,
+        replyCount: UInt64,
+        transaction: SDSAnyWriteTransaction,
+        attachmentGenerator: AttachmentGenerator
+    ) throws -> StoryMessage {
+        // During this transitory period, this attachment type is temporary; we immediately
+        // replace it with the attachment from the AttachmentGenerator (and enforce as much
+        // below; if the replace fails we delete the story message).
+        // Eventually, foreign reference attachments will be the _only_ kind of attachment
+        // in a StoryMessage, so this will actually not be temporary.
+        let initialAttachmentType = StoryMessageAttachment.foreignReferenceAttachment
+
+        let storyMessage = StoryMessage(
+            timestamp: timestamp,
+            authorAci: authorAci,
+            groupId: groupId,
+            manifest: manifest,
+            attachment: initialAttachmentType,
+            replyCount: replyCount
+        )
+        storyMessage.anyInsert(transaction: transaction)
+        guard let id = storyMessage.id else {
+            throw OWSAssertionError("No sqlite id after insert!")
+        }
+        do {
+            let attachment = try attachmentGenerator(id, storyMessage.uniqueId, transaction)
+            storyMessage.updateAttachment(attachment, transaction: transaction)
+        } catch let error {
+            // If we couldn't generate the attachment the story message is invalid
+            // and needs to be removed.
+            storyMessage.anyRemove(transaction: transaction)
+            throw error
+        }
+        return storyMessage
     }
 
     @discardableResult
@@ -391,6 +437,14 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         record.anyInsert(transaction: transaction)
 
         return record
+    }
+
+    // MARK: - (Private) Updating attachment
+
+    private func updateAttachment(_ attachment: StoryMessageAttachment, transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { record in
+            record._attachment = attachment.asSerializable
+        }
     }
 
     // MARK: - Marking Read
@@ -848,6 +902,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     // MARK: -
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        self.id = rowID
+    }
 
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
         // Delete all group replies for the message.

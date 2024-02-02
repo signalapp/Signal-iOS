@@ -65,9 +65,9 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     }
 
     public class func createUnsentMessage(
-        attachment: StoryMessageAttachment,
         thread: TSThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: SDSAnyWriteTransaction,
+        attachmentGenerator: StoryMessage.AttachmentGenerator
     ) throws -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
             recipientStates: try thread.recipientAddresses(with: transaction)
@@ -84,15 +84,16 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                     }
                 }
         )
-        let storyMessage = StoryMessage(
+
+        let storyMessage = try StoryMessage.createAndInsert(
             timestamp: Date.ows_millisecondTimestamp(),
             authorAci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
-            attachment: attachment,
-            replyCount: 0
+            replyCount: 0,
+            transaction: transaction,
+            attachmentGenerator: attachmentGenerator
         )
-        storyMessage.anyInsert(transaction: transaction)
 
         thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
 
