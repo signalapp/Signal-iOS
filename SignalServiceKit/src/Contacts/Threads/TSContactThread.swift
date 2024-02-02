@@ -8,6 +8,16 @@ import LibSignalClient
 extension TSContactThread {
 
     @objc
+    public convenience init(contactAddress: SignalServiceAddress) {
+        let normalizedAddress = NormalizedDatabaseRecordAddress(address: contactAddress)
+        owsAssertDebug(normalizedAddress != nil)
+        self.init(
+            contactUUID: normalizedAddress?.serviceId?.serviceIdUppercaseString,
+            contactPhoneNumber: normalizedAddress?.phoneNumber
+        )
+    }
+
+    @objc
     public static func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("Missing localAddress.")

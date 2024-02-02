@@ -59,11 +59,16 @@ class UserProfileMerger: RecipientMergeObserver {
         guard let userProfileToMergeInto = userProfiles.first else {
             return
         }
+        let normalizedAddress = NormalizedDatabaseRecordAddress(
+            aci: recipient.aci,
+            phoneNumber: recipient.phoneNumber,
+            pni: recipient.pni
+        )
         // One of these might not be set, or one of them might have a non-canonical
         // representation (eg upper vs. lowercase ServiceId). Make sure both of
-        // these are updated to reflect that latest (ACI/PNI, E164) pair.
-        userProfileToMergeInto.serviceIdString = (recipient.aci ?? recipient.pni)?.serviceIdUppercaseString
-        userProfileToMergeInto.phoneNumber = recipient.phoneNumber
+        // these are updated to reflect that latest normalized value.
+        userProfileToMergeInto.serviceIdString = normalizedAddress?.serviceId?.serviceIdUppercaseString
+        userProfileToMergeInto.phoneNumber = normalizedAddress?.phoneNumber
         userProfileStore.updateUserProfile(userProfileToMergeInto, tx: tx)
 
         for userProfileToMergeFrom in userProfiles.dropFirst() {

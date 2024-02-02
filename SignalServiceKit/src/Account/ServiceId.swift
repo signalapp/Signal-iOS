@@ -69,6 +69,59 @@ public struct AtLeastOneServiceId {
     }
 }
 
+/// An "address" that's written to disk in a DB record.
+///
+/// This is the exact value that exists in the database, meaning that
+///
+///   `self == self.normalizedValue?.persistableValue`
+///
+/// may not always be true.
+public struct PersistableDatabaseRecordAddress: Equatable {
+    public let serviceId: ServiceId?
+    public let phoneNumber: String?
+
+    public init(serviceId: ServiceId?, phoneNumber: String?) {
+        self.serviceId = serviceId
+        self.phoneNumber = phoneNumber
+    }
+}
+
+/// A "normalized address" that's written to various DB records.
+///
+/// New DB record types should generally store a foreign key to
+/// `SignalRecipient`, but existing types may store a ServiceId/E164 pair.
+///
+/// For these older types, we often want to avoid storing phone numbers in
+/// cases where we already know the ACI. This type does that.
+public struct NormalizedDatabaseRecordAddress {
+    public let serviceId: ServiceId?
+    public let phoneNumber: String?
+
+    public init?(aci: Aci?, phoneNumber: String?, pni: Pni?) {
+        if let aci {
+            self.serviceId = aci
+            self.phoneNumber = nil
+        } else if phoneNumber != nil || pni != nil {
+            self.phoneNumber = phoneNumber
+            self.serviceId = pni
+        } else {
+            return nil
+        }
+    }
+
+    public init?(serviceId: ServiceId?, phoneNumber: String?) {
+        self.init(aci: serviceId as? Aci, phoneNumber: phoneNumber, pni: serviceId as? Pni)
+    }
+
+    public init?(address: SignalServiceAddress?) {
+        self.init(serviceId: address?.serviceId, phoneNumber: address?.phoneNumber)
+    }
+
+    public var persistableValue: PersistableDatabaseRecordAddress {
+        return PersistableDatabaseRecordAddress(serviceId: serviceId, phoneNumber: phoneNumber)
+    }
+}
+
 @objc
 public class ServiceIdObjC: NSObject, NSCopying {
     public var wrappedValue: ServiceId { owsFail("Subclasses must implement.") }

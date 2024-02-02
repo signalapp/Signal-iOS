@@ -108,13 +108,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return self;
 }
 
-- (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress
+- (instancetype)initWithContactUUID:(nullable NSString *)contactUUID
+                 contactPhoneNumber:(nullable NSString *)contactPhoneNumber
 {
-    OWSAssertDebug(contactAddress.isValid);
-
     if (self = [super init]) {
-        _contactUUID = contactAddress.serviceIdUppercaseString;
-        _contactPhoneNumber = contactAddress.phoneNumber;
+        _contactUUID = [contactUUID copy];
+        _contactPhoneNumber = [contactPhoneNumber copy];
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
     }
 

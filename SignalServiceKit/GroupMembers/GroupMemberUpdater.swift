@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol GroupMemberUpdater {
     func updateRecords(groupThread: TSGroupThread, transaction: DBWriteTransaction)
@@ -65,21 +66,21 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
         })
 
         for groupMember in groupMemberStore.sortedFullGroupMembers(in: groupThreadId, tx: transaction) {
-            let serviceId = groupMember.serviceId
-            let phoneNumber = groupMember.phoneNumber
+            let oldAddress = PersistableDatabaseRecordAddress(
+                serviceId: groupMember.serviceId,
+                phoneNumber: groupMember.phoneNumber
+            )
 
             let expectedAddress = expectedAddresses.remove(SignalServiceAddress(
-                serviceId: serviceId,
-                phoneNumber: phoneNumber,
+                serviceId: oldAddress.serviceId,
+                phoneNumber: oldAddress.phoneNumber,
                 cache: signalServiceAddressCache,
                 cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
             ))
 
-            if
-                let expectedAddress,
-                expectedAddress.serviceId == serviceId,
-                expectedAddress.phoneNumber == phoneNumber
-            {
+            let newAddress = NormalizedDatabaseRecordAddress(address: expectedAddress)
+
+            if oldAddress == newAddress?.persistableValue {
                 // The value on disk already matches the source of truth; do nothing.
                 continue
             }
@@ -87,18 +88,21 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             // It needs to be removed or updated.
             groupMembersToRemove.append(groupMember)
 
-            if let expectedAddress {
+            if let newAddress {
                 // It needs to be updated, so copy fields from the removed group member.
                 groupMembersToInsert.append(TSGroupMember(
-                    serviceId: expectedAddress.serviceId,
-                    phoneNumber: expectedAddress.phoneNumber,
+                    address: newAddress,
                     groupThreadId: groupThreadId,
                     lastInteractionTimestamp: groupMember.lastInteractionTimestamp
                 ))
             }
         }
 
+        // Create TSGroupMembers for all the new members.
         for expectedAddress in expectedAddresses {
+            guard let newAddress = NormalizedDatabaseRecordAddress(address: expectedAddress) else {
+                continue
+            }
             // We look up the latest interaction by this user, because they could
             // have been a member of the group previously.
             let latestInteractionTimestamp = temporaryShims.fetchLatestInteractionTimestamp(
@@ -107,8 +111,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
                 transaction: transaction
             )
             groupMembersToInsert.append(TSGroupMember(
-                serviceId: expectedAddress.serviceId,
-                phoneNumber: expectedAddress.phoneNumber,
+                address: newAddress,
                 groupThreadId: groupThreadId,
                 lastInteractionTimestamp: latestInteractionTimestamp ?? 0
             ))

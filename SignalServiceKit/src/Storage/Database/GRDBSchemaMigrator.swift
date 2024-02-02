@@ -2735,6 +2735,10 @@ public class GRDBSchemaMigrator: NSObject {
                     )
                     let memberAddress = recipient?.address ?? address
 
+                    guard let newAddress = NormalizedDatabaseRecordAddress(address: memberAddress) else {
+                        return
+                    }
+
                     guard TSGroupMember.groupMember(
                         for: memberAddress,
                         in: groupThreadId,
@@ -2751,8 +2755,7 @@ public class GRDBSchemaMigrator: NSObject {
                         transaction: transaction.asAnyWrite
                     )
                     let memberRecord = TSGroupMember(
-                        serviceId: memberAddress.serviceId,
-                        phoneNumber: memberAddress.phoneNumber,
+                        address: newAddress,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
                     )

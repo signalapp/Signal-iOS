@@ -22,12 +22,12 @@ class UserProfileTest: SignalBaseTest {
 
     func testUserProfileForAci() {
         let aci = Aci.randomForTesting()
-        let address = SignalServiceAddress(aci)
+        let address = NormalizedDatabaseRecordAddress(aci: aci, phoneNumber: nil, pni: nil)!
         write { transaction in
             OWSUserProfile(address: address).anyInsert(transaction: transaction)
         }
         read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: address, transaction: transaction)
+            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress(aci), transaction: transaction)
             XCTAssertEqual(actual?.serviceIdString, aci.serviceIdUppercaseString)
         }
         read { transaction in
@@ -38,12 +38,12 @@ class UserProfileTest: SignalBaseTest {
 
     func testUserProfileForPni() throws {
         let pni = Pni.randomForTesting()
-        let address = SignalServiceAddress(pni)
+        let address = NormalizedDatabaseRecordAddress(aci: nil, phoneNumber: nil, pni: pni)!
         write { transaction in
             OWSUserProfile(address: address).anyInsert(transaction: transaction)
         }
         read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: address, transaction: transaction)
+            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress(pni), transaction: transaction)
             XCTAssertEqual(actual?.serviceIdString, pni.serviceIdUppercaseString)
         }
         read { transaction in
@@ -57,7 +57,7 @@ class UserProfileTest: SignalBaseTest {
             SignalServiceAddress.randomForTesting(),
             SignalServiceAddress.randomForTesting()
         ]
-        let profiles = addresses.map { OWSUserProfile(address: $0) }
+        let profiles = addresses.map { OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: $0)!) }
         write { transaction in
             for profile in profiles {
                 profile.anyInsert(transaction: transaction)
@@ -74,7 +74,8 @@ class UserProfileTest: SignalBaseTest {
     func testUserProfileForPhoneNumber() {
         let address = SignalServiceAddress(phoneNumber: "+17035550000")
         write { transaction in
-            OWSUserProfile(address: address).anyInsert(transaction: transaction)
+            OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
+                .anyInsert(transaction: transaction)
         }
         read { transaction in
             let actual = OWSUserProfile.getUserProfile(for: address, transaction: transaction)
@@ -91,7 +92,7 @@ class UserProfileTest: SignalBaseTest {
             SignalServiceAddress(phoneNumber: "+17035550000"),
             SignalServiceAddress(phoneNumber: "+17035550001")
         ]
-        let profiles = addresses.map { OWSUserProfile(address: $0) }
+        let profiles = addresses.map { OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: $0)!) }
         write { transaction in
             for profile in profiles {
                 profile.anyInsert(transaction: transaction)

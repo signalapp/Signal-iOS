@@ -50,7 +50,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -72,7 +72,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 // Place values in the cache but not in storage.
                 for address in addresses {
                     cache.writeToCache(cacheKey: adapter.cacheKey(forKey: address),
-                                       value: OWSUserProfile(address: address))
+                                       value: OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!))
                 }
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
                 // This should have a side-effect of removing values from the cache.
@@ -101,7 +101,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 for address in addresses {
                     let cacheKey = adapter.cacheKey(forKey: address)
                     cache.writeToCache(cacheKey: cacheKey,
-                                       value: OWSUserProfile(address: address))
+                                       value: OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!))
                     // Exclude it so that it won't be removed later.
                     cache.addExclusion(for: cacheKey)
                 }
@@ -132,13 +132,13 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         // 1. Put alice in DB.
         let alice = SignalServiceAddress.randomForTesting()
         let bob = SignalServiceAddress.randomForTesting()
-        adapter.storage[alice] = OWSUserProfile(address: alice)
+        adapter.storage[alice] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: alice)!)
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {
                 // 2. Put bob in cache.
                 cache.writeToCache(cacheKey: adapter.cacheKey(forKey: bob),
-                                   value: OWSUserProfile(address: bob))
+                                   value: OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: bob)!))
 
                 // 3. Try to read alice and bob
                 let keys = [alice, bob].map { adapter.cacheKey(forKey: $0) }
@@ -161,7 +161,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -179,7 +179,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -196,7 +196,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -207,7 +207,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 // Remove Alice from DB to test that it comes from cache.
                 adapter.storage.removeValue(forKey: alice)
                 let actual = cache.getValue(for: key, transaction: transaction)
-                let expected = OWSUserProfile(address: alice)
+                let expected = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: alice)!)
                 XCTAssertEqual(actual?.serviceIdString, expected.serviceIdString)
             }
         }
@@ -217,7 +217,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -236,7 +236,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -266,7 +266,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         for address in addresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -278,7 +278,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 // Remove addresses from DB to test that they come from cache.
                 adapter.storage = [:]
                 let actual = cache.getValues(for: keys, transaction: transaction)
-                let expected = addresses.map { OWSUserProfile(address: $0) }
+                let expected = addresses.map { OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: $0)!) }
                 XCTAssertEqual(actual.map { $0?.serviceIdString }, expected.map { $0.serviceIdString })
             }
         }
@@ -288,7 +288,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         let storedAddresses = [SignalServiceAddress.randomForTesting(),
                                SignalServiceAddress.randomForTesting()]
         for address in storedAddresses {
-            adapter.storage[address] = OWSUserProfile(address: address)
+            adapter.storage[address] = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
         }
         // Add a bogus address to test querying a nonexistent key.
         let addresses = storedAddresses + [SignalServiceAddress.randomForTesting()]

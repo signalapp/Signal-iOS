@@ -55,7 +55,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         // A bunch of ServiceIds might share a phone number in the source data. We
         // must ensure only one of these ends up with a phone number (and that it's
         // the right one that gets the phone number).
-        oldGroupMembers.append(("00000000-0000-4000-8000-000000000001", "+16505550100", 1))
+        oldGroupMembers.append(("00000000-0000-4000-8000-000000000001", nil, 1))
         oldGroupMembers.append(("00000000-0000-4000-8000-000000000002", nil, 2))
         signalRecipients.append(("00000000-0000-4000-8000-000000000002", nil, "+16505550100"))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000001", "+16505550100"))
@@ -63,22 +63,22 @@ class GroupMemberUpdaterTest: XCTestCase {
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000003", "+16505550100"))
         fetchableInteractionTimestamps.append(("00000000-0000-4000-8000-000000000003", 3))
         newGroupMembers.append(("00000000-0000-4000-8000-000000000001", nil, 1))
-        newGroupMembers.append(("00000000-0000-4000-8000-000000000002", "+16505550100", 2))
+        newGroupMembers.append(("00000000-0000-4000-8000-000000000002", nil, 2))
         newGroupMembers.append(("00000000-0000-4000-8000-000000000003", nil, 3))
 
         // If two accounts are in a group and the phone number transfers between
         // them, we should also transfer it in the TSGroupMember table.
-        oldGroupMembers.append(("00000000-0000-4000-8000-000000000004", "+16505550101", 4))
+        oldGroupMembers.append(("00000000-0000-4000-8000-000000000004", nil, 4))
         oldGroupMembers.append(("00000000-0000-4000-8000-000000000005", nil, 5))
         signalRecipients.append(("00000000-0000-4000-8000-000000000005", nil, "+16505550101"))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000004", nil))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000005", "+16505550101"))
         newGroupMembers.append(("00000000-0000-4000-8000-000000000004", nil, 4))
-        newGroupMembers.append(("00000000-0000-4000-8000-000000000005", "+16505550101", 5))
+        newGroupMembers.append(("00000000-0000-4000-8000-000000000005", nil, 5))
 
         // If a recipient has lost a phone number (ie no longer represented by a
         // SignalRecipient), we should remove it.
-        oldGroupMembers.append(("00000000-0000-4000-8000-000000000006", "+16505550102", 6))
+        oldGroupMembers.append(("00000000-0000-4000-8000-000000000006", nil, 6))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000006", "+16505550102"))
         newGroupMembers.append(("00000000-0000-4000-8000-000000000006", nil, 6))
 
@@ -89,10 +89,10 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         // If there's a group member that's already up to date, we should keep it
         // around.
-        oldGroupMembers.append(("00000000-0000-4000-8000-000000000007", "+16505550104", 8))
+        oldGroupMembers.append(("00000000-0000-4000-8000-000000000007", nil, 8))
         signalRecipients.append(("00000000-0000-4000-8000-000000000007", nil, "+16505550104"))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000007", "+16505550104"))
-        newGroupMembers.append(("00000000-0000-4000-8000-000000000007", "+16505550104", 8))
+        newGroupMembers.append(("00000000-0000-4000-8000-000000000007", nil, 8))
 
         // If there's a new group member, we should fetch its latest interaction
         // timestamp.
@@ -106,7 +106,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000009", "+16505550105"))
         groupThreadMembers.append(("PNI:00000000-0000-4000-8000-00000000000A", "+16505550105"))
         fetchableInteractionTimestamps.append(("00000000-0000-4000-8000-000000000009", 10))
-        newGroupMembers.append(("00000000-0000-4000-8000-000000000009", "+16505550105", 10))
+        newGroupMembers.append(("00000000-0000-4000-8000-000000000009", nil, 10))
 
         // -- Set up the input data. --
 
@@ -135,8 +135,10 @@ class GroupMemberUpdaterTest: XCTestCase {
             for oldGroupMember in oldGroupMembers {
                 mockGroupMemberStore.insert(
                     fullGroupMember: TSGroupMember(
-                        serviceId: oldGroupMember.serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
-                        phoneNumber: oldGroupMember.phoneNumber,
+                        address: NormalizedDatabaseRecordAddress(
+                            serviceId: oldGroupMember.serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
+                            phoneNumber: oldGroupMember.phoneNumber
+                        )!,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: oldGroupMember.interactionTimestamp
                     ),

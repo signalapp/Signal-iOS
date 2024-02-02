@@ -271,7 +271,6 @@ final class ThreadMerger {
         // duplicate threads that we need to merge. We fetch the ACI threads first
         // to ensure we merge *into* one of those threads where possible.
 
-        let serviceId: ServiceId? = recipient.aci ?? recipient.pni
         let threadsToMerge: [TSContactThread] = UniqueRecipientObjectMerger.fetchAndExpunge(
             for: recipient,
             serviceIdField: \.contactUUID,
@@ -284,14 +283,19 @@ final class ThreadMerger {
 
         let threadMergeEventCount = mergeAllThreads(threadsToMerge, tx: tx)
         if threadsToMerge.count >= 2 {
-            Logger.info("Merged \(threadsToMerge.count) threads for \(serviceId?.logString ?? "nil")")
+            Logger.info("Merged \(threadsToMerge.count) threads for \((recipient.aci ?? recipient.pni)?.logString ?? "nil")")
         }
 
         // After we merge all threads, we're left with just one. Make sure that
         // that thread has the new (ACI/PNI, Phone Number) pair.
         if let finalThread = threadsToMerge.first {
-            finalThread.contactUUID = serviceId?.serviceIdUppercaseString
-            finalThread.contactPhoneNumber = recipient.phoneNumber
+            let normalizedAddress = NormalizedDatabaseRecordAddress(
+                aci: recipient.aci,
+                phoneNumber: recipient.phoneNumber,
+                pni: recipient.pni
+            )
+            finalThread.contactUUID = normalizedAddress?.serviceId?.serviceIdUppercaseString
+            finalThread.contactPhoneNumber = normalizedAddress?.phoneNumber
             threadStore.updateThread(finalThread, tx: tx)
         }
 

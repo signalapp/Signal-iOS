@@ -186,7 +186,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(oldAddress.serviceId, newAddress.serviceId)
 
             XCTAssertEqual(oldThread.uniqueId, newThread.uniqueId)
-            XCTAssertNotEqual(oldThread.contactPhoneNumber, newThread.contactPhoneNumber)
+            XCTAssertNil(oldThread.contactPhoneNumber)
+            XCTAssertNil(newThread.contactPhoneNumber)
             XCTAssertEqual(newAddress, newThread.contactAddress)
 
             XCTAssertEqual(oldMessage.uniqueId, newMessage.uniqueId)
@@ -301,8 +302,11 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // that were provided.
             for address in addresses {
                 let groupMember = TSGroupMember(
-                    serviceId: address.aci,
-                    phoneNumber: address.phoneNumber?.stringValue,
+                    address: NormalizedDatabaseRecordAddress(
+                        aci: address.aci,
+                        phoneNumber: address.phoneNumber?.stringValue,
+                        pni: nil
+                    )!,
                     groupThreadId: groupThread.uniqueId,
                     lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
                 )
@@ -370,7 +374,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         // We should still have two group members: (u1, p2) and (u2, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: phoneNumber2),
+            (aci: aci1, phoneNumber: nil),
             (aci: aci2, phoneNumber: nil)
         ])
     }
@@ -417,7 +421,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         // We should now have one group member: (u1, p2).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: phoneNumber2)
+            (aci: aci1, phoneNumber: nil)
         ])
     }
 
@@ -464,7 +468,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         // We should still have two group members: (u2, p1) and (u1, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci2, phoneNumber: phoneNumber1),
+            (aci: aci2, phoneNumber: nil),
             (aci: aci1, phoneNumber: nil)
         ])
     }
@@ -512,7 +516,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // We should now have two group members: (u2, p1), (u1, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
             (aci: aci1, phoneNumber: nil),
-            (aci: aci2, phoneNumber: phoneNumber1)
+            (aci: aci2, phoneNumber: nil)
         ])
     }
 
@@ -550,7 +554,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
 
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: phoneNumber1)
+            (aci: aci1, phoneNumber: nil)
         ])
     }
 

@@ -87,7 +87,6 @@ class UserProfileMergerTest: XCTestCase {
             )
         }
 
-        finalProfile.phoneNumber = phoneNumber.stringValue
         finalProfile.setValue(OWSAES256Key(data: Data(repeating: 2, count: 32))!, forKey: "profileKey")
         otherAciProfile.phoneNumber = nil
         otherPniProfile.serviceIdString = nil

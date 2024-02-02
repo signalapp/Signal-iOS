@@ -50,14 +50,13 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public private(set) var lastInteractionTimestamp: UInt64
 
     required public init(
-        serviceId: ServiceId?,
-        phoneNumber: String?,
+        address: NormalizedDatabaseRecordAddress,
         groupThreadId: String,
         lastInteractionTimestamp: UInt64
     ) {
         self.uniqueId = UUID().uuidString
-        self.serviceId = serviceId
-        self.phoneNumber = phoneNumber
+        self.serviceId = address.serviceId
+        self.phoneNumber = address.phoneNumber
         self.groupThreadId = groupThreadId
         self.lastInteractionTimestamp = lastInteractionTimestamp
     }

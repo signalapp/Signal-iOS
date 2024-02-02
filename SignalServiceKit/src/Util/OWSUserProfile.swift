@@ -233,14 +233,13 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     @objc
     private(set) public var isPniCapable: Bool
 
-    public convenience init(address: SignalServiceAddress) {
-        owsAssertDebug(address.isValid)
-        owsAssertDebug(!address.isLocalAddress)
+    public convenience init(address: NormalizedDatabaseRecordAddress?) {
+        owsAssertDebug(address != nil)
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
-            serviceIdString: address.serviceIdUppercaseString,
-            phoneNumber: address.phoneNumber,
+            serviceIdString: address?.serviceId?.serviceIdUppercaseString,
+            phoneNumber: address?.phoneNumber,
             avatarFileName: nil,
             avatarUrlPath: nil,
             profileKey: nil,
@@ -751,7 +750,9 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         }
 
         // Otherwise, create & return a new profile for this address.
-        let userProfile = OWSUserProfile(address: address)
+        let userProfile = OWSUserProfile(
+            address: NormalizedDatabaseRecordAddress(address: address)
+        )
         if address.phoneNumber == Constants.localProfilePhoneNumber {
             userProfile.update(
                 profileKey: .setTo(OWSAES256Key.generateRandom()),

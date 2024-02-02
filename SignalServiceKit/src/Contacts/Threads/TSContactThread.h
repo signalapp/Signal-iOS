@@ -24,9 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-// TODO: We might want to make this initializer private once we
-//       convert getOrCreateThreadWithContactAddress to take "any" transaction.
-- (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithContactUUID:(nullable NSString *)contactUUID
+                 contactPhoneNumber:(nullable NSString *)contactPhoneNumber NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                                        uniqueId:(NSString *)uniqueId
