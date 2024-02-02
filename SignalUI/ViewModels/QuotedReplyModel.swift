@@ -53,7 +53,7 @@ public class QuotedReplyModel: NSObject {
 
         let attachmentStream: TSAttachmentStream?
         let failedAttachmentPointer: TSAttachmentPointer?
-        let quotedAttachment = storyMessage.quotedAttachment(transaction: transaction)
+        let quotedAttachment = storyMessage.fileAttachment(tx: transaction)
         if let quotedAttachmentStream = quotedAttachment as? TSAttachmentStream {
             attachmentStream = quotedAttachmentStream
             failedAttachmentPointer = nil

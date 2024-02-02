@@ -132,7 +132,20 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             } else {
                 return nil
             }
+        case .foreignReferenceAttachment:
+            guard
+                let resource = StoryMessageResource.fetch(storyMessage: self, tx: tx),
+                let attachment = resource.fetchAttachment(tx: tx)
+            else {
+                owsFailDebug("Missing attachment for story message \(timestamp)")
+                return nil
+            }
+            return attachment.uniqueId
         }
+    }
+
+    public func fileAttachment(tx: SDSAnyReadTransaction) -> TSAttachment? {
+        return attachment.fileAttachment(storyMessage: self, tx: tx)
     }
 
     public var replyCount: UInt64
@@ -691,6 +704,16 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 ) as? TSAttachmentPointer,
                 ![.enqueued, .downloading].contains(pointer.state)
             else {
+                return
+            }
+            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+        case .foreignReferenceAttachment:
+            guard
+                let resource = StoryMessageResource.fetch(storyMessage: self, tx: transaction),
+                let pointer = resource.fetchAttachment(tx: transaction) as? TSAttachmentPointer,
+                ![.enqueued, .downloading].contains(pointer.state)
+            else {
+                owsFailDebug("Missing attachment for story message \(timestamp)")
                 return
             }
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)

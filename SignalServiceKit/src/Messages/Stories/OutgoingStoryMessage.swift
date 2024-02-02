@@ -197,6 +197,20 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             }
             builder.setFileAttachment(attachmentProto)
             builder.setBodyRanges(file.captionProtoBodyRanges())
+        case .foreignReferenceAttachment:
+            guard
+                let resource = StoryMessageResource.fetch(storyMessage: storyMessage, tx: transaction),
+                let attachment = resource.fetchAttachment(tx: transaction),
+                let attachmentProto = (attachment as? TSAttachmentStream)?.buildProto(
+                    withCaption: resource.caption,
+                    attachmentType: resource.isLoopingVideo ? .GIF : .default
+                )
+            else {
+                owsFailDebug("Missing attachment for outgoin story message")
+                return nil
+            }
+            builder.setFileAttachment(attachmentProto)
+            builder.setBodyRanges(resource.captionProtoBodyRanges())
         case .text(let attachment):
             guard let attachmentProto = try? attachment.buildProto(
                 bodyRangeHandler: builder.setBodyRanges(_:),

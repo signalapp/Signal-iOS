@@ -8,22 +8,9 @@ import SignalServiceKit
 extension StoryMessage {
 
     func quotedBody(transaction: SDSAnyReadTransaction) -> MessageBody? {
+        let caption: String?
+        let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
         switch attachment {
-        case .file(let file):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
-                owsFailDebug("Missing attachment for story message \(timestamp)")
-                return nil
-            }
-            guard let caption = attachment.caption(forContainingStoryMessage: self, transaction: transaction) else {
-                return nil
-            }
-            // Note: stripping any over-extended styles to the caption
-            // length will happen at hydration time, which is required
-            // to turn a MessageBody into something we can display.
-            return MessageBody(
-                text: caption,
-                ranges: MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: file.captionStyles)
-            )
         case .text(let attachment):
             switch attachment.textContent {
             case .styledRanges(let body):
@@ -36,28 +23,41 @@ extension StoryMessage {
                 }
                 return MessageBody(text: urlString, ranges: .empty)
             }
-        }
-    }
 
-    func quotedAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        switch attachment {
         case .file(let file):
             guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
             }
-            return attachment
-        case .text:
+            caption = attachment.caption(forContainingStoryMessage: self, transaction: transaction)
+            captionStyles = file.captionStyles
+        case .foreignReferenceAttachment:
+            guard let resource = StoryMessageResource.fetch(storyMessage: self, tx: transaction) else {
+                owsFailDebug("Missing attachment for story message \(timestamp)")
+                return nil
+            }
+            caption = resource.caption
+            captionStyles = resource.captionStyles
+        }
+
+        guard let caption else {
             return nil
         }
+        // Note: stripping any over-extended styles to the caption
+        // length will happen at hydration time, which is required
+        // to turn a MessageBody into something we can display.
+        return MessageBody(
+            text: caption,
+            ranges: MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: captionStyles)
+        )
     }
 
     func thumbnailImage(transaction: SDSAnyReadTransaction) -> UIImage? {
         switch attachment {
         case .text:
             return nil
-        case .file(let file):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+        case .file, .foreignReferenceAttachment:
+            guard let attachment = self.fileAttachment(tx: transaction) else {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
             }

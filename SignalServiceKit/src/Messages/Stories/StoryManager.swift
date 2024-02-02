@@ -248,8 +248,8 @@ public class StoryManager: NSObject {
             switch otherMessage.attachment {
             case .text:
                 unviewedDownloadedStoriesForContext += 1
-            case .file(let file):
-                guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
+            case .file, .foreignReferenceAttachment:
+                guard let attachment = otherMessage.fileAttachment(tx: transaction) else {
                     owsFailDebug("Missing attachment for attachmentId \(file.attachmentId)")
                     return
                 }

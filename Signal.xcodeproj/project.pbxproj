@@ -879,6 +879,7 @@
 		6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */; };
 		6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
+		6659FA4F2B69B16F0036E7AF /* StoryMessageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659FA4E2B69B16F0036E7AF /* StoryMessageResource.swift */; };
 		665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */; };
 		665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */; };
 		665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */; };
@@ -3545,6 +3546,7 @@
 		6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyUploadBundle.swift; sourceTree = "<group>"; };
 		6659A0382A81933B00066AB7 /* ProvisioningPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningPermissionsViewController.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
+		6659FA4E2B69B16F0036E7AF /* StoryMessageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageResource.swift; sourceTree = "<group>"; };
 		665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManager.swift; sourceTree = "<group>"; };
 		665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerImpl.swift; sourceTree = "<group>"; };
 		665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBackupManager+Shims.swift"; sourceTree = "<group>"; };
@@ -9730,6 +9732,7 @@
 				F9C5C969289453B100548EEE /* StoryManager.swift */,
 				F9C5C96A289453B100548EEE /* StoryMessage.swift */,
 				6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */,
+				6659FA4E2B69B16F0036E7AF /* StoryMessageResource.swift */,
 				6619A1962B27CA5F004B38FE /* StoryStore.swift */,
 				669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */,
 				669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */,
@@ -13480,6 +13483,7 @@
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,
 				F9C5CC58289453B300548EEE /* StoryMessage.swift in Sources */,
 				6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */,
+				6659FA4F2B69B16F0036E7AF /* StoryMessageResource.swift in Sources */,
 				6619A1972B27CA5F004B38FE /* StoryStore.swift in Sources */,
 				F9C5CDDB289453B400548EEE /* String+SSK.swift in Sources */,
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,

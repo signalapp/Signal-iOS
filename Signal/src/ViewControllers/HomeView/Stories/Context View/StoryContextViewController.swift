@@ -330,41 +330,59 @@ class StoryContextViewController: OWSViewController {
     private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
         let replyCount = message.replyCount
 
+        let attachment: TSAttachment?
+        let caption: String?
+        let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+        let isLoopingVideo: Bool
         switch message.attachment {
         case .file(let file):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction) else {
-                owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
-                return nil
-            }
-            if let attachment = attachment as? TSAttachmentPointer {
-                let pointer = StoryItem.Attachment.Pointer(
-                    attachment: attachment,
-                    caption: attachment.caption(forContainingStoryMessage: message, transaction: transaction),
-                    captionStyles: file.captionStyles
-                )
-                return StoryItem(
-                    message: message,
-                    numberOfReplies: replyCount,
-                    attachment: .pointer(pointer)
-                )
-            } else if let attachment = attachment as? TSAttachmentStream {
-                let stream = StoryItem.Attachment.Stream(
-                    attachment: attachment,
-                    isLoopingVideo: attachment.isLoopingVideo(inContainingStoryMessage: message, transaction: transaction),
-                    caption: attachment.caption(forContainingStoryMessage: message, transaction: transaction),
-                    captionStyles: file.captionStyles
-                )
-                return StoryItem(
-                    message: message,
-                    numberOfReplies: replyCount,
-                    attachment: .stream(stream)
-                )
-            } else {
-                owsFailDebug("Unexpected attachment type \(type(of: attachment))")
-                return nil
-            }
+            attachment = TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: transaction)
+            caption = attachment?.caption(forContainingStoryMessage: message, transaction: transaction)
+            captionStyles = file.captionStyles
+            isLoopingVideo = (attachment as? TSAttachmentStream)?
+                .isLoopingVideo(inContainingStoryMessage: message, transaction: transaction)
+                ?? false
+        case .foreignReferenceAttachment:
+            let resource = StoryMessageResource.fetch(storyMessage: message, tx: transaction)
+            attachment = resource?.fetchAttachment(tx: transaction)
+            caption = resource?.caption
+            captionStyles = resource?.captionStyles ?? []
+            isLoopingVideo = resource?.isLoopingVideo ?? false
+
         case .text(let attachment):
             return .init(message: message, numberOfReplies: replyCount, attachment: .text(attachment))
+        }
+
+        guard let attachment else {
+            owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
+            return nil
+        }
+        if let attachment = attachment as? TSAttachmentPointer {
+            let pointer = StoryItem.Attachment.Pointer(
+                attachment: attachment,
+                caption: caption,
+                captionStyles: captionStyles
+            )
+            return StoryItem(
+                message: message,
+                numberOfReplies: replyCount,
+                attachment: .pointer(pointer)
+            )
+        } else if let attachment = attachment as? TSAttachmentStream {
+            let stream = StoryItem.Attachment.Stream(
+                attachment: attachment,
+                isLoopingVideo: isLoopingVideo,
+                caption: caption,
+                captionStyles: captionStyles
+            )
+            return StoryItem(
+                message: message,
+                numberOfReplies: replyCount,
+                attachment: .stream(stream)
+            )
+        } else {
+            owsFailDebug("Unexpected attachment type \(type(of: attachment))")
+            return nil
         }
     }
 

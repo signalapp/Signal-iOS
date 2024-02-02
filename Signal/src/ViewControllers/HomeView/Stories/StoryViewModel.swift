@@ -54,7 +54,7 @@ struct StoryViewModel: Dependencies {
             transaction: transaction
         )
         latestMessageAvatarDataSource = try StoryUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
-        latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
+        latestMessageAttachment = .from(latestMessage, transaction: transaction)
         latestMessageIdentifier = .fromStoryMessage(latestMessage)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp

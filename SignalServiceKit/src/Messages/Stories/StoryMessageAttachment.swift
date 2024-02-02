@@ -70,6 +70,9 @@ internal enum SerializedStoryMessageAttachment: Codable {
     // but is otherwise perfectly convertible once decoded.
     case fileV2(StoryMessageFileAttachment)
 
+    /// The attachment reference can be found in a separate join table.
+    case foreignReferenceAttachment
+
     var asPublicAttachment: StoryMessageAttachment {
         switch self {
         case .file(let attachmentId):
@@ -78,6 +81,8 @@ internal enum SerializedStoryMessageAttachment: Codable {
             return .file(storyMessageFileAttachment)
         case .text(let attachment):
             return .text(attachment)
+        case .foreignReferenceAttachment:
+            return .foreignReferenceAttachment
         }
     }
 }
@@ -85,6 +90,8 @@ internal enum SerializedStoryMessageAttachment: Codable {
 public enum StoryMessageAttachment {
     case file(StoryMessageFileAttachment)
     case text(TextAttachment)
+    /// The attachment reference can be found in a separate join table.
+    case foreignReferenceAttachment
 
     internal var asSerializable: SerializedStoryMessageAttachment {
         switch self {
@@ -92,6 +99,21 @@ public enum StoryMessageAttachment {
             return .fileV2(storyMessageFileAttachment)
         case .text(let textAttachment):
             return .text(attachment: textAttachment)
+        case .foreignReferenceAttachment:
+            return .foreignReferenceAttachment
+        }
+    }
+
+    public func fileAttachment(storyMessage: StoryMessage, tx: SDSAnyReadTransaction) -> TSAttachment? {
+        switch self {
+        case .file(let file):
+            return TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: tx)
+        case .foreignReferenceAttachment:
+            return StoryMessageResource
+                .fetch(storyMessage: storyMessage, tx: tx)?
+                .fetchAttachment(tx: tx)
+        case .text:
+            return nil
         }
     }
 }

@@ -40,7 +40,7 @@ struct MyStoryViewModel: Dependencies {
 
         if let latestMessage = sortedFilteredMessages.last {
             latestMessageIdentifier = .fromStoryMessage(latestMessage)
-            latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
+            latestMessageAttachment = .from(latestMessage, transaction: transaction)
             latestMessageTimestamp = latestMessage.timestamp
         } else {
             latestMessageIdentifier = nil
@@ -50,7 +50,7 @@ struct MyStoryViewModel: Dependencies {
 
         if let secondLatestMessage = sortedFilteredMessages.dropLast().last {
             secondLatestMessageIdentifier = .fromStoryMessage(secondLatestMessage)
-            secondLatestMessageAttachment = .from(secondLatestMessage.attachment, transaction: transaction)
+            secondLatestMessageAttachment = .from(secondLatestMessage, transaction: transaction)
         } else {
             secondLatestMessageIdentifier = nil
             secondLatestMessageAttachment = nil

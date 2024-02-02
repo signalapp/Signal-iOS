@@ -557,18 +557,22 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     }
 
     private func storyThumbnailSize(for presentingMessage: StoryMessage) throws -> CGSize? {
+        let attachment: TSAttachment?
         switch presentingMessage.attachment {
-        case .file(let file):
-            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: $0) }) else {
-                throw OWSAssertionError("Unexpectedly missing attachment for story message")
-            }
-
-            if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
-                return thumbnailImage.size
-            } else {
-                return nil
+        case .file, .foreignReferenceAttachment:
+            attachment = databaseStorage.read { tx in
+                return presentingMessage.fileAttachment(tx: tx)
             }
         case .text:
+            return nil
+        }
+        guard let attachment else {
+            throw OWSAssertionError("Unexpectedly missing attachment for story message")
+        }
+
+        if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
+            return thumbnailImage.size
+        } else {
             return nil
         }
     }
@@ -576,8 +580,8 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     private func storyView(for presentingMessage: StoryMessage) -> UIView? {
         let storyView: UIView
         switch presentingMessage.attachment {
-        case .file(let file):
-            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: file.attachmentId, transaction: $0) }) else {
+        case .file, .foreignReferenceAttachment:
+            guard let attachment = databaseStorage.read(block: { presentingMessage.fileAttachment(tx: $0) }) else {
                 // Can happen if the story was deleted by the sender while in the viewer.
                 return nil
             }

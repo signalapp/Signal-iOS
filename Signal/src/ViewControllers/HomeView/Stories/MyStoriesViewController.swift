@@ -329,7 +329,7 @@ private struct OutgoingStoryItem {
         message.threads(transaction: transaction).map {
             .init(
                 message: message,
-                attachment: .from(message.attachment, transaction: transaction),
+                attachment: .from(message, transaction: transaction),
                 thread: $0
             )
         }
