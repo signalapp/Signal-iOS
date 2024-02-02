@@ -14,7 +14,7 @@ extension StoryMessage {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
             }
-            guard let caption = attachment.caption else {
+            guard let caption = attachment.caption(forContainingStoryMessage: self, transaction: transaction) else {
                 return nil
             }
             // Note: stripping any over-extended styles to the caption

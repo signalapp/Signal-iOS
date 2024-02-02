@@ -92,7 +92,7 @@ public class OWSThumbnailService: NSObject {
     }
 
     private func canThumbnailAttachment(attachment: TSAttachmentStream) -> Bool {
-        return attachment.isImageMimeType || attachment.isAnimatedMimeType != .notAnimated || attachment.isVideoMimeType
+        return attachment.isImageMimeType || attachment.getAnimatedMimeType() != .notAnimated || attachment.isVideoMimeType
     }
 
     // success and failure will be called async _off_ the main thread.
@@ -184,7 +184,7 @@ public class OWSThumbnailService: NSObject {
         if isWebp {
             thumbnailImage = try OWSMediaUtils.thumbnail(forWebpAtPath: originalFilePath,
                                                          maxDimensionPoints: maxDimensionPoints)
-        } else if attachment.isImageMimeType || attachment.isAnimatedMimeType != .notAnimated {
+        } else if attachment.isImageMimeType || attachment.getAnimatedMimeType() != .notAnimated {
             thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath,
                                                          maxDimensionPoints: maxDimensionPoints)
         } else if attachment.isVideoMimeType {

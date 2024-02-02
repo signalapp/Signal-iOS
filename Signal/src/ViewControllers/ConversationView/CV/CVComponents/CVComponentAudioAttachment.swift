@@ -339,7 +339,7 @@ extension CVComponentAudioAttachment: DatabaseChangeDelegate {
 
 extension CVComponentAudioAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
-        if attachment.isVoiceMessage {
+        if audioAttachment.isVoiceMessage {
             if let attachmentStream = attachmentStream,
                attachmentStream.audioDurationSeconds() > 0 {
                 let format = OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",

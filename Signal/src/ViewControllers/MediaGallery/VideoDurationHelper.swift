@@ -131,7 +131,13 @@ class VideoDurationHelper {
     private func makePromise(for attachment: TSAttachmentStream) -> Promise<TimeInterval> {
         lock.assertOwner()
 
-        guard let cloneRequest = try? attachment.cloneAsSignalAttachmentRequest() else {
+        // None of these fields matter; we just want the source media itself.
+        guard let cloneRequest = try? attachment.cloneAsSignalAttachmentRequest(
+            isVoiceMessage: false,
+            isBorderless: false,
+            isLoopingVideo: false,
+            caption: nil
+        ) else {
             return Promise<TimeInterval>(error: DurationUnavailableError())
         }
 

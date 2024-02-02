@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
+@class StoryMessage;
 @class TSAttachmentPointer;
 @class TSMessage;
 
@@ -38,7 +39,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
 @property (atomic) UInt32 cdnNumber;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
-@property (nonatomic) TSAttachmentType attachmentType;
 
 // Though now required, may incorrectly be 0 on legacy attachments.
 @property (nonatomic, readonly) UInt32 byteCount;
@@ -52,11 +52,21 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
 // This property will be non-zero if set.
 @property (nonatomic) UInt64 uploadTimestamp;
 
+/// WARNING: please don't use this directly.
+@property (nonatomic) TSAttachmentType attachmentType;
+/// WARNING: please don't use this directly.
+@property (nonatomic, nullable) NSString *caption;
+
 #pragma mark - Media Album
 
-@property (nonatomic, readonly, nullable) NSString *caption;
+- (nullable NSString *)captionForContainingMessage:(TSMessage *)message
+                                       transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(caption(forContainingMessage:transaction:));
+- (nullable NSString *)captionForContainingStoryMessage:(StoryMessage *)storyMessage
+                                            transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(caption(forContainingStoryMessage:transaction:));
+
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
-@property (nonatomic, readonly) NSString *emoji;
 
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(fetchAlbumMessage(transaction:));
@@ -84,6 +94,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  attachmentType:(TSAttachmentType)attachmentType
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
@@ -103,6 +114,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
+                               attachmentType:(TSAttachmentType)attachmentType
                                albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 // This constructor is used for new instances of TSAttachmentStream
@@ -141,24 +153,51 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)upgradeAttachmentSchemaVersionIfNecessary;
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
-@property (nonatomic, readonly) TSAnimatedMimeType isAnimatedMimeType;
+- (TSAnimatedMimeType)getAnimatedMimeType;
 @property (nonatomic, readonly) BOOL isImageMimeType;
 @property (nonatomic, readonly) BOOL isWebpImageMimeType;
 @property (nonatomic, readonly) BOOL isVideoMimeType;
 @property (nonatomic, readonly) BOOL isAudioMimeType;
-// TODO: This is a property of the containing message.
-@property (nonatomic, readonly) BOOL isVoiceMessage;
-// TODO: This is a property of the containing message.
-@property (nonatomic, readonly) BOOL isBorderless;
-// TODO: This is a property of the containing message AND the attachment.
-@property (nonatomic, readonly) BOOL isLoopingVideo;
 @property (nonatomic, readonly) BOOL isVisualMediaMimeType;
 @property (nonatomic, readonly) BOOL isOversizeTextMimeType;
+
+// MARK: - Attachment Type
+
+- (TSAttachmentType)attachmentTypeForContainingMessage:(TSMessage *)message
+                                           transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(attachmentType(forContainingMessage:transaction:));
+
+- (BOOL)isVoiceMessageInContainingMessage:(TSMessage *)message
+                              transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isVoiceMessage(inContainingMessage:transaction:));
+
+- (BOOL)isBorderlessInContainingMessage:(TSMessage *)message
+                            transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isBorderless(inContainingMessage:transaction:));
+
+
+- (BOOL)isLoopingVideoWithAttachmentType:(TSAttachmentType)attachmentType NS_SWIFT_NAME(isLoopingVideo(_:));
+- (BOOL)isLoopingVideoInContainingMessage:(TSMessage *)message
+                              transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isLoopingVideo(inContainingMessage:transaction:));
+/// Note that other TSAttachmentTypes are not allowed for story messages.
+- (BOOL)isLoopingVideoInContainingStoryMessage:(StoryMessage *)storyMessage
+                                   transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isLoopingVideo(inContainingStoryMessage:transaction:));
 
 // nil: no value cached
 // NaN: not a video, broken video, or duration otherwise impossible to ascertain.
 // Nonnegative number: Duration in seconds
 @property (nullable, nonatomic, readonly) NSNumber *videoDuration;
+
+- (NSString *)description NS_UNAVAILABLE;
+- (NSString *)previewTextForContainingMessage:(TSMessage *)message
+                                  transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(previewText(forContainingMessage:transaction:));
+
+- (NSString *)emojiForContainingMessage:(TSMessage *)message
+                            transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(emoji(forContainingMessage:transaction:));
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 

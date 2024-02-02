@@ -27,8 +27,11 @@ public class VideoAttachmentDetection: NSObject {
     }
 
     @objc
-    public func attachmentIsLoopingVideo(_ attachment: TSAttachment) -> Bool {
-        return attachment.attachmentType == .GIF && isVideoMimeType(attachment.contentType)
+    public func attachmentIsLoopingVideo(
+        _ attachmentType: TSAttachmentType,
+        mimeType: String
+    ) -> Bool {
+        return attachmentType == .GIF && isVideoMimeType(mimeType)
     }
 
     private var attachmentIsLoopingVideoSQL: String {

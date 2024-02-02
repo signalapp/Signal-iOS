@@ -506,7 +506,7 @@ extension AudioMessageView: CVAudioPlayerListener {
 extension AudioAttachment {
     var sizeString: String {
         switch state {
-        case .attachmentStream(attachmentStream: let stream, audioDurationSeconds: _):
+        case .attachmentStream(attachmentStream: let stream, _, audioDurationSeconds: _):
             return ByteCountFormatter().string(for: stream.byteCount) ?? ""
         case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
@@ -515,7 +515,7 @@ extension AudioAttachment {
     }
     var dateString: String {
         switch state {
-        case .attachmentStream(attachmentStream: let stream, audioDurationSeconds: _):
+        case .attachmentStream(attachmentStream: let stream, _, audioDurationSeconds: _):
             let dateFormatter = DateFormatter()
             dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
             return dateFormatter.string(from: stream.creationTimestamp)

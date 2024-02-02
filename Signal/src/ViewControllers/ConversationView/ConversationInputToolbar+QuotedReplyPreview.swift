@@ -513,7 +513,11 @@ private class QuotedMessageSnippetView: UIView {
                     comment: "Indicates this message is a quoted reply to an image file."
                 )
             }
-        } else if let attachmentStream = quotedMessage.attachmentStream, attachmentStream.isLoopingVideo {
+        } else if
+            let attachmentStream = quotedMessage.attachmentStream,
+            let attachmentType = quotedMessage.attachmentType,
+            attachmentStream.isLoopingVideo(attachmentType)
+        {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_GIF",
                 comment: "Indicates this message is a quoted reply to animated GIF file."

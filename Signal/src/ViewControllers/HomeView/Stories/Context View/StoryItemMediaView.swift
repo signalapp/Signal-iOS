@@ -202,7 +202,7 @@ class StoryItemMediaView: UIView {
         case .pointer:
             owsFailDebug("Undownloaded attachments should not progress.")
             return 0
-        case .stream(let stream, _):
+        case .stream(let stream):
             glyphCount = stream.caption?.glyphCount
 
             if let asset = videoPlayer?.avPlayer.currentItem?.asset {
@@ -842,15 +842,15 @@ class StoryItemMediaView: UIView {
 
     private func buildMediaView() -> UIView {
         switch item.attachment {
-        case .stream(let stream, _):
+        case .stream(let stream):
             let container = UIView()
 
-            guard let originalMediaUrl = stream.originalMediaURL else {
+            guard let originalMediaUrl = stream.attachment.originalMediaURL else {
                 owsFailDebug("Missing media for attachment stream")
                 return buildContentUnavailableView()
             }
 
-            guard let thumbnailImage = stream.thumbnailImageSmallSync() else {
+            guard let thumbnailImage = stream.attachment.thumbnailImageSmallSync() else {
                 owsFailDebug("Failed to generate thumbnail for attachment stream")
                 return buildContentUnavailableView()
             }
@@ -859,15 +859,15 @@ class StoryItemMediaView: UIView {
             container.addSubview(backgroundImageView)
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
-            if stream.isVideoMimeType {
+            if stream.attachment.isVideoMimeType {
                 let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
-            } else if stream.isAnimatedContent {
+            } else if stream.attachment.isAnimatedContent {
                 let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(yyImageView)
                 yyImageView.autoPinEdgesToSuperviewEdges()
-            } else if stream.isImageMimeType {
+            } else if stream.attachment.isImageMimeType {
                 let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
@@ -877,15 +877,15 @@ class StoryItemMediaView: UIView {
             }
 
             return container
-        case .pointer(let pointer, _):
+        case .pointer(let pointer):
             let container = UIView()
 
-            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
+            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer.attachment) {
                 container.addSubview(blurHashImageView)
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
 
-            let view = buildDownloadStateView(for: pointer)
+            let view = buildDownloadStateView(for: pointer.attachment)
             container.addSubview(view)
             view.autoPinEdgesToSuperviewEdges()
 
@@ -1016,8 +1016,21 @@ class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
-        case pointer(TSAttachmentPointer, captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>])
-        case stream(TSAttachmentStream, captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>])
+        struct Pointer: Equatable {
+            let attachment: TSAttachmentPointer
+            let caption: String?
+            let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+        }
+
+        struct Stream: Equatable {
+            let attachment: TSAttachmentStream
+            let isLoopingVideo: Bool
+            let caption: String?
+            let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+        }
+
+        case pointer(Pointer)
+        case stream(Stream)
         case text(TextAttachment)
     }
     var attachment: Attachment
@@ -1030,16 +1043,16 @@ class StoryItem: NSObject {
 
     var caption: StyleOnlyMessageBody? {
         switch attachment {
-        case let .stream(attachment, captionStyles):
-            guard let text = attachment.caption?.nilIfEmpty else {
+        case let .stream(stream):
+            guard let text = stream.caption?.nilIfEmpty else {
                 return nil
             }
-            return StyleOnlyMessageBody(text: text, collapsedStyles: captionStyles)
-        case let .pointer(attachment, captionStyles):
-            guard let text = attachment.caption?.nilIfEmpty else {
+            return StyleOnlyMessageBody(text: text, collapsedStyles: stream.captionStyles)
+        case let .pointer(pointer):
+            guard let text = pointer.caption?.nilIfEmpty else {
                 return nil
             }
-            return StyleOnlyMessageBody(text: text, collapsedStyles: captionStyles)
+            return StyleOnlyMessageBody(text: text, collapsedStyles: pointer.captionStyles)
         case .text:
             return nil
         }
@@ -1051,7 +1064,7 @@ extension StoryItem {
 
     @discardableResult
     func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
-        guard case .pointer(let pointer, _) = attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.attachment.state) else { return false }
 
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: message.uniqueId,

@@ -21,6 +21,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private let conversationStyle: ConversationStyle
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
+    private let isLoopingVideo: Bool
     private let thumbnailQuality: AttachmentThumbnailQuality
     private let isBroken: Bool
     private var reusableMediaView: ReusableMediaView?
@@ -32,6 +33,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                          interaction: TSInteraction,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
+                         isLoopingVideo: Bool,
                          isBroken: Bool,
                          thumbnailQuality: AttachmentThumbnailQuality,
                          conversationStyle: ConversationStyle) {
@@ -40,6 +42,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         self.interaction = interaction
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
+        self.isLoopingVideo = isLoopingVideo
         self.isBroken = isBroken
         self.thumbnailQuality = thumbnailQuality
         self.conversationStyle = conversationStyle
@@ -66,7 +69,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             return configureForUndownloadedMedia()
         }
 
-        if attachmentStream.isLoopingVideo {
+        if isLoopingVideo {
             configureForLoopingVideo(attachmentStream: attachmentStream)
         } else if attachmentStream.isAnimatedContent {
             configureForAnimatedImage(attachmentStream: attachmentStream)

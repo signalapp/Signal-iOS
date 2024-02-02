@@ -515,6 +515,7 @@ public class OWSContact: MTLModel {
             byteCount: UInt32(imageData.count),
             sourceFilename: nil,
             caption: nil,
+            attachmentType: .default,
             albumMessageId: nil
         )
         do {
@@ -1087,7 +1088,12 @@ extension OWSContact {
         contactBuilder.setAddress(addresses.compactMap({ $0.proto() }))
 
         if let avatarAttachmentId {
-            if let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: avatarAttachmentId, transaction: tx) {
+            if let attachmentProto = TSAttachmentStream.buildProto(
+                attachmentId: avatarAttachmentId,
+                caption: nil,
+                attachmentType: .default,
+                transaction: tx
+            ) {
                 let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
                 avatarBuilder.setAvatar(attachmentProto)
 

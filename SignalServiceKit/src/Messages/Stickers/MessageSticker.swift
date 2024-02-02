@@ -190,7 +190,14 @@ public class MessageSticker: MTLModel {
             } else {
                 contentType = OWSMimeTypeImageWebp
             }
-            let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil)
+            let attachment = TSAttachmentStream(
+                contentType: contentType,
+                byteCount: fileSize.uint32Value,
+                sourceFilename: nil,
+                caption: nil,
+                attachmentType: .default,
+                albumMessageId: nil
+            )
             try attachment.writeCopyingDataSource(dataSource)
             attachment.anyInsert(transaction: transaction)
             return attachment
@@ -234,7 +241,14 @@ public class MessageSticker: MTLModel {
         }
 
         let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
+        let attachment = TSAttachmentStream(
+            contentType: contentType,
+            byteCount: UInt32(fileSize),
+            sourceFilename: nil,
+            caption: nil,
+            attachmentType: .default,
+            albumMessageId: nil
+        )
         try attachment.writeConsumingDataSource(dataSource)
 
         attachment.anyInsert(transaction: transaction)

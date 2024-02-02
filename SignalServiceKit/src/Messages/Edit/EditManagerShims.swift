@@ -49,6 +49,12 @@ public protocol _EditManager_DataStore {
         tx: DBReadTransaction
     ) -> [TSAttachment]
 
+    func getIsVoiceMessage(
+        forAttachment attachment: TSAttachment,
+        on message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Bool
+
     func getOversizedTextAttachments(
         message: TSMessage,
         tx: DBReadTransaction
@@ -135,6 +141,14 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         tx: DBReadTransaction
     ) -> [TSAttachment] {
         message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+    }
+
+    public func getIsVoiceMessage(
+        forAttachment attachment: TSAttachment,
+        on message: TSMessage,
+        tx: DBReadTransaction
+    ) -> Bool {
+        attachment.isVoiceMessage(inContainingMessage: message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getOversizedTextAttachments(

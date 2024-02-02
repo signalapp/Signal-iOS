@@ -337,16 +337,27 @@ class StoryContextViewController: OWSViewController {
                 return nil
             }
             if let attachment = attachment as? TSAttachmentPointer {
+                let pointer = StoryItem.Attachment.Pointer(
+                    attachment: attachment,
+                    caption: attachment.caption(forContainingStoryMessage: message, transaction: transaction),
+                    captionStyles: file.captionStyles
+                )
                 return StoryItem(
                     message: message,
                     numberOfReplies: replyCount,
-                    attachment: .pointer(attachment, captionStyles: file.captionStyles)
+                    attachment: .pointer(pointer)
                 )
             } else if let attachment = attachment as? TSAttachmentStream {
+                let stream = StoryItem.Attachment.Stream(
+                    attachment: attachment,
+                    isLoopingVideo: attachment.isLoopingVideo(inContainingStoryMessage: message, transaction: transaction),
+                    caption: attachment.caption(forContainingStoryMessage: message, transaction: transaction),
+                    captionStyles: file.captionStyles
+                )
                 return StoryItem(
                     message: message,
                     numberOfReplies: replyCount,
-                    attachment: .stream(attachment, captionStyles: file.captionStyles)
+                    attachment: .stream(stream)
                 )
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
@@ -1033,10 +1044,10 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
         }
         let attachment: StoryThumbnailView.Attachment
         switch item.attachment {
-        case .pointer(let pointer, _):
-            attachment = .file(pointer)
-        case .stream(let stream, _):
-            attachment = .file(stream)
+        case .pointer(let pointer):
+            attachment = .file(pointer.attachment)
+        case .stream(let stream):
+            attachment = .file(stream.attachment)
         case .text(let textAttachment):
             attachment = .text(textAttachment)
         }

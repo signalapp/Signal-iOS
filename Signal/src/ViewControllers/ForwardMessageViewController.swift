@@ -102,8 +102,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         do {
             let builder = Item.Builder(interaction: message)
 
-            builder.attachments = try attachmentStreams.map { attachmentStream in
-                try attachmentStream.cloneAsSignalAttachment()
+            try databaseStorage.read { tx in
+                builder.attachments = try attachmentStreams.map { attachmentStream in
+                    try attachmentStream.cloneAsSignalAttachment(sourceMessage: message, transaction: tx)
+                }
             }
 
             let item: Item = builder.build()
@@ -129,19 +131,24 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let builder = Item.Builder()
         switch storyMessage.attachment {
         case .file(let file):
-            guard let attachmentStream = databaseStorage.read(block: {
-                TSAttachmentStream.anyFetchAttachmentStream(uniqueId: file.attachmentId, transaction: $0)
-            }) else {
-                ForwardMessageViewController.showAlertForForwardError(
-                    error: OWSAssertionError("Missing attachment stream for forwarded story message"),
-                    forwardedInteractionCount: 1
-                )
-                return
+            let error: Error? = databaseStorage.read { tx -> Error? in
+                guard let attachmentStream = databaseStorage.read(block: {
+                    TSAttachmentStream.anyFetchAttachmentStream(uniqueId: file.attachmentId, transaction: $0)
+                }) else {
+                    return OWSAssertionError("Missing attachment stream for forwarded story message")
+                }
+                do {
+                    let signalAttachment = try attachmentStream.cloneAsSignalAttachment(
+                        sourceStoryMessage: storyMessage,
+                        transaction: tx
+                    )
+                    builder.attachments = [signalAttachment]
+                    return nil
+                } catch {
+                    return error
+                }
             }
-            do {
-                let signalAttachment = try attachmentStream.cloneAsSignalAttachment()
-                builder.attachments = [signalAttachment]
-            } catch {
+            if let error {
                 ForwardMessageViewController.showAlertForForwardError(
                     error: error,
                     forwardedInteractionCount: 1
@@ -540,7 +547,42 @@ extension TSAttachmentStream {
         fileprivate var isLoopingVideo: Bool
     }
 
-    func cloneAsSignalAttachmentRequest() throws -> CloneAsSignalAttachmentRequest {
+    func cloneAsSignalAttachmentRequest(
+        sourceMessage: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) throws -> CloneAsSignalAttachmentRequest {
+        // TODO: these should be done in one lookup.
+        let attachmentType = self.attachmentType(forContainingMessage: sourceMessage, transaction: transaction)
+        let caption = self.caption(forContainingMessage: sourceMessage, transaction: transaction)
+        return try cloneAsSignalAttachmentRequest(
+            isVoiceMessage: attachmentType == .voiceMessage,
+            isBorderless: attachmentType == .borderless,
+            isLoopingVideo: self.isLoopingVideo(attachmentType),
+            caption: caption
+        )
+    }
+
+    func cloneAsSignalAttachmentRequest(
+        sourceStoryMessage: StoryMessage,
+        transaction: SDSAnyReadTransaction
+    ) throws -> CloneAsSignalAttachmentRequest {
+        // TODO: these should be done in one lookup.
+        let isLoopingVideo = self.isLoopingVideo(inContainingStoryMessage: sourceStoryMessage, transaction: transaction)
+        let caption = self.caption(forContainingStoryMessage: sourceStoryMessage, transaction: transaction)
+        return try cloneAsSignalAttachmentRequest(
+            isVoiceMessage: false,
+            isBorderless: false,
+            isLoopingVideo: isLoopingVideo,
+            caption: caption
+        )
+    }
+
+    func cloneAsSignalAttachmentRequest(
+        isVoiceMessage: Bool,
+        isBorderless: Bool,
+        isLoopingVideo: Bool,
+        caption: String?
+    ) throws -> CloneAsSignalAttachmentRequest {
         guard let sourceUrl = originalMediaURL else {
             throw OWSAssertionError("Missing originalMediaURL.")
         }
@@ -557,8 +599,13 @@ extension TSAttachmentStream {
                                               isLoopingVideo: isLoopingVideo)
     }
 
-    func cloneAsSignalAttachment() throws -> SignalAttachment {
-        let request = try cloneAsSignalAttachmentRequest()
+    func cloneAsSignalAttachment(sourceMessage: TSMessage, transaction: SDSAnyReadTransaction) throws -> SignalAttachment {
+        let request = try cloneAsSignalAttachmentRequest(sourceMessage: sourceMessage, transaction: transaction)
+        return try Self.cloneAsSignalAttachment(request: request)
+    }
+
+    func cloneAsSignalAttachment(sourceStoryMessage: StoryMessage, transaction: SDSAnyReadTransaction) throws -> SignalAttachment {
+        let request = try cloneAsSignalAttachmentRequest(sourceStoryMessage: sourceStoryMessage, transaction: transaction)
         return try Self.cloneAsSignalAttachment(request: request)
     }
 
@@ -764,9 +811,9 @@ public struct ForwardMessageItem {
                 attachmentStreams.append(attachmentStream)
             }
 
-            if !attachmentStreams.isEmpty {
+            if !attachmentStreams.isEmpty, let message = interaction as? TSMessage {
                 builder.attachments = try attachmentStreams.map { attachmentStream in
-                    try attachmentStream.cloneAsSignalAttachment()
+                    try attachmentStream.cloneAsSignalAttachment(sourceMessage: message, transaction: transaction)
                 }
             }
 

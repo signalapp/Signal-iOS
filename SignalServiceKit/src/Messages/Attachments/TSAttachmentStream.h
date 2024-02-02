@@ -51,6 +51,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
+                               attachmentType:(TSAttachmentType)attachmentType
                                albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
@@ -75,6 +76,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
+                     attachmentType:(TSAttachmentType)attachmentType
                      albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
@@ -214,9 +216,25 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 #pragma mark - Protobuf
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                      transaction:(SDSAnyReadTransaction *)transaction;
+                                                containingMessage:(TSMessage *)message
+                                                      transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(buildProto(attachmentId:containingMessage:transaction:));
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                           containingStoryMessage:(StoryMessage *)storyMessage
+                                                      transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(buildProto(attachmentId:containingStoryMessage:transaction:));
 
-- (nullable SSKProtoAttachmentPointer *)buildProto;
+
+- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingMessage:(TSMessage *)message
+                                                           transaction:(SDSAnyReadTransaction *)transaction;
+
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                          caption:(nullable NSString *)caption
+                                                   attachmentType:(TSAttachmentType)attachmentType
+                                                      transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(buildProto(attachmentId:caption:attachmentType:transaction:));
+- (nullable SSKProtoAttachmentPointer *)buildProtoWithCaption:(nullable NSString *)caption
+                                               attachmentType:(TSAttachmentType)attachmentType;
 
 @end
 

@@ -3944,7 +3944,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             messageState: messageState,
             isDelivered: isDelivered,
             isRead: isRead,
-            isVoiceMessage: attachment?.isVoiceMessage ?? false,
+            isVoiceMessage: false,
             quotedMessage: quotedMessage,
             contactShare: contactShare,
             linkPreview: linkPreview,
@@ -3981,6 +3981,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 byteCount: nominalDataLength,
                 sourceFilename: filename,
                 caption: nil,
+                attachmentType: .default,
                 albumMessageId: nil
             )
             do {

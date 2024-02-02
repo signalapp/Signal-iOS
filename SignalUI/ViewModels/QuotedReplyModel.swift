@@ -12,6 +12,7 @@ public class QuotedReplyModel: NSObject {
     public let timestamp: UInt64?
     public let authorAddress: SignalServiceAddress
     public let attachmentStream: TSAttachmentStream?
+    public let attachmentType: TSAttachmentType?
     public let failedThumbnailAttachmentPointer: TSAttachmentPointer?
 
     // This property should be set IFF we are quoting a text message
@@ -64,6 +65,10 @@ public class QuotedReplyModel: NSObject {
             failedAttachmentPointer = nil
         }
 
+        let attachmentType: TSAttachmentType? = quotedAttachment?
+            .isLoopingVideo(inContainingStoryMessage: storyMessage, transaction: transaction) ?? false
+            ? .GIF : .default
+
         let body = storyMessage.quotedBody(transaction: transaction)
 
         self.init(
@@ -76,6 +81,7 @@ public class QuotedReplyModel: NSObject {
             thumbnailViewFactory: thumbnailViewFactory,
             contentType: attachmentStream?.contentType,
             attachmentStream: attachmentStream,
+            attachmentType: attachmentType,
             failedThumbnailAttachmentPointer: failedAttachmentPointer,
             reactionEmoji: reactionEmoji
         )
@@ -148,6 +154,9 @@ public class QuotedReplyModel: NSObject {
             failedAttachmentPointer = nil
         }
 
+        let attachmentType: TSAttachmentType? = attachment?
+            .attachmentType(forContainingMessage: message, transaction: transaction)
+
         var body: String? = quotedMessage.body
         var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
 
@@ -173,6 +182,7 @@ public class QuotedReplyModel: NSObject {
             thumbnailImage: thumbnailImage,
             contentType: quotedMessage.contentType,
             sourceFilename: quotedMessage.sourceFilename,
+            attachmentType: attachmentType,
             failedThumbnailAttachmentPointer: failedAttachmentPointer,
             isGiftBadge: quotedMessage.isGiftBadge,
             isPayment: isPayment
@@ -316,6 +326,13 @@ public class QuotedReplyModel: NSObject {
                 return nil
             }
 
+            let attachmentType: TSAttachmentType?
+            if let message = item.interaction as? TSMessage {
+               attachmentType = stickerAttachment.attachmentType(forContainingMessage: message, transaction: transaction)
+            } else {
+                attachmentType = nil
+            }
+
             return QuotedReplyModel(
                 timestamp: timestamp,
                 authorAddress: authorAddress,
@@ -323,7 +340,8 @@ public class QuotedReplyModel: NSObject {
                 thumbnailImage: resizedThumbnailImage,
                 contentType: contentType,
                 sourceFilename: stickerAttachment.sourceFilename,
-                attachmentStream: stickerAttachment
+                attachmentStream: stickerAttachment,
+                attachmentType: attachmentType
             )
         }
 
@@ -412,6 +430,13 @@ public class QuotedReplyModel: NSObject {
             thumbnailImage = nil
         }
 
+        let attachmentType: TSAttachmentType?
+        if let message = item.interaction as? TSMessage {
+           attachmentType = quotedAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
+        } else {
+            attachmentType = nil
+        }
+
         return QuotedReplyModel(
             timestamp: timestamp,
             authorAddress: authorAddress,
@@ -421,7 +446,8 @@ public class QuotedReplyModel: NSObject {
             thumbnailImage: thumbnailImage,
             contentType: quotedAttachment?.contentType,
             sourceFilename: quotedAttachment?.sourceFilename,
-            attachmentStream: quotedAttachment
+            attachmentStream: quotedAttachment,
+            attachmentType: attachmentType
         )
     }
 
@@ -448,6 +474,7 @@ public class QuotedReplyModel: NSObject {
         contentType: String? = nil,
         sourceFilename: String? = nil,
         attachmentStream: TSAttachmentStream? = nil,
+        attachmentType: TSAttachmentType? = nil,
         failedThumbnailAttachmentPointer: TSAttachmentPointer? = nil,
         reactionEmoji: String? = nil,
         isGiftBadge: Bool = false,
@@ -463,6 +490,7 @@ public class QuotedReplyModel: NSObject {
         self.contentType = contentType
         self.sourceFilename = sourceFilename
         self.attachmentStream = attachmentStream
+        self.attachmentType = attachmentType
         self.failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer
         self.reactionEmoji = reactionEmoji
         self.isGiftBadge = isGiftBadge

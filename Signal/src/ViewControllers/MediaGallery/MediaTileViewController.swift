@@ -795,6 +795,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 interaction: galleryItem.message,
                 thread: thread,
                 attachmentStream: galleryItem.attachmentStream,
+                isVoiceMessage: galleryItem.attachmentType == .voiceMessage,
                 mediaCache: mediaCache,
                 metadata: galleryItem.mediaMetadata!
             ))

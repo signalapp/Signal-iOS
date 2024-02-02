@@ -496,6 +496,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 byteCount: UInt32(truncating: byteCount),
                 sourceFilename: resultUrl.lastPathComponent,
                 caption: nil,
+                attachmentType: .default,
                 albumMessageId: nil
             )
             attachmentStream.isUploaded = false

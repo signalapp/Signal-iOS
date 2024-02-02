@@ -42,6 +42,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  attachmentType:(TSAttachmentType)attachmentType
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
@@ -73,6 +74,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _caption = caption;
+    _attachmentType = attachmentType;
     _albumMessageId = albumMessageId;
     _blurHash = blurHash;
     _uploadTimestamp = uploadTimestamp;
@@ -123,6 +125,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
+                               attachmentType:(TSAttachmentType)attachmentType
                                albumMessageId:(nullable NSString *)albumMessageId
 {
     if (contentType.length < 1) {
@@ -142,6 +145,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _sourceFilename = sourceFilename;
     _caption = caption;
     _albumMessageId = albumMessageId;
+    _attachmentType = attachmentType;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -177,6 +181,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _encryptionKey = pointer.encryptionKey;
     _byteCount = pointer.byteCount;
     _sourceFilename = pointer.sourceFilename;
+    _attachmentType = pointer.attachmentType;
     NSString *contentType = pointer.contentType;
     if (contentType.length < 1) {
         OWSLogWarn(@"incoming attachment has invalid content type");
@@ -315,12 +320,14 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return @"TSAttachements";
 }
 
-- (NSString *)description {
+- (NSString *)previewTextForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+{
     NSString *attachmentString;
 
-    if ([MIMETypeUtil isMaybeAnimated:self.contentType] || self.isLoopingVideo) {
+    BOOL isLoopingVideo = [self isLoopingVideoInContainingMessage:message transaction:transaction];
+    if ([MIMETypeUtil isMaybeAnimated:self.contentType] || isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
-        BOOL isLoopingVideo = self.isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
+        isLoopingVideo = isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
 
         if (isGIF || isLoopingVideo) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_GIF",
@@ -336,7 +343,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
             @"Short text label for a video attachment, used for thread preview and on the lock screen");
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
-        if (self.isVoiceMessage) {
+        if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
         } else {
@@ -348,23 +355,20 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
             @"Short text label for a file attachment, used for thread preview and on the lock screen");
     }
 
-    return [NSString stringWithFormat:@"%@ %@", self.emoji, attachmentString];
+    NSString *emoji = [self emojiForContainingMessage:message transaction:transaction];
+    return [NSString stringWithFormat:@"%@ %@", emoji, attachmentString];
 }
 
-- (NSString *)emoji
+- (NSString *)emojiForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     if ([MIMETypeUtil isAudio:self.contentType]) {
-        if (self.isVoiceMessage) {
+        if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
             return @"🎤";
         }
     }
 
-    return [self emojiForMimeType];
-}
-
-- (NSString *)emojiForMimeType
-{
-    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType] || self.isLoopingVideo) {
+    if ([MIMETypeUtil isDefinitelyAnimated:self.contentType] ||
+        [self isLoopingVideoInContainingMessage:message transaction:transaction]) {
         return @"🎡";
     } else if ([MIMETypeUtil isImage:self.contentType]) {
         return @"📷";
@@ -392,6 +396,17 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     }
 }
 
+- (nullable NSString *)captionForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+{
+    return _caption;
+}
+
+- (nullable NSString *)captionForContainingStoryMessage:(StoryMessage *)storyMessage
+                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    return _caption;
+}
+
 - (BOOL)isImageMimeType
 {
     return [MIMETypeUtil isImage:self.contentType];
@@ -412,7 +427,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return [MIMETypeUtil isAudio:self.contentType];
 }
 
-- (TSAnimatedMimeType)isIsAnimatedMimeType
+- (TSAnimatedMimeType)getAnimatedMimeType
 {
     if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
         return TSAnimatedMimeTypeAnimated;
@@ -423,7 +438,13 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     }
 }
 
-- (BOOL)isVoiceMessage
+- (TSAttachmentType)attachmentTypeForContainingMessage:(TSMessage *)message
+                                           transaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.attachmentType;
+}
+
+- (BOOL)isVoiceMessageInContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     // a missing filename is the legacy way to determine if an audio attachment is
     // a voice note vs. other arbitrary audio attachments.
@@ -436,14 +457,29 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return NO;
 }
 
-- (BOOL)isBorderless
+- (BOOL)isBorderlessInContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     return self.attachmentType == TSAttachmentTypeBorderless;
 }
 
-- (BOOL)isLoopingVideo
+- (BOOL)isLoopingVideoWithAttachmentType:(TSAttachmentType)attachmentType
 {
-    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:self];
+    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:attachmentType
+                                                                       mimeType:self.contentType];
+}
+
+
+- (BOOL)isLoopingVideoInContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+{
+    TSAttachmentType type = [self attachmentTypeForContainingMessage:message transaction:transaction];
+    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:type mimeType:self.contentType];
+}
+
+- (BOOL)isLoopingVideoInContainingStoryMessage:(StoryMessage *)storyMessage
+                                   transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:_attachmentType
+                                                                       mimeType:self.contentType];
 }
 
 - (BOOL)isVisualMediaMimeType

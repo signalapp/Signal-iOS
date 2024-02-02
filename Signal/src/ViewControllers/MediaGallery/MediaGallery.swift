@@ -40,6 +40,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     let message: TSMessage
     let sender: Sender?
     let attachmentStream: TSAttachmentStream
+    let attachmentType: TSAttachmentType
 
     let galleryDate: GalleryDate
     let captionForDisplay: MediaCaptionView.Content?
@@ -59,7 +60,9 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         self.galleryDate = GalleryDate(message: message)
         self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
-        if let captionText = attachmentStream.caption?.filterForDisplay {
+        // TODO: these two should be done in one fetch.
+        self.attachmentType = attachmentStream.attachmentType(forContainingMessage: message, transaction: transaction)
+        if let captionText = attachmentStream.caption(forContainingMessage: message, transaction: transaction)?.filterForDisplay {
             self.captionForDisplay = .attachmentStreamCaption(captionText)
         } else if let body = message.body {
             let hydratedMessageBody = MessageBody(
@@ -75,11 +78,11 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     }
 
     var isVideo: Bool {
-        return attachmentStream.isVideoMimeType && !attachmentStream.isLoopingVideo
+        return attachmentStream.isVideoMimeType && !attachmentStream.isLoopingVideo(attachmentType)
     }
 
     var isAnimated: Bool {
-        return attachmentStream.isAnimatedMimeType == .animated || attachmentStream.isLoopingVideo
+        return attachmentStream.getAnimatedMimeType() == .animated || attachmentStream.isLoopingVideo(attachmentType)
     }
 
     var isImage: Bool {

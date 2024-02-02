@@ -62,12 +62,14 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
+                     attachmentType:(TSAttachmentType)attachmentType
                      albumMessageId:(nullable NSString *)albumMessageId
 {
     self = [super initAttachmentWithContentType:contentType
                                       byteCount:byteCount
                                  sourceFilename:sourceFilename
                                         caption:caption
+                                 attachmentType:attachmentType
                                  albumMessageId:albumMessageId];
     if (!self) {
         return self;
@@ -98,7 +100,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     // state, but this constructor is used only for new incoming
     // attachments which don't need to be uploaded.
     _isUploaded = YES;
-    self.attachmentType = pointer.attachmentType;
     self.digest = pointer.digest;
     _creationTimestamp = [NSDate new];
 
@@ -358,7 +359,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         return nil;
     }
 
-    if (!self.isImageMimeType && !self.isVideoMimeType && self.isAnimatedMimeType == TSAnimatedMimeTypeNotAnimated) {
+    if (!self.isImageMimeType && !self.isVideoMimeType && [self getAnimatedMimeType] == TSAnimatedMimeTypeNotAnimated) {
         return nil;
     }
 
@@ -454,11 +455,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         return YES;
     }
 
-    if (self.isAnimatedMimeType != TSAnimatedMimeTypeNotAnimated && [self isValidImageIgnoringSize:ignoreSize]) {
-        return YES;
-    }
-
-    if (self.isLoopingVideo && [self isValidVideoIgnoringSize:ignoreSize]) {
+    if ([self getAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated && [self isValidImageIgnoringSize:ignoreSize]) {
         return YES;
     }
 
@@ -474,7 +471,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)isValidImageIgnoringSize:(BOOL)ignoreSize
 {
-    OWSAssertDebug(self.isImageMimeType || self.isAnimatedMimeType != TSAnimatedMimeTypeNotAnimated);
+    OWSAssertDebug(self.isImageMimeType || [self getAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated);
 
     BOOL result;
     BOOL didUpdateCache = NO;
@@ -577,7 +574,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 {
     if ([self isVideoMimeType]) {
         return [self videoStillImage];
-    } else if ([self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
+    } else if ([self isImageMimeType] || [self getAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
         NSString *_Nullable originalFilePath = self.originalFilePath;
         if (!originalFilePath) {
             return nil;
@@ -607,7 +604,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         OWSFailDebug(@"isVideo was unexpectedly true");
         return nil;
     }
-    if ([self isAnimatedMimeType] == TSAnimatedMimeTypeAnimated) {
+    if ([self getAnimatedMimeType] == TSAnimatedMimeTypeAnimated) {
         OWSFailDebug(@"isAnimated was unexpectedly true");
         return nil;
     }
@@ -668,7 +665,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             return CGSizeZero;
         }
         return [[self videoStillImage] pixelSize];
-    } else if ([self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
+    } else if ([self isImageMimeType] || [self getAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated) {
         // imageSizeForFilePath checks validity.
         return [NSData imageSizeForFilePath:self.originalFilePath mimeType:self.contentType];
     } else {
@@ -678,8 +675,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (BOOL)shouldHaveImageSize
 {
-    return (
-        [self isVideoMimeType] || [self isImageMimeType] || [self isAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated);
+    return ([self isVideoMimeType] || [self isImageMimeType] ||
+        [self getAnimatedMimeType] != TSAnimatedMimeTypeNotAnimated);
 }
 
 - (CGSize)imageSizePixels
@@ -1043,6 +1040,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
+                                         attachmentType:TSAttachmentTypeDefault
                                          albumMessageId:nil];
 
     NSError *error;
@@ -1058,6 +1056,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 // MARK: Protobuf serialization
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                containingMessage:(TSMessage *)message
                                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(attachmentId.length > 0);
@@ -1066,10 +1065,59 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if (attachmentStream == nil) {
         return nil;
     }
-    return [attachmentStream buildProto];
+    return [attachmentStream buildProtoForContainingMessage:message transaction:transaction];
 }
 
-- (nullable SSKProtoAttachmentPointer *)buildProto
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                           containingStoryMessage:(StoryMessage *)storyMessage
+                                                      transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(attachmentId.length > 0);
+    TSAttachmentStream *_Nullable attachmentStream =
+        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
+    if (attachmentStream == nil) {
+        return nil;
+    }
+    return [attachmentStream buildProtoForContainingStoryMessage:storyMessage transaction:transaction];
+}
+
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                          caption:(nullable NSString *)caption
+                                                   attachmentType:(TSAttachmentType)attachmentType
+                                                      transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(attachmentId.length > 0);
+    TSAttachmentStream *_Nullable attachmentStream =
+        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
+    if (attachmentStream == nil) {
+        return nil;
+    }
+    return [attachmentStream buildProtoWithCaption:caption attachmentType:attachmentType];
+}
+
+- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingMessage:(TSMessage *)message
+                                                           transaction:(SDSAnyReadTransaction *)transaction
+{
+    NSString *caption = [self captionForContainingMessage:message transaction:transaction];
+    TSAttachmentType attachmentType = [self attachmentTypeForContainingMessage:message transaction:transaction];
+    return [self buildProtoWithCaption:caption attachmentType:attachmentType];
+}
+
+- (nullable SSKProtoAttachmentPointer *)buildProtoForContainingStoryMessage:(StoryMessage *)storyMessage
+                                                                transaction:(SDSAnyReadTransaction *)transaction
+{
+    NSString *caption = [self captionForContainingStoryMessage:storyMessage transaction:transaction];
+    TSAttachmentType attachmentType;
+    if ([self isLoopingVideoInContainingStoryMessage:storyMessage transaction:transaction]) {
+        attachmentType = TSAttachmentTypeGIF;
+    } else {
+        attachmentType = TSAttachmentTypeDefault;
+    }
+    return [self buildProtoWithCaption:caption attachmentType:attachmentType];
+}
+
+- (nullable SSKProtoAttachmentPointer *)buildProtoWithCaption:(nullable NSString *)caption
+                                               attachmentType:(TSAttachmentType)attachmentType
 {
     BOOL isValidV1orV2 = self.serverId > 0;
     BOOL isValidV3 = (self.cdnKey.length > 0 && self.cdnNumber > 0);
@@ -1089,19 +1137,19 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if (self.sourceFilename.length > 0) {
         builder.fileName = self.sourceFilename;
     }
-    if (self.caption.length > 0) {
-        builder.caption = self.caption;
+    if (caption && caption.length > 0) {
+        builder.caption = caption;
     }
 
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
 
-    if (self.isVoiceMessage) {
+    if (attachmentType == TSAttachmentTypeVoiceMessage) {
         builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;
-    } else if (self.isBorderless) {
+    } else if (attachmentType == TSAttachmentTypeBorderless) {
         builder.flags = SSKProtoAttachmentPointerFlagsBorderless;
-    } else if (self.isLoopingVideo || self.isAnimatedContent) {
+    } else if (attachmentType == TSAttachmentTypeGIF || self.isAnimatedContent) {
         builder.flags = SSKProtoAttachmentPointerFlagsGif;
     } else {
         builder.flags = 0;

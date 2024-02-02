@@ -63,6 +63,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                                interaction: interaction,
                                maxMessageWidth: maxMessageWidth,
                                isBorderless: isBorderless,
+                               isLoopingVideo: item.attachment.isLoopingVideo(item.attachmentType),
                                isBroken: item.isBroken,
                                thumbnailQuality: thumbnailQuality,
                                conversationStyle: conversationStyle)
@@ -568,6 +569,8 @@ public struct CVMediaAlbumItem: Equatable {
 
     // This property will only be set if the attachment is downloaded and valid.
     public let attachmentStream: TSAttachmentStream?
+
+    public let attachmentType: TSAttachmentType
 
     public let hasCaption: Bool
 

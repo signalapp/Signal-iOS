@@ -97,6 +97,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                        contentType:contentType
                     sourceFilename:sourceFilename
                            caption:caption
+                    attachmentType:attachmentType
                     albumMessageId:albumMessageId
                           blurHash:blurHash
                    uploadTimestamp:uploadTimestamp
@@ -107,30 +108,8 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
 
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
-    self.attachmentType = attachmentType;
     _pointerType = TSAttachmentPointerTypeIncoming;
     _mediaSize = mediaSize;
-
-    return self;
-}
-
-- (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-{
-    OWSAssertDebug(attachmentStream);
-
-    self = [super initForRestoreWithUniqueId:attachmentStream.uniqueId
-                                 contentType:attachmentStream.contentType
-                              sourceFilename:attachmentStream.sourceFilename
-                                     caption:attachmentStream.caption
-                              albumMessageId:attachmentStream.albumMessageId];
-    if (!self) {
-        return self;
-    }
-
-    _state = TSAttachmentPointerStateEnqueued;
-    self.attachmentType = attachmentStream.attachmentType;
-    _pointerType = TSAttachmentPointerTypeRestoring;
-    _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedMediaSize : CGSizeZero);
 
     return self;
 }

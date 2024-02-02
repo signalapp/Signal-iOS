@@ -20,21 +20,6 @@ protocol SignalAttachmentProvider {
 
 // MARK: -
 
-// This can be used to forward an existing attachment stream.
-struct TSAttachmentStreamCloner: SignalAttachmentProvider {
-    let attachmentStream: TSAttachmentStream
-
-    func buildAttachmentForSending() throws -> SignalAttachment {
-        try attachmentStream.cloneAsSignalAttachment()
-    }
-
-    var isBorderless: Bool {
-        attachmentStream.isBorderless
-    }
-}
-
-// MARK: -
-
 public enum SendMessageFlowType {
     case `default`
     case forward

@@ -939,7 +939,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSMutableArray<SSKProtoAttachmentPointer *> *attachments = [NSMutableArray new];
     for (NSString *attachmentId in self.attachmentIds) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:attachmentId transaction:transaction];
+            [TSAttachmentStream buildProtoForAttachmentId:attachmentId containingMessage:self transaction:transaction];
         if (!attachmentProto) {
             OWSFailDebug(@"could not build protobuf.");
             return nil;
@@ -990,6 +990,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (self.linkPreview.imageAttachmentId) {
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId
+                                            containingMessage:self
                                                   transaction:transaction];
             if (!attachmentProto) {
                 OWSFailDebug(@"Could not build link preview image protobuf.");
@@ -1017,7 +1018,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     // Sticker
     if (self.messageSticker) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId transaction:transaction];
+            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId
+                                        containingMessage:self
+                                              transaction:transaction];
         if (!attachmentProto) {
             OWSFailDebug(@"Could not build sticker attachment protobuf.");
         } else {
@@ -1130,6 +1133,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (quotedMessage.thumbnailAttachmentId && quotedMessage.isThumbnailOwned) {
             NSString *attachmentId = quotedMessage.thumbnailAttachmentId;
             quotedAttachmentBuilder.thumbnail = [TSAttachmentStream buildProtoForAttachmentId:attachmentId
+                                                                            containingMessage:self
                                                                                   transaction:transaction];
         } else if (quotedMessage.thumbnailAttachmentId) {
             OWSFailDebug(@"Referencing an attachment that isn't owned by the quote.");

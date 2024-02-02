@@ -1182,7 +1182,7 @@ public extension OWSAttachmentDownloads {
                     return .bodyMediaImage
                 } else if attachment.isVideoMimeType {
                     return .bodyMediaVideo
-                } else if attachment.isVoiceMessage {
+                } else if attachment.isVoiceMessage(inContainingMessage: message, transaction: transaction) {
                     return .bodyAudioVoiceMemo
                 } else if attachment.isAudioMimeType {
                     return .bodyAudioOther
@@ -1281,7 +1281,10 @@ public extension OWSAttachmentDownloads {
                 owsFailDebug("Missing attachment: \(file.attachmentId)")
                 break
             }
-            addJobRequest(attachment: attachment, category: attachment.downloadCategory)
+            addJobRequest(
+                attachment: attachment,
+                category: attachment.downloadCategory(containingMessage: storyMessage, transaction: transaction)
+            )
         case .text(let attachment):
             if let attachmentId = attachment.preview?.imageAttachmentId {
                 addJobRequest(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
@@ -1294,7 +1297,10 @@ public extension OWSAttachmentDownloads {
                 owsFailDebug("Missing attachment: \(attachmentId)")
                 continue
             }
-            addJobRequest(attachment: attachment, category: attachment.downloadCategory)
+            addJobRequest(
+                attachment: attachment,
+                category: attachment.downloadCategory(containingMessage: storyMessage, transaction: transaction)
+            )
         }
 
         return jobRequests
@@ -1663,13 +1669,12 @@ public extension OWSAttachmentDownloads {
 }
 
 private extension TSAttachment {
-    var downloadCategory: OWSAttachmentDownloads.AttachmentCategory {
+    func downloadCategory(containingMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> OWSAttachmentDownloads.AttachmentCategory {
+        // Story messages cant be voice message, so no `bodyAudioVoiceMemo`
         if isImageMimeType {
             return .bodyMediaImage
         } else if isVideoMimeType {
             return .bodyMediaVideo
-        } else if isVoiceMessage {
-            return .bodyAudioVoiceMemo
         } else if isAudioMimeType {
             return .bodyAudioOther
         } else if isOversizeTextMimeType {

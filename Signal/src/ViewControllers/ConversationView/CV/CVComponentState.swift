@@ -650,8 +650,8 @@ public class CVComponentState: Equatable, Dependencies {
            let bodyMedia = bodyMedia,
            bodyMedia.items.count == 1,
            let firstItem = bodyMedia.items.first,
-           let attachmentStream = firstItem.attachmentStream,
-           attachmentStream.isBorderless {
+           firstItem.attachmentType == .borderless
+        {
             return true
         }
         return false
@@ -965,10 +965,14 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Missing attachment.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
+            let attachmentType = mediaAttachment.attachmentType(forContainingMessage: message, transaction: transaction)
             if let attachmentPointer = mediaAttachment as? TSAttachmentPointer {
                 switch attachmentPointer.state {
                 case .enqueued, .downloading:
-                    return buildViewOnce(viewOnceState: .incomingDownloading(attachmentPointer: attachmentPointer))
+                    return buildViewOnce(viewOnceState: .incomingDownloading(
+                        attachmentPointer: attachmentPointer,
+                        attachmentType: attachmentType
+                    ))
                 case .failed:
                     return buildViewOnce(viewOnceState: .incomingFailed)
                 case .pendingMessageRequest, .pendingManualDownload:
@@ -978,11 +982,14 @@ fileprivate extension CVComponentState.Builder {
                 if attachmentStream.isValidVisualMedia
                     && (
                         attachmentStream.isImageMimeType
-                        || attachmentStream.isAnimatedMimeType != .notAnimated
+                        || attachmentStream.getAnimatedMimeType() != .notAnimated
                         || attachmentStream.isVideoMimeType
                     )
                 {
-                    return buildViewOnce(viewOnceState: .incomingAvailable(attachmentStream: attachmentStream))
+                    return buildViewOnce(viewOnceState: .incomingAvailable(
+                        attachmentStream: attachmentStream,
+                        attachmentType: attachmentType
+                    ))
                 }
             }
 
@@ -1128,7 +1135,10 @@ fileprivate extension CVComponentState.Builder {
                 return []
             }
 
-            let hasCaption = attachment.caption.map {
+            // TODO: this should pull all the message->attachment edge metadata in one method.
+            let caption = attachment.caption(forContainingMessage: message, transaction: transaction)
+            let attachmentType = attachment.attachmentType(forContainingMessage: message, transaction: transaction)
+            let hasCaption = caption.map {
                 return CVComponentState.displayableCaption(
                     text: $0,
                     attachmentId: attachment.uniqueId,
@@ -1146,6 +1156,7 @@ fileprivate extension CVComponentState.Builder {
                 }
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
+                                                        attachmentType: attachmentType,
                                                         hasCaption: hasCaption,
                                                         mediaSize: mediaSize,
                                                         isBroken: false))
@@ -1156,6 +1167,7 @@ fileprivate extension CVComponentState.Builder {
                 Logger.warn("Filtering invalid media.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
+                                                        attachmentType: attachmentType,
                                                         hasCaption: hasCaption,
                                                         mediaSize: .zero,
                                                         isBroken: true))
@@ -1166,6 +1178,7 @@ fileprivate extension CVComponentState.Builder {
                 Logger.warn("Filtering media with invalid size.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
+                                                        attachmentType: attachmentType,
                                                         hasCaption: hasCaption,
                                                         mediaSize: .zero,
                                                         isBroken: true))
@@ -1174,6 +1187,7 @@ fileprivate extension CVComponentState.Builder {
 
             mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                     attachmentStream: attachmentStream,
+                                                    attachmentType: attachmentType,
                                                     hasCaption: hasCaption,
                                                     mediaSize: mediaSize,
                                                     isBroken: false))
@@ -1187,7 +1201,19 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing attachment.")
         }
 
-        if attachment.isAudioMimeType, let audioAttachment = AudioAttachment(attachment: attachment, owningMessage: interaction as? TSMessage, metadata: nil) {
+        let isVoiceMessage: Bool
+        if let message = interaction as? TSMessage {
+            isVoiceMessage = attachment.isVoiceMessage(inContainingMessage: message, transaction: transaction)
+        } else {
+            isVoiceMessage = false
+        }
+
+        if attachment.isAudioMimeType, let audioAttachment = AudioAttachment(
+            attachment: attachment,
+            owningMessage: interaction as? TSMessage,
+            metadata: nil,
+            isVoiceMessage: isVoiceMessage
+        ) {
             self.audioAttachment = audioAttachment
             return
         }

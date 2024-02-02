@@ -551,11 +551,14 @@ public class AttachmentStreamFactory: NSObject, Factory {
 
     @objc
     public func build() -> TSAttachmentStream {
-        let attachmentStream = TSAttachmentStream(contentType: contentTypeBuilder(),
-                                                  byteCount: byteCountBuilder(),
-                                                  sourceFilename: sourceFilenameBuilder(),
-                                                  caption: captionBuilder(),
-                                                  albumMessageId: albumMessageIdBuilder())
+        let attachmentStream = TSAttachmentStream(
+            contentType: contentTypeBuilder(),
+            byteCount: byteCountBuilder(),
+            sourceFilename: sourceFilenameBuilder(),
+            caption: captionBuilder(),
+            attachmentType: attachmentTypeBuilder(),
+            albumMessageId: albumMessageIdBuilder()
+        )
 
         return attachmentStream
     }
@@ -580,6 +583,11 @@ public class AttachmentStreamFactory: NSObject, Factory {
     @objc
     public var captionBuilder: () -> String? = {
         return nil
+    }
+
+    @objc
+    public var attachmentTypeBuilder: () -> TSAttachmentType = {
+        return .default
     }
 
     @objc

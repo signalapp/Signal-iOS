@@ -36,7 +36,12 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
             owsFailDebug("couldn't build protobuf")
             return nil
         }
-        guard let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: attachmentId, transaction: tx) else {
+        guard let attachmentProto = TSAttachmentStream.buildProto(
+            attachmentId: attachmentId,
+            caption: nil,
+            attachmentType: .default,
+            transaction: tx
+        ) else {
             owsFailDebug("couldn't build protobuf")
             return nil
         }

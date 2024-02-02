@@ -479,8 +479,8 @@ public extension TSMessage {
         }
 
         let mediaAttachment = self.mediaAttachments(with: tx.unwrapGrdbRead).first
-        let attachmentEmoji = mediaAttachment?.emoji
-        let attachmentDescription = mediaAttachment?.description()
+        let attachmentEmoji = mediaAttachment?.emoji(forContainingMessage: self, transaction: tx)
+        let attachmentDescription = mediaAttachment?.previewText(forContainingMessage: self, transaction: tx)
 
         if isViewOnceMessage {
             if self is TSOutgoingMessage || mediaAttachment == nil {
@@ -495,11 +495,11 @@ public extension TSMessage {
                 ))
             } else {
                 // Make sure that if we add new types we cover them here.
-                switch mediaAttachment?.isAnimatedMimeType {
+                switch mediaAttachment?.getAnimatedMimeType() {
                 case nil, .notAnimated:
                     owsAssertDebug(
                         mediaAttachment?.isImageMimeType == true
-                        || mediaAttachment?.isLoopingVideo == true
+                        || mediaAttachment?.isLoopingVideo(inContainingMessage: self, transaction: tx) == true
                     )
                 case .maybeAnimated, .animated:
                     break

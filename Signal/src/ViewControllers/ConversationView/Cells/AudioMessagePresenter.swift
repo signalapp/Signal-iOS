@@ -133,7 +133,7 @@ class AudioMessagePresenter: AudioPresenter {
     func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig? {
 
         let attachment = audioAttachment.attachment
-        guard !attachment.isVoiceMessage else {
+        guard !audioAttachment.isVoiceMessage else {
             return nil
         }
 

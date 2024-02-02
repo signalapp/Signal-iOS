@@ -493,7 +493,12 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
            let attachment = nextMessage.mediaAttachments(with: transaction.unwrapGrdbRead).first,
            attachment.isAudioMimeType {
 
-            itemViewState.nextAudioAttachment = AudioAttachment(attachment: attachment, owningMessage: nextMessage, metadata: nil)
+            itemViewState.nextAudioAttachment = AudioAttachment(
+                attachment: attachment,
+                owningMessage: nextMessage,
+                metadata: nil,
+                isVoiceMessage: attachment.isVoiceMessage(inContainingMessage: nextMessage, transaction: transaction)
+            )
         }
     }
 

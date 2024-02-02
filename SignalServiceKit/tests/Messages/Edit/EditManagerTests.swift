@@ -340,6 +340,14 @@ class EditManagerTests: SSKBaseTestSwift {
             return []
         }
 
+        func getIsVoiceMessage(
+            forAttachment attachment: TSAttachment,
+            on message: TSMessage,
+            tx: DBReadTransaction
+        ) -> Bool {
+            return false
+        }
+
         func getOversizedTextAttachments(
             message: TSMessage,
             tx: DBReadTransaction

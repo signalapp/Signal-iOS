@@ -470,7 +470,11 @@ public class EditManager {
             tx: tx
         )
 
-        if currentAttachments.filter({ $0.isVoiceMessage }).isEmpty.negated {
+        // Voice memos only ever have one attachment; only need to check the first.
+        if
+            let firstAttachment = currentAttachments.first,
+            context.dataStore.getIsVoiceMessage(forAttachment: firstAttachment, on: targetMessage, tx: tx)
+        {
             // This will bail if it finds a voice memo
             // Might be able to handle image attachemnts, but fail for now.
             Logger.warn("Voice message edits not supported")

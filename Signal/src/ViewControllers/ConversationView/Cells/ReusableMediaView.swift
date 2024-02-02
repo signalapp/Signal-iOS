@@ -274,8 +274,7 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
     var cacheKey: String { attachmentStream.uniqueId }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.isLoopingVideo,
-              let path = attachmentStream.originalFilePath,
+        guard let path = attachmentStream.originalFilePath,
               let video = LoopingVideo(url: URL(fileURLWithPath: path)) else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }

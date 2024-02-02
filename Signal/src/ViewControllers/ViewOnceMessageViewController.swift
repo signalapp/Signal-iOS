@@ -120,7 +120,7 @@ class ViewOnceMessageViewController: OWSViewController {
             }
 
             let viewOnceType: Content.ContentType
-            if attachmentStream.isLoopingVideo {
+            if attachmentStream.isLoopingVideo(inContainingMessage: message, transaction: transaction) {
                 viewOnceType = .loopingVideo
             } else if attachmentStream.isAnimatedContent {
                 viewOnceType = .animatedImage

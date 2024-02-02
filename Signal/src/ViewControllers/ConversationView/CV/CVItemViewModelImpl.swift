@@ -204,7 +204,7 @@ extension CVItemViewModelImpl {
                 guard attachment.isValidVisualMedia else {
                     return false
                 }
-                if attachment.isImageMimeType || attachment.isAnimatedMimeType == .animated {
+                if attachment.isImageMimeType || attachment.getAnimatedMimeType() == .animated {
                     return true
                 }
                 if attachment.isVideoMimeType,

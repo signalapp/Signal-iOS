@@ -305,18 +305,18 @@ class AudioAllMediaPresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(text, font: Constants.bottomLineFont, textColor: .label)
     }
 
-    static func hasAttachmentLabel(attachment: TSAttachment) -> Bool {
-        return !attachment.isVoiceMessage
+    static func hasAttachmentLabel(attachment: TSAttachment, isVoiceMessage: Bool) -> Bool {
+        return !isVoiceMessage
     }
 
-    func hasAttachmentLabel(attachment: TSAttachment) -> Bool {
-        return Self.hasAttachmentLabel(attachment: attachment)
+    func hasAttachmentLabel(attachment: TSAttachment, isVoiceMessage: Bool) -> Bool {
+        return Self.hasAttachmentLabel(attachment: attachment, isVoiceMessage: isVoiceMessage)
     }
 
     func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig? {
 
         let attachment = audioAttachment.attachment
-        guard hasAttachmentLabel(attachment: attachment) else {
+        guard hasAttachmentLabel(attachment: attachment, isVoiceMessage: audioAttachment.isVoiceMessage) else {
             return nil
         }
 

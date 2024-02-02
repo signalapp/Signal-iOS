@@ -9,10 +9,10 @@ import SignalUI
 enum ViewOnceState: Equatable {
     case unknown
     case incomingExpired
-    case incomingDownloading(attachmentPointer: TSAttachmentPointer)
+    case incomingDownloading(attachmentPointer: TSAttachmentPointer, attachmentType: TSAttachmentType)
     case incomingFailed
     case incomingPending
-    case incomingAvailable(attachmentStream: TSAttachmentStream)
+    case incomingAvailable(attachmentStream: TSAttachmentStream, attachmentType: TSAttachmentType)
     case incomingInvalidContent
     case outgoingSending
     case outgoingFailed
@@ -46,7 +46,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         }
     }
     private var attachmentStream: TSAttachmentStream? {
-        if case .incomingAvailable(let attachmentStream) = viewOnceState {
+        if case .incomingAvailable(let attachmentStream, _) = viewOnceState {
             return attachmentStream
         }
         return nil
@@ -90,7 +90,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         var subviews = [UIView]()
 
         switch viewOnceState {
-        case .incomingDownloading(let attachmentPointer):
+        case .incomingDownloading(let attachmentPointer, _):
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         diameter: iconSize,
                                                         isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
@@ -355,7 +355,27 @@ fileprivate extension CVComponentViewOnce {
     }
 
     private var viewOnceMessageType: ViewOnceMessageType {
-        guard let attachmentStream = self.attachmentStream else {
+        switch viewOnceState {
+        case let .incomingAvailable(attachmentStream, attachmentType):
+            if attachmentStream.isVideoMimeType {
+                return .video
+            } else {
+                owsAssertDebug(
+                    attachmentStream.isImageMimeType
+                    || attachmentStream.getAnimatedMimeType() != .notAnimated
+                    || attachmentStream.isLoopingVideo(attachmentType)
+                )
+                return .photo
+            }
+        case .unknown,
+             .incomingExpired,
+             .incomingDownloading,
+             .incomingFailed,
+             .incomingPending,
+             .incomingInvalidContent,
+             .outgoingSending,
+             .outgoingFailed,
+             .outgoingSentExpired:
             // The attachment doesn't exist for outgoing
             // messages so we'd need to store the content type if
             // we wanted to distinguish between photo and video
@@ -364,17 +384,6 @@ fileprivate extension CVComponentViewOnce {
             // because we show generic "View" text, regardless of the
             // content type
             return .unknown
-        }
-
-        if attachmentStream.isVideoMimeType {
-            return .video
-        } else {
-            owsAssertDebug(
-                attachmentStream.isImageMimeType
-                || attachmentStream.isAnimatedMimeType != .notAnimated
-                || attachmentStream.isLoopingVideo
-            )
-            return .photo
         }
     }
 }

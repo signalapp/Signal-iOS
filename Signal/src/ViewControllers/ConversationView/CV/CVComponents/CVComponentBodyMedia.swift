@@ -200,19 +200,21 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             }
 
             if mediaAlbumHasPendingAttachment {
-                let attachmentPointers = items.compactMap { $0.attachment as? TSAttachmentPointer }
-                let pendingManualDownloadAttachments = attachmentPointers.filter { $0.isPendingManualDownload }
-                let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)
+                let attachmentPointerItems = items.filter { $0.attachment is TSAttachmentPointer }
+                let pendingManualDownloadAttachments = attachmentPointerItems.filter { $0.attachment.isPendingManualDownload }
+                let totalSize = pendingManualDownloadAttachments.map { $0.attachment.byteCount}.reduce(0, +)
 
                 if totalSize > 0 {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
-                        if firstAttachmentPointer.isAnimatedMimeType == .animated || firstAttachmentPointer.isLoopingVideo {
+                        if firstAttachmentPointer.attachment.getAnimatedMimeType() == .animated
+                            || firstAttachmentPointer.attachment.isLoopingVideo(firstAttachmentPointer.attachmentType)
+                        {
                             // Do nothing.
-                        } else if firstAttachmentPointer.isImageMimeType {
+                        } else if firstAttachmentPointer.attachment.isImageMimeType {
                             downloadSizeText.append(CommonStrings.attachmentTypePhoto)
-                        } else if firstAttachmentPointer.isVideoMimeType {
+                        } else if firstAttachmentPointer.attachment.isVideoMimeType {
                             downloadSizeText.append(CommonStrings.attachmentTypeVideo)
                         }
                     }

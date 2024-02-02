@@ -187,7 +187,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         switch storyMessage.attachment {
         case .file(let file):
-            guard let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: file.attachmentId, transaction: transaction) else {
+            guard let attachmentProto = TSAttachmentStream.buildProto(
+                attachmentId: file.attachmentId,
+                containingStoryMessage: storyMessage,
+                transaction: transaction
+            ) else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }

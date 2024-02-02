@@ -21,7 +21,8 @@ class AudioCell: MediaTileListModeCell {
             audioAttachment = AudioAttachment(
                 attachment: audioItem.attachmentStream,
                 owningMessage: audioItem.message,
-                metadata: audioItem.metadata
+                metadata: audioItem.metadata,
+                isVoiceMessage: audioItem.isVoiceMessage
             )
         }
     }
@@ -43,7 +44,10 @@ class AudioCell: MediaTileListModeCell {
         }
 
         let currentContentSizeCategory = UITraitCollection.current.preferredContentSizeCategory
-        let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(attachment: audioItem.attachmentStream)
+        let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(
+            attachment: audioItem.attachmentStream,
+            isVoiceMessage: audioItem.isVoiceMessage
+        )
 
         if let cellHeight: CGFloat = {
             if displaysTopLabel {
@@ -58,7 +62,8 @@ class AudioCell: MediaTileListModeCell {
         guard let audioAttachment = AudioAttachment(
             attachment: audioItem.attachmentStream,
             owningMessage: audioItem.message,
-            metadata: audioItem.metadata
+            metadata: audioItem.metadata,
+            isVoiceMessage: audioItem.isVoiceMessage
         ) else {
             return defaultCellHeight
         }

@@ -49,6 +49,7 @@ struct MediaGalleryCellItemAudio {
     var interaction: TSInteraction
     var thread: TSThread
     var attachmentStream: TSAttachmentStream
+    var isVoiceMessage: Bool
     var mediaCache: CVMediaCache
     var metadata: MediaMetadata
 
@@ -67,7 +68,6 @@ struct MediaGalleryCellItemAudio {
         case voiceMessage
     }
     var attachmentType: AttachmentType {
-        let isVoiceMessage = attachmentStream.isVoiceMessage
         return isVoiceMessage ? .voiceMessage : .file
     }
 

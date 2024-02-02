@@ -19,11 +19,12 @@ class InteractionFinderTest: SSKBaseTestSwift {
                                              byteCount: UInt32(attachmentData1.count),
                                              sourceFilename: "some.gif",
                                              caption: nil,
+                                             attachmentType: .default,
                                              albumMessageId: nil)
         let attachmentData2 = Randomness.generateRandomBytes(2048)
         let attachment2 = TSAttachmentStream(contentType: OWSMimeTypePdf,
                                              byteCount: UInt32(attachmentData2.count),
-                                             sourceFilename: "some.df", caption: nil, albumMessageId: nil)
+                                             sourceFilename: "some.df", caption: nil, attachmentType: .default, albumMessageId: nil)
         // Messages
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: attachment1.uniqueId)
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes", attachmentId: attachment2.uniqueId)

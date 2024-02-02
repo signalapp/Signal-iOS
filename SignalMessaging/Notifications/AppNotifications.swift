@@ -760,6 +760,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         } else if message.hasAttachments() {
             let mediaAttachments = message.mediaAttachments(with: transaction.unwrapGrdbRead)
             let firstAttachment = mediaAttachments.first
+            let firstAttachmentType = firstAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
 
             if mediaAttachments.count > 1 {
                 notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
@@ -770,11 +771,15 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                 notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
             } else if firstAttachment?.isImageMimeType == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isAnimatedMimeType == .animated || firstAttachment?.isLoopingVideo == true {
+            } else if
+                let firstAttachment,
+                let firstAttachmentType,
+                firstAttachment.getAnimatedMimeType() == .animated || firstAttachment.isLoopingVideo(firstAttachmentType)
+            {
                 notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
             } else if firstAttachment?.isVideoMimeType == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isVoiceMessage == true {
+            } else if firstAttachmentType == .voiceMessage {
                 notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
             } else if firstAttachment?.isAudioMimeType == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)

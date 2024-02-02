@@ -153,7 +153,7 @@ extension TSAttachmentStream: UIActivityItemSource {
         if contentType == OWSMimeTypeImageWebp {
             return originalImage
         }
-        if isAnimatedMimeType == .animated {
+        if getAnimatedMimeType() == .animated {
             return originalMediaURL
         }
         if isImageMimeType {

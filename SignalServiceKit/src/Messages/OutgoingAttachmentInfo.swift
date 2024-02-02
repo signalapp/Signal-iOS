@@ -33,21 +33,25 @@ public final class OutgoingAttachmentInfo {
     }
 
     public func asStreamConsumingDataSource(isVoiceMessage: Bool) throws -> TSAttachmentStream {
+        let attachmentType: TSAttachmentType
+        if isVoiceMessage {
+            attachmentType = .voiceMessage
+        } else if isBorderless {
+            attachmentType = .borderless
+        } else if isLoopingVideo || MIMETypeUtil.isDefinitelyAnimated(contentType) {
+            attachmentType = .GIF
+        } else {
+            attachmentType = .default
+        }
+
         let attachmentStream = TSAttachmentStream(
             contentType: contentType,
             byteCount: UInt32(dataSource.dataLength),
             sourceFilename: sourceFilename,
             caption: caption,
+            attachmentType: attachmentType,
             albumMessageId: albumMessageId
         )
-
-        if isVoiceMessage {
-            attachmentStream.attachmentType = .voiceMessage
-        } else if isBorderless {
-            attachmentStream.attachmentType = .borderless
-        } else if isLoopingVideo || attachmentStream.isAnimatedContent {
-            attachmentStream.attachmentType = .GIF
-        }
 
         try attachmentStream.writeConsumingDataSource(dataSource)
 
