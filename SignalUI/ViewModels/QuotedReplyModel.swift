@@ -370,7 +370,7 @@ public class QuotedReplyModel: NSObject {
         var hasText = !quotedText.isEmptyOrNil
 
         var quotedAttachment: TSAttachmentStream?
-        if let attachmentStream = message.bodyAttachments(with: transaction.unwrapGrdbRead).first as? TSAttachmentStream {
+        if let attachmentStream = message.bodyAttachments(with: transaction).first as? TSAttachmentStream {
             // If the attachment is "oversize text", try the quote as a reply to text, not as
             // a reply to an attachment.
             if !hasText && attachmentStream.contentType == OWSMimeTypeOversizeTextMessage {

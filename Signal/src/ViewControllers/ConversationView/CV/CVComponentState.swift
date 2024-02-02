@@ -864,7 +864,7 @@ fileprivate extension CVComponentState.Builder {
 
         do {
             // TODO: Rename this method to TSMessage.bodyAttachments(...)?
-            let bodyAttachments = message.mediaAttachments(with: transaction.unwrapGrdbRead)
+            let bodyAttachments = message.mediaAttachments(with: transaction)
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
@@ -959,7 +959,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [TSAttachment] = message.mediaAttachments(with: transaction.unwrapGrdbRead)
+            let mediaAttachments: [TSAttachment] = message.mediaAttachments(with: transaction)
             // We currently only support single attachments for view-once messages.
             guard let mediaAttachment = mediaAttachments.first else {
                 owsFailDebug("Missing attachment.")

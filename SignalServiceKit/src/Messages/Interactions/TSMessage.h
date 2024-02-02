@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class AciObjC;
-@class GRDBReadTransaction;
 @class MessageBodyRanges;
 @class MessageSticker;
 @class OWSContact;
@@ -178,11 +177,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // --- CODE GENERATION MARKER
 
 - (BOOL)hasAttachments;
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
-- (BOOL)hasMediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
-- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
-- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(GRDBReadTransaction *)transaction;
-- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (BOOL)hasMediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
@@ -198,7 +197,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // The raw body contains placeholders for things like mentions and is not
 // user friendly. If you want a constant string representing the body of
 // this message, this is it.
-- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable NSString *)rawBodyWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimer;
 

@@ -37,14 +37,14 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
     @objc
     public class func attachments(
         withAttachmentIds attachmentIds: [String],
-        transaction: GRDBReadTransaction
+        transaction: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         guard !attachmentIds.isEmpty else {
             return []
         }
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
-            transaction: transaction
+            transaction: transaction.unwrapGrdbRead
         )
     }
 
@@ -52,7 +52,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
     public class func attachments(
         withAttachmentIds attachmentIds: [String],
         matchingContentType: String,
-        transaction: GRDBReadTransaction
+        transaction: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         guard !attachmentIds.isEmpty else {
             return []
@@ -60,7 +60,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
             matchingContentType: matchingContentType,
-            transaction: transaction
+            transaction: transaction.unwrapGrdbRead
         )
     }
 
@@ -68,7 +68,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
     public class func attachments(
         withAttachmentIds attachmentIds: [String],
         ignoringContentType: String,
-        transaction: GRDBReadTransaction
+        transaction: SDSAnyReadTransaction
     ) -> [TSAttachment] {
         guard !attachmentIds.isEmpty else {
             return []
@@ -76,7 +76,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: ignoringContentType,
-            transaction: transaction
+            transaction: transaction.unwrapGrdbRead
         )
     }
 
@@ -84,7 +84,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
     public class func existsAttachments(
         withAttachmentIds attachmentIds: [String],
         ignoringContentType: String,
-        transaction: GRDBReadTransaction
+        transaction: SDSAnyReadTransaction
     ) -> Bool {
         guard !attachmentIds.isEmpty else {
             return false
@@ -92,7 +92,7 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         return GRDBAttachmentFinderAdapter.existsAttachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: ignoringContentType,
-            transaction: transaction
+            transaction: transaction.unwrapGrdbRead
         )
     }
 }

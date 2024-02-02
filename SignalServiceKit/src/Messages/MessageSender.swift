@@ -730,7 +730,7 @@ public class MessageSender: Dependencies {
             return true
         }
         return databaseStorage.read { tx in
-            for attachment in message.allAttachments(with: tx.unwrapGrdbRead) {
+            for attachment in message.allAttachments(with: tx) {
                 guard let attachment = attachment as? TSAttachmentStream else {
                     return false
                 }

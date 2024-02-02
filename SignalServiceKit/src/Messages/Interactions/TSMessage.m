@@ -362,19 +362,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [NSSet setWithArray:result].allObjects;
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // Note: attachmentIds vs. allAttachmentIds
     return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // Note: attachmentIds vs. allAttachmentIds
     return [AttachmentFinder attachmentsWithAttachmentIds:self.allAttachmentIds transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                                 contentType:(NSString *)contentType
 {
     return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
@@ -382,7 +382,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                               transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                           exceptContentType:(NSString *)contentType
 {
     return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
@@ -420,24 +420,24 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(GRDBReadTransaction *)transaction
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
 }
 
-- (BOOL)hasMediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (BOOL)hasMediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [AttachmentFinder existsAttachmentsWithAttachmentIds:self.attachmentIds
                                             ignoringContentType:OWSMimeTypeOversizeTextMessage
                                                     transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
 }
 
-- (nullable NSString *)oversizeTextWithTransaction:(GRDBReadTransaction *)transaction
+- (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSAttachment *_Nullable attachment = [self oversizeTextAttachmentWithTransaction:transaction];
     if (!attachment) {
@@ -463,7 +463,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return text;
 }
 
-- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction
+- (nullable NSString *)rawBodyWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
     if (oversizeText) {

@@ -18,25 +18,25 @@ public extension TSMessage {
     // MARK: - Attachments
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let attachments: [TSAttachment] = allAttachments(with: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let attachments: [TSAttachment] = allAttachments(with: transaction)
         let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction)
         let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
@@ -451,7 +451,7 @@ public extension TSMessage {
             )
         }
 
-        let bodyDescription = self.rawBody(with: tx.unwrapGrdbRead)
+        let bodyDescription = self.rawBody(with: tx)
         if
             bodyDescription == nil,
             let storyReactionEmoji,
@@ -478,7 +478,7 @@ public extension TSMessage {
             }
         }
 
-        let mediaAttachment = self.mediaAttachments(with: tx.unwrapGrdbRead).first
+        let mediaAttachment = self.mediaAttachments(with: tx).first
         let attachmentEmoji = mediaAttachment?.emoji(forContainingMessage: self, transaction: tx)
         let attachmentDescription = mediaAttachment?.previewText(forContainingMessage: self, transaction: tx)
 

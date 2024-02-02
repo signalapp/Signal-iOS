@@ -758,7 +758,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
         } else if message.hasAttachments() {
-            let mediaAttachments = message.mediaAttachments(with: transaction.unwrapGrdbRead)
+            let mediaAttachments = message.mediaAttachments(with: transaction)
             let firstAttachment = mediaAttachments.first
             let firstAttachmentType = firstAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
 

@@ -140,7 +140,7 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         message: TSMessage,
         tx: DBReadTransaction
     ) -> [TSAttachment] {
-        message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+        message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getIsVoiceMessage(
@@ -155,7 +155,7 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         message: TSMessage,
         tx: DBReadTransaction
     ) -> TSAttachment? {
-        message.oversizeTextAttachment(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+        message.oversizeTextAttachment(with: SDSDB.shimOnlyBridge(tx))
     }
 
     public func insertMessageCopy(

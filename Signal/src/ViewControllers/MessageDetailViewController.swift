@@ -886,7 +886,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                 return false
             }
             self.message = newMessage
-            self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
+            self.attachments = newMessage.mediaAttachments(with: transaction)
             guard let renderItem = buildRenderItem(
                 message: newMessage,
                 spoilerState: spoilerState,

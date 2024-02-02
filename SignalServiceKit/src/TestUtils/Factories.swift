@@ -475,7 +475,7 @@ public class ConversationFactory: NSObject {
             let messagePreparer = OutgoingMessagePreparer(message, unsavedAttachmentInfos: attachmentInfos)
             _ = try! messagePreparer.prepareMessage(transaction: asyncTransaction)
 
-            for attachment in message.allAttachments(with: asyncTransaction.unwrapGrdbRead) as! [TSAttachmentStream] {
+            for attachment in message.allAttachments(with: asyncTransaction) as! [TSAttachmentStream] {
                 attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
                                             digest: Randomness.generateRandomBytes(16),
                                             serverId: 1,

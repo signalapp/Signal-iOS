@@ -269,7 +269,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         // TODO: We might want to treat text that is completely stripped
         // as not present.
-        if let oversizeTextAttachment = message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) {
+        if let oversizeTextAttachment = message.oversizeTextAttachment(with: transaction) {
             if let oversizeTextAttachmentStream = oversizeTextAttachment as? TSAttachmentStream {
                 let displayableText = CVComponentState.displayableBodyText(oversizeTextAttachment: oversizeTextAttachmentStream,
                                                                            ranges: message.bodyRanges,

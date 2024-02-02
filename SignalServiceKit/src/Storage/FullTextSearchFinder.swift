@@ -687,7 +687,7 @@ class AnySearchIndexer: Dependencies {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: SDSAnyReadTransaction) in
-        if let bodyText = message.rawBody(with: transaction.unwrapGrdbRead) {
+        if let bodyText = message.rawBody(with: transaction) {
             return bodyText
         }
         return ""

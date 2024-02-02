@@ -416,7 +416,7 @@ class MediaPageViewController: UIPageViewController {
         let messageForCurrentItem = currentItem.message
 
         let mediaAttachments: [TSAttachment] = databaseStorage.read { transaction in
-            messageForCurrentItem.bodyAttachments(with: transaction.unwrapGrdbRead)
+            messageForCurrentItem.bodyAttachments(with: transaction)
         }
 
         let mediaAttachmentStreams: [TSAttachmentStream] = mediaAttachments.compactMap { attachment in
