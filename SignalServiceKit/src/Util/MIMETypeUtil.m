@@ -136,6 +136,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
         NSMutableDictionary<NSString *, NSString *> *value =
             [[MIMETypeUtil supportedDefinitelyAnimatedMIMETypesToExtensionTypes] mutableCopy];
         value[OWSMimeTypeImageWebp] = @"webp";
+        value[OWSMimeTypeImagePng] = @"png";
         result = [value copy];
     });
     return result;
