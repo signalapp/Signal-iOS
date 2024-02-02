@@ -122,15 +122,15 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     @objc
-    public var allAttachmentIds: [String] {
+    public func attachmentUniqueId(tx: SDSAnyReadTransaction) -> String? {
         switch attachment {
         case .file(let file):
-            return [file.attachmentId]
+            return file.attachmentId
         case .text(let attachment):
             if let preview = attachment.preview, let imageAttachmentId = preview.imageAttachmentId {
-                return [imageAttachmentId]
+                return imageAttachmentId
             } else {
-                return []
+                return nil
             }
         }
     }
@@ -833,12 +833,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         // Delete all attachments for the message.
-        for id in allAttachmentIds {
-            guard let attachment = TSAttachment.anyFetch(uniqueId: id, transaction: transaction) else {
+        if let id = attachmentUniqueId(tx: transaction) {
+            if let attachment = TSAttachment.anyFetch(uniqueId: id, transaction: transaction) {
+                attachment.anyRemove(transaction: transaction)
+            } else {
                 owsFailDebug("Missing attachment for StoryMessage \(id)")
-                continue
             }
-            attachment.anyRemove(transaction: transaction)
         }
 
         // Reload latest unexpired timestamp for the context.

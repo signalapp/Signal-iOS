@@ -963,8 +963,8 @@ public extension OWSAttachmentDownloads {
     }
 
     func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
-        // No attachments, nothing to do.
-        guard !message.allAttachmentIds.isEmpty else { return }
+        // No attachment, nothing to do.
+        guard message.attachmentUniqueId(tx: transaction) != nil else { return }
 
         enqueueDownloadOfAttachmentsForNewStoryMessageId(
             message.uniqueId,
@@ -1291,16 +1291,16 @@ public extension OWSAttachmentDownloads {
             }
         }
 
-        for attachmentId in storyMessage.allAttachmentIds {
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
-                                                         transaction: transaction) else {
+        if let attachmentId = storyMessage.attachmentUniqueId(tx: transaction) {
+            if let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) {
+                addJobRequest(
+                    attachment: attachment,
+                    category: attachment.downloadCategory(containingMessage: storyMessage, transaction: transaction)
+                )
+            } else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
-                continue
             }
-            addJobRequest(
-                attachment: attachment,
-                category: attachment.downloadCategory(containingMessage: storyMessage, transaction: transaction)
-            )
+
         }
 
         return jobRequests

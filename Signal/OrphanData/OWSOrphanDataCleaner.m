@@ -424,7 +424,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                           if (![message isKindOfClass:[StoryMessage class]]) {
                                               return;
                                           }
-                                          [allStoryAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+                                          [allStoryAttachmentIds
+                                              addObject:[message attachmentUniqueIdWithTx:transaction]];
                                       }];
 
         if (shouldAbort) {

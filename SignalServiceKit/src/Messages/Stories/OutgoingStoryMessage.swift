@@ -29,7 +29,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.timestamp = storyMessage.timestamp
-        builder.attachmentIds = storyMessage.allAttachmentIds
+        builder.attachmentIds = [storyMessage.attachmentUniqueId(tx: transaction)].compacted()
         super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
     }
 
