@@ -412,7 +412,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return [MIMETypeUtil isAudio:self.contentType];
 }
 
-- (TSAnimatedMimeType)isIsAnimatedMimeType
+- (TSAnimatedMimeType)isAnimatedMimeType
 {
     if ([MIMETypeUtil isDefinitelyAnimated:self.contentType]) {
         return TSAnimatedMimeTypeAnimated;
