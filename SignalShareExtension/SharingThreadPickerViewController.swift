@@ -340,7 +340,7 @@ extension SharingThreadPickerViewController {
 
         var progressPerAttachment = [String: Float]()
         let observer = NotificationCenter.default.addObserver(
-            forName: .attachmentUploadProgress,
+            forName: Upload.Constants.uploadProgressNotification,
             object: nil,
             queue: nil
         ) { notification in
@@ -353,11 +353,11 @@ extension SharingThreadPickerViewController {
                 progressPerAttachment = Dictionary(uniqueKeysWithValues: attachmentIds.map { ($0, 0) })
             }
 
-            guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
                 owsFailDebug("Missing notificationAttachmentId.")
                 return
             }
-            guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+            guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
                 owsFailDebug("Missing progress.")
                 return
             }

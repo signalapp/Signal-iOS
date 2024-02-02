@@ -1390,6 +1390,7 @@
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* AttachmentUpload.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
@@ -1402,8 +1403,12 @@
 		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
 		C1D5836F2B03DFED00EE8FD9 /* Stripe+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
+		C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */; };
+		C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */; };
 		C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */; };
 		C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3F2B0283C5004B6986 /* Upload.swift */; };
+		C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F402B0283C5004B6986 /* UploadShims.swift */; };
+		C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
@@ -2252,11 +2257,8 @@
 		F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDA9289453B400548EEE /* OWSUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAD4289453B200548EEE /* OWSUpload.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDAA289453B400548EEE /* HTTPUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD5289453B200548EEE /* HTTPUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDAB289453B400548EEE /* OWSUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAD6289453B200548EEE /* OWSUpload.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDAD289453B400548EEE /* RESTNetworkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD8289453B200548EEE /* RESTNetworkManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CDAE289453B400548EEE /* OWSUploadOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD9289453B200548EEE /* OWSUploadOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADA289453B200548EEE /* NetworkManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB0289453B400548EEE /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADC289453B200548EEE /* GiphyDownloader.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDB1289453B400548EEE /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADD289453B200548EEE /* GiphyAPI.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2269,9 +2271,7 @@
 		F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDBC289453B400548EEE /* HTTPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE9289453B200548EEE /* HTTPUtils.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDBD289453B400548EEE /* OWSUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAEA289453B200548EEE /* OWSUpload.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEC289453B200548EEE /* OWSUploadOperation.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC0289453B400548EEE /* RESTNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAED289453B200548EEE /* RESTNetworkManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4135,6 +4135,7 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C18B56B82B07BC12000A441F /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
@@ -4146,8 +4147,12 @@
 		C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStoreTests.swift; sourceTree = "<group>"; };
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
+		C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpoint.swift; sourceTree = "<group>"; };
+		C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadV2.swift; sourceTree = "<group>"; };
 		C1DF3F3F2B0283C5004B6986 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
+		C1DF3F402B0283C5004B6986 /* UploadShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadShims.swift; sourceTree = "<group>"; };
+		C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN2.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTests.swift; sourceTree = "<group>"; };
 		C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTestMocks.swift; sourceTree = "<group>"; };
@@ -5018,11 +5023,8 @@
 		F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyMessageJobFinder.swift; sourceTree = "<group>"; };
 		F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IncomingGroupsV2MessageJob+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingGroupsV2MessageJob.h; sourceTree = "<group>"; };
-		F9C5CAD4289453B200548EEE /* OWSUpload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUpload.swift; sourceTree = "<group>"; };
 		F9C5CAD5289453B200548EEE /* HTTPUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPUtils.h; sourceTree = "<group>"; };
-		F9C5CAD6289453B200548EEE /* OWSUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUpload.m; sourceTree = "<group>"; };
 		F9C5CAD8289453B200548EEE /* RESTNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTNetworkManager.h; sourceTree = "<group>"; };
-		F9C5CAD9289453B200548EEE /* OWSUploadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUploadOperation.h; sourceTree = "<group>"; };
 		F9C5CADA289453B200548EEE /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CADC289453B200548EEE /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		F9C5CADD289453B200548EEE /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
@@ -5035,9 +5037,7 @@
 		F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevicesService.swift; sourceTree = "<group>"; };
 		F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceProfile.swift; sourceTree = "<group>"; };
 		F9C5CAE9289453B200548EEE /* HTTPUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPUtils.m; sourceTree = "<group>"; };
-		F9C5CAEA289453B200548EEE /* OWSUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUpload.h; sourceTree = "<group>"; };
 		F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTNetworkManager.swift; sourceTree = "<group>"; };
-		F9C5CAEC289453B200548EEE /* OWSUploadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUploadOperation.m; sourceTree = "<group>"; };
 		F9C5CAED289453B200548EEE /* RESTNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTNetworkManager.m; sourceTree = "<group>"; };
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
 		F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningService.swift; sourceTree = "<group>"; };
@@ -8380,7 +8380,12 @@
 		C1DF3F3B2B0283C5004B6986 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
+				C18B56B82B07BC12000A441F /* AttachmentUpload.swift */,
 				C1DF3F3F2B0283C5004B6986 /* Upload.swift */,
+				C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */,
+				C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */,
+				C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */,
+				C1DF3F402B0283C5004B6986 /* UploadShims.swift */,
 				C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */,
 			);
 			path = Upload;
@@ -10232,11 +10237,6 @@
 				F9C5CAE0289453B200548EEE /* HTTPUtils.swift */,
 				F9C5CADA289453B200548EEE /* NetworkManager.swift */,
 				F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */,
-				F9C5CAEA289453B200548EEE /* OWSUpload.h */,
-				F9C5CAD6289453B200548EEE /* OWSUpload.m */,
-				F9C5CAD4289453B200548EEE /* OWSUpload.swift */,
-				F9C5CAD9289453B200548EEE /* OWSUploadOperation.h */,
-				F9C5CAEC289453B200548EEE /* OWSUploadOperation.m */,
 				F9C5CAD8289453B200548EEE /* RESTNetworkManager.h */,
 				F9C5CAED289453B200548EEE /* RESTNetworkManager.m */,
 				F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */,
@@ -10643,8 +10643,6 @@
 				F9C5CBBF289453B300548EEE /* OWSSyncRequestMessage.h in Headers */,
 				F9C5CC81289453B300548EEE /* OWSUnknownContactBlockOfferMessage.h in Headers */,
 				F9C5CC42289453B300548EEE /* OWSUnknownProtocolVersionMessage.h in Headers */,
-				F9C5CDBD289453B400548EEE /* OWSUpload.h in Headers */,
-				F9C5CDAE289453B400548EEE /* OWSUploadOperation.h in Headers */,
 				F9C5CBFA289453B300548EEE /* OWSVerificationStateChangeMessage.h in Headers */,
 				F9C5CD0A289453B300548EEE /* OWSVerificationStateSyncMessage.h in Headers */,
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
@@ -12839,6 +12837,7 @@
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				F9C5CD16289453B300548EEE /* AttachmentFinder.swift in Sources */,
 				6619A1C32B2B7199004B38FE /* AttachmentStore.swift in Sources */,
+				C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,
 				5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */,
@@ -13270,9 +13269,6 @@
 				F9C5CC4D289453B300548EEE /* OWSUnknownContactBlockOfferMessage.m in Sources */,
 				F9C5CBCC289453B300548EEE /* OWSUnknownProtocolVersionMessage+SDS.swift in Sources */,
 				F9C5CC8B289453B300548EEE /* OWSUnknownProtocolVersionMessage.m in Sources */,
-				F9C5CDAB289453B400548EEE /* OWSUpload.m in Sources */,
-				F9C5CDA9289453B400548EEE /* OWSUpload.swift in Sources */,
-				F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */,
 				669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */,
 				669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */,
 				503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */,
@@ -13614,6 +13610,10 @@
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */,
+				C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */,
+				C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */,
+				C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */,
+				C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */,
 				C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
 				D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */,

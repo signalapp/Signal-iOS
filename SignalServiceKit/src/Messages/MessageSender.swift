@@ -507,8 +507,6 @@ public class MessageSender: Dependencies {
 
         Logger.info("Sending \(type(of: message)), timestamp: \(message.timestamp)")
 
-        let canUseV3 = message.groupMetaMessage == .unspecified || message.groupMetaMessage == .deliver
-
         // We create a PendingTask so we can block on flushing all current message sends.
         let pendingTask = pendingTasks.buildPendingTask(label: "Message Send")
         defer { pendingTask.complete() }
@@ -520,13 +518,15 @@ public class MessageSender: Dependencies {
             sendMessageOperation.queuePriority = Self.sendingQueuePriority(for: message)
 
             for attachmentId in (outgoingMessagePreparer.savedAttachmentIds ?? []) {
-                let uploadAttachmentOperation = OWSUploadOperation(
-                    attachmentId: attachmentId,
-                    messageIds: [ message.uniqueId ],
-                    canUseV3: canUseV3
-                )
-                sendMessageOperation.addDependency(uploadAttachmentOperation)
-                OWSUploadOperation.uploadQueue.addOperation(uploadAttachmentOperation)
+                let uploadOperation = AsyncBlockOperation {
+                    try await DependenciesBridge.shared.uploadManager.uploadAttachment(
+                        attachmentId: attachmentId,
+                        messageIds: [ message.uniqueId ],
+                        version: .v3
+                    )
+                }
+                sendMessageOperation.addDependency(uploadOperation)
+                Upload.uploadQueue.addOperation(uploadOperation)
             }
 
             sendingQueue(for: message).addOperation(sendMessageOperation)

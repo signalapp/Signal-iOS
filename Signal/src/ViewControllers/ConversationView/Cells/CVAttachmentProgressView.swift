@@ -271,10 +271,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
             updateUploadProgress(attachmentStream: attachmentStream)
 
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(processUploadNotification(notification:)),
-                                                   name: .attachmentUploadProgress,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(processUploadNotification(notification:)),
+                name: Upload.Constants.uploadProgressNotification,
+                object: nil
+            )
 
         case .download(let attachmentPointer):
             switch attachmentPointer.state {
@@ -334,14 +336,14 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     @objc
     private func processUploadNotification(notification: Notification) {
-        guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }
         guard notificationAttachmentId == attachmentId else {
             return
         }
-        guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+        guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
             owsFailDebug("Missing progress.")
             stateView.state = .uploadUnknownProgress
             return

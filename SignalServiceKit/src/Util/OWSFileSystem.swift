@@ -212,3 +212,25 @@ public extension OWSFileSystem {
         return UInt64(result)
     }
 }
+
+// MARK: - Creating Partial files
+
+public extension OWSFileSystem {
+    class func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
+        // Resuming, slice attachment data in memory.
+        let dataSliceFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+
+        // TODO: It'd be better if we could slice on disk.
+        let entireFileData = try Data(contentsOf: url)
+        let dataSlice = entireFileData.suffix(from: start)
+        let dataSliceLength = dataSlice.count
+        guard dataSliceLength + start == entireFileData.count else {
+            throw OWSAssertionError("Could not slice the data.")
+        }
+
+        // Write the slice to a temporary file.
+        try dataSlice.write(to: dataSliceFileUrl)
+
+        return (dataSliceFileUrl, dataSliceLength)
+    }
+}

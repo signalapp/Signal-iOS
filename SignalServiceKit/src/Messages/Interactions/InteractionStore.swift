@@ -16,6 +16,11 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) -> TSInteraction?
 
+    func fetchInteraction(
+        uniqueId: String,
+        tx: DBReadTransaction
+    ) -> TSInteraction?
+
     func findMessage(
         withTimestamp timestamp: UInt64,
         threadId: String,
@@ -93,6 +98,13 @@ public class InteractionStoreImpl: InteractionStore {
         return InteractionFinder.fetch(
             rowId: interactionRowId, transaction: SDSDB.shimOnlyBridge(tx)
         )
+    }
+
+    public func fetchInteraction(
+        uniqueId: String,
+        tx: DBReadTransaction
+    ) -> TSInteraction? {
+        return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func findMessage(
@@ -213,6 +225,7 @@ public class InteractionStoreImpl: InteractionStore {
 #if TESTABLE_BUILD
 
 open class MockInteractionStore: InteractionStore {
+
     var insertedInteractions = [TSInteraction]()
 
     // MARK: -
@@ -222,6 +235,10 @@ open class MockInteractionStore: InteractionStore {
         tx: DBReadTransaction
     ) -> TSInteraction? {
         return insertedInteractions.first(where: { $0.sqliteRowId == interactionRowId })
+    }
+
+    public func fetchInteraction(uniqueId: String, tx: DBReadTransaction) -> TSInteraction? {
+        return insertedInteractions.first(where: { $0.uniqueId == uniqueId })
     }
 
     public func findMessage(

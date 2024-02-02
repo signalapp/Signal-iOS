@@ -117,6 +117,8 @@ public class DependenciesBridge {
 
     public let tsAccountManager: TSAccountManager
 
+    public let uploadManager: UploadManager
+
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
     public let usernameLinkManager: UsernameLinkManager
@@ -693,6 +695,18 @@ public class DependenciesBridge {
             storageServiceManager: storageServiceManager,
             tsAccountManager: self.tsAccountManager,
             udManager: udManager
+        )
+
+        self.uploadManager = UploadManagerImpl(
+            db: db,
+            attachmentStore: AttachmentStoreImpl(),
+            interactionStore: InteractionStoreImpl(),
+            networkManager: networkManager,
+            socketManager: socketManager,
+            signalService: signalService,
+            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
+            blurHash: Upload.Wrappers.BlurHash(),
+            fileSystem: Upload.Wrappers.FileSystem()
         )
     }
 }

@@ -96,8 +96,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
-#import <SignalServiceKit/OWSUpload.h>
-#import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/OWSVerificationStateSyncMessage.h>
 #import <SignalServiceKit/OWSViewOnceMessageReadSyncMessage.h>

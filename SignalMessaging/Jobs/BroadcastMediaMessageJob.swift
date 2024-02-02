@@ -77,15 +77,15 @@ public enum BroadcastMediaUploader: Dependencies {
         sendMessages: @escaping (_ messages: [TSOutgoingMessage], _ tx: SDSAnyWriteTransaction) -> T
     ) async throws -> T {
         let observer = NotificationCenter.default.addObserver(
-            forName: .attachmentUploadProgress,
+            forName: Upload.Constants.uploadProgressNotification,
             object: nil,
             queue: nil
         ) { notification in
-            guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+            guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? String else {
                 owsFailDebug("Missing notificationAttachmentId.")
                 return
             }
-            guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+            guard let progress = notification.userInfo?[Upload.Constants.uploadProgressKey] as? NSNumber else {
                 owsFailDebug("Missing progress.")
                 return
             }
@@ -99,18 +99,18 @@ public enum BroadcastMediaUploader: Dependencies {
                     continue
                 }
                 NotificationCenter.default.post(
-                    name: .attachmentUploadProgress,
+                    name: Upload.Constants.uploadProgressNotification,
                     object: nil,
                     userInfo: [
-                        kAttachmentUploadAttachmentIDKey: correspondingId,
-                        kAttachmentUploadProgressKey: progress
+                        Upload.Constants.uploadAttachmentIDKey: correspondingId,
+                        Upload.Constants.uploadProgressKey: progress
                     ]
                 )
             }
         }
         defer { NotificationCenter.default.removeObserver(observer) }
 
-        let uploadOperations: [OWSUploadOperation] = databaseStorage.read { tx in
+        let uploadOperations: [AsyncBlockOperation] = databaseStorage.read { tx in
             return attachmentIdMap.map { (attachmentId, correspondingAttachmentIds) in
                 let messageIds: [String] = correspondingAttachmentIds.compactMap { correspondingId in
                     let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: correspondingId, transaction: tx)
@@ -123,8 +123,13 @@ public enum BroadcastMediaUploader: Dependencies {
                     }
                     return messageId
                 }
-                // This is only used for media attachments, so we can always use v3.
-                return OWSUploadOperation(attachmentId: attachmentId, messageIds: messageIds, canUseV3: true)
+                return AsyncBlockOperation {
+                    try await DependenciesBridge.shared.uploadManager.uploadAttachment(
+                        attachmentId: attachmentId,
+                        messageIds: messageIds,
+                        version: .v3
+                    )
+                }
             }
         }
 
@@ -133,20 +138,10 @@ public enum BroadcastMediaUploader: Dependencies {
         try? await withCheckedThrowingContinuation { continuation in
             let waitingOperation = AwaitableAsyncBlockOperation(completionContinuation: continuation, asyncBlock: {})
             uploadOperations.forEach { waitingOperation.addDependency($0) }
-            OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: false)
-            OWSUploadOperation.uploadQueue.addOperation(waitingOperation)
+            Upload.uploadQueue.addOperations(uploadOperations, waitUntilFinished: false)
+            Upload.uploadQueue.addOperation(waitingOperation)
         }
         if let error = (uploadOperations.compactMap { $0.failingError }).first { throw error }
-
-        let uploadedAttachments: [TSAttachmentStream] = uploadOperations.compactMap { operation in
-            guard let completedUpload = operation.completedUpload else {
-                owsFailDebug("completedUpload was unexpectedly nil")
-                return nil
-            }
-            return completedUpload
-        }
-
-        Logger.info("Completed \(uploadedAttachments.count) uploads")
 
         return await databaseStorage.awaitableWrite { transaction in
             var messageIdsToSend: Set<String> = Set()
@@ -155,6 +150,13 @@ public enum BroadcastMediaUploader: Dependencies {
             // uploaded, update the potentially many corresponding attachments (one per
             // thread that the attachment was uploaded to) with the details of that
             // upload.
+            let uploadedAttachments = attachmentIdMap.keys.compactMap { attachmentId in
+                // Probably should foreach to check for missing and warn.
+                TSAttachmentStream.anyFetchAttachmentStream(
+                    uniqueId: attachmentId,
+                    transaction: transaction
+                )
+            }
             for uploadedAttachment in uploadedAttachments {
                 guard let correspondingAttachments = attachmentIdMap[uploadedAttachment.uniqueId] else {
                     owsFailDebug("correspondingAttachments was unexpectedly nil")
@@ -168,7 +170,7 @@ public enum BroadcastMediaUploader: Dependencies {
                 guard
                     let encryptionKey = uploadedAttachment.encryptionKey,
                     let digest = uploadedAttachment.digest,
-                    (serverId > 0 || !cdnKey.isEmpty)
+                    cdnKey.isEmpty.negated
                 else {
                     owsFailDebug("uploaded attachment was incomplete")
                     continue
