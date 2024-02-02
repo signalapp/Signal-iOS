@@ -433,7 +433,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         /// Only attempt to load newer calls if the top row is visible. If not,
         /// we'll load newer calls when the user scrolls up anyway.
         let shouldLoadNewerCalls: Bool = {
-            guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
+            guard
+                let visibleIndexPaths = tableView.indexPathsForVisibleRows,
+                !visibleIndexPaths.isEmpty
+            else {
                 return true
             }
 
