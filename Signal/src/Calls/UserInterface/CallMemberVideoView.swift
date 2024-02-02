@@ -96,7 +96,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     ) {
         if case let .remoteInGroup(videoView) = callViewWrapper {
             if videoView.superview == self { videoView.removeFromSuperview() }
-        } else {
+        } else if nil != callViewWrapper {
             owsFailDebug("Can only call configureRemoteVideo for groups!")
         }
         let remoteVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, context: context)
