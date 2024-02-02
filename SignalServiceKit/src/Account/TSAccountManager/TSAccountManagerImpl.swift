@@ -579,7 +579,12 @@ extension TSAccountManagerImpl {
                 // reregistrationAci is optional (for now, see above TODO).
                 // isDeregistered is probably also true; this takes precedence.
 
-                if kvStore.getBool(Keys.reregistrationWasPrimaryDevice, defaultValue: true, transaction: tx) {
+                let shouldDefaultToPrimaryDevice = UIDevice.current.userInterfaceIdiom == .phone
+                if kvStore.getBool(
+                    Keys.reregistrationWasPrimaryDevice,
+                    defaultValue: shouldDefaultToPrimaryDevice,
+                    transaction: tx
+                ) {
                     logger?.info("rereg phone number set, and wasPrimaryDevice true; reregistering")
                     return .reregistering(
                         phoneNumber: reregistrationPhoneNumber,

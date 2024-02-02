@@ -587,40 +587,50 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
         } else if needsOnboarding || !tsRegistrationState.isRegistered {
-            if UIDevice.current.isIPad {
-                if tsRegistrationState == .delinked {
-                    // If we are delinked, go to the chat list in the delinked state.
-                    // The user can kick of re-linking from there.
-                    return .chatList
+            switch tsRegistrationState {
+
+            case .reregistering(let reregNumber, let reregAci):
+                if let reregE164 = E164(reregNumber), let reregAci {
+                    Logger.info("Found legacy re-registration; continuing in new registration")
+                    // A user who started re-registration before the new
+                    // registration flow shipped; kick them to new re-reg.
+                    return .registration(regLoader, .reRegistering(.init(e164: reregE164, aci: reregAci)))
+                } else {
+                    // If we're missing the e164 or aci, drop into normal reg.
+                    Logger.info("Found legacy initial registration; continuing in new registration")
+                    return .registration(regLoader, .registering)
                 }
+
+            case .relinking:
                 return .secondaryProvisioning
-            } else {
-                let desiredMode: RegistrationMode
 
-                switch tsRegistrationState {
-                case .reregistering(let reregNumber, let reregAci):
-                    if let reregE164 = E164(reregNumber), let reregAci {
-                        Logger.info("Found legacy re-registration; continuing in new registration")
-                        // A user who started re-registration before the new
-                        // registration flow shipped; kick them to new re-reg.
-                        desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
-                    } else {
-                        // If we're missing the e164 or aci, drop into normal reg.
-                        Logger.info("Found legacy initial registration; continuing in new registration")
-                        desiredMode = .registering
-                    }
-                case .deregistered:
-                    // If we are deregistered, go to the chat list in the deregistered state.
-                    // The user can kick of re-registration from there, which will set the
-                    // 'lastMode' var and short circuit before we get here next time around.
-                    return .chatList
-                default:
-                    // We got here (past the isRegistered check above) which means we should register
-                    // but its not a reregistration.
-                    desiredMode = .registering
+            case .deregistered:
+                // If we are deregistered, go to the chat list in the deregistered state.
+                // The user can kick of re-registration from there, which will set the
+                // 'lastMode' var and short circuit before we get here next time around.
+                return .chatList
+            case .delinked:
+                // If we are delinked, go to the chat list in the delinked state.
+                // The user can kick of re-linking from there.
+                return .chatList
+
+            case
+                    .registered,
+                    .provisioned,
+                    .transferringIncoming,
+                    .transferringPrimaryOutgoing,
+                    .transferringLinkedOutgoing,
+                    .transferred:
+                // We got here (past the isRegistered check above) so these are invalid
+                // states, but default to "unregistered".
+                fallthrough
+
+            case .unregistered:
+                if UIDevice.current.isIPad {
+                    return .secondaryProvisioning
+                } else {
+                    return .registration(regLoader, .registering)
                 }
-
-                return .registration(regLoader, desiredMode)
             }
         } else {
             return .chatList
