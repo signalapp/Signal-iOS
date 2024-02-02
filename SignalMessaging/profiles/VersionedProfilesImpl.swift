@@ -238,7 +238,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         case .changeAvatar(let avatarData):
             let encryptedAvatarData = try OWSUserProfile.encrypt(profileData: avatarData, profileKey: profileKey)
             avatarUrlPath = .setTo(try await uploadAvatar(
-                formResponse: response.responseBodyJson,
+                formResponseData: response.responseBodyData,
                 encryptedAvatarData: encryptedAvatarData
             ))
         }
@@ -246,14 +246,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         return VersionedProfileUpdate(avatarUrlPath: avatarUrlPath)
     }
 
-    private func uploadAvatar(formResponse: Any?, encryptedAvatarData: Data) async throws -> String {
-        guard let formResponse = formResponse as? [AnyHashable: Any] else {
-            throw OWSAssertionError("Unexpected response.")
-        }
-        guard let uploadForm = OWSUploadFormV2.parseDictionary(formResponse) else {
+    private func uploadAvatar(formResponseData: Data?, encryptedAvatarData: Data) async throws -> String {
+        guard
+            let formResponseData,
+            let uploadForm = try? JSONDecoder().decode(Upload.CDN0.Form.self, from: formResponseData)
+        else {
             throw OWSAssertionError("Could not parse response.")
         }
-        return try await OWSUpload.uploadV2(data: encryptedAvatarData, uploadForm: uploadForm, uploadUrlPath: "").awaitable()
+        return try await Upload.CDN0.upload(data: encryptedAvatarData, uploadForm: uploadForm)
     }
 
     // MARK: - Get

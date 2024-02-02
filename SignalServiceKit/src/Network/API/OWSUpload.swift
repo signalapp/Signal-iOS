@@ -11,20 +11,7 @@ public enum OWSUploadError: Error {
 
 @objc
 public class OWSUpload: NSObject {
-
     public typealias ProgressBlock = (Progress) -> Void
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public class func uploadV2(data: Data,
-                               uploadForm: OWSUploadFormV2,
-                               uploadUrlPath: String,
-                               progressBlock: ((Progress) -> Void)?) -> AnyPromise {
-        AnyPromise(uploadV2(data: data,
-                            uploadForm: uploadForm,
-                            uploadUrlPath: uploadUrlPath,
-                            progressBlock: progressBlock))
-    }
 
     @objc
     public static let serialQueue: DispatchQueue = {
@@ -131,9 +118,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     public func upload(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return (canUseV3
-                ? uploadV3(progressBlock: progressBlock)
-                : uploadV2(progressBlock: progressBlock))
+        return uploadV3(progressBlock: progressBlock)
     }
 
     /// Performs a request, trying to use the websocket and failing over to REST.
@@ -145,60 +130,6 @@ public class OWSAttachmentUploadV2: NSObject {
                 && DependenciesBridge.shared.socketManager.canMakeRequests(webSocketType: .identified)
             )
         )
-    }
-
-    // MARK: - V2
-
-    public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        firstly(on: Self.serialQueue) {
-            // Fetch attachment upload form.
-            self.performRequest(OWSRequestFactory.allocAttachmentRequestV2())
-        }.then(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Promise<OWSUploadFormV2> in
-            guard let self = self else {
-                throw OWSAssertionError("Upload deallocated")
-            }
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Invalid JSON")
-            }
-            return self.parseUploadFormV2(formResponseObject: json)
-        }.then(on: Self.serialQueue) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
-            firstly {
-                return self.attachmentData()
-            }.map(on: Self.serialQueue) { (attachmentData: Data) in
-                return (form, attachmentData)
-            }
-        }.then(on: Self.serialQueue) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
-            let uploadUrlPath = "attachments/"
-            return OWSUpload.uploadV2(data: attachmentData,
-                                      uploadForm: form,
-                                      uploadUrlPath: uploadUrlPath,
-                                      progressBlock: progressBlock)
-        }.map(on: Self.serialQueue) { [weak self] (_) throws -> Void in
-            self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
-        }
-    }
-
-    private func parseUploadFormV2(formResponseObject: Any?) -> Promise<OWSUploadFormV2> {
-
-        firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
-            guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
-                Logger.warn("formResponseObject: \(String(describing: formResponseObject))")
-                throw OWSAssertionError("Invalid form.")
-            }
-            guard let form = OWSUploadFormV2.parseDictionary(formDictionary) else {
-                Logger.warn("formDictionary: \(formDictionary)")
-                throw OWSAssertionError("Invalid form dictionary.")
-            }
-            let serverId: UInt64 = form.attachmentId?.uint64Value ?? 0
-            guard serverId > 0 else {
-                Logger.warn("serverId: \(serverId)")
-                throw OWSAssertionError("Invalid serverId.")
-            }
-
-            self.serverId = serverId
-
-            return form
-        }
     }
 
     // MARK: - V3
@@ -631,91 +562,6 @@ public class OWSAttachmentUploadV2: NSObject {
 
 // MARK: -
 
-public extension OWSUpload {
-
-    class func uploadV2(data: Data,
-                        uploadForm: OWSUploadFormV2,
-                        uploadUrlPath: String,
-                        progressBlock: ProgressBlock? = nil) -> Promise<String> {
-        if DependenciesBridge.shared.appExpiry.isExpired {
-            return Promise(error: OWSAssertionError("App is expired."))
-        }
-
-        let cdn0UrlSession = signalService.urlSessionForCdn(cdnNumber: 0)
-        return firstly { () -> Promise<HTTPResponse> in
-            let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-            try data.write(to: dataFileUrl)
-
-            let request = try cdn0UrlSession.endpoint.buildRequest(uploadUrlPath, method: .post)
-
-            // We have to build up the form manually vs. simply passing in a parameters dict
-            // because AWS is sensitive to the order of the form params (at least the "key"
-            // field must occur early on).
-            //
-            // For consistency, all fields are ordered here in a known working order.
-            var textParts = uploadForm.asOrderedDictionary
-            textParts.append(key: "Content-Type", value: OWSMimeTypeApplicationOctetStream)
-
-            return cdn0UrlSession.multiPartUploadTaskPromise(request: request,
-                                                             fileUrl: dataFileUrl,
-                                                             name: "file",
-                                                             fileName: "file",
-                                                             mimeType: OWSMimeTypeApplicationOctetStream,
-                                                             textParts: textParts,
-                                                             progress: { (_, progress) in
-                Logger.verbose("progress: \(progress.fractionCompleted)")
-
-                progressBlock?(progress)
-            })
-        }.map(on: DispatchQueue.global()) { (_: HTTPResponse) -> String in
-            Logger.verbose("Success.")
-            let uploadedUrlPath = uploadForm.key
-            return uploadedUrlPath
-        }
-    }
-}
-
-// MARK: -
-
-public extension OWSUploadFormV2 {
-    class func parse(proto attributesProto: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadFormV2 {
-
-        guard let acl = attributesProto.acl else {
-            throw OWSAssertionError("Missing acl.")
-        }
-        guard let key = attributesProto.key else {
-            throw OWSAssertionError("Missing key.")
-        }
-        guard let policy = attributesProto.policy else {
-            throw OWSAssertionError("Missing policy.")
-        }
-        guard let algorithm = attributesProto.algorithm else {
-            throw OWSAssertionError("Missing algorithm.")
-        }
-        guard let credential = attributesProto.credential else {
-            throw OWSAssertionError("Missing credential.")
-        }
-        guard let date = attributesProto.date else {
-            throw OWSAssertionError("Missing acl.")
-        }
-        guard let signature = attributesProto.signature else {
-            throw OWSAssertionError("Missing signature.")
-        }
-
-        return OWSUploadFormV2(acl: acl,
-                               key: key,
-                               policy: policy,
-                               algorithm: algorithm,
-                               credential: credential,
-                               date: date,
-                               signature: signature,
-                               attachmentId: nil,
-                               attachmentIdString: nil)
-    }
-}
-
-// MARK: -
-
 private class OWSUploadFormV3: NSObject {
 
     let headers: [String: String]
@@ -740,27 +586,5 @@ private class OWSUploadFormV3: NSObject {
             throw OWSAssertionError("Invalid signedUploadLocation.")
         }
         headers = try parser.required(key: "headers")
-    }
-}
-
-// MARK: -
-
-// See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-fileprivate extension OWSUploadFormV2 {
-    var asOrderedDictionary: OrderedDictionary<String, String> {
-        // We have to build up the form manually vs. simply passing in a parameters dict
-        // because AWS is sensitive to the order of the form params (at least the "key"
-        // field must occur early on).
-        var result = OrderedDictionary<String, String>()
-
-        // For consistency, all fields are ordered here in a known working order.
-        result.append(key: "key", value: self.key)
-        result.append(key: "acl", value: self.acl)
-        result.append(key: "x-amz-algorithm", value: self.algorithm)
-        result.append(key: "x-amz-credential", value: self.credential)
-        result.append(key: "x-amz-date", value: self.date)
-        result.append(key: "policy", value: self.policy)
-        result.append(key: "x-amz-signature", value: self.signature)
-        return result
     }
 }

@@ -552,11 +552,13 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoAvatarUploadAttributes(serializedData: protoData)
-        }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadFormV2 in
-            try OWSUploadFormV2.parse(proto: avatarUploadAttributes)
-        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadFormV2) -> Promise<String> in
+        }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> Upload.CDN0.Form in
+            try Upload.CDN0.Form.parse(proto: avatarUploadAttributes)
+        }.then(on: DispatchQueue.global()) { (uploadForm: Upload.CDN0.Form) -> Promise<String> in
             let encryptedData = try groupV2Params.encryptGroupAvatar(avatarData)
-            return OWSUpload.uploadV2(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
+            return Promise.wrapAsync {
+                try await Upload.CDN0.upload(data: encryptedData, uploadForm: uploadForm)
+            }
         }
     }
 
