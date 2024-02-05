@@ -31,7 +31,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         mockRecipientDatabaseTable = MockRecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
-        mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+        mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, _ in
             XCTFail("Shouldn't be deleting!")
         }
         mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
@@ -78,7 +78,8 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
             var didCallMock = false
-            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, sendSyncMessageOnDelete in
+                XCTAssertFalse(sendSyncMessageOnDelete)
                 didCallMock = true
             }
 
@@ -152,7 +153,8 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
             var didCallMock = false
-            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, sendSyncMessageOnDelete in
+                XCTAssertFalse(sendSyncMessageOnDelete)
                 didCallMock = true
             }
 

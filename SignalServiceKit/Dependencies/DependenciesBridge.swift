@@ -436,9 +436,11 @@ public class DependenciesBridge {
             )
             self.callRecordDeleteManager = CallRecordDeleteManagerImpl(
                 callRecordStore: self.callRecordStore,
+                callRecordOutgoingSyncMessageManager: outgoingSyncMessageManager,
                 deletedCallRecordCleanupManager: self.deletedCallRecordCleanupManager,
                 deletedCallRecordStore: self.deletedCallRecordStore,
-                interactionStore: self.interactionStore
+                interactionStore: self.interactionStore,
+                threadStore: self.threadStore
             )
             self.callRecordQuerier = CallRecordQuerierImpl()
 

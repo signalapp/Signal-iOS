@@ -189,6 +189,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 contactThread: contactThread,
                 callRecord: callRecord,
+                callEvent: .callUpdated,
                 tx: tx
             )
         }
@@ -224,6 +225,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 contactThread: contactThread,
                 callRecord: existingCallRecord,
+                callEvent: .callUpdated,
                 tx: tx
             )
         }

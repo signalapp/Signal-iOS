@@ -18,7 +18,11 @@ final class IndividualCallRecordManagerTest: XCTestCase {
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
         mockInteractionStore = MockInteractionStore()
-        mockOutgoingSyncMessageManager = MockCallRecordOutgoingSyncMessageManager()
+        mockOutgoingSyncMessageManager = {
+            let mock = MockCallRecordOutgoingSyncMessageManager()
+            mock.expectedCallEvent = .callUpdated
+            return mock
+        }()
 
         mockDB = MockDB()
         individualCallRecordManager = SnoopingIndividualCallRecordManagerImpl(
@@ -58,7 +62,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(interaction.callType, .incomingAnsweredElsewhere)
         XCTAssertNil(individualCallRecordManager.didAskToUpdateRecord)
         XCTAssertNil(individualCallRecordManager.didAskToCreateRecord)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     func testUpdateInteractionTypeAndRecordIfExists_recordExists() {
@@ -87,7 +91,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 
         XCTAssertEqual(interaction.callType, .incomingAnsweredElsewhere)
         XCTAssertEqual(individualCallRecordManager.didAskToUpdateRecord, .accepted)
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     // MARK: - createOrUpdateRecordForInteraction
@@ -107,7 +111,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(individualCallRecordManager.didAskToCreateRecord, .pending)
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     func testCreateOrUpdate_recordExists() {
@@ -137,7 +141,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(individualCallRecordManager.didAskToUpdateRecord, .notAccepted)
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     func testCreateOrUpdate_nothingIfRecordRecentlyDeleted() {
@@ -158,7 +162,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertNil(individualCallRecordManager.didAskToUpdateRecord)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     // MARK: - createRecordForInteraction
@@ -182,7 +186,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     func testCreate_syncMessage() {
@@ -204,7 +208,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     // MARK: - updateRecordForInteraction
@@ -232,7 +236,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     /// We shouldn't send a sync message if we tried updating a record with a
@@ -262,7 +266,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordStatusTo)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     func testUpdate_syncMessage() {
@@ -288,7 +292,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .individual(.accepted))
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 }
 

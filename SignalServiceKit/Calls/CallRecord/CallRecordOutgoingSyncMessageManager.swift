@@ -19,14 +19,23 @@ enum CallRecordOutgoingSyncMessageConversationId {
     }
 }
 
+enum CallRecordOutgoingSyncMessageCallEvent {
+    case callUpdated
+    case callDeleted
+}
+
 protocol CallRecordOutgoingSyncMessageManager {
+    typealias ConversationId = CallRecordOutgoingSyncMessageConversationId
+    typealias CallEvent = CallRecordOutgoingSyncMessageCallEvent
+
     /// Send a sync message with the state on the given call record.
     ///
     /// - Parameter callEventTimestamp
     /// The time at which the event that triggered this sync message occurred.
     func sendSyncMessage(
-        conversationId: CallRecordOutgoingSyncMessageConversationId,
+        conversationId: ConversationId,
         callRecord: CallRecord,
+        callEvent: CallEvent,
         callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     )
@@ -34,6 +43,7 @@ protocol CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
+        callEvent: CallEvent,
         tx: DBWriteTransaction
     )
 }
@@ -42,12 +52,14 @@ extension CallRecordOutgoingSyncMessageManager {
     func sendSyncMessage(
         groupThread: TSGroupThread,
         callRecord: CallRecord,
+        callEvent: CallEvent,
         callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
         sendSyncMessage(
             conversationId: .group(groupId: groupThread.groupId),
             callRecord: callRecord,
+            callEvent: callEvent,
             callEventTimestamp: callEventTimestamp,
             tx: tx
         )
@@ -74,6 +86,7 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
     func sendSyncMessage(
         contactThread: TSContactThread,
         callRecord: CallRecord,
+        callEvent: CallEvent,
         tx: DBWriteTransaction
     ) {
         guard let contactServiceId = recipientDatabaseTable.fetchServiceId(for: contactThread, tx: tx) else {
@@ -97,21 +110,29 @@ final class CallRecordOutgoingSyncMessageManagerImpl: CallRecordOutgoingSyncMess
         sendSyncMessage(
             conversationId: .oneToOne(contactServiceId: contactServiceId),
             callRecord: callRecord,
+            callEvent: callEvent,
             callEventTimestamp: callRecord.callBeganTimestamp,
             tx: tx
         )
     }
 
     func sendSyncMessage(
-        conversationId: CallRecordOutgoingSyncMessageConversationId,
+        conversationId: ConversationId,
         callRecord: CallRecord,
+        callEvent: CallEvent,
         callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        guard let outgoingCallEventType = OutgoingCallEvent.EventType(callRecord.callStatus) else {
-            logger.info("Skipping sync message for call in local-only state!")
-            return
-        }
+        let outgoingCallEventType: OutgoingCallEvent.EventType? = {
+            switch callEvent {
+            case .callDeleted:
+                return .deleted
+            case .callUpdated:
+                return OutgoingCallEvent.EventType(callRecord.callStatus)
+            }
+        }()
+
+        guard let outgoingCallEventType else { return }
 
         let outgoingCallEvent = OutgoingCallEvent(
             timestamp: callEventTimestamp,

@@ -204,6 +204,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 groupThread: groupThread,
                 callRecord: newCallRecord,
+                callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,
                 tx: tx
             )
@@ -271,6 +272,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             outgoingSyncMessageManager.sendSyncMessage(
                 groupThread: groupThread,
                 callRecord: existingCallRecord,
+                callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,
                 tx: tx
             )

@@ -302,8 +302,10 @@ private extension CallRecordIncomingSyncMessageManagerImpl {
                 "Ignoring incoming delete call sync message: existing record was already deleted!"
             )
         case .matchFound(let existingCallRecord):
+            // Don't send a sync message, since we're reacting to one!
             callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
                 callRecords: [existingCallRecord],
+                sendSyncMessageOnDelete: false,
                 tx: tx
             )
         case .matchNotFound:

@@ -6,19 +6,28 @@
 #if TESTABLE_BUILD
 
 final class MockCallRecordDeleteManager: CallRecordDeleteManager {
-    var deleteCallRecordByIndividualCallInteractionMock: ((_ individualCallInteraction: TSCall) -> Void)?
-    func deleteCallRecord(associatedIndividualCallInteraction: TSCall, tx: DBWriteTransaction) {
-        deleteCallRecordByIndividualCallInteractionMock!(associatedIndividualCallInteraction)
+    var deleteCallRecordByIndividualCallInteractionMock: ((
+        _ individualCallInteraction: TSCall,
+        _ sendSyncMessageOnDelete: Bool
+    ) -> Void)?
+    func deleteCallRecord(associatedIndividualCallInteraction: TSCall, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
+        deleteCallRecordByIndividualCallInteractionMock!(associatedIndividualCallInteraction, sendSyncMessageOnDelete)
     }
 
-    var deleteCallRecordByGroupCallInteractionMock: ((_ groupCallInteraction: OWSGroupCallMessage) -> Void)?
-    func deleteCallRecord(associatedGroupCallInteraction: OWSGroupCallMessage, tx: DBWriteTransaction) {
-        deleteCallRecordByGroupCallInteractionMock!(associatedGroupCallInteraction)
+    var deleteCallRecordByGroupCallInteractionMock: ((
+        _ groupCallInteraction: OWSGroupCallMessage,
+        _ sendSyncMessageOnDelete: Bool
+    ) -> Void)?
+    func deleteCallRecord(associatedGroupCallInteraction: OWSGroupCallMessage, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
+        deleteCallRecordByGroupCallInteractionMock!(associatedGroupCallInteraction, sendSyncMessageOnDelete)
     }
 
-    var deleteCallRecordsAndAssociatedInteractionsMock: ((_ callRecords: [CallRecord]) -> Void)?
-    func deleteCallRecordsAndAssociatedInteractions(callRecords: [CallRecord], tx: DBWriteTransaction) {
-        deleteCallRecordsAndAssociatedInteractionsMock!(callRecords)
+    var deleteCallRecordsAndAssociatedInteractionsMock: ((
+        _ callRecords: [CallRecord],
+        _ sendSyncMessageOnDelete: Bool
+    ) -> Void)?
+    func deleteCallRecordsAndAssociatedInteractions(callRecords: [CallRecord], sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
+        deleteCallRecordsAndAssociatedInteractionsMock!(callRecords, sendSyncMessageOnDelete)
     }
 
     var markCallAsDeletedMock: ((_ callId: UInt64, _ threadRowId: Int64) -> Void)?

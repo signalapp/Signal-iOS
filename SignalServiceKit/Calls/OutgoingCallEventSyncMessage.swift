@@ -23,6 +23,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
     enum EventType: UInt {
         case accepted
         case notAccepted
+        case deleted
     }
 
     let timestamp: UInt64
@@ -179,6 +180,8 @@ fileprivate extension OutgoingCallEvent.EventType {
             return .accepted
         case .notAccepted:
             return .notAccepted
+        case .deleted:
+            return .deleted
         }
     }
 }

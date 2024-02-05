@@ -20,7 +20,11 @@ final class GroupCallRecordManagerTest: XCTestCase {
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
         mockInteractionStore = MockInteractionStore()
-        mockOutgoingSyncMessageManager = MockCallRecordOutgoingSyncMessageManager()
+        mockOutgoingSyncMessageManager = {
+            let mock = MockCallRecordOutgoingSyncMessageManager()
+            mock.expectedCallEvent = .callUpdated
+            return mock
+        }()
 
         mockDB = MockDB()
         snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
@@ -146,7 +150,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         }
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
 
         _ = mockDB.write { tx in
             groupCallRecordManager.createGroupCallRecord(
@@ -166,7 +170,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
         XCTAssertEqual(mockCallRecordStore.callRecords.count, 2)
         XCTAssertNotNil(mockCallRecordStore.callRecords[1].groupCallRingerAci)
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     func testCreateGroupCallRecordForPeek() {
@@ -191,7 +195,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(insertedCallRecord.callStatus, .group(.generic))
         XCTAssertEqual(insertedCallRecord.callDirection, .incoming)
         XCTAssertEqual(insertedCallRecord.callType, .groupCall)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     // MARK: Update record
@@ -225,7 +229,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
         XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordDirectionTo, .outgoing)
         XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .group(.ringingAccepted))
-        XCTAssertTrue(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
     func testUpdate_SkipsDirectionAndSyncMessage() {
@@ -257,7 +261,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordDirectionTo)
         XCTAssertEqual(mockCallRecordStore.askedToUpdateRecordStatusTo, .group(.joined))
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     /// We shouldn't send a sync message if we tried updating a record with a
@@ -293,7 +297,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordDirectionTo)
         XCTAssertNil(mockCallRecordStore.askedToUpdateRecordStatusTo)
-        XCTAssertFalse(mockOutgoingSyncMessageManager.askedToSendSyncMessage)
+        XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
     func testUpdate_UpdatesCallBeganTimestamp() {
