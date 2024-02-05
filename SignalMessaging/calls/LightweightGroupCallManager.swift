@@ -158,9 +158,15 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
 
         let joinedMemberAcis = peekInfo.joinedMembers.map { Aci(fromUUID: $0) }
 
-        let interactionToUpdate: OWSGroupCallMessage? = {
+        enum InteractionToUpdate {
+            case found(OWSGroupCallMessage)
+            case notFound
+            case deleted
+        }
+
+        let interactionToUpdate: InteractionToUpdate = {
             if let interactionForCurrentCall {
-                return interactionForCurrentCall
+                return .found(interactionForCurrentCall)
             }
 
             // Call IDs are server-defined, and don't reset immediately
@@ -174,16 +180,26 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 threadRowId: groupThreadRowId,
                 tx: tx.asV2Write
             ) {
-            case .matchNotFound, .matchDeleted:
-                return nil
+            case .matchNotFound:
+                return .notFound
+            case .matchDeleted:
+                return .deleted
             case .matchFound(let existingCallRecordForCallId):
-                return self.interactionStore.fetchAssociatedInteraction(
-                    callRecord: existingCallRecordForCallId, tx: tx.asV2Read
-                )
+                if let associatedInteraction: OWSGroupCallMessage = self.interactionStore
+                    .fetchAssociatedInteraction(
+                        callRecord: existingCallRecordForCallId,
+                        tx: tx.asV2Read
+                    )
+                {
+                    return .found(associatedInteraction)
+                }
+
+                return .notFound
             }
         }()
 
-        if let interactionToUpdate {
+        switch interactionToUpdate {
+        case .found(let interactionToUpdate):
             let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
 
             self.interactionStore.updateGroupCallInteractionAcis(
@@ -205,7 +221,9 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                     tx: tx
                 )
             }
-        } else if !joinedMemberAcis.isEmpty {
+        case .notFound where joinedMemberAcis.isEmpty:
+            break
+        case .notFound:
             let newMessage = self.createModelsForNewGroupCall(
                 callId: currentCallId,
                 joinedMemberAcis: joinedMemberAcis,
@@ -223,6 +241,8 @@ open class LightweightGroupCallManager: NSObject, Dependencies {
                 groupThread: groupThread,
                 tx: tx
             )
+        case .deleted:
+            logger.warn("Not updating group call models for peek – interaction was deleted!")
         }
     }
 
