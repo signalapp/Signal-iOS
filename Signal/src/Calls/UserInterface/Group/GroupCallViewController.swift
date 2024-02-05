@@ -532,7 +532,9 @@ class GroupCallViewController: UIViewController {
 
         guard !isCallMinimized else { return }
 
-        let showNoVideoIndicator = groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
+        // TODO: When ``CallMemberCameraOffView`` is used in Production,
+        // `noVideoIndicatorView` in this class will no longer be needed.
+        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
         // Hide the subviews of this view to collapse the stack.
         noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
 

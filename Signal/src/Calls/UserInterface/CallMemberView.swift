@@ -38,11 +38,11 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         updateDimensions()
     }
 
-    private let type: CallMemberVideoView.MemberType
+    private let type: MemberType
 
-    init(type: CallMemberVideoView.MemberType) {
+    init(type: MemberType) {
         self.type = type
-        self.callMemberCameraOffView = CallMemberCameraOffView()
+        self.callMemberCameraOffView = CallMemberCameraOffView(type: type)
         self.callMemberVideoView = CallMemberVideoView(type: type)
         self.callMemberChromeOverlayView = CallMemberChromeOverlayView()
 
@@ -96,7 +96,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         }
     }
 
-    /// Not to be confused with ``CallMemberVideoView.MemberType``, which is used on
+    /// Not to be confused with ``MemberType``, which is used on
     /// init. This is an imperfect solution to the issue of (group,individual)x(local,remote)
     /// call member views having different needs for set up and configuration. The alternative
     /// is having optional params on `init` and `configure`.
@@ -105,6 +105,12 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
     enum ConfigurationType {
         case local
         case remote(RemoteDeviceState, CallMemberVisualContext)
+    }
+
+    /// See note on ```ConfigurationType```.
+    enum MemberType {
+        case local(SignalCall)
+        case remote(isGroupCall: Bool)
     }
 
     private var hasBeenConfigured = false

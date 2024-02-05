@@ -9,13 +9,7 @@ import SignalMessaging
 import SignalRingRTC
 
 class CallMemberVideoView: UIView, CallMemberComposableView {
-    /// See note on ```CallMemberView.Configurationtype```.
-    enum MemberType {
-        case local(SignalCall)
-        case remote(isGroupCall: Bool)
-    }
-
-    init(type: MemberType) {
+    init(type: CallMemberView.MemberType) {
         super.init(frame: .zero)
         switch type {
         case .local(let call):
