@@ -33,6 +33,11 @@ public protocol CallRecordStore {
     /// Deletes the given call records and creates ``DeletedCallRecord``s
     /// in their place.
     /// - Important
+    /// This is a low-level API to simply remove ``CallRecord``s from disk;
+    /// colloquially, "deleting a call record" involves more than just this
+    /// step. Unless you're sure you want just this effect, you probably want to
+    /// call ``CallRecordDeleteManager``.
+    /// - Important
     /// Posts a `.deleted` ``CallRecordStoreNotification``.
     func delete(callRecords: [CallRecord], tx: DBWriteTransaction)
 

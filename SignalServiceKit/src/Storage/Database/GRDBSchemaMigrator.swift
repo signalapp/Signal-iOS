@@ -244,6 +244,7 @@ public class GRDBSchemaMigrator: NSObject {
         case renameAndDeprecateSourceDeviceId
         case addCallRecordQueryIndices
         case addDeletedCallRecordTable
+        case addFirstDeletedIndexToDeletedCallRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2554,6 +2555,16 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "DeletedCallRecord",
                 columns: ["threadRowId", "callId"],
                 options: [.unique]
+            )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addFirstDeletedIndexToDeletedCallRecord) { tx in
+            try tx.database.create(
+                index: "index_deleted_call_record_on_deletedAtTimestamp",
+                on: "DeletedCallRecord",
+                columns: ["deletedAtTimestamp"]
             )
 
             return .success(())

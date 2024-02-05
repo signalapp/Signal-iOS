@@ -6,6 +6,18 @@
 import GRDB
 
 /// A record representing a ``CallRecord`` that was deleted.
+///
+/// When a ``CallRecord`` is deleted, a ``DeletedCallRecord`` is inserted in its
+/// place. This allows us to track that the record for a given call was deleted;
+/// without this, we could delete the record for a call, then receive an update
+/// for that call that results in us spuriosuly re-creating a record for that
+/// call. Instead, the presence of a ``DeletedCallRecord`` allows us to instead
+/// silently ignore updates for the call they refer to.
+///
+/// A ``DeletedCallRecord`` is kept for a short period – at the time of writing,
+/// the period is 8h – after which point we assume the call it refers to will
+/// have ended and it can be deleted. See ``DeletedCallRecordCleanupManager``
+/// for that cleanup of "expired" ``DeletedCallRecord``s.
 final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
     enum CodingKeys: String, CodingKey {
         case id

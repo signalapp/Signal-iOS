@@ -44,7 +44,9 @@ public class DependenciesBridge {
     public let authorMergeHelper: AuthorMergeHelper
 
     let deletedCallRecordStore: DeletedCallRecordStore
+    public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     public let callRecordStore: CallRecordStore
+    let callRecordDeleteManager: CallRecordDeleteManager
     public let callRecordQuerier: CallRecordQuerier
 
     public let groupCallRecordManager: GroupCallRecordManager
@@ -422,9 +424,19 @@ public class DependenciesBridge {
             )
 
             self.deletedCallRecordStore = DeletedCallRecordStoreImpl()
+            self.deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
+                dateProvider: dateProvider,
+                db: self.db,
+                deletedCallRecordStore: self.deletedCallRecordStore,
+                schedulers: self.schedulers
+            )
             self.callRecordStore = CallRecordStoreImpl(
                 deletedCallRecordStore: self.deletedCallRecordStore,
                 schedulers: self.schedulers
+            )
+            self.callRecordDeleteManager = CallRecordDeleteManagerImpl(
+                callRecordStore: self.callRecordStore,
+                deletedCallRecordCleanupManager: self.deletedCallRecordCleanupManager
             )
             self.callRecordQuerier = CallRecordQuerierImpl()
 

@@ -18,6 +18,17 @@ protocol DeletedCallRecordStore {
     /// Insert the given deleted call record.
     func insert(deletedCallRecord: DeletedCallRecord, db: Database)
 
+    /// Deletes the given deleted call record, which was created sufficiently
+    /// long ago as to now be expired.
+    func delete(
+        expiredDeletedCallRecord: DeletedCallRecord,
+        tx: DBWriteTransaction
+    )
+
+    /// Returns the oldest deleted call record; i.e., the deleted call record
+    /// with the oldest `deletedAtTimestamp`.
+    func nextDeletedRecord(tx: DBReadTransaction) -> DeletedCallRecord?
+
     /// Update all relevant records in response to a thread merge.
     /// - Parameter fromThreadRowId
     /// The SQLite row ID of the thread being merged from.
@@ -41,6 +52,23 @@ extension DeletedCallRecordStore {
 // MARK: -
 
 class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
+    fileprivate enum ColumnArg {
+        case equal(
+            column: DeletedCallRecord.CodingKeys,
+            value: DatabaseValueConvertible
+        )
+
+        case ascending(column: DeletedCallRecord.CodingKeys)
+
+        var column: DeletedCallRecord.CodingKeys {
+            switch self {
+            case .equal(let column, _):
+                return column
+            case .ascending(let column):
+                return column
+            }
+        }
+    }
 
     init() {}
 
@@ -53,8 +81,8 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     ) -> DeletedCallRecord? {
         return fetch(
             columnArgs: [
-                (.callIdString, String(callId)),
-                (.threadRowId, threadRowId)
+                .equal(column: .callIdString, value: String(callId)),
+                .equal(column: .threadRowId, value: threadRowId)
             ],
             db: db
         )
@@ -69,6 +97,36 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         } catch let error {
             owsFailBeta("Failed to insert deleted call record: \(error)")
         }
+    }
+
+    // MARK: -
+
+    func delete(expiredDeletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
+        return delete(
+            expiredDeletedCallRecord: expiredDeletedCallRecord,
+            db: SDSDB.shimOnlyBridge(tx).database
+        )
+    }
+
+    func delete(expiredDeletedCallRecord: DeletedCallRecord, db: Database) {
+        do {
+            try expiredDeletedCallRecord.delete(db)
+        } catch let error {
+            owsFailBeta("Failed to delete expired deleted call record: \(error)")
+        }
+    }
+
+    // MARK: -
+
+    func nextDeletedRecord(tx: DBReadTransaction) -> DeletedCallRecord? {
+        return nextDeletedRecord(db: SDSDB.shimOnlyBridge(tx).database)
+    }
+
+    func nextDeletedRecord(db: Database) -> DeletedCallRecord? {
+        return fetch(
+            columnArgs: [.ascending(column: .deletedAtTimestamp)],
+            db: db
+        )
     }
 
     // MARK: -
@@ -103,7 +161,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     // MARK: -
 
     fileprivate func fetch(
-        columnArgs: [(DeletedCallRecord.CodingKeys, DatabaseValueConvertible)],
+        columnArgs: [ColumnArg],
         db: Database
     ) -> DeletedCallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
@@ -114,25 +172,49 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                 arguments: StatementArguments(sqlArgs)
             ))
         } catch let error {
-            let columns = columnArgs.map { (column, _) in column }
+            let columns = columnArgs.map { $0.column }
             owsFailBeta("Error fetching CallRecord by \(columns): \(error)")
             return nil
         }
     }
 
     fileprivate func compileQuery(
-        columnArgs: [(DeletedCallRecord.CodingKeys, DatabaseValueConvertible)]
+        columnArgs: [ColumnArg]
     ) -> (sqlString: String, sqlArgs: [DatabaseValueConvertible]) {
-        let conditionClauses = columnArgs.map { (column, _) -> String in
-            return "\(column.rawValue) = ?"
+        var equalityClauses = [String]()
+        var equalityArgs = [DatabaseValueConvertible]()
+        var orderingClause: String?
+
+        for columnArg in columnArgs {
+            switch columnArg {
+            case .equal(let column, let value):
+                equalityClauses.append("\(column.rawValue) = ?")
+                equalityArgs.append(value)
+            case .ascending(let column):
+                owsAssert(
+                    orderingClause == nil,
+                    "Multiple ordering clauses! How did that happen?"
+                )
+
+                orderingClause = "ORDER BY \(column.rawValue) ASC"
+            }
         }
+
+        let whereClause: String = {
+            if equalityClauses.isEmpty {
+                return ""
+            } else {
+                return "WHERE \(equalityClauses.joined(separator: " AND "))"
+            }
+        }()
 
         return (
             sqlString: """
                 SELECT * FROM \(DeletedCallRecord.databaseTableName)
-                WHERE \(conditionClauses.joined(separator: " AND "))
+                \(whereClause)
+                \(orderingClause ?? "")
             """,
-            sqlArgs: columnArgs.map { $1 }
+            sqlArgs: equalityArgs
         )
     }
 }
@@ -151,7 +233,7 @@ final class ExplainingDeletedCallRecordStoreImpl: DeletedCallRecordStoreImpl {
     var lastExplanation: String?
 
     override fileprivate func fetch(
-        columnArgs: [(DeletedCallRecord.CodingKeys, DatabaseValueConvertible)],
+        columnArgs: [ColumnArg],
         db: Database
     ) -> DeletedCallRecord? {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)

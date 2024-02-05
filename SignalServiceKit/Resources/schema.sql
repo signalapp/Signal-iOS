@@ -1544,3 +1544,9 @@ CREATE
     ,"callId"
 )
 ;
+
+CREATE
+    INDEX "index_deleted_call_record_on_deletedAtTimestamp"
+        ON "DeletedCallRecord"("deletedAtTimestamp"
+)
+;

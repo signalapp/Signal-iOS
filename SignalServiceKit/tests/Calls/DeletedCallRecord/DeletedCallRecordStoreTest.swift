@@ -79,6 +79,66 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         })
     }
 
+    func testDelete() {
+        let threadRowId = insertThread()
+        let record = DeletedCallRecord(
+            callId: 1234,
+            threadRowId: threadRowId,
+            deletedAtTimestamp: 9
+        )
+
+        inMemoryDB.write { tx in
+            deletedCallRecordStore.insert(
+                deletedCallRecord: record,
+                db: InMemoryDB.shimOnlyBridge(tx).db
+            )
+        }
+
+        inMemoryDB.write { tx in
+            deletedCallRecordStore.delete(
+                expiredDeletedCallRecord: record,
+                db: InMemoryDB.shimOnlyBridge(tx).db
+            )
+        }
+
+        inMemoryDB.read(block: { tx in
+            XCTAssertFalse(deletedCallRecordStore.contains(
+                callId: 1234,
+                threadRowId: threadRowId,
+                db: InMemoryDB.shimOnlyBridge(tx).db
+            ))
+        })
+    }
+
+    // MARK: -
+
+    func testNextDeletedRecordUsesIndex() {
+        let records: [DeletedCallRecord] = [
+            .init(callId: 2, threadRowId: insertThread(), deletedAtTimestamp: 2),
+            .init(callId: 1, threadRowId: insertThread(), deletedAtTimestamp: 1),
+            .init(callId: 3, threadRowId: insertThread(), deletedAtTimestamp: 3),
+        ]
+
+        inMemoryDB.write { tx in
+            for record in records {
+                deletedCallRecordStore.insert(
+                    deletedCallRecord: record,
+                    db: InMemoryDB.shimOnlyBridge(tx).db
+                )
+            }
+        }
+
+        let nextDeletedRecord = inMemoryDB.read { tx in
+            deletedCallRecordStore.nextDeletedRecord(db: InMemoryDB.shimOnlyBridge(tx).db)
+        }
+
+        assertExplanation(contains: "index_deleted_call_record_on_deletedAtTimestamp")
+
+        XCTAssertNotNil(nextDeletedRecord)
+        XCTAssertEqual(nextDeletedRecord!.callId, 1)
+        XCTAssertEqual(nextDeletedRecord!.deletedAtTimestamp, 1)
+    }
+
     // MARK: -
 
     func testUpdateWithMergedThread() {
