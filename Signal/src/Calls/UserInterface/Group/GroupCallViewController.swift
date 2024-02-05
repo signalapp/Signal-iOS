@@ -521,7 +521,6 @@ class GroupCallViewController: UIViewController {
                 speakerView.configure(
                     call: call,
                     memberType: .remote(speakerState, .speaker)
-                    // getting mode based on its old value in init in this file.
                 )
             } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
                 speakerView.configure(call: call, device: speakerState)

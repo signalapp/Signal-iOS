@@ -27,6 +27,7 @@ protocol CallMemberComposableView: UIView {
 class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_IndividualRemoteBridge, CallMemberView_IndividualLocalBridge {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberVideoView: CallMemberVideoView
+    private let callMemberWaitingAndErrorView: CallMemberWaitingAndErrorView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView
 
     /// Must be specified with the lowest view first; views will be added
@@ -44,6 +45,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         self.type = type
         self.callMemberCameraOffView = CallMemberCameraOffView(type: type)
         self.callMemberVideoView = CallMemberVideoView(type: type)
+        self.callMemberWaitingAndErrorView = CallMemberWaitingAndErrorView()
         self.callMemberChromeOverlayView = CallMemberChromeOverlayView()
 
         super.init(frame: .zero)
@@ -58,7 +60,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             self.orderedComposableViews = [
                 callMemberCameraOffView,
                 callMemberVideoView,
-                // TODO: Add waiting and error views
+                callMemberWaitingAndErrorView,
                 callMemberChromeOverlayView
             ]
         }
@@ -176,9 +178,23 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         )
     }
 
-    var isCallMinimized: Bool = false
+    var isCallMinimized: Bool {
+        get {
+            self.callMemberWaitingAndErrorView.isCallMinimized
+        }
+        set {
+            self.callMemberWaitingAndErrorView.isCallMinimized = newValue
+        }
+    }
 
-    weak var delegate: GroupCallMemberViewDelegate?
+    weak var delegate: GroupCallMemberViewDelegate? {
+        get {
+            self.callMemberWaitingAndErrorView.delegate
+        }
+        set {
+            self.callMemberWaitingAndErrorView.delegate = newValue
+        }
+    }
 
     // MARK: CallMemberView_IndividualRemoteBridge
 

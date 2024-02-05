@@ -147,7 +147,6 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
     func updateDimensions() {
         self.videoOffIndicatorImageWidthConstraint?.constant = videoOffImageIndicatorWidth
-        // Will this be a problem being called from layout subviews?
         avatarView?.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = .customDiameter(avatarDiameter)
         }
