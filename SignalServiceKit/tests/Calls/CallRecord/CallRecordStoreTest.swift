@@ -167,20 +167,14 @@ final class CallRecordStoreTest: XCTestCase {
                     threadRowId: callRecord.threadRowId,
                     db: InMemoryDB.shimOnlyBridge(tx).db
                 ) {
-                case .matchDeleted:
+                case .matchNotFound:
                     // Test pass
                     break
-                case .matchFound, .matchNotFound:
+                case .matchFound, .matchDeleted:
                     XCTFail("Unexpected fetch result!")
                 }
             }
         }
-
-        XCTAssertEqual(mockDeletedCallRecordStore.deletedCallRecords.count, 2)
-        XCTAssertTrue(mockDeletedCallRecordStore.deletedCallRecords[0]
-            .matches(callRecord: callRecord1))
-        XCTAssertTrue(mockDeletedCallRecordStore.deletedCallRecords[1]
-            .matches(callRecord: callRecord2))
     }
 
     // MARK: - updateRecordStatus

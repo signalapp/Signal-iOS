@@ -48,17 +48,20 @@ final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
     /// deleted.
     let deletedAtTimestamp: UInt64
 
-    init(callId: UInt64, threadRowId: Int64, deletedAtTimestamp: UInt64) {
+    init(
+        callId: UInt64,
+        threadRowId: Int64,
+        deletedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970
+    ) {
         self.callIdString = String(callId)
         self.threadRowId = threadRowId
         self.deletedAtTimestamp = deletedAtTimestamp
     }
 
-    convenience init(deletedCallRecord: CallRecord) {
+    convenience init(callRecord: CallRecord) {
         self.init(
-            callId: deletedCallRecord.callId,
-            threadRowId: deletedCallRecord.threadRowId,
-            deletedAtTimestamp: Date().ows_millisecondsSince1970
+            callId: callRecord.callId,
+            threadRowId: callRecord.threadRowId
         )
     }
 

@@ -10,6 +10,7 @@ import XCTest
 
 final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
+    private var mockCallRecordDeleteManager: MockCallRecordDeleteManager!
     private var mockGroupCallRecordManager: MockGroupCallRecordManager!
     private var mockIndividualCallRecordManager: MockIndividualCallRecordManager!
     private var mockInteractionStore: MockInteractionStore!
@@ -22,6 +23,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
 
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
+        mockCallRecordDeleteManager = MockCallRecordDeleteManager()
         mockGroupCallRecordManager = MockGroupCallRecordManager()
         mockIndividualCallRecordManager = MockIndividualCallRecordManager()
         mockInteractionStore = MockInteractionStore()
@@ -29,8 +31,16 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         mockRecipientDatabaseTable = MockRecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
+        mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+            XCTFail("Shouldn't be deleting!")
+        }
+        mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
+            XCTFail("Shouldn't be deleting!")
+        }
+
         incomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
             callRecordStore: mockCallRecordStore,
+            callRecordDeleteManager: mockCallRecordDeleteManager,
             groupCallRecordManager: mockGroupCallRecordManager,
             individualCallRecordManager: mockIndividualCallRecordManager,
             interactionStore: mockInteractionStore,
@@ -40,9 +50,159 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         )
     }
 
+    // MARK: - Deleted calls
+
+    func testDeleteIndividualCall() {
+        let (contactServiceId, callId) = insertIndividualCallRecord()
+
+        /// If the call record in question was already deleted, do nothing. (The
+        /// delete manager mocks are set to blow up if called.)
+        mockDB.write { tx in
+            mockCallRecordStore.fetchMock = { .matchDeleted }
+            defer { mockCallRecordStore.fetchMock = nil }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .individual(contactServiceId: contactServiceId),
+                    callId: callId.adjacent,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+        }
+
+        /// If the call record in question is present, it should be deleted.
+        mockDB.write { tx in
+            var didCallMock = false
+            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+                didCallMock = true
+            }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .individual(contactServiceId: contactServiceId),
+                    callId: callId,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+
+            XCTAssertTrue(didCallMock)
+        }
+
+        /// If the call record in question does not exist, we should mark it as
+        /// deleted prophylactically.
+        mockDB.write { tx in
+            var didCallMock = false
+            mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
+                didCallMock = true
+            }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .individual(contactServiceId: contactServiceId),
+                    callId: callId.adjacent,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+
+            XCTAssertTrue(didCallMock)
+        }
+    }
+
+    func testDeleteGroupCall() {
+        let (existingCallRecord, groupId) = createGroupCallRecord(
+            callDirection: .incoming,
+            groupCallStatus: .generic
+        )
+
+        /// If the call record in question was already deleted, do nothing. (The
+        /// delete manager mocks are set to blow up if called.)
+        mockDB.write { tx in
+            mockCallRecordStore.fetchMock = { .matchDeleted }
+            defer { mockCallRecordStore.fetchMock = nil }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .group(groupId: groupId),
+                    callId: existingCallRecord.callId.adjacent,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+        }
+
+        /// If the call record in question is present, it should be deleted.
+        mockDB.write { tx in
+            var didCallMock = false
+            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _ in
+                didCallMock = true
+            }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .group(groupId: groupId),
+                    callId: existingCallRecord.callId,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+
+            XCTAssertTrue(didCallMock)
+        }
+
+        /// If the call record in question does not exist, we should mark it as
+        /// deleted prophylactically.
+        mockDB.write { tx in
+            var didCallMock = false
+            mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
+                didCallMock = true
+            }
+
+            incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
+                incomingSyncMessage: CallRecordIncomingSyncMessageParams(
+                    conversationType: .group(groupId: groupId),
+                    callId: existingCallRecord.callId.adjacent,
+                    callTimestamp: .maxRandom,
+                    callEvent: .deleted,
+                    callType: .audioCall,
+                    callDirection: .outgoing
+                ),
+                syncMessageTimestamp: .maxRandom,
+                tx: tx
+            )
+
+            XCTAssertTrue(didCallMock)
+        }
+    }
+
     // MARK: - Individual calls
 
-    func testUpdatesIndividualCallIfExists() {
+    private func insertIndividualCallRecord(
+        callType: RPRecentCallType = .outgoingMissed,
+        individualCallStatus: CallRecord.CallStatus.IndividualCallStatus = .notAccepted
+    ) -> (ServiceId, UInt64) {
         let callId = UInt64.maxRandom
 
         let contactAddress = SignalServiceAddress.isolatedRandomForTesting()
@@ -54,7 +214,7 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         let contactRecipient = SignalRecipient(aci: contactServiceId, pni: nil, phoneNumber: nil)
 
         let interaction = TSCall(
-            callType: .outgoingMissed,
+            callType: callType,
             offerType: .audio,
             thread: thread,
             sentAtTimestamp: UInt64.maxRandom
@@ -71,13 +231,19 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
             threadRowId: threadRowId,
             callType: .audioCall,
             callDirection: .outgoing,
-            callStatus: .individual(.notAccepted),
+            callStatus: .individual(individualCallStatus),
             callBeganTimestamp: .maxRandomInt64Compat
         )
 
         mockDB.write { tx in
-            _ = mockCallRecordStore.insert(callRecord: callRecord, tx: tx)
+            mockCallRecordStore.insert(callRecord: callRecord, tx: tx)
         }
+
+        return (contactServiceId, callId)
+    }
+
+    func testUpdatesIndividualCallIfExists() {
+        let (contactServiceId, callId) = insertIndividualCallRecord()
 
         mockDB.write { tx in
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
@@ -604,6 +770,20 @@ final class CallRecordIncomingSyncMessageManagerTest: XCTestCase {
         XCTAssertEqual(createCount, 3)
         XCTAssertEqual(mockInteractionStore.insertedInteractions.count, 3)
         XCTAssertEqual(mockMarkAsReadShims.markedAsReadCount, 3)
+    }
+}
+
+// MARK: -
+
+private extension UInt64 {
+    /// An adjacent value to this one. Most importantly, will never be equal to
+    /// this value.
+    var adjacent: UInt64 {
+        if self == .max {
+            return self - 1
+        }
+
+        return self + 1
     }
 }
 

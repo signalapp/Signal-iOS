@@ -12,6 +12,9 @@ import SignalCoreKit
 /// Powers both "call disposition" (i.e., sending sync messages for call-related
 /// events) as well as the Calls Tab.
 public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
+
+    public static let databaseTableName: String = "CallRecord"
+
     public enum CodingKeys: String, CodingKey {
         case id
         case callIdString = "callId"
@@ -23,8 +26,6 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         case _groupCallRingerAci = "groupCallRingerAci"
         case callBeganTimestamp = "timestamp"
     }
-
-    public static let databaseTableName: String = "CallRecord"
 
     /// This record's SQLite row ID, if it represents a record that has already
     /// been inserted.

@@ -609,6 +609,7 @@ message SyncMessage {
       UNKNOWN_ACTION = 0;
       ACCEPTED       = 1;
       NOT_ACCEPTED   = 2;
+      DELETED        = 3;
     }
 
     optional bytes     conversationId = 1;

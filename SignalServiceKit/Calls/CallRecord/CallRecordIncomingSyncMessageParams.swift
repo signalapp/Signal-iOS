@@ -14,12 +14,14 @@ public struct CallRecordIncomingSyncMessageParams {
     enum CallEvent {
         case accepted
         case notAccepted
+        case deleted
 
         init?(protoCallEvent: SSKProtoSyncMessageCallEventEvent) {
             switch protoCallEvent {
             case .unknownAction: return nil
             case .accepted: self = .accepted
             case .notAccepted: self = .notAccepted
+            case .deleted: self = .deleted
             }
         }
     }

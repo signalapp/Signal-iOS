@@ -46,7 +46,7 @@ public class DependenciesBridge {
     let deletedCallRecordStore: DeletedCallRecordStore
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     public let callRecordStore: CallRecordStore
-    let callRecordDeleteManager: CallRecordDeleteManager
+    public let callRecordDeleteManager: CallRecordDeleteManager
     public let callRecordQuerier: CallRecordQuerier
 
     public let groupCallRecordManager: GroupCallRecordManager
@@ -436,7 +436,9 @@ public class DependenciesBridge {
             )
             self.callRecordDeleteManager = CallRecordDeleteManagerImpl(
                 callRecordStore: self.callRecordStore,
-                deletedCallRecordCleanupManager: self.deletedCallRecordCleanupManager
+                deletedCallRecordCleanupManager: self.deletedCallRecordCleanupManager,
+                deletedCallRecordStore: self.deletedCallRecordStore,
+                interactionStore: self.interactionStore
             )
             self.callRecordQuerier = CallRecordQuerierImpl()
 
@@ -452,6 +454,7 @@ public class DependenciesBridge {
             )
             self.callRecordIncomingSyncMessageManager = CallRecordIncomingSyncMessageManagerImpl(
                 callRecordStore: self.callRecordStore,
+                callRecordDeleteManager: self.callRecordDeleteManager,
                 groupCallRecordManager: self.groupCallRecordManager,
                 individualCallRecordManager: self.individualCallRecordManager,
                 interactionStore: interactionStore,

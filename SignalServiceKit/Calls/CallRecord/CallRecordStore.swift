@@ -248,13 +248,6 @@ class CallRecordStoreImpl: CallRecordStore {
         for callRecord in callRecords {
             do {
                 try callRecord.delete(db)
-
-                deletedCallRecordStore.insert(
-                    deletedCallRecord: DeletedCallRecord(
-                        deletedCallRecord: callRecord
-                    ),
-                    db: db
-                )
             } catch let error {
                 owsFailBeta("Failed to delete call record: \(error)")
             }

@@ -18,7 +18,7 @@ class MockDeletedCallRecordStore: DeletedCallRecordStore {
         }
     }
 
-    func insert(deletedCallRecord: DeletedCallRecord, db: Database) {
+    func insert(deletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
         deletedCallRecords.append(deletedCallRecord)
     }
 

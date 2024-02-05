@@ -12503,6 +12503,7 @@ public enum SSKProtoSyncMessageCallEventEvent: Int32 {
     case unknownAction = 0
     case accepted = 1
     case notAccepted = 2
+    case deleted = 3
 }
 
 private func SSKProtoSyncMessageCallEventEventWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.Event) -> SSKProtoSyncMessageCallEventEvent {
@@ -12510,6 +12511,7 @@ private func SSKProtoSyncMessageCallEventEventWrap(_ value: SignalServiceProtos_
     case .unknownAction: return .unknownAction
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
+    case .deleted: return .deleted
     }
 }
 
@@ -12518,6 +12520,7 @@ private func SSKProtoSyncMessageCallEventEventUnwrap(_ value: SSKProtoSyncMessag
     case .unknownAction: return .unknownAction
     case .accepted: return .accepted
     case .notAccepted: return .notAccepted
+    case .deleted: return .deleted
     }
 }
 

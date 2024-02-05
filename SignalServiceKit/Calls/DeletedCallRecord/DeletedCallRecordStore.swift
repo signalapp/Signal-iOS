@@ -16,7 +16,7 @@ protocol DeletedCallRecordStore {
     ) -> DeletedCallRecord?
 
     /// Insert the given deleted call record.
-    func insert(deletedCallRecord: DeletedCallRecord, db: Database)
+    func insert(deletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction)
 
     /// Deletes the given deleted call record, which was created sufficiently
     /// long ago as to now be expired.
@@ -85,6 +85,18 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                 .equal(column: .threadRowId, value: threadRowId)
             ],
             db: db
+        )
+    }
+
+    // MARK: -
+
+    func insert(
+        deletedCallRecord: DeletedCallRecord,
+        tx: DBWriteTransaction
+    ) {
+        return insert(
+            deletedCallRecord: deletedCallRecord,
+            db: SDSDB.shimOnlyBridge(tx).database
         )
     }
 

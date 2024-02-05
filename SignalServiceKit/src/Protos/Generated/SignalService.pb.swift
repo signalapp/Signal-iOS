@@ -3530,6 +3530,7 @@ struct SignalServiceProtos_SyncMessage {
       case unknownAction // = 0
       case accepted // = 1
       case notAccepted // = 2
+      case deleted // = 3
 
       init() {
         self = .unknownAction
@@ -3540,6 +3541,7 @@ struct SignalServiceProtos_SyncMessage {
         case 0: self = .unknownAction
         case 1: self = .accepted
         case 2: self = .notAccepted
+        case 3: self = .deleted
         default: return nil
         }
       }
@@ -3549,6 +3551,7 @@ struct SignalServiceProtos_SyncMessage {
         case .unknownAction: return 0
         case .accepted: return 1
         case .notAccepted: return 2
+        case .deleted: return 3
         }
       }
 
@@ -8109,6 +8112,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
     0: .same(proto: "UNKNOWN_ACTION"),
     1: .same(proto: "ACCEPTED"),
     2: .same(proto: "NOT_ACCEPTED"),
+    3: .same(proto: "DELETED"),
   ]
 }
 
