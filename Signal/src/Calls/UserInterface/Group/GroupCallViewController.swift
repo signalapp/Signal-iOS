@@ -99,10 +99,10 @@ class GroupCallViewController: UIViewController {
 
         call.addObserverAndSyncState(observer: self)
 
-        videoGrid.memberViewDelegate = self
-        videoOverflow.memberViewDelegate = self
-        speakerView.delegate = self
-        localMemberView.delegate = self
+        videoGrid.memberViewErrorPresenter = self
+        videoOverflow.memberViewErrorPresenter = self
+        speakerView.errorPresenter = self
+        localMemberView.errorPresenter = self
 
         SDSDatabaseStorage.shared.asyncRead { readTx in
             self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
@@ -1019,8 +1019,8 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 }
 
-extension GroupCallViewController: GroupCallMemberViewDelegate {
-    func memberView(userRequestedInfoAboutError error: GroupCallMemberView.ErrorState) {
+extension GroupCallViewController: CallMemberErrorPresenter {
+    func presentErrorSheet(for error: CallMemberErrorState) {
         let title: String
         let message: String
 

@@ -7,7 +7,7 @@ import SignalRingRTC
 import SignalServiceKit
 
 class GroupCallVideoGrid: UICollectionView {
-    weak var memberViewDelegate: GroupCallMemberViewDelegate?
+    weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
     init(call: SignalCall) {
@@ -68,7 +68,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             return cell
         }
 
-        cell.setMemberViewDelegate(memberViewDelegate)
+        cell.setMemberViewErrorPresenter(memberViewErrorPresenter)
         cell.configure(call: call, device: remoteDevice)
         return cell
     }
@@ -158,8 +158,8 @@ class GroupCallVideoGridCell: UICollectionViewCell {
         memberView.configureRemoteVideo(device: device, context: .videoGrid)
     }
 
-    func setMemberViewDelegate(_ delegate: GroupCallMemberViewDelegate?) {
-        memberView.delegate = delegate
+    func setMemberViewErrorPresenter(_ errorPresenter: CallMemberErrorPresenter?) {
+        memberView.errorPresenter = errorPresenter
     }
 }
 

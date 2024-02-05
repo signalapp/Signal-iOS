@@ -187,12 +187,12 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         }
     }
 
-    weak var delegate: GroupCallMemberViewDelegate? {
+    weak var errorPresenter: CallMemberErrorPresenter? {
         get {
-            self.callMemberWaitingAndErrorView.delegate
+            self.callMemberWaitingAndErrorView.errorPresenter
         }
         set {
-            self.callMemberWaitingAndErrorView.delegate = newValue
+            self.callMemberWaitingAndErrorView.errorPresenter = newValue
         }
     }
 
@@ -253,7 +253,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 /// For both local and remote call member views in group calls.
 protocol CallMemberView_GroupBridge: UIView {
     var isCallMinimized: Bool { get set }
-    var delegate: GroupCallMemberViewDelegate? { get set }
+    var errorPresenter: CallMemberErrorPresenter? { get set }
     func cleanupVideoViews()
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext)
     func clearConfiguration()

@@ -8,7 +8,7 @@ import SignalMessaging
 
 /// Only used for group calls currently; adjust if individual calls come to need it.
 class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
-    weak var delegate: GroupCallMemberViewDelegate?
+    weak var errorPresenter: CallMemberErrorPresenter?
 
     enum ErrorState {
         case blocked(SignalServiceAddress)
@@ -114,9 +114,9 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             guard let self = self else { return }
 
             if isBlocked {
-                self.delegate?.memberView(userRequestedInfoAboutError: .blocked(address))
+                self.errorPresenter?.presentErrorSheet(for: .blocked(address))
             } else {
-                self.delegate?.memberView(userRequestedInfoAboutError: .noMediaKeys(address))
+                self.errorPresenter?.presentErrorSheet(for: .noMediaKeys(address))
             }
         }
     }

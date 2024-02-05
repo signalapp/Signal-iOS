@@ -12,7 +12,7 @@ protocol GroupCallVideoOverflowDelegate: AnyObject {
 }
 
 class GroupCallVideoOverflow: UICollectionView {
-    weak var memberViewDelegate: GroupCallMemberViewDelegate?
+    weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
     let call: SignalCall
 
@@ -192,7 +192,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
             return cell
         }
 
-        cell.setMemberViewDelegate(memberViewDelegate)
+        cell.setMemberViewErrorPresenter(memberViewErrorPresenter)
         cell.configure(call: call, device: remoteDevice)
         return cell
     }
@@ -262,7 +262,7 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
         memberView.configureRemoteVideo(device: device, context: .videoOverflow)
     }
 
-    func setMemberViewDelegate(_ delegate: GroupCallMemberViewDelegate?) {
-        memberView.delegate = delegate
+    func setMemberViewErrorPresenter(_ errorPresenter: CallMemberErrorPresenter?) {
+        memberView.errorPresenter = errorPresenter
     }
 }

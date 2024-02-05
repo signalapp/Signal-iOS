@@ -9,12 +9,17 @@ import SignalMessaging
 import SignalRingRTC
 import SignalUI
 
-protocol GroupCallMemberViewDelegate: AnyObject {
-    func memberView(userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
+enum CallMemberErrorState {
+    case blocked(SignalServiceAddress)
+    case noMediaKeys(SignalServiceAddress)
+}
+
+protocol CallMemberErrorPresenter: AnyObject {
+    func presentErrorSheet(for error: CallMemberErrorState)
 }
 
 class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
-    weak var delegate: GroupCallMemberViewDelegate?
+    weak var errorPresenter: CallMemberErrorPresenter?
     let noVideoView = UIView()
 
     let backgroundAvatarView = UIImageView()
@@ -79,11 +84,6 @@ class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    enum ErrorState {
-        case blocked(SignalServiceAddress)
-        case noMediaKeys(SignalServiceAddress)
     }
 
     @objc
@@ -422,9 +422,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             guard let self = self else { return }
 
             if isBlocked {
-                self.delegate?.memberView(userRequestedInfoAboutError: .blocked(address))
+                self.errorPresenter?.presentErrorSheet(for: .blocked(address))
             } else {
-                self.delegate?.memberView(userRequestedInfoAboutError: .noMediaKeys(address))
+                self.errorPresenter?.presentErrorSheet(for: .noMediaKeys(address))
             }
         }
     }
