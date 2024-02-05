@@ -54,7 +54,7 @@ Describe here the issue that you are experiencing.
 ### Link to debug log
 <!-- Ensure that "Enable Debug Log" is on in Signal's settings then make the bug happen and immediately after that tap "Submit Debug Log" from settings and paste the link below. -->
 
-<!--  If this is a crashing bug, after filing this issue, email a copy of your latest crash report to support@whispersystems.org
+<!--  If this is a crashing bug, after filing this issue, email a copy of your latest crash report to support@signal.org
 
 To get a crash log:
 
