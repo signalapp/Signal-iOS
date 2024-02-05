@@ -252,6 +252,10 @@ public class RemoteConfig: BaseFlags {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
 
+    public static var enableGifSearch: Bool {
+        return isEnabled(.enableGifSearch, defaultValue: true)
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -470,6 +474,7 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case cdsDisableCompatibilityMode = "cds.disableCompatibilityMode"
     case canDonateWithSepa = "ios.canDonateWithSepa"
+    case enableGifSearch = "global.gifSearch"
 
     var isSticky: Bool {
         switch self {
@@ -488,7 +493,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .cdsDisableCompatibilityMode: fallthrough
-        case .canDonateWithSepa:
+        case .canDonateWithSepa: fallthrough
+        case .enableGifSearch:
             return false
         }
     }
@@ -509,7 +515,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .cdsDisableCompatibilityMode: fallthrough
-        case .canDonateWithSepa:
+        case .canDonateWithSepa: fallthrough
+        case .enableGifSearch:
             return false
         }
     }

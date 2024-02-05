@@ -171,19 +171,21 @@ class AttachmentFormatPickerView: UIView {
 
         private static var contactCases: [AttachmentType] {
             if payments.shouldShowPaymentsUI {
-                return allCases
+                return cases(except: [])
             } else {
-                return everythingExceptPayments
+                return cases(except: [.payment])
             }
         }
 
         private static var groupCases: [AttachmentType] {
-            everythingExceptPayments
+            cases(except: [.payment])
         }
 
-        private static var everythingExceptPayments: [AttachmentType] {
+        private static func cases(except: [AttachmentType]) -> [AttachmentType] {
+            let showGifSearch = RemoteConfig.enableGifSearch
             return allCases.filter { (value: AttachmentType) in
-                value != .payment
+                if value == .gif && showGifSearch.negated { return false }
+                return except.contains(value).negated
             }
         }
 
