@@ -12,9 +12,8 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
     private enum Constants {
         static let headerHeight: CGFloat = 44.0
-        static let iconSize: CGFloat = 64.0
         static let itemIconSize: CGFloat = 48.0
-        static let itemMargin: CGFloat = 16.0
+        static let itemMargin: CGFloat = 20.0
 
         static let continueButtonInsets: UIEdgeInsets = .init(
             top: 16.0,
@@ -45,6 +44,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         bottomFooter = footerView
         setColorsForCurrentTheme()
         super.viewDidLoad()
+        tableView.alwaysBounceVertical = false
     }
 
     public override func themeDidChange() {
@@ -153,7 +153,8 @@ class UsernameEducationViewController: OWSTableViewController2 {
             description: OWSLocalizedString(
                 "USERNAME_EDUCATION_LINK_DESCRIPTION",
                 comment: "Description of username links and QR codes on the username education sheet"
-            )
+            ),
+            isLastItem: true
         ))
 
         contents.add(sections: [
@@ -168,7 +169,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         return OWSTableItem {
             let cell = OWSTableItem.newCell()
 
-            let headerView = Self.HeaderView(withIconSize: Constants.iconSize)
+            let headerView = Self.HeaderView()
             cell.addSubview(headerView)
 
             headerView.autoPinEdgesToSuperviewMargins()
@@ -179,7 +180,8 @@ class UsernameEducationViewController: OWSTableViewController2 {
     private func createTableItem(
         iconName: String,
         title: String,
-        description: String
+        description: String,
+        isLastItem: Bool = false
     ) -> OWSTableItem {
         return OWSTableItem {
             let cell = OWSTableItem.newCell()
@@ -190,9 +192,13 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
             cell.addSubview(stackView)
 
-            stackView.autoPinEdgesToSuperviewMargins(with: .init(
-                hMargin: Constants.itemMargin,
-                vMargin: 0.0))
+            stackView.autoPinLeadingToSuperviewMargin(withInset: Constants.itemMargin)
+            stackView.autoPinTrailingToSuperviewMargin(withInset: Constants.itemMargin)
+            stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
+            stackView.autoPinEdge(
+                toSuperviewEdge: .bottom,
+                withInset: isLastItem ? 0 : Constants.itemMargin * 2
+            )
             stackView.alignment = .top
 
             let iconView = UIImageView(image: UIImage(named: iconName))
@@ -257,13 +263,9 @@ class UsernameEducationViewController: OWSTableViewController2 {
 extension UsernameEducationViewController {
     class HeaderView: UIView {
 
-        private let iconSize: CGFloat
-
         // MARK: Init
 
-        init(withIconSize iconSize: CGFloat) {
-            self.iconSize = iconSize
-
+        init() {
             super.init(frame: .zero)
 
             addSubview(usernameTitleLabel)
