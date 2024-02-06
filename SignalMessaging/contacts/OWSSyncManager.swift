@@ -393,7 +393,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                     }
                 }
             }
-            try await self.messageSender.sendTemporaryAttachment(
+            try await self.messageSender.sendTemporaryContactSyncAttachment(
                 dataSource: dataSource,
                 contentType: OWSMimeTypeApplicationOctetStream,
                 message: result.message

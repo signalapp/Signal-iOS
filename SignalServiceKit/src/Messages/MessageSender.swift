@@ -468,7 +468,11 @@ public class MessageSender: Dependencies {
 
     // MARK: - Sending Attachments
 
-    public func sendTemporaryAttachment(dataSource: DataSource, contentType: String, message: TSOutgoingMessage) async throws {
+    public func sendTemporaryContactSyncAttachment(
+        dataSource: DataSource,
+        contentType: String,
+        message: OWSSyncContactsMessage
+    ) async throws {
         let outgoingMessagePreparer = OutgoingMessagePreparer(
             message,
             unsavedAttachmentInfos: [OutgoingAttachmentInfo(
