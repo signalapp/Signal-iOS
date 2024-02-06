@@ -342,7 +342,6 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
                 defer {
                     self.dismiss(animated: true)
-                    self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
                 }
 
                 // Check that the contact got deleted from our db.
@@ -362,6 +361,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                             wasLocallyInitiated: true,
                             tx: tx.asV2Write
                         )
+                        self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
                     } catch {
                         owsFailDebug("Failed to hide recipient")
                     }
