@@ -20,7 +20,7 @@ class ConversationViewModel {
         let isSystemContact: Bool
         if let contactThread = thread as? TSContactThread {
             let contactsManager = NSObject.contactsManagerImpl
-            isSystemContact = contactsManager.isSystemContact(address: contactThread.contactAddress, transaction: tx)
+            isSystemContact = contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
         } else {
             isSystemContact = false
         }

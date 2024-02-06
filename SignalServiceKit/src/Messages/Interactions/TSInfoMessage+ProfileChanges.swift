@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public extension TSInfoMessage {
     @objc
@@ -94,14 +95,12 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        if contactsManager.hasNameInSystemContacts(for: address, transaction: transaction) {
-            let displayName = contactsManager.displayName(for: address, transaction: transaction)
-
+        if let systemContactName = contactsManager.systemContactName(for: address, tx: transaction) {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT",
                 comment: "The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name}"
             )
-            return String(format: formatString, displayName, oldFullName, newFullName)
+            return String(format: formatString, systemContactName, oldFullName, newFullName)
         } else {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT",

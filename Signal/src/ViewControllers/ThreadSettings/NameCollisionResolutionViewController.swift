@@ -298,7 +298,7 @@ extension NameCollisionResolutionViewController: ContactsViewHelperObserver {
             return false
         }
         return databaseStorage.read { transaction in
-            contactsManager.isSystemContact(address: address, transaction: transaction)
+            return contactsManager.fetchSignalAccount(for: address, transaction: transaction) != nil
         }
     }
 

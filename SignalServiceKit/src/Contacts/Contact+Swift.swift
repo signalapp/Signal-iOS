@@ -8,7 +8,7 @@ import Foundation
 @objc
 public extension Contact {
 
-    func signalRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
+    func systemContactRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         return e164sForIntersection.compactMap { e164Number in
             guard let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: e164Number, transaction: tx.asV2Read) else {

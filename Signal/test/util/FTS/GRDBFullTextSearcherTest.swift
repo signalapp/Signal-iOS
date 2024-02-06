@@ -10,127 +10,6 @@ import Contacts
 @testable import SignalServiceKit
 @testable import SignalUI
 
-// TODO: We might be able to merge this with OWSFakeContactsManager.
-class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
-    func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        nil
-    }
-
-    func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
-        false
-    }
-
-    func isSystemContactWithSignalAccount(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        false
-    }
-
-    func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        false
-    }
-
-    private var mockDisplayNameMap = [SignalServiceAddress: String]()
-
-    func setMockDisplayName(_ name: String, for address: SignalServiceAddress) {
-        mockDisplayNameMap[address] = name
-    }
-
-    func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        self.displayName(for: address)
-    }
-
-    func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
-        self.displayName(for: signalAccount.recipientAddress)
-    }
-
-    func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        self.displayName(for: address)
-    }
-
-    func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        return addresses.map { displayName(for: $0) }
-    }
-
-    func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        self.displayName(for: address)
-    }
-
-    func displayName(for address: SignalServiceAddress) -> String {
-        mockDisplayNameMap[address] ?? ""
-    }
-
-    public func displayName(for signalAccount: SignalAccount) -> String {
-        "Fake name"
-    }
-
-    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
-        "Fake name"
-    }
-
-    public func displayNameWithSneakyTransaction(thread: TSThread) -> String {
-        "Fake name"
-    }
-
-    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
-        PersonNameComponents()
-    }
-
-    func signalAccounts() -> [SignalAccount] {
-        []
-    }
-
-    func isSystemContactWithSneakyTransaction(phoneNumber: String) -> Bool {
-        return true
-    }
-
-    func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
-    }
-
-    func isSystemContactWithSneakyTransaction(address: SignalServiceAddress) -> Bool {
-        return true
-    }
-
-    func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
-    }
-
-    func isSystemContact(withSignalAccount recipientId: String) -> Bool {
-        true
-    }
-
-    func isSystemContact(withSignalAccount phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        true
-    }
-
-    func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
-        owsFailDebug("if this method ends up being used by the tests, we should provide a better implementation.")
-
-        return .orderedAscending
-    }
-
-    public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        addresses
-    }
-
-    func cnContact(withId contactId: String?) -> CNContact? {
-        nil
-    }
-
-    func avatarData(forCNContactId contactId: String?) -> Data? {
-        nil
-    }
-
-    func avatarImage(forCNContactId contactId: String?) -> UIImage? {
-        nil
-    }
-
-    func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
-        return nil
-    }
-
-    var unknownUserLabel: String = "unknown"
-}
-
 // MARK: -
 
 class GRDBFullTextSearcherTest: SignalBaseTest {
@@ -149,6 +28,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
+        let localIdentifiers: LocalIdentifiers = .forUnitTests
+
         // We need to create new instances of SignalServiceAddress
         // for each test because we're using a new
         // SignalServiceAddressCache for each test and we need
@@ -157,9 +38,11 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
 
         // Replace this singleton.
-        let fakeContactsManager = GRDBFullTextSearcherContactsManager()
-        fakeContactsManager.setMockDisplayName("Alice", for: aliceRecipient)
-        fakeContactsManager.setMockDisplayName("Bob Barker", for: bobRecipient)
+        let fakeContactsManager = FakeContactsManager()
+        fakeContactsManager.mockDisplayNames = [
+            aliceRecipient: "Alice",
+            bobRecipient: "Bob Barker",
+        ]
         SSKEnvironment.shared.setContactsManagerForUnitTests(fakeContactsManager)
 
         // ensure local client has necessary "registered" state
@@ -167,11 +50,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let localUUID = UUID()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: localUUID),
-                    pni: nil,
-                    e164: E164(localE164Identifier)!
-                ),
+                localIdentifiers: localIdentifiers,
                 tx: tx.asV2Write
             )
         }

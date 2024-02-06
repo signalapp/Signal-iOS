@@ -54,23 +54,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 
 - (id)initWithSwiftValues:(OWSContactsManagerSwiftValues *)swiftValues;
 
-@property (nonatomic, readonly) BOOL shouldSortByGivenName;
-
 @property (nonatomic, readonly) OWSContactsManagerSwiftValues *swiftValues;
 @property (nonatomic, readonly) AnyLRUCache *cnContactCache;
 
 #pragma mark - Accessors
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
-
-// This will return an instance of SignalAccount for _known_ signal accounts.
-- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
-
-- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
-                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - System Contact Fetching
 
@@ -106,21 +95,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
 - (AnyPromise *)userRequestedSystemContactsRefresh;
 
-#pragma mark - Util
-
-- (NSString *)comparableNameForContact:(Contact *)contact;
-
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */
-- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
-                                 transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
-
-- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

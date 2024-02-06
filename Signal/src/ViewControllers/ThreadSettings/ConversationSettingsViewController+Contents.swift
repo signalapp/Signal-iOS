@@ -29,8 +29,8 @@ extension ConversationSettingsViewController {
             owsFailDebug("Invalid thread.")
             return false
         }
-        return databaseStorage.read { transaction in
-            contactsManagerImpl.isSystemContact(address: contactThread.contactAddress, transaction: transaction)
+        return databaseStorage.read { tx in
+            return contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
         }
     }
 

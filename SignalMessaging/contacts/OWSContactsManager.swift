@@ -27,8 +27,6 @@ class OWSContactsManagerSwiftValues {
     }
 }
 
-// MARK: - Some caches
-
 // TODO: Should we use these caches in NSE?
 private extension OWSContactsManager {
     static let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
@@ -503,11 +501,13 @@ extension OWSContactsManager {
             return nil
         }
 
-        if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
-           let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
-           let cnContactId = contact.cnContactId,
-           let avatarData = self.avatarData(forCNContactId: cnContactId),
-           let validData = validateIfNecessary(avatarData) {
+        if
+            let phoneNumber = address.phoneNumber,
+            let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
+            let cnContactId = contact.cnContactId,
+            let avatarData = self.avatarData(forCNContactId: cnContactId),
+            let validData = validateIfNecessary(avatarData)
+        {
             return validData
         }
 
@@ -561,7 +561,7 @@ extension OWSContactsManager {
         var signalAccounts = [SignalAccount]()
         var seenServiceIds = Set<ServiceId>()
         for contact in systemContacts {
-            var signalRecipients = contact.signalRecipients(tx: transaction)
+            var signalRecipients = contact.systemContactRecipients(tx: transaction)
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
             let relatedAddresses = signalRecipients.map { $0.address }
@@ -1227,51 +1227,22 @@ extension OWSContactsManager {
         swiftValues.systemContactsCache?.unsortedSignalAccounts.set(uncachedValue)
         return uncachedValue
     }
-
-    private func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
-            owsFailDebug("Can't access contacts until registration is finished.")
-            return []
-        }
-        let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.phoneNumber
-        return dataProvider.fetchAllSystemContacts(transaction: transaction)
-            .filter { !$0.hasPhoneNumber(localNumber) }
-    }
-
-    public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        allUnsortedContacts(transaction: transaction)
-            .sorted { comparableName(for: $0).caseInsensitiveCompare(comparableName(for: $1)) == .orderedAscending }
-    }
 }
 
-// MARK: - Contact Names
+// MARK: - Display Names
 
 extension OWSContactsManager {
-    @objc
-    public func comparableNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
-        databaseStorage.read { transaction in
-            self.comparableName(for: signalAccount, transaction: transaction)
-        }
-    }
-
-    // This is based on -[OWSContactsManager displayNameForAddress:transaction:].
-    // Rather than being called once for each address, we call it once with all the
-    // addresses and it will use a single database query per step to assign
-    // display names to addresses using different techniques.
     private func displayNamesRefinery(
         for addresses: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
     ) -> Refinery<SignalServiceAddress, String> {
         return .init(addresses).refine { addresses in
             // Prefer a saved name from system contacts, if available.
-            return cachedContactNames(for: addresses, transaction: transaction)
+            systemContactNames(for: addresses, tx: transaction)
         }.refine { addresses in
             profileManager.fullNames(for: Array(addresses), tx: transaction)
         }.refine { addresses in
-            return self.phoneNumbers(for: Array(addresses),
-                                     transaction: transaction).lazy.map {
-                return $0?.nilIfEmpty
-            }
+            phoneNumbers(for: Array(addresses)).lazy.map { $0?.nilIfEmpty }
         }.refine { addresses -> [String?] in
             swiftValues.usernameLookupManager.fetchUsernames(
                 forAddresses: addresses,
@@ -1280,7 +1251,7 @@ extension OWSContactsManager {
         }.refine { addresses in
             return addresses.lazy.map {
                 self.fetchProfile(forUnknownAddress: $0)
-                return self.unknownUserLabel
+                return Self.unknownUserLabel
             }
         }
     }
@@ -1297,54 +1268,29 @@ extension OWSContactsManager {
         displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
     }
 
-    func phoneNumbers(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String?] {
+    func phoneNumbers(for addresses: [SignalServiceAddress]) -> [String?] {
         return addresses.map { E164($0.phoneNumber)?.stringValue }
     }
 
-    func fetchSignalAccounts(for addresses: AnySequence<SignalServiceAddress>,
-                             transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
+    func fetchSignalAccounts(
+        for addresses: AnySequence<SignalServiceAddress>,
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount?] {
         return modelReadCaches.signalAccountReadCache.getSignalAccounts(addresses: addresses, transaction: transaction)
     }
 
-    @objc(cachedContactNameForAddress:transaction:)
-    func cachedContactName(for address: SignalServiceAddress, trasnaction: SDSAnyReadTransaction) -> String? {
-        return cachedContactNames(for: AnySequence([address]), transaction: trasnaction)[0]
+    @objc
+    func _systemContactName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String? {
+        return systemContactNames(for: AnySequence([address]), tx: tx)[0]
     }
 
-    func cachedContactNames(for addresses: AnySequence<SignalServiceAddress>,
-                            transaction: SDSAnyReadTransaction) -> [String?] {
-        // First, get full names from accounts where possible.
-        let accounts = fetchSignalAccounts(for: addresses, transaction: transaction)
-        let accountFullNames = accounts.lazy.map { $0?.fullName }
+    func systemContactNames(for addresses: AnySequence<SignalServiceAddress>, tx: SDSAnyReadTransaction) -> [String?] {
+        return fetchSignalAccounts(for: addresses, transaction: tx).map { $0?.fullName }
+    }
 
-        // Build a list of addreses that don't have accounts. Leave nil placeholders for those
-        // addresses that don't need to be queried so that we can keep all our arrays parallel.
-        let addressesToQuery = zip(addresses, accounts).map { tuple -> SignalServiceAddress? in
-            let (address, account) = tuple
-            if account != nil {
-                return nil
-            }
-            return address
-        }
-
-        // Do a batch lookup of phone numbers for addresses that don't have accounts and use the cache of Contacts
-        // to get their names.
-        let phoneNumberFullNames = Refinery<SignalServiceAddress?, String>(addressesToQuery).refineNonnilKeys { (addresses: AnySequence<SignalServiceAddress>) -> [String?] in
-            let phoneNumbers = phoneNumbers(for: Array(addresses), transaction: transaction)
-            return phoneNumbers.map { (maybePhoneNumber: String?) -> String? in
-                guard let phoneNumber = maybePhoneNumber else {
-                    return nil
-                }
-                // Fast (in-memory) lookup of a non-Signal contact. For example, no-longer-registered Signal users.
-                return contact(forPhoneNumber: phoneNumber, transaction: transaction)?.fullName
-            }
-        }.values
-
-        // At this point each address will either have a full name from its account, from its phone number, or neither.
-        // Return the nonnil value for each if one exists.
-        return zip(accountFullNames, phoneNumberFullNames).map { tuple in
-            return tuple.0 ?? tuple.1
-        }
+    @objc
+    public static var unknownUserLabel: String {
+        return OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
 }
 
@@ -1390,6 +1336,21 @@ extension ContactsManagerProtocol {
             }
         }
         return name.asAttributedString
+    }
+
+    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        if thread.isNoteToSelf {
+            return MessageStrings.noteToSelf
+        }
+        switch thread {
+        case let thread as TSContactThread:
+            return displayName(for: thread.contactAddress, transaction: transaction)
+        case let thread as TSGroupThread:
+            return thread.groupNameOrDefault
+        default:
+            owsFailDebug("Unexpected thread type: \(type(of: thread))")
+            return ""
+        }
     }
 
     public func sortSignalServiceAddresses(

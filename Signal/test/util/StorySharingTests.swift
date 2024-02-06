@@ -49,6 +49,6 @@ class StorySharingTests: SignalBaseTest {
             with: nil
         )?.text
 
-        XCTAssertEqual(output, "@Fake name Some text")
+        XCTAssertEqual(output, "@John Doe Some text")
     }
 }

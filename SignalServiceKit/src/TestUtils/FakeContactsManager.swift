@@ -5,102 +5,56 @@
 
 import Contacts
 
+#if TESTABLE_BUILD
+
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        return nil
+        fatalError()
     }
 
-    public func displayName(for address: SignalServiceAddress) -> String {
-        return "Fake name"
+    public var mockDisplayNames = [SignalServiceAddress: String]()
+
+    public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return mockDisplayNames[address] ?? "John Doe"
     }
 
     public func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        return Array(repeating: "Fake name", count: addresses.count)
-    }
-
-    public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return self.displayName(for: address)
-    }
-
-    public func displayName(for signalAccount: SignalAccount) -> String {
-        return "Fake name"
-    }
-
-    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
-        return "Fake name"
+        return addresses.map { displayName(for: $0, transaction: transaction) }
     }
 
     public func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return "Short fake name"
+        return displayName(for: address, transaction: transaction)
     }
 
     public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
-        return PersonNameComponents()
+        let nameComponents = displayName(for: address, transaction: transaction).split(separator: " ")
+        var result = PersonNameComponents()
+        result.givenName = nameComponents.first.map(String.init(_:))
+        result.familyName = nameComponents.dropFirst().first.map(String.init(_:))
+        return result
     }
 
-    public func displayNameWithSneakyTransaction(thread: TSThread) -> String {
-        return "Fake name"
-    }
-
-    public func signalAccounts() -> [SignalAccount] {
-        return []
-    }
-
-    public var systemContacts: [SignalServiceAddress] = []
-
-    public func isSystemContactWithSneakyTransaction(phoneNumber: String) -> Bool {
-        return systemContacts.contains { $0.phoneNumber == phoneNumber }
-    }
+    public var systemContactPhoneNumbers: [String] = []
 
     public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return isSystemContactWithSneakyTransaction(phoneNumber: phoneNumber)
-    }
-
-    public func isSystemContactWithSneakyTransaction(address: SignalServiceAddress) -> Bool {
-        return systemContacts.contains(address)
-    }
-
-    public func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        return isSystemContactWithSneakyTransaction(address: address)
-    }
-
-    public func isSystemContact(withSignalAccount phoneNumber: String) -> Bool {
-        return isSystemContactWithSneakyTransaction(phoneNumber: phoneNumber)
-    }
-
-    public func isSystemContact(withSignalAccount phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return isSystemContact(withSignalAccount: phoneNumber)
-    }
-
-    public func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
-    }
-
-    public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
-        return isSystemContactWithSneakyTransaction(address: address)
-    }
-
-    public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress,
-                                                 transaction: SDSAnyReadTransaction) -> Bool {
-        return isSystemContactWithSignalAccount(address)
+        return systemContactPhoneNumbers.contains(phoneNumber)
     }
 
     public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         return addresses
     }
 
-    public func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
-        // If this method ends up being used by the tests, we should provide a better implementation.
-        owsFail("TODO")
-    }
-
     public func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return "Fake name"
+        return displayName(for: address, transaction: transaction)
     }
 
-    public func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
-        return "Fake name"
+    public func systemContactName(for address: SignalServiceAddress, tx transaction: SDSAnyReadTransaction) -> String? {
+        fatalError()
+    }
+
+    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
+        return nil
     }
 
     public func cnContact(withId contactId: String?) -> CNContact? {
@@ -114,12 +68,6 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
-
-    public var unknownUserLabel: String {
-        "Unknown"
-    }
-
-    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
-        return nil
-    }
 }
+
+#endif

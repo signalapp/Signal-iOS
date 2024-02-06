@@ -290,7 +290,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                         return contactsManager.displayName(for: SignalServiceAddress(senderAci), transaction: tx)
                     }
                 }
-                return Self.contactsManager.unknownUserLabel
+                return OWSContactsManager.unknownUserLabel
             }()
             let value: String
             if let mcLedgerBlockDate = paymentItem.paymentModel.mcLedgerBlockDate {

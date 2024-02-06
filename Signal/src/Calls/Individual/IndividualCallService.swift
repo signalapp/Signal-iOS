@@ -457,7 +457,9 @@ final public class IndividualCallService: NSObject {
 
             var isUnknownCaller = false
             if call.individualCall.direction == .incoming {
-                isUnknownCaller = !self.contactsManagerImpl.isSystemContactWithSignalAccount(call.individualCall.thread.contactAddress)
+                isUnknownCaller = self.databaseStorage.read { tx in
+                    return self.contactsManager.fetchSignalAccount(for: call.individualCall.thread.contactAddress, transaction: tx) == nil
+                }
                 if isUnknownCaller {
                     Logger.warn("Using relay server because remote user is an unknown caller")
                 }

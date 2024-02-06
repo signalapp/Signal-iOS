@@ -232,167 +232,17 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     }
 }
 
-- (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address
-                                                               transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSString *)systemContactNameForAddress:(SignalServiceAddress *)address
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    NSString *_Nullable phoneNumber = nil;
-    if (signalAccount == nil) {
-        // We only need the phone number if signalAccount is nil.
-        phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
-    }
-    
-    return [self cachedContactNameComponentsForSignalAccount:signalAccount
-                                                 phoneNumber:phoneNumber
-                                                 transaction:transaction];
+    return [self _systemContactNameFor:address tx:transaction];
 }
 
-- (nullable NSPersonNameComponents *)cachedContactNameComponentsForSignalAccount:(nullable SignalAccount *)signalAccount
-                                                                     phoneNumber:(nullable NSString *)phoneNumber
-                                                                     transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!signalAccount) {
-        if (!phoneNumber) {
-            return nil;
-        }
-        // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        Contact *_Nullable nonSignalContact = [self contactForPhoneNumber:phoneNumber transaction:transaction];
-        if (!nonSignalContact) {
-            return nil;
-        }
-        NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
-        nameComponents.givenName = nonSignalContact.firstName;
-        nameComponents.familyName = nonSignalContact.lastName;
-        nameComponents.nickname = nonSignalContact.nickname;
-        return nameComponents;
-    }
-
-    return [signalAccount contactPersonNameComponentsWithUserDefaults:NSUserDefaults.standardUserDefaults];
-}
-
-- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
-                                 transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (address.phoneNumber != nil) {
-        return [address.phoneNumber filterStringForDisplay];
-    }
-    
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    return [signalAccount.recipientPhoneNumber filterStringForDisplay];
-}
-
-#pragma mark - View Helpers
-
-- (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2
-{
-    return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
-}
-
-#pragma mark - Whisper User Management
-
-- (BOOL)isSystemContactWithPhoneNumberWithSneakyTransaction:(NSString *)phoneNumber
-{
-    __block BOOL result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self isSystemContactWithPhoneNumber:phoneNumber transaction:transaction];
-    }];
-    return result;
-}
-
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
-                           transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
     return [self contactForPhoneNumber:phoneNumber transaction:transaction] != nil;
-}
-
-- (BOOL)isSystemContactWithAddressWithSneakyTransaction:(SignalServiceAddress *)address
-{
-    __block BOOL result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self isSystemContactWithAddress:address transaction:transaction];
-    }];
-    return result;
-}
-
-- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
-                       transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *_Nullable phoneNumber = address.phoneNumber;
-    if (phoneNumber.length == 0) {
-        return NO;
-    }
-    return [self isSystemContactWithPhoneNumber:phoneNumber transaction:transaction];
-}
-
-- (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-    
-    return [self hasSignalAccountForAddress:address];
-}
-
-- (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
-                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-    
-    return [self hasSignalAccountForAddress:address transaction:transaction];
-}
-
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self cachedContactNameForAddress:address transaction:transaction].length > 0;
-}
-
-- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (thread.isNoteToSelf) {
-        return MessageStrings.noteToSelf;
-    } else if ([thread isKindOfClass:TSContactThread.class]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self displayNameForAddress:contactThread.contactAddress transaction:transaction];
-    } else if ([thread isKindOfClass:TSGroupThread.class]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        return groupThread.groupNameOrDefault;
-    } else {
-        OWSFailDebug(@"unexpected thread: %@", thread);
-        return @"";
-    }
-}
-
-- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
-{
-    if (thread.isNoteToSelf) {
-        return MessageStrings.noteToSelf;
-    } else if ([thread isKindOfClass:TSContactThread.class]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        __block NSString *name;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            name = [self displayNameForAddress:contactThread.contactAddress transaction:transaction];
-        }];
-        return name;
-    } else if ([thread isKindOfClass:TSGroupThread.class]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        return groupThread.groupNameOrDefault;
-    } else {
-        OWSFailDebug(@"unexpected thread: %@", thread);
-        return @"";
-    }
-}
-
-- (NSString *)unknownContactName
-{
-    return OWSLocalizedString(
-                             @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
-}
-
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
-                                            transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self cachedContactNameForAddress:address transaction:transaction];
 }
 
 - (NSArray<NSString *> *)displayNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -406,40 +256,15 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     return [self displayNamesForAddresses:@[ address ] transaction:transaction].firstObject;
 }
 
-// TODO: Remove?
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-    
-    __block NSString *displayName;
-    
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        displayName = [self displayNameForAddress:address transaction:transaction];
-    }];
-    
-    return displayName;
-}
-
-- (NSString *)unknownUserLabel
-{
-    return OWSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
-}
-
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
-    
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    if (signalAccount != nil) {
-        NSString *_Nullable nickname =
-            [signalAccount contactNicknameIfAvailableWithUserDefaults:NSUserDefaults.standardUserDefaults];
-        if (nickname.length > 0) {
-            return nickname;
-        }
-    }
-    
+
     NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
+    if (nameComponents.nickname.length > 0) {
+        return nameComponents.nickname;
+    }
     if (!nameComponents) {
         return [self displayNameForAddress:address transaction:transaction];
     }
@@ -451,27 +276,12 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
-    
-    NSPersonNameComponents *_Nullable savedContactNameComponents =
-    [self cachedContactNameComponentsForAddress:address transaction:transaction];
-    if (savedContactNameComponents) {
-        return savedContactNameComponents;
-    }
 
-    return [self.profileManagerObjC nameComponentsForProfileWithAddress:address transaction:transaction];
-}
-
-// TODO: Remove?
-- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address);
-    
-    __block SignalAccount *_Nullable result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address
-                                                                              transaction:transaction];
-    }];
-    return result;
+    return ({
+        SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+        [signalAccount contactPersonNameComponentsWithUserDefaults:NSUserDefaults.standardUserDefaults];
+    })
+        ?: ({ [self.profileManagerObjC nameComponentsForProfileWithAddress:address transaction:transaction]; });
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -481,31 +291,6 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
     OWSAssertDebug(transaction);
     
     return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
-}
-
-- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address
-{
-    return [self fetchSignalAccountForAddress:address] != nil;
-}
-
-- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self fetchSignalAccountForAddress:address transaction:transaction] != nil;
-}
-
-// TODO: Remove?
-- (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
-{
-    if (address == nil) {
-        OWSFailDebug(@"address was unexpectedly nil");
-        return nil;
-    }
-    
-    __block NSData *_Nullable data;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        data = [self.profileManagerObjC profileAvatarDataForAddress:address transaction:transaction];
-    }];
-    return data;
 }
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
@@ -521,58 +306,16 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    if (!signalAccount) {
-        signalAccount = [[SignalAccount alloc] initWithContact:nil address:address];
-    }
-    
-    return [self comparableNameForSignalAccount:signalAccount transaction:transaction];
-}
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
 
-- (NSString *)comparableNameForContact:(Contact *)contact
-{
-    if (self.shouldSortByGivenName) {
-        return contact.comparableNameFirstLast;
-    }
-    
-    return contact.comparableNameLastFirst;
-}
-
-- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
-                                 transaction:(SDSAnyReadTransaction *)transaction
-{
-    {
-        Contact *_Nullable contact = signalAccount.contact;
-        if (contact != nil) {
-            NSString *_Nullable name = [self comparableNameForContact:contact];
-            if (name.length > 0) {
-                return name;
-            }
-        }
-    }
-
-    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
-    if (phoneNumber != nil) {
-        Contact *_Nullable contact = [self contactForPhoneNumber:phoneNumber transaction:transaction];
-        if (contact != nil) {
-            NSString *_Nullable name = [self comparableNameForContact:contact];
-            if (name.length > 0) {
-                return name;
-            }
-        }
-    }
-    
-    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:signalAccount.recipientAddress
-                                                                          transaction:transaction];
-    
     if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
         NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
         NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
         return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
     }
-    
-    // Fall back to non-contact display name.
-    return [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
+
+    // Fall back to non-system contact, non-profile display name.
+    return [self displayNameForAddress:address transaction:transaction];
 }
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {

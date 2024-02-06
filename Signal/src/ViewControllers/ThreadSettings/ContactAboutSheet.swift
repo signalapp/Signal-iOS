@@ -199,7 +199,7 @@ class ContactAboutSheet: StackSheetViewController {
             isInSystemContacts = false
             return
         }
-        isInSystemContacts = contactsManager.isSystemContact(address: thread.contactAddress, transaction: tx)
+        isInSystemContacts = contactsManager.fetchSignalAccount(for: thread.contactAddress, transaction: tx) != nil
     }
 
     // MARK: Threads

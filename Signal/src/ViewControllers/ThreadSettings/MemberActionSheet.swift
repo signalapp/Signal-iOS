@@ -240,8 +240,8 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
         ))
 
-        let isSystemContact = databaseStorage.read { transaction in
-            contactsManager.isSystemContact(address: address, transaction: transaction)
+        let isSystemContact = databaseStorage.read { tx in
+            return contactsManager.fetchSignalAccount(for: address, transaction: tx) != nil
         }
         if isSystemContact {
             section.add(.item(

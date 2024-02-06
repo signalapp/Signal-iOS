@@ -62,7 +62,7 @@ extension NameCollision {
                 commonGroupsString: commonGroupsString(for: $0.address, thread: thread, transaction: transaction),
                 avatar: avatar(for: $0.address, transaction: transaction),
                 isBlocked: blockingManager.isAddressBlocked($0.address, transaction: transaction),
-                isSystemContact: Self.contactsManager.isSystemContact(address: $0.address, transaction: transaction)
+                isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: transaction) != nil
             )
         }
     }

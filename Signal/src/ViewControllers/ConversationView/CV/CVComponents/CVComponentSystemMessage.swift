@@ -1194,15 +1194,12 @@ extension CVComponentSystemMessage {
             guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
                 return nil
             }
-            guard Self.contactsManager.isSystemContact(address: profileChangeAddress,
-                                                       transaction: transaction) else {
+            let systemContactName = contactsManager.systemContactName(for: profileChangeAddress, tx: transaction)
+            guard let systemContactName else {
                 return nil
             }
-            let systemContactName = Self.contactsManagerImpl.nameFromSystemContacts(for: profileChangeAddress,
-                                                                                    transaction: transaction)
             let newProfileName = OWSFormat.formatNameComponents(profileChangeNewNameComponents)
-            let currentProfileName = Self.profileManager.fullName(for: profileChangeAddress,
-                                                                  transaction: transaction)
+            let currentProfileName = profileManager.fullName(for: profileChangeAddress, transaction: transaction)
 
             // Only show the button if the address book contact's name is different
             // than the profile name.
@@ -1216,10 +1213,11 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            return Action(title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
-                          accessibilityIdentifier: "update_contact",
-                          action: .didTapUpdateSystemContact(address: profileChangeAddress,
-                                                             newNameComponents: profileChangeNewNameComponents))
+            return Action(
+                title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
+                accessibilityIdentifier: "update_contact",
+                action: .didTapUpdateSystemContact(address: profileChangeAddress, newNameComponents: profileChangeNewNameComponents)
+            )
 
         case .phoneNumberChange:
             guard
