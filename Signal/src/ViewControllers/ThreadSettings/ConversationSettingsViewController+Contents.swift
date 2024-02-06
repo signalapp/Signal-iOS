@@ -24,16 +24,6 @@ extension ConversationSettingsViewController {
         return !thread.isGroupThread
     }
 
-    private var hasExistingSystemContact: Bool {
-        guard let contactThread = thread as? TSContactThread else {
-            owsFailDebug("Invalid thread.")
-            return false
-        }
-        return databaseStorage.read { tx in
-            return contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
-        }
-    }
-
     // MARK: - Table
 
     func updateTableContents(shouldReload: Bool = true) {
@@ -211,7 +201,7 @@ extension ConversationSettingsViewController {
     private func addSystemContactItemIfNecessary(to section: OWSTableSection) {
         guard !thread.isNoteToSelf, let contactThread = thread as? TSContactThread else { return }
 
-        if hasExistingSystemContact {
+        if isSystemContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
@@ -234,7 +224,7 @@ extension ConversationSettingsViewController {
                 }
                 self.presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: false)
             }))
-        } else {
+        } else if contactThread.contactAddress.phoneNumber != nil {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")

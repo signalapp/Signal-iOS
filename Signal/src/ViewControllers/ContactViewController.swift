@@ -106,7 +106,7 @@ class ContactViewController: OWSTableViewController2 {
 
     private func showAddToContacts() -> Bool {
         switch viewMode {
-        case .nonSystemContact, .noPhoneNumber:
+        case .nonSystemContact:
             return true
         default:
             return false

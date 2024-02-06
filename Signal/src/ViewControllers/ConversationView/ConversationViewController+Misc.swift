@@ -175,6 +175,7 @@ public extension ConversationViewController {
 
         let settingsView = ConversationSettingsViewController(
             threadViewModel: threadViewModel,
+            isSystemContact: conversationViewModel.isSystemContact,
             spoilerState: viewState.spoilerState
         )
         settingsView.conversationSettingsViewDelegate = self

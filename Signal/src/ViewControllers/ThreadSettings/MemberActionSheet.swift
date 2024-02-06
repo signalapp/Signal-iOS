@@ -256,7 +256,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     self.viewSystemContactDetails(contactAddress: self.address)
                 }
             ))
-        } else {
+        } else if address.phoneNumber != nil {
             section.add(.item(
                 icon: .contactInfoAddToContacts,
                 name: OWSLocalizedString(

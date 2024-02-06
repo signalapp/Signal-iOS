@@ -30,6 +30,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
+    private(set) var isSystemContact: Bool
     private let spoilerState: SpoilerRenderState
 
     var thread: TSThread {
@@ -59,9 +60,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     public required init(
         threadViewModel: ThreadViewModel,
+        isSystemContact: Bool,
         spoilerState: SpoilerRenderState
     ) {
         self.threadViewModel = threadViewModel
+        self.isSystemContact = isSystemContact
         self.spoilerState = spoilerState
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
@@ -143,10 +146,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        if isGroupThread {
-            updateNavigationBar()
-        }
-
         // The header should "extend" offscreen so that we
         // don't see the root view's background color if we scroll down.
         let backgroundTopView = UIView()
@@ -179,7 +178,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         case .denied, .restricted:
             return false
         case .authorized:
-            return true
+            return isSystemContact
         }
     }
 
@@ -298,19 +297,23 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func reloadThreadAndUpdateContent() {
-        let didUpdate = self.databaseStorage.read { transaction -> Bool in
-            guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId,
-                                                    transaction: transaction) else {
+        let didUpdate = self.databaseStorage.read { tx -> Bool in
+            guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId, transaction: tx) else {
                 return false
             }
-            let newThreadViewModel = ThreadViewModel(thread: newThread,
-                                                     forChatList: false,
-                                                     transaction: transaction)
+            let newThreadViewModel = ThreadViewModel(thread: newThread, forChatList: false, transaction: tx)
             self.threadViewModel = newThreadViewModel
+            self.isSystemContact = {
+                guard let contactThread = newThread as? TSContactThread else {
+                    return false
+                }
+                let address = contactThread.contactAddress
+                return contactsManager.fetchSignalAccount(for: address, transaction: tx) != nil
+            }()
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
             self.groupViewHelper.delegate = self
 
-            self.updateGroupMembers(transaction: transaction)
+            self.updateGroupMembers(transaction: tx)
 
             return true
         }
