@@ -54,7 +54,7 @@ extension OutgoingStoryMessage {
                     }
 
                     state.messages.append(message)
-                    state.unsavedMessages.append(message)
+                    state.storyMessagesToSend.append(message)
                 }
 
             case .text(let textAttachment):
@@ -88,7 +88,7 @@ extension OutgoingStoryMessage {
                 }
 
                 state.messages.append(message)
-                state.unsavedMessages.append(message)
+                state.storyMessagesToSend.append(message)
             }
         }
 

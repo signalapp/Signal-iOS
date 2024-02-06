@@ -25,17 +25,25 @@ public final class BroadcastMediaMessageJobRecord: JobRecord, FactoryInitializab
     ///         ]
     ///     ]
     public let attachmentIdMap: [String: [String]]
-    public let unsavedMessagesToSend: [TSOutgoingMessage]?
+
+    // These have always been only OutgoingStoryMessages, but rather than touch the serialization
+    // layer, we just transform them in memory.
+    // This class's public API takes OutgoingStoryMessage(s) and returns OutgoingStoryMessage(s).
+    private let unsavedMessagesToSend: [TSOutgoingMessage]?
+
+    public var storyMessagesToSend: [OutgoingStoryMessage]? {
+        return unsavedMessagesToSend?.compactMap { $0 as? OutgoingStoryMessage }
+    }
 
     public init(
         attachmentIdMap: [String: [String]],
-        unsavedMessagesToSend: [TSOutgoingMessage]?,
+        storyMessagesToSend: [OutgoingStoryMessage]?,
         exclusiveProcessIdentifier: String? = nil,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
         self.attachmentIdMap = attachmentIdMap
-        self.unsavedMessagesToSend = unsavedMessagesToSend
+        self.unsavedMessagesToSend = storyMessagesToSend
 
         super.init(
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,

@@ -26,10 +26,10 @@ public class BroadcastMediaMessageJobQueue {
         jobQueueRunner.start(shouldRestartExistingJobs: appContext.isMainApp)
     }
 
-    public func add(attachmentIdMap: [String: [String]], unsavedMessagesToSend: [TSOutgoingMessage], transaction: SDSAnyWriteTransaction) {
+    public func add(attachmentIdMap: [String: [String]], storyMessagesToSend: [OutgoingStoryMessage], transaction: SDSAnyWriteTransaction) {
         let jobRecord = BroadcastMediaMessageJobRecord(
             attachmentIdMap: attachmentIdMap,
-            unsavedMessagesToSend: unsavedMessagesToSend
+            storyMessagesToSend: storyMessagesToSend
         )
         jobRecord.anyInsert(transaction: transaction)
         transaction.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
@@ -60,7 +60,7 @@ private class BroadcastMediaMessageJobRunner: JobRunner, Dependencies {
         try await BroadcastMediaUploader.uploadAttachments(
             attachmentIdMap: jobRecord.attachmentIdMap,
             sendMessages: { uploadedMessages, tx in
-                for message in uploadedMessages + (jobRecord.unsavedMessagesToSend ?? []) {
+                for message in uploadedMessages + (jobRecord.storyMessagesToSend ?? []) {
                     SSKEnvironment.shared.messageSenderJobQueueRef.add(message: message.asPreparer, transaction: tx)
                 }
                 jobRecord.anyRemove(transaction: tx)

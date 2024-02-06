@@ -129,9 +129,8 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
         (
             BroadcastMediaMessageJobRecord(
                 attachmentIdMap: ["once": ["upon", "a"]],
-                unsavedMessagesToSend: [
-                    .init(uniqueId: "time", thread: TSThread(uniqueId: "in a galaxy"))
-                ],
+                // The encoded object below has a non-story message, which is invalid in the real app.
+                storyMessagesToSend: [],
                 exclusiveProcessIdentifier: nil,
                 failureCount: 3,
                 status: .running
@@ -141,7 +140,7 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
         (
             BroadcastMediaMessageJobRecord(
                 attachmentIdMap: ["once": ["upon", "a"]],
-                unsavedMessagesToSend: nil,
+                storyMessagesToSend: nil,
                 exclusiveProcessIdentifier: nil,
                 failureCount: 3,
                 status: .running
@@ -153,8 +152,8 @@ extension BroadcastMediaMessageJobRecord: ValidatableModel {
     func validate(against: BroadcastMediaMessageJobRecord) throws {
         guard
             attachmentIdMap == against.attachmentIdMap,
-            unsavedMessagesToSend?.count == against.unsavedMessagesToSend?.count,
-            unsavedMessagesToSend?.first?.uniqueId == against.unsavedMessagesToSend?.first?.uniqueId
+            storyMessagesToSend?.count == against.storyMessagesToSend?.count,
+            storyMessagesToSend?.first?.uniqueId == against.storyMessagesToSend?.first?.uniqueId
         else {
             throw ValidatableModelError.failedToValidate
         }

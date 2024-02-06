@@ -12,7 +12,7 @@ public class AttachmentMultisend: Dependencies {
     private struct PreparedMultisend {
         let attachmentIdMap: [String: [String]]
         let messages: [TSOutgoingMessage]
-        let unsavedMessages: [OutgoingStoryMessage]
+        let storyMessagesToSend: [OutgoingStoryMessage]
         let threads: [TSThread]
     }
 
@@ -208,7 +208,7 @@ public class AttachmentMultisend: Dependencies {
         return PreparedMultisend(
             attachmentIdMap: state.attachmentIdMap,
             messages: state.messages,
-            unsavedMessages: state.unsavedMessages,
+            storyMessagesToSend: state.storyMessagesToSend,
             threads: state.threads
         )
     }
@@ -284,7 +284,7 @@ public class AttachmentMultisend: Dependencies {
         return PreparedMultisend(
             attachmentIdMap: state.attachmentIdMap,
             messages: state.messages,
-            unsavedMessages: state.unsavedMessages,
+            storyMessagesToSend: state.storyMessagesToSend,
             threads: state.threads
         )
     }
@@ -299,7 +299,7 @@ public class AttachmentMultisend: Dependencies {
             // and propagate its upload state to each of these independent clones.
             smJobQueues.broadcastMediaMessageJobQueue.add(
                 attachmentIdMap: preparedSend.attachmentIdMap,
-                unsavedMessagesToSend: preparedSend.unsavedMessages,
+                storyMessagesToSend: preparedSend.storyMessagesToSend,
                 transaction: transaction
             )
         }
@@ -316,7 +316,7 @@ public class AttachmentMultisend: Dependencies {
             let messageSendPromises = try await BroadcastMediaUploader.uploadAttachments(
                 attachmentIdMap: preparedSend.attachmentIdMap,
                 sendMessages: { uploadedMessages, tx in
-                    let outgoingMessages = uploadedMessages + preparedSend.unsavedMessages
+                    let outgoingMessages = uploadedMessages + preparedSend.storyMessagesToSend
                     return outgoingMessages.map { message in
                         ThreadUtil.enqueueMessagePromise(message: message, transaction: tx)
                     }
@@ -366,7 +366,7 @@ class MultisendDestination: NSObject {
 class MultisendState: NSObject {
     let approvalMessageBody: MessageBody?
     var messages: [TSOutgoingMessage] = []
-    var unsavedMessages: [OutgoingStoryMessage] = []
+    var storyMessagesToSend: [OutgoingStoryMessage] = []
     var threads: [TSThread] = []
     var correspondingAttachmentIds: [UUID: [String]] = [:]
     var attachmentIdMap: [String: [String]] = [:]
