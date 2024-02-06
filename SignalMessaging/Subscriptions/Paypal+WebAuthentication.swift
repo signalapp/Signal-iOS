@@ -179,20 +179,17 @@ public extension Paypal {
     /// the payment. These fields are opaque to us.
     struct OneTimePaymentWebAuthApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems {
         let payerId: String
-        let paymentId: String
         let paymentToken: String
 
         /// Represents the query-string keys for the elements we expect to be
         /// present in the callback URL from a successful PayPal authentication.
         private enum QueryKey: String {
             case payerId = "PayerID"
-            case paymentId = "paymentId"
             case paymentToken = "token"
         }
 
-        public init(payerId: String, paymentId: String, paymentToken: String) {
+        public init(payerId: String, paymentToken: String) {
             self.payerId = payerId
-            self.paymentId = paymentId
             self.paymentToken = paymentToken
         }
 
@@ -222,14 +219,12 @@ public extension Paypal {
         private init?(queryItemMap: [QueryKey: String]) {
             guard
                 let payerId = queryItemMap[.payerId],
-                let paymentId = queryItemMap[.paymentId],
                 let paymentToken = queryItemMap[.paymentToken]
             else {
                 return nil
             }
 
             self.payerId = payerId
-            self.paymentId = paymentId
             self.paymentToken = paymentToken
         }
     }

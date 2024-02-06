@@ -14,8 +14,8 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             level: OneTimeBadgeLevel,
             fromViewController: UIViewController
-        ) -> Promise<URL> {
-            let (promise, future) = Promise<URL>.pending()
+        ) -> Promise<(URL, String)> {
+            let (promise, future) = Promise<(URL, String)>.pending()
 
             ModalActivityIndicatorViewController.present(
                 fromViewController: fromViewController,

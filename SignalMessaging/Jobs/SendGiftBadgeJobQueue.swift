@@ -45,15 +45,17 @@ public class SendGiftBadgeJobQueue {
         var stripePaymentIntent: Stripe.PaymentIntent?
         var stripePaymentMethodId: String?
         var paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams?
+        var paypalPaymentId: String?
 
         switch preparedPayment {
         case let .forStripe(paymentIntent, paymentMethodId):
             paymentProcessor = .stripe
             stripePaymentIntent = paymentIntent
             stripePaymentMethodId = paymentMethodId
-        case let .forPaypal(approvalParams):
+        case let .forPaypal(approvalParams, paymentId):
             paymentProcessor = .braintree
             paypalApprovalParams = approvalParams
+            paypalPaymentId = paymentId
         }
 
         return SendGiftBadgeJobRecord(
@@ -66,7 +68,7 @@ public class SendGiftBadgeJobQueue {
             paymentIntentId: stripePaymentIntent?.id,
             paymentMethodId: stripePaymentMethodId,
             paypalPayerId: paypalApprovalParams?.payerId,
-            paypalPaymentId: paypalApprovalParams?.paymentId,
+            paypalPaymentId: paypalPaymentId,
             paypalPaymentToken: paypalApprovalParams?.paymentToken,
             threadId: thread.uniqueId,
             messageText: messageText
@@ -149,7 +151,10 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
             paymentIntentId: String,
             paymentMethodId: String
         )
-        case forBraintree(paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams)
+        case forBraintree(
+            paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams,
+            paymentId: String
+        )
 
         var processor: DonationPaymentProcessor {
             switch self {
@@ -214,11 +219,10 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
                 else {
                     throw OWSGenericError("Tried to use Braintree as payment processor but data was missing")
                 }
-                return Payment.forBraintree(paypalApprovalParams: .init(
-                    payerId: paypalPayerId,
-                    paymentId: paypalPaymentId,
-                    paymentToken: paypalPaymentToken
-                ))
+                return Payment.forBraintree(
+                    paypalApprovalParams: .init(payerId: paypalPayerId, paymentToken: paypalPaymentToken),
+                    paymentId: paypalPaymentId
+                )
             }
         }()
 
@@ -287,10 +291,11 @@ private class SendGiftBadgeJobRunner: JobRunner, Dependencies {
                 idempotencyKey: idempotencyKey
             ).awaitable()
             return paymentIntentId
-        case let .forBraintree(paypalApprovalParams):
+        case let .forBraintree(paypalApprovalParams, paymentId):
             return try await Paypal.confirmOneTimePayment(
                 amount: amount,
                 level: .giftBadge(.signalGift),
+                paymentId: paymentId,
                 approvalParams: paypalApprovalParams
             ).awaitable()
         }

@@ -16,7 +16,7 @@ extension DonateViewController {
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
 
-        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<URL> in
+        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<(URL, String)> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Creating one-time PayPal payment")
@@ -25,15 +25,17 @@ extension DonateViewController {
                 level: .boostBadge,
                 fromViewController: self
             )
-        }.then(on: DispatchQueue.main) { [weak self] approvalUrl -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
+        }.then(on: DispatchQueue.main) { [weak self] (approvalUrl, paymentId) -> Promise<(Paypal.OneTimePaymentWebAuthApprovalParams, String)> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
             return Paypal.presentExpectingApprovalParams(
                 approvalUrl: approvalUrl,
                 withPresentationContext: self
-            )
-        }.then(on: DispatchQueue.main) { [weak self] approvalParams -> Promise<Void> in
+            ).map { approvalParams in
+                (approvalParams, paymentId)
+            }
+        }.then(on: DispatchQueue.main) { [weak self] (approvalParams, paymentId) -> Promise<Void> in
             guard let self else { return .value(()) }
 
             Logger.info("[Donations] Creating and redeeming one-time boost receipt for PayPal donation")
@@ -41,6 +43,7 @@ extension DonateViewController {
                 from: self,
                 promise: self.confirmPaypalPaymentAndRedeemBoost(
                     amount: amount,
+                    paymentId: paymentId,
                     approvalParams: approvalParams
                 )
             )
@@ -74,12 +77,14 @@ extension DonateViewController {
 
     private func confirmPaypalPaymentAndRedeemBoost(
         amount: FiatMoney,
+        paymentId: String,
         approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams
     ) -> Promise<Void> {
         firstly { () -> Promise<String> in
             Paypal.confirmOneTimePayment(
                 amount: amount,
                 level: .boostBadge,
+                paymentId: paymentId,
                 approvalParams: approvalParams
             )
         }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in

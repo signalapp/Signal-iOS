@@ -7,5 +7,5 @@ import Foundation
 
 public enum PreparedGiftPayment {
     case forStripe(paymentIntent: Stripe.PaymentIntent, paymentMethodId: String)
-    case forPaypal(approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams)
+    case forPaypal(approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams, paymentId: String)
 }

@@ -25,17 +25,17 @@ extension BadgeGiftingConfirmationViewController {
                     transaction: transaction
                 )
             }
-        }.then(on: DispatchQueue.main) { () -> Promise<URL> in
+        }.then(on: DispatchQueue.main) { () -> Promise<(URL, String)> in
             DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                 amount: self.price,
                 level: .giftBadge(.signalGift),
                 fromViewController: self
             )
-        }.then(on: DispatchQueue.main) { [weak self] approvalUrl -> Promise<PreparedGiftPayment> in
+        }.then(on: DispatchQueue.main) { [weak self] (approvalUrl, paymentId) -> Promise<PreparedGiftPayment> in
             guard let self else {
                 throw SendGiftError.userCanceledBeforeChargeCompleted
             }
-            return self.presentPaypal(with: approvalUrl)
+            return self.presentPaypal(with: approvalUrl, paymentId: paymentId)
         }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
             guard let self else { throw SendGiftError.userCanceledBeforeChargeCompleted }
             return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread)
@@ -77,7 +77,7 @@ extension BadgeGiftingConfirmationViewController {
         }
     }
 
-    private func presentPaypal(with approvalUrl: URL) -> Promise<PreparedGiftPayment> {
+    private func presentPaypal(with approvalUrl: URL, paymentId: String) -> Promise<PreparedGiftPayment> {
         firstly(on: DispatchQueue.main) { () -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
             Logger.info("[Gifting] Presenting PayPal web UI for user approval of gift donation")
             return Paypal.presentExpectingApprovalParams(
@@ -85,7 +85,7 @@ extension BadgeGiftingConfirmationViewController {
                 withPresentationContext: self
             )
         }.map(on: DispatchQueue.sharedUserInitiated) { approvalParams -> PreparedGiftPayment in
-            .forPaypal(approvalParams: approvalParams)
+            .forPaypal(approvalParams: approvalParams, paymentId: paymentId)
         }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<PreparedGiftPayment> in
             let errorToThrow: Error
 

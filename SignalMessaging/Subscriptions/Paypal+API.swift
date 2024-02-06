@@ -12,7 +12,7 @@ public extension Paypal {
     static func createBoost(
         amount: FiatMoney,
         level: OneTimeBadgeLevel
-    ) -> Promise<URL> {
+    ) -> Promise<(URL, String)> {
         firstly(on: DispatchQueue.sharedUserInitiated) {
             let createBoostRequest = OWSRequestFactory.boostPaypalCreatePayment(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
@@ -23,18 +23,19 @@ public extension Paypal {
             )
 
             return networkManager.makePromise(request: createBoostRequest)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> URL in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> (URL, String) in
             guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
                 throw OWSAssertionError("[Donations] Failed to decode JSON response")
             }
 
             let approvalUrlString: String = try parser.required(key: "approvalUrl")
+            let paymentId: String = try parser.required(key: "paymentId")
 
             guard let approvalUrl = URL(string: approvalUrlString) else {
                 throw OWSAssertionError("[Donations] Approval URL was not a valid URL!")
             }
 
-            return approvalUrl
+            return (approvalUrl, paymentId)
         }
     }
 
@@ -43,6 +44,7 @@ public extension Paypal {
     static func confirmOneTimePayment(
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
+        paymentId: String,
         approvalParams: OneTimePaymentWebAuthApprovalParams
     ) -> Promise<String> {
         firstly(on: DispatchQueue.sharedUserInitiated) {
@@ -51,7 +53,7 @@ public extension Paypal {
                 inCurrencyCode: amount.currencyCode,
                 level: level.rawValue,
                 payerId: approvalParams.payerId,
-                paymentId: approvalParams.paymentId,
+                paymentId: paymentId,
                 paymentToken: approvalParams.paymentToken
             )
 
