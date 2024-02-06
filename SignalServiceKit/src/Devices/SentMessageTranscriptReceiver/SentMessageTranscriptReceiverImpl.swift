@@ -211,14 +211,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 fromProtos: messageParams.attachmentPointerProtos,
                 albumMessage: outgoingMessage
             )
-            var attachmentIds = outgoingMessage.attachmentIds
             for pointer in attachmentPointers {
                 attachmentStore.anyInsert(pointer, tx: tx)
-                attachmentIds.append(pointer.uniqueId)
             }
-            if outgoingMessage.attachmentIds.count != attachmentIds.count {
-                interactionStore.updateAttachmentIds(attachmentIds, for: outgoingMessage, tx: tx)
-            }
+            interactionStore.addBodyAttachments(attachmentPointers, to: outgoingMessage, tx: tx)
         }
         owsAssertDebug(outgoingMessage.hasRenderableContent())
 

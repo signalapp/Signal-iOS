@@ -45,7 +45,7 @@ extension TSOutgoingMessage {
             state.messages.append(message)
             state.threads.append(destination.thread)
 
-            for (idx, attachmentId) in message.attachmentIds.enumerated() {
+            for (idx, attachmentId) in message.bodyAttachmentIds(with: transaction).enumerated() {
                 let attachmentUUID = attachmentUUIDs[idx]
                 var correspondingIdsForAttachment = state.correspondingAttachmentIds[attachmentUUID] ?? []
                 correspondingIdsForAttachment += [attachmentId]

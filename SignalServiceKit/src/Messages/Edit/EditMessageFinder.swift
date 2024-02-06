@@ -41,7 +41,10 @@ public class EditMessageFinder {
         )
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
-            return .outgoingMessage(OutgoingEditMessageWrapper(message: outgoingMessage))
+            return .outgoingMessage(OutgoingEditMessageWrapper(
+                message: outgoingMessage,
+                messageBodyAttachmentIds: outgoingMessage.bodyAttachmentIds(with: transaction)
+            ))
         case (let incomingMessage as TSIncomingMessage, let authorAci?):
             return .incomingMessage(IncomingEditMessageWrapper(message: incomingMessage, authorAci: authorAci))
         case (.some, _):

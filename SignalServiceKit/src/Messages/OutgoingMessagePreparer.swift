@@ -76,11 +76,7 @@ public class OutgoingMessagePreparer: NSObject {
                 try $0.asStreamConsumingDataSource(isVoiceMessage: isVoiceMessage)
             }
 
-            unpreparedMessage.anyUpdateOutgoingMessage(transaction: transaction) { unpreparedMessage in
-                var attachmentIds = unpreparedMessage.attachmentIds
-                attachmentIds.append(contentsOf: attachmentStreams.map { $0.uniqueId })
-                unpreparedMessage.attachmentIds = attachmentIds
-            }
+            unpreparedMessage.addBodyAttachments(attachmentStreams, transaction: transaction)
 
             attachmentStreams.forEach { $0.anyInsert(transaction: transaction) }
         }
@@ -97,7 +93,7 @@ public class OutgoingMessagePreparer: NSObject {
     private static func prepareAttachments(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> [String] {
         var attachmentIds = [String]()
 
-        attachmentIds.append(contentsOf: message.attachmentIds)
+        attachmentIds.append(contentsOf: message.bodyAttachmentIds(with: tx))
 
         if message.quotedMessage?.thumbnailAttachmentId != nil {
             // We need to update the message record here to reflect the new attachments we may create.

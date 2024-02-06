@@ -85,8 +85,8 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 
 @interface TSMessage : TSInteraction <NSObject>
 
-// NOTE: These correspond to just the "body" attachments.
-@property (nonatomic) NSArray<NSString *> *attachmentIds;
+// WARNING: do not use this getter directly. Use the getters that take transactions below.
+@property (nonatomic, readonly) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
@@ -176,19 +176,30 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-- (BOOL)hasAttachments;
+- (NSArray<NSString *> *)bodyAttachmentIdsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (BOOL)hasBodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSNumber *)indexOfAttachmentId:(NSString *)attachmentId
+                               transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(indexOf(attachmentId:transaction:));
+
+
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (BOOL)hasMediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
+- (void)addBodyAttachment:(TSAttachment *)attachment
+              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(addBodyAttachment(_:transaction:));
+- (void)addBodyAttachments:(NSArray<TSAttachment *> *)attachments
+               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(addBodyAttachments(_:transaction:));
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
 
 // Returns ids for all attachments, including message ("body") attachments,
 // quoted reply thumbnails, contact share avatars, link preview images, etc.
-- (NSArray<NSString *> *)allAttachmentIds;
+- (NSArray<NSString *> *)allAttachmentIdsWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(allAttachmentIds(transaction:));
 
 - (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream

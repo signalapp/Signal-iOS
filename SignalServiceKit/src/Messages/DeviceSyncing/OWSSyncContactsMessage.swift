@@ -31,6 +31,7 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
     public override var isUrgent: Bool { false }
 
     public override func syncMessageBuilder(transaction tx: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+        let attachmentIds = self.bodyAttachmentIds(with: tx)
         owsAssertDebug(attachmentIds.count == 1, "Contact sync message should have exactly one attachment.")
         guard let attachmentId = attachmentIds.first else {
             owsFailDebug("couldn't build protobuf")

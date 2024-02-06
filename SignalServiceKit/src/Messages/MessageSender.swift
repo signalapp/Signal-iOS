@@ -721,10 +721,10 @@ public class MessageSender: Dependencies {
     }
 
     private func areAttachmentsUploadedWithSneakyTransaction(for message: TSOutgoingMessage) -> Bool {
-        guard message.hasAttachments() else {
-            return true
-        }
         return databaseStorage.read { tx in
+            guard message.hasBodyAttachments(with: tx) else {
+                return true
+            }
             for attachment in message.allAttachments(with: tx) {
                 guard let attachment = attachment as? TSAttachmentStream else {
                     return false

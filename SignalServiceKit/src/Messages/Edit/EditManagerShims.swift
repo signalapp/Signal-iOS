@@ -44,6 +44,11 @@ public protocol _EditManager_DataStore {
         tx: DBWriteTransaction
     )
 
+    func getBodyAttachmentIds(
+        message: TSMessage,
+        tx: DBReadTransaction
+    ) -> [String]
+
     func getMediaAttachments(
         message: TSMessage,
         tx: DBReadTransaction
@@ -134,6 +139,13 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
             recipientAddressStates: source.recipientAddressStates,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
+    }
+
+    public func getBodyAttachmentIds(
+        message: TSMessage,
+        tx: DBReadTransaction
+    ) -> [String] {
+        message.bodyAttachmentIds(with: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getMediaAttachments(

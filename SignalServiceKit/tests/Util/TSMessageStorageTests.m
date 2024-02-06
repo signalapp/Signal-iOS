@@ -81,7 +81,7 @@
             [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:messageId transaction:transaction];
 
         XCTAssertEqualObjects(body, fetchedMessage.body);
-        XCTAssertFalse(fetchedMessage.hasAttachments);
+        XCTAssertFalse([fetchedMessage hasBodyAttachmentsWithTransaction:transaction]);
         XCTAssertEqual(timestamp, fetchedMessage.timestamp);
         XCTAssertFalse(fetchedMessage.wasRead);
         XCTAssertEqualObjects(self.thread.uniqueId, fetchedMessage.uniqueThreadId);
@@ -113,7 +113,8 @@
                 [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
 
             XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
-            XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are nil");
+            XCTAssertEqual(
+                0, [fetchedMessage bodyAttachmentIdsWithTransaction:transaction].count, @"attachments are nil");
             XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
             XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
             XCTAssertEqualObjects(
@@ -164,7 +165,8 @@
                 [TSIncomingMessage anyFetchIncomingMessageWithUniqueId:message.uniqueId transaction:transaction];
             XCTAssertNotNil(fetchedMessage);
             XCTAssertEqualObjects(fetchedMessage.body, body, @"Body of incoming message recovered");
-            XCTAssertEqual(0, fetchedMessage.attachmentIds.count, @"attachments are empty");
+            XCTAssertEqual(
+                0, [fetchedMessage bodyAttachmentIdsWithTransaction:transaction].count, @"attachments are empty");
             XCTAssertEqualObjects(fetchedMessage.uniqueId, message.uniqueId, @"Unique identifier is accurate");
             XCTAssertFalse(fetchedMessage.wasRead, @"Message should originally be unread");
             XCTAssertEqualObjects(fetchedMessage.uniqueThreadId, thread.uniqueId, @"Isn't stored in the right thread!");

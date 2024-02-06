@@ -868,7 +868,7 @@ public extension OWSAttachmentDownloads {
     @objc
     func enqueueDownloadOfAttachmentsForNewMessage(_ message: TSMessage, transaction: SDSAnyWriteTransaction) {
         // No attachments, nothing to do.
-        guard !message.allAttachmentIds().isEmpty else { return }
+        guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return }
 
         enqueueDownloadOfAttachmentsForNewMessageId(
             message.uniqueId,
@@ -1171,12 +1171,7 @@ public extension OWSAttachmentDownloads {
             addJobRequest(attachment: attachment, category: category)
         }
 
-        for attachmentId in message.attachmentIds {
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
-                                                         transaction: transaction) else {
-                owsFailDebug("Missing attachment: \(attachmentId)")
-                continue
-            }
+        for attachment in message.bodyAttachments(with: transaction) {
             let category: AttachmentCategory = {
                 if attachment.isImageMimeType {
                     return .bodyMediaImage

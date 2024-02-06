@@ -104,7 +104,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 ViewOnceMessages.markAsComplete(message: message, sendSyncMessages: true, transaction: transaction)
             }
 
-            guard let attachmentId = message.attachmentIds.first else {
+            guard let attachmentId = message.bodyAttachmentIds(with: transaction).first else {
                 return
             }
             guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentStream else {

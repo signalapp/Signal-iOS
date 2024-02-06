@@ -67,9 +67,9 @@ public protocol InteractionStore {
         tx: DBWriteTransaction
     )
 
-    func updateAttachmentIds(
-        _ attachmentIds: [String],
-        for outgoingMessage: TSOutgoingMessage,
+    func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to outgoingMessage: TSOutgoingMessage,
         tx: DBWriteTransaction
     )
 
@@ -194,14 +194,12 @@ public class InteractionStoreImpl: InteractionStore {
         interaction.insertOrReplacePlaceholder(from: sender, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func updateAttachmentIds(
-        _ attachmentIds: [String],
-        for outgoingMessage: TSOutgoingMessage,
+    public func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to outgoingMessage: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
-        outgoingMessage.anyUpdateOutgoingMessage(transaction: SDSDB.shimOnlyBridge(tx)) {
-            $0.attachmentIds = attachmentIds
-        }
+        outgoingMessage.addBodyAttachments(attachments, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - TSOutgoingMessage state updates
@@ -331,9 +329,9 @@ open class MockInteractionStore: InteractionStore {
         // Do nothing
     }
 
-    public func updateAttachmentIds(
-        _ attachmentIds: [String],
-        for outgoingMessage: TSOutgoingMessage,
+    public func addBodyAttachments(
+        _ attachments: [TSAttachment],
+        to outgoingMessage: TSOutgoingMessage,
         tx: DBWriteTransaction
     ) {
         // Do nothing

@@ -23,39 +23,24 @@ public class MessageRecipientStatusUtils {
     private init() {}
 
     // This method is per-recipient.
-    public class func recipientStatus(
+    public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState
-    ) -> MessageReceiptStatus {
-        let (messageReceiptStatus, _, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                             recipientState: recipientState)
-        return messageReceiptStatus
-    }
-
-    // This method is per-recipient.
-    public class func shortStatusMessage(
-        outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState
-    ) -> String {
-        let (_, shortStatusMessage, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                         recipientState: recipientState)
-        return shortStatusMessage
-    }
-
-    // This method is per-recipient.
-    public class func longStatusMessage(
-        outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState
-    ) -> String {
-        let (_, _, longStatusMessage) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                        recipientState: recipientState)
-        return longStatusMessage
+        recipientState: TSOutgoingMessageRecipientState,
+        transaction: SDSAnyReadTransaction
+    ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
+        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(with: transaction)
+        return recipientStatusAndStatusMessage(
+            outgoingMessage: outgoingMessage,
+            recipientState: recipientState,
+            hasBodyAttachments: hasBodyAttachments
+        )
     }
 
     // This method is per-recipient.
     public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState
+        recipientState: TSOutgoingMessageRecipientState,
+        hasBodyAttachments: Bool
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
         switch recipientState.state {
@@ -68,7 +53,7 @@ public class MessageRecipientStatusUtils {
             let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused.")
             return (status: .pending, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .sending:
-            if outgoingMessage.hasAttachments() {
+            if hasBodyAttachments {
                 assert(outgoingMessage.messageState == .sending)
 
                 let statusMessage = OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
@@ -115,8 +100,18 @@ public class MessageRecipientStatusUtils {
     }
 
     // This method is per-message.
-    internal class func receiptStatusAndMessage(outgoingMessage: TSOutgoingMessage) -> (status: MessageReceiptStatus, message: String) {
+    public class func receiptStatusAndMessage(
+        outgoingMessage: TSOutgoingMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> (status: MessageReceiptStatus, message: String) {
+        let hasBodyAttachments = outgoingMessage.hasBodyAttachments(with: transaction)
+        return receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
+    }
 
+    public class func receiptStatusAndMessage(
+        outgoingMessage: TSOutgoingMessage,
+        hasBodyAttachments: Bool
+    ) -> (status: MessageReceiptStatus, message: String) {
         switch outgoingMessage.messageState {
         case .failed:
             // Use the "long" version of this message here.
@@ -124,7 +119,7 @@ public class MessageRecipientStatusUtils {
         case .pending:
             return (.pending, OWSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused."))
         case .sending:
-            if outgoingMessage.hasAttachments() {
+            if hasBodyAttachments {
                 return (.uploading, OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                          comment: "status message while attachment is uploading"))
             } else {
@@ -152,14 +147,38 @@ public class MessageRecipientStatusUtils {
     }
 
     // This method is per-message.
-    public class func receiptMessage(outgoingMessage: TSOutgoingMessage) -> String {
-        let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage)
+    public class func receiptMessage(
+        outgoingMessage: TSOutgoingMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> String {
+        let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
         return message
     }
 
     // This method is per-message.
-    public class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageReceiptStatus {
-        let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage)
+    public class func receiptMessage(
+        outgoingMessage: TSOutgoingMessage,
+        hasBodyAttachments: Bool
+    ) -> String {
+        let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
+        return message
+    }
+
+    // This method is per-message.
+    public class func recipientStatus(
+        outgoingMessage: TSOutgoingMessage,
+        transaction: SDSAnyReadTransaction
+    ) -> MessageReceiptStatus {
+        let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
+        return status
+    }
+
+    // This method is per-message.
+    public class func recipientStatus(
+        outgoingMessage: TSOutgoingMessage,
+        hasBodyAttachments: Bool
+    ) -> MessageReceiptStatus {
+        let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
         return status
     }
 

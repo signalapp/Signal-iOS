@@ -1239,7 +1239,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else {
             timestampText = CVComponentFooter.timestampText(
                 forInteraction: interaction,
-                shouldUseLongFormat: true
+                shouldUseLongFormat: true,
+                hasBodyAttachments: componentState.messageHasBodyAttachments
             )
         }
         contents.append(timestampText)

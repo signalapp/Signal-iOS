@@ -338,6 +338,10 @@ extension SharingThreadPickerViewController {
         let progressFormat = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
+        let attachmentIds: [String]? = databaseStorage.read { tx in
+            return self.outgoingMessages.first?.bodyAttachmentIds(with: tx)
+        }
+
         var progressPerAttachment = [String: Float]()
         let observer = NotificationCenter.default.addObserver(
             forName: Upload.Constants.uploadProgressNotification,
@@ -346,7 +350,7 @@ extension SharingThreadPickerViewController {
         ) { notification in
             // We can safely show the progress for just the first message,
             // all the messages share the same attachment upload progress.
-            guard let attachmentIds = self.outgoingMessages.first?.attachmentIds else { return }
+            guard let attachmentIds else { return }
 
             // Populate the initial progress for all attachments at 0
             if progressPerAttachment.isEmpty {

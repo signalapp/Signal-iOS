@@ -266,7 +266,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         } else {
             itemViewState.footerState = CVComponentFooter.buildState(
                 interaction: interaction,
-                hasTapForMore: hasTapForMore
+                hasTapForMore: hasTapForMore,
+                transaction: transaction
             )
         }
 
@@ -306,7 +307,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         if let outgoingMessage = interaction as? TSOutgoingMessage {
-            let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
+            let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage, transaction: transaction)
             let isDisappearingMessage = outgoingMessage.hasPerConversationExpiration
             itemViewState.accessibilityAuthorName = CommonStrings.you
 
@@ -329,7 +330,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 // ...but always show the "sending" and "failed to send" statuses...
                 // ...and always show the "disappearing messages" animation...
                 // ...and always show the "tap to read more" footer.
-                let nextReceiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: nextOutgoingMessage)
+                let nextReceiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: nextOutgoingMessage, transaction: transaction)
                 let nextTimestampText = DateUtil.formatTimestampShort(nextOutgoingMessage.timestamp)
                 itemViewState.shouldHideFooter = (
                     timestampText == nextTimestampText &&

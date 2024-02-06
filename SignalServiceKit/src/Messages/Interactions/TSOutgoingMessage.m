@@ -350,7 +350,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         OWSFailDebug(@"App is not ready.");
         return;
     }
-    NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
+    NSArray<NSString *> *_Nullable attachmentIds = [self bodyAttachmentIdsWithTransaction:transaction];
     if (attachmentIds.count < 1) {
         return;
     }
@@ -937,7 +937,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     
     // Message Attachments
     NSMutableArray<SSKProtoAttachmentPointer *> *attachments = [NSMutableArray new];
-    for (NSString *attachmentId in self.attachmentIds) {
+    for (NSString *attachmentId in [self bodyAttachmentIdsWithTransaction:transaction]) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
             [TSAttachmentStream buildProtoForAttachmentId:attachmentId containingMessage:self transaction:transaction];
         if (!attachmentProto) {

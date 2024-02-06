@@ -126,7 +126,8 @@ public class ChatListInfo: Dependencies {
                 )
             } else {
                 return MessageRecipientStatusUtils.recipientStatus(
-                    outgoingMessage: outgoingMessage
+                    outgoingMessage: outgoingMessage,
+                    transaction: transaction
                 )
             }
         }()

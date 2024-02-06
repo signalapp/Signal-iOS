@@ -307,7 +307,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 + (nullable TSAttachment *)quotedAttachmentFromOriginalMessage:(TSMessage *)quotedMessage
                                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (quotedMessage.attachmentIds.count > 0) {
+    if ([quotedMessage hasBodyAttachmentsWithTransaction:transaction]) {
         return [quotedMessage bodyAttachmentsWithTransaction:transaction].firstObject;
     } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
         return [TSAttachment anyFetchWithUniqueId:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];

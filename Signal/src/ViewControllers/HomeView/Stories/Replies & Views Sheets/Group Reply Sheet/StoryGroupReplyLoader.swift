@@ -248,7 +248,7 @@ class StoryGroupReplyLoader: Dependencies {
             } else {
                 let recipientStatus: MessageReceiptStatus?
                 if let message = message as? TSOutgoingMessage {
-                    recipientStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: message)
+                    recipientStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: message, transaction: transaction)
                 } else {
                     recipientStatus = nil
                 }

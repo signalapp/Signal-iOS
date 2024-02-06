@@ -89,7 +89,12 @@ public final class MediaGalleryManager: NSObject {
             return nil
         }
 
-        guard let originalAlbumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) else {
+        guard
+            let originalAlbumIndex = message.indexOf(
+                attachmentId: attachmentStream.uniqueId,
+                transaction: transaction.asAnyRead
+            )?.intValue
+        else {
             owsFailDebug("originalAlbumIndex was unexpectedly nil")
             return nil
         }

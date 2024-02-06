@@ -283,6 +283,8 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let sendFailureBadge: SendFailureBadge?
 
+    let messageHasBodyAttachments: Bool
+
     fileprivate init(messageCellType: CVMessageCellType,
                      senderName: SenderName?,
                      senderAvatar: SenderAvatar?,
@@ -307,7 +309,8 @@ public class CVComponentState: Equatable, Dependencies {
                      defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?,
                      bottomButtons: BottomButtons?,
                      failedOrPendingDownloads: FailedOrPendingDownloads?,
-                     sendFailureBadge: SendFailureBadge?) {
+                     sendFailureBadge: SendFailureBadge?,
+                     messageHasBodyAttachments: Bool) {
 
         self.messageCellType = messageCellType
         self.senderName = senderName
@@ -334,6 +337,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.bottomButtons = bottomButtons
         self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
+        self.messageHasBodyAttachments = messageHasBodyAttachments
     }
 
     // MARK: - Equatable
@@ -423,11 +427,13 @@ public class CVComponentState: Equatable, Dependencies {
         var reactions: Reactions?
         var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
+        var messageHasBodyAttachments: Bool
 
         var bottomButtonsActions = [CVMessageAction]()
 
         init(interaction: TSInteraction, itemBuildingContext: CVItemBuildingContext) {
             self.interaction = interaction
+            self.messageHasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: itemBuildingContext.transaction) ?? false
             self.itemBuildingContext = itemBuildingContext
         }
 
@@ -461,7 +467,8 @@ public class CVComponentState: Equatable, Dependencies {
                                     defaultDisappearingMessageTimer: defaultDisappearingMessageTimer,
                                     bottomButtons: bottomButtons,
                                     failedOrPendingDownloads: failedOrPendingDownloads,
-                                    sendFailureBadge: sendFailureBadge)
+                                    sendFailureBadge: sendFailureBadge,
+                                    messageHasBodyAttachments: messageHasBodyAttachments)
         }
 
         // MARK: -
@@ -838,7 +845,8 @@ fileprivate extension CVComponentState.Builder {
                 )
             } else {
                 messageStatus = MessageRecipientStatusUtils.recipientStatus(
-                    outgoingMessage: outgoingMessage
+                    outgoingMessage: outgoingMessage,
+                    transaction: transaction
                 )
             }
 
@@ -951,7 +959,7 @@ fileprivate extension CVComponentState.Builder {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
-            let hasMoreThanOneAttachment: Bool = message.attachmentIds.count > 1
+            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(with: transaction).count > 1
             let hasBodyText: Bool = !(message.body?.isEmpty ?? true)
             if hasMoreThanOneAttachment || hasBodyText {
                 // Refuse to render incoming "view once" messages if they

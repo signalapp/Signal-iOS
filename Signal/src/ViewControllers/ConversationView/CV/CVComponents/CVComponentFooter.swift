@@ -176,27 +176,22 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                              subviews: outerViews)
     }
 
-    static func isPendingOutgoingMessage(interaction: TSInteraction) -> Bool {
+    static func outgoingMessageStatus(interaction: TSInteraction, hasBodyAttachments: Bool) -> MessageReceiptStatus? {
         guard let outgoingMessage = interaction as? TSOutgoingMessage else {
-            return false
+            return nil
         }
-        let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
-        return messageStatus == .pending
+        return MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
     }
 
-    static func isFailedOutgoingMessage(interaction: TSInteraction) -> Bool {
-        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
-            return false
-        }
-        let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
-        return messageStatus == .failed
-    }
+    public static func timestampText(
+        forInteraction interaction: TSInteraction,
+        shouldUseLongFormat: Bool,
+        hasBodyAttachments: Bool
+    ) -> String {
 
-    public static func timestampText(forInteraction interaction: TSInteraction,
-                                     shouldUseLongFormat: Bool) -> String {
-
-        let isPendingOutgoingMessage = Self.isPendingOutgoingMessage(interaction: interaction)
-        let isFailedOutgoingMessage = Self.isFailedOutgoingMessage(interaction: interaction)
+        let status = Self.outgoingMessageStatus(interaction: interaction, hasBodyAttachments: hasBodyAttachments)
+        let isPendingOutgoingMessage = status == .pending
+        let isFailedOutgoingMessage = status == .failed
         let wasSentToAnyRecipient: Bool = {
             guard let outgoingMessage = interaction as? TSOutgoingMessage else {
                 return false
@@ -234,9 +229,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 forMcReceiptData: receiptData,
                 transaction: transaction).first
         else {
+            let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: transaction) ?? false
             let timestampText = Self.timestampText(
                 forInteraction: interaction,
-                shouldUseLongFormat: false
+                shouldUseLongFormat: false,
+                hasBodyAttachments: hasBodyAttachments
             )
             return State(
                 timestampText: timestampText,
@@ -352,16 +349,23 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
     }
 
-    static func buildState(interaction: TSInteraction, hasTapForMore: Bool) -> State {
+    static func buildState(interaction: TSInteraction, hasTapForMore: Bool, transaction: SDSAnyReadTransaction) -> State {
 
-        let timestampText = Self.timestampText(forInteraction: interaction,
-                                               shouldUseLongFormat: false)
+        let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(with: transaction) ?? false
+        let timestampText = Self.timestampText(
+            forInteraction: interaction,
+            shouldUseLongFormat: false,
+            hasBodyAttachments: hasBodyAttachments
+        )
 
         var statusIndicator: StatusIndicator?
         var accessibilityLabel: String?
         if let outgoingMessage = interaction as? TSOutgoingMessage {
-            let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
-            accessibilityLabel = MessageRecipientStatusUtils.receiptMessage(outgoingMessage: outgoingMessage)
+            let (messageStatus, label) = MessageRecipientStatusUtils.receiptStatusAndMessage(
+                outgoingMessage: outgoingMessage,
+                transaction: transaction
+            )
+            accessibilityLabel = label
 
             switch messageStatus {
             case .uploading, .sending:

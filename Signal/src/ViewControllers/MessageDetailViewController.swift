@@ -922,10 +922,13 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             guard let self = self else { return }
 
             let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
-            let messageRecipientAddressesSorted = self.databaseStorage.read { transaction in
-                self.contactsManagerImpl.sortSignalServiceAddresses(
-                    messageRecipientAddressesUnsorted,
-                    transaction: transaction
+            let (hasBodyAttachments, messageRecipientAddressesSorted) = self.databaseStorage.read { transaction in
+                return (
+                    outgoingMessage.hasBodyAttachments(with: transaction),
+                    self.contactsManagerImpl.sortSignalServiceAddresses(
+                        messageRecipientAddressesUnsorted,
+                        transaction: transaction
+                    )
                 )
             }
             let messageRecipientAddressesGrouped = messageRecipientAddressesSorted.reduce(
@@ -937,7 +940,8 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
 
                 let (status, statusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(
                     outgoingMessage: outgoingMessage,
-                    recipientState: recipientState
+                    recipientState: recipientState,
+                    hasBodyAttachments: hasBodyAttachments
                 )
                 var bucket = result[status] ?? []
 

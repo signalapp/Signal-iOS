@@ -333,6 +333,13 @@ class EditManagerTests: SSKBaseTestSwift {
             self.targetMessage = targetMessage
         }
 
+        func getBodyAttachmentIds(
+            message: TSMessage,
+            tx: DBReadTransaction
+        ) -> [String] {
+            return []
+        }
+
         func getMediaAttachments(
             message: TSMessage,
             tx: DBReadTransaction
@@ -443,6 +450,7 @@ class EditManagerTests: SSKBaseTestSwift {
         "wasRemotelyDeleted": .unchanged,
         "storyReactionEmoji": .unchanged,
         "storedShouldStartExpireTimer": .unchanged,
+        "bodyAttachmentIds": .unchanged,
         "attachmentIds": .unchanged,
         "expiresAt": .unchanged,
         "hasPerConversationExpiration": .unchanged,
@@ -478,6 +486,7 @@ class EditManagerTests: SSKBaseTestSwift {
         "wasRemotelyDeleted": .unchanged,
         "storyReactionEmoji": .unchanged,
         "storedShouldStartExpireTimer": .unchanged,
+        "bodyAttachmentIds": .unchanged,
         "attachmentIds": .unchanged,
         "expiresAt": .unchanged,
         "hasPerConversationExpiration": .unchanged,

@@ -269,7 +269,11 @@ public class EditManager {
         updateBlock: @escaping ((TSOutgoingMessageBuilder) -> Void)
     ) -> OutgoingEditMessage {
 
-        let editTarget = OutgoingEditMessageWrapper(message: targetMessage)
+        let editTarget = OutgoingEditMessageWrapper.wrap(
+            message: targetMessage,
+            dataStore: self.context.dataStore,
+            tx: tx
+        )
 
         let editedMessage = createEditedMessage(
             thread: thread,
@@ -527,7 +531,9 @@ public class EditManager {
             tx: tx
         )
 
-        var newAttachmentIds = targetMessage.attachmentIds.filter { $0 != existingText?.uniqueId }
+        var newAttachmentIds = context.dataStore
+            .getBodyAttachmentIds(message: targetMessage, tx: tx)
+            .filter { $0 != existingText?.uniqueId }
         if let oversizeText {
             // insert the new oversized text attachment
             context.dataStore.insertAttachment(attachment: oversizeText, tx: tx)

@@ -1044,14 +1044,10 @@ public final class MessageReceiver: Dependencies {
             albumMessage: message
         )
         if !attachmentPointers.isEmpty {
-            var attachmentIds = message.attachmentIds
             for attachmentPointer in attachmentPointers {
                 attachmentPointer.anyInsert(transaction: tx)
-                attachmentIds.append(attachmentPointer.uniqueId)
             }
-            message.anyUpdateIncomingMessage(transaction: tx) { message in
-                message.attachmentIds = attachmentIds
-            }
+            message.addBodyAttachments(attachmentPointers, transaction: tx)
         }
 
         owsAssertDebug(message.hasRenderableContent())

@@ -105,7 +105,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             authorAci: authorAci,
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
-            attachmentIds: message.attachmentIds,
+            attachmentIds: dataStore.getBodyAttachmentIds(message: message, tx: tx),
             editState: editState,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
@@ -140,6 +140,23 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public let message: TSOutgoingMessage
+    public let messageBodyAttachmentIds: [String]
+
+    public init(message: TSOutgoingMessage, messageBodyAttachmentIds: [String]) {
+        self.message = message
+        self.messageBodyAttachmentIds = messageBodyAttachmentIds
+    }
+
+    public static func wrap(
+        message: TSOutgoingMessage,
+        dataStore: EditManager.Shims.DataStore,
+        tx: DBReadTransaction
+    ) -> Self {
+        return .init(
+            message: message,
+            messageBodyAttachmentIds: dataStore.getBodyAttachmentIds(message: message, tx: tx)
+        )
+    }
 
     // Always return true for the sake of outgoing message read status
     public var wasRead: Bool { true }
@@ -153,7 +170,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             timestamp: message.timestamp,
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
-            attachmentIds: message.attachmentIds,
+            attachmentIds: messageBodyAttachmentIds,
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,

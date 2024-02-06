@@ -98,7 +98,7 @@ extension OWSOrphanDataCleaner {
         findAttachmentIds(
             transaction: transaction,
             jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) in
-                fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds() ?? []
+                fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds(transaction: transaction) ?? []
             }
         )
 
