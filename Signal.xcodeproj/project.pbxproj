@@ -1392,6 +1392,7 @@
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C18B56B92B07BC12000A441F /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* AttachmentUpload.swift */; };
+		C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
 		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
@@ -1411,6 +1412,8 @@
 		C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F402B0283C5004B6986 /* UploadShims.swift */; };
 		C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */; };
 		C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */; };
+		C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */; };
+		C1DF3F4E2B028409004B6986 /* UploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
@@ -4147,6 +4150,7 @@
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C18B56B82B07BC12000A441F /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
+		C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManagerTestHelper.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
@@ -4165,6 +4169,8 @@
 		C1DF3F402B0283C5004B6986 /* UploadShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadShims.swift; sourceTree = "<group>"; };
 		C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN2.swift; sourceTree = "<group>"; };
 		C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN3.swift; sourceTree = "<group>"; };
+		C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManagerTestMocks.swift; sourceTree = "<group>"; };
+		C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManagerTests.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTests.swift; sourceTree = "<group>"; };
 		C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTestMocks.swift; sourceTree = "<group>"; };
@@ -8416,6 +8422,9 @@
 		C1DF3F4A2B028409004B6986 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
+				C18CA8332B6D6F8400D411B0 /* UploadManagerTestHelper.swift */,
+				C1DF3F4B2B028409004B6986 /* UploadManagerTestMocks.swift */,
+				C1DF3F4C2B028409004B6986 /* UploadManagerTests.swift */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -13874,6 +13883,9 @@
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
 				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
+				C18CA8342B6D6F8400D411B0 /* UploadManagerTestHelper.swift in Sources */,
+				C1DF3F4D2B028409004B6986 /* UploadManagerTestMocks.swift in Sources */,
+				C1DF3F4E2B028409004B6986 /* UploadManagerTests.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,

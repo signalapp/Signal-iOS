@@ -135,7 +135,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
             !rangeEndString.isEmpty,
             let rangeEnd = Int(rangeEndString)
         else {
-            owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
+            logger.warn("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
             // There was a range header present, but it was
             // invalid - restart the upload from scratch
             return .restart
