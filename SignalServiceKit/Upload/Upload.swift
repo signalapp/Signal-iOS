@@ -109,7 +109,7 @@ public enum Upload {
 
     public enum FormVersion {
         case v3
-        // v4 will be added to this with CDN3
+        case v4
     }
 
     public struct Result {

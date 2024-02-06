@@ -108,6 +108,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v3/attachments/form/upload"] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)allocAttachmentRequestV4
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v4/attachments/form/upload"] method:@"GET" parameters:@{}];
+}
+
 + (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity
 {
     NSString *path = self.textSecureKeysAPI;

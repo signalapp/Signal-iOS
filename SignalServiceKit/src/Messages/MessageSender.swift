@@ -517,7 +517,7 @@ public class MessageSender: Dependencies {
                     try await DependenciesBridge.shared.uploadManager.uploadAttachment(
                         attachmentId: attachmentId,
                         messageIds: [ message.uniqueId ],
-                        version: .v3
+                        version: FeatureFlags.useAttachmentsV4Endpoint ? .v4 : .v3
                     )
                 }
                 sendMessageOperation.addDependency(uploadOperation)

@@ -1410,6 +1410,7 @@
 		C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F3F2B0283C5004B6986 /* Upload.swift */; };
 		C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F402B0283C5004B6986 /* UploadShims.swift */; };
 		C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */; };
+		C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
@@ -4163,6 +4164,7 @@
 		C1DF3F3F2B0283C5004B6986 /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		C1DF3F402B0283C5004B6986 /* UploadShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadShims.swift; sourceTree = "<group>"; };
 		C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN2.swift; sourceTree = "<group>"; };
+		C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadEndpointCDN3.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTests.swift; sourceTree = "<group>"; };
 		C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTestMocks.swift; sourceTree = "<group>"; };
@@ -8403,6 +8405,7 @@
 				C1DF3F3F2B0283C5004B6986 /* Upload.swift */,
 				C1DF3F3C2B0283C5004B6986 /* UploadEndpoint.swift */,
 				C1DF3F422B0283C5004B6986 /* UploadEndpointCDN2.swift */,
+				C1DF3F5A2B0287C7004B6986 /* UploadEndpointCDN3.swift */,
 				C1DF3F3D2B0283C5004B6986 /* UploadManager.swift */,
 				C1DF3F402B0283C5004B6986 /* UploadShims.swift */,
 				C1DF3F3E2B0283C5004B6986 /* UploadV2.swift */,
@@ -13662,6 +13665,7 @@
 				C1DF3F462B0283C5004B6986 /* Upload.swift in Sources */,
 				C1DF3F432B0283C5004B6986 /* UploadEndpoint.swift in Sources */,
 				C1DF3F492B0283C5004B6986 /* UploadEndpointCDN2.swift in Sources */,
+				C1DF3F5B2B0287C7004B6986 /* UploadEndpointCDN3.swift in Sources */,
 				C1DF3F442B0283C5004B6986 /* UploadManager.swift in Sources */,
 				C1DF3F472B0283C5004B6986 /* UploadShims.swift in Sources */,
 				C1DF3F452B0283C5004B6986 /* UploadV2.swift in Sources */,

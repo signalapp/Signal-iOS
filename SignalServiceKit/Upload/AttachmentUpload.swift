@@ -235,13 +235,22 @@ public struct AttachmentUpload {
             switch version {
             case .v3:
                 return OWSRequestFactory.allocAttachmentRequestV3()
+            case .v4:
+                return OWSRequestFactory.allocAttachmentRequestV4()
             }
         }()
         let form: Upload.Form = try await fetchUploadForm(request: request)
-        let endpoint = try {
+        let endpoint: UploadEndpoint = try {
             switch form.cdnNumber {
             case 2:
                 return UploadEndpointCDN2(
+                    form: form,
+                    signalService: signalService,
+                    fileSystem: fileSystem,
+                    logger: logger
+                )
+            case 3:
+                return UploadEndpointCDN3(
                     form: form,
                     signalService: signalService,
                     fileSystem: fileSystem,

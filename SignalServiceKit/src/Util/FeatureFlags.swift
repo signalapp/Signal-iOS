@@ -130,6 +130,8 @@ public class FeatureFlags: BaseFlags {
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
     public static let messageBackupFileAlpha = build.includes(.internal)
+
+    public static let useAttachmentsV4Endpoint = false
 }
 
 // MARK: -

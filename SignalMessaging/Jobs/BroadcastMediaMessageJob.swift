@@ -127,7 +127,7 @@ public enum BroadcastMediaUploader: Dependencies {
                     try await DependenciesBridge.shared.uploadManager.uploadAttachment(
                         attachmentId: attachmentId,
                         messageIds: messageIds,
-                        version: .v3
+                        version: FeatureFlags.useAttachmentsV4Endpoint ? .v4 : .v3
                     )
                 }
             }
