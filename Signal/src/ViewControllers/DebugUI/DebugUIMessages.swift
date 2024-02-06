@@ -3830,13 +3830,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     @discardableResult
     private static func createFakeOutgoingMessage(
         thread: TSThread,
-        messageBody: String?,
-        attachment: TSAttachment? = nil,
-        filename: String? = nil,
+        messageBody messageBodyParam: String?,
+        fakeAssetLoader fakeAssetLoaderParam: DebugUIMessagesAssetLoader? = nil,
         messageState: TSOutgoingMessageState,
         isDelivered: Bool = false,
         isRead: Bool = false,
-        isVoiceMessage: Bool = false,
         quotedMessage: TSQuotedMessage? = nil,
         contactShare: OWSContact? = nil,
         linkPreview: OWSLinkPreview? = nil,
@@ -3844,18 +3842,22 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         transaction: SDSAnyWriteTransaction
     ) -> TSOutgoingMessage {
 
-        owsAssertDebug(!messageBody.isEmptyOrNil || attachment != nil || contactShare != nil)
-
-        let attachmentIds: [String]
-        if let attachmentId = attachment?.uniqueId {
-            attachmentIds = [attachmentId]
+        // Seamlessly convert oversize text messages to oversize text attachments.
+        let messageBody: String?
+        let fakeAssetLoader: DebugUIMessagesAssetLoader?
+        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+            owsAssertDebug(fakeAssetLoaderParam == nil)
+            messageBody = nil
+            fakeAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: messageBodyParam)
         } else {
-            attachmentIds = []
+            messageBody = messageBodyParam
+            fakeAssetLoader = fakeAssetLoaderParam
         }
 
+        owsAssertDebug(!messageBody.isEmptyOrNil || fakeAssetLoader != nil || contactShare != nil)
+
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: messageBody)
-        messageBuilder.attachmentIds = attachmentIds
-        messageBuilder.isVoiceMessage = isVoiceMessage
+        messageBuilder.isVoiceMessage = false
         messageBuilder.quotedMessage = quotedMessage
         messageBuilder.contactShare = contactShare
         messageBuilder.linkPreview = linkPreview
@@ -3864,6 +3866,19 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let message = messageBuilder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)
         message.update(withFakeMessageState: messageState, transaction: transaction)
+
+        let attachment: TSAttachment?
+        if let fakeAssetLoader {
+            attachment = createFakeAttachment(
+                fakeAssetLoader: fakeAssetLoader,
+                isAttachmentDownloaded: true,
+                albumMessageId: message.uniqueId,
+                transaction: transaction
+            )
+            owsAssertDebug(attachment != nil)
+        } else {
+            attachment = nil
+        }
 
         if let attachment {
             updateAttachment(attachment, albumMessage: message, transaction: transaction)
@@ -3897,65 +3912,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         return message
     }
 
-    @discardableResult
-    private static func createFakeOutgoingMessage(
-        thread: TSThread,
-        messageBody messageBodyParam: String?,
-        fakeAssetLoader fakeAssetLoaderParam: DebugUIMessagesAssetLoader?,
-        messageState: TSOutgoingMessageState,
-        isDelivered: Bool = false,
-        isRead: Bool = false,
-        quotedMessage: TSQuotedMessage? = nil,
-        contactShare: OWSContact? = nil,
-        linkPreview: OWSLinkPreview? = nil,
-        messageSticker: MessageSticker? = nil,
-        transaction: SDSAnyWriteTransaction
-    ) -> TSOutgoingMessage {
-
-        // Seamlessly convert oversize text messages to oversize text attachments.
-        let messageBody: String?
-        let fakeAssetLoader: DebugUIMessagesAssetLoader?
-        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
-            owsAssertDebug(fakeAssetLoaderParam == nil)
-            messageBody = nil
-            fakeAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: messageBodyParam)
-        } else {
-            messageBody = messageBodyParam
-            fakeAssetLoader = fakeAssetLoaderParam
-        }
-
-        let attachment: TSAttachment?
-        if let fakeAssetLoader {
-            attachment = createFakeAttachment(
-                fakeAssetLoader: fakeAssetLoader,
-                isAttachmentDownloaded: true,
-                transaction: transaction
-            )
-            owsAssertDebug(attachment != nil)
-        } else {
-            attachment = nil
-        }
-
-        return createFakeOutgoingMessage(
-            thread: thread,
-            messageBody: messageBody,
-            attachment: attachment,
-            filename: fakeAssetLoader?.filename,
-            messageState: messageState,
-            isDelivered: isDelivered,
-            isRead: isRead,
-            isVoiceMessage: false,
-            quotedMessage: quotedMessage,
-            contactShare: contactShare,
-            linkPreview: linkPreview,
-            messageSticker: messageSticker,
-            transaction: transaction
-        )
-    }
-
     private static func createFakeAttachment(
         fakeAssetLoader: DebugUIMessagesAssetLoader,
         isAttachmentDownloaded: Bool,
+        albumMessageId: String,
         transaction: SDSAnyWriteTransaction
     ) -> TSAttachment? {
 
@@ -3982,7 +3942,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 sourceFilename: filename,
                 caption: nil,
                 attachmentType: .default,
-                albumMessageId: nil
+                albumMessageId: albumMessageId
             )
             do {
                 try attachmentStream.write(dataSource.data)
@@ -4005,7 +3965,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 contentType: fakeAssetLoader.mimeType,
                 sourceFilename: fakeAssetLoader.filename,
                 caption: nil,
-                albumMessageId: nil,
+                albumMessageId: albumMessageId,
                 attachmentType: .default,
                 mediaSize: .zero,
                 blurHash: nil,
@@ -4023,12 +3983,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         albumMessage: TSMessage,
         transaction: SDSAnyWriteTransaction
     ) {
-        attachment.anyUpdate(transaction: transaction) { latest in
-            // There's no public setter for albumMessageId, since it's usually set in the
-            // initializer. This isn't convenient for the DEBUG UI, so we abuse the
-            // migrateAlbumMessageId method.
-            latest.migrateAlbumMessageId(albumMessage.uniqueId)
-        }
+        albumMessage.addBodyAttachments([attachment], transaction: transaction)
         if let attachmentStream = attachment as? TSAttachmentStream {
             MediaGalleryManager.didInsert(attachmentStream: attachmentStream, transaction: transaction)
         }
@@ -4110,6 +4065,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         quotedMessage: TSQuotedMessage? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> TSIncomingMessage {
+        owsAssertDebug(!messageBodyParam.isEmptyOrNil || fakeAssetLoaderParam != nil)
+
+        let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.aci!
 
         // Seamlessly convert oversize text messages to oversize text attachments.
         let messageBody: String?
@@ -4123,26 +4081,30 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             fakeAssetLoader = fakeAssetLoaderParam
         }
 
+        let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
+        incomingMessageBuilder.authorAci = AciObjC(authorAci)
+        incomingMessageBuilder.quotedMessage = quotedMessage
+        let message = incomingMessageBuilder.build()
+        message.anyInsert(transaction: transaction)
+        message.debugonly_markAsReadNow(transaction: transaction)
+
         let attachment: TSAttachment?
         if let fakeAssetLoader {
             attachment = createFakeAttachment(
                 fakeAssetLoader: fakeAssetLoader,
                 isAttachmentDownloaded: isAttachmentDownloaded,
+                albumMessageId: message.uniqueId,
                 transaction: transaction
             )
         } else {
             attachment = nil
         }
 
-        return createFakeIncomingMessage(
-            thread: thread,
-            messageBody: messageBody,
-            attachment: attachment,
-            filename: fakeAssetLoader?.filename,
-            isAttachmentDownloaded: isAttachmentDownloaded,
-            quotedMessage: quotedMessage,
-            transaction: transaction
-        )
+        if let attachment {
+            updateAttachment(attachment, albumMessage: message, transaction: transaction)
+        }
+
+        return message
     }
 
     private static func createFakeThreadAssociatedData(thread: TSThread) -> ThreadAssociatedData {

@@ -574,11 +574,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return [TSMessage anyFetchMessageWithUniqueId:self.albumMessageId transaction:transaction];
 }
 
-- (void)migrateAlbumMessageId:(NSString *)albumMesssageId
-{
-    _albumMessageId = albumMesssageId;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

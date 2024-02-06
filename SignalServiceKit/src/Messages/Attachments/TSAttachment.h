@@ -71,11 +71,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(fetchAlbumMessage(transaction:));
 
-// `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,
-// and shouldn't be used as a general purpose setter. Instead, `albumMessageId` should be passed as
-// an initializer param.
-- (void)migrateAlbumMessageId:(NSString *)albumMesssageId;
-
 #pragma mark -
 
 + (instancetype)new NS_UNAVAILABLE;
