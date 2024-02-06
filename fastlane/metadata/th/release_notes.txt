@@ -1,1 +1,1 @@
-• Now you can tap on someone's profile photo in a group chat and quickly see additional information like how many groups you have in common. 
+• จากนี้ไป เพียงแตะที่รูปโปรไฟล์ของผู้ติดต่อในแชทกลุ่ม คุณก็จะสามารถเห็นข้อมูลเพิ่มเติมของคนคนนั้นได้ทันที ดูเพิ่มได้ง่ายๆ ว่าคุณกับเพื่อนมีกลุ่มร่วมกันบ้างหรือไม่ 

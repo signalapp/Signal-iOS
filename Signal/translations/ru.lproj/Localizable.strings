@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Понятно";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Сообщение, стикер, реакцию, уведомление о прочтении или медиафайл от %1$@ не удалось доставить вам в этом чате.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Ошибка доставки";
@@ -1028,13 +1028,13 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать новое устройство";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ есть в ваших системных контактах";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Контакты Signal";
 
 /* The title for a contact 'about' sheet. */
-"CONTACT_ABOUT_SHEET_TITLE" = "About";
+"CONTACT_ABOUT_SHEET_TITLE" = "О контакте";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Адрес";
@@ -3431,13 +3431,13 @@
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Выберите свой банк";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Подтвердить пожертвование";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Для настройки регулярного пожертвования нажмите «Продолжить», чтобы подтвердить списание средств в размере 0,01 евро в вашем банке. Эта сумма будет автоматически возвращена, и это позволит списывать с вашего счёта пожертвование в размере %1$@ в месяц.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Подтвердить пожертвование через %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Зарисуйте участок, чтобы размыть его";
@@ -4940,7 +4940,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Все";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Любой, у кого есть ваш номер телефона, будет видеть, что вы в Signal, и сможет начать с вами чат.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Никто";

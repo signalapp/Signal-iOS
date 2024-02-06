@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "বুঝতে পেরেছি";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "এই চ্যাট-এ %1$@-এর কাছ থেকে কোনো ম্যাসেজ, স্টিকার, প্রতিক্রিয়া, রিড রিসিপ্ট বা মিডিয়া আপনাকে পাঠানো যায়নি।";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "পাঠানোর ক্ষেত্রে সমস্যা";
@@ -1028,13 +1028,13 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "নতুন ডিভাইস যুক্ত করুন";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ আপনার সিস্টেমের কন্টাক্টে আছেন";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal কানেকশন";
 
 /* The title for a contact 'about' sheet. */
-"CONTACT_ABOUT_SHEET_TITLE" = "About";
+"CONTACT_ABOUT_SHEET_TITLE" = "পরিচিতি";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "ঠিকানা";
@@ -3431,13 +3431,13 @@
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "আপনার ব্যাংক বেছে নিন";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "আপনার ডোনেশন নিশ্চিত করুন";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "আপনার পুনরাবৃত্ত ডোনেশন সেটআপ করতে, আপনার ব্যাংকের মাধ্যমে €0,01 চার্জ নিশ্চিত করতে 'চালিয়ে যান' ট্যাপ করুন। এটি স্বয়ংক্রিয়ভাবে ফেরত দেওয়া হবে এবং এটি আপনার অ্যাকাউন্ট থেকে আপনার %1$@/মাসের ডোনেশন ডেবিট করার অনুমতি দেয়।";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "%1$@-এর মাধ্যমে আপনার ডোনেশন নিশ্চিত করুন";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "যেকোনো জায়গা অস্পষ্ট করতে আলতো চেপে টানুন";
@@ -4940,7 +4940,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "সবাই";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "যাদের কাছে আপনার ফোন নম্বর আছে তারা দেখতে পাবেন আপনি Signal-এ আছেন এবং আপনার সাথে চ্যাট শুরু করতে পারবেন।";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "কেউ না";

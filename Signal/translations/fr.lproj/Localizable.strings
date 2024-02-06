@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Compris";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "%1$@ vous a envoyé un message, un autocollant, une réaction, un accusé de lecture ou un contenu multimédia que nous n'avons pas pu vous remettre.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problème de remise";
@@ -503,7 +503,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Faire un don";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "En apprendre davantage.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "En savoir plus.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Don mensuel annulé";
@@ -917,7 +917,7 @@
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Vos données sont privées";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
-"CARD_DONATION_SUBHEADER_LEARN_MORE" = "En apprendre davantage.";
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "En savoir plus.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
 "CARD_DONATION_SUBHEADER_TEXT" = "Veuillez saisir les informations de votre carte. Signal ne collecte ni ne sauvegarde vos informations personnelles.";
@@ -1028,13 +1028,13 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ se trouve dans vos contacts système";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Contact Signal";
 
 /* The title for a contact 'about' sheet. */
-"CONTACT_ABOUT_SHEET_TITLE" = "About";
+"CONTACT_ABOUT_SHEET_TITLE" = "À propos";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adresse";
@@ -3431,13 +3431,13 @@
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Choisissez votre banque";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirmez votre don";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Pour configurer votre don mensuel, appuyez sur \"Continuer\". Vous confirmez ainsi le prélèvement de 0,01 € auprès de votre banque. Cette somme sera automatiquement remboursée et permettra de confirmer le prélèvement de la somme mensuelle de %1$@ sur votre compte.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirmez votre don %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Dessinez n’importe où pour rendre flou.";
@@ -3617,7 +3617,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Désarchiver la conversation";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "En apprendre davantage";
+"LEARN_MORE" = "En savoir plus";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Quitter";
@@ -4466,7 +4466,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez épuisé tous vos essais de NIP, mais vous pouvez encore accéder à votre compte Signal en créant un nouveau NIP. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En apprendre davantage sur les NIP";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En savoir plus sur les codes PIN";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Le NIP est erroné";
@@ -4940,7 +4940,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Tout le monde";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Toutes les personnes disposant de votre numéro de téléphone pourront voir que vous utilisez Signal et lancer une conversation avec vous.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Personne";
@@ -5528,7 +5528,7 @@
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Votre compte a été verrouillé afin de protéger vos données personnelles et votre sécurité. Après %1$@ d’inactivité sur votre compte, vous pourrez réinscrire ce numéro de téléphone sans avoir besoin de votre PIN. Tout le contenu sera supprimé.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "En apprendre davantage sur les comptes verrouillés";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "En savoir plus sur les comptes verrouillés";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
 "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Utiliser un autre numéro";
@@ -6521,7 +6521,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Paiements récents";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Avant de désactiver votre NIP, vous devez enregistrer une phrase de récupération pour vous garantir la récupération de votre compte de paiements.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Avant de désactiver votre code PIN, vous devez enregistrer la phrase de récupération qui vous permettra de récupérer votre compte de paiement.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Enregistrer une phrase de récupération";
@@ -6536,7 +6536,7 @@
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Effacer";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Récupérer un compte de paiements";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Récupérer un compte de paiement";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Assurez vous d'avoir saisi votre phrase correctement.";
@@ -6569,7 +6569,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Coller la phrase de récupération";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Votre phrase de récupération est une phrase unique et personnelle de 24 mots. Utilisez-la pour récupérer votre compte de paiements.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Votre phrase de récupération est une phrase unique et personnelle de 24 mots. Utilisez-la pour récupérer votre compte de paiement.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Entrer la phrase de récupération";

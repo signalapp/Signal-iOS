@@ -1,1 +1,1 @@
-• Now you can tap on someone's profile photo in a group chat and quickly see additional information like how many groups you have in common. 
+• グループチャット内でメンバーのプロフィール写真をタップすると、共通のグループの数などの追加情報がすぐに確認できるようになりました。 

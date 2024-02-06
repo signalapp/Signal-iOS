@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Verstanden";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %1$@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Eine Nachricht, ein Sticker, eine Reaktion, eine Lesebestätigung oder ein Medieninhalt von %1$@ konnte dir in diesem Chat nicht zugestellt werden.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Zustellungsproblem";
@@ -1028,13 +1028,13 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Neues Gerät koppeln";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ is in your system contacts";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ ist in deinen Systemkontakten";
 
 /* A label indicating a user is a signal connection. */
-"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Connection";
+"CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-Verbindung";
 
 /* The title for a contact 'about' sheet. */
-"CONTACT_ABOUT_SHEET_TITLE" = "About";
+"CONTACT_ABOUT_SHEET_TITLE" = "Info";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adresse";
@@ -1697,7 +1697,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Löschen";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Diese Person wird aus deinen Systemkontakten gelöscht. Du wirst diese Person bei der Suche nicht sehen. Du erhältst eine Nachrichtenanfrage, wenn sie dir in Zukunft eine Nachricht schickt.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Diese Person wird aus deinen Systemkontakten gelöscht. Du wirst diese Person bei der Suche nicht sehen. Du erhältst eine Unterhaltungsanfrage, wenn sie dir in Zukunft eine Nachricht schickt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Kontakt löschen und aus deiner Liste entfernen?";
@@ -3362,7 +3362,7 @@
 "HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ entfernen?";
 
 /* An explanation of the consequences of removing a user. */
-"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Du wirst diese Person bei der Suche nicht sehen. Du erhältst eine Nachrichtenanfrage, wenn sie dir in Zukunft eine Nachricht schicken.";
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Du wirst diese Person bei der Suche nicht sehen. Du erhältst eine Unterhaltungsanfrage, wenn sie dir in Zukunft eine Nachricht schicken.";
 
 /* Button label for the 'remove' button */
 "HIDE_RECIPIENT_BUTTON" = "Entfernen";
@@ -3431,13 +3431,13 @@
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Wähle deine Bank";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirm Your Donation";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Bestätige deine Spende";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "To setup your recurring donation, tap continue to confirm a €0,01 charge with your bank. This will be automatically refunded and allows your %1$@/month donation to be debited from your account.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Wenn du deine wiederkehrende monatliche Spende einrichtest, tippe auf »Weiter«, um die Abbuchung von 0,01 € bei deiner Bank zu bestätigen. Dieser Betrag wird automatisch erstattet und erlaubt die Abbuchung deiner Spende in Höhe von %1$@ pro Monat von deinem Konto.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirm Your Donation with %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Bestätige deine Spende bei %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Zeichne zum Verwischen in beliebige Bereiche";
@@ -4331,7 +4331,7 @@
 "NOTE_TO_SELF" = "Notiz an mich";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Chatanfrage";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Unterhaltungsanfrage";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du hast eventuell Nachrichten erhalten, während dein %1$@ neu gestartet wurde.";
@@ -4826,10 +4826,10 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unbekannte Zahlung";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Nachrichtenanfrage akzeptieren.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Nachrichtenanfrage akzeptieren. Sende ihm eine Nachricht, um eine Nachrichtenanfrage zu stellen.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren. Sende ihm eine Nachricht, um eine Nachrichtenanfrage zu stellen.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Zahlung kann nicht gesendet werden";
@@ -4940,7 +4940,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Jeder";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number will see you're on Signal and can start chats with you.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Wer deine Telefonnummer hat, sieht, dass du bei Signal bist und kann mit dir chatten.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
@@ -6341,7 +6341,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Speichere deinen Satz";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Mit deinem Wiederherstellungssatz hast du eine weitere Möglichkeit, dein Guthaben wiederherzustellen.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Mit deiner Wiederherstellungsphrase hast du eine weitere Möglichkeit, dein Guthaben wiederherzustellen.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Speichere deinen Satz";
@@ -6392,10 +6392,10 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Neu: Zahlungen";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Wiederherstellungssatz überspringen";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Wiederherstellungsphrase überspringen";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Mit deinem Wiederherstellungssatz kannst du im schlimmsten Fall dein Guthaben wiederherstellen. Wir empfehlen dir dringend, ihn zu speichern.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Mit deiner Wiederherstellungsphrase kannst du im schlimmsten Fall dein Guthaben wiederherstellen. Wir empfehlen dir dringend, sie zu speichern.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Ohne Speichern fortfahren?";
@@ -6404,10 +6404,10 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Dein Kontostand wird beim erneuten Installieren von Signal automatisch wiederhergestellt, falls du deine Signal-PIN bestätigst. Weiterhin kannst du deinen Kontostand durch Verwenden einer Wiederherstellungsphrase wiederherstellen, einer aus 24 Wörtern bestehenden, einzigartigen Phrase. Notiere sie und bewahre sie an einem sicheren Ort auf.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Du hast ein Guthaben! Zeit, deinen Wiederherstellungssatz zu speichern – ein Schlüssel mit 24 Wörtern, mit dem du dein Guthaben wiederherstellen kannst.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Du hast ein Guthaben! Zeit, deine Wiederherstellungsphrase zu speichern – ein Schlüssel mit 24 Wörtern, mit dem du dein Guthaben wiederherstellen kannst.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Zeit, deinen Wiederherstellungssatz zu speichern – ein Schlüssel mit 24 Wörtern, mit dem du dein Guthaben wiederherstellen kannst.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Zeit, deine Wiederherstellungsphrase zu speichern – ein Schlüssel mit 24 Wörtern, mit dem du dein Guthaben wiederherstellen kannst.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Guthaben hinzufügen";
@@ -6590,7 +6590,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Wiederherstellungsphrase eingeben";
 
 /* Title for the first step of the 'save payments passphrase' views. */
-"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Speichere deinen Wiederherstellungssatz";
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Speichere deine Wiederherstellungsphrase";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanne den QR-Code des Überweisungsempfängers.";
