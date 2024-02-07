@@ -23,11 +23,7 @@ public class SignalAccountFinder: NSObject {
         }
         if
             let phoneNumber = address.phoneNumber,
-            let phoneNumberMatch = signalAccountWhere(
-                column: SignalAccount.columnName(.recipientPhoneNumber),
-                matches: phoneNumber,
-                tx: tx
-            )
+            let phoneNumberMatch = signalAccount(for: phoneNumber, tx: tx)
         {
             return phoneNumberMatch
         }
@@ -38,9 +34,16 @@ public class SignalAccountFinder: NSObject {
         for e164: E164,
         tx: SDSAnyReadTransaction
     ) -> SignalAccount? {
+        return signalAccount(for: e164.stringValue, tx: tx)
+    }
+
+    func signalAccount(
+        for phoneNumber: String,
+        tx: SDSAnyReadTransaction
+    ) -> SignalAccount? {
         return signalAccountWhere(
             column: SignalAccount.columnName(.recipientPhoneNumber),
-            matches: e164.stringValue,
+            matches: phoneNumber,
             tx: tx
         )
     }
@@ -60,6 +63,13 @@ public class SignalAccountFinder: NSObject {
                 tx: tx
             )
         }.values
+    }
+
+    func signalAccounts(
+        for phoneNumbers: [String],
+        tx: SDSAnyReadTransaction
+    ) -> [SignalAccount?] {
+        return signalAccountsForPhoneNumbers(phoneNumbers, tx: tx)
     }
 
     private func signalAccountsForServiceIds(

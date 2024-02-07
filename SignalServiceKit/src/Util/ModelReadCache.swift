@@ -662,7 +662,7 @@ public class UserProfileReadCache: NSObject {
 
 @objc
 public class SignalAccountReadCache: NSObject {
-    typealias KeyType = SignalServiceAddress
+    typealias KeyType = String
     typealias ValueType = SignalAccount
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
@@ -678,7 +678,7 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            value.recipientAddress
+            value.recipientPhoneNumber ?? ""
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -703,14 +703,16 @@ public class SignalAccountReadCache: NSObject {
     }
 
     @objc
-    public func getSignalAccount(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        let cacheKey = adapter.cacheKey(forKey: address)
+    public func getSignalAccount(phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+        let cacheKey = adapter.cacheKey(forKey: phoneNumber)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
-    public func getSignalAccounts(addresses: AnySequence<SignalServiceAddress>,
-                                  transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
-        let cacheKeys = addresses.map { adapter.cacheKey(forKey: $0) }
+    public func getSignalAccounts(
+        phoneNumbers: some Sequence<String>,
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount?] {
+        let cacheKeys = phoneNumbers.map { adapter.cacheKey(forKey: $0) }
         return cache.getValues(for: cacheKeys, transaction: transaction)
     }
 

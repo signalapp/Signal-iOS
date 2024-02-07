@@ -666,9 +666,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             familyName: record.systemFamilyName,
             nickname: record.systemNickname
         )
-        if let systemFullName {
+        if let systemFullName, let phoneNumber = anyAddress.phoneNumber {
             let newContact = Contact(
-                address: anyAddress,
+                phoneNumber: phoneNumber,
                 phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
                 givenName: record.systemGivenName,
                 familyName: record.systemFamilyName,
@@ -689,7 +689,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 contact: newContact,
                 contactAvatarHash: nil,
                 multipleAccountLabelText: multipleAccountLabelText,
-                recipientPhoneNumber: anyAddress.phoneNumber,
+                recipientPhoneNumber: phoneNumber,
                 recipientServiceId: anyAddress.serviceId
             )
         } else {

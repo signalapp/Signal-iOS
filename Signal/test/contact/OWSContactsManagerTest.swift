@@ -78,32 +78,26 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     private func makeAccount(
         serviceId: ServiceId,
-        phoneNumber: String?,
+        phoneNumber: E164,
         name: String? = nil
     ) -> SignalAccount {
         let contact = name.map { name -> Contact in
-            makeContact(
-                address: SignalServiceAddress(
-                    serviceId: serviceId,
-                    phoneNumber: phoneNumber
-                ),
-                name: name
-            )
+            makeContact(phoneNumber: phoneNumber, name: name)
         }
 
         return SignalAccount(
             contact: contact,
             contactAvatarHash: nil,
             multipleAccountLabelText: "home",
-            recipientPhoneNumber: phoneNumber,
+            recipientPhoneNumber: phoneNumber.stringValue,
             recipientServiceId: serviceId
         )
     }
 
-    private func makeContact(address: SignalServiceAddress, name: String) -> Contact {
+    private func makeContact(phoneNumber: E164, name: String) -> Contact {
         let parts = name.components(separatedBy: " ")
         return Contact(
-            address: address,
+            phoneNumber: phoneNumber.stringValue,
             phoneNumberLabel: "home",
             givenName: parts.first,
             familyName: parts.dropFirst().first,
@@ -115,15 +109,14 @@ class OWSContactsManagerTest: SignalBaseTest {
     // MARK: - Display Names
 
     func testGetDisplayNamesWithCachedContactNames() {
-        let serviceIds = [Aci.randomForTesting(), Aci.randomForTesting()]
-        let addresses = serviceIds.map { SignalServiceAddress($0) }
-
-        createRecipients(serviceIds)
-        let accounts = [
-            makeAccount(serviceId: serviceIds[0], phoneNumber: nil, name: "Alice Aliceson"),
-            makeAccount(serviceId: serviceIds[1], phoneNumber: nil, name: "Bob Bobson")
+        let addresses = [
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550100"),
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550101"),
         ]
-        createAccounts(accounts)
+        createRecipients(addresses.map { $0.serviceId! })
+        createAccounts(zip(addresses, ["Alice Aliceson", "Bob Bobson"]).map { address, name in
+            makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, name: name)
+        })
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
@@ -203,8 +196,8 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     func testGetDisplayNamesMixed() {
         let aliceAci = Aci.randomForTesting()
-        let aliceAddress = SignalServiceAddress(aliceAci)
-        let aliceAccount = makeAccount(serviceId: aliceAci, phoneNumber: nil, name: "Alice Aliceson")
+        let aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: "+16505550100")
+        let aliceAccount = makeAccount(serviceId: aliceAci, phoneNumber: aliceAddress.e164!, name: "Alice Aliceson")
         createRecipients([aliceAci])
         createAccounts([aliceAccount])
 
@@ -231,14 +224,14 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testSinglePartName() {
-        let serviceIds = [Aci.randomForTesting(), Aci.randomForTesting()]
-        let addresses = serviceIds.map { SignalServiceAddress($0) }
-        createRecipients(serviceIds)
-        let accounts = [
-            makeAccount(serviceId: serviceIds[0], phoneNumber: nil, name: "Alice"),
-            makeAccount(serviceId: serviceIds[1], phoneNumber: nil, name: "Bob")
+        let addresses = [
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550100"),
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550101"),
         ]
-        createAccounts(accounts)
+        createRecipients(addresses.map { $0.serviceId! })
+        createAccounts(zip(addresses, ["Alice", "Bob"]).map { address, name in
+            makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, name: name)
+        })
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
@@ -251,14 +244,14 @@ class OWSContactsManagerTest: SignalBaseTest {
     // MARK: - Cached Contact Names
 
     func testCachedContactNamesWithAccounts() {
-        let serviceIds = [Aci.randomForTesting(), Aci.randomForTesting()]
-        let addresses = serviceIds.map { SignalServiceAddress($0) }
-        createRecipients(serviceIds)
-        let accounts = [
-            makeAccount(serviceId: serviceIds[0], phoneNumber: nil, name: "Alice Aliceson"),
-            makeAccount(serviceId: serviceIds[1], phoneNumber: nil, name: "Bob Bobson")
+        let addresses = [
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550100"),
+            SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+16505550101"),
         ]
-        createAccounts(accounts)
+        createRecipients(addresses.map { $0.serviceId! })
+        createAccounts(zip(addresses, ["Alice Aliceson", "Bob Bobson"]).map { address, name in
+            makeAccount(serviceId: address.serviceId!, phoneNumber: address.e164!, name: name)
+        })
         let contactsManager = makeContactsManager()
         read { transaction in
             let actual = contactsManager.systemContactNames(for: AnySequence(addresses), tx: transaction)
@@ -279,8 +272,8 @@ class OWSContactsManagerTest: SignalBaseTest {
     func testCachedContactNameMixed() {
         // Register alice with an account that has a full name.
         let aliceAci = Aci.randomForTesting()
-        let aliceAddress = SignalServiceAddress(aliceAci)
-        let aliceAccount = makeAccount(serviceId: aliceAci, phoneNumber: nil, name: "Alice Aliceson")
+        let aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: "+16505550100")
+        let aliceAccount = makeAccount(serviceId: aliceAci, phoneNumber: aliceAddress.e164!, name: "Alice Aliceson")
         createRecipients([aliceAci])
         createAccounts([aliceAccount])
 

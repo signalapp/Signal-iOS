@@ -101,7 +101,7 @@ public extension Contact {
 
 public extension Contact {
     convenience init(
-        address: SignalServiceAddress,
+        phoneNumber: String,
         phoneNumberLabel: String,
         givenName: String?,
         familyName: String?,
@@ -111,10 +111,7 @@ public extension Contact {
         var userTextPhoneNumbers: [String] = []
         var phoneNumberNameMap: [String: String] = [:]
         var parsedPhoneNumbers: [PhoneNumber] = []
-        if
-            let phoneNumber = address.phoneNumber,
-            let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber)
-        {
+        if let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber) {
             userTextPhoneNumbers.append(phoneNumber)
             parsedPhoneNumbers.append(parsedPhoneNumber)
             phoneNumberNameMap[parsedPhoneNumber.toE164()] = phoneNumberLabel

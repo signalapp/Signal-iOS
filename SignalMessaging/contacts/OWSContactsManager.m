@@ -289,8 +289,13 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 {
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
-    
-    return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
+
+    NSString *phoneNumber = address.phoneNumber;
+    if (phoneNumber == nil) {
+        return nil;
+    }
+    return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithPhoneNumber:phoneNumber
+                                                                            transaction:transaction];
 }
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses

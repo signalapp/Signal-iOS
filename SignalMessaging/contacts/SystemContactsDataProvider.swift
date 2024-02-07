@@ -196,7 +196,7 @@ final class LinkedDeviceSystemContactsDataProvider {
 extension LinkedDeviceSystemContactsDataProvider: SystemContactsDataProvider {
     func fetchSystemContact(for phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
         modelReadCaches.signalAccountReadCache.getSignalAccount(
-            address: SignalServiceAddress(phoneNumber: phoneNumber),
+            phoneNumber: phoneNumber,
             transaction: transaction
         )?.contact
     }

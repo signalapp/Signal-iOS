@@ -1264,10 +1264,15 @@ extension OWSContactsManager {
     }
 
     func fetchSignalAccounts(
-        for addresses: AnySequence<SignalServiceAddress>,
+        for addresses: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount?] {
-        return modelReadCaches.signalAccountReadCache.getSignalAccounts(addresses: addresses, transaction: transaction)
+        let phoneNumbers = addresses.map { $0.phoneNumber }
+        var compactedResult = modelReadCaches.signalAccountReadCache.getSignalAccounts(
+            phoneNumbers: phoneNumbers.compacted(),
+            transaction: transaction
+        ).makeIterator()
+        return phoneNumbers.map { $0 != nil ? compactedResult.next()! : nil }
     }
 
     @objc
