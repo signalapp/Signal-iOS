@@ -256,6 +256,10 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.enableGifSearch, defaultValue: true)
     }
 
+    public static var shouldCheckForServiceExtensionFailures: Bool {
+        return !isEnabled(.serviceExtensionFailureKillSwitch)
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -475,6 +479,7 @@ private enum IsEnabledFlag: String, FlagType {
     case cdsDisableCompatibilityMode = "cds.disableCompatibilityMode"
     case canDonateWithSepa = "ios.canDonateWithSepa"
     case enableGifSearch = "global.gifSearch"
+    case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
 
     var isSticky: Bool {
         switch self {
@@ -494,12 +499,15 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .cdsDisableCompatibilityMode: fallthrough
         case .canDonateWithSepa: fallthrough
-        case .enableGifSearch:
+        case .enableGifSearch: fallthrough
+        case .serviceExtensionFailureKillSwitch:
             return false
         }
     }
     var isHotSwappable: Bool {
         switch self {
+        case .serviceExtensionFailureKillSwitch:
+            return true
         case .automaticSessionResetKillSwitch: fallthrough
         case .paymentsResetKillSwitch: fallthrough
         case .messageResendKillSwitch: fallthrough
