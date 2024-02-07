@@ -19,14 +19,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         public static let commonGRDBPrefix = "grdb"
         public static var primaryFolderNameKey: String { "GRDBPrimaryDirectoryNameKey" }
         public static var transferFolderNameKey: String { "GRDBTransferDirectoryNameKey" }
-        static var storedPrimaryFolderName: String? {
-            get {
-                CurrentAppContext().appUserDefaults().string(forKey: primaryFolderNameKey)
-            } set {
-                guard newValue != nil else { return owsFailDebug("Stored primary database name can never be cleared") }
-                CurrentAppContext().appUserDefaults().set(newValue, forKey: primaryFolderNameKey)
-            }
-        }
+
         static var storedTransferFolderName: String? {
             get { CurrentAppContext().appUserDefaults().string(forKey: transferFolderNameKey) }
             set { CurrentAppContext().appUserDefaults().set(newValue, forKey: transferFolderNameKey) }
@@ -49,7 +42,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         var folderName: String! {
             let result: String?
             switch self {
-            case .primary: result = Self.storedPrimaryFolderName ?? DirectoryMode.primaryLegacy.folderName
+            case .primary: result = GRDBDatabaseStorageAdapter.storedPrimaryFolderName() ?? DirectoryMode.primaryLegacy.folderName
             case .transfer: result = Self.storedTransferFolderName
             case .primaryLegacy: result = "grdb"
             case .hotswapLegacy: result = "grdb-hotswap"
@@ -79,6 +72,40 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
+    }
+
+    fileprivate static func storedPrimaryFolderNameFileUrl() -> URL {
+        return SDSDatabaseStorage.baseDir.appendingPathComponent("storedPrimaryFolderName.txt", isDirectory: false)
+    }
+
+    fileprivate static func storedPrimaryFolderName() -> String? {
+        // Try and read from the file on disk.
+        let fileUrl = storedPrimaryFolderNameFileUrl()
+        if
+            OWSFileSystem.fileOrFolderExists(url: fileUrl),
+            let primaryFolderName = try? String(contentsOfFile: fileUrl.path, encoding: .utf8),
+            // Should never be empty, but this is a precautionary measuere.
+            !primaryFolderName.isEmpty
+        {
+            return primaryFolderName
+        }
+        if let primaryFolderName = CurrentAppContext().appUserDefaults().string(forKey: DirectoryMode.primaryFolderNameKey) {
+            // Make sure its also written to the file.
+            OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
+            try? primaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
+            return primaryFolderName
+        }
+        return nil
+    }
+
+    fileprivate static func writeStoredPrimaryFolderName(_ newPrimaryFolderName: String) {
+        CurrentAppContext().appUserDefaults().set(newPrimaryFolderName, forKey: DirectoryMode.primaryFolderNameKey)
+        // Make sure its also written to the file.
+        let fileUrl = storedPrimaryFolderNameFileUrl()
+        OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
+        try? newPrimaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
+
+        DarwinNotificationCenter.post(.primaryDBFolderNameDidChange)
     }
 
     private let checkpointQueue = DispatchQueue(label: "org.signal.checkpoint", qos: .utility)
@@ -142,9 +169,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     deinit {
-        if didRegisterDatabasePathKVO {
-            let userDefaults = CurrentAppContext().appUserDefaults()
-            userDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey, context: &Self.databasePathKVOContext)
+        if let darwinToken, DarwinNotificationCenter.isValidObserver(darwinToken) {
+            DarwinNotificationCenter.removeObserver(darwinToken)
         }
     }
 
@@ -202,29 +228,21 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: - DatabasePathObservation
 
-    private static var databasePathKVOContext = 0
-    var didRegisterDatabasePathKVO = false
+    private var darwinToken: Int32?
 
     func setUpDatabasePathKVO() {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-
-        if CurrentAppContext().isMainApp == false {
-            appUserDefaults.addObserver(
-                self,
-                forKeyPath: DirectoryMode.primaryFolderNameKey,
-                options: [],
-                context: &Self.databasePathKVOContext
-            )
-            didRegisterDatabasePathKVO = true
-        }
+        darwinToken = DarwinNotificationCenter.addObserver(
+            for: .primaryDBFolderNameDidChange,
+            queue: .main,
+            using: { [weak self] token in
+                self?.primaryDBFolderNameDidChange(darwinNotificationToken: token)
+            }
+        )
     }
 
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == DirectoryMode.primaryFolderNameKey, context == &Self.databasePathKVOContext {
-            checkForDatabasePathChange()
-        } else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-        }
+    @objc
+    private func primaryDBFolderNameDidChange(darwinNotificationToken: Int32) {
+        checkForDatabasePathChange()
     }
 
     private func checkForDatabasePathChange() {
@@ -422,7 +440,7 @@ extension GRDBDatabaseStorageAdapter {
         // Ordering matters here. We should be able to crash and recover without issue
         // A prior run may have already performed the swap but crashed, so we should not expect a transfer folder
         if let newPrimaryName = DirectoryMode.transfer.folderName {
-            DirectoryMode.storedPrimaryFolderName = newPrimaryName
+            Self.writeStoredPrimaryFolderName(newPrimaryName)
             Logger.info("Updated primary database directory to: \(newPrimaryName)")
             clearTransferDirectory()
         }

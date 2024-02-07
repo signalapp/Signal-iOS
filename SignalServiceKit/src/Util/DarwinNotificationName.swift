@@ -15,6 +15,8 @@ public class DarwinNotificationName: NSObject, ExpressibleByStringLiteral {
     public static let mainAppHandledNotification: DarwinNotificationName = "org.signal.mainAppHandledNotification"
     @objc
     public static let mainAppLaunched: DarwinNotificationName = "org.signal.mainAppLaunched"
+    @objc
+    public static var primaryDBFolderNameDidChange: DarwinNotificationName = "org.signal.primaryDBFolderNameDidChange"
 
     public typealias StringLiteralType = String
 
