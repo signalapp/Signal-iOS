@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Activezi notificările?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Repornește dispozitivul %1$@ dacă nu primești notificări de la Signal.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Notificările nu s-au putut afișa";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca Citit\", \"Răspunde\" și \"Apelează Înapoi.\"";
 

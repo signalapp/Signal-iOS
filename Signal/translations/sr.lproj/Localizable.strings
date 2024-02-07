@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Укључите обавештења?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Рестартујте свој уређај (%1$@) ако вам не стижу обавештења од Signal-а.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Нисмо успели да прикажемо обавештења";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Акције су „Означи прочитаним”, „Одговори” и „Позови”.";
 

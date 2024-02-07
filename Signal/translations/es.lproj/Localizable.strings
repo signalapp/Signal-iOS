@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "¿Activar notificaciones?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Si no recibes notificaciones de Signal, reinicia tu %1$@.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "No se pudieron mostrar las notificaciones";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Las acciones incluyen: «Marcar como leído», «Responder» o «Llamar».";
 

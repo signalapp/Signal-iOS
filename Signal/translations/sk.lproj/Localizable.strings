@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Zapnúť hlásenia?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Ak nedostávate Signal upozornenia, reštartujte svoj %1$@.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Nepodarilo sa zobraziť upozornenia";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Akcie zahŕňajú “Označiť ako prečítané,” “Odpovedať,” a “Zavolať späť.”";
 

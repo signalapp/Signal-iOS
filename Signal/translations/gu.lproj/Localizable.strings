@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "સૂચનાઓ ચાલુ કરવી છે?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "જો તમે Signal નોટિફિકેશન મેળવી ન રહ્યાં હોય, તો તમારા %1$@ ને રિસ્ટાર્ટ કરો.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "નોટિફિકેશન બતાવી શક્યા નહીં";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "કાર્યમાં \"વાંચેલા તરીકે માર્ક કરો\", \"જવાબ આપો\" અને \"કૉલ બૅક\" શામેલ છે.";
 

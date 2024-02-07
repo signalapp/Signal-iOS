@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "ئۇقتۇرۇشنى قوزغىتامدۇ؟";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Signal ئۇقتۇرۇشلىرىنى تاپشۇرۇۋالمىغان بولسىڭىز %1$@ نى قايتا قوزغىتىڭ.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "ئۇقتۇرۇشلارنى كۆرسىتەلمىدى";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "مەشغۇلات «ئوقۇلدى»، «جاۋاب»، «قايتۇرۇپ چاقىر» نى ئۆز ئىچىگە ئالىدۇ.";
 

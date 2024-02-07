@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "เปิดการแจ้งเตือนหรือไม่?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "หากไม่ได้รับการแจ้งเตือนของ Signal โปรดรีสตาร์ท %1$@ ของคุณ";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "ไม่สามารถแสดงการแจ้งเตือนได้";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "การกระทำรวมถึง \"ทำเครื่องหมายอ่านแล้ว\" \"ตอบ\" และ \"โทรกลับ\"";
 

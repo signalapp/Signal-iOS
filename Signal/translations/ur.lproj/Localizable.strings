@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "اطلاعات آن کریں؟";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "اگر آپ Signal اطلاعات وصول نہیں کر رہے ہیں تو اپنا %1$@ ری اسٹارٹ کریں۔";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "اطلاعات دکھائی نہیں جا سکیں";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "کارروائیوں میں \"پڑھے ہوئے پیغام کے بطور نشان زد کریں ،\" \"جواب دیں ،\" اور \"کال بیک\" شامل ہیں۔";
 

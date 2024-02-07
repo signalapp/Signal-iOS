@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "নোটিফিকেশন পেতে চান?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "আপনি যদি Signal-এর নোটিফিকেশন না পান তাহলে আপনার %1$@ পুনরায় চালু করুন।";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "নোটিফিকেশন দেখানো যায়নি";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "ক্রিয়াগুলির মধ্যে \"পঠিত হিসাবে চিহ্নিত করুন,\" \"উত্তর দিন,\" এবং \"কল ব্যাক করুন\" অন্তর্ভুক্ত রয়েছে।";
 

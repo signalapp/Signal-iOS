@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Ενεργοποίηση Ειδοποιήσεων;";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Κάνε επανεκκίνηση του %1$@ αν δεν λαμβάνεις ειδοποιήσεις Signal.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Δεν ήταν δυνατή η εμφάνιση ειδοποιήσεων";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Οι ενέργειες περιλαμβάνουν \"Σημείωση ως αναγνωσμένο\", \"Απάντηση\", και \"Επιστροφή Κλήσης\".";
 

@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "सूचनाओं को चालू करना है?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "अगर आपको सिग्नल नोटिफ़िकेशन नहीं मिल रही हैं, तो अपने %1$@ को फिर से शुरू करें।";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "नोटिफ़िकेशन नहीं दिखा सका";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "क्रियाओं में \"दिखा हुआ मार्क करे\", \"उत्तर\", और \"वापस कॉल करें\" शामिल है।";
 

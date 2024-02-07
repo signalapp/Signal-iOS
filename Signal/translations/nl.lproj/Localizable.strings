@@ -4363,6 +4363,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Meldingen inschakelen?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Start je %1$@ opnieuw op als je geen Signal-meldingen ontvangt.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Meldingen kunnen niet worden weergegeven";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Handelingen omvatten ‘Markeren als gelezen’, ‘Reageren’ en ‘Terugbellen’.";
 
@@ -4946,7 +4952,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kan zien dat je een Signal-gebruiker bent, tenzij je een contact een bericht stuurt of een bestaande chat met iemand hebt.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kan zien dat je een Signal-gebruiker bent, tenzij je hen een bericht stuurt of een bestaande chat met iemand hebt.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Voorbeeld: %1$@";
@@ -7742,7 +7748,7 @@
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Wanneer je je gebruikersnaam wijzigt, werken je bestaande QR-code en link niet langer en worden deze vernieuwd. Weet je het zeker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Met gebruikersnamen kunnen anderen jou berichten sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een reeks cijfers om je adres privé te houden. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Gebruikersnamen zorgen ervoor dat anderen jou berichten kunnen sturen zonder je telefoonnummer nodig te hebben. Ze zijn gekoppeld aan een cijferset zodat jouw adres privé blijft. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Kies jouw gebruikersnaam";
@@ -7754,7 +7760,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Ongeldige gebruikersnaam, voer minimaal 2 cijfers in";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen jou je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel jouw gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijferset.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Deze cijfers helpen om je gebruikersnaam privé te houden zodat je ongewenste berichten kunt voorkomen. Deel je gebruikersnaam alleen met mensen en groepen waarmee je zou willen chatten. Als je je gebruikersnaam wijzigt, krijg je een nieuwe cijferset.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Wat is dit nummer?";
