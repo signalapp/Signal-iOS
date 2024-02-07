@@ -4345,6 +4345,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Értesítések bekapcsolása?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Ha nem kapod meg a Signal-értesítéseket, indítsd újra %1$@ készülékedet.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Nem jeleníthetők meg az értesítések";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Művelet lehet \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
 

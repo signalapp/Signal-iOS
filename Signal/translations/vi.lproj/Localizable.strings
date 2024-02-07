@@ -4345,6 +4345,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Bật thông báo?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Khởi động lại %1$@ nếu bạn không nhận được thông báo của Signal.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Không Thể Hiển Thị Thông Báo";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Hành động bao gồm \"Đánh dẫu là đã đọc\", \"Trả lời\" và \"Gọi lại\".";
 

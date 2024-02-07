@@ -4345,6 +4345,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "اعلان‌ها روشن شوند؟";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "اگر اعلان‌های سیگنال را دریافت نمی‌کنید، %1$@ خود را بازراه‌اندازی کنید.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "اعلان‌ها نمایش داده نشد";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "اقدامات شامل \"علامت گذاری به عنوان خوانده شده،\" \"پاسخ،\" و \"تماس\" می باشند.";
 

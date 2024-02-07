@@ -4345,6 +4345,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Nyalakan Pemberitahuan?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "Mulai ulang %1$@ jika Anda tidak menerima notifikasi Signal.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "Tidak Dapat Menampilkan Notifikasi";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Respon termasuk \"Tandai telah Terbaca\", \"Balas\", and \"Telepon\"";
 

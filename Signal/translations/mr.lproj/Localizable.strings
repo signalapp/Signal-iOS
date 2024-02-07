@@ -4345,6 +4345,12 @@
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "सूचना चालू करायच्या?";
 
+/* Shown as the body of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_MESSAGE" = "आपणाला Signal अधिसूचना प्राप्त होत नसतील तर आपला %1$@ रिस्टार्ट करा.";
+
+/* Shown as the title of an alert when notifications can't be shown due to an error. */
+"NOTIFICATIONS_ERROR_TITLE" = "अधिसूचना दाखवू शकलो नाही";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "क्रियांमध्ये \"वाचले म्हणून चिन्हांकित करा\", \"प्रत्युत्तर द्या\" आणि \"परत कॉल करा\" समाविष्ट आहे.";
 
