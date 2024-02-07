@@ -339,19 +339,19 @@ public class ProfileFetcherJob: NSObject {
                 .filter { persistedBadgeIds.contains($0.badgeId) }
 
             self.profileManager.updateProfile(
-                for: SignalServiceAddress(serviceId),
+                address: SignalServiceAddress(serviceId),
                 givenName: givenName,
                 familyName: familyName,
                 bio: bio,
                 bioEmoji: bioEmoji,
-                avatarUrlPath: profile.avatarUrlPath,
-                optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
+                remoteAvatarUrlPath: profile.avatarUrlPath,
+                localAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
-                lastFetch: Date(),
+                lastFetchDate: Date(),
                 isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
                 authedAccount: self.options.authedAccount,
-                transaction: transaction
+                tx: transaction
             )
 
             if localIdentifiers.contains(serviceId: serviceId) {

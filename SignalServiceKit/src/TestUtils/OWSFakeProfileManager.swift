@@ -21,6 +21,23 @@ extension OWSFakeProfileManager: ProfileManager {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
+    public func updateProfile(
+        address: SignalServiceAddress,
+        givenName: String?,
+        familyName: String?,
+        bio: String?,
+        bioEmoji: String?,
+        remoteAvatarUrlPath: String?,
+        localAvatarFileUrl: URL?,
+        profileBadges: [OWSUserProfileBadgeInfo],
+        lastFetchDate: Date,
+        isPniCapable: Bool,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        tx: SDSAnyWriteTransaction
+    ) {
+    }
+
     public func updateLocalProfile(
         profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,

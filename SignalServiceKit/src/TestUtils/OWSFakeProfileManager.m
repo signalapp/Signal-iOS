@@ -268,23 +268,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.hasLocalProfile;
 }
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-                      givenName:(nullable NSString *)givenName
-                     familyName:(nullable NSString *)familyName
-                            bio:(nullable NSString *)bio
-                       bioEmoji:(nullable NSString *)bioEmoji
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath
-          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
-                  profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
-                  lastFetchDate:(NSDate *)lastFetchDate
-                   isPniCapable:(BOOL)isPniCapable
-              userProfileWriter:(UserProfileWriter)userProfileWriter
-                  authedAccount:(nonnull AuthedAccount *)authedAccount
-                    transaction:(SDSAnyWriteTransaction *)writeTx
-{
-    // Do nothing.
-}
-
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile
 {
     // Do nothing.

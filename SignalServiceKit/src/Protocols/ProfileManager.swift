@@ -65,6 +65,22 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileKey: OWSAES256Key
     ) async throws -> Data
 
+    func updateProfile(
+        address: SignalServiceAddress,
+        givenName: String?,
+        familyName: String?,
+        bio: String?,
+        bioEmoji: String?,
+        remoteAvatarUrlPath: String?,
+        localAvatarFileUrl: URL?,
+        profileBadges: [OWSUserProfileBadgeInfo],
+        lastFetchDate: Date,
+        isPniCapable: Bool,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        tx: SDSAnyWriteTransaction
+    )
+
     func updateLocalProfile(
         profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,

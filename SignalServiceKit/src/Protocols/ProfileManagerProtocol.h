@@ -136,23 +136,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-// Profile fetches will make a best effort to download and decrypt avatar
-// data, but optionalAvatarFileUrl may not be populated due to network
-// failures, decryption errors, service issues, etc.
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-                      givenName:(nullable NSString *)givenName
-                     familyName:(nullable NSString *)familyName
-                            bio:(nullable NSString *)bio
-                       bioEmoji:(nullable NSString *)bioEmoji
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath
-          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
-                  profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
-                  lastFetchDate:(NSDate *)lastFetchDate
-                   isPniCapable:(BOOL)isPniCapable
-              userProfileWriter:(UserProfileWriter)userProfileWriter
-                  authedAccount:(AuthedAccount *)authedAccount
-                    transaction:(SDSAnyWriteTransaction *)writeTx;
-
 - (void)warmCaches;
 
 @property (nonatomic, readonly) BOOL hasProfileName;

@@ -1258,72 +1258,6 @@ extension OWSUserProfile {
     }
 
     @available(swift, obsoleted: 1.0)
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:lastFetchDate:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
-    func update(
-        givenName: String?,
-        familyName: String?,
-        bio: String?,
-        bioEmoji: String?,
-        badges: [OWSUserProfileBadgeInfo],
-        avatarUrlPath: String?,
-        lastFetchDate: Date,
-        isPniCapable: Bool,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            bio: .setTo(bio),
-            bioEmoji: .setTo(bioEmoji),
-            avatarUrlPath: .setTo(avatarUrlPath),
-            lastFetchDate: .setTo(lastFetchDate),
-            badges: .setTo(badges),
-            isPniCapable: .setTo(isPniCapable),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:badges:avatarUrlPath:avatarFileName:lastFetchDate:isPniCapable:userProfileWriter:authedAccount:transaction:completion:)
-    func update(
-        givenName: String?,
-        familyName: String?,
-        bio: String?,
-        bioEmoji: String?,
-        badges: [OWSUserProfileBadgeInfo],
-        avatarUrlPath: String?,
-        avatarFileName: String?,
-        lastFetchDate: Date,
-        isPniCapable: Bool,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction,
-        completion: (() -> Void)?
-    ) {
-        update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            bio: .setTo(bio),
-            bioEmoji: .setTo(bioEmoji),
-            avatarUrlPath: .setTo(avatarUrlPath),
-            avatarFileName: .setTo(avatarFileName),
-            lastFetchDate: .setTo(lastFetchDate),
-            badges: .setTo(badges),
-            isPniCapable: .setTo(isPniCapable),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
     @objc
     public func update(
         avatarFileName: String?,
@@ -1403,25 +1337,6 @@ extension OWSUserProfile {
             authedAccount: authedAccount,
             transaction: transaction,
             completion: completion
-        )
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    public func update(
-        lastFetchDate: Date,
-        isPniCapable: Bool,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        update(
-            lastFetchDate: .setTo(lastFetchDate),
-            isPniCapable: .setTo(isPniCapable),
-            userProfileWriter: userProfileWriter,
-            authedAccount: authedAccount,
-            transaction: transaction,
-            completion: nil
         )
     }
 

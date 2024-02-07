@@ -31,6 +31,70 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
+    public func updateProfile(
+        address: SignalServiceAddress,
+        givenName: String?,
+        familyName: String?,
+        bio: String?,
+        bioEmoji: String?,
+        remoteAvatarUrlPath: String?,
+        localAvatarFileUrl: URL?,
+        profileBadges: [OWSUserProfileBadgeInfo],
+        lastFetchDate: Date,
+        isPniCapable: Bool,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        tx: SDSAnyWriteTransaction
+    ) {
+        AssertNotOnMainThread()
+
+        var address = OWSUserProfile.internalAddress(for: address)
+        if authedAccount.isAddressForLocalUser(address) {
+            address = OWSUserProfile.localProfileAddress
+        }
+
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(
+            for: address,
+            authedAccount: authedAccount,
+            transaction: tx
+        )
+
+        guard userProfile.profileKey != nil else {
+            userProfile.update(
+                lastFetchDate: .setTo(lastFetchDate),
+                isPniCapable: .setTo(isPniCapable),
+                userProfileWriter: userProfileWriter,
+                authedAccount: authedAccount,
+                transaction: tx,
+                completion: nil
+            )
+            return
+        }
+
+        let newAvatarFileName: OptionalChange<String?>
+        if let avatarFileName = localAvatarFileUrl?.lastPathComponent {
+            newAvatarFileName = .setTo(avatarFileName)
+        } else {
+            newAvatarFileName = .noChange
+        }
+
+        userProfile.update(
+            givenName: .setTo(givenName),
+            familyName: .setTo(familyName),
+            bio: .setTo(bio),
+            bioEmoji: .setTo(bioEmoji),
+            avatarUrlPath: .setTo(remoteAvatarUrlPath),
+            avatarFileName: newAvatarFileName,
+            lastFetchDate: .setTo(lastFetchDate),
+            badges: .setTo(profileBadges),
+            isPniCapable: .setTo(isPniCapable),
+            userProfileWriter: userProfileWriter,
+            authedAccount: authedAccount,
+            transaction: tx,
+            completion: nil
+        )
+    }
+
     // The main entry point for updating the local profile. It will:
     //
     // * Enqueue a service update.
