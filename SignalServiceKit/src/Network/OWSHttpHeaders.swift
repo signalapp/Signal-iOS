@@ -35,21 +35,15 @@ public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
     // MARK: -
 
     public func hasValueForHeader(_ header: String) -> Bool {
-        headers.keys.lazy.map { $0.lowercased() }.contains(header.lowercased())
+        return headers[header.lowercased()] != nil
     }
 
     public func value(forHeader header: String) -> String? {
-        let header = header.lowercased()
-        for (key, value) in headers {
-            if key.lowercased() == header {
-                return value
-            }
-        }
-        return nil
+        return headers[header.lowercased()]
     }
 
     public func removeValueForHeader(_ header: String) {
-        headers = headers.filter { $0.key.lowercased() != header.lowercased() }
+        headers = headers.filter { $0.key != header.lowercased() }
         owsAssertDebug(!hasValueForHeader(header))
     }
 
@@ -63,18 +57,19 @@ public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
             return
         }
         for (key, value) in newHttpHeaders {
+            let key = key.lowercased()
             if let existingValue = self.value(forHeader: key) {
                 if value == existingValue {
                     // Don't warn about redundant changes.
                 } else if overwriteOnConflict {
                     // We expect to overwrite the User-Agent; don't log it.
-                    if key.lowercased() != Self.userAgentHeaderKey.lowercased() {
+                    if key != Self.userAgentHeaderKey.lowercased() {
                         Logger.verbose("Overwriting header: \(key), \(existingValue) -> \(value)")
                     }
-                } else if key.lowercased() == Self.acceptLanguageHeaderKey.lowercased() {
+                } else if key == Self.acceptLanguageHeaderKey.lowercased() {
                     // Don't warn about default headers.
                     continue
-                } else if key.lowercased() == Self.userAgentHeaderKey.lowercased() {
+                } else if key == Self.userAgentHeaderKey.lowercased() {
                     // Don't warn about default headers.
                     continue
                 } else {
@@ -206,7 +201,7 @@ public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
     public var debugDescription: String {
         var headerValues = [String]()
         for (key, value) in headers.sorted(by: { $0.key < $1.key }) {
-            if Self.whitelistedLoggedHeaderKeys.contains(key.lowercased()) {
+            if Self.whitelistedLoggedHeaderKeys.contains(key) {
                 headerValues.append("\(key): \(value)")
             } else {
                 headerValues.append(key)

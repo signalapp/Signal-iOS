@@ -156,7 +156,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         } catch {
             let retryMode: Upload.FailureMode.RetryMode = {
                 guard
-                    let retryHeader = error.httpResponseHeaders?.headers["Retry-After"],
+                    let retryHeader = error.httpResponseHeaders?.value(forHeader: "retry-after"),
                     let delay = TimeInterval(retryHeader)
                 else { return .immediately }
                 return .afterDelay(delay)

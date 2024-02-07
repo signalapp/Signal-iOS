@@ -531,7 +531,7 @@ public class OWSWebSocket: NSObject {
         headers.addHeaderList(message.headers, overwriteOnConflict: true)
 
         var serverDeliveryTimestamp: UInt64 = 0
-        if let timestampString = headers.value(forHeader: "X-Signal-Timestamp") {
+        if let timestampString = headers.value(forHeader: "x-signal-timestamp") {
             if let timestamp = UInt64(timestampString) {
                 serverDeliveryTimestamp = timestamp
             } else {

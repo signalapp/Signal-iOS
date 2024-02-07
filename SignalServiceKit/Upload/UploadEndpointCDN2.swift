@@ -64,7 +64,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 throw OWSAssertionError("Invalid statusCode: \(response.responseStatusCode).")
             }
             guard
-                let locationHeader = response.responseHeaders["Location"],
+                let locationHeader = response.responseHeaders["location"],
                 locationHeader.lowercased().hasPrefix("http"),
                 let locationUrl = URL(string: locationHeader)
             else {
@@ -123,7 +123,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         // See: https://cloud.google.com/storage/docs/performing-resumable-uploads#status-check
         let expectedPrefix = "bytes=0-"
         guard
-            let rangeHeader = response.responseHeaders["Range"],
+            let rangeHeader = response.responseHeaders["range"],
             rangeHeader.hasPrefix(expectedPrefix)
         else {
             // Return zero to restart the upload.

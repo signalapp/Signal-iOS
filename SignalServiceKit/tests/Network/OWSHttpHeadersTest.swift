@@ -54,7 +54,7 @@ class OWSHttpHeadersTest: XCTestCase {
 
         XCTAssertEqual(
             "\(httpHeaders)",
-            "<OWSHttpHeaders: [Content-Type; Retry-After: Wed, 21 Oct 2015 07:28:01 GMT; x-signal-timestamp: 1669077270]>"
+            "<OWSHttpHeaders: [content-type; retry-after: Wed, 21 Oct 2015 07:28:01 GMT; x-signal-timestamp: 1669077270]>"
         )
     }
 

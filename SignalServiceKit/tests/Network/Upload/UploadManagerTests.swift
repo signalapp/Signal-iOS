@@ -57,7 +57,7 @@ class UploadManagerTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "PUT")
 
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "0")
-            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Range"], "bytes */\(size)")
+            XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes */\(size)")
         } else { XCTFail("Unexpected request encountered.") }
 
         if case let .uploadTask(request) = helper.capturedRequests[3] {
@@ -102,7 +102,7 @@ class UploadManagerTests: XCTestCase {
 
             let nextByte = firstUpload + 1
             let lastByte = size - 1
-            XCTAssertEqual(request.allHTTPHeaderFields!["Content-Range"], "bytes \(nextByte)-\(lastByte)/\(size)")
+            XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes \(nextByte)-\(lastByte)/\(size)")
         } else { XCTFail("Unexpected request encountered.") }
         XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.sourceFilename, "test-file")
     }

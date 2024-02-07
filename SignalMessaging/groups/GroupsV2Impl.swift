@@ -760,9 +760,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             }
             let earlyEnd: UInt32?
             if response.responseStatusCode == 206 {
-                let groupRangeHeader = response.responseHeaders.first {
-                    $0.key.caseInsensitiveCompare("content-range") == .orderedSame
-                }?.value
+                let groupRangeHeader = response.responseHeaders["content-range"]
                 earlyEnd = GroupChangePage.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
             } else {
                 earlyEnd = nil
