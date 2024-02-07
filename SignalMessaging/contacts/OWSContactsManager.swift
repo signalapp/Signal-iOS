@@ -606,7 +606,7 @@ extension OWSContactsManager {
         )
         var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
 
-        var signalAccountsToInsert = [SignalAccount]()
+        var signalAccountChanges: [(remove: SignalAccount?, insert: SignalAccount?)] = []
         for newSignalAccount in newSignalAccounts {
             let address = newSignalAccount.recipientAddress
 
@@ -617,7 +617,8 @@ extension OWSContactsManager {
             }
 
             let oldSignalAccountToKeep: SignalAccount?
-            switch oldSignalAccountsMap[address] {
+            let oldSignalAccount = oldSignalAccountsMap[address]
+            switch oldSignalAccount {
             case .none:
                 oldSignalAccountToKeep = nil
 
@@ -633,12 +634,11 @@ extension OWSContactsManager {
                 newSignalAccountsMap[address] = oldSignalAccount
             } else {
                 newSignalAccountsMap[address] = newSignalAccount
-                signalAccountsToInsert.append(newSignalAccount)
+                signalAccountChanges.append((oldSignalAccount, newSignalAccount))
             }
         }
 
         // Clean up orphans.
-        var signalAccountsToRemove = [SignalAccount]()
         for signalAccount in oldSignalAccounts {
             if newSignalAccountsMap[signalAccount.recipientAddress]?.uniqueId == signalAccount.uniqueId {
                 // If the SignalAccount is going to be inserted or updated, it doesn't need
@@ -647,56 +647,47 @@ extension OWSContactsManager {
             }
             // Clean up instances that have been replaced by another instance or are no
             // longer in the system contacts.
-            signalAccountsToRemove.append(signalAccount)
+            signalAccountChanges.append((signalAccount, nil))
         }
 
         // Update cached SignalAccounts on disk
-        databaseStorage.write { transaction in
-            func touchContactThread(for signalAccount: SignalAccount) {
-                if
+        databaseStorage.write { tx in
+            func touchContactThread(for signalAccount: SignalAccount?) {
+                guard
+                    let signalAccount,
                     let contactThread = ContactThreadFinder()
-                        .contactThread(for: signalAccount.recipientAddress, tx: transaction),
+                        .contactThread(for: signalAccount.recipientAddress, tx: tx),
                     contactThread.shouldThreadBeVisible
-                {
-                    Logger.info("Touching thread for reindexing: \(signalAccount.recipientAddress)")
-                    databaseStorage.touch(
-                        thread: contactThread,
-                        shouldReindex: true,
-                        transaction: transaction
-                    )
+                else {
+                    return
                 }
+                databaseStorage.touch(thread: contactThread, shouldReindex: true, transaction: tx)
             }
 
-            if !signalAccountsToRemove.isEmpty {
-                Logger.info("Removing \(signalAccountsToRemove.count) old SignalAccounts.")
-                for signalAccount in signalAccountsToRemove {
-                    Logger.verbose("Removing old SignalAccount: \(signalAccount.recipientAddress)")
-                    signalAccount.anyRemove(transaction: transaction)
-                    touchContactThread(for: signalAccount)
+            for (signalAccountToRemove, signalAccountToInsert) in signalAccountChanges {
+                let oldSignalAccount = signalAccountToRemove.flatMap {
+                    SignalAccount.anyFetch(uniqueId: $0.uniqueId, transaction: tx)
                 }
+                let newSignalAccount = signalAccountToInsert
+
+                oldSignalAccount?.anyRemove(transaction: tx)
+                newSignalAccount?.anyInsert(transaction: tx)
+
+                touchContactThread(for: newSignalAccount ?? oldSignalAccount)
             }
 
-            if signalAccountsToInsert.count > 0 {
-                Logger.info("Saving \(signalAccountsToInsert.count) SignalAccounts.")
-                for signalAccount in signalAccountsToInsert {
-                    Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
-                    signalAccount.anyInsert(transaction: transaction)
-                    touchContactThread(for: signalAccount)
-                }
-            }
-
-            Logger.info("SignalAccount count: \(newSignalAccountsMap.count).")
+            Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
 
             // Add system contacts to the profile whitelist immediately so that they do
             // not see the "message request" UI.
             profileManager.addUsers(
                 toProfileWhitelist: Array(newSignalAccountsMap.keys),
                 userProfileWriter: .systemContactsFetch,
-                transaction: transaction
+                transaction: tx
             )
 
 #if DEBUG
-            let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
+            let persistedAddresses = SignalAccount.anyFetchAll(transaction: tx).map {
                 $0.recipientAddress
             }
             let persistedAddressSet = Set(persistedAddresses)
@@ -711,7 +702,7 @@ extension OWSContactsManager {
             allSignalAccountsAfterFetch: newSignalAccountsMap
         )
 
-        let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToInsert.isEmpty
+        let didChangeAnySignalAccount = !signalAccountChanges.isEmpty
         DispatchQueue.main.async {
             // Post a notification if something changed or this is the first load since launch.
             let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
