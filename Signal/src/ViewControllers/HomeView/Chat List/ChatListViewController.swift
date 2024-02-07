@@ -188,6 +188,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.viewDidAppear(animated)
 
         showBadgeSheetIfNecessary()
+        Task { await self.checkForFailedServiceExtensionLaunches() }
 
         hasEverAppeared = true
         if viewState.multiSelectState.isActive {
@@ -1180,6 +1181,133 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         stack.isLayoutMarginsRelativeArrangement = true
         paymentsBannerView.addSubview(stack)
         stack.autoPinEdgesToSuperviewEdges()
+    }
+
+    // MARK: - Notifications
+
+    func checkForFailedServiceExtensionLaunches() async {
+        guard #available(iOS 17.0, *) else {
+            return
+        }
+
+        guard RemoteConfig.shouldCheckForServiceExtensionFailures else {
+            return
+        }
+
+        await messageProcessor.waitForFetchingAndProcessing().awaitable()
+
+        // Has the NSE ever launched with the current version?
+        let appVersion = AppVersionImpl.shared
+        guard
+            let mainAppVersion = appVersion.lastCompletedLaunchMainAppVersion,
+            let nseAppVersion = appVersion.lastCompletedLaunchNSEAppVersion,
+            let upgradeDate = appVersion.firstMainAppLaunchDateAfterUpdate
+        else {
+            return
+        }
+        guard nseAppVersion != mainAppVersion else {
+            return
+        }
+
+        // Has it been at least an hour since we upgraded?
+        guard -upgradeDate.timeIntervalSinceNow > kHourInterval else {
+            return
+        }
+
+        // Has the user restarted since the most recent update was installed?
+        let bootTime: Date? = {
+            var timeVal = timeval()
+            var timeValSize = MemoryLayout<timeval>.size
+            let err = sysctlbyname("kern.boottime", &timeVal, &timeValSize, nil, 0)
+            guard err == 0, timeValSize == MemoryLayout<timeval>.size else {
+                return nil
+            }
+            return Date(timeIntervalSince1970: TimeInterval(timeVal.tv_sec))
+        }()
+        guard let bootTime else {
+            return
+        }
+        guard bootTime < upgradeDate else {
+            return
+        }
+
+        let keyValueStore = SDSKeyValueStore(collection: "FailedNSELaunches")
+        let mostRecentDateKey = "mostRecentPromptDate"
+        let promptCountKey = "promptCount"
+
+        let shouldShowPrompt = databaseStorage.read { tx in
+            // If we've shown the prompt recently, don't show it again.
+            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
+            let promptBackoff: TimeInterval = {
+                switch promptCount {
+                case 0:
+                    return 0
+                case 1, 2:
+                    return 24*kHourInterval
+                case 3:
+                    return 48*kHourInterval
+                case 4:
+                    return 72*kHourInterval
+                default:
+                    return 96*kHourInterval
+                }
+            }()
+            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx)
+            if let mostRecentDate, -mostRecentDate.timeIntervalSinceNow < promptBackoff {
+                return false
+            }
+
+            // If we haven't received a message since upgrading, don't show it.
+            guard
+                let mostRecentMessage = InteractionFinder.lastInsertedIncomingMessage(transaction: tx),
+                Date(millisecondsSince1970: mostRecentMessage.receivedAtTimestamp) > upgradeDate
+            else {
+                return false
+            }
+            return true
+        }
+
+        guard shouldShowPrompt else {
+            return
+        }
+
+        guard isChatListTopmostViewController() else {
+            return
+        }
+
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "NOTIFICATIONS_ERROR_TITLE",
+                comment: "Shown as the title of an alert when notifications can't be shown due to an error."
+            ),
+            message: String(
+                format: OWSLocalizedString(
+                    "NOTIFICATIONS_ERROR_MESSAGE",
+                    comment: "Shown as the body of an alert when notifications can't be shown due to an error."
+                ),
+                UIDevice.current.localizedModel
+            )
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.contactSupport,
+            handler: { [weak self] _ in
+                guard let self else { return }
+                ContactSupportAlert.presentStep2(emailSupportFilter: "NotLaunchingNSE", fromViewController: self)
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
+
+        let promptDate = Date()
+        self.present(actionSheet, animated: true)
+
+        await databaseStorage.awaitableWrite { tx in
+            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
+            keyValueStore.setInt(
+                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx) + 1,
+                key: promptCountKey,
+                transaction: tx
+            )
+        }
     }
 }
 

@@ -42,6 +42,7 @@ public protocol AppVersion {
     var lastCompletedLaunchMainAppVersion: String? { get }
     var lastCompletedLaunchSAEAppVersion: String? { get }
     var lastCompletedLaunchNSEAppVersion: String? { get }
+    var firstMainAppLaunchDateAfterUpdate: Date? { get }
 
     var buildDate: Date { get }
 
@@ -62,6 +63,7 @@ public class AppVersionImpl: AppVersion {
     private let lastCompletedMainAppLaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp"
     private let lastCompletedSAELaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_SAE"
     private let lastCompletedNSELaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_NSE"
+    private let firstMainAppLaunchDateAfterUpdateKey = "FirstMainAppLaunchDateAfterUpdate"
 
     public static let shared: AppVersion = {
         let result = AppVersionImpl(
@@ -126,8 +128,10 @@ public class AppVersionImpl: AppVersion {
     public private(set) var lastCompletedLaunchMainAppVersion: String? {
         get { userDefaults.string(forKey: lastCompletedMainAppLaunchVersionKey) }
         set {
+            let didChange = lastCompletedLaunchMainAppVersion != newValue
             userDefaults.setOrRemove(newValue, forKey: lastCompletedLaunchVersionKey)
             userDefaults.setOrRemove(newValue, forKey: lastCompletedMainAppLaunchVersionKey)
+            if didChange { userDefaults.set(Date(), forKey: firstMainAppLaunchDateAfterUpdateKey) }
         }
     }
     public private(set) var lastCompletedLaunchSAEAppVersion: String? {
@@ -143,6 +147,9 @@ public class AppVersionImpl: AppVersion {
             userDefaults.setOrRemove(newValue, forKey: lastCompletedLaunchVersionKey)
             userDefaults.setOrRemove(newValue, forKey: lastCompletedNSELaunchVersionKey)
         }
+    }
+    public var firstMainAppLaunchDateAfterUpdate: Date? {
+        return userDefaults.object(forKey: firstMainAppLaunchDateAfterUpdateKey) as? Date
     }
 
     public let buildDate: Date
@@ -340,6 +347,8 @@ public class MockAppVerion: AppVersion {
     public var lastCompletedLaunchSAEAppVersion: String?
 
     public var lastCompletedLaunchNSEAppVersion: String?
+
+    public var firstMainAppLaunchDateAfterUpdate: Date?
 
     public var buildDate: Date = Date()
 
