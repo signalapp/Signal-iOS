@@ -1193,6 +1193,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         await messageProcessor.waitForFetchingAndProcessing().awaitable()
 
+        let notificationSettings = await UNUserNotificationCenter.current().notificationSettings()
+        guard notificationSettings.authorizationStatus == .authorized else {
+            return
+        }
+
         // Has the NSE ever launched with the current version?
         let appVersion = AppVersionImpl.shared
         guard
