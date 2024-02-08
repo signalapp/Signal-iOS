@@ -8,10 +8,11 @@ import SignalServiceKit
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)
 /// Useful when reporting a profile spoofing attempt to the user.
 /// In cases where a colliding addresses' display name has recently changed, `oldName` and `latestUpdate` may be populated.
-public struct NameCollision: Dependencies {
+public struct NameCollision {
     public struct Element {
         public let address: SignalServiceAddress
         public let currentName: String
+        public let shortName: String
         public let oldName: String?
         public let latestUpdateTimestamp: UInt64?
     }
@@ -90,6 +91,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
                 NameCollision.Element(
                     address: $0,
                     currentName: $0.displayName(transaction: transaction),
+                    shortName: $0.shortDisplayName(tx: transaction),
                     oldName: nil,
                     latestUpdateTimestamp: nil)
             })
@@ -185,6 +187,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
                     return NameCollision.Element(
                         address: address,
                         currentName: address.displayName(transaction: transaction),
+                        shortName: address.shortDisplayName(tx: transaction),
                         oldName: oldestUpdateMessage?.profileChangesOldFullName,
                         latestUpdateTimestamp: newestUpdateMessage?.timestamp)
                 })
@@ -268,6 +271,10 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 fileprivate extension SignalServiceAddress {
     func displayName(transaction readTx: SDSAnyReadTransaction) -> String {
         Self.contactsManager.displayName(for: self, transaction: readTx)
+    }
+
+    func shortDisplayName(tx: SDSAnyReadTransaction) -> String {
+        Self.contactsManager.shortDisplayName(for: self, transaction: tx)
     }
 }
 

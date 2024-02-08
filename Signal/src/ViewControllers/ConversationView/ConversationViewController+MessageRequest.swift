@@ -431,7 +431,7 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         return actionSheet
     }
 
-    func createDeleteThreadActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
+    func createDeleteThreadActionSheet() -> ActionSheetController {
         let actionSheetTitle: String
         let actionSheetMessage: String
         let confirmationText: String
@@ -462,11 +462,8 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
             self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                                    responseType: .delete)
             self.leaveAndSoftDeleteThread()
-            sheetCompletion?(true)
         }))
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: { _ in
-            sheetCompletion?(false)
-        }))
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
         return actionSheet
     }
 

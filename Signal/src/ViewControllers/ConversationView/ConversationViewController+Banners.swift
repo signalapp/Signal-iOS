@@ -86,6 +86,7 @@ public extension ConversationViewController {
         let collisionFinder = ContactThreadNameCollisionFinder
             .makeToCheckMessageRequestNameCollisions(forContactThread: contactThread)
 
+        // TODO: Display profile pictures of colliding contacts
         let collisionCount = databaseStorage.read { transaction -> Int in
             guard viewState.shouldShowMessageRequestNameCollisionBanner(transaction: transaction) else {
                 // The banner should not be shown, so let's pretend we have no
@@ -102,11 +103,9 @@ public extension ConversationViewController {
 
         let banner = NameCollisionBanner()
         banner.labelText = OWSLocalizedString(
-            "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
+            "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL",
             comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
-        banner.reviewActionText = OWSLocalizedString(
-            "MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
-            comment: "Button to allow user to review known name collisions with an incoming message request")
+        banner.reviewActionText = CommonStrings.viewButton
 
         banner.closeAction = { [weak self] in
             guard let self = self else { return }
@@ -157,9 +156,23 @@ public extension ConversationViewController {
 
             let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }
 
-            let titleFormat = OWSLocalizedString("GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d", tableName: "PluralAware",
-                                                comment: "Banner title alerting user to a name collision set ub the group membership. Embeds {{ total number of colliding members }}")
-            let title = String.localizedStringWithFormat(titleFormat, totalCollisionElementCount)
+            let title: String
+
+            if collisionSets.count > 1 {
+                let titleFormat = OWSLocalizedString(
+                    "GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d",
+                    tableName: "PluralAware",
+                    comment: "Banner title alerting user to a name collision set ub the group membership. Embeds {{ total number of colliding members }}"
+                )
+                title = String.localizedStringWithFormat(titleFormat, collisionSets.count)
+            } else {
+                let titleFormat = OWSLocalizedString(
+                    "GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d",
+                    tableName: "PluralAware",
+                    comment: "Banner title alerting user about multiple name collisions in group membership. Embeds {{ number of sets of colliding members }}"
+                )
+                title = String.localizedStringWithFormat(titleFormat, totalCollisionElementCount)
+            }
 
             let fetchAvatarForAddress = { (address: SignalServiceAddress) -> UIImage? in
                 if address.isLocalAddress, let profileAvatar = self.profileManager.localProfileAvatarImage() {
@@ -180,9 +193,7 @@ public extension ConversationViewController {
 
         let banner = NameCollisionBanner()
         banner.labelText = title
-        banner.reviewActionText = OWSLocalizedString(
-            "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON",
-            comment: "Button to allow user to review known name collisions in group membership")
+        banner.reviewActionText = CommonStrings.viewButton
         if let avatar1 = avatar1, let avatar2 = avatar2 {
             banner.primaryImage = avatar1
             banner.secondaryImage = avatar2
@@ -286,6 +297,11 @@ public class GestureView: UIView {
 
 private class NameCollisionBanner: UIView {
 
+    private enum Constants {
+        static let avatarSize = CGSize(square: 24)
+        static let avatarBorderSize: CGFloat = 2
+    }
+
     var primaryImage: UIImage? {
         get { primaryImageView.image }
         set {
@@ -325,36 +341,61 @@ private class NameCollisionBanner: UIView {
     private let label: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = UIFont.dynamicTypeFootnote
+        label.font = UIFont.dynamicTypeFootnoteClamped
         label.textColor = Theme.secondaryTextAndIconColor
         return label
     }()
 
     private let primaryImageView: UIImageView = {
-        let avatarSize = CGSize(square: 24)
-        let borderWidth: CGFloat = 2
-        let totalSize = avatarSize.plus(CGSize(square: borderWidth))
+        let avatarSize = Constants.avatarSize
 
         let imageView = UIImageView.withTemplateImageName("info", tintColor: Theme.secondaryTextAndIconColor)
-        imageView.contentMode = .center
 
-        imageView.layer.borderColor = Theme.secondaryBackgroundColor.cgColor
-        imageView.layer.borderWidth = borderWidth
-        imageView.layer.cornerRadius = totalSize.smallerAxis / 2
+        imageView.layer.cornerRadius = avatarSize.smallerAxis / 2
         imageView.layer.masksToBounds = true
 
-        imageView.autoSetDimensions(to: totalSize)
+        imageView.autoSetDimensions(to: avatarSize)
         imageView.setCompressionResistanceHigh()
         imageView.setContentHuggingHigh()
         return imageView
     }()
 
-    private let secondaryImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.layer.cornerRadius = 12
-        imageView.layer.masksToBounds = true
+    private class SecondaryImageView: UIImageView {
+        override func layoutSubviews() {
+            layer.cornerRadius = Constants.avatarSize.smallerAxis / 2
+            layer.masksToBounds = true
 
-        imageView.autoSetDimensions(to: CGSize(square: 24))
+            // Mask out a border around the primary avatar.
+            // The background is a UIVisualEffect, so we can't just rely
+            // on adding a border around the primary avatar itself.
+            let borderSize = Constants.avatarBorderSize
+
+            let maskPath = UIBezierPath(rect: bounds)
+
+            let circlePath = UIBezierPath(
+                ovalIn: .init(
+                    origin: .init(
+                        x: self.width / 2 - borderSize,
+                        y: self.height / 2 - borderSize
+                    ),
+                    size: self.frame.size.plus(.square(borderSize * 2))
+                )
+            )
+
+            maskPath.append(circlePath)
+
+            let maskLayer = CAShapeLayer()
+            maskLayer.path = maskPath.cgPath
+            // Mask the inverse of the circle path
+            maskLayer.fillRule = .evenOdd
+
+            self.layer.mask = maskLayer
+        }
+    }
+
+    private let secondaryImageView: SecondaryImageView = {
+        let imageView = SecondaryImageView()
+        imageView.autoSetDimensions(to: Constants.avatarSize)
         imageView.setCompressionResistanceHigh()
         imageView.setContentHuggingHigh()
         return imageView
@@ -362,10 +403,13 @@ private class NameCollisionBanner: UIView {
 
     private let closeButton: OWSButton = {
         let button = OWSButton(
-            imageName: "x-circle-compact",
-            tintColor: Theme.secondaryTextAndIconColor)
-        button.accessibilityLabel = OWSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
-                                                      comment: "Accessibility label for banner close button")
+            imageName: "x-20",
+            tintColor: Theme.secondaryTextAndIconColor
+        )
+        button.accessibilityLabel = OWSLocalizedString(
+            "BANNER_CLOSE_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for banner close button"
+        )
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setCompressionResistanceHigh()
         button.setContentHuggingHigh()
@@ -373,62 +417,92 @@ private class NameCollisionBanner: UIView {
     }()
 
     private let reviewButton: OWSButton = {
-        let button = OWSButton()
-        button.setTitleColor(Theme.accentBlueColor, for: .normal)
-        button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
-        button.titleLabel?.font = UIFont.dynamicTypeFootnote
+        let button = OWSRoundedButton()
+        button.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
+        button.setTitleColor(Theme.primaryTextColor, for: .normal)
+        button.titleLabel?.font = UIFont.dynamicTypeFootnoteClamped.semibold()
+        button.dimsWhenHighlighted = true
+
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.contentEdgeInsets = .init(hMargin: 12, vMargin: 6)
+        button.setCompressionResistanceHigh()
+        button.setContentHuggingLow()
+
         return button
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = Theme.secondaryBackgroundColor
 
-        [secondaryImageView, primaryImageView, label, closeButton, reviewButton]
-            .forEach { addSubview($0) }
+        let stackView = UIStackView()
+
+        if UIAccessibility.isReduceTransparencyEnabled {
+            stackView.backgroundColor = Theme.secondaryBackgroundColor
+        } else {
+            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
+            stackView.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+            stackView.clipsToBounds = true
+        }
+
+        stackView.spacing = 12
+        stackView.layoutMargins = .init(margin: 12)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+
+        let imageContainer = UIView.container()
+
+        imageContainer.addSubview(secondaryImageView)
+        imageContainer.addSubview(primaryImageView)
+        stackView.addArrangedSubview(imageContainer)
 
         // Offsets adjusted in updateConstraints() based on content
         primaryImageViewConstraints = (
-            top: primaryImageView.autoPinEdge(.top, to: .top, of: self, withOffset: 18),
-            leading: primaryImageView.autoPinEdge(.leading, to: .leading, of: self, withOffset: 16),
-            trailing: label.autoPinEdge(.leading, to: .trailing, of: primaryImageView, withOffset: 16)
+            top: primaryImageView.autoPinEdge(.top, to: .top, of: imageContainer, withOffset: 0),
+            leading: primaryImageView.autoPinEdge(.leading, to: .leading, of: imageContainer, withOffset: 4)
         )
+        primaryImageView.autoPinEdge(toSuperviewEdge: .trailing)
+        primaryImageView.autoPinEdge(.bottom, to: .bottom, of: imageContainer)
         // Secondary image is always offset to the top left of the primary image
         secondaryImageView.autoPinEdge(.top, to: .top, of: primaryImageView, withOffset: -12)
         secondaryImageView.autoPinEdge(.leading, to: .leading, of: primaryImageView, withOffset: -12)
 
-        // Note that UIButtons are being aligned based on their content subviews
-        // UIButtons this small will have an intrinsic size larger than their content
-        // That extra padding between the content and its frame messes up alignment
-        label.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
-        closeButton.imageView?.autoPinEdge(.top, to: .top, of: label)
-        reviewButton.titleLabel?.autoPinEdge(.top, to: .bottom, of: label, withOffset: 3)
-        reviewButton.titleLabel?.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -12)
-
-        // Aligning things this way is useful, because we can also increase the tap target
-        // for the tiny close button without messing up the appearance.
-        closeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 8, vMargin: 8)
-        closeButton.imageView?.autoPinLeading(toTrailingEdgeOf: label, offset: 16)
-        closeButton.imageView?.autoPinTrailing(toEdgeOf: self, offset: -16)
-        reviewButton.titleLabel?.autoPinLeading(toEdgeOf: label)
-
+        stackView.addArrangedSubviews([label, reviewButton, closeButton])
         accessibilityElements = [label, reviewButton, closeButton]
+
+        let cornerRadius: CGFloat = 18
+
+        let stackContainer = UIView.container()
+        stackContainer.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.addBorder(with: .ows_blackAlpha10)
+        // Clip the stack view so the blurred background is clipped
+        stackView.layer.cornerRadius = cornerRadius
+        stackView.clipsToBounds = true
+        // Apply the shadow to the container so it doesn't get clipped out
+        stackContainer.layer.cornerRadius = cornerRadius
+        stackContainer.setShadow(radius: 8, opacity: 0.2, offset: .init(width: 0, height: 4))
+
+        let containerView = UIView()
+        containerView.layoutMargins = .init(hMargin: 16, vMargin: 8)
+        containerView.addSubview(stackContainer)
+        stackContainer.autoPinEdgesToSuperviewMargins()
+
+        self.addSubview(containerView)
+        containerView.autoPinEdgesToSuperviewEdges()
     }
 
-    var primaryImageViewConstraints: (top: NSLayoutConstraint, leading: NSLayoutConstraint, trailing: NSLayoutConstraint)?
+    var primaryImageViewConstraints: (top: NSLayoutConstraint, leading: NSLayoutConstraint)?
 
     override func updateConstraints() {
         super.updateConstraints()
-        guard let topConstraint = primaryImageViewConstraints?.top,
-              let leadingConstraint = primaryImageViewConstraints?.leading,
-              let trailingConstraint = primaryImageViewConstraints?.trailing else { return }
+        guard let constraints = primaryImageViewConstraints else { return }
 
         // If we have a secondary image, we want to adjust our constraints a bit
         let hasSecondaryImage = (secondaryImage != nil)
-        topConstraint.constant = hasSecondaryImage ? 24 : 18
-        leadingConstraint.constant = hasSecondaryImage ? 28 : 16
-        trailingConstraint.constant = hasSecondaryImage ? 12 : 16
+        constraints.top.constant = hasSecondaryImage ? 12 : 0
+        constraints.leading.constant = hasSecondaryImage ? 16 : 4
     }
 
     required init?(coder: NSCoder) {

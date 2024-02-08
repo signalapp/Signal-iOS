@@ -14,6 +14,7 @@ public class ProfileDetailLabel: UIStackView {
     public init(
         title: String,
         icon: ThemeIcon,
+        font: UIFont = .dynamicTypeBody,
         showDetailDisclosure: Bool = false,
         tapAction: (() -> Void)? = nil,
         longPressAction: (() -> Void)? = nil
@@ -27,7 +28,6 @@ public class ProfileDetailLabel: UIStackView {
         self.alignment = .top
         self.layoutMargins = .zero
 
-        let font = UIFont.dynamicTypeBody
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: Theme.primaryTextColor,
@@ -61,7 +61,7 @@ public class ProfileDetailLabel: UIStackView {
             let attachmentString = NSAttributedString.with(
                 image: chevron,
                 font: font,
-                attributes: textAttributes
+                attributes: [.foregroundColor: Theme.primaryIconColor]
             )
             titleString.append(attachmentString)
         }
@@ -73,7 +73,7 @@ public class ProfileDetailLabel: UIStackView {
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
         }
         if longPressAction != nil {
-            addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPress)))
+            addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(sender:))))
         }
     }
 
@@ -87,7 +87,8 @@ public class ProfileDetailLabel: UIStackView {
     }
 
     @objc
-    private func didLongPress() {
+    private func didLongPress(sender: UIGestureRecognizer) {
+        guard sender.state == .began else { return }
         longPressAction?()
     }
 }
@@ -95,15 +96,22 @@ public class ProfileDetailLabel: UIStackView {
 // MARK: Convenience
 
 public extension ProfileDetailLabel {
-    static func profile(title: String) -> ProfileDetailLabel {
-        .init(title: title, icon: .profileName)
+    static func profile(
+        title: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(title: title, icon: .profileName, font: font)
     }
 
-    static func profileAbout(bio: String) -> ProfileDetailLabel {
-        .init(title: bio, icon: .profileAbout)
+    static func profileAbout(
+        bio: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(title: bio, icon: .profileAbout, font: font)
     }
 
     static func signalConnectionLink(
+        font: UIFont = .dynamicTypeBody,
         shouldDismissOnNavigation: Bool,
         presentEducationFrom viewController: UIViewController?
     ) -> ProfileDetailLabel {
@@ -113,6 +121,7 @@ public extension ProfileDetailLabel {
                 comment: "A label indicating a user is a signal connection."
             ),
             icon: .contactInfoSignalConnection,
+            font: font,
             showDetailDisclosure: true,
             tapAction: { [weak viewController] in
                 func action() {
@@ -127,7 +136,10 @@ public extension ProfileDetailLabel {
         )
     }
 
-    static func inSystemContacts(name: String) -> ProfileDetailLabel {
+    static func inSystemContacts(
+        name: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
         .init(
             title: String(
                 format: OWSLocalizedString(
@@ -136,13 +148,15 @@ public extension ProfileDetailLabel {
                 ),
                 name
             ),
-            icon: .contactInfoUserInContacts
+            icon: .contactInfoUserInContacts,
+            font: font
         )
     }
 
     static func phoneNumber(
         _ phoneNumber: String,
-        presentSuccessToastFrom viewController: UIViewController
+        font: UIFont = .dynamicTypeBody,
+        presentSuccessToastFrom viewController: UIViewController?
     ) -> ProfileDetailLabel {
         let copyPhoneNumber: () -> Void = { [weak viewController] in
             UIPasteboard.general.string = phoneNumber
@@ -156,6 +170,7 @@ public extension ProfileDetailLabel {
         return .init(
             title: formattedPhoneNumber,
             icon: .contactInfoPhone,
+            font: font,
             tapAction: copyPhoneNumber,
             longPressAction: copyPhoneNumber
         )
@@ -163,11 +178,13 @@ public extension ProfileDetailLabel {
 
     static func mutualGroups(
         for thread: TSThread,
-        mutualGroups: [TSGroupThread]
+        mutualGroups: [TSGroupThread],
+        font: UIFont = .dynamicTypeBody
     ) -> ProfileDetailLabel {
         .init(
             title: mutualGroupsString(for: thread, mutualGroups: mutualGroups),
-            icon: .contactInfoGroups
+            icon: .contactInfoGroups,
+            font: font
         )
     }
 

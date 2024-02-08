@@ -9,123 +9,55 @@ import SignalUI
 struct NameCollisionCellModel {
     let address: SignalServiceAddress
     let name: String
+    let shortName: String
 
     let oldName: String?
     let updateTimestamp: UInt64?
 
-    let commonGroupsString: String
-    let avatar: UIImage?
+    /// The thread the collision appears in.
+    /// Not necessarily the contacts thread for the address.
+    let thread: TSThread
+    let mutualGroups: [TSGroupThread]
+    let isConnection: Bool
     let isBlocked: Bool
     let isSystemContact: Bool
 
-    var phoneNumber: String? {
-        address.phoneNumber.map {
-            PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: $0)
-        }
-    }
+    let viewControllerForPresentation: UIViewController
 }
 
 extension NameCollision {
-    private func avatar(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> UIImage? {
-        if address.isLocalAddress, let localProfileAvatar = profileManager.localProfileAvatarImage() {
-            return localProfileAvatar
-        } else {
-            return Self.avatarBuilder.avatarImage(forAddress: address,
-                                                  diameterPoints: 64,
-                                                  localUserDisplayMode: .asUser,
-                                                  transaction: transaction)
-        }
-    }
-
-    private func commonGroupsString(
-        for address: SignalServiceAddress,
+    func collisionCellModels(
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
-    ) -> String {
-        let commonGroups = TSGroupThread.groupThreads(
-            with: address,
-            transaction: transaction
-        )
-        return ProfileDetailLabel.mutualGroupsString(
-            for: thread,
-            mutualGroups: commonGroups
-        )
-    }
-
-    func collisionCellModels(thread: TSThread, transaction: SDSAnyReadTransaction) -> [NameCollisionCellModel] {
+        profileManager: any ProfileManager,
+        blockingManager: BlockingManager,
+        contactsManager: any ContactsManagerProtocol,
+        viewControllerForPresentation: UIViewController,
+        tx: SDSAnyReadTransaction
+    ) -> [NameCollisionCellModel] {
         elements.map {
             NameCollisionCellModel(
                 address: $0.address,
                 name: $0.currentName,
+                shortName: $0.shortName,
                 oldName: $0.oldName,
                 updateTimestamp: $0.latestUpdateTimestamp,
-                commonGroupsString: commonGroupsString(for: $0.address, thread: thread, transaction: transaction),
-                avatar: avatar(for: $0.address, transaction: transaction),
-                isBlocked: blockingManager.isAddressBlocked($0.address, transaction: transaction),
-                isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: transaction) != nil
+                thread: thread,
+                mutualGroups: TSGroupThread.groupThreads(with: $0.address, transaction: tx),
+                isConnection: profileManager.isUser(inProfileWhitelist: $0.address, transaction: tx),
+                isBlocked: blockingManager.isAddressBlocked($0.address, transaction: tx),
+                isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: tx) != nil, viewControllerForPresentation: viewControllerForPresentation
             )
         }
     }
 }
 
 class NameCollisionCell: UITableViewCell {
-    typealias Action = (title: String, action: () -> Void)
-
-    let avatarView = ConversationAvatarView(sizeClass: .sixtyFour, localUserDisplayMode: .asUser)
+    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser)
     let nameLabel: UILabel = {
         let label = UILabel()
 
         label.textColor = Theme.primaryTextColor
-        label.font = UIFont.dynamicTypeBody
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
-
-        return label
-    }()
-
-    let phoneNumberLabel: UILabel = {
-        let label = UILabel()
-
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.dynamicTypeFootnote
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
-
-        return label
-    }()
-
-    let blockedLabel: UILabel = {
-        let label = UILabel()
-
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.dynamicTypeFootnote
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
-        label.text = OWSLocalizedString(
-            "CONTACT_CELL_IS_BLOCKED",
-            comment: "An indicator that a contact or group has been blocked.")
-
-        return label
-    }()
-
-    let commonGroupsLabel: UILabel = {
-        let label = UILabel()
-
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.dynamicTypeFootnote
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
-
-        return label
-    }()
-
-    let nameChangeSpacer = UIView.spacer(withHeight: 12)
-
-    let recentNameChangeLabel: UILabel = {
-        let label = UILabel()
-
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.font = UIFont.dynamicTypeFootnote.italic()
+        label.font = UIFont.dynamicTypeBody.semibold()
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
 
@@ -138,46 +70,30 @@ class NameCollisionCell: UITableViewCell {
         hairline.autoSetDimension(.height, toSize: .hairlineWidth)
         let separator = UIView()
         separator.addSubview(hairline)
-        hairline.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: 0, vMargin: 12))
+        hairline.autoPinEdgesToSuperviewEdges(with: .init(top: 8, leading: 0, bottom: 0, trailing: 0))
         return separator
     }()
 
-    let actionStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.distribution = .equalSpacing
-        stack.alignment = .center
-        stack.spacing = 8
-        return stack
+    private let verticalStack: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        return stackView
     }()
 
     required override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let verticalStack = UIStackView(arrangedSubviews: [
-            nameLabel,
-            phoneNumberLabel,
-            blockedLabel,
-            commonGroupsLabel,
-            nameChangeSpacer,
-            recentNameChangeLabel,
-            UIView.vStretchingSpacer(),
-            separatorView,
-            actionStack
-        ])
         let horizontalStack = UIStackView(arrangedSubviews: [
             avatarView, verticalStack
         ])
 
-        verticalStack.axis = .vertical
-        verticalStack.spacing = 1
         horizontalStack.axis = .horizontal
         horizontalStack.spacing = 16
         horizontalStack.alignment = .top
 
         contentView.addSubview(horizontalStack)
         horizontalStack.autoPinEdgesToSuperviewMargins()
-        separatorView.autoConstrainAttribute(.horizontal, to: .bottom, of: avatarView, withMultiplier: 1, relation: .greaterThanOrEqual)
     }
 
     required init?(coder: NSCoder) {
@@ -186,78 +102,167 @@ class NameCollisionCell: UITableViewCell {
 
     static func createWithModel(
         _ model: NameCollisionCellModel,
-        actions: [NameCollisionCell.Action]) -> Self {
-
+        action: NameCollisionCell.Action?
+    ) -> Self {
         let cell = self.init(style: .default, reuseIdentifier: nil)
-        cell.configure(model: model, actions: actions)
+        cell.configure(model: model, action: action)
         return cell
     }
 
     override func prepareForReuse() {
+        verticalStack.removeAllSubviews()
         avatarView.reset()
         nameLabel.text = ""
-        phoneNumberLabel.text = ""
-        blockedLabel.isHidden = true
-        commonGroupsLabel.text = ""
-        nameChangeSpacer.isHidden = false
-        recentNameChangeLabel.text = ""
     }
 
-    func configure(model: NameCollisionCellModel, actions: [NameCollisionCell.Action]) {
-        owsAssertDebug(actions.count < 3, "Only supports two actions. Feel free to update this for more.")
+    func configure(model: NameCollisionCellModel, action: NameCollisionCell.Action?) {
+        verticalStack.removeAllSubviews()
 
+        // Avatar
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(model.address)
         }
+
+        // Name
         if model.address.isLocalAddress {
             nameLabel.text = CommonStrings.you
         } else {
             nameLabel.text = model.name
         }
+        verticalStack.addArrangedSubview(nameLabel)
 
-        if let phoneNumber = model.phoneNumber {
-            phoneNumberLabel.text = phoneNumber
-        } else {
-            phoneNumberLabel.isHidden = true
-        }
-        blockedLabel.isHidden = !model.isBlocked
-        commonGroupsLabel.isHidden = model.address.isLocalAddress
-        commonGroupsLabel.text = model.commonGroupsString
+        let detailFont = UIFont.dynamicTypeBody2
 
+        // Name change
         if let oldName = model.oldName {
-            nameChangeSpacer.isHidden = false
-            recentNameChangeLabel.isHidden = false
             let formatString = OWSLocalizedString(
                 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING",
-                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }}")
-            recentNameChangeLabel.text = String(format: formatString, oldName, model.name)
-        } else {
-            nameChangeSpacer.isHidden = true
-            recentNameChangeLabel.isHidden = true
+                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current short profile name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }}"
+            )
+            let string = String(format: formatString, model.shortName, oldName, model.name)
+            verticalStack.addArrangedSubview(ProfileDetailLabel.profile(
+                title: string,
+                font: detailFont
+            ))
         }
 
-        actionStack.removeAllSubviews()
-        let buttons = actions.map { createButton(for: $0) }
-        buttons.forEach { actionStack.addArrangedSubview($0) }
-        actionStack.addArrangedSubview(UIView.vStretchingSpacer())
-
-        // If one button grows super tall, its larger intrinsic content size could result in the other button
-        // being compressed very thin and tall in response. It's unlikely, since this would only be hit by a very
-        // edge case localization. But, if it does happen, these constraints ensure things will look reasonably okay.
-        if let button1 = buttons[safe: 0], let button2 = buttons[safe: 1] {
-            button1.autoSetDimension(.width, toSize: min(100, button1.intrinsicContentSize.width), relation: .greaterThanOrEqual)
-            button2.autoSetDimension(.width, toSize: min(100, button2.intrinsicContentSize.width), relation: .greaterThanOrEqual)
+        // Connection
+        if model.isConnection {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(
+                font: detailFont,
+                shouldDismissOnNavigation: false,
+                presentEducationFrom: model.viewControllerForPresentation
+            ))
         }
 
-        separatorView.isHidden = actions.isEmpty
-        actionStack.isHidden = actions.isEmpty
+        // System contacts
+        if model.isSystemContact {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.inSystemContacts(
+                name: model.shortName,
+                font: detailFont
+            ))
+        }
+
+        // Phone number
+        if let phoneNumber = model.address.phoneNumber {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.phoneNumber(
+                phoneNumber,
+                font: detailFont,
+                presentSuccessToastFrom: model.viewControllerForPresentation
+            ))
+        }
+
+        // Mutual groups
+        verticalStack.addArrangedSubview(ProfileDetailLabel.mutualGroups(
+            for: model.thread,
+            mutualGroups: model.mutualGroups,
+            font: detailFont
+        ))
+
+        separatorView.isHidden = action == nil
+        verticalStack.addArrangedSubview(separatorView)
+
+        if let action {
+            verticalStack.addArrangedSubview(createButton(for: action))
+        }
+    }
+
+    struct Action {
+        enum Role {
+            case normal
+            case destructive
+
+            var color: UIColor {
+                switch self {
+                case .normal:
+                    return Theme.primaryTextColor
+                case .destructive:
+                    return .ows_accentRed
+                }
+            }
+        }
+
+        let title: String
+        let icon: ThemeIcon
+        let role: Role
+        let action: () -> Void
+
+        static func block(_ action: @escaping () -> Void) -> Action {
+            Action(
+                title: MessageRequestView.LocalizedStrings.block,
+                icon: .chatSettingsBlock,
+                role: .destructive,
+                action: action
+            )
+        }
+
+        static func unblock(_ action: @escaping () -> Void) -> Action {
+            Action(
+                title: MessageRequestView.LocalizedStrings.unblock,
+                icon: .chatSettingsBlock,
+                role: .normal,
+                action: action
+            )
+        }
+
+        static func removeFromGroup(_ action: @escaping () -> Void) -> Action {
+            Action(
+                title: OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
+                    comment: "Label for 'remove from group' button in conversation settings view."
+                ),
+                icon: .groupMemberRemoveFromGroup,
+                role: .destructive,
+                action: action
+            )
+        }
+
+        static func updateContact(_ action: @escaping () -> Void) -> Action {
+            Action(
+                title: OWSLocalizedString(
+                    "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION",
+                    comment: "A button that updates a known contact's information to resolve a name collision"
+                ),
+                icon: .profileAbout,
+                role: .normal,
+                action: action
+            )
+        }
     }
 
     private func createButton(for action: Action) -> UIButton {
-        let button = OWSButton(title: action.title, block: action.action)
-        button.setTitleColor(Theme.accentBlueColor, for: .normal)
-        button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
-        button.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+        let button = OWSButton(
+            title: action.title,
+            imageName: Theme.iconName(action.icon),
+            tintColor: action.role.color,
+            spacing: 12,
+            block: action.action
+        )
+
+        button.setTitleColor(action.role.color, for: .normal)
+        button.setTitleColor(action.role.color.withAlphaComponent(0.7), for: .highlighted)
+
+        button.titleLabel?.font = UIFont.dynamicTypeBody
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.titleLabel?.numberOfLines = 0
         button.contentHorizontalAlignment = .leading

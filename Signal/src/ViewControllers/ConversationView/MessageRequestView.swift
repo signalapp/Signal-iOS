@@ -37,6 +37,29 @@ public struct MessageRequestType: Equatable {
 
 class MessageRequestView: UIStackView {
 
+    enum LocalizedStrings {
+        static let block = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+            comment: "A button used to block a user on an incoming message request."
+        )
+        static let unblock = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
+            comment: "A button used to unlock a blocked conversation."
+        )
+        static let delete = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+            comment: "incoming message request button text which deletes a conversation"
+        )
+        static let accept = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
+            comment: "A button used to accept a user on an incoming message request."
+        )
+        static let `continue` = OWSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON",
+            comment: "A button used to continue a conversation and share your profile."
+        )
+    }
+
     private let thread: TSThread
     private let mode: MessageRequestMode
     private let messageRequestType: MessageRequestType
@@ -239,71 +262,85 @@ class MessageRequestView: UIStackView {
 
         if isThreadBlocked {
             buttons = [
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                       comment: "incoming message request button text which deletes a conversation"),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapDelete()
+                prepareButton(
+                    title: LocalizedStrings.delete,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
-                                                       comment: "A button used to unlock a blocked conversation."),
-                              titleColor: Theme.accentBlueColor) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
-                }]
+                prepareButton(
+                    title: LocalizedStrings.unblock,
+                    titleColor: Theme.accentBlueColor
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
+                },
+            ]
         } else if isThreadFromHiddenRecipient {
             buttons = [
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
-                                                       comment: "A button used to block a user on an incoming message request."),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
+                prepareButton(
+                    title: LocalizedStrings.block,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                       comment: "incoming message request button text which deletes a conversation"),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapDelete()
+                prepareButton(
+                    title: LocalizedStrings.delete,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
-                                                       comment: "A button used to accept a user on an incoming message request."),
-                              titleColor: Theme.accentBlueColor) { [weak self] in
-                                  self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
-                }
+                prepareButton(
+                    title: LocalizedStrings.accept,
+                    titleColor: Theme.accentBlueColor
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
+                },
             ]
         } else if hasSentMessages {
             buttons = [
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
-                                                       comment: "A button used to block a user on an incoming message request."),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
+                prepareButton(
+                    title: LocalizedStrings.block,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                       comment: "incoming message request button text which deletes a conversation"),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapDelete()
+                prepareButton(
+                    title: LocalizedStrings.delete,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON",
-                                                       comment: "A button used to continue a conversation and share your profile."),
-                              titleColor: Theme.accentBlueColor) { [weak self] in
+                prepareButton(
+                    title: LocalizedStrings.continue,
+                    titleColor: Theme.accentBlueColor
+                ) { [weak self] in
                     // This is the same action as accepting the message request, but displays
                     // with slightly different visuals if the user has already been messaging
                     // this user in the past but didn't share their profile.
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-                }]
+                },
+            ]
         } else {
             buttons = [
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
-                                                       comment: "A button used to block a user on an incoming message request."),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
+                prepareButton(
+                    title: LocalizedStrings.block,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                       comment: "incoming message request button text which deletes a conversation"),
-                              titleColor: .ows_accentRed) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapDelete()
+                prepareButton(
+                    title: LocalizedStrings.delete,
+                    titleColor: .ows_accentRed
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapDelete()
                 },
-                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
-                                                       comment: "A button used to accept a user on an incoming message request."),
-                              titleColor: Theme.accentBlueColor) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-                }]
+                prepareButton(
+                    title: LocalizedStrings.accept,
+                    titleColor: Theme.accentBlueColor
+                ) { [weak self] in
+                    self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
+                },
+            ]
         }
 
         return prepareButtonStack(buttons)
@@ -329,21 +366,25 @@ class MessageRequestView: UIStackView {
     func prepareGroupV2InviteButtons() -> UIStackView {
         let mode = self.mode
         let buttons = [
-            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
-                                                   comment: "A button used to block a user on an incoming message request."),
-                          titleColor: .ows_accentRed) { [weak self] in
-                            self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
+            prepareButton(
+                title: LocalizedStrings.block,
+                titleColor: .ows_accentRed
+            ) { [weak self] in
+                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
             },
-            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
-                                                   comment: "incoming message request button text which deletes a conversation"),
-                          titleColor: .ows_accentRed) { [weak self] in
-                            self?.delegate?.messageRequestViewDidTapDelete()
+            prepareButton(
+                title: LocalizedStrings.delete,
+                titleColor: .ows_accentRed)
+            { [weak self] in
+                self?.delegate?.messageRequestViewDidTapDelete()
             },
-            prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
-                                                   comment: "A button used to accept a user on an incoming message request."),
-                          titleColor: Theme.accentBlueColor) { [weak self] in
-                            self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
-            }]
+            prepareButton(
+                title: LocalizedStrings.accept,
+                titleColor: Theme.accentBlueColor
+            ) { [weak self] in
+                self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
+            },
+        ]
         return prepareButtonStack(buttons)
     }
 
