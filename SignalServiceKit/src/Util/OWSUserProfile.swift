@@ -365,7 +365,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         try container.encodeIfPresent(avatarFileName, forKey: .avatarFileName)
         try container.encodeIfPresent(avatarUrlPath, forKey: .avatarUrlPath)
-        try container.encodeIfPresent(LegacySDSSerializer().serializeAsLegacySDSData(property: profileKey), forKey: .profileKey)
+        try container.encodeIfPresent(profileKey?.keyData, forKey: .profileKey)
         try container.encodeIfPresent(givenName, forKey: .givenName)
         try container.encodeIfPresent(familyName, forKey: .familyName)
         try container.encodeIfPresent(bio, forKey: .bio)
