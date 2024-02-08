@@ -1339,8 +1339,15 @@ public extension GroupsProtoGroupChangeActions {
             // or even just push this up to the callsite. In any case,
             // the time to differentiate is when looking at the group updates
             // or before/after model we get from the server.
-            owsAssertDebug(self.deletePendingMembers.count == 1)
-            owsAssertDebug(self.deletePendingMembers.first?.deletedUserID == Data(pni.serviceIdBinary))
+            if
+                self.deletePendingMembers.count == 1,
+                let firstDeletePendingMemberIdData = self.deletePendingMembers.first?.deletedUserID,
+                let firstDeletePendingMemberId = try? groupV2Params.serviceId(for: firstDeletePendingMemberIdData)
+            {
+                owsAssertDebug(firstDeletePendingMemberId == pni, "Canary: pni for group update doesn't match")
+            } else {
+                owsFailDebug("Canary: unknown type of pni authored group update")
+            }
 
             // At this point we are processing a new set of group changes; its safe
             // to compare our pni against this pni.
