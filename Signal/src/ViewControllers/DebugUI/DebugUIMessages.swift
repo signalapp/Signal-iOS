@@ -4,6 +4,7 @@
 //
 
 import CoreServices
+import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
@@ -3258,8 +3259,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             } else if let contactThread = thread as? TSContactThread {
                 return contactThread.contactAddress
             } else {
-                owsFailDebug("Unknown thread type")
-                return SignalServiceAddress(phoneNumber: "unknown-source-id")
+                owsFail("Unknown thread type")
             }
         }()
 
@@ -3471,9 +3471,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         // Try to use an arbitrary member of the current thread that isn't
         // ourselves as the sender.
-        // This might be an "empty" group with no other members.  If so, use a fake
-        // sender id.
-        let address = thread.recipientAddressesWithSneakyTransaction.first ?? SignalServiceAddress(phoneNumber: "+12345678901")
+        let address = thread.recipientAddressesWithSneakyTransaction.first!
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setType(.ciphertext)
@@ -3691,7 +3689,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
                 createRandomGroupWithName(string, member: member, completion: { _ in })
             }
         }
@@ -3716,7 +3714,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
                 createRandomGroupWithName(string, member: member, completion: { _ in })
             }
         }
@@ -3739,7 +3737,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     transaction: transaction
                 )
 
-                let member = SignalServiceAddress(phoneNumber: "+1323555555")
+                let member = SignalServiceAddress(Aci(fromUUID: UUID()))
                 createRandomGroupWithName(string, member: member, completion: { _ in })
             }
         }

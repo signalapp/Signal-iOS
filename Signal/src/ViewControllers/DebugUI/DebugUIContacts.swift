@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -36,12 +37,7 @@ class DebugUIContacts: DebugUIPage {
     // MARK: -
 
     private static func createUnregisteredContactThread() {
-        // We ensure that the phone number is invalid by using an invalid area code.
-        var recipientId = "+1999"
-        for _ in 1...7 {
-            recipientId += "\(Int.random(in: 0...9))"
-        }
-        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(phoneNumber: recipientId))
+        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(Aci(fromUUID: UUID())))
         SignalApp.shared.presentConversationForThread(thread, animated: true)
      }
 }

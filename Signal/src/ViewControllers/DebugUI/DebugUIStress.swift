@@ -212,11 +212,9 @@ class DebugUIStress: DebugUIPage, Dependencies {
     // MARK: Groups
 
     private static func makeUnregisteredGroup() {
-        var recipientAddresses: [SignalServiceAddress] = (0...2).map { _ in
-            var phoneNumber = "+1651555"
-            phoneNumber.append(String(format: "%04d", Int.random(in: 0...9999)))
-            return SignalServiceAddress(serviceId: Aci(fromUUID: UUID()), phoneNumber: phoneNumber)
-        }
+        var recipientAddresses = [SignalServiceAddress]()
+
+        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
 
         if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
             recipientAddresses.append(localAddress)
