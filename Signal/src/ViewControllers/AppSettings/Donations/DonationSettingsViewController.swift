@@ -125,7 +125,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         UIPasteboard.general.string = subscriberID.asBase64Url
 
         presentToast(text: OWSLocalizedString("SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
-                                             comment: "Toast indicating that the user has copied their subscriber ID."))
+                                             comment: "Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID)"))
     }
 
     // MARK: - Data loading
