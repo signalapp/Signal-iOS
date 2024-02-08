@@ -75,10 +75,10 @@ class MockConversationView: UIView {
         return stackView
     }()
 
-    private let thread = MockThread(
-        // Use a v5 UUID that's in a separate namespace from ACIs/PNIs.
-        contactAddress: SignalServiceAddress(try! ServiceId.parseFrom(serviceIdString: "00000000-0000-5000-8000-000000000000"))
-    )
+    // Use a v5 UUID that's in a separate namespace from ACIs/PNIs.
+    fileprivate static let mockAddress = SignalServiceAddress(try! ServiceId.parseFrom(serviceIdString: "00000000-0000-5000-8000-000000000000"))
+
+    private let thread = MockThread(contactAddress: MockConversationView.mockAddress)
 
     override var frame: CGRect {
         didSet {
@@ -251,7 +251,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
 
     override func readRecipientAddresses() -> [SignalServiceAddress] {
         // makes message appear as read
-        return [SignalServiceAddress(phoneNumber: "+123123123123123123")]
+        return [MockConversationView.mockAddress]
     }
 
     override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
