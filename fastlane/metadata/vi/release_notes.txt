@@ -1,1 +1,2 @@
-• Now you can tap on someone's profile photo in a group chat and quickly see additional information like how many groups you have in common. 
+• This Valentine's Day, we have good news if you're planning on getting back together with your iPad after taking a break: A bug that could cause Signal to crash when attempting to re-link an unlinked device has been fixed.
+• If you're in a relationship with multiple devices, group call notifications on your iPhone will be automatically dismissed when you answer that call on your iPad or Desktop.
