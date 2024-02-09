@@ -24,7 +24,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @interface TSMessage ()
 
-@property (nonatomic) NSArray<NSString *> *bodyAttachmentIds;
+/// These are body attachments.
+@property (nonatomic) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic, nullable) MessageBodyRanges *bodyRanges;
 
@@ -85,7 +86,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (messageBuilder.messageBody != nil) {
         OWSFailDebug(@"Empty message body.");
     }
-    _bodyAttachmentIds = messageBuilder.attachmentIds;
+    _attachmentIds = messageBuilder.attachmentIds;
     _editState = messageBuilder.editState;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
@@ -153,7 +154,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return self;
     }
 
-    _bodyAttachmentIds = attachmentIds;
+    _attachmentIds = attachmentIds;
     _body = body;
     _bodyRanges = bodyRanges;
     _contactShare = contactShare;
@@ -213,8 +214,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (_schemaVersion < 2) {
         // renamed _attachments to _attachmentIds
-        if (!_bodyAttachmentIds) {
-            _bodyAttachmentIds = [coder decodeObjectForKey:@"attachments"];
+        if (!_attachmentIds) {
+            _attachmentIds = [coder decodeObjectForKey:@"attachments"];
         }
     }
 
@@ -241,13 +242,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         // than building the logic to try to find and delete the redundant "dummy" text messages which users
         // have been seeing and interacting with, we delete the body field from the attachment message,
         // which iOS users have never seen directly.
-        if (_bodyAttachmentIds.count > 0) {
+        if (_attachmentIds.count > 0) {
             _body = nil;
         }
     }
 
-    if (!_bodyAttachmentIds) {
-        _bodyAttachmentIds = @[];
+    if (!_attachmentIds) {
+        _attachmentIds = @[];
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -333,29 +334,29 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (NSArray<NSString *> *)attachmentIds
 {
-    return _bodyAttachmentIds;
+    return _attachmentIds;
 }
 
 - (NSArray<NSString *> *)bodyAttachmentIdsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return _bodyAttachmentIds;
+    return _attachmentIds;
 }
 
 - (BOOL)hasBodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return self.bodyAttachmentIds ? (self.bodyAttachmentIds.count > 0) : NO;
+    return self.attachmentIds ? (self.attachmentIds.count > 0) : NO;
 }
 
 - (nullable NSNumber *)indexOfAttachmentId:(NSString *)attachmentId transaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!_bodyAttachmentIds) {
+    if (!_attachmentIds) {
         return nil;
     }
-    if (_bodyAttachmentIds.count == 0) {
+    if (_attachmentIds.count == 0) {
         return nil;
     }
-    for (NSUInteger i = 0; i < _bodyAttachmentIds.count; i++) {
-        if ([_bodyAttachmentIds[i] isEqualToString:attachmentId]) {
+    for (NSUInteger i = 0; i < _attachmentIds.count; i++) {
+        if ([_attachmentIds[i] isEqualToString:attachmentId]) {
             return [[NSNumber alloc] initWithUnsignedLong:i];
         }
     }
@@ -365,8 +366,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSArray<NSString *> *)allAttachmentIdsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    if (self.bodyAttachmentIds.count > 0) {
-        [result addObjectsFromArray:self.bodyAttachmentIds];
+    if (self.attachmentIds.count > 0) {
+        [result addObjectsFromArray:self.attachmentIds];
     }
 
     if (self.quotedMessage.thumbnailAttachmentId) {
@@ -392,7 +393,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // Note: attachmentIds vs. allAttachmentIds
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.bodyAttachmentIds transaction:transaction];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
 }
 
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -405,7 +406,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                                 contentType:(NSString *)contentType
 {
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.bodyAttachmentIds
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
                                       matchingContentType:contentType
                                               transaction:transaction];
 }
@@ -413,7 +414,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                           exceptContentType:(NSString *)contentType
 {
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.bodyAttachmentIds
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
                                       ignoringContentType:contentType
                                               transaction:transaction];
 }
@@ -427,8 +428,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        NSMutableArray<NSString *> *attachmentIds =
-                                            [message.bodyAttachmentIds mutableCopy];
+                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
                                         NSSet<NSString *> *attachmentIdSet =
                                             [[NSSet alloc] initWithArray:attachmentIds];
                                         for (TSAttachment *attachment in attachments) {
@@ -437,33 +437,32 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                                 [attachmentIds addObject:attachmentId];
                                             }
                                         }
-                                        message.bodyAttachmentIds = [attachmentIds copy];
+                                        message.attachmentIds = [attachmentIds copy];
                                     }];
 }
 
 - (void)removeAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug([self.bodyAttachmentIds containsObject:attachment.uniqueId]);
+    OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
     [attachment anyRemoveWithTransaction:transaction];
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        NSMutableArray<NSString *> *attachmentIds =
-                                            [message.bodyAttachmentIds mutableCopy];
+                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
                                         [attachmentIds removeObject:attachment.uniqueId];
-                                        message.bodyAttachmentIds = [attachmentIds copy];
+                                        message.attachmentIds = [attachmentIds copy];
                                     }];
 }
 
 - (NSString *)debugDescription
 {
-    BOOL hasAttachments = _bodyAttachmentIds && _bodyAttachmentIds.count;
+    BOOL hasAttachments = _attachmentIds && _attachmentIds.count;
     if (hasAttachments > 0 && self.body.length > 0) {
-        NSString *attachmentId = self.bodyAttachmentIds[0];
+        NSString *attachmentId = self.attachmentIds[0];
         return [NSString
             stringWithFormat:@"Media Message with attachmentId: %@ and caption: '%@'", attachmentId, self.body];
     } else if (hasAttachments) {
-        NSString *attachmentId = self.bodyAttachmentIds[0];
+        NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
         return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
@@ -480,7 +479,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)hasMediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [AttachmentFinder existsAttachmentsWithAttachmentIds:self.bodyAttachmentIds
+    return [AttachmentFinder existsAttachmentsWithAttachmentIds:self.attachmentIds
                                             ignoringContentType:OWSMimeTypeOversizeTextMessage
                                                     transaction:transaction];
 }
@@ -774,7 +773,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     // We DO NOT consider a message with just a linkPreview
     // or quotedMessage to be renderable.
-    return (self.body.length > 0 || self.bodyAttachmentIds.count > 0 || self.contactShare != nil
+    return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil
         || self.messageSticker != nil || self.giftBadge != nil);
 }
 
@@ -832,7 +831,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.quotedMessage = nil;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
-                                        message.bodyAttachmentIds = @[];
+                                        message.attachmentIds = @[];
                                         message.storyReactionEmoji = nil;
                                         OWSAssertDebug(!message.hasRenderableContent);
 
@@ -869,7 +868,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     // "Body attachments" includes body media, stickers, audio & generic attachments.
     // It can also contain the "oversize text" attachment, which we special-case below.
-    NSMutableSet<NSString *> *bodyAttachmentIds = [NSMutableSet setWithArray:self.bodyAttachmentIds];
+    NSMutableSet<NSString *> *bodyAttachmentIds = [NSMutableSet setWithArray:self.attachmentIds];
     NSMutableSet<NSString *> *removedBodyAttachmentIds = [NSMutableSet new];
     if (self.messageSticker.attachmentId != nil) {
         [bodyAttachmentIds addObject:self.messageSticker.attachmentId];
@@ -947,13 +946,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                             message.messageSticker = nil;
                                         }
                                         NSMutableArray<NSString *> *newAttachmentIds = [NSMutableArray new];
-                                        if (message.bodyAttachmentIds != nil) {
-                                            [newAttachmentIds addObjectsFromArray:message.bodyAttachmentIds];
+                                        if (message.attachmentIds != nil) {
+                                            [newAttachmentIds addObjectsFromArray:message.attachmentIds];
                                         }
                                         for (NSString *attachmentId in removedBodyAttachmentIds) {
                                             [newAttachmentIds removeObject:attachmentId];
                                         }
-                                        message.bodyAttachmentIds = [newAttachmentIds copy];
+                                        message.attachmentIds = [newAttachmentIds copy];
                                     }];
 }
 
