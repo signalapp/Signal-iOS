@@ -1427,7 +1427,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case .unknown:
                 updaterAddress = nil
             case .legacyE164(let e164):
-                updaterAddress = .init(e164)
+                updaterAddress = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
             case .aci(let aci):
                 updaterAddress = .init(aci)
             case .rejectedInviteToPni(let pni):
@@ -1437,7 +1437,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 case .unknown, .localUser:
                     updaterAddress = nil
                 case .legacyE164(let e164):
-                    updaterAddress = .init(e164)
+                    updaterAddress = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
                 case .aci(let aci):
                     updaterAddress = .init(aci)
                 case .rejectedInviteToPni(let pni):

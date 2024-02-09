@@ -405,7 +405,7 @@ public final class MessageReceiver: Dependencies {
                     } else {
                         // If we observe a linked device sending our profile key to another user,
                         // we can infer that that user belongs in our profile whitelist.
-                        let destinationAddress = SignalServiceAddress(
+                        let destinationAddress = SignalServiceAddress.legacyAddress(
                             serviceIdString: sent.destinationServiceID,
                             phoneNumber: sent.destinationE164
                         )

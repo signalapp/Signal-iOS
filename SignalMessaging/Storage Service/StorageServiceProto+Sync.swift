@@ -1610,7 +1610,10 @@ extension StorageServiceAccountRecordUpdater {
         for pinnedConversation in pinnedConversations {
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
-                let address = SignalServiceAddress(serviceIdString: contact.serviceID, phoneNumber: contact.e164)
+                let address = SignalServiceAddress.legacyAddress(
+                    serviceIdString: contact.serviceID,
+                    phoneNumber: contact.e164
+                )
                 guard address.isValid else {
                     owsFailDebug("Dropping pinned thread with invalid address \(address)")
                     continue

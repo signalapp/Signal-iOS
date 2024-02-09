@@ -1054,7 +1054,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocolSwift {
                         case .unknown, .localUser:
                             groupUpdateAuthor = nil
                         case .legacyE164(let e164):
-                            groupUpdateAuthor = .init(e164)
+                            groupUpdateAuthor = .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue)
                         case .aci(let aci):
                             groupUpdateAuthor = .init(aci)
                         case .rejectedInviteToPni(let pni):

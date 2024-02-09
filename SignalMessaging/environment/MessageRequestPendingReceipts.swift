@@ -151,7 +151,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
         Logger.debug("Enqueuing read receipt for sender.")
         for receipt in pendingReadReceipts {
-            let address = SignalServiceAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
+            let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
             guard address.isValid else {
                 owsFailDebug("address was invalid")
                 continue
@@ -167,7 +167,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
         Logger.debug("Enqueuing viewed receipt for sender.")
         for receipt in pendingViewedReceipts {
-            let address = SignalServiceAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
+            let address = SignalServiceAddress.legacyAddress(aciString: receipt.authorAciString, phoneNumber: receipt.authorPhoneNumber)
             guard address.isValid else {
                 owsFailDebug("address was invalid")
                 continue

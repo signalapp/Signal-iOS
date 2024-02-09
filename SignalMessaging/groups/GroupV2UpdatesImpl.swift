@@ -715,7 +715,7 @@ private extension GroupV2UpdatesImpl {
                 localUserWasAddedByBlockedUser = false
             case .legacyE164(let e164):
                 localUserWasAddedByBlockedUser = self.blockingManager.isAddressBlocked(
-                    .init(e164),
+                    .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
                     transaction: transaction
                 )
             case .aci(let aci):

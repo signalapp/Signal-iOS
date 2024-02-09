@@ -599,7 +599,7 @@ class AnySearchIndexer: Dependencies {
 
     private static let groupMemberIndexer: SearchIndexer<TSGroupMember> = SearchIndexer { (groupMember: TSGroupMember, transaction: SDSAnyReadTransaction) in
         return recipientIndexer.index(
-            SignalServiceAddress(serviceId: groupMember.serviceId, phoneNumber: groupMember.phoneNumber),
+            SignalServiceAddress.legacyAddress(serviceId: groupMember.serviceId, phoneNumber: groupMember.phoneNumber),
             transaction: transaction
         )
     }

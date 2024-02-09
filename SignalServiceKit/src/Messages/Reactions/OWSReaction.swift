@@ -53,7 +53,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public private(set) var read: Bool
 
     public var reactor: SignalServiceAddress {
-        SignalServiceAddress(serviceId: reactorAci, phoneNumber: reactorPhoneNumber)
+        SignalServiceAddress.legacyAddress(serviceId: reactorAci, phoneNumber: reactorPhoneNumber)
     }
 
     /// Note that we initialize with a receivedAtTimestamp, but should make no assumptions

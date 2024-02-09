@@ -74,8 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (_sentRecipientAddress == nil) {
-        _sentRecipientAddress =
-            [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"sentRecipientId"]];
+        NSString *phoneNumber = [coder decodeObjectForKey:@"sentRecipientId"];
+        _sentRecipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         OWSAssertDebug(_sentRecipientAddress.isValid);
     }
 

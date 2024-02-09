@@ -106,9 +106,39 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     // MARK: - Initializers
 
+    public static func legacyAddress(serviceId: ServiceId?, phoneNumber: String?) -> SignalServiceAddress {
+        let normalizedAddress = NormalizedDatabaseRecordAddress(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber
+        )
+        return SignalServiceAddress(
+            serviceId: normalizedAddress?.serviceId,
+            phoneNumber: normalizedAddress?.phoneNumber
+        )
+    }
+
+    public static func legacyAddress(aciString: String?, phoneNumber: String?) -> SignalServiceAddress {
+        let normalizedAddress = NormalizedDatabaseRecordAddress(
+            aci: Aci.parseFrom(aciString: aciString),
+            phoneNumber: phoneNumber,
+            pni: nil
+        )
+        return SignalServiceAddress(
+            serviceId: normalizedAddress?.serviceId,
+            phoneNumber: normalizedAddress?.phoneNumber
+        )
+    }
+
     @objc
-    public convenience init(e164ObjC: E164ObjC) {
-        self.init(e164ObjC.wrappedValue)
+    public static func legacyAddress(serviceIdString: String?, phoneNumber: String?) -> SignalServiceAddress {
+        let normalizedAddress = NormalizedDatabaseRecordAddress(
+            serviceIdString: serviceIdString,
+            phoneNumber: phoneNumber
+        )
+        return SignalServiceAddress(
+            serviceId: normalizedAddress?.serviceId,
+            phoneNumber: normalizedAddress?.phoneNumber
+        )
     }
 
     public convenience init(_ e164: E164) {

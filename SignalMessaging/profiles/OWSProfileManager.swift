@@ -174,7 +174,7 @@ extension OWSProfileManager: ProfileManager {
             addresses.insert(SignalServiceAddress(serviceIdString: serviceIdString))
         }
         for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: tx) {
-            addresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
+            addresses.insert(SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: phoneNumber))
         }
 
         return Array(
@@ -465,7 +465,7 @@ extension OWSProfileManager: ProfileManager {
         let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: tx)
 
         return allWhitelistedNumbers.filter { candidate in
-            let address = SignalServiceAddress(phoneNumber: candidate)
+            let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: candidate)
             return blockingManager.isAddressBlocked(address, transaction: tx)
         }
     }

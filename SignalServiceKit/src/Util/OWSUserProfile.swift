@@ -178,7 +178,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// All other users are represented by their real ACI/PNI/E164 addresses.
     @objc
     public var internalAddress: SignalServiceAddress {
-        SignalServiceAddress(serviceIdString: serviceIdString, phoneNumber: phoneNumber)
+        SignalServiceAddress.legacyAddress(serviceIdString: serviceIdString, phoneNumber: phoneNumber)
     }
 
     /// The "public" address.

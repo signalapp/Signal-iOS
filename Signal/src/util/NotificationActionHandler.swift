@@ -102,7 +102,7 @@ public class NotificationActionHandler: Dependencies {
     private class func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         let aciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
-        let address = SignalServiceAddress(aciString: aciString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress.legacyAddress(aciString: aciString, phoneNumber: phoneNumber)
         guard address.isValid else {
             throw OWSAssertionError("Missing or invalid address.")
         }

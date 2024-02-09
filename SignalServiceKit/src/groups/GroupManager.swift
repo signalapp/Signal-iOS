@@ -547,7 +547,7 @@ public class GroupManager: NSObject {
                     remoteContactName = nil
                 case .legacyE164(let e164):
                     remoteContactName = contactsManager.displayName(
-                        for: .init(e164),
+                        for: .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
                         transaction: transaction
                     )
                 case .aci(let aci):

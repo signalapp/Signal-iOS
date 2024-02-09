@@ -113,6 +113,11 @@ public struct NormalizedDatabaseRecordAddress {
         self.init(aci: serviceId as? Aci, phoneNumber: phoneNumber, pni: serviceId as? Pni)
     }
 
+    public init?(serviceIdString: String?, phoneNumber: String?) {
+        let serviceId = serviceIdString.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+        self.init(serviceId: serviceId, phoneNumber: phoneNumber)
+    }
+
     public init?(address: SignalServiceAddress?) {
         self.init(serviceId: address?.serviceId, phoneNumber: address?.phoneNumber)
     }

@@ -59,7 +59,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             sentProto.destinationServiceID != nil
             || sentProto.destinationE164 != nil
         {
-            let destinationAddress = SignalServiceAddress(
+            let destinationAddress = SignalServiceAddress.legacyAddress(
                 serviceIdString: sentProto.destinationServiceID,
                 phoneNumber: sentProto.destinationE164
             )

@@ -208,7 +208,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     }
 
     if (_authorAddress == nil) {
-        _authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"authorId"]];
+        NSString *phoneNumber = [coder decodeObjectForKey:@"authorId"];
+        _authorAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         OWSAssertDebug(_authorAddress.isValid);
     }
 

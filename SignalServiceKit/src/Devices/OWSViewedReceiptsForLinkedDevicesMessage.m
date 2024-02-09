@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SignalServiceAddress *)senderAddress
 {
-    return [[SignalServiceAddress alloc] initWithAciString:self.senderUUID phoneNumber:self.senderPhoneNumber];
+    return [SignalServiceAddress legacyAddressWithServiceIdString:self.senderUUID phoneNumber:self.senderPhoneNumber];
 }
 
 @end

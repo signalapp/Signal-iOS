@@ -50,7 +50,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     if (_unknownProtocolVersionMessageSchemaVersion < 1) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"senderId"];
         if (phoneNumber) {
-            _sender = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _sender = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         }
     }
 

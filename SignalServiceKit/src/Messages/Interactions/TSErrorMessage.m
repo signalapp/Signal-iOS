@@ -41,7 +41,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (self.errorMessageSchemaVersion == 1) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
         if (phoneNumber) {
-            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
             OWSAssertDebug(_recipientAddress.isValid);
         }
     }
