@@ -425,6 +425,10 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
         pushNextController(coordinator.submitE164(e164), loadingMode: .submittingPhoneNumber(e164: e164.stringValue))
     }
 
+    func handleInvalidPhoneNumber() {
+        pushNextController(coordinator.nextStep())
+    }
+
     func exitRegistration() {
         guard coordinator.exitRegistration() else {
             owsFailBeta("Unable to exit registration")
