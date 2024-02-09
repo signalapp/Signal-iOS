@@ -16,14 +16,12 @@ extension MessageSender {
             return devices.map { ProtocolAddress(serviceId, deviceId: $0) }
         }
 
-        init(serviceId: ServiceId, transaction readTx: SDSAnyReadTransaction) {
-            let recipient = SignalRecipient.fetchRecipient(
-                for: SignalServiceAddress(serviceId),
-                onlyIfRegistered: false,
-                tx: readTx
-            )
+        init(serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) {
             self.serviceId = serviceId
-            self.devices = recipient?.deviceIds ?? []
+            self.devices = {
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+                return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)?.deviceIds ?? []
+            }()
         }
     }
 

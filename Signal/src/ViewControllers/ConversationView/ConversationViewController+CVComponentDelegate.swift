@@ -479,15 +479,18 @@ extension ConversationViewController: CVComponentDelegate {
         // return from FingerprintViewController.
         dismissKeyBoard()
 
-        var address = address
-        // Reload the address from disk if missing info so we don't rely on any cache.
-        if address.serviceId == nil || address.e164 == nil {
-            databaseStorage.read { tx in
-                address = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx)?.address ?? address
+        let addressAci: Aci? = address.aci ?? {
+            guard let phoneNumber = address.phoneNumber else {
+                return nil
             }
-        }
+            // Reload the address from disk if we lack an ACI.
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            return databaseStorage.read { tx in
+                return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)?.aci
+            }
+        }()
 
-        FingerprintViewController.present(for: address.aci, from: self)
+        FingerprintViewController.present(for: addressAci, from: self)
     }
 
     public func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {

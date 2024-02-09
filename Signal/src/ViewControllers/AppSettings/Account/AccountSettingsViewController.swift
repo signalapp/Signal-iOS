@@ -261,14 +261,14 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 // Don't allow changing number if we are in the middle of registering.
                 return .disallowed
             }
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             guard
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read),
                 let localE164 = E164(localIdentifiers.phoneNumber),
                 let authToken = tsAccountManager.storedServerAuthToken(tx: transaction.asV2Read),
-                let localRecipient = SignalRecipient.fetchRecipient(
-                    for: localIdentifiers.aciAddress,
-                    onlyIfRegistered: false,
-                    tx: transaction
+                let localRecipient = recipientDatabaseTable.fetchRecipient(
+                    serviceId: localIdentifiers.aci,
+                    transaction: transaction.asV2Read
                 ),
                 let localAccountId = localRecipient.accountId
             else {
