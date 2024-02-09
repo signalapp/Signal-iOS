@@ -789,29 +789,6 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address5.e164, pn_a)
         XCTAssertEqual(address6.e164, pn_b)
 
-        let address7 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: nil,
-            cache: cache,
-            cachePolicy: .ignoreCache
-        )
-        let address8 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: pn_a.stringValue,
-            cache: cache,
-            cachePolicy: .ignoreCache
-        )
-        let address9 = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: pn_b.stringValue,
-            cache: cache,
-            cachePolicy: .ignoreCache
-        )
-
-        XCTAssertEqual(address7.e164, nil)
-        XCTAssertEqual(address8.e164, pn_a)
-        XCTAssertEqual(address9.e164, pn_b)
-
         cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_b))
 
         XCTAssertEqual(address1.e164, pn_b)
@@ -820,9 +797,6 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address4.e164, pn_b)
         XCTAssertEqual(address5.e164, pn_b)
         XCTAssertEqual(address6.e164, pn_b)
-        XCTAssertEqual(address7.e164, nil)
-        XCTAssertEqual(address8.e164, pn_a)
-        XCTAssertEqual(address9.e164, pn_b)
     }
 
     func testInitializerPerformance() {

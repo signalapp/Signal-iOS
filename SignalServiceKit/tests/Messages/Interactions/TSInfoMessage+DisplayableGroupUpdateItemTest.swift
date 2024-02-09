@@ -216,13 +216,13 @@ private extension SignalServiceAddress {
         serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
-        cachePolicy: .ignoreCache
+        cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
     )
 
     static let otherUser2: SignalServiceAddress = SignalServiceAddress(
         serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
-        cachePolicy: .ignoreCache
+        cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
     )
 }

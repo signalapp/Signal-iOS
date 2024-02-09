@@ -28,14 +28,14 @@ class ReceiptSenderTest: XCTestCase {
         // Setup – Store two different receipt sets for an ACI and an e164.
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aciAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef, cachePolicy: .ignoreCache
+            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef, cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
         let aciReceiptSet = MessageReceiptSet()
         aciReceiptSet.insert(timestamp: 1234, messageUniqueId: "00000000-0000-4000-8000-000000000AAA")
 
         let e164 = E164("+16505550101")!
         let e164Address = SignalServiceAddress(
-            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .ignoreCache
+            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "00000000-0000-4000-8000-000000000BBB")
@@ -47,7 +47,7 @@ class ReceiptSenderTest: XCTestCase {
 
         // Test – Fetch the receipt set for a merged address
         let mergedAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .ignoreCache
+            serviceId: aci, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
         let mergedReceipt = mockDb.write { tx in
             receiptSender.fetchAndMergeReceiptSet(receiptType: .delivery, address: mergedAddress, tx: tx)
@@ -62,14 +62,14 @@ class ReceiptSenderTest: XCTestCase {
         // Setup – Store two different receipt sets for a uuid and an e164
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aciAddress = SignalServiceAddress(
-            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef, cachePolicy: .ignoreCache
+            serviceId: aci, phoneNumber: nil, cache: signalServiceAddressCacheRef, cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
         let aciReceiptSet = MessageReceiptSet()
         aciReceiptSet.insert(timestamp: 1234, messageUniqueId: "00000000-0000-4000-8000-000000000AAA")
 
         let e164 = E164("+16505550101")!
         let e164Address = SignalServiceAddress(
-            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .ignoreCache
+            serviceId: nil, phoneNumber: e164.stringValue, cache: signalServiceAddressCacheRef, cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "00000000-0000-4000-8000-000000000BBB")

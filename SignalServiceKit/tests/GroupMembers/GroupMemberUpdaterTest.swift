@@ -186,7 +186,7 @@ class GroupMemberUpdaterTest: XCTestCase {
             serviceId: serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
             phoneNumber: phoneNumber,
             cache: mockSignalServiceAddressCache,
-            cachePolicy: .ignoreCache
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
     }
 }

@@ -185,7 +185,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     public convenience init(serviceId: ServiceId?, phoneNumber: String?) {
-        self.init(serviceId: serviceId, phoneNumber: phoneNumber, ignoreCache: false)
+        self.init(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
     }
 
     internal convenience init(from address: ProtocolAddress) {
@@ -200,15 +205,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             // If we know the UUID, let the cache fill in the phone number when
             // possible. (This avoids decoding stale mappings that may exist.)
             cachePolicy: .preferCachedPhoneNumberAndListenForUpdates
-        )
-    }
-
-    public convenience init(serviceId: ServiceId?, phoneNumber: String?, ignoreCache: Bool) {
-        self.init(
-            serviceId: serviceId,
-            phoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache,
-            cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
         )
     }
 
@@ -572,19 +568,12 @@ public class SignalServiceAddressCache: NSObject {
         /// "stale" data may be provided in the initializer. If the phone number
         /// changes in the future, the address will be dynamically updated.
         case preferCachedPhoneNumberAndListenForUpdates
-
-        /// Never retrieves either value from the cache. Never updated when a new
-        /// mapping is learned. The hash value *is* retrieved from the "cache".
-        /// These addresses shouldn't be put in a Set or used as Dictionary keys.
-        case ignoreCache
     }
 
     fileprivate func registerAddress(proposedIdentifiers: CachedAddress.Identifiers, cachePolicy: CachePolicy) -> CachedAddress {
         state.update { cacheState in
             let resolvedIdentifiers: CachedAddress.Identifiers
             switch cachePolicy {
-            case .ignoreCache:
-                resolvedIdentifiers = proposedIdentifiers
             case .preferInitialPhoneNumberAndListenForUpdates:
                 resolvedIdentifiers = resolveIdentifiers(proposedIdentifiers, preferInitialPhoneNumber: true, cacheState: cacheState)
             case .preferCachedPhoneNumberAndListenForUpdates:
@@ -610,18 +599,13 @@ public class SignalServiceAddressCache: NSObject {
                 return result
             }
 
-            switch cachePolicy {
-            case .preferInitialPhoneNumberAndListenForUpdates, .preferCachedPhoneNumberAndListenForUpdates:
-                if let serviceId = resolvedIdentifiers.serviceId {
-                    return getOrCreateCachedAddress(key: serviceId, in: &cacheState.serviceIdCachedAddresses)
-                }
-                if let phoneNumber = resolvedIdentifiers.phoneNumber {
-                    return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyCachedAddresses)
-                }
-                fallthrough
-            case .ignoreCache:
-                return CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
+            if let serviceId = resolvedIdentifiers.serviceId {
+                return getOrCreateCachedAddress(key: serviceId, in: &cacheState.serviceIdCachedAddresses)
             }
+            if let phoneNumber = resolvedIdentifiers.phoneNumber {
+                return getOrCreateCachedAddress(key: phoneNumber, in: &cacheState.phoneNumberOnlyCachedAddresses)
+            }
+            return CachedAddress(hashValue: hashValue, identifiers: resolvedIdentifiers)
         }
     }
 
@@ -704,7 +688,7 @@ extension SignalServiceAddress {
             serviceId: Aci.randomForTesting(),
             phoneNumber: nil,
             cache: SignalServiceAddressCache(),
-            cachePolicy: .ignoreCache
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
         )
     }
 }
