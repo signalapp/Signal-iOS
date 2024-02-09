@@ -80,32 +80,52 @@ public extension ConversationViewController {
 
     // MARK: - Name collision banners
 
+    func fetchAvatar(
+        for address: SignalServiceAddress,
+        tx: SDSAnyReadTransaction
+    ) -> UIImage? {
+        if
+            address.isLocalAddress,
+            let profileAvatar = self.profileManager.localProfileAvatarImage()
+        {
+            return profileAvatar.resizedImage(to: CGSize(square: 24))
+        }
+        return Self.avatarBuilder.avatarImage(
+            forAddress: address,
+            diameterPoints: 24,
+            localUserDisplayMode: .asUser,
+            transaction: tx
+        )
+    }
+
     func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
         guard let contactThread = thread as? TSContactThread else { return nil }
 
         let collisionFinder = ContactThreadNameCollisionFinder
             .makeToCheckMessageRequestNameCollisions(forContactThread: contactThread)
 
-        // TODO: Display profile pictures of colliding contacts
-        let collisionCount = databaseStorage.read { transaction -> Int in
-            guard viewState.shouldShowMessageRequestNameCollisionBanner(transaction: transaction) else {
-                // The banner should not be shown, so let's pretend we have no
-                // collisions.
-                return 0
-            }
+        guard let (avatar1, avatar2) = databaseStorage.read(block: { tx -> (UIImage?, UIImage?)? in
+            guard
+                viewState.shouldShowMessageRequestNameCollisionBanner(transaction: tx),
+                let collision = collisionFinder.findCollisions(transaction: tx).first,
+                collision.elements.count >= 2
+            else { return nil }
 
-            return collisionFinder.findCollisions(transaction: transaction).count
-        }
-
-        guard collisionCount > 0 else {
-            return nil
-        }
+            return (
+                fetchAvatar(for: collision.elements[0].address, tx: tx),
+                fetchAvatar(for: collision.elements[1].address, tx: tx)
+            )
+        }) else { return nil }
 
         let banner = NameCollisionBanner()
         banner.labelText = OWSLocalizedString(
             "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL",
             comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
         banner.reviewActionText = CommonStrings.viewButton
+        if let avatar1 = avatar1, let avatar2 = avatar2 {
+            banner.primaryImage = avatar1
+            banner.secondaryImage = avatar2
+        }
 
         banner.closeAction = { [weak self] in
             guard let self = self else { return }
@@ -174,19 +194,14 @@ public extension ConversationViewController {
                 title = String.localizedStringWithFormat(titleFormat, totalCollisionElementCount)
             }
 
-            let fetchAvatarForAddress = { (address: SignalServiceAddress) -> UIImage? in
-                if address.isLocalAddress, let profileAvatar = self.profileManager.localProfileAvatarImage() {
-                    return profileAvatar.resizedImage(to: CGSize(square: 24))
-                } else {
-                    return Self.avatarBuilder.avatarImage(forAddress: address,
-                                                          diameterPoints: 24,
-                                                          localUserDisplayMode: .asUser,
-                                                          transaction: readTx)
-                }
-            }
-
-            let avatar1 = fetchAvatarForAddress(collisionSets[0].elements[0].address)
-            let avatar2 = fetchAvatarForAddress(collisionSets[0].elements[1].address)
+            let avatar1 = fetchAvatar(
+                for: collisionSets[0].elements[0].address,
+                tx: readTx
+            )
+            let avatar2 = fetchAvatar(
+                for: collisionSets[0].elements[1].address,
+                tx: readTx
+            )
             return (title, avatar1, avatar2)
 
         }) else { return nil }

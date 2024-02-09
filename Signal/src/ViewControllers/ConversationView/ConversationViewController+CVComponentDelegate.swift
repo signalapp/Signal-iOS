@@ -920,6 +920,11 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
+    public func didTapContactName(thread: TSContactThread) {
+        AssertIsOnMainThread()
+        ContactAboutSheet(thread: thread).present(from: self)
+    }
+
     public func didTapUnknownThreadWarningGroup() {
         AssertIsOnMainThread()
 

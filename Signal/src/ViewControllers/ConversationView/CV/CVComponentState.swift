@@ -251,6 +251,11 @@ public class CVComponentState: Equatable, Dependencies {
     let typingIndicator: TypingIndicator?
 
     struct ThreadDetails: Equatable {
+        enum MutualGroupsTapAction: Equatable {
+            case unknownThreadWarningContact
+            case unknownThreadWarningGroup
+        }
+
         let avatarDataSource: ConversationAvatarDataSource?
         let isAvatarBlurred: Bool
         let titleText: String
@@ -258,6 +263,7 @@ public class CVComponentState: Equatable, Dependencies {
         let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?
+        let mutualGroupsTapAction: MutualGroupsTapAction?
         let groupDescriptionText: String?
     }
     let threadDetails: ThreadDetails?
@@ -715,9 +721,7 @@ fileprivate extension CVComponentState.Builder {
             self.threadDetails = buildThreadDetails()
             return build()
         case .unknownThreadWarning:
-            self.unknownThreadWarning = CVComponentSystemMessage.buildUnknownThreadWarningState(interaction: interaction,
-                                                                                                threadViewModel: threadViewModel,
-                                                                                                transaction: transaction)
+            // TODO: Remove this case entirely?
             return build()
         case .defaultDisappearingMessageTimer:
             self.defaultDisappearingMessageTimer = CVComponentSystemMessage.buildDefaultDisappearingMessageTimerState(

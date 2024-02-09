@@ -983,37 +983,6 @@ extension CVComponentSystemMessage {
         }
     }
 
-    // MARK: - Unknown Thread Warning
-
-    static func buildUnknownThreadWarningState(interaction: TSInteraction,
-                                               threadViewModel: ThreadViewModel,
-                                               transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
-
-        if threadViewModel.isGroupThread {
-            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
-                                          comment: "Indicator warning about an unknown group thread.")
-
-            let labelText = NSMutableAttributedString()
-            labelText.appendTemplatedImage(named: Theme.iconName(.info16),
-                                           font: Self.textLabelFont,
-                                           heightReference: ImageAttachmentHeightReference.lineHeight)
-            labelText.append("  ", attributes: [:])
-            labelText.append(title, attributes: [:])
-
-            let action = Action(title: CommonStrings.learnMore,
-                                accessibilityIdentifier: "unknown_thread_warning",
-                                action: .didTapUnknownThreadWarningGroup)
-            return buildComponentState(title: labelText, action: action)
-        } else {
-            let title = OWSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
-                                          comment: "Indicator warning about an unknown contact thread.")
-            let action = Action(title: CommonStrings.learnMore,
-                                accessibilityIdentifier: "unknown_thread_warning",
-                                action: .didTapUnknownThreadWarningContact)
-            return buildComponentState(title: title.attributedString(), action: action)
-        }
-    }
-
     // MARK: - Default Disappearing Message Timer
 
     static func buildDefaultDisappearingMessageTimerState(

@@ -394,21 +394,22 @@ struct ConversationHeaderBuilder: Dependencies {
         return avatarView
     }
 
-    func buildThreadNameLabel() -> UILabel {
-        let label = OWSLabel()
-        label.attributedText = delegate.threadAttributedString(
+    func buildThreadNameLabel() -> OWSButton {
+        let button = OWSButton()
+        button.setAttributedTitle(delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
             transaction: transaction
-        )
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.lineBreakMode = .byWordWrapping
+        ), for: .normal)
+        button.titleLabel?.numberOfLines = 0
+        button.titleLabel?.textAlignment = .center
+        button.titleLabel?.lineBreakMode = .byWordWrapping
         if delegate.canTapThreadName {
-            label.addTapGesture { [weak delegate] in
+            button.block = { [weak delegate] in
                 delegate?.didTapThreadName()
             }
+            button.dimsWhenHighlighted = true
         }
-        return label
+        return button
     }
 
     @discardableResult

@@ -53,6 +53,34 @@ open class CVLabel: UILabel, CVView {
     }
 }
 
+open class CVButton: OWSButton, CVView {
+    open override func updateConstraints() {
+        super.updateConstraints()
+        deactivateAllConstraints()
+    }
+
+    public func reset() {
+        self.block = {}
+        self.dimsWhenDisabled = false
+        self.dimsWhenHighlighted = false
+        self.contentEdgeInsets = .zero
+        self.titleEdgeInsets = .zero
+        [
+            UIControl.State.normal,
+            .highlighted,
+            .disabled,
+            .selected,
+            .focused,
+            .application,
+            .reserved,
+        ].forEach { controlState in
+            self.setAttributedTitle(nil, for: controlState)
+            self.setTitle(nil, for: controlState)
+            self.setImage(nil, for: controlState)
+        }
+    }
+}
+
 // MARK: -
 
 open class CVImageView: UIImageView, CVView {

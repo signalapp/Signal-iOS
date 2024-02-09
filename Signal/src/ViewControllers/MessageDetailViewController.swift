@@ -1246,6 +1246,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     func didTapViewOnceExpired(_ interaction: TSInteraction) {}
 
+    func didTapContactName(thread: TSContactThread) {}
+
     // TODO:
     func didTapUnknownThreadWarningGroup() {}
     // TODO:

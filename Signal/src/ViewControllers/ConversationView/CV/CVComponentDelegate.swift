@@ -209,6 +209,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapViewOnceExpired(_ interaction: TSInteraction)
 
+    func didTapContactName(thread: TSContactThread)
+
     func didTapUnknownThreadWarningGroup()
     func didTapUnknownThreadWarningContact()
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage)

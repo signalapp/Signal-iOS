@@ -112,8 +112,7 @@ class MessageRequestView: UIStackView {
         layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 20 + safeAreaInset, trailing: 16)
         isLayoutMarginsRelativeArrangement = true
 
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = Theme.backgroundColor
+        let backgroundView = UIVisualEffectView(effect: Theme.barBlurEffect)
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
@@ -270,7 +269,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(
                     title: LocalizedStrings.unblock,
-                    titleColor: Theme.accentBlueColor
+                    titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 },
@@ -291,7 +290,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(
                     title: LocalizedStrings.accept,
-                    titleColor: Theme.accentBlueColor
+                    titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
                 },
@@ -312,7 +311,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(
                     title: LocalizedStrings.continue,
-                    titleColor: Theme.accentBlueColor
+                    titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     // This is the same action as accepting the message request, but displays
                     // with slightly different visuals if the user has already been messaging
@@ -336,7 +335,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(
                     title: LocalizedStrings.accept,
-                    titleColor: Theme.accentBlueColor
+                    titleColor: Theme.primaryTextColor
                 ) { [weak self] in
                     self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
                 },
@@ -380,7 +379,7 @@ class MessageRequestView: UIStackView {
             },
             prepareButton(
                 title: LocalizedStrings.accept,
-                titleColor: Theme.accentBlueColor
+                titleColor: Theme.primaryTextColor
             ) { [weak self] in
                 self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
             },
@@ -390,20 +389,22 @@ class MessageRequestView: UIStackView {
 
     // MARK: -
 
-    func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
-        let flatButton = OWSFlatButton()
-        flatButton.setTitle(title: title, font: UIFont.dynamicTypeBodyClamped.semibold(), titleColor: titleColor)
-        flatButton.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
-        flatButton.setPressedBlock(touchHandler)
-        flatButton.useDefaultCornerRadius()
-        flatButton.autoSetDimension(.height, toSize: 48)
-        return flatButton
+    private func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSRoundedButton {
+        let button = OWSRoundedButton(title: title, block: touchHandler)
+        button.setTitleColor(titleColor, for: .normal)
+        button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
+        button.dimsWhenHighlighted = true
+        button.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
+        return button
     }
 
     private func preparePromptTextView(formatString: String, embeddedString: String, appendLearnMoreLink: Bool) -> UITextView {
+        let centered = NSMutableParagraphStyle()
+        centered.alignment = .center
         let defaultAttributes: AttributedFormatArg.Attributes = [
             .font: UIFont.dynamicTypeSubheadlineClamped,
-            .foregroundColor: Theme.secondaryTextAndIconColor
+            .foregroundColor: Theme.secondaryTextAndIconColor,
+            .paragraphStyle: centered,
         ]
 
         let attributesForEmbedded: AttributedFormatArg.Attributes = [
@@ -450,7 +451,7 @@ class MessageRequestView: UIStackView {
 
     private func prepareButtonStack(_ buttons: [UIView]) -> UIStackView {
         let buttonsStack = UIStackView(arrangedSubviews: buttons)
-        buttonsStack.spacing = 8
+        buttonsStack.spacing = 11.5
         buttonsStack.distribution = .fillEqually
         return buttonsStack
     }

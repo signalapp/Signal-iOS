@@ -117,21 +117,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        // UnknownThreadWarning are the second item in the thread
-        if messageLoader.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction) {
-            // The "Unknown Thread Warning" should have a stable timestamp.
-            let timestamp: UInt64
-            if let firstInteraction = messageLoader.loadedInteractions.first {
-                timestamp = max(1, firstInteraction.timestamp) - 1
-            } else {
-                timestamp = 2
-            }
-            let unknownThreadWarning = UnknownThreadWarningInteraction(thread: thread,
-                                                                       timestamp: timestamp)
-            let item = addItem(interaction: unknownThreadWarning)
-            owsAssertDebug(item != nil)
-        }
-
         var interactionIds = Set<String>()
         for interaction in messageLoader.loadedInteractions {
             guard !interactionIds.contains(interaction.uniqueId) else {
@@ -713,10 +698,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 private extension MessageLoader {
     var shouldShowThreadDetails: Bool {
         !canLoadOlder
-    }
-
-    func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        !canLoadOlder && NSObject.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction)
     }
 
     func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
