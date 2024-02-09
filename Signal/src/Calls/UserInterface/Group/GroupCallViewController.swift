@@ -82,13 +82,13 @@ class GroupCallViewController: UIViewController {
         owsAssertDebug(call.isGroupCall)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            speakerView = CallMemberView(type: .remote(isGroupCall: true))
+            speakerView = CallMemberView(type: .remoteInGroup(nil, .speaker))
         } else {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls {
-            localMemberView = CallMemberView(type: .local(call))
+            localMemberView = CallMemberView(type: .local)
         } else {
             localMemberView = GroupCallLocalMemberView()
         }
@@ -520,7 +520,7 @@ class GroupCallViewController: UIViewController {
             if let speakerView = speakerView as? CallMemberView {
                 speakerView.configure(
                     call: call,
-                    memberType: .remote(speakerState, .speaker)
+                    memberType: .remoteInGroup(speakerState, .speaker)
                 )
             } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
                 speakerView.configure(call: call, device: speakerState)

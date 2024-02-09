@@ -186,7 +186,15 @@ extension RemoteVideoView: RTCVideoRenderer {
         }
     }
 
-    // MARK: CallMemberView_IndividualRemoteBridge
+    // MARK: - CallMemberView_IndividualRemoteBridge
 
     var remoteVideoView: RemoteVideoView? { return self }
+
+    // MARK: - CallMemberView_IndividualRemoteBridge
+
+    func configure(
+        call: SignalCall,
+        isFullScreen: Bool,
+        memberType: CallMemberView.MemberType
+    ) {}
 }

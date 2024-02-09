@@ -35,26 +35,6 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
         self.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
-
-        createOptionalViews(type: type)
-        if let avatarView {
-            self.addSubview(avatarView)
-            avatarView.autoCenterInSuperview()
-        }
-        if let detailedNoVideoIndicatorView {
-            self.addSubview(detailedNoVideoIndicatorView)
-            detailedNoVideoIndicatorView.autoCenterInSuperview()
-            detailedNoVideoIndicatorView.isHidden = true
-        }
-        if let noVideoIndicatorImageView {
-            self.addSubview(noVideoIndicatorImageView)
-            noVideoIndicatorImageView.isHidden = true
-            noVideoIndicatorImageView.autoMatch(.height, to: .width, of: noVideoIndicatorImageView)
-            noVideoIndicatorImageView.autoCenterInSuperview()
-            let constraint = noVideoIndicatorImageView.autoSetDimension(.width, toSize: videoOffImageIndicatorWidth)
-            self.videoOffIndicatorImageWidthConstraint = constraint
-            NSLayoutConstraint.activate([constraint])
-        }
     }
 
     /// This method initializes the views that have the potential to be shown
@@ -70,30 +50,56 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     ///     - PIP: Camera-off image.
     ///     - Fullscreen: Camera-off image and message.
     /// - Remote Member: Circular avatar.
-    private func createOptionalViews(type: CallMemberView.MemberType) {
+    private func createOptionalViews(type: CallMemberView.MemberType, call: SignalCall) {
         switch type {
-        case .local(let call):
+        case .local:
             if call.isIndividualCall {
                 self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
             } else if call.isGroupCall {
                 self.detailedNoVideoIndicatorView = self.createDetailedVideoOffIndicatorView()
                 self.noVideoIndicatorImageView = self.createVideoOffIndicatorImageView()
             }
-        case .remote(_):
+        case .remoteInIndividual, .remoteInGroup(_, _):
             self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
         }
     }
 
+    private var hasConfiguredOnce = false
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     ) {
+        if !hasConfiguredOnce {
+            self.createOptionalViews(type: memberType, call: call)
+            if let avatarView {
+                self.addSubview(avatarView)
+                avatarView.autoCenterInSuperview()
+            }
+            if let detailedNoVideoIndicatorView {
+                self.addSubview(detailedNoVideoIndicatorView)
+                detailedNoVideoIndicatorView.autoCenterInSuperview()
+                detailedNoVideoIndicatorView.isHidden = true
+            }
+            if let noVideoIndicatorImageView {
+                self.addSubview(noVideoIndicatorImageView)
+                noVideoIndicatorImageView.isHidden = true
+                noVideoIndicatorImageView.autoMatch(.height, to: .width, of: noVideoIndicatorImageView)
+                noVideoIndicatorImageView.autoCenterInSuperview()
+                let constraint = noVideoIndicatorImageView.autoSetDimension(.width, toSize: videoOffImageIndicatorWidth)
+                self.videoOffIndicatorImageWidthConstraint = constraint
+                NSLayoutConstraint.activate([constraint])
+            }
+            hasConfiguredOnce = true
+        }
+
         switch memberType {
         case .local:
             self.isHidden = !call.isOutgoingVideoMuted
-        case .remote(let remoteDeviceState, _):
-            if let videoMuted = remoteDeviceState.videoMuted {
+        case .remoteInIndividual:
+            self.isHidden = call.individualCall.isRemoteVideoEnabled
+        case .remoteInGroup(let remoteDeviceState, _):
+            if let videoMuted = remoteDeviceState?.videoMuted {
                 self.isHidden = !videoMuted
             } else {
                 self.isHidden = true
@@ -126,23 +132,38 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
             backgroundAvatarImage = profileManager.localProfileAvatarImage()
-        case .remote(let remoteDeviceState, _):
-            let profileImage = databaseStorage.read { tx in
-                updateCircularAvatarIfNecessary(
-                    address: remoteDeviceState.address,
-                    tx: tx
-                )
-                return self.contactsManagerImpl.avatarImage(
-                    forAddress: remoteDeviceState.address,
-                    shouldValidate: true,
-                    transaction: tx
-                )
-            }
-            backgroundAvatarImage = profileImage
-            backgroundColor = AvatarTheme.forAddress(remoteDeviceState.address).backgroundColor
+        case .remoteInGroup(let remoteDeviceState, _):
+            guard let remoteDeviceState else { return }
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteDeviceState.address)
+            backgroundAvatarImage = image
+            backgroundColor = color
+        case .remoteInIndividual:
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: call.individualCall.remoteAddress)
+            backgroundAvatarImage = image
+            backgroundColor = color
         }
         backgroundAvatarView.image = backgroundAvatarImage
         self.backgroundColor = backgroundColor
+    }
+
+    private func avatarImageAndBackgroundColorWithSneakyTransaction(
+        for address: SignalServiceAddress
+    ) -> (UIImage?, UIColor?) {
+        let profileImage = databaseStorage.read { tx in
+            updateCircularAvatarIfNecessary(
+                address: address,
+                tx: tx
+            )
+            return self.contactsManagerImpl.avatarImage(
+                forAddress: address,
+                shouldValidate: true,
+                transaction: tx
+            )
+        }
+        return (
+            profileImage,
+            AvatarTheme.forAddress(address).backgroundColor
+        )
     }
 
     func updateDimensions() {

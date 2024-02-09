@@ -151,15 +151,15 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.individualCall.remoteAddress)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            remoteMemberView = CallMemberView(type: .remote(isGroupCall: false))
+            remoteMemberView = CallMemberView(type: .remoteInIndividual)
         } else {
             remoteMemberView = RemoteVideoView()
         }
 
         if FeatureFlags.useCallMemberComposableViewsForLocalUserInIndividualCalls {
-            self.localVideoView = CallMemberView(type: .local(call))
+            self.localVideoView = CallMemberView(type: .local)
         } else {
-            let localVideoView = LocalVideoView(shouldUseAutolayout: false)
+            let localVideoView = LocalVideoView(shouldUseAutoLayout: false)
             localVideoView.captureSession = call.videoCaptureController.captureSession
             self.localVideoView = localVideoView
         }
@@ -745,6 +745,13 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         // Update local video
         localVideoView.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : 8
         updateLocalVideoLayout()
+
+        // Update remote video
+        remoteMemberView.configure(
+            call: call,
+            isFullScreen: true,
+            memberType: .remoteInIndividual
+        )
 
         // Dismiss Handling
         switch call.individualCall.state {

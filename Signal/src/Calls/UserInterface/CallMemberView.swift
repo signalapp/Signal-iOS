@@ -17,7 +17,7 @@ protocol CallMemberComposableView: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     )
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat)
     func updateDimensions()
@@ -50,13 +50,13 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
 
         super.init(frame: .zero)
         switch type {
-        case .local:
+        case .local, .remoteInIndividual:
             self.orderedComposableViews = [
                 callMemberCameraOffView,
                 callMemberVideoView,
                 callMemberChromeOverlayView
             ]
-        case .remote(_):
+        case .remoteInGroup:
             self.orderedComposableViews = [
                 callMemberCameraOffView,
                 callMemberVideoView,
@@ -98,45 +98,26 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         }
     }
 
-    /// Not to be confused with ``MemberType``, which is used on
-    /// init. This is an imperfect solution to the issue of (group,individual)x(local,remote)
-    /// call member views having different needs for set up and configuration. The alternative
-    /// is having optional params on `init` and `configure`.
-    /// TODO: Eventually iterate to a point that the enum params can become non-optional
-    /// `configure` params.
-    enum ConfigurationType {
-        case local
-        case remote(RemoteDeviceState, CallMemberVisualContext)
-    }
-
-    /// See note on ```ConfigurationType```.
     enum MemberType {
-        case local(SignalCall)
-        case remote(isGroupCall: Bool)
+        case local
+        case remoteInGroup(RemoteDeviceState?, CallMemberVisualContext)
+        case remoteInIndividual
     }
 
-    private var hasBeenConfigured = false
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: ConfigurationType
+        memberType: MemberType
     ) {
-        hasBeenConfigured = true
         switch memberType {
         case .local:
-            guard case .local = self.type else {
-                owsAssertBeta(false, "Member type on init must match member type on config!")
-                return
-            }
             layer.shadowOffset = .zero
             layer.shadowOpacity = 0.25
             layer.shadowRadius = 4
             layer.cornerRadius = isFullScreen ? 0 : 10
-        case .remote(_, _):
-            guard case .remote = self.type else {
-                owsAssertBeta(false, "Member type on init must match member type on config!")
-                return
-            }
+        case .remoteInGroup(_, _),
+             .remoteInIndividual:
+            break
         }
 
         self.orderedComposableViews.forEach { view in
@@ -149,7 +130,6 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
     }
 
     private func updateDimensions() {
-        guard hasBeenConfigured else { return }
         self.orderedComposableViews.forEach { view in
             view.updateDimensions()
         }
@@ -243,10 +223,8 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
     var remoteVideoView: RemoteVideoView? {
         if let remoteVideoView = self.callMemberVideoView.remoteVideoViewIfApplicable() {
             return remoteVideoView
-        } else {
-            owsFailDebug("Attempting to get remote video view for a group or remote individual call member, which shouldn't be needed!")
-            return nil
         }
+        return nil
     }
 }
 
@@ -264,12 +242,17 @@ protocol CallMemberView_IndividualRemoteBridge: UIView {
     var isScreenShare: Bool { get set }
     var isFullScreen: Bool { get set }
     var remoteVideoView: RemoteVideoView? { get }
+    func configure(
+        call: SignalCall,
+        isFullScreen: Bool,
+        memberType: CallMemberView.MemberType
+    )
 }
 
 protocol CallMemberView_IndividualLocalBridge: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     )
 }

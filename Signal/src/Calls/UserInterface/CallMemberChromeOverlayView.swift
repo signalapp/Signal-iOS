@@ -50,13 +50,15 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     ) {
         switch memberType {
         case .local:
             muteIndicatorImage.isHidden = !call.isOutgoingAudioMuted || isFullScreen
-        case .remote(let remoteDeviceState, let context):
-            muteIndicatorImage.isHidden = context == .speaker || remoteDeviceState.audioMuted != true || isFullScreen
+        case .remoteInGroup(let remoteDeviceState, let context):
+            muteIndicatorImage.isHidden = context == .speaker || remoteDeviceState?.audioMuted != true || isFullScreen
+        case .remoteInIndividual:
+            muteIndicatorImage.isHidden = true
         }
     }
 

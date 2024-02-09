@@ -12,23 +12,14 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     init(type: CallMemberView.MemberType) {
         super.init(frame: .zero)
         switch type {
-        case .local(let call):
-            let localVideoView = LocalVideoView(shouldUseAutolayout: true)
-            localVideoView.captureSession = call.videoCaptureController.captureSession
+        case .local:
+            let localVideoView = LocalVideoView(shouldUseAutoLayout: true)
             self.addSubview(localVideoView)
             localVideoView.contentMode = .scaleAspectFill
             localVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .local(localVideoView)
-        case .remote(let isGroupCall):
-            if !isGroupCall {
-                let remoteVideoView = RemoteVideoView()
-                remoteVideoView.isGroupCall = false
-                remoteVideoView.isUserInteractionEnabled = false
-                self.addSubview(remoteVideoView)
-                remoteVideoView.autoPinEdgesToSuperviewEdges()
-                self.callViewWrapper = .remoteInIndividual(remoteVideoView)
-            }
-            // The view for group calls is set upon `configure`.
+        case .remoteInGroup(_, _), .remoteInIndividual:
+            break
         }
     }
 
@@ -48,25 +39,38 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         }
     }
 
+    private var hasConfiguredOnce = false
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        memberType: CallMemberView.ConfigurationType
+        memberType: CallMemberView.MemberType
     ) {
-        self.isHidden = call.isOutgoingVideoMuted
         switch memberType {
         case .local:
+            self.isHidden = call.isOutgoingVideoMuted
             if case let .local(videoView) = callViewWrapper {
                 videoView.captureSession = call.videoCaptureController.captureSession
             } else {
                 owsFailDebug("This should not be called when we're dealing with a remote video!")
             }
-        case .remote(let remoteDeviceState, let context):
+        case .remoteInGroup(let remoteDeviceState, let context):
+            guard let remoteDeviceState else { return }
             if remoteDeviceState.mediaKeysReceived, remoteDeviceState.videoTrack != nil {
                 self.isHidden = (remoteDeviceState.videoMuted == true)
             }
             if !self.isHidden {
                 configureRemoteVideo(device: remoteDeviceState, context: context)
+            }
+        case .remoteInIndividual:
+            self.isHidden = !call.individualCall.isRemoteVideoEnabled
+            if !hasConfiguredOnce {
+                let remoteVideoView = RemoteVideoView()
+                remoteVideoView.isGroupCall = false
+                remoteVideoView.isUserInteractionEnabled = false
+                self.addSubview(remoteVideoView)
+                remoteVideoView.autoPinEdgesToSuperviewEdges()
+                self.callViewWrapper = .remoteInIndividual(remoteVideoView)
+                hasConfiguredOnce = true
             }
         }
     }
