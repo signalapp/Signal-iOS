@@ -21,7 +21,6 @@ public struct AttachmentUpload {
     private let fileSystem: Upload.Shims.FileSystem
 
     private let sourceURL: URL
-    private let version: Upload.FormVersion
 
     private let logger: PrefixedLogger
 
@@ -33,7 +32,6 @@ public struct AttachmentUpload {
         attachmentEncrypter: Upload.Shims.AttachmentEncrypter,
         fileSystem: Upload.Shims.FileSystem,
         sourceURL: URL,
-        version: Upload.FormVersion,
         logger: PrefixedLogger
     ) {
         self.db = db
@@ -45,7 +43,6 @@ public struct AttachmentUpload {
         self.fileSystem = fileSystem
 
         self.sourceURL = sourceURL
-        self.version = version
 
         self.logger = logger
     }
@@ -94,7 +91,7 @@ public struct AttachmentUpload {
     /// rebuild the endpoint and upload state before trying again
     private func attemptUpload(localMetadata: Upload.LocalUploadMetadata, count: UInt = 0, progress: Upload.ProgressBlock?) async throws -> Upload.Result {
         do {
-            let attempt = try await buildAttempt(for: localMetadata, version: version, count: count, logger: logger)
+            let attempt = try await buildAttempt(for: localMetadata, count: count, logger: logger)
             return try await performResumableUpload(attempt: attempt, progress: progress)
         } catch {
             // Anything besides 'restart' should be handled below this method,
@@ -227,18 +224,10 @@ public struct AttachmentUpload {
 
     private func buildAttempt(
         for localMetadata: Upload.LocalUploadMetadata,
-        version: Upload.FormVersion,
         count: UInt = 0,
         logger: PrefixedLogger
     ) async throws -> Upload.Attempt {
-        let request = {
-            switch version {
-            case .v3:
-                return OWSRequestFactory.allocAttachmentRequestV3()
-            case .v4:
-                return OWSRequestFactory.allocAttachmentRequestV4()
-            }
-        }()
+        let request = OWSRequestFactory.allocAttachmentRequestV4()
         let form: Upload.Form = try await fetchUploadForm(request: request)
         let endpoint: UploadEndpoint = try {
             switch form.cdnNumber {

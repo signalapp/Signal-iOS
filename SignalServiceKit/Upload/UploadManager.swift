@@ -12,8 +12,7 @@ public protocol UploadManager {
     ///   - param attachmentId: The id of the TSAttachmentStream to upload
     ///   - param messageIds: A list of TSInteractions representing the message or
     ///   album this attachment is associated with
-    ///   - param version: The upload endpoint to use for creating an upload form
-    func uploadAttachment(attachmentId: String, messageIds: [String], version: Upload.FormVersion) async throws
+    func uploadAttachment(attachmentId: String, messageIds: [String]) async throws
 }
 
 public actor UploadManagerImpl: UploadManager {
@@ -56,7 +55,7 @@ public actor UploadManagerImpl: UploadManager {
     ///
     /// It is assumed any errors that could be retried or otherwise handled will have happend at a lower level,
     /// so any error encountered here is considered unrecoverable and thrown to the caller.
-    public func uploadAttachment(attachmentId: String, messageIds: [String], version: Upload.FormVersion) async throws {
+    public func uploadAttachment(attachmentId: String, messageIds: [String]) async throws {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
 
         let attachmentStream = try db.read(block: { tx in
@@ -87,7 +86,6 @@ public actor UploadManagerImpl: UploadManager {
                 attachmentEncrypter: attachmentEncrypter,
                 fileSystem: fileSystem,
                 sourceURL: sourceURL,
-                version: version,
                 logger: logger
             )
 

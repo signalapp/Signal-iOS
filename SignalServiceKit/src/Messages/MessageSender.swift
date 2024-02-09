@@ -520,8 +520,7 @@ public class MessageSender: Dependencies {
                 let uploadOperation = AsyncBlockOperation {
                     try await DependenciesBridge.shared.uploadManager.uploadAttachment(
                         attachmentId: attachmentId,
-                        messageIds: [ message.uniqueId ],
-                        version: FeatureFlags.useAttachmentsV4Endpoint ? .v4 : .v3
+                        messageIds: [ message.uniqueId ]
                     )
                 }
                 sendMessageOperation.addDependency(uploadOperation)

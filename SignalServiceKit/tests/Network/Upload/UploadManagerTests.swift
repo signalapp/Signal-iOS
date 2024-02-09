@@ -39,11 +39,7 @@ class UploadManagerTests: XCTestCase {
         // 3. Successful download
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        _ = try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        _ = try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadLocation(request) = helper.capturedRequests[1] {
             XCTAssertEqual(request.url!.absoluteString, uploadLocation)
@@ -87,11 +83,7 @@ class UploadManagerTests: XCTestCase {
         // 5. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[5] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -125,11 +117,7 @@ class UploadManagerTests: XCTestCase {
         // 5. Complete the upload
         helper.addUploadRequestMock(auth: auth, location: location, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[5] {
             XCTAssertEqual(request.url!.absoluteString, location)
@@ -165,11 +153,7 @@ class UploadManagerTests: XCTestCase {
         // 8. Complete the upload
         helper.addUploadRequestMock(auth: auth2, location: location2, type: .success)
 
-        try await uploadManager.uploadAttachment(
-            attachmentId: "attachment_1",
-            messageIds: ["message_1"],
-            version: .v3
-        )
+        try await uploadManager.uploadAttachment(attachmentId: "attachment_1", messageIds: ["message_1"])
 
         if case let .uploadTask(request) = helper.capturedRequests[8] {
             XCTAssertEqual(request.url!.absoluteString, location2)
