@@ -493,7 +493,7 @@ internal struct PreKeyTaskManager {
         if let signedPreKeyRecord = bundle.getSignedPreKey() {
 
             // Mark the new Signed Prekey as accepted
-            protocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+            protocolStore.signedPreKeyStore.storeSignedPreKeyAsCurrent(
                 signedPreKeyId: signedPreKeyRecord.id,
                 signedPreKeyRecord: signedPreKeyRecord,
                 tx: tx

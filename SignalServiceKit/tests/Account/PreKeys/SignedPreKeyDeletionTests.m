@@ -101,7 +101,6 @@
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
         // we only retain accepted keys
-        [record markAsAcceptedByService];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
             [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];

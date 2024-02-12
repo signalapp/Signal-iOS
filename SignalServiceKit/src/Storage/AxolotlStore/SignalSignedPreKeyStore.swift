@@ -20,7 +20,7 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
         tx: DBWriteTransaction
     )
 
-    func storeSignedPreKeyAsAcceptedAndCurrent(
+    func storeSignedPreKeyAsCurrent(
            signedPreKeyId: Int32,
            signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
            tx: DBWriteTransaction
@@ -70,12 +70,12 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         )
     }
 
-    public func storeSignedPreKeyAsAcceptedAndCurrent(
+    public func storeSignedPreKeyAsCurrent(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
         tx: DBWriteTransaction
     ) {
-        storeSignedPreKeyAsAcceptedAndCurrent(
+        storeSignedPreKeyAsCurrent(
             signedPreKeyId: signedPreKeyId,
             signedPreKeyRecord: signedPreKeyRecord,
             transaction: SDSDB.shimOnlyBridge(tx)

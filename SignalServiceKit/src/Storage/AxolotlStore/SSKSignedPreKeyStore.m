@@ -213,11 +213,10 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
     // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
-        OWSLogInfo(@"Considering signed prekey id: %d, generatedAt: %@, createdAt: %@, wasAcceptedByService: %d",
+        OWSLogInfo(@"Considering signed prekey id: %d, generatedAt: %@, createdAt: %@",
             signedPrekey.Id,
             signedPrekey.generatedAt,
-            signedPrekey.createdAt,
-            signedPrekey.wasAcceptedByService);
+            signedPrekey.createdAt);
 
         // Always keep at least 3 keys, accepted or otherwise.
         if (oldSignedPreKeyCount <= 3) {
@@ -245,63 +244,10 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 - (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSDate *lastSuccess = [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
-
-    // For compatibility with existing signed prekeys, fall back to the last
-    if (lastSuccess == nil) {
-        SignedPreKeyRecord *currentSignedPreKey = [self currentSignedPreKeyWithTransaction:transaction];
-        if (currentSignedPreKey.wasAcceptedByService) {
-            // Return the date the last key was signed at as an approximation of last rotation date.
-            return currentSignedPreKey.generatedAt;
-        }
-        return nil;
-    }
-
-    return lastSuccess;
+    return [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
 }
 
 #pragma mark - Debugging
-
-- (void)logSignedPreKeyReport
-{
-    NSString *tag = @"SSKSignedPreKeyStore";
-
-    NSNumber *currentId = [self currentSignedPrekeyId];
-
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        __block int i = 0;
-
-        OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
-        OWSLogInfo(@"%@   currentId: %@", tag, currentId);
-
-        NSUInteger count = [self.keyStore numberOfKeysWithTransaction:transaction];
-        OWSLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
-
-        [self.keyStore
-            enumerateKeysAndObjectsWithTransaction:transaction
-                                             block:^(NSString *_Nonnull key,
-                                                 id _Nonnull signedPreKeyObject,
-                                                 BOOL *_Nonnull stop) {
-                                                 i++;
-                                                 if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
-                                                     OWSFailDebug(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
-                                                         tag,
-                                                         [signedPreKeyObject class]);
-                                                     return;
-                                                 }
-                                                 SignedPreKeyRecord *signedPreKeyRecord
-                                                     = (SignedPreKeyRecord *)signedPreKeyObject;
-                                                 OWSLogInfo(@"%@     #%d <SignedPreKeyRecord: id: %d, generatedAt: %@, "
-                                                            @"wasAcceptedByService:%@, signature: %@",
-                                                     tag,
-                                                     i,
-                                                     signedPreKeyRecord.Id,
-                                                     signedPreKeyRecord.generatedAt,
-                                                     (signedPreKeyRecord.wasAcceptedByService ? @"YES" : @"NO"),
-                                                     signedPreKeyRecord.signature);
-                                             }];
-    }];
-}
 
 #if TESTABLE_BUILD
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction

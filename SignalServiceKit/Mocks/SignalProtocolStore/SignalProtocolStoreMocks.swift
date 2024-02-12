@@ -151,7 +151,7 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         self.storedSignedPreKeyRecord = signedPreKeyRecord
     }
 
-    func storeSignedPreKeyAsAcceptedAndCurrent(
+    func storeSignedPreKeyAsCurrent(
            signedPreKeyId: Int32,
            signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
            tx: DBWriteTransaction

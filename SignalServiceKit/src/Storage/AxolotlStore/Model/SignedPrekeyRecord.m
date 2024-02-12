@@ -11,36 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString* const kCoderPreKeyId        = @"kCoderPreKeyId";
 static NSString* const kCoderPreKeyPair      = @"kCoderPreKeyPair";
 static NSString* const kCoderPreKeyDate      = @"kCoderPreKeyDate";
-static NSString* const kCoderPreKeySignature = @"kCoderPreKeySignature";
-static NSString *const kCoderPreKeyWasAcceptedByService = @"kCoderPreKeyWasAcceptedByService";
+static NSString *const kCoderPreKeySignature = @"kCoderPreKeySignature";
 
 @implementation SignedPreKeyRecord
 
 + (BOOL)supportsSecureCoding{
     return YES;
-}
-
-- (instancetype)initWithId:(int)identifier
-                   keyPair:(ECKeyPair *)keyPair
-                 signature:(NSData *)signature
-               generatedAt:(NSDate *)generatedAt
-      wasAcceptedByService:(BOOL)wasAcceptedByService
-{
-    OWSAssert(keyPair);
-    OWSAssert(signature);
-    OWSAssert(generatedAt);
-
-    self = [super initWithId:identifier
-                     keyPair:keyPair
-                   createdAt:generatedAt];
-
-    if (self) {
-        _signature = signature;
-        _generatedAt = generatedAt;
-        _wasAcceptedByService = wasAcceptedByService;
-    }
-
-    return self;
 }
 
 - (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair signature:(NSData*)signature generatedAt:(NSDate *)generatedAt{
@@ -58,10 +34,9 @@ static NSString *const kCoderPreKeyWasAcceptedByService = @"kCoderPreKeyWasAccep
 
 - (nullable id)initWithCoder:(NSCoder *)aDecoder{
     return [self initWithId:[aDecoder decodeIntForKey:kCoderPreKeyId]
-                     keyPair:[aDecoder decodeObjectOfClass:[ECKeyPair class] forKey:kCoderPreKeyPair]
-                   signature:[aDecoder decodeObjectOfClass:[NSData class] forKey:kCoderPreKeySignature]
-                 generatedAt:[aDecoder decodeObjectOfClass:[NSDate class] forKey:kCoderPreKeyDate]
-        wasAcceptedByService:[aDecoder decodeBoolForKey:kCoderPreKeyWasAcceptedByService]];
+                    keyPair:[aDecoder decodeObjectOfClass:[ECKeyPair class] forKey:kCoderPreKeyPair]
+                  signature:[aDecoder decodeObjectOfClass:[NSData class] forKey:kCoderPreKeySignature]
+                generatedAt:[aDecoder decodeObjectOfClass:[NSDate class] forKey:kCoderPreKeyDate]];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder{
@@ -69,17 +44,11 @@ static NSString *const kCoderPreKeyWasAcceptedByService = @"kCoderPreKeyWasAccep
     [aCoder encodeObject:self.keyPair forKey:kCoderPreKeyPair];
     [aCoder encodeObject:self.signature forKey:kCoderPreKeySignature];
     [aCoder encodeObject:self.generatedAt forKey:kCoderPreKeyDate];
-    [aCoder encodeBool:self.wasAcceptedByService forKey:kCoderPreKeyWasAcceptedByService];
 }
 
 - (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair*)keyPair{
     OWSAbstractMethod();
     return nil;
-}
-
-- (void)markAsAcceptedByService
-{
-    _wasAcceptedByService = YES;
 }
 
 @end

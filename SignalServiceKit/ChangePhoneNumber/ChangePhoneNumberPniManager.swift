@@ -199,7 +199,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         }
 
         let newSignedPreKeyRecord = pendingState.localDevicePniSignedPreKeyRecord
-        pniSignedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+        pniSignedPreKeyStore.storeSignedPreKeyAsCurrent(
             signedPreKeyId: newSignedPreKeyRecord.id,
             signedPreKeyRecord: newSignedPreKeyRecord,
             tx: transaction

@@ -54,8 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Debugging
 
-- (void)logSignedPreKeyReport;
-
 #if TESTABLE_BUILD
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction;
 #endif

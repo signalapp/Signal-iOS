@@ -86,8 +86,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
             tx: tx
         )
 
-        pniChangeData.signedPreKey.markAsAcceptedByService()
-        pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
+        pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsCurrent(
             signedPreKeyId: pniChangeData.signedPreKey.id,
             signedPreKeyRecord: pniChangeData.signedPreKey,
             tx: tx
