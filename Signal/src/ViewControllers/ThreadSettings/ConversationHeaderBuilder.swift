@@ -476,7 +476,7 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
 
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String
 
-    var avatarView: PrimaryImageView? { get set }
+    var avatarView: ConversationAvatarView? { get set }
 
     var isGroupV1Thread: Bool { get }
     var canEditConversationAttributes: Bool { get }
@@ -619,7 +619,8 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
             owsFailDebug("Conversation name should only be tappable for contact threads")
             return
         }
-        ContactAboutSheet(thread: contactThread).present(from: self)
+        ContactAboutSheet(thread: contactThread, spoilerState: self.spoilerState)
+            .present(from: self)
     }
 }
 

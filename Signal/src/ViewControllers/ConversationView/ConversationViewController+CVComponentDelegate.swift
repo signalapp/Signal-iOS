@@ -925,7 +925,8 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapContactName(thread: TSContactThread) {
         AssertIsOnMainThread()
-        ContactAboutSheet(thread: thread).present(from: self)
+        ContactAboutSheet(thread: thread, spoilerState: self.spoilerState)
+            .present(from: self)
     }
 
     public func didTapUnknownThreadWarningGroup() {

@@ -29,7 +29,7 @@ struct ProfileSheetSheetCoordinator {
         let thread = threadViewModel.threadRecord
 
         if thread.isNoteToSelf, let contactThread = thread as? TSContactThread {
-            ContactAboutSheet(thread: contactThread)
+            ContactAboutSheet(thread: contactThread, spoilerState: spoilerState)
                 .present(from: viewController)
             return
         }
@@ -47,7 +47,7 @@ struct ProfileSheetSheetCoordinator {
 class MemberActionSheet: OWSTableSheetViewController {
     private var groupViewHelper: GroupViewHelper?
 
-    var avatarView: PrimaryImageView?
+    var avatarView: ConversationAvatarView?
     var thread: TSThread { threadViewModel.threadRecord }
     var threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
@@ -402,7 +402,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
             owsFailDebug("How is member sheet not showing a contact?")
             return
         }
-        let sheet = ContactAboutSheet(thread: contactThread)
+        let sheet = ContactAboutSheet(thread: contactThread, spoilerState: spoilerState)
         dismiss(animated: true) {
             guard let fromViewController = self.fromViewController else { return }
             sheet.present(from: fromViewController)
@@ -410,39 +410,6 @@ extension MemberActionSheet: ConversationHeaderDelegate {
     }
 }
 
-extension MemberActionSheet: MediaPresentationContextProvider {
-    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-        let mediaView: UIView
-        let mediaViewShape: MediaViewShape
-        switch item {
-        case .gallery:
-            owsFailDebug("Unexpected item")
-            return nil
-        case .image:
-            guard let avatarView = avatarView as? ConversationAvatarView else { return nil }
-            mediaView = avatarView
-            if case .circular = avatarView.configuration.shape {
-                mediaViewShape = .circle
-            } else {
-                mediaViewShape = .rectangle(0)
-            }
-        }
-
-        guard let mediaSuperview = mediaView.superview else {
-            owsFailDebug("mediaSuperview was unexpectedly nil")
-            return nil
-        }
-
-        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
-
-        return MediaPresentationContext(
-            mediaView: mediaView,
-            presentationFrame: presentationFrame,
-            mediaViewShape: mediaViewShape
-        )
-    }
-
-    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        return nil
-    }
+extension MemberActionSheet: AvatarViewPresentationContextProvider {
+    var conversationAvatarView: ConversationAvatarView? { avatarView }
 }

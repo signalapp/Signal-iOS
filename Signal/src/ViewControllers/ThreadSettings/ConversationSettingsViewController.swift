@@ -31,7 +31,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     private(set) var threadViewModel: ThreadViewModel
     private(set) var isSystemContact: Bool
-    private let spoilerState: SpoilerRenderState
+    let spoilerState: SpoilerRenderState
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -51,7 +51,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public var showVerificationOnAppear = false
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    var avatarView: PrimaryImageView?
+    var avatarView: ConversationAvatarView?
 
     var isShowingAllGroupMembers = false
     var isShowingAllMutualGroups = false

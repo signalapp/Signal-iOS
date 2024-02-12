@@ -12,10 +12,12 @@ import SignalServiceKit
 class ContactAboutSheet: StackSheetViewController {
     private let thread: TSContactThread
     private let isLocalUser: Bool
+    private let spoilerState: SpoilerRenderState
 
-    init(thread: TSContactThread) {
+    init(thread: TSContactThread, spoilerState: SpoilerRenderState) {
         self.thread = thread
         self.isLocalUser = thread.isNoteToSelf
+        self.spoilerState = spoilerState
         super.init()
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -29,7 +31,7 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Layout
 
-    private lazy var avatarViewContainer: UIView = {
+    private lazy var avatarView: ConversationAvatarView = {
         let avatarView = ConversationAvatarView(
             sizeClass: .customDiameter(240),
             localUserDisplayMode: .asUser,
@@ -38,7 +40,11 @@ class ContactAboutSheet: StackSheetViewController {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
         }
+        avatarView.interactionDelegate = self
+        return avatarView
+    }()
 
+    private lazy var avatarViewContainer: UIView = {
         let container = UIView.container()
         container.addSubview(avatarView)
         avatarView.autoCenterInSuperview()
@@ -238,4 +244,43 @@ extension ContactAboutSheet: DatabaseChangeDelegate {
     func databaseChangesDidReset() {
         updateContents()
     }
+}
+
+// MARK: - ConversationAvatarViewDelegate
+
+extension ContactAboutSheet: ConversationAvatarViewDelegate {
+    func didTapBadge() {
+        // Badges are not shown on contact about sheet
+    }
+
+    func presentStoryViewController() {
+        let vc = StoryPageViewController(
+            context: self.thread.storyContext,
+            spoilerState: self.spoilerState
+        )
+        present(vc, animated: true)
+    }
+
+    func presentAvatarViewController() {
+        guard
+            avatarView.primaryImage != nil,
+            let vc = databaseStorage.read(block: { tx in
+                AvatarViewController(
+                    thread: self.thread,
+                    renderLocalUserAsNoteToSelf: false,
+                    readTx: tx
+                )
+            })
+        else {
+            return
+        }
+
+        present(vc, animated: true)
+    }
+}
+
+// MARK: - AvatarViewPresentationContextProvider
+
+extension ContactAboutSheet: AvatarViewPresentationContextProvider {
+    var conversationAvatarView: ConversationAvatarView? { avatarView }
 }
