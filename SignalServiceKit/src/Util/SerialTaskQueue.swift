@@ -17,8 +17,8 @@ public actor SerialTaskQueue {
         let task: AnyTask
     }
 
-    private var isRunningTask = false
     private var queue: [IdentifiedTask] = []
+    private var nextTaskId = 0
 
     public init() {}
 
@@ -33,8 +33,8 @@ public actor SerialTaskQueue {
     @discardableResult
     public func enqueue<T>(operation: @escaping @Sendable () async throws -> T) -> Task<T, Error> {
         let previousTask = queue.last
-        let newTaskIdParams = (previousTask?.id ?? 0).addingReportingOverflow(1)
-        let newTaskId = newTaskIdParams.overflow ? 1 : newTaskIdParams.partialValue
+        let newTaskId = nextTaskId
+        nextTaskId += 1
 
         let task = Task { [weak self] in
             try Task.checkCancellation()
@@ -56,18 +56,18 @@ public actor SerialTaskQueue {
     public func enqueueCancellingPrevious<T>(
         operation: @escaping @Sendable () async throws -> T
     ) async -> Task<T, Error> {
-        await cancelAll()
+        cancelAll()
         return enqueue(operation: operation)
     }
 
     /// Note that it is up to each task to respect its cancellation and yield; cancelling does not
     /// guarantee they will cease execution.
-    public func cancelAll() async {
+    public func cancelAll() {
         queue.forEach { $0.task.cancel() }
         queue = []
     }
 
-    private func cleanUpQueue(upToId: Int) async {
+    private func cleanUpQueue(upToId: Int) {
         queue = queue.filter { $0.id > upToId }
     }
 }
