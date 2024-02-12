@@ -1371,6 +1371,7 @@
 		B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93955E22B06D47000F35940 /* CallsListViewController.swift */; };
 		B9439F3DDBE241269273DD6F /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
+		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
@@ -4131,6 +4132,7 @@
 		B935268F2B0E63C300421E6A /* NewCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCallViewController.swift; sourceTree = "<group>"; };
 		B93955E22B06D47000F35940 /* CallsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
+		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
@@ -6234,6 +6236,7 @@
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
 				34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */,
+				B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
@@ -11828,6 +11831,7 @@
 				B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */,
 				7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */,
 				3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */,
+				B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */,
 				7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */,
 				662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */,
 				F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */,

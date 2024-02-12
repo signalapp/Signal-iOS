@@ -13,7 +13,7 @@ class NewCallViewController: RecipientPickerContainerViewController {
 
         title = "New Call" // [CallsTab] TODO: Localize
 
-        recipientPicker.allowsAddByPhoneNumber = true
+        recipientPicker.allowsAddByAddress = true
         recipientPicker.shouldShowInvites = true
         recipientPicker.delegate = self
 

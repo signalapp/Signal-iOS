@@ -33,7 +33,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Configuration
 
-    public var allowsAddByPhoneNumber = true
+    public var allowsAddByAddress = true
     public var shouldHideLocalRecipient = true
     public var selectionMode = SelectionMode.default
     public var groupsToShow = GroupsToShow.groupsThatUserIsMemberOfWhenSearching
@@ -375,8 +375,24 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             ))
         }
 
-        // Find Non-Contacts by Phone Number
-        if allowsAddByPhoneNumber && !isSearching {
+        if allowsAddByAddress && !isSearching {
+            // Find by username
+            staticSection.add(OWSTableItem.disclosureItem(
+                icon: .profileUsername,
+                name: OWSLocalizedString(
+                    "NEW_CONVERSATION_FIND_BY_USERNAME",
+                    comment: "A label for the cell that lets you add a new member by their username"
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.find_by_username",
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let viewController = FindByUsernameViewController()
+                    viewController.findByUsernameDelegate = self
+                    self.navigationController?.pushViewController(viewController, animated: true)
+                }
+            ))
+
+            // Find by phone number
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .phoneNumber,
                 name: OWSLocalizedString(
@@ -392,21 +408,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                         requiresRegisteredNumber: self.selectionMode != .blocklist
                     )
                     self.navigationController?.pushViewController(viewController, animated: true)
-                }
-            ))
-        }
-
-        // Invite Contacts
-        if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
-            staticSection.add(OWSTableItem.disclosureItem(
-                icon: .settingsInvite,
-                name: OWSLocalizedString(
-                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                    comment: "Label for the cell that presents the 'invite contacts' workflow."
-                ),
-                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
-                actionBlock: { [weak self] in
-                    self?.presentInviteFlow()
                 }
             ))
         }
@@ -468,6 +469,26 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                     return self.collation.sectionTitles
                 }
             }
+        }
+
+        // Invite Contacts
+        if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
+            let bottomSection = OWSTableSection(title: OWSLocalizedString(
+                "INVITE_FRIENDS_CONTACT_TABLE_HEADER",
+                comment: "Header label above a section for more options for adding contacts"
+            ))
+            bottomSection.add(OWSTableItem.disclosureItem(
+                icon: .settingsInvite,
+                name: OWSLocalizedString(
+                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                    comment: "Label for the cell that presents the 'invite contacts' workflow."
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
+                actionBlock: { [weak self] in
+                    self?.presentInviteFlow()
+                }
+            ))
+            tableContents.add(bottomSection)
         }
 
         tableViewController.contents = tableContents
@@ -738,7 +759,18 @@ extension RecipientPickerViewController {
             )
         }
 
-        if allowsAddByPhoneNumber {
+        if allowsAddByAddress {
+            addButton(
+                title: OWSLocalizedString(
+                    "NO_CONTACTS_SEARCH_BY_USERNAME",
+                    comment: "Label for a button that lets users search for contacts by username"
+                ),
+                selector: #selector(hideBackgroundView),
+                accessibilityIdentifierName: "searchByPhoneNumberButton",
+                icon: .composeFindByUsernameLarge,
+                innerIconSize: 40
+            )
+
             addButton(
                 title: OWSLocalizedString(
                     "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
@@ -1489,6 +1521,13 @@ extension RecipientPickerViewController: FindByPhoneNumberDelegate {
     ) {
         owsAssertDebug(address.isValid)
 
+        tryToSelectRecipient(.for(address: address))
+    }
+}
+
+extension RecipientPickerViewController: FindByUsernameDelegate {
+    func findByUsername(address: SignalServiceAddress) {
+        owsAssertDebug(address.isValid)
         tryToSelectRecipient(.for(address: address))
     }
 }

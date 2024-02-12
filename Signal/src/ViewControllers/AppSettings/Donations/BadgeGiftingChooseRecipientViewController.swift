@@ -32,7 +32,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
             comment: "Title on the screen where you choose who you're going to donate on behalf of."
         )
 
-        recipientPicker.allowsAddByPhoneNumber = false
+        recipientPicker.allowsAddByAddress = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.groupsToShow = .noGroups
         recipientPicker.delegate = self
