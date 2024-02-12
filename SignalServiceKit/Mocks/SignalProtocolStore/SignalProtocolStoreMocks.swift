@@ -101,7 +101,7 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
     private var preKeyId: Int32 = 0
     private var currentSignedPreKey: SignalServiceKit.SignedPreKeyRecord?
 
-    private(set) var lastPreKeyRotation: Date?
+    private(set) var lastSuccessfulRotationDate: Date?
 
     internal private(set) var storedSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
     internal private(set) var storedSignedPreKeyId: Int32?
@@ -180,12 +180,12 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         tx: DBWriteTransaction
     ) { }
 
-    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
-        lastPreKeyRotation = date
+    func setLastSuccessfulRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
+        lastSuccessfulRotationDate = date
     }
 
-    func getLastSuccessfulPreKeyRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
-        return lastPreKeyRotation
+    func getLastSuccessfulRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
+        return lastSuccessfulRotationDate
     }
 }
 
@@ -195,7 +195,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     var identityKeyPair = ECKeyPair.generateKeyPair()
     var dateProvider: DateProvider
 
-    private(set) var lastPreKeyRotation: Date?
+    private(set) var lastSuccessfulRotationDate: Date?
 
     private(set) var lastResortRecords = [SignalServiceKit.KyberPreKeyRecord]()
     private(set) var currentLastResortPreKey: SignalServiceKit.KyberPreKeyRecord!
@@ -288,12 +288,12 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         tx: SignalServiceKit.DBWriteTransaction
     ) {}
 
-    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
-        lastPreKeyRotation = date
+    func setLastSuccessfulRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
+        lastSuccessfulRotationDate = date
     }
 
-    func getLastSuccessfulPreKeyRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
-        return lastPreKeyRotation
+    func getLastSuccessfulRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
+        return lastSuccessfulRotationDate
     }
 
     func removeAll(tx: DBWriteTransaction) { }

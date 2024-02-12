@@ -51,12 +51,12 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws
 
-    func setLastSuccessfulPreKeyRotationDate(
+    func setLastSuccessfulRotationDate(
         _ date: Date,
         tx: DBWriteTransaction
     )
 
-    func getLastSuccessfulPreKeyRotationDate(
+    func getLastSuccessfulRotationDate(
         tx: DBReadTransaction
     ) -> Date?
 
@@ -369,11 +369,11 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         try self.markKyberPreKeyUsed(id: Int32(bitPattern: id), tx: context.asTransaction.asV2Write)
     }
 
-    public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {
+    public func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
         self.metadataStore.setDate(date, key: Constants.lastKeyRotationDate, transaction: tx)
     }
 
-    public func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date? {
+    public func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
         self.metadataStore.getDate(Constants.lastKeyRotationDate, transaction: tx)
     }
 

@@ -499,7 +499,7 @@ internal struct PreKeyTaskManager {
                 tx: tx
             )
 
-            protocolStore.signedPreKeyStore.setLastSuccessfulPreKeyRotationDate(self.dateProvider(), tx: tx)
+            protocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
 
             protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
         }
@@ -513,7 +513,7 @@ internal struct PreKeyTaskManager {
             )
 
             // Register a successful key rotation
-            protocolStore.kyberPreKeyStore.setLastSuccessfulPreKeyRotationDate(self.dateProvider(), tx: tx)
+            protocolStore.kyberPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
 
             // Cleanup any old keys
             try protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(tx: tx)

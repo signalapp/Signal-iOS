@@ -33,8 +33,8 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
         tx: DBWriteTransaction
     )
 
-    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction)
-    func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date?
+    func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction)
+    func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date?
 
     // MARK: - Testing
 #if TESTABLE_BUILD
@@ -93,12 +93,12 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         self.removeSignedPreKey(signedPreKeyRecord.id, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {
-        setLastSuccessfulPreKeyRotationDate(date, transaction: SDSDB.shimOnlyBridge(tx))
+    public func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
+        setLastSuccessfulRotationDate(date, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date? {
-        getLastSuccessfulPreKeyRotationDate(transaction: SDSDB.shimOnlyBridge(tx))
+    public func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
+        getLastSuccessfulRotationDate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     // MARK: - Testing

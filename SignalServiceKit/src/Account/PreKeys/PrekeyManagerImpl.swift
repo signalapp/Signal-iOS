@@ -63,7 +63,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
 
-        guard let lastSuccessDate = store.getLastSuccessfulPreKeyRotationDate(tx: tx) else {
+        guard let lastSuccessDate = store.getLastSuccessfulRotationDate(tx: tx) else {
             return true
         }
 
@@ -73,7 +73,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     private func needsLastResortPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).kyberPreKeyStore
 
-        guard let lastSuccessDate = store.getLastSuccessfulPreKeyRotationDate(tx: tx) else {
+        guard let lastSuccessDate = store.getLastSuccessfulRotationDate(tx: tx) else {
             return true
         }
 

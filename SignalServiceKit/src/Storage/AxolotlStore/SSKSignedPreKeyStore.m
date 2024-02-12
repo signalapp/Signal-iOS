@@ -237,12 +237,12 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 #pragma mark - Prekey update failures
 
-- (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setLastSuccessfulRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.metadataStore setDate:date key:kLastPreKeyRotationDate transaction:transaction];
 }
 
-- (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSDate *)getLastSuccessfulRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
 }

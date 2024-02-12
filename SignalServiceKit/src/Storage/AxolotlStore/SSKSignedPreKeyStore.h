@@ -48,9 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Prekey rotation tracking
-- (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction;
-- (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(getLastSuccessfulPreKeyRotationDate(transaction:));
+- (void)setLastSuccessfulRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable NSDate *)getLastSuccessfulRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(getLastSuccessfulRotationDate(transaction:));
 
 #pragma mark - Debugging
 
