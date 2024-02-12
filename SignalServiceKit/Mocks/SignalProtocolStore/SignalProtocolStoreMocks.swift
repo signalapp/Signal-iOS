@@ -191,7 +191,7 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
 
 internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
 
-    private(set) var nextKeyId: Int32 = 0
+    private(set) var nextKeyId: UInt32 = 0
     var identityKeyPair = ECKeyPair.generateKeyPair()
     var dateProvider: DateProvider
 
@@ -255,7 +255,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         let keyPair = KEMKeyPair.generate()
         let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
         return try LibSignalClient.KyberPreKeyRecord(
-            id: UInt32(bitPattern: keyId),
+            id: keyId,
             timestamp: Date().ows_millisecondsSince1970,
             keyPair: keyPair,
             signature: signature

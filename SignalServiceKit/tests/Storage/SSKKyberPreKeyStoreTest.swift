@@ -102,7 +102,7 @@ class KyberPreKeyStoreTest: XCTestCase {
 
         db.write { tx in
             metadataStore.setInt32(
-                SSKKyberPreKeyStore.Constants.maxKeyId - 1,
+                0xFFFFFE,
                 key: SSKKyberPreKeyStore.Constants.lastKeyId,
                 transaction: tx
             )
@@ -112,7 +112,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: identityKey, tx: tx)
         }
 
-        XCTAssertEqual(record1.id, SSKKyberPreKeyStore.Constants.maxKeyId)
+        XCTAssertEqual(record1.id, 0xFFFFFF)
 
         let record2 = try! self.db.write { tx in
             try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: identityKey, tx: tx)
@@ -129,7 +129,7 @@ class KyberPreKeyStoreTest: XCTestCase {
 
         let batchCount: Int32 = 50
         db.write { tx in
-            let lastKeyId: Int32 = SSKKyberPreKeyStore.Constants.maxKeyId - batchCount + 1
+            let lastKeyId: Int32 = 0x1000000 - batchCount
             metadataStore.setInt32(lastKeyId, key: SSKKyberPreKeyStore.Constants.lastKeyId, transaction: tx)
         }
 
