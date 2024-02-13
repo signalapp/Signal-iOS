@@ -482,7 +482,7 @@ internal struct PreKeyTaskManager {
             )
         }
         if let lastResortPreKey = bundle.getLastResortPreKey() {
-            try protocolStore.kyberPreKeyStore.storeKyberPreKey(
+            try protocolStore.kyberPreKeyStore.storeLastResortPreKey(
                 record: lastResortPreKey,
                 tx: tx
             )

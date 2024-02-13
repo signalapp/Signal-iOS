@@ -67,24 +67,18 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
 
         // Store in the right places
 
-        // attempt this first and return before writing any other information
-        do {
-            if let lastResortKey = pniChangeData.lastResortKyberPreKey {
-                try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKey(
-                    record: lastResortKey,
-                    tx: tx
-                )
-            }
-        } catch {
-            owsFailDebug("Failed to store last resort Kyber prekey")
-            return
-        }
-
         identityManager.setIdentityKeyPair(
             pniChangeData.identityKeyPair,
             for: .pni,
             tx: tx
         )
+
+        if let lastResortKey = pniChangeData.lastResortKyberPreKey {
+            try? pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyFromLinkedDevice(
+                record: lastResortKey,
+                tx: tx
+            )
+        }
 
         pniProtocolStore.signedPreKeyStore.storeSignedPreKey(
             pniChangeData.signedPreKey.id,

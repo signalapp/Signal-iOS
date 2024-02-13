@@ -13,9 +13,14 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     /// Keys returned by this method should not be stored in the local
     /// KyberPreKeyStore since there is no guarantee the key ID is unique.
-    func generateEphemeralLastResortKyberPreKey(
+    func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
     ) throws -> SignalServiceKit.KyberPreKeyRecord
+
+    func storeLastResortPreKeyFromLinkedDevice(
+        record: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws
 
     func generateKyberPreKeyRecords(
         count: Int,
@@ -30,11 +35,6 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     func storeKyberPreKeyRecords(
         records: [SignalServiceKit.KyberPreKeyRecord],
-        tx: DBWriteTransaction
-    ) throws
-
-    func storeKyberPreKey(
-        record: SignalServiceKit.KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
 
@@ -245,7 +245,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         return record
     }
 
-    public func generateEphemeralLastResortKyberPreKey(
+    public func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
     ) throws -> SignalServiceKit.KyberPreKeyRecord {
         return try generateKyberPreKeyRecord(
@@ -257,6 +257,11 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
     public func storeLastResortPreKey(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         try storeKyberPreKey(record: record, tx: tx)
+    }
+
+    public func storeLastResortPreKeyFromLinkedDevice(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+        try storeLastResortPreKey(record: record, tx: tx)
+        metadataStore.setInt32(Int32(record.id), key: Constants.lastKeyId, transaction: tx)
     }
 
     // MARK: - LibSignalClient.KyberPreKeyStore conformance
@@ -271,7 +276,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         }
     }
 
-    public func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+    private func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         try self.keyStore.setCodable(record, key: key(for: record.id), transaction: tx)
     }
 

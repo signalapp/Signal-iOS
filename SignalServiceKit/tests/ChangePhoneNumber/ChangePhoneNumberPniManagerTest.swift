@@ -38,6 +38,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         db = .init()
 
         changeNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            db: db,
             identityManager: identityManagerMock,
             pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             pniSignedPreKeyStore: signedPreKeyStoreMock,

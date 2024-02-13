@@ -98,6 +98,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     private let logger: PrefixedLogger = .init(prefix: "[CNPNI]")
 
+    private let db: any DB
     private let identityManager: Shims.IdentityManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
@@ -108,6 +109,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let tsAccountManager: TSAccountManager
 
     init(
+        db: any DB,
         identityManager: Shims.IdentityManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
@@ -117,6 +119,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         schedulers: Schedulers,
         tsAccountManager: TSAccountManager
     ) {
+        self.db = db
         self.identityManager = identityManager
         self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
@@ -140,7 +143,9 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
-        let localDevicePniPqLastResortPreKeyRecord = try? pniKyberPreKeyStore.generateEphemeralLastResortKyberPreKey(signedBy: pniIdentityKeyPair)
+        let localDevicePniPqLastResortPreKeyRecord = db.write { tx in
+            try? pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: pniIdentityKeyPair, tx: tx)
+        }
         guard let localDevicePniPqLastResortPreKeyRecord else {
             return Guarantee.value(.failure)
         }

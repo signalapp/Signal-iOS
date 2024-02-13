@@ -308,6 +308,7 @@ public class DependenciesBridge {
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            db: self.db,
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,

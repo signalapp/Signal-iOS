@@ -194,11 +194,13 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         return record
     }
 
-    func generateEphemeralLastResortKyberPreKey(signedBy keyPair: ECKeyPair) throws -> SignalServiceKit.KyberPreKeyRecord {
+    func generateLastResortKyberPreKeyForLinkedDevice(signedBy keyPair: ECKeyPair) throws -> SignalServiceKit.KyberPreKeyRecord {
         let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true)
         lastResortRecords.append(record)
         return record
     }
+
+    func storeLastResortPreKeyFromLinkedDevice(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws { }
 
     func generateKyberPreKeyRecords(count: Int, signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> [SignalServiceKit.KyberPreKeyRecord] {
         let records = try (0..<count).map { _ in
@@ -240,7 +242,6 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         didStoreLastResortRecord = true
     }
 
-    func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws { }
     func storeKyberPreKeyRecords(records: [SignalServiceKit.KyberPreKeyRecord], tx: DBWriteTransaction) throws {
         didStoreOneTimeRecords = true
     }

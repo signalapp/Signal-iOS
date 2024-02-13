@@ -234,7 +234,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             let logger = logger
 
             let signedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair)
-            let pqLastResortPreKey = try pniKyberPreKeyStore.generateEphemeralLastResortKyberPreKey(
+            let pqLastResortPreKey = try pniKyberPreKeyStore.generateLastResortKyberPreKeyForLinkedDevice(
                 signedBy: pniIdentityKeyPair
             )
 
