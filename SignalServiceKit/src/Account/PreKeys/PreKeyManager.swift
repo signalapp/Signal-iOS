@@ -10,6 +10,8 @@ public protocol PreKeyManager {
 
     func checkPreKeysIfNecessary(tx: DBReadTransaction)
 
+    func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async
+
     /// Creates a new set of prekeys for registration, creating a new identity key if needed
     /// (or reusing the existing identity key).
     /// These keys are persisted before this method's promise resolves, but best effort

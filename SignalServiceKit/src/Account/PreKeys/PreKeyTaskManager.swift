@@ -142,6 +142,7 @@ internal struct PreKeyTaskManager {
     internal func refresh(
         identity: OWSIdentity,
         targets: PreKey.Target,
+        force: Bool = false,
         auth: ChatServiceAuth
     ) async throws {
         PreKey.logger.info("[\(identity)] Refresh [\(targets)]")
@@ -149,29 +150,34 @@ internal struct PreKeyTaskManager {
         try await waitForMessageProcessing(identity: identity)
         try Task.checkCancellation()
 
-        let unfilteredTargets = targets
-        let (ecCount, pqCount): (Int?, Int?)
-        if unfilteredTargets.contains(target: .oneTimePreKey) || unfilteredTargets.contains(target: .oneTimePqPreKey) {
-            (ecCount, pqCount) = try await self.serviceClient.getPreKeysCount(for: identity).awaitable()
+        let filteredTargets: PreKey.Target
+        if force {
+            filteredTargets = targets
         } else {
-            // No need to fetch prekey counts.
-            (ecCount, pqCount) = (nil, nil)
-        }
-        try Task.checkCancellation()
-        let targets = self.filterToNecessaryTargets(
-            identity: identity,
-            unfilteredTargets: unfilteredTargets,
-            ecPreKeyRecordCount: ecCount,
-            pqPreKeyRecordCount: pqCount
-        )
+            let (ecCount, pqCount): (Int?, Int?)
+            if targets.contains(target: .oneTimePreKey) || targets.contains(target: .oneTimePqPreKey) {
+                (ecCount, pqCount) = try await self.serviceClient.getPreKeysCount(for: identity).awaitable()
+            } else {
+                // No need to fetch prekey counts.
+                (ecCount, pqCount) = (nil, nil)
+            }
+            try Task.checkCancellation()
 
-        PreKey.logger.info("[\(identity)] Refresh(filtered): [\(targets)]")
+            filteredTargets = self.filterToNecessaryTargets(
+                identity: identity,
+                unfilteredTargets: targets,
+                ecPreKeyRecordCount: ecCount,
+                pqPreKeyRecordCount: pqCount
+            )
+        }
+
+        PreKey.logger.info("[\(identity)] Refresh(filtered): [\(filteredTargets)]")
         let bundle = try await db.awaitableWrite { tx in
             let identityKeyPair = try self.requireIdentityKeyPair(for: identity, tx: tx)
             return try self.createAndPersistPartialBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
-                targets: targets,
+                targets: filteredTargets,
                 tx: tx
             )
         }

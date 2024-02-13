@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// Boradly speaking, this class does not perform PreKey operations. It just manages scheduling
 /// them (they must occur in serial), including deciding which need to happen in the first place.
@@ -18,6 +19,10 @@ public class PreKeyManagerImpl: PreKeyManager {
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
         static let SignedPreKeyMaxRotationDuration = (14 * kDayInterval)
+
+        fileprivate static let preKeyRotationVersion = 1
+        fileprivate static let aciPreKeyRotationVersionKey = "ACIPreKeyRotationVersion"
+        fileprivate static let pniPreKeyRotationVersionKey = "PNIPreKeyRotationVersion"
     }
 
     /// PreKey state lives in two places - on the client and on the service.
@@ -28,8 +33,10 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     private let db: DB
     private let identityManager: PreKey.Shims.IdentityManager
+    private let keyValueStore: any KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
     private let socketManager: any SocketManager
+    private let tsAccountManager: any TSAccountManager
 
     private let taskManager: PreKeyTaskManager
 
@@ -37,6 +44,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         dateProvider: @escaping DateProvider,
         db: DB,
         identityManager: PreKey.Shims.IdentityManager,
+        keyValueStoryFactory: any KeyValueStoreFactory,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
@@ -46,8 +54,10 @@ public class PreKeyManagerImpl: PreKeyManager {
     ) {
         self.db = db
         self.identityManager = identityManager
+        self.keyValueStore = keyValueStoryFactory.keyValueStore(collection: "PreKeyManager")
         self.protocolStoreManager = protocolStoreManager
         self.socketManager = socketManager
+        self.tsAccountManager = tsAccountManager
 
         self.taskManager = PreKeyTaskManager(
             dateProvider: dateProvider,
@@ -235,13 +245,23 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     /// Refresh one-time pre-keys for the given identity, and optionally refresh
     /// the signed pre-key.
-    /// TODO: callers of this method _feel_ like they actually want a rotation (forced) not
-    /// a refresh (conditional). TBD.
-   public func refreshOneTimePreKeys(
+    public func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) {
-        PreKey.logger.info("[\(identity)] Refresh onetime prekeys")
+        Task {
+            try? await self._refreshOneTimePreKeys(
+                forIdentity: identity,
+                alsoRefreshSignedPreKey: shouldRefreshSignedPreKey
+            )
+        }
+    }
+
+    private func _refreshOneTimePreKeys(
+        forIdentity identity: OWSIdentity,
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+    ) async throws {
+        PreKey.logger.info("[\(identity)] Force refresh onetime prekeys (also refresh signed pre key? \(shouldRefreshSignedPreKey))")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
         /// because this operation does not generate BOTH types of one time prekeys,
         /// so we shouldn't mark the routine refresh as having been "checked".
@@ -252,19 +272,58 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .lastResortPqPreKey)
         }
 
-        Task { [taskManager, targets] in
-            let task = await Self.taskQueue.enqueue { [targets] in
-                try Task.checkCancellation()
-                try await taskManager.refresh(identity: identity, targets: targets, auth: .implicit())
-            }
-            try await task.value
+        let task = await Self.taskQueue.enqueue { [taskManager, targets] in
+            try Task.checkCancellation()
+            try await taskManager.refresh(
+                identity: identity,
+                targets: targets,
+                force: true,
+                auth: .implicit()
+            )
         }
+        try await task.value
     }
 
     /// If we don't have a PNI identity key, we should not run PNI operations.
     /// If we try, they will fail, and we will count the joint pni+aci operation as failed.
     private func hasPniIdentityKey(tx: DBReadTransaction) -> Bool {
         return self.identityManager.identityKeyPair(for: .pni, tx: tx) != nil
+    }
+
+    public func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async {
+        let keyValueStoreKey: String = {
+            switch identity {
+            case .aci:
+                return Constants.aciPreKeyRotationVersionKey
+            case .pni:
+                return Constants.pniPreKeyRotationVersionKey
+            }
+        }()
+        let preKeyRotationVersion = db.read { tx in
+            return keyValueStore.getInt(keyValueStoreKey, defaultValue: 0, transaction: tx)
+        }
+        guard preKeyRotationVersion < Constants.preKeyRotationVersion else {
+            return
+        }
+        var retryInterval: TimeInterval = 0.5
+        while db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
+            do {
+                try await socketManager.waitForSocketToOpen(webSocketType: .identified)
+                try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
+                break
+            } catch {
+                Logger.warn("Couldn't rotate pre keys: \(error)")
+                try? await Task.sleep(nanoseconds: UInt64(retryInterval * TimeInterval(NSEC_PER_SEC)))
+                retryInterval *= 2
+            }
+        }
+        await db.awaitableWrite { [keyValueStore] tx in
+            keyValueStore.setInt(
+                Constants.preKeyRotationVersion,
+                key: keyValueStoreKey,
+                transaction: tx
+            )
+        }
     }
 }
 

@@ -6,10 +6,13 @@
 import Foundation
 import LibSignalClient
 
+#if TESTABLE_BUILD
+
 internal class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
+    func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async { }
 
     func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
@@ -87,3 +90,5 @@ internal class MockPreKeyManager: PreKeyManager {
         return record
     }
 }
+
+#endif
