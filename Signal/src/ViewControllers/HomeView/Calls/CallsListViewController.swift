@@ -922,7 +922,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func cancelMultiselectIfEmpty() {
         if
             tableView.isEditing,
-            calls.viewModels.isEmpty
+            calls.allLoadedViewModelIds.isEmpty
         {
             cancelMultiselect()
         }
