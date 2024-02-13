@@ -92,10 +92,9 @@ public class FeatureFlags: BaseFlags {
 
     public static let shouldShowCallsTab = build.includes(.internal)
 
-    public static let useCallMemberComposableViewsForLocalUserInGroupCalls = false
-    public static let useCallMemberComposableViewsForLocalUserInIndividualCalls = false
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
+    public static let useCallMemberComposableViewsForLocalUser = false
 
     @objc
     public static var notificationServiceExtension: Bool {

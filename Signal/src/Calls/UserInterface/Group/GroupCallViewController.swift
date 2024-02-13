@@ -87,7 +87,7 @@ class GroupCallViewController: UIViewController {
             speakerView = GroupCallRemoteMemberView(context: .speaker)
         }
 
-        if FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls {
+        if FeatureFlags.useCallMemberComposableViewsForLocalUser {
             localMemberView = CallMemberView(type: .local)
         } else {
             localMemberView = GroupCallLocalMemberView()
@@ -533,7 +533,7 @@ class GroupCallViewController: UIViewController {
 
         // TODO: When ``CallMemberCameraOffView`` is used in Production,
         // `noVideoIndicatorView` in this class will no longer be needed.
-        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUserInGroupCalls && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
+        let showNoVideoIndicator = !FeatureFlags.useCallMemberComposableViewsForLocalUser && groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
         // Hide the subviews of this view to collapse the stack.
         noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
 

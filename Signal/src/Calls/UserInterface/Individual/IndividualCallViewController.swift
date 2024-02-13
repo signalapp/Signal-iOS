@@ -156,7 +156,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             remoteMemberView = RemoteVideoView()
         }
 
-        if FeatureFlags.useCallMemberComposableViewsForLocalUserInIndividualCalls {
+        if FeatureFlags.useCallMemberComposableViewsForLocalUser {
             self.localVideoView = CallMemberView(type: .local)
         } else {
             let localVideoView = LocalVideoView(shouldUseAutoLayout: false)
