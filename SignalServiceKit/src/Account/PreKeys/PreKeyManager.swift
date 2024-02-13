@@ -52,15 +52,6 @@ public protocol PreKeyManager {
     /// the task is handled separately (but can be optionally waited on by the caller).
     func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async -> Task<Void, Error>
 
-    /// Our local PNI can get out of sync with the server, including because we never had
-    /// a PNI or the server never got ours. In these cases we create new PNI prekeys
-    /// to give to the server, ignoring any old ones we may have had.
-    ///
-    /// - returns: A task representing the completion of the prekey operation. This task is _not_
-    /// a child task of the calling context; this call returns once the task has been scheduled, but running
-    /// the task is handled separately (but can be optionally waited on by the caller).
-    func createOrRotatePNIPreKeys(auth: ChatServiceAuth) async -> Task<Void, Error>
-
     /// - returns: A task representing the completion of the prekey operation. This task is _not_
     /// a child task of the calling context; this call returns once the task has been scheduled, but running
     /// the task is handled separately (but can be optionally waited on by the caller).

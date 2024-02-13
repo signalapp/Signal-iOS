@@ -30,7 +30,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let logger = PrefixedLogger(prefix: "PHWM")
 
     private let database: DB
-    private let identityManager: Shims.IdentityManager
+    private let identityManager: any OWSIdentityManager
     private let keyValueStore: KeyValueStore
     private let networkManager: Shims.NetworkManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
@@ -43,7 +43,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
     init(
         database: DB,
-        identityManager: Shims.IdentityManager,
+        identityManager: any OWSIdentityManager,
         keyValueStoreFactory: KeyValueStoreFactory,
         networkManager: Shims.NetworkManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
@@ -71,7 +71,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         let logger = logger
 
         guard tsAccountManager.registrationState(tx: syncTx).isRegisteredPrimaryDevice else {
-            logger.info("Skipping PNI Hello World, am a linked device.")
             return
         }
 
@@ -80,13 +79,13 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             defaultValue: false,
             transaction: syncTx
         ) else {
-            logger.info("Skipping PNI Hello World, already completed.")
             return
         }
 
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx),
             localIdentifiers.pni != nil,
+            let localE164 = E164(localIdentifiers.phoneNumber),
             let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: syncTx)
         else {
             logger.warn("Skipping PNI Hello World, missing local account parameters!")
@@ -100,13 +99,12 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             return
         }
 
-        // Use the primary device's existing PNI identity and e164.
-        guard
-            let localE164 = E164(localIdentifiers.phoneNumber),
-            let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx)
-        else {
-            logger.warn("Skipping PNI Hello World, missing PNI parameters!")
-            return
+        let localPniIdentityKeyPair: ECKeyPair
+        if let existingKeyPair = identityManager.identityKeyPair(for: .pni, tx: syncTx) {
+            localPniIdentityKeyPair = existingKeyPair
+        } else {
+            localPniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
+            identityManager.setIdentityKeyPair(localPniIdentityKeyPair, for: .pni, tx: syncTx)
         }
 
         let localDeviceId = tsAccountManager.storedDeviceId(tx: syncTx)
@@ -183,33 +181,13 @@ private extension OWSRequestFactory {
 
 extension PniHelloWorldManagerImpl {
     enum Shims {
-        typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Shim
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
     }
 
     enum Wrappers {
-        typealias IdentityManager = _PniHelloWorldManagerImpl_IdentityManager_Wrapper
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
-    }
-}
-
-// MARK: IdentityManager
-
-protocol _PniHelloWorldManagerImpl_IdentityManager_Shim {
-    func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair?
-}
-
-class _PniHelloWorldManagerImpl_IdentityManager_Wrapper: _PniHelloWorldManagerImpl_IdentityManager_Shim {
-    private let identityManager: OWSIdentityManager
-
-    init(_ identityManager: OWSIdentityManager) {
-        self.identityManager = identityManager
-    }
-
-    func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair? {
-        return identityManager.identityKeyPair(for: .pni, tx: tx)
     }
 }
 

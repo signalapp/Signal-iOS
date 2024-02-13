@@ -213,19 +213,6 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func createOrRotatePNIPreKeys(auth: ChatServiceAuth) async -> Task<Void, Error> {
-        PreKey.logger.info("Create or rotate PNI prekeys")
-        let targets: PreKey.Target = [
-            .oneTimePreKey,
-            .signedPreKey,
-            .oneTimePqPreKey,
-            .lastResortPqPreKey
-        ]
-        return await Self.taskQueue.enqueue { [taskManager] in
-            try await taskManager.createOrRotatePniKeys(targets: targets, auth: auth)
-        }
-    }
-
     public func rotateSignedPreKeys() async -> Task<Void, Error> {
         PreKey.logger.info("Rotate signed prekeys")
 

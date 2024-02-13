@@ -232,31 +232,6 @@ internal struct PreKeyTaskManager {
         try await uploadAndPersistBundle(bundle, auth: auth)
     }
 
-    /// When we create our PNI (as part of hello world) we are allowed to
-    /// create a new identity key. So this variant:
-    /// CAN create a new identity key (or uses any existing one)
-    /// ALWAYS changes the targeted keys (regardless of current key state)
-    internal func createOrRotatePniKeys(
-        targets: PreKey.Target,
-        auth: ChatServiceAuth
-    ) async throws {
-        PreKey.logger.info("[PNI] Create or Rotate PNI [\(targets)]")
-        try Task.checkCancellation()
-        try await waitForMessageProcessing(identity: .pni)
-        try Task.checkCancellation()
-        let bundle = try await db.awaitableWrite { tx in
-            let identityKeyPair = self.getOrCreateIdentityKeyPair(identity: .pni, tx: tx)
-            return try self.createAndPersistPartialBundle(
-                identity: .pni,
-                identityKeyPair: identityKeyPair,
-                targets: targets,
-                tx: tx
-            )
-        }
-        try Task.checkCancellation()
-        try await uploadAndPersistBundle(bundle, auth: auth)
-    }
-
     // MARK: - Private helpers
 
     // MARK: Per-identity registration generators
@@ -299,7 +274,7 @@ internal struct PreKeyTaskManager {
 
     // MARK: Identity Key
 
-    fileprivate func getOrCreateIdentityKeyPair(
+    private func getOrCreateIdentityKeyPair(
         identity: OWSIdentity,
         tx: DBWriteTransaction
     ) -> ECKeyPair {

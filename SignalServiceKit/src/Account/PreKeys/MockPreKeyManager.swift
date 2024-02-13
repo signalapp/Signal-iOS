@@ -71,7 +71,6 @@ internal class MockPreKeyManager: PreKeyManager {
         return Task {}
     }
 
-    func createOrRotatePNIPreKeys(auth: ChatServiceAuth) async -> Task<Void, Error> { Task {} }
     func rotateSignedPreKeys() async -> Task<Void, Error> { Task {} }
     func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
 

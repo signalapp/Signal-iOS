@@ -256,13 +256,4 @@ extension ProvisioningCoordinatorTest {
             ))
         }
     }
-
-    class MockIdentityManager: SignalServiceKit.MockIdentityManager {
-
-        var identityKeyPairs = [OWSIdentity: ECKeyPair]()
-
-        override func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
-            identityKeyPairs[identity] = keyPair
-        }
-    }
 }

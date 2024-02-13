@@ -178,15 +178,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
     }
 
-    func testIdentityKeyCreated() async throws {
-        XCTAssertNil(mockIdentityManager.pniKeyPair)
-
-        _ = try await taskManager.createOrRotatePniKeys(targets: [], auth: .implicit())
-
-        // Validate key created
-        XCTAssertNotNil(mockIdentityManager.pniKeyPair)
-    }
-
     //
     //
     // MARK: - Refresh Tests
@@ -353,22 +344,6 @@ final class PreKeyTaskTests: XCTestCase {
     //
     // PNI
     //
-
-    func testMockPreKeyTaskCreate() async throws {
-        mockServiceClient.setPreKeysResult = .value(())
-
-        // Pre-validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockPniProtocolStore.mockPreKeyStore.records.count, 0)
-
-        _ = try await taskManager.createOrRotatePniKeys(targets: .all, auth: .implicit())
-
-        // Validate
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-        XCTAssertEqual(mockPniProtocolStore.mockPreKeyStore.records.count, 100)
-        XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
-        XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
-    }
 
     func test403WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() async throws {
         mockIdentityManager.pniKeyPair = ECKeyPair.generateKeyPair()

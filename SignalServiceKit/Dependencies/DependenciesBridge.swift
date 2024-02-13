@@ -542,7 +542,7 @@ public class DependenciesBridge {
         )
         self.pniHelloWorldManager = PniHelloWorldManagerImpl(
             database: db,
-            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            identityManager: identityManager,
             keyValueStoreFactory: keyValueStoreFactory,
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
@@ -571,9 +571,6 @@ public class DependenciesBridge {
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
             accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
-            preKeyManager: preKeyManager,
             registrationStateChangeManager: registrationStateChangeManager,
             schedulers: schedulers,
             tsAccountManager: tsAccountManager
