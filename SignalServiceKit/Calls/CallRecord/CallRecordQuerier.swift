@@ -23,10 +23,13 @@ public protocol CallRecordCursor {
 }
 
 public extension CallRecordCursor {
-    func drain() throws -> [CallRecord] {
+    func drain(maxResults: UInt? = nil) throws -> [CallRecord] {
         var records = [CallRecord]()
 
-        while let record = try next() {
+        while
+            let record = try next(),
+            maxResults.map({ records.count < $0 }) ?? true
+        {
             records.append(record)
         }
 

@@ -628,6 +628,15 @@ message SyncMessage {
     optional string newE164         = 4;
   }
 
+  message CallLogEvent {
+    enum Type {
+      CLEAR = 0;
+    }
+
+    optional Type type = 1;
+    optional uint64 timestamp = 2;
+  }
+
   optional Sent                   sent                   = 1;
   optional Contacts               contacts               = 2;
   reserved                        /*groups*/               3;
@@ -647,6 +656,7 @@ message SyncMessage {
   reserved                                                 17; // Formerly, PNI identity sync messages
   optional PniChangeNumber        pniChangeNumber        = 18;
   optional CallEvent              callEvent              = 19;
+  optional CallLogEvent           callLogEvent           = 21;
 }
 
 message AttachmentPointer {

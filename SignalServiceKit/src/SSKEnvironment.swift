@@ -85,6 +85,7 @@ public class SSKEnvironment: NSObject {
     @objc
     public let messageSenderJobQueueRef: MessageSenderJobQueue
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
+    public let callRecordDeleteAllJobQueueRef: CallRecordDeleteAllJobQueue
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -148,7 +149,8 @@ public class SSKEnvironment: NSObject {
         notificationsManager: NotificationsProtocol,
         messageSendLog: MessageSendLog,
         messageSenderJobQueue: MessageSenderJobQueue,
-        localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue
+        localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
+        callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
     ) {
         self.contactsManagerRef = contactsManager
         self.linkPreviewManagerRef = linkPreviewManager
@@ -208,6 +210,7 @@ public class SSKEnvironment: NSObject {
         self.messageSendLogRef = messageSendLog
         self.messageSenderJobQueueRef = messageSenderJobQueue
         self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue
+        self.callRecordDeleteAllJobQueueRef = callRecordDeleteAllJobQueue
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {
@@ -241,6 +244,7 @@ public class SSKEnvironment: NSObject {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
+            self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
         }
 
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)

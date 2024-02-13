@@ -611,6 +611,26 @@ public final class MessageReceiver: Dependencies {
                     syncMessageTimestamp: decryptedEnvelope.timestamp,
                     tx: tx.asV2Write
                 )
+        } else if let callLogEvent = syncMessage.callLogEvent {
+            guard
+                callLogEvent.hasTimestamp,
+                SDS.fitsInInt64(callLogEvent.timestamp),
+                callLogEvent.hasType,
+                let callLogEventType = callLogEvent.type
+            else {
+                CallRecordLogger.shared.warn("Failed to parse incoming call log event protobuf!")
+                return
+            }
+
+            switch callLogEventType {
+            case .clear:
+                SSKEnvironment.shared.callRecordDeleteAllJobQueueRef
+                    .addJob(
+                        sendDeleteAllSyncMessage: false,
+                        deleteAllBeforeTimestamp: callLogEvent.timestamp,
+                        tx: tx
+                    )
+            }
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
             let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
             pniProcessor.processIncomingPniChangePhoneNumber(
@@ -1981,6 +2001,9 @@ extension SSKProtoSyncMessage {
         }
         if callEvent != nil {
             return "CallDispositionEvent"
+        }
+        if callLogEvent != nil {
+            return "CallLogEvent"
         }
         if pniChangeNumber != nil {
             return "PniChangeNumber"

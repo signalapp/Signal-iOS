@@ -17,7 +17,8 @@ public protocol CallRecordDeleteManager {
     /// - Important
     /// Does not delete the given interaction!
     /// - Parameter sendSyncMessageOnDelete
-    /// Whether we should send a sync message if we delete a call record.
+    /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
+    /// a call record.
     func deleteCallRecord(
         associatedIndividualCallInteraction: TSCall,
         sendSyncMessageOnDelete: Bool,
@@ -28,7 +29,8 @@ public protocol CallRecordDeleteManager {
     /// - Important
     /// Does not delete the given interaction!
     /// - Parameter sendSyncMessageOnDelete
-    /// Whether we should send a sync message if we delete a call record.
+    /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
+    /// a call record.
     func deleteCallRecord(
         associatedGroupCallInteraction: OWSGroupCallMessage,
         sendSyncMessageOnDelete: Bool,
@@ -37,7 +39,8 @@ public protocol CallRecordDeleteManager {
 
     /// Delete the given call record, and its associated call interaction.
     /// - Parameter sendSyncMessageOnDelete
-    /// Whether we should send a sync message if we delete a call record.
+    /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
+    /// a call record.
     func deleteCallRecordsAndAssociatedInteractions(
         callRecords: [CallRecord],
         sendSyncMessageOnDelete: Bool,
@@ -52,8 +55,8 @@ public protocol CallRecordDeleteManager {
     /// - Note
     /// Because there is no ``CallRecord``, there is no associated interaction.
     /// - Note
-    /// This API never sends a sync message about the delete, as it isn't
-    /// actually deleting a call this device knows about.
+    /// This API never sends an ``OutgoingCallEventSyncMessage`` about the
+    /// delete, as it isn't actually deleting a call this device knows about.
     func markCallAsDeleted(
         callId: UInt64,
         threadRowId: Int64,

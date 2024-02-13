@@ -281,6 +281,8 @@ CREATE
             ,"paymentMethod" TEXT
             ,"isNewSubscription" BOOLEAN
             ,"shouldSuppressPaymentAlreadyRedeemed" BOOLEAN
+            ,"CRDAJR_sendDeleteAllSyncMessage" BOOLEAN
+            ,"CRDAJR_deleteAllBeforeTimestamp" INTEGER
         )
 ;
 

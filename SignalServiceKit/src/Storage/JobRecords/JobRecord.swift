@@ -21,27 +21,24 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
     /// of ``JobRecord`` to ``SDSCodableModel`` must provide their own unique
     /// values here for factory initialization.
     enum JobRecordType: UInt, CaseIterable {
-        /// Value originally from ``SDSRecordType``.
+
+        // MARK: Values originally from SDSRecordType
+
         case broadcastMediaMessage = 58
-        /// Value originally from ``SDSRecordType``.
         case incomingContactSync = 61
-        /// Value originally from ``SDSRecordType``.
-        ///
         /// This job record type is deprecated, but left around in case any are
         /// currently-persisted and need to be cleaned up.
         case deprecated_incomingGroupSync = 60
-        /// Value originally from ``SDSRecordType``.
         case legacyMessageDecrypt = 53
-        /// Value originally from ``SDSRecordType``.
         case localUserLeaveGroup = 74
-        /// Value originally from ``SDSRecordType``.
         case messageSender = 35
-        /// Value originally from ``SDSRecordType``.
         case receiptCredentialRedemption = 71
-        /// Value originally from ``SDSRecordType``.
         case sendGiftBadge = 73
-        /// Value originally from ``SDSRecordType``.
         case sessionReset = 52
+
+        // MARK: Created after migration to SDSCodableModel
+
+        case callRecordDeleteAll = 100
     }
 
     static var recordTypeCodingKey: JobRecordColumns {
@@ -63,6 +60,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         case .receiptCredentialRedemption: return ReceiptCredentialRedemptionJobRecord.self
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
+        case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
         }
     }
 }
@@ -89,6 +87,8 @@ extension JobRecord.JobRecordType {
             return "SendGiftBadge"
         case .sessionReset:
             return "SessionReset"
+        case .callRecordDeleteAll:
+            return "CallRecordDeleteAll"
         }
     }
 }

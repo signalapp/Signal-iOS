@@ -185,6 +185,12 @@ public class MockSSKEnvironment: SSKEnvironment {
             db: dependenciesBridge.db,
             reachabilityManager: reachabilityManager
         )
+        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordDeleteManager: dependenciesBridge.callRecordDeleteManager,
+            callRecordQuerier: dependenciesBridge.callRecordQuerier,
+            db: dependenciesBridge.db,
+            messageSenderJobQueue: messageSenderJobQueue
+        )
 
         super.init(
             contactsManager: contactsManager,
@@ -244,7 +250,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             notificationsManager: notificationsManager,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
-            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
+            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue
         )
     }
 

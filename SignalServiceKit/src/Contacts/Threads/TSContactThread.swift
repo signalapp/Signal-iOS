@@ -18,7 +18,7 @@ extension TSContactThread {
     }
 
     @objc
-    public static func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+    public static func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSContactThread? {
         guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
@@ -27,7 +27,7 @@ extension TSContactThread {
     }
 
     @objc
-    public static func getOrCreateLocalThreadWithSneakyTransaction() -> TSThread? {
+    public static func getOrCreateLocalThreadWithSneakyTransaction() -> TSContactThread? {
         assert(!Thread.isMainThread)
 
         let thread: TSContactThread? = databaseStorage.read { tx in

@@ -25,6 +25,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private struct Dependencies {
         let callRecordDeleteManager: CallRecordDeleteManager
+        let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
         let callRecordQuerier: CallRecordQuerier
         let callRecordStore: CallRecordStore
         let callService: CallService
@@ -37,6 +38,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private lazy var deps: Dependencies = Dependencies(
         callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
+        callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
         callRecordStore: DependenciesBridge.shared.callRecordStore,
         callService: NSObject.callService,
@@ -128,7 +130,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func updateBarButtonItems() {
         if tableView.isEditing {
             navigationItem.leftBarButtonItem = cancelMultiselectButton()
-            navigationItem.rightBarButtonItem = nil
+            navigationItem.rightBarButtonItem = deleteAllCallsButton()
         } else {
             navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
@@ -212,16 +214,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         guard let multiselectToolbar else { return }
 
         let selectedRows = tableView.indexPathsForSelectedRows ?? []
-        let areAllEntriesSelected = selectedRows.count == tableView.numberOfRows(inSection: 0)
         let hasSelectedEntries = !selectedRows.isEmpty
-
-        let selectAllButtonTitle = areAllEntriesSelected ? "Deselect all" : "Select all" // [CallsTab] TODO: Localize
-        let selectAllButton = UIBarButtonItem(
-            title: selectAllButtonTitle,
-            style: .plain,
-            target: self,
-            action: #selector(selectAllCalls)
-        )
 
         let deleteButton = UIBarButtonItem(
             title: CommonStrings.deleteButton,
@@ -233,26 +226,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         multiselectToolbar.setItems(
-            [selectAllButton, spacer, deleteButton],
+            [spacer, deleteButton],
             animated: false
         )
-    }
-
-    @objc
-    private func selectAllCalls() {
-        let selectedRows = tableView.indexPathsForSelectedRows ?? []
-        let numberOfRows = tableView.numberOfRows(inSection: 0)
-        let areAllEntriesSelected = selectedRows.count == numberOfRows
-
-        if areAllEntriesSelected {
-            selectedRows.forEach { tableView.deselectRow(at: $0, animated: false) }
-        } else {
-            (0..<numberOfRows)
-                .lazy
-                .map { .indexPathForPrimarySection(row: $0) }
-                .forEach { tableView.selectRow(at: $0, animated: false, scrollPosition: .none) }
-        }
-        updateMultiselectToolbarButtons()
     }
 
     @objc
@@ -319,6 +295,39 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             multiselectToolbarContainer.removeFromSuperview()
             guard let tabController = self.tabBarController as? HomeTabBarController else { return }
             tabController.setTabBarHidden(false, animated: true, duration: 0.1)
+        }
+    }
+
+    // MARK: Delete All button
+
+    private func deleteAllCallsButton() -> UIBarButtonItem {
+        return UIBarButtonItem(
+            title: "Clear", // [CallsTab] TODO: Localize
+            style: .plain,
+            target: self,
+            action: #selector(promptAboutDeletingAllCalls)
+        )
+    }
+
+    @objc
+    private func promptAboutDeletingAllCalls() {
+        // [Calls Tab] TODO: Localize
+        OWSActionSheets.showConfirmationAlert(
+            title: "Clear call history?",
+            message: "This will permanently delete all call history.",
+            proceedTitle: "Clear",
+            proceedStyle: .destructive
+        ) { _ in
+            self.deps.db.asyncWrite { tx in
+                /// This will ultimately post "call records deleted"
+                /// notifications that this view is listening to, so we don't
+                /// need to do any manual UI updates.
+                self.deps.callRecordDeleteAllJobQueue.addJob(
+                    sendDeleteAllSyncMessage: true,
+                    deleteAllBeforeTimestamp: Date().ows_millisecondsSince1970,
+                    tx: tx
+                )
+            }
         }
     }
 
@@ -943,6 +952,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func updateSnapshot(animated: Bool) {
         dataSource.apply(getSnapshot(), animatingDifferences: animated)
         updateEmptyStateMessage()
+        cancelMultiselectIfEmpty()
     }
 
     /// Reload the rows for the given view model IDs that are currently loaded.
@@ -977,6 +987,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         var snapshot = getSnapshot()
         snapshot.reloadSections([.primary])
         dataSource.apply(snapshot)
+    }
+
+    private func cancelMultiselectIfEmpty() {
+        if
+            tableView.isEditing,
+            calls.viewModels.isEmpty
+        {
+            cancelMultiselect()
+        }
     }
 
     private func updateEmptyStateMessage() {

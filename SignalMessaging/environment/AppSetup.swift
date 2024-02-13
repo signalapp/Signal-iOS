@@ -202,6 +202,12 @@ public class AppSetup {
             db: dependenciesBridge.db,
             reachabilityManager: reachabilityManager
         )
+        let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
+            callRecordDeleteManager: dependenciesBridge.callRecordDeleteManager,
+            callRecordQuerier: dependenciesBridge.callRecordQuerier,
+            db: dependenciesBridge.db,
+            messageSenderJobQueue: messageSenderJobQueue
+        )
 
         let smEnvironment = SMEnvironment(
             preferences: preferences,
@@ -269,7 +275,8 @@ public class AppSetup {
             notificationsManager: notificationPresenter,
             messageSendLog: messageSendLog,
             messageSenderJobQueue: messageSenderJobQueue,
-            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue
+            localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
+            callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

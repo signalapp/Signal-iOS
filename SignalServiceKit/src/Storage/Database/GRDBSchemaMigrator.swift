@@ -245,6 +245,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCallRecordQueryIndices
         case addDeletedCallRecordTable
         case addFirstDeletedIndexToDeletedCallRecord
+        case addCallRecordDeleteAllColumnsToJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2566,6 +2567,15 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "DeletedCallRecord",
                 columns: ["deletedAtTimestamp"]
             )
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addCallRecordDeleteAllColumnsToJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "CRDAJR_sendDeleteAllSyncMessage", .boolean)
+                table.add(column: "CRDAJR_deleteAllBeforeTimestamp", .integer)
+            }
 
             return .success(())
         }

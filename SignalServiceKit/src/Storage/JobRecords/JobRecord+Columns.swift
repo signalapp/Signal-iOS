@@ -98,5 +98,10 @@ extension JobRecord {
         // MARK: LocalUserLeaveGroupJobRecord & MessageSenderJobRecord & SendGiftBadgeJobRecord
 
         case threadId
+
+        // MARK: CallRecordDeleteAllJobRecord
+
+        case sendDeleteAllSyncMessage = "CRDAJR_sendDeleteAllSyncMessage"
+        case deleteAllBeforeTimestamp = "CRDAJR_deleteAllBeforeTimestamp"
     }
 }
