@@ -561,12 +561,9 @@ extension ExperienceUpgradeManifest {
     // MARK: Remote megaphone preconditions
 
     private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel, tx: SDSAnyReadTransaction) -> Bool {
-        guard
-            AppVersionImpl.shared.compare(
-                megaphone.manifest.minAppVersion,
-                with: AppVersionImpl.shared.currentAppVersion4
-            ) != .orderedDescending
-        else {
+        let minimumVersion = AppVersionNumber(megaphone.manifest.minAppVersion)
+        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
+        guard currentVersion >= minimumVersion else {
             return false
         }
 

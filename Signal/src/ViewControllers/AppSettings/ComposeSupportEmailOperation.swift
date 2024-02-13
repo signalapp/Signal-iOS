@@ -37,7 +37,7 @@ struct SupportEmailModel: Dependencies {
     var deviceType: String = UIDevice.current.model
     var deviceIdentifier: String = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
     var iosVersion: String = AppVersionImpl.shared.iosVersionString
-    var signalVersion4: String = AppVersionImpl.shared.currentAppVersion4
+    var signalAppVersion: String = AppVersionImpl.shared.currentAppVersion
     var locale: String = NSLocale.current.identifier
 
     var userDescription: String? = OWSLocalizedString(
@@ -228,7 +228,7 @@ final class ComposeSupportEmailOperation: NSObject {
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT",
                     comment: "Localized label for support request email signal version string. Embeds {{signal version}}."
-                ), model.signalVersion4
+                ), model.signalAppVersion
             ), {
                 if let debugURLString = model.resolvedDebugString {
                     return String(

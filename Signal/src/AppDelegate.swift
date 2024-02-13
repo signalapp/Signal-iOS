@@ -688,7 +688,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if
-            appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
+            appVersion.lastAppVersion == appVersion.currentAppVersion,
             userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey) >= launchAttemptFailureThreshold
         {
             if case .readCorrupted = databaseCorruptionState.status {

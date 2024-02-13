@@ -49,8 +49,6 @@
 	</dict>
 	<key>OWSBundleIDPrefix</key>
 	<string>$(SIGNAL_BUNDLEID_PREFIX)</string>
-	<key>OWSBundleVersion4</key>
-	<string>7.0.0.4</string>
 	<key>OWSMerchantID</key>
 	<string>$(SIGNAL_MERCHANTID)</string>
 </dict>

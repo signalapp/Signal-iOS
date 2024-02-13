@@ -82,18 +82,15 @@ private extension RemoteMegaphoneFetcher {
             return true
         }
 
-        let hasUpgradedAppVerison = AppVersionImpl.shared.compare(
-            appVersionAtLastFetch,
-            with: AppVersionImpl.shared.currentAppVersion4
-        ) == .orderedAscending
+        let hasChangedAppVersion = appVersionAtLastFetch != AppVersionImpl.shared.currentAppVersion
         let hasWaitedEnoughSinceLastSync = Date().timeIntervalSince(lastFetchDate) > Self.delayBetweenSyncs
 
-        return hasUpgradedAppVerison || hasWaitedEnoughSinceLastSync
+        return hasChangedAppVersion || hasWaitedEnoughSinceLastSync
     }
 
     func recordCompletedSync(transaction: SDSAnyWriteTransaction) {
         Self.fetcherStore.setString(
-            AppVersionImpl.shared.currentAppVersion4,
+            AppVersionImpl.shared.currentAppVersion,
             key: .appVersionAtLastFetchKey,
             transaction: transaction
         )

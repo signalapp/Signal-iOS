@@ -1010,16 +1010,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     private func remoteExpirationDate(minimumVersions: [MinimumVersion]) -> Date? {
         var oldestEnforcementDate: Date?
-        let currentVersion4 = AppVersionImpl.shared.currentAppVersion4
+        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
         for minimumVersion in minimumVersions {
             // We only are interested in minimum versions greater than our current version.
             // Note: This method of comparison will only work as long as we always use
             // *long* version strings (x.x.x.x). We enforce that `MinimumVersion` only
             // uses long versions while decoding.
-            guard minimumVersion.string.compare(
-                currentVersion4,
-                options: .numeric
-            ) == .orderedDescending else { continue }
+            let minimumVersionNumber = AppVersionNumber(minimumVersion.string)
+            guard minimumVersionNumber > currentVersion else {
+                continue
+            }
 
             if let enforcementDate = oldestEnforcementDate {
                 oldestEnforcementDate = min(enforcementDate, minimumVersion.enforcementDate)

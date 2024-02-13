@@ -1373,7 +1373,7 @@ class StorageServiceOperation: OWSOperation {
 
     private func cleanUpRecordsWithUnknownFields(in state: inout State) {
         var shouldCleanUpRecordsWithUnknownFields =
-            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion4
+            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion
         #if DEBUG
         // Debug builds don't have proper version numbers but we do want to run
         // these migrations on them.
@@ -1386,7 +1386,7 @@ class StorageServiceOperation: OWSOperation {
         guard shouldCleanUpRecordsWithUnknownFields else {
             return
         }
-        state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion4
+        state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion
 
         func fetchRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,

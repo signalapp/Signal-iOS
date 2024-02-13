@@ -1721,7 +1721,6 @@
 		F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EE289B1B5400460798 /* OWSFormatTest.swift */; };
 		F942625D289B1B5500460798 /* RefineryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F0289B1B5400460798 /* RefineryTest.swift */; };
 		F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F2289B1B5400460798 /* LRUCacheTest.swift */; };
-		F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F4289B1B5400460798 /* AppVersionTests.swift */; };
 		F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F6289B1B5400460798 /* DeviceNamesTest.swift */; };
 		F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F8289B1B5400460798 /* Date+SSKTest.swift */; };
 		F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */; };
@@ -4503,7 +4502,6 @@
 		F94261EE289B1B5400460798 /* OWSFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormatTest.swift; sourceTree = "<group>"; };
 		F94261F0289B1B5400460798 /* RefineryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefineryTest.swift; sourceTree = "<group>"; };
 		F94261F2289B1B5400460798 /* LRUCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCacheTest.swift; sourceTree = "<group>"; };
-		F94261F4289B1B5400460798 /* AppVersionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		F94261F6289B1B5400460798 /* DeviceNamesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceNamesTest.swift; sourceTree = "<group>"; };
 		F94261F8289B1B5400460798 /* Date+SSKTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSKTest.swift"; sourceTree = "<group>"; };
 		F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWSTest.swift"; sourceTree = "<group>"; };
@@ -9155,7 +9153,6 @@
 			isa = PBXGroup;
 			children = (
 				F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */,
-				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
 				F962B38B293F9F9F00765BD8 /* CRC32Test.swift */,
 				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
@@ -13733,7 +13730,6 @@
 				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
-				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
