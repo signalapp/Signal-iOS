@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalMessaging
 
 // MARK: - ProfileDetailLabel
 
@@ -103,6 +104,12 @@ public extension ProfileDetailLabel {
         .init(title: title, icon: .profileName, font: font)
     }
 
+    static func verified(
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(title: SafetyNumberStrings.verified, icon: .checkmark, font: font)
+    }
+
     static func profileAbout(
         bio: String,
         font: UIFont = .dynamicTypeBody
@@ -133,6 +140,54 @@ public extension ProfileDetailLabel {
                     action()
                 }
             }
+        )
+    }
+
+    static func noDirectChat(
+        name: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(
+            title: String(
+                format: OWSLocalizedString(
+                    "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES",
+                    comment: "Indicates that the user has no messages with the other account. Embeds {{name}}"
+                ),
+                name
+            ),
+            icon: .contactInfoNoDirectChat,
+            font: font
+        )
+    }
+
+    static func blocked(
+        name: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(
+            title: String(
+                format: OWSLocalizedString(
+                    "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT",
+                    comment: "Indicates that the user has blocked the other account. Embeds {{name}}"
+                ),
+                name
+            ),
+            icon: .chatSettingsBlock,
+            font: font
+        )
+    }
+
+    static func pendingRequest(
+        name: String,
+        font: UIFont = .dynamicTypeBody
+    ) -> ProfileDetailLabel {
+        .init(
+            title: OWSLocalizedString(
+                "CONTACT_ABOUT_SHEET_PENDING_REQUEST",
+                comment: "Indicates that the user has a pending request with the other account. Embeds {{name}}"
+            ),
+            icon: .contactInfoPendingRequest,
+            font: font
         )
     }
 

@@ -175,8 +175,7 @@ struct ConversationHeaderBuilder: Dependencies {
             let subtitle = NSMutableAttributedString()
             subtitle.appendTemplatedImage(named: "check-extra-small", font: .dynamicTypeSubheadlineClamped)
             subtitle.append(" ")
-            subtitle.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                              comment: "Badge indicating that the user is verified."))
+            subtitle.append(SafetyNumberStrings.verified)
             builder.addSubtitleLabel(attributedText: subtitle)
         }
 

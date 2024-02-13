@@ -18,8 +18,10 @@ struct NameCollisionCellModel {
     /// Not necessarily the contacts thread for the address.
     let thread: TSThread
     let mutualGroups: [TSGroupThread]
+    let isVerified: Bool
     let isConnection: Bool
     let isBlocked: Bool
+    let hasPendingRequest: Bool
     let isSystemContact: Bool
 
     let viewControllerForPresentation: UIViewController
@@ -28,6 +30,7 @@ struct NameCollisionCellModel {
 extension NameCollision {
     func collisionCellModels(
         thread: TSThread,
+        identityManager: any OWSIdentityManager,
         profileManager: any ProfileManager,
         blockingManager: BlockingManager,
         contactsManager: any ContactsManagerProtocol,
@@ -43,8 +46,10 @@ extension NameCollision {
                 updateTimestamp: $0.latestUpdateTimestamp,
                 thread: thread,
                 mutualGroups: TSGroupThread.groupThreads(with: $0.address, transaction: tx),
+                isVerified: identityManager.verificationState(for: $0.address, tx: tx.asV2Read) == .verified,
                 isConnection: profileManager.isUser(inProfileWhitelist: $0.address, transaction: tx),
                 isBlocked: blockingManager.isAddressBlocked($0.address, transaction: tx),
+                hasPendingRequest: ContactThreadFinder().contactThread(for: $0.address, tx: tx)?.hasPendingMessageRequest(transaction: tx) ?? false,
                 isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: tx) != nil, viewControllerForPresentation: viewControllerForPresentation
             )
         }
@@ -133,6 +138,11 @@ class NameCollisionCell: UITableViewCell {
 
         let detailFont = UIFont.dynamicTypeBody2
 
+        // Verified
+        if model.isVerified {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.verified(font: detailFont))
+        }
+
         // Name change
         if let oldName = model.oldName {
             let formatString = OWSLocalizedString(
@@ -152,6 +162,21 @@ class NameCollisionCell: UITableViewCell {
                 font: detailFont,
                 shouldDismissOnNavigation: false,
                 presentEducationFrom: model.viewControllerForPresentation
+            ))
+        } else if model.isBlocked {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.blocked(
+                name: model.shortName,
+                font: detailFont
+            ))
+        } else if model.hasPendingRequest {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.pendingRequest(
+                name: model.shortName,
+                font: detailFont
+            ))
+        } else {
+            verticalStack.addArrangedSubview(ProfileDetailLabel.noDirectChat(
+                name: model.shortName,
+                font: detailFont
             ))
         }
 

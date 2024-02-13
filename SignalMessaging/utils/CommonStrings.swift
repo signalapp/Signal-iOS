@@ -511,6 +511,13 @@ public class SafetyNumberStrings: NSObject {
             comment: "button title to confirm sending to a recipient whose safety number recently changed"
         )
     }
+
+    static public var verified: String {
+        OWSLocalizedString(
+            "PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+            comment: "Badge indicating that the user is verified."
+        )
+    }
 }
 
 // MARK: -

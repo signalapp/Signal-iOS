@@ -98,6 +98,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 
             return sortedCollisions.map { $0.collisionCellModels(
                 thread: self.thread,
+                identityManager: DependenciesBridge.shared.identityManager,
                 profileManager: profileManager,
                 blockingManager: blockingManager,
                 contactsManager: contactsManager,

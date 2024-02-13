@@ -97,8 +97,9 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateContents() {
         databaseStorage.read { tx in
             updateContactNames(tx: tx)
+            updateIsVerified(tx: tx)
             updateProfileBio(tx: tx)
-            updateIsConnection(tx: tx)
+            updateConnectionState(tx: tx)
             updateIsInSystemContacts(tx: tx)
             updateMutualGroupThreadCount(tx: tx)
         }
@@ -129,12 +130,25 @@ class ContactAboutSheet: StackSheetViewController {
 
         stackView.addArrangedSubview(ProfileDetailLabel.profile(title: self.contactName))
 
+        if isVerified {
+            stackView.addArrangedSubview(ProfileDetailLabel.verified())
+        }
+
         if let profileBio {
             stackView.addArrangedSubview(ProfileDetailLabel.profileAbout(bio: profileBio))
         }
 
-        if isConnection {
+        switch connectionState {
+        case .connection:
             stackView.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(shouldDismissOnNavigation: true, presentEducationFrom: fromViewController))
+        case .blocked:
+            stackView.addArrangedSubview(ProfileDetailLabel.blocked(name: self.contactShortName))
+        case .pending:
+            stackView.addArrangedSubview(ProfileDetailLabel.pendingRequest(name: self.contactShortName))
+        case .noConnection:
+            stackView.addArrangedSubview(ProfileDetailLabel.noDirectChat(name: self.contactShortName))
+        case nil:
+            break
         }
 
         if isInSystemContacts {
@@ -179,6 +193,14 @@ class ContactAboutSheet: StackSheetViewController {
         )
     }
 
+    // MARK: Verified
+
+    private var isVerified = false
+    private func updateIsVerified(tx: SDSAnyReadTransaction) {
+        let identityManager = DependenciesBridge.shared.identityManager
+        isVerified = identityManager.verificationState(for: thread.contactAddress, tx: tx.asV2Read) == .verified
+    }
+
     // MARK: Bio
 
     private var profileBio: String?
@@ -188,13 +210,26 @@ class ContactAboutSheet: StackSheetViewController {
 
     // MARK: Connection
 
-    private var isConnection = false
-    private func updateIsConnection(tx: SDSAnyReadTransaction) {
+    private enum ConnectionState {
+        case connection
+        case blocked
+        case pending
+        case noConnection
+    }
+
+    private var connectionState: ConnectionState?
+    private func updateConnectionState(tx: SDSAnyReadTransaction) {
         if isLocalUser {
-            isConnection = false
-            return
+            connectionState = nil
+        } else if profileManager.isThread(inProfileWhitelist: thread, transaction: tx) {
+            connectionState = .connection
+        } else if blockingManager.isAddressBlocked(thread.contactAddress, transaction: tx) {
+            connectionState = .blocked
+        } else if thread.hasPendingMessageRequest(transaction: tx) {
+            connectionState = .pending
+        } else {
+            connectionState = .noConnection
         }
-        isConnection = profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
     }
 
     // MARK: System contacts
