@@ -146,7 +146,7 @@ internal struct PreKeyTaskManager {
     ) async throws {
         PreKey.logger.info("[\(identity)] Refresh [\(targets)]")
         try Task.checkCancellation()
-        try await waitForMessageProcessing()
+        try await waitForMessageProcessing(identity: identity)
         try Task.checkCancellation()
 
         let unfilteredTargets = targets
@@ -191,7 +191,7 @@ internal struct PreKeyTaskManager {
     ) async throws {
         PreKey.logger.info("[\(identity)] Rotate [\(targets)]")
         try Task.checkCancellation()
-        try await waitForMessageProcessing()
+        try await waitForMessageProcessing(identity: identity)
         try Task.checkCancellation()
         let bundle = try await db.awaitableWrite { tx in
             let identityKeyPair = try self.requireIdentityKeyPair(for: identity, tx: tx)
@@ -236,7 +236,7 @@ internal struct PreKeyTaskManager {
     ) async throws {
         PreKey.logger.info("[PNI] Create or Rotate PNI [\(targets)]")
         try Task.checkCancellation()
-        try await waitForMessageProcessing()
+        try await waitForMessageProcessing(identity: .pni)
         try Task.checkCancellation()
         let bundle = try await db.awaitableWrite { tx in
             let identityKeyPair = self.getOrCreateIdentityKeyPair(identity: .pni, tx: tx)
@@ -435,8 +435,17 @@ internal struct PreKeyTaskManager {
     private class MessageProcessingTimeoutError: Swift.Error {}
 
     /// Waits (potentially forever) for message processing, pausing every couple of seconds if not finished to check for cancellation.
-    private func waitForMessageProcessing() async throws {
+    private func waitForMessageProcessing(identity: OWSIdentity) async throws {
         try Task.checkCancellation()
+
+        switch identity {
+        case .aci:
+            // We can't change our ACI via a message, so there's no need to wait.
+            return
+        case .pni:
+            // Our PNI might change via a change number message, so wait.
+            break
+        }
 
         do {
             try await messageProcessor.waitForFetchingAndProcessing().asPromise()
@@ -445,7 +454,7 @@ internal struct PreKeyTaskManager {
         } catch let error {
             if error is MessageProcessingTimeoutError {
                 // try again so we get the chance to check for cancellation.
-                try await self.waitForMessageProcessing()
+                try await self.waitForMessageProcessing(identity: identity)
                 return
             }
             throw SSKUnretryableError.messageProcessingFailed

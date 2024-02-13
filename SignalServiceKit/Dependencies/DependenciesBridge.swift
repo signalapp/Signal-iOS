@@ -553,6 +553,7 @@ public class DependenciesBridge {
             tsAccountManager: tsAccountManager
         )
 
+        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
@@ -561,8 +562,8 @@ public class DependenciesBridge {
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             protocolStoreManager: signalProtocolStoreManager,
             serviceClient: accountServiceClient,
+            socketManager: self.socketManager,
             tsAccountManager: tsAccountManager
-
         )
 
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
@@ -697,7 +698,6 @@ public class DependenciesBridge {
             tsAccountManager: tsAccountManager
         )
 
-        self.socketManager = SocketManagerImpl(appExpiry: appExpiry, db: db)
         self.externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
 
         // TODO: Move this into ProfileFetcherJob.

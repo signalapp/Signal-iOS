@@ -29,6 +29,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     private let db: DB
     private let identityManager: PreKey.Shims.IdentityManager
     private let protocolStoreManager: SignalProtocolStoreManager
+    private let socketManager: any SocketManager
 
     private let taskManager: PreKeyTaskManager
 
@@ -40,11 +41,13 @@ public class PreKeyManagerImpl: PreKeyManager {
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
         serviceClient: AccountServiceClient,
+        socketManager: any SocketManager,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db
         self.identityManager = identityManager
         self.protocolStoreManager = protocolStoreManager
+        self.socketManager = socketManager
 
         self.taskManager = PreKeyTaskManager(
             dateProvider: dateProvider,
@@ -132,8 +135,9 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
         let shouldPerformPniOp = hasPniIdentityKey(tx: tx)
 
-        Task { [weak self, taskManager, targets] in
+        Task { [weak self, socketManager, taskManager, targets] in
             let task = await Self.taskQueue.enqueue {
+                try await socketManager.waitForSocketToOpen(webSocketType: .identified)
                 try Task.checkCancellation()
                 try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
                 if shouldPerformPniOp {
@@ -215,7 +219,8 @@ public class PreKeyManagerImpl: PreKeyManager {
         let targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
 
-        return await Self.taskQueue.enqueue { [weak self, taskManager, targets] in
+        return await Self.taskQueue.enqueue { [weak self, socketManager, taskManager, targets] in
+            try await socketManager.waitForSocketToOpen(webSocketType: .identified)
             try Task.checkCancellation()
             try await taskManager.rotate(identity: .aci, targets: targets, auth: .implicit())
             if shouldPerformPniOp {
