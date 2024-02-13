@@ -316,7 +316,7 @@ struct ConversationHeaderBuilder: Dependencies {
             subviews.append(stackView)
         }
 
-        subviews.append(.spacer(withHeight: 24))
+        subviews.append(.spacer(withHeight: 20))
 
         if needsTwoRows {
             addButtonRow(Array(buttons.prefix(Int(ceil(CGFloat(buttons.count) / 2)))))
@@ -402,6 +402,8 @@ struct ConversationHeaderBuilder: Dependencies {
         button.titleLabel?.numberOfLines = 0
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.setContentHuggingHigh()
+        button.titleLabel?.autoMatch(.height, to: .height, of: button)
         if delegate.canTapThreadName {
             button.block = { [weak delegate] in
                 delegate?.didTapThreadName()
@@ -420,7 +422,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     @discardableResult
     mutating func addSubtitleLabel(attributedText: NSAttributedString) -> OWSLabel {
-        subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
+        subviews.append(UIView.spacer(withHeight: 4))
         let label = buildHeaderSubtitleLabel(attributedText: attributedText)
         subviews.append(label)
         hasSubtitleLabel = true
