@@ -8,7 +8,7 @@ import LibSignalClient
 
 internal class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
-    func refreshPreKeysDidSucceed() { }
+    func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
 
     func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {

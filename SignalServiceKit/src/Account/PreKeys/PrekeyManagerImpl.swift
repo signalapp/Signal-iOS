@@ -13,7 +13,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     public enum Constants {
 
         // How often we check prekey state on app activation.
-        static let PreKeyCheckFrequencySeconds = (12 * kHourInterval)
+        static let oneTimePreKeyCheckFrequencySeconds = 12 * kHourInterval
 
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
@@ -61,7 +61,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         )
     }
 
-    @Atomic private var lastPreKeyCheckTimestamp: Date?
+    @Atomic private var lastOneTimePreKeyCheckTimestamp: Date?
 
     private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
@@ -102,8 +102,8 @@ public class PreKeyManagerImpl: PreKeyManager {
         return needPreKeyRotation || needLastResortKeyRotation
     }
 
-    private func refreshPreKeysDidSucceed() {
-        lastPreKeyCheckTimestamp = Date()
+    private func refreshOneTimePreKeysCheckDidSucceed() {
+        lastOneTimePreKeyCheckTimestamp = Date()
     }
 
     public func checkPreKeysIfNecessary(tx: DBReadTransaction) {
@@ -117,11 +117,11 @@ public class PreKeyManagerImpl: PreKeyManager {
             return
         }
 
-        let shouldRefreshOneTimePrekeys = {
+        let shouldCheckOneTimePrekeys = {
             if
                 shouldThrottle,
-                let lastPreKeyCheckTimestamp,
-                fabs(lastPreKeyCheckTimestamp.timeIntervalSinceNow) < Constants.PreKeyCheckFrequencySeconds
+                let lastOneTimePreKeyCheckTimestamp,
+                fabs(lastOneTimePreKeyCheckTimestamp.timeIntervalSinceNow) < Constants.oneTimePreKeyCheckFrequencySeconds
             {
                 return false
             }
@@ -129,7 +129,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         }()
 
         var targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
-        if shouldRefreshOneTimePrekeys {
+        if shouldCheckOneTimePrekeys {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
@@ -146,14 +146,17 @@ public class PreKeyManagerImpl: PreKeyManager {
                 }
             }
             try await task.value
-            self?.refreshPreKeysDidSucceed()
+            if shouldCheckOneTimePrekeys {
+                self?.refreshOneTimePreKeysCheckDidSucceed()
+            }
         }
     }
 
     public func createPreKeysForRegistration() async -> Task<RegistrationPreKeyUploadBundles, Error> {
         PreKey.logger.info("Create registration prekeys")
-        /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
-        /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
+        /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
+        /// because this operation does not generate one time prekeys, so we
+        /// shouldn't mark the routine refresh as having been "checked".
         return await Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
             return try await taskManager.createForRegistration()
         }
@@ -164,8 +167,9 @@ public class PreKeyManagerImpl: PreKeyManager {
         pniIdentityKeyPair: ECKeyPair
     ) async -> Task<RegistrationPreKeyUploadBundles, Error> {
         PreKey.logger.info("Create provisioning prekeys")
-        /// Note that we do not report a `refreshPreKeysDidSucceed`, because this operation does not
-        /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
+        /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
+        /// because this operation does not generate one time prekeys, so we
+        /// shouldn't mark the routine refresh as having been "checked".
         return await Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
             return try await taskManager.createForProvisioning(
                 aciIdentityKeyPair: aciIdentityKeyPair,
@@ -195,7 +199,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             try await taskManager.createOneTimePreKeys(identity: .aci, auth: auth)
             try Task.checkCancellation()
             try await taskManager.createOneTimePreKeys(identity: .pni, auth: auth)
-            self?.refreshPreKeysDidSucceed()
+            self?.refreshOneTimePreKeysCheckDidSucceed()
         }
     }
 
@@ -207,9 +211,8 @@ public class PreKeyManagerImpl: PreKeyManager {
             .oneTimePqPreKey,
             .lastResortPqPreKey
         ]
-        return await Self.taskQueue.enqueue { [weak self, taskManager] in
+        return await Self.taskQueue.enqueue { [taskManager] in
             try await taskManager.createOrRotatePniKeys(targets: targets, auth: auth)
-            self?.refreshPreKeysDidSucceed()
         }
     }
 
@@ -219,7 +222,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         let targets: PreKey.Target = [.signedPreKey, .lastResortPqPreKey]
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
 
-        return await Self.taskQueue.enqueue { [weak self, socketManager, taskManager, targets] in
+        return await Self.taskQueue.enqueue { [socketManager, taskManager, targets] in
             try await socketManager.waitForSocketToOpen(webSocketType: .identified)
             try Task.checkCancellation()
             try await taskManager.rotate(identity: .aci, targets: targets, auth: .implicit())
@@ -227,7 +230,6 @@ public class PreKeyManagerImpl: PreKeyManager {
                 try Task.checkCancellation()
                 try await taskManager.rotate(identity: .pni, targets: targets, auth: .implicit())
             }
-            self?.refreshPreKeysDidSucceed()
         }
     }
 
@@ -240,6 +242,9 @@ public class PreKeyManagerImpl: PreKeyManager {
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) {
         PreKey.logger.info("[\(identity)] Refresh onetime prekeys")
+        /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
+        /// because this operation does not generate BOTH types of one time prekeys,
+        /// so we shouldn't mark the routine refresh as having been "checked".
 
         var targets: PreKey.Target = [.oneTimePreKey, .oneTimePqPreKey]
         if shouldRefreshSignedPreKey {
@@ -247,13 +252,12 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .lastResortPqPreKey)
         }
 
-        Task { [weak self, taskManager, targets] in
+        Task { [taskManager, targets] in
             let task = await Self.taskQueue.enqueue { [targets] in
                 try Task.checkCancellation()
                 try await taskManager.refresh(identity: identity, targets: targets, auth: .implicit())
             }
             try await task.value
-            self?.refreshPreKeysDidSucceed()
         }
     }
 
