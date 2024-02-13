@@ -348,7 +348,6 @@ public class ProfileFetcherJob: NSObject {
                 localAvatarFileUrl: localAvatarUrlIfDownloaded,
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
-                isPniCapable: profile.isPniCapable,
                 userProfileWriter: .profileFetch,
                 authedAccount: self.options.authedAccount,
                 tx: transaction

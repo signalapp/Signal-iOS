@@ -548,7 +548,6 @@ public class DependenciesBridge {
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
             recipientDatabaseTable: self.recipientDatabaseTable,
             schedulers: schedulers,
             tsAccountManager: tsAccountManager

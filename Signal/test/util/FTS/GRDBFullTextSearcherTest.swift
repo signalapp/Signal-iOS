@@ -453,15 +453,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     // MARK: - Perf
 
     func testPerf() {
-        let aliceE164 = "+13213214321"
-        let aliceUuid = UUID()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: aliceUuid),
-                    pni: nil,
-                    e164: E164(aliceE164)!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

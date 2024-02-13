@@ -31,7 +31,6 @@ extension OWSFakeProfileManager: ProfileManager {
         localAvatarFileUrl: URL?,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
-        isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction

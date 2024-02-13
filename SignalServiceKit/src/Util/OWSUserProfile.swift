@@ -230,9 +230,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     @objc
     private(set) public var lastMessagingDate: Date?
 
-    @objc
-    private(set) public var isPniCapable: Bool
-
     public convenience init(address: NormalizedDatabaseRecordAddress?) {
         owsAssertDebug(address != nil)
         self.init(
@@ -249,8 +246,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             bioEmoji: nil,
             badges: [],
             lastFetchDate: nil,
-            lastMessagingDate: nil,
-            isPniCapable: false
+            lastMessagingDate: nil
         )
     }
 
@@ -268,8 +264,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         bioEmoji: String?,
         badges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date?,
-        lastMessagingDate: Date?,
-        isPniCapable: Bool
+        lastMessagingDate: Date?
     ) {
         self.id = id
         self.uniqueId = uniqueId
@@ -285,7 +280,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         self.badges = badges
         self.lastFetchDate = lastFetchDate
         self.lastMessagingDate = lastMessagingDate
-        self.isPniCapable = isPniCapable
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
@@ -308,8 +302,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             bioEmoji: bioEmoji,
             badges: badges,
             lastFetchDate: lastFetchDate,
-            lastMessagingDate: lastMessagingDate,
-            isPniCapable: isPniCapable
+            lastMessagingDate: lastMessagingDate
         )
     }
 
@@ -331,7 +324,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         guard badges == otherProfile.badges else { return false }
         guard lastFetchDate == otherProfile.lastFetchDate else { return false }
         guard lastMessagingDate == otherProfile.lastMessagingDate else { return false }
-        guard isPniCapable == otherProfile.isPniCapable else { return false }
         return true
     }
 
@@ -375,7 +367,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         try container.encodeIfPresent(lastMessagingDate, forKey: .lastMessagingDate)
         try container.encode(true, forKey: .isStoriesCapable)
         try container.encode(true, forKey: .canReceiveGiftBadges)
-        try container.encode(isPniCapable, forKey: .isPniCapable)
+        try container.encode(true, forKey: .isPniCapable)
     }
 
     public init(from decoder: Decoder) throws {
@@ -403,7 +395,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         } ?? []
         lastFetchDate = try container.decodeIfPresent(Date.self, forKey: .lastFetchDate)
         lastMessagingDate = try container.decodeIfPresent(Date.self, forKey: .lastMessagingDate)
-        isPniCapable = try container.decode(Bool.self, forKey: .isPniCapable)
     }
 
     private static func decodeProfileKey(_ profileKeyData: Data) throws -> OWSAES256Key {
@@ -941,7 +932,6 @@ private struct UserProfileChanges {
     var lastMessagingDate: OptionalChange<Date>
     var profileKey: OptionalChange<OWSAES256Key>
     var badges: OptionalChange<[OWSUserProfileBadgeInfo]>
-    var isPniCapable: OptionalChange<Bool>
 }
 
 // MARK: - Update With... Methods
@@ -1038,7 +1028,6 @@ extension OWSUserProfile {
         // Some properties are invisible/"polled", so changes don't matter.
         _ = setIfChanged(changes.lastFetchDate.map { $0 as Date? }, keyPath: \.lastFetchDate)
         _ = setIfChanged(changes.lastMessagingDate.map { $0 as Date? }, keyPath: \.lastMessagingDate)
-        _ = setIfChanged(changes.isPniCapable, keyPath: \.isPniCapable)
 
         if visibleChangeCount > 0 {
             return .something
@@ -1210,7 +1199,6 @@ extension OWSUserProfile {
         lastMessagingDate: OptionalChange<Date> = .noChange,
         profileKey: OptionalChange<OWSAES256Key> = .noChange,
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
-        isPniCapable: OptionalChange<Bool> = .noChange,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         transaction: SDSAnyWriteTransaction,
@@ -1227,8 +1215,7 @@ extension OWSUserProfile {
                 lastFetchDate: lastFetchDate,
                 lastMessagingDate: lastMessagingDate,
                 profileKey: profileKey,
-                badges: badges,
-                isPniCapable: isPniCapable
+                badges: badges
             ),
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,

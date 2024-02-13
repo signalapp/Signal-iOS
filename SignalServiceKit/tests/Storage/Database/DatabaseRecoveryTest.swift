@@ -16,11 +16,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         super.setUp()
         Self.databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: .init()),
-                    pni: .init(fromUUID: .init()),
-                    phoneNumber: "+12225550101"
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

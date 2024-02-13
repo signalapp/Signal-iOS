@@ -14,11 +14,7 @@ class ViewOnceMessagesTest: SSKBaseTestSwift {
 
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: .init()),
-                    pni: nil,
-                    e164: .init("+13334445555")!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

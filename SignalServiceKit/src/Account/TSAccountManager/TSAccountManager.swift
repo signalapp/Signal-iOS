@@ -91,12 +91,10 @@ public protocol PhoneNumberDiscoverabilitySetter {
 public protocol LocalIdentifiersSetter {
 
     /// Initialize local identifiers state after registration, linking, reregistration, or relinking.
-    /// PNP0 TODO: once all devices are PNI-capable, remove PNI nullability here.
-    /// Nil pni only happens with device linking, for registration its already non-optional.
     func initializeLocalIdentifiers(
         e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         deviceId: UInt32,
         serverAuthToken: String,
         tx: DBWriteTransaction
@@ -108,7 +106,7 @@ public protocol LocalIdentifiersSetter {
     func changeLocalNumber(
         newE164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         tx: DBWriteTransaction
     )
 

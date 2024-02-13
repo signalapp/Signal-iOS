@@ -41,7 +41,6 @@ extension OWSProfileManager: ProfileManager {
         localAvatarFileUrl: URL?,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
-        isPniCapable: Bool,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction
@@ -62,7 +61,6 @@ extension OWSProfileManager: ProfileManager {
         guard userProfile.profileKey != nil else {
             userProfile.update(
                 lastFetchDate: .setTo(lastFetchDate),
-                isPniCapable: .setTo(isPniCapable),
                 userProfileWriter: userProfileWriter,
                 authedAccount: authedAccount,
                 transaction: tx,
@@ -87,7 +85,6 @@ extension OWSProfileManager: ProfileManager {
             avatarFileName: newAvatarFileName,
             lastFetchDate: .setTo(lastFetchDate),
             badges: .setTo(profileBadges),
-            isPniCapable: .setTo(isPniCapable),
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,

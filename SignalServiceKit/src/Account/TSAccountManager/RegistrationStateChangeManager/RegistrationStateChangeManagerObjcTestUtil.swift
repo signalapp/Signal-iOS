@@ -12,13 +12,10 @@ public class RegistrationStateChangeManagerObjcTestUtil: NSObject {
 
     private override init() { super.init() }
 
-    public static func registerForTests(
-        localNumber: String,
-        aci: UUID
-    ) {
+    public static func registerForTests() {
         DependenciesBridge.shared.db.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as? RegistrationStateChangeManagerImpl)?.registerForTests(
-                localIdentifiers: .init(aci: .init(fromUUID: aci), pni: nil, phoneNumber: localNumber),
+                localIdentifiers: .forUnitTests,
                 tx: tx
             )
         }

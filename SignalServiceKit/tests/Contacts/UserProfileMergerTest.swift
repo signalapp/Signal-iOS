@@ -108,8 +108,7 @@ class UserProfileMergerTest: XCTestCase {
             bioEmoji: nil,
             badges: [],
             lastFetchDate: nil,
-            lastMessagingDate: nil,
-            isPniCapable: false
+            lastMessagingDate: nil
         )
     }
 }

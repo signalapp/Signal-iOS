@@ -40,16 +40,9 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        // ensure local client has necessary "registered" state
-        let localE164Identifier = "+13235551234"
-        let localUUID = UUID()
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: localUUID),
-                    pni: nil,
-                    e164: .init(localE164Identifier)!
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx.asV2Write
             )
         }

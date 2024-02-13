@@ -23,7 +23,6 @@ public class SignalServiceProfile {
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
-    public let isPniCapable: Bool
     public let phoneNumberSharingEncrypted: Data?
 
     public init(serviceId: ServiceId, responseObject: Any?) throws {
@@ -51,8 +50,6 @@ public class SignalServiceProfile {
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
-
-        self.isPniCapable = Self.parseCapabilityFlag(capabilityKey: "pni", params: params, requireCapability: true)
 
         self.phoneNumberSharingEncrypted = try params.optionalBase64EncodedData(key: "phoneNumberSharing")
 

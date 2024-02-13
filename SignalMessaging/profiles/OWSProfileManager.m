@@ -340,11 +340,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return self.localUserProfile.badges;
 }
 
-- (BOOL)localProfileIsPniCapable
-{
-    return self.localUserProfile.isPniCapable;
-}
-
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];

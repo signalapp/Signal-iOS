@@ -11,7 +11,7 @@ import LibSignalClient
 class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     let localE164Identifier = "+13235551234"
-    let localUUID = UUID()
+    let localAci = Aci.randomForTesting()
 
     let aliceE164Identifier = "+14715355555"
     var aliceClient: TestSignalClient!
@@ -40,8 +40,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         databaseStorage.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .init(
-                    aci: .init(fromUUID: localUUID),
-                    pni: .init(fromUUID: UUID()),
+                    aci: localAci,
+                    pni: Pni.randomForTesting(),
                     e164: .init(localE164Identifier)!
                 ),
                 tx: tx.asV2Write

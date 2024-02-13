@@ -1193,18 +1193,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: transaction.asV2Read)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        if profileManager.localProfileIsPniCapable() {
-            // If we are PNI capable we should no longer use or rely on the
-            // e164 from the AccountRecord since it doesn't store related PNI
-            // material.
-        } else {
-            if let localE164 = E164(localAddress.phoneNumber?.strippedOrNil) {
-                builder.setE164(localE164.stringValue)
-            } else {
-                owsFailDebug("Missing or invalid local E164!")
-            }
-        }
-
         if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
             builder.setPreferredReactionEmoji(customEmojiSet)
         }
@@ -1503,53 +1491,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
         if !localHasViewedOnboardingStory && record.viewedOnboardingStory {
             systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
-        }
-
-        if profileManager.localProfileIsPniCapable() {
-            // If we are PNI capable we should no longer use or rely on the
-            // e164 from the AccountRecord since it doesn't store related PNI
-            // material.
-        } else if let serviceLocalE164 = E164(record.e164?.strippedOrNil) {
-            if localAddress.e164 != serviceLocalE164 {
-                Logger.warn("localAddress.e164: \(String(describing: localAddress.e164)) != serviceLocalE164: \(serviceLocalE164)")
-
-                if isPrimaryDevice {
-                    // It's not clear how we got into this scenario, but if we
-                    // do it's bad. Once all clients are PNI-capable we can
-                    // ignore the AccountRecord's e164 entirely, and remove
-                    // this attempt to heal.
-                    //
-                    // PNP0 TODO: remove this logic after all clients are known PNI-capable.
-
-                    transaction.addAsyncCompletionOffMain {
-                        owsFailDebug("Attempting to heal from primary-device e164 mismatch with AccountRecord.")
-
-                        // Consult "whoami" service endpoint; the service is the source of truth
-                        // for the local phone number.  This ensures that the primary will always
-                        // reflect the latest value.
-                        self.legacyChangePhoneNumber.deprecated_updateLocalPhoneNumberOnAccountRecordMismatch()
-
-                        // The primary should always reflect the latest value.
-                        // If local db state doesn't agree with the storage service state,
-                        // the primary needs to update the storage service.
-                        self.storageServiceManager.recordPendingLocalAccountUpdates()
-                    }
-                } else if let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) {
-                    // If we're a linked device, we should always take the e164
-                    // from StorageService.
-                    registrationStateChangeManager.didUpdateLocalPhoneNumber(
-                        serviceLocalE164,
-                        aci: localIdentifiers.aci,
-                        pni: localIdentifiers.pni,
-                        tx: transaction.asV2Write
-                    )
-                } else {
-                    owsFailDebug("Linked device missing local ACI!")
-                }
-            }
-        } else {
-            // If we don't have an e164 in StorageService yet, do so now.
-            needsUpdate = true
         }
 
         let localStoriesDisabled = !StoryManager.areStoriesEnabled(transaction: transaction)

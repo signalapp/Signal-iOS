@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localFullName;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
 @property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
-@property (nonatomic) BOOL localProfileIsPniCapable;
 
 @end
 

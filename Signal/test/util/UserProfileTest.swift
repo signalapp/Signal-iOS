@@ -174,7 +174,6 @@ final class UserProfile2Test: XCTestCase {
             XCTAssertEqual(userProfiles[0].badges, [])
             XCTAssertEqual(userProfiles[0].lastFetchDate, Date(timeIntervalSince1970: 1700000000))
             XCTAssertEqual(userProfiles[0].lastMessagingDate, nil)
-            XCTAssertEqual(userProfiles[0].isPniCapable, false)
 
             XCTAssertEqual(userProfiles[1].id, 2)
             XCTAssertEqual(userProfiles[1].uniqueId, "00000000-0000-4000-8000-00000000000B")
@@ -190,7 +189,6 @@ final class UserProfile2Test: XCTestCase {
             XCTAssertEqual(userProfiles[1].badges, [OWSUserProfileBadgeInfo(badgeId: "BOOST")])
             XCTAssertEqual(userProfiles[1].lastFetchDate, Date(timeIntervalSince1970: 1700000000))
             XCTAssertEqual(userProfiles[1].lastMessagingDate, Date(timeIntervalSince1970: 1702000000))
-            XCTAssertEqual(userProfiles[1].isPniCapable, true)
         }
     }
 

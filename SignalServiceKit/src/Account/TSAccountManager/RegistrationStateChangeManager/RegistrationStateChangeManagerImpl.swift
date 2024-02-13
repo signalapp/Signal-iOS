@@ -91,7 +91,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public func didProvisionSecondary(
         e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         authToken: String,
         deviceId: UInt32,
         tx: DBWriteTransaction
@@ -115,7 +115,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     public func didUpdateLocalPhoneNumber(
         _ e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         tx: DBWriteTransaction
     ) {
         tsAccountManager.changeLocalNumber(newE164: e164, aci: aci, pni: pni, tx: tx)
@@ -237,7 +237,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private func didUpdateLocalIdentifiers(
         e164: E164,
         aci: Aci,
-        pni: Pni?,
+        pni: Pni,
         tx: DBWriteTransaction
     ) {
         udManager.removeSenderCertificates(tx: tx)
@@ -345,7 +345,7 @@ extension RegistrationStateChangeManagerImpl {
         tsAccountManager.initializeLocalIdentifiers(
             e164: E164(localIdentifiers.phoneNumber)!,
             aci: localIdentifiers.aci,
-            pni: localIdentifiers.pni,
+            pni: localIdentifiers.pni!,
             deviceId: OWSDevice.primaryDeviceId,
             serverAuthToken: "",
             tx: tx
@@ -353,7 +353,7 @@ extension RegistrationStateChangeManagerImpl {
         didUpdateLocalIdentifiers(
             e164: E164(localIdentifiers.phoneNumber)!,
             aci: localIdentifiers.aci,
-            pni: localIdentifiers.pni,
+            pni: localIdentifiers.pni!,
             tx: tx
         )
     }

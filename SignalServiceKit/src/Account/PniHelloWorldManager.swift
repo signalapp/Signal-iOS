@@ -36,7 +36,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
-    private let profileManager: Shims.ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let schedulers: Schedulers
     private let tsAccountManager: TSAccountManager
@@ -49,7 +48,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
-        profileManager: Shims.ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
         schedulers: Schedulers,
         tsAccountManager: TSAccountManager
@@ -61,7 +59,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
-        self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
@@ -93,11 +90,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         }
         let localRecipientId = localRecipient.uniqueId
         let localDeviceIds = localRecipient.deviceIds
-
-        guard profileManager.isLocalProfilePniCapable() else {
-            logger.info("Skipping PNI Hello World, profile not yet PNI capable.")
-            return
-        }
 
         let localPniIdentityKeyPair: ECKeyPair
         if let existingKeyPair = identityManager.identityKeyPair(for: .pni, tx: syncTx) {
@@ -182,12 +174,10 @@ private extension OWSRequestFactory {
 extension PniHelloWorldManagerImpl {
     enum Shims {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
-        typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
     }
 
     enum Wrappers {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
-        typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
     }
 }
 
@@ -210,23 +200,5 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
         )
 
         return networkManager.makePromise(request: helloWorldRequest).asVoid()
-    }
-}
-
-// MARK: ProfileManager
-
-protocol _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    func isLocalProfilePniCapable() -> Bool
-}
-
-class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    private let profileManager: ProfileManager
-
-    init(_ profileManager: ProfileManager) {
-        self.profileManager = profileManager
-    }
-
-    func isLocalProfilePniCapable() -> Bool {
-        return profileManager.localProfileIsPniCapable()
     }
 }

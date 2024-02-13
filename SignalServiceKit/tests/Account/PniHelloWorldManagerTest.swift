@@ -32,7 +32,6 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var pniDistributionParameterBuilderMock: PniDistributionParamaterBuilderMock!
     private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
-    private var profileManagerMock: ProfileManagerMock!
     private var recipientDatabaseTableMock: MockRecipientDatabaseTable!
     private var tsAccountManagerMock: MockTSAccountManager!
 
@@ -53,7 +52,6 @@ class PniHelloWorldManagerTest: XCTestCase {
         pniDistributionParameterBuilderMock = .init()
         pniSignedPreKeyStoreMock = .init()
         pniKyberPreKeyStoreMock = .init(dateProvider: Date.provider)
-        profileManagerMock = .init()
         recipientDatabaseTableMock = .init()
         tsAccountManagerMock = .init()
 
@@ -71,7 +69,6 @@ class PniHelloWorldManagerTest: XCTestCase {
             pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
-            profileManager: profileManagerMock,
             recipientDatabaseTable: recipientDatabaseTableMock,
             schedulers: schedulers,
             tsAccountManager: tsAccountManagerMock
@@ -104,7 +101,6 @@ class PniHelloWorldManagerTest: XCTestCase {
                 deviceIds: [1, 2, 3]
             ), transaction: tx)
         }
-        profileManagerMock.isPniCapable = true
 
         let keyPair = ECKeyPair.generateKeyPair()
         identityManagerMock.identityKeyPairs[.pni] = keyPair
@@ -188,16 +184,6 @@ class PniHelloWorldManagerTest: XCTestCase {
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
-    func testSkipsIfNotPniCapable() {
-        setMocksForHappyPath()
-        profileManagerMock.isPniCapable = false
-
-        runRunRun()
-
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
-    }
-
     func testSkipsRequestIfBuildFailed() {
         setMocksForHappyPath()
         pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
@@ -274,15 +260,5 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
         case .failure:
             return .value(.failure)
         }
-    }
-}
-
-// MARK: ProfileManager
-
-private class ProfileManagerMock: _PniHelloWorldManagerImpl_ProfileManager_Shim {
-    var isPniCapable: Bool = false
-
-    func isLocalProfilePniCapable() -> Bool {
-        return isPniCapable
     }
 }
