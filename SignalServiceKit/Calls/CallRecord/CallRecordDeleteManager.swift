@@ -157,7 +157,10 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
     ) {
         insertDeletedCallRecords(
             deletedCallRecords: [
-                DeletedCallRecord(callId: callId, threadRowId: threadRowId)
+                DeletedCallRecord(
+                    callId: callId,
+                    threadRowId: threadRowId
+                )
             ],
             tx: tx
         )
@@ -171,7 +174,9 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         callRecordStore.delete(callRecords: callRecords, tx: tx)
 
         insertDeletedCallRecords(
-            deletedCallRecords: callRecords.map(DeletedCallRecord.init(callRecord:)),
+            deletedCallRecords: callRecords.map {
+                DeletedCallRecord(callRecord: $0)
+            },
             tx: tx
         )
 
@@ -214,6 +219,6 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
             deletedCallRecordStore.insert(deletedCallRecord: deletedCallRecord, tx: tx)
         }
 
-        deletedCallRecordCleanupManager.startCleanupIfNecessary(tx: tx)
+        deletedCallRecordCleanupManager.startCleanupIfNecessary()
     }
 }

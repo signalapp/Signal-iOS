@@ -8,6 +8,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class DeletedCallRecordCleanupManagerTest: XCTestCase {
+    private var timeIntervalProvider: DeletedCallRecordCleanupManagerImpl.TimeIntervalProvider = { owsFail("Not implemented!") }
     private var dateProvider: DateProvider = { owsFail("Not implemented!") }
     private var db: MockDB!
     private var deletedCallRecordStore: MockDeletedCallRecordStore!
@@ -21,6 +22,7 @@ final class DeletedCallRecordCleanupManagerTest: XCTestCase {
         testScheduler = TestScheduler()
 
         cleanupManager = DeletedCallRecordCleanupManagerImpl(
+            minimumSecondsBetweenCleanupPasses: { self.timeIntervalProvider() },
             dateProvider: { self.dateProvider() },
             db: db,
             deletedCallRecordStore: deletedCallRecordStore,
@@ -34,49 +36,71 @@ final class DeletedCallRecordCleanupManagerTest: XCTestCase {
         }
 
         testScheduler.start()
-
-        db.write { tx in
-            cleanupManager.startCleanupIfNecessary(tx: tx)
-        }
+        cleanupManager.startCleanupIfNecessary()
     }
 
     func testCleanupIfNecessary() {
+        timeIntervalProvider = { 2 }
+
         deletedCallRecordStore.deletedCallRecords = [
             .fixture(deletedAtSeconds: 3),
             .fixture(deletedAtSeconds: 4),
             .fixture(deletedAtSeconds: 5),
             .fixture(deletedAtSeconds: 6),
+            .fixture(deletedAtSeconds: 7),
             .fixture(deletedAtSeconds: 9),
         ]
 
+        /// This will dispatch async cleanup to start whenever we start the
+        /// scheduler.
+        cleanupManager.startCleanupIfNecessary()
+
+        /// This will run the on-start async cleanup work, which will delete
+        /// records 3, 4, and 5. Cleanup for record 6 will be scheduled two
+        /// ticks from now, due to the debounce.
         dateProvider = { .fixture(seconds: 5) }
-        testScheduler.advance(to: 5)
+        testScheduler.advance(to: 0)
 
-        db.write { tx in
-            cleanupManager.startCleanupIfNecessary(tx: tx)
-        }
-
-        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 2)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 3)
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 6000)
-        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[1].deletedAtTimestamp, 9000)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[1].deletedAtTimestamp, 7000)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[2].deletedAtTimestamp, 9000)
 
+        /// This should do nothing, since we're in the debounce.
         dateProvider = { .fixture(seconds: 6) }
-        testScheduler.advance(to: 6)
+        testScheduler.tick()
+
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 3)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 6000)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[1].deletedAtTimestamp, 7000)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[2].deletedAtTimestamp, 9000)
+
+        /// This will clean up record 6 _and_ record 7, and schedule record 9
+        /// for cleanup after two more ticks.
+        dateProvider = { .fixture(seconds: 7) }
+        testScheduler.tick()
 
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 1)
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 9000)
 
-        testScheduler.advance(to: 7)
+        /// This should do nothing, since record 9 is still scheduled for future
+        /// deletion.
+        dateProvider = { .fixture(seconds: 8) }
+        testScheduler.tick()
 
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 1)
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 9000)
 
-        testScheduler.advance(to: 9)
+        /// This should delete record 9, after which we should have no more work
+        /// scheduled.
+        dateProvider = { .fixture(seconds: 9) }
+        testScheduler.tick()
 
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 0)
 
         deletedCallRecordStore.deleteMock = { _ in XCTFail("Shouldn't be deleting!") }
-        testScheduler.advance(to: 10)
+        dateProvider = { .fixture(seconds: 10) }
+        testScheduler.tick()
     }
 
     /// A call to start cleanup while cleanup is already scheduled should bail
@@ -84,35 +108,62 @@ final class DeletedCallRecordCleanupManagerTest: XCTestCase {
     /// is scheduled for deletion, then attempt to re-start cleanup – this
     /// shouldn't even ask for the next record.
     func testReentrance() {
-        deletedCallRecordStore.deletedCallRecords = [.fixture(deletedAtSeconds: 5)]
+        timeIntervalProvider = { 1 }
 
-        // This will schedule a record for deletion...
-        dateProvider = { .fixture(seconds: 3) }
-        testScheduler.advance(to: 3)
-        db.write { tx in cleanupManager.startCleanupIfNecessary(tx: tx) }
+        /// There's nothing to clean up, so this should do nothing.
+        cleanupManager.startCleanupIfNecessary()
+        testScheduler.advance(to: 0)
+
+        deletedCallRecordStore.deletedCallRecords = [
+            .fixture(deletedAtSeconds: 4),
+            .fixture(deletedAtSeconds: 5),
+        ]
+
+        /// This will delete record 4 and schedule record 5 for deletion for one
+        /// tick from now...
+        cleanupManager.startCleanupIfNecessary()
+        dateProvider = { .fixture(seconds: 4) }
+        testScheduler.tick()
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 1)
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 5000)
 
-        // ...which means this shouldn't do anything...
+        /// ...which means this identical call shouldn't do anything...
+        deletedCallRecordStore.deletedCallRecords = [
+            .fixture(deletedAtSeconds: 4),
+            .fixture(deletedAtSeconds: 5),
+        ]
         deletedCallRecordStore.nextDeletedRecordMock = {
             XCTFail("Shouldn't be asking for next deleted!")
             return nil
         }
-        db.write { tx in cleanupManager.startCleanupIfNecessary(tx: tx) }
-        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 1)
-        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 5000)
+        cleanupManager.startCleanupIfNecessary()
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 2)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[0].deletedAtTimestamp, 4000)
+        XCTAssertEqual(deletedCallRecordStore.deletedCallRecords[1].deletedAtTimestamp, 5000)
 
-        // ...and this should delete the scheduled record...
+        /// ...but if we reset the mocks and tick, we should perform the
+        /// scheduled delete of record 5...
         deletedCallRecordStore.nextDeletedRecordMock = nil
+        deletedCallRecordStore.deletedCallRecords = [.fixture(deletedAtSeconds: 5)]
         dateProvider = { .fixture(seconds: 5) }
-        testScheduler.advance(to: 5)
+        testScheduler.tick()
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 0)
 
-        // ...at which point we should be able to start cleanup anew.
-        deletedCallRecordStore.deletedCallRecords = [.fixture(deletedAtSeconds: 6)]
+        /// ...after which subsequent ticking should do nothing...
+        deletedCallRecordStore.nextDeletedRecordMock = {
+            XCTFail("Shouldn't be asking for next deleted!")
+            return nil
+        }
         dateProvider = { .fixture(seconds: 6) }
-        testScheduler.advance(to: 6)
-        db.write { tx in cleanupManager.startCleanupIfNecessary(tx: tx) }
+        testScheduler.tick()
+
+        /// ...but when we reset the mocks with a new record to delete and
+        /// re-start cleanup, we should be back in business.
+        deletedCallRecordStore.deletedCallRecords = [.fixture(deletedAtSeconds: 7)]
+        deletedCallRecordStore.nextDeletedRecordMock = nil
+        cleanupManager.startCleanupIfNecessary()
+        dateProvider = { .fixture(seconds: 7) }
+        testScheduler.tick()
         XCTAssertEqual(deletedCallRecordStore.deletedCallRecords.count, 0)
     }
 }

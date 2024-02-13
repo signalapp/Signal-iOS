@@ -7,7 +7,7 @@
 
 final class MockDeletedCallRecordCleanupManager: DeletedCallRecordCleanupManager {
     var cleanupStartCount: UInt = 0
-    func startCleanupIfNecessary(tx syncTx: DBWriteTransaction) {
+    func startCleanupIfNecessary() {
         cleanupStartCount += 1
     }
 }
