@@ -137,8 +137,8 @@ public class AppVersionImpl: AppVersion {
     // MARK: - Setup
 
     private init(bundle: Bundle, userDefaults: UserDefaults) {
-        let marketingVersion = bundle.string(forInfoDictionaryKey: "CFBundleVersion")
-        let buildNumber = bundle.string(forInfoDictionaryKey: "CFBundleShortVersionString")
+        let marketingVersion = bundle.string(forInfoDictionaryKey: "CFBundleShortVersionString")
+        let buildNumber = bundle.string(forInfoDictionaryKey: "CFBundleVersion")
         self.currentAppVersion = "\(marketingVersion).\(buildNumber)"
 
         if
