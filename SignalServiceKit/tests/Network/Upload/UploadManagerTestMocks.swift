@@ -112,6 +112,7 @@ public class _UploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 class _UploadManager_SocketManagerMock: SocketManager {
     var isAnySocketOpen: Bool { true }
     var hasEmptiedInitialQueue: Bool { true }
+    func waitForSocketToOpen(webSocketType: OWSWebSocketType) async throws { }
     func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState { .open }
     func cycleSocket() { }
     func canMakeRequests(webSocketType: OWSWebSocketType) -> Bool { true }
