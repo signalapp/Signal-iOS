@@ -339,8 +339,10 @@ public extension ConversationViewController {
 // MARK: - Timers
 
 extension ConversationViewController {
-    public func startReadTimer() {
+    public func startReadTimer(caller: String = #function) {
         AssertIsOnMainThread()
+
+        markAsReadLogger.info("Starting read timer for \(caller).")
 
         readTimer?.invalidate()
         let readTimer = Timer.weakTimer(withTimeInterval: 0.1,
@@ -362,8 +364,10 @@ extension ConversationViewController {
         markVisibleMessagesAsRead()
     }
 
-    public func cancelReadTimer() {
+    public func cancelReadTimer(caller: String = #function) {
         AssertIsOnMainThread()
+
+        markAsReadLogger.info("Canceling read timer for \(caller).")
 
         readTimer?.invalidate()
         self.readTimer = nil
@@ -432,7 +436,7 @@ extension ConversationViewController {
         self.lastSortIdMarkedRead = lastSortIdMarkedRead
     }
 
-    public func markVisibleMessagesAsRead() {
+    public func markVisibleMessagesAsRead(caller: String = #function) {
         AssertIsOnMainThread()
 
         if nil != self.presentedViewController {
@@ -451,6 +455,8 @@ extension ConversationViewController {
         let lastVisibleSortId = self.lastVisibleSortId
         let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
         if !self.isMarkingAsRead && isShowingUnreadMessage {
+            markAsReadLogger.info("Marking as read for \(caller).")
+
             self.isMarkingAsRead = true
 
             Self.receiptManager.markAsReadLocally(

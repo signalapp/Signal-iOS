@@ -49,6 +49,9 @@ public final class ConversationViewController: OWSViewController {
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
 
+    // [MarkAsRead] TODO: using this logger to track down the phantom "mark as read" bug. Remove once addressed.
+    let markAsReadLogger: PrefixedLogger = .init(prefix: "[MarkAsRead]", suffix: "\(UUID().uuidString.prefix(8))")
+
     /// See `ConversationViewController+OWS.updateContentInsetsDebounced`
     lazy var updateContentInsetsEvent = DebouncedEvents.build(
         mode: .lastOnly,
