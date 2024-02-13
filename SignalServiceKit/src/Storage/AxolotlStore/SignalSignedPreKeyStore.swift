@@ -8,9 +8,6 @@ import LibSignalClient
 
 public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
 
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord?
-    func currentSignedPreKeyId(tx: DBReadTransaction) -> Int?
-
     func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord
     func generateRandomSignedRecord() -> SignalServiceKit.SignedPreKeyRecord
 
@@ -20,13 +17,10 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
         tx: DBWriteTransaction
     )
 
-    func storeSignedPreKeyAsCurrent(
-           signedPreKeyId: Int32,
-           signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-           tx: DBWriteTransaction
+    func cullSignedPreKeyRecords(
+        justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
+        tx: DBWriteTransaction
     )
-
-    func cullSignedPreKeyRecords(tx: DBWriteTransaction)
 
     func removeSignedPreKey(
         _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -50,14 +44,6 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
     }
 
-    public func currentSignedPreKey(tx: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
-        currentSignedPreKey(with: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func currentSignedPreKeyId(tx: DBReadTransaction) -> Int? {
-        currentSignedPrekeyId(with: SDSDB.shimOnlyBridge(tx))?.intValue
-    }
-
     public func storeSignedPreKey(
         _ signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -70,20 +56,8 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         )
     }
 
-    public func storeSignedPreKeyAsCurrent(
-        signedPreKeyId: Int32,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        tx: DBWriteTransaction
-    ) {
-        storeSignedPreKeyAsCurrent(
-            signedPreKeyId: signedPreKeyId,
-            signedPreKeyRecord: signedPreKeyRecord,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func cullSignedPreKeyRecords(tx: DBWriteTransaction) {
-        cullSignedPreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
+    public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, tx: DBWriteTransaction) {
+        cullSignedPreKeyRecords(justUploadedSignedPreKey: justUploadedSignedPreKey, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func removeSignedPreKey(

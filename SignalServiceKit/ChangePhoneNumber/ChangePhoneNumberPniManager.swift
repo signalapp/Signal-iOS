@@ -192,15 +192,15 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         )
 
         if let newPqLastResortPreKeyRecord = pendingState.localDevicePniPqLastResortPreKeyRecord {
-            try pniKyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+            try pniKyberPreKeyStore.storeLastResortPreKey(
                 record: newPqLastResortPreKeyRecord,
                 tx: transaction
             )
         }
 
         let newSignedPreKeyRecord = pendingState.localDevicePniSignedPreKeyRecord
-        pniSignedPreKeyStore.storeSignedPreKeyAsCurrent(
-            signedPreKeyId: newSignedPreKeyRecord.id,
+        pniSignedPreKeyStore.storeSignedPreKey(
+            newSignedPreKeyRecord.id,
             signedPreKeyRecord: newSignedPreKeyRecord,
             tx: transaction
         )

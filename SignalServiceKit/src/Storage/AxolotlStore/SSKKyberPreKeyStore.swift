@@ -6,10 +6,6 @@
 import LibSignalClient
 
 public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
-    func getLastResortKyberPreKey(
-        tx: DBReadTransaction
-    ) -> SignalServiceKit.KyberPreKeyRecord?
-
     func generateLastResortKyberPreKey(
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
@@ -27,7 +23,7 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws -> [SignalServiceKit.KyberPreKeyRecord]
 
-    func storeLastResortPreKeyAndMarkAsCurrent(
+    func storeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
@@ -42,7 +38,10 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws
 
-    func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws
+    func cullLastResortPreKeyRecords(
+        justUploadedLastResortPreKey: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws
 
     func removeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
@@ -147,7 +146,6 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             static let metadataStoreCollection = "SSKKyberPreKeyStorePNIMetadataStore"
         }
 
-        static let currentLastResortKeyId = "currentLastResortKeyId"
         static let lastKeyId = "lastKeyId"
 
         static let lastKeyRotationDate = "lastKeyRotationDate"
@@ -257,25 +255,8 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         )
     }
 
-    // Mark as current
-    public func storeLastResortPreKeyAndMarkAsCurrent(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+    public func storeLastResortPreKey(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         try storeKyberPreKey(record: record, tx: tx)
-        self.metadataStore.setInt32(Int32(bitPattern: record.id), key: Constants.currentLastResortKeyId, transaction: tx)
-    }
-
-    private func getLastResortKyberPreKeyId(tx: DBReadTransaction) -> Int32? {
-        return self.metadataStore.getInt32(Constants.currentLastResortKeyId, transaction: tx)
-    }
-
-    public func getLastResortKyberPreKey(tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
-        guard
-            let lastResortId = getLastResortKyberPreKeyId(tx: tx),
-            let record = loadKyberPreKey(id: UInt32(bitPattern: lastResortId), tx: tx),
-            record.isLastResort
-        else {
-            return nil
-        }
-        return record
     }
 
     // MARK: - LibSignalClient.KyberPreKeyStore conformance
@@ -387,19 +368,19 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
     }
 
-    public func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws {
-
+    public func cullLastResortPreKeyRecords(
+        justUploadedLastResortPreKey: KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) throws {
         // get a list of keys
-        // get the current key
-        // don't touch the current
+        // don't touch what we just uploaded
         // remove all others older than 30 days
-        guard let currentLastResort = getLastResortKyberPreKey(tx: tx) else { return }
 
         let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
             .allCodableValues(transaction: tx)
             .filter { record in
                 guard record.isLastResort else { return false }
-                guard record.id != currentLastResort.id else { return false }
+                guard record.id != justUploadedLastResortPreKey.id else { return false }
                 let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
                 return keyAge >= Constants.lastResortKeyExpirationInterval
             }

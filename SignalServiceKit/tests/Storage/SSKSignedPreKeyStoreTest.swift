@@ -13,21 +13,12 @@ private extension SSKSignedPreKeyStore {
             loadSignedPreKey(id, transaction: transaction)
         }
     }
-
-    var countSignedPreKeys: Int {
-        return self.databaseStorage.read { transaction in
-            loadSignedPreKeys(with: transaction).count
-        }
-    }
 }
 
 class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
     func testPniStoreIsSeparate() {
         let aciStore = SSKSignedPreKeyStore(for: .aci)
         let pniStore = SSKSignedPreKeyStore(for: .pni)
-
-        XCTAssertEqual(0, aciStore.countSignedPreKeys)
-        XCTAssertEqual(0, pniStore.countSignedPreKeys)
 
         let days: Int32 = 3
         let lastPreKeyId = days
@@ -45,7 +36,6 @@ class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
             }
         }
 
-        XCTAssertEqual(4, aciStore.countSignedPreKeys)
         XCTAssertNotNil(aciStore.loadSignedPreKey(lastPreKeyId))
 
         for i in 0...days { // 4 signed keys are generated, one per day from now until 3 days ago.
@@ -61,7 +51,6 @@ class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
             }
         }
 
-        XCTAssertEqual(4, pniStore.countSignedPreKeys)
         XCTAssertNotNil(pniStore.loadSignedPreKey(lastPreKeyId))
 
         self.databaseStorage.write { transaction in

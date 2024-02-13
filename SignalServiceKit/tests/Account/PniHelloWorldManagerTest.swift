@@ -103,15 +103,6 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         let keyPair = ECKeyPair.generateKeyPair()
         identityManagerMock.identityKeyPair = keyPair
-        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(
-            pniSignedPreKeyStoreMock.generateSignedPreKey(
-                signedBy: keyPair
-            )
-        )
-        db.write { tx in
-            let key = try! pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: keyPair, tx: tx)
-            try! pniKyberPreKeyStoreMock.storeLastResortPreKeyAndMarkAsCurrent(record: key, tx: tx)
-        }
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
@@ -195,7 +186,6 @@ class PniHelloWorldManagerTest: XCTestCase {
     func testSkipsIfMissingPniKeyParameters() {
         setMocksForHappyPath()
         identityManagerMock.identityKeyPair = nil
-        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(nil)
 
         runRunRun()
 

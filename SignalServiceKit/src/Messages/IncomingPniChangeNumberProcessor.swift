@@ -70,7 +70,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
         // attempt this first and return before writing any other information
         do {
             if let lastResortKey = pniChangeData.lastResortKyberPreKey {
-                try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+                try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKey(
                     record: lastResortKey,
                     tx: tx
                 )
@@ -86,8 +86,8 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
             tx: tx
         )
 
-        pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsCurrent(
-            signedPreKeyId: pniChangeData.signedPreKey.id,
+        pniProtocolStore.signedPreKeyStore.storeSignedPreKey(
+            pniChangeData.signedPreKey.id,
             signedPreKeyRecord: pniChangeData.signedPreKey,
             tx: tx
         )

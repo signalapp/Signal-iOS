@@ -39,7 +39,7 @@ protocol _ChangePhoneNumberPniManager_PreKeyManagerShim {
 protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
     func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord
 
-    func storeSignedPreKeyAsCurrent(
+    func storeSignedPreKey(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
         transaction: DBWriteTransaction
@@ -91,13 +91,13 @@ class _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper: _ChangePhoneNumberP
         return signedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
     }
 
-    func storeSignedPreKeyAsCurrent(
+    func storeSignedPreKey(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
         transaction: DBWriteTransaction
     ) {
-        signedPreKeyStore.storeSignedPreKeyAsCurrent(
-            signedPreKeyId: signedPreKeyId,
+        signedPreKeyStore.storeSignedPreKey(
+            signedPreKeyId,
             signedPreKeyRecord: signedPreKeyRecord,
             transaction: SDSDB.shimOnlyBridge(transaction)
         )

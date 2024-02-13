@@ -376,10 +376,10 @@ internal struct PreKeyTaskManager {
         pqPreKeyRecordCount: Int?
     ) -> PreKey.Target {
         let protocolStore = self.protocolStoreManager.signalProtocolStore(for: identity)
-        let (currentSignedPreKey, currentLastResortPqPreKey) = db.read { tx in
-            let signedPreKey = protocolStore.signedPreKeyStore.currentSignedPreKey(tx: tx)
-            let lastResortKey = protocolStore.kyberPreKeyStore.getLastResortKyberPreKey(tx: tx)
-            return (signedPreKey, lastResortKey)
+        let (lastSuccessfulRotation, lastKyberSuccessfulRotation) = db.read { tx in
+            let lastSuccessfulRotation = protocolStore.signedPreKeyStore.getLastSuccessfulRotationDate(tx: tx)
+            let lastKyberSuccessfulRotation = protocolStore.kyberPreKeyStore.getLastSuccessfulRotationDate(tx: tx)
+            return (lastSuccessfulRotation, lastKyberSuccessfulRotation)
         }
 
         // Take the gathered PreKeyState information and run it through
@@ -408,23 +408,19 @@ internal struct PreKeyTaskManager {
                 }
             case .signedPreKey:
                 if
-                    let signedPreKey = currentSignedPreKey,
-                    case let currentDate = self.dateProvider(),
-                    case let generatedDate = signedPreKey.generatedAt,
-                    currentDate.timeIntervalSince(generatedDate) < Constants.SignedPreKeyRotationTime
+                    let lastSuccessfulRotation,
+                    dateProvider().timeIntervalSince(lastSuccessfulRotation) < Constants.SignedPreKeyRotationTime
                 {
-                    Logger.info("Available \(identity) signed PreKey sufficient: \(signedPreKey.generatedAt)")
+                    Logger.info("Available \(identity) signed PreKey is recent enough")
                 } else {
                     value.insert(target: target)
                 }
             case .lastResortPqPreKey:
                 if
-                    let lastResortPreKey = currentLastResortPqPreKey,
-                    case let currentDate = self.dateProvider(),
-                    case let generatedDate = lastResortPreKey.generatedAt,
-                    currentDate.timeIntervalSince(generatedDate) < Constants.LastResortPqPreKeyRotationTime
+                    let lastKyberSuccessfulRotation,
+                    dateProvider().timeIntervalSince(lastKyberSuccessfulRotation) < Constants.LastResortPqPreKeyRotationTime
                 {
-                    Logger.info("Available \(identity) last resort PreKey sufficient: \(lastResortPreKey.generatedAt)")
+                    Logger.info("Available \(identity) last resort PreKey is recent enough")
                 } else {
                     value.insert(target: target)
                 }
@@ -493,21 +489,24 @@ internal struct PreKeyTaskManager {
         if let signedPreKeyRecord = bundle.getSignedPreKey() {
 
             // Mark the new Signed Prekey as accepted
-            protocolStore.signedPreKeyStore.storeSignedPreKeyAsCurrent(
-                signedPreKeyId: signedPreKeyRecord.id,
+            protocolStore.signedPreKeyStore.storeSignedPreKey(
+                signedPreKeyRecord.id,
                 signedPreKeyRecord: signedPreKeyRecord,
                 tx: tx
             )
 
             protocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
 
-            protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
+            protocolStore.signedPreKeyStore.cullSignedPreKeyRecords(
+                justUploadedSignedPreKey: signedPreKeyRecord,
+                tx: tx
+            )
         }
 
         // save last-resort PQ key here as well (if created)
         if let lastResortPreKey = bundle.getLastResortPreKey() {
 
-            try protocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+            try protocolStore.kyberPreKeyStore.storeLastResortPreKey(
                 record: lastResortPreKey,
                 tx: tx
             )
@@ -516,7 +515,10 @@ internal struct PreKeyTaskManager {
             protocolStore.kyberPreKeyStore.setLastSuccessfulRotationDate(self.dateProvider(), tx: tx)
 
             // Cleanup any old keys
-            try protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(tx: tx)
+            try protocolStore.kyberPreKeyStore.cullLastResortPreKeyRecords(
+                justUploadedLastResortPreKey: lastResortPreKey,
+                tx: tx
+            )
         }
 
         if let newPreKeyRecords = bundle.getPreKeyRecords() {

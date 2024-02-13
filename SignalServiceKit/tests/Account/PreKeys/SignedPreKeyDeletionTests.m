@@ -43,23 +43,12 @@
     return [[SSKSignedPreKeyStore alloc] initForIdentity:OWSIdentityACI];
 }
 
-- (NSUInteger)signedPreKeyCount
-{
-    __block NSUInteger result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.signedPreKeyStore loadSignedPreKeysWithTransaction:transaction].count;
-    }];
-    return result;
-}
-
 - (void)testSignedPreKeyDeletion
 {
-    XCTAssertEqual(0, self.signedPreKeyCount);
-
     int days = 40;
-    int lastPreKeyId = days;
 
-    for (int i = 0; i <= days; i++) { // 41 signed keys are generated, one per day from now until 40 days ago.
+    SignedPreKeyRecord *justUploadedSignedPreKeyRecord;
+    for (int i = 0; i <= days; i += 5) { // 5 keys are generated: [0, 10, ..., 40]
         int secondsAgo = (i - days) * 24 * 60 * 60;
         NSAssert(secondsAgo <= 0, @"Time in past must be negative");
         NSDate *generatedAt = [NSDate dateWithTimeIntervalSinceNow:secondsAgo];
@@ -69,29 +58,30 @@
                                                                 generatedAt:generatedAt];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
-            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
         });
+        justUploadedSignedPreKeyRecord = record;
     }
 
-    // Sanity check
-    XCTAssertEqual(41, self.signedPreKeyCount);
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
+        [self.signedPreKeyStore cullSignedPreKeyRecordsWithJustUploadedSignedPreKey:justUploadedSignedPreKeyRecord
+                                                                        transaction:transaction];
     });
 
-    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
-
-    // We'll delete every key created 30 or more days ago.
-    XCTAssertEqual(30, self.signedPreKeyCount);
+    XCTAssertNil([self.signedPreKeyStore loadSignedPreKey:0]);
+    XCTAssertNil([self.signedPreKeyStore loadSignedPreKey:5]);
+    XCTAssertNil([self.signedPreKeyStore loadSignedPreKey:10]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:15]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:20]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:25]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:30]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:35]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:40]);
 }
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
 {
-    XCTAssertEqual(0, self.signedPreKeyCount);
-
-    int lastPreKeyId = 10;
-    for (int i = 0; i <= 10; i++) {
+    SignedPreKeyRecord *justUploadedSignedPreKeyRecord;
+    for (int i = 1; i <= 5; i++) {
         // All these keys will be considered "old", since they were created more than 30 days ago.
         int secondsAgo = (i - 40) * 24 * 60 * 60;
         NSAssert(secondsAgo <= 0, @"Time in past must be negative");
@@ -100,57 +90,23 @@
                                                                     keyPair:[ECKeyPair generateKeyPair]
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
-        // we only retain accepted keys
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
-            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
         });
+        justUploadedSignedPreKeyRecord = record;
     }
 
-    // Sanity check
-    XCTAssertEqual(11, self.signedPreKeyCount);
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
+        [self.signedPreKeyStore cullSignedPreKeyRecordsWithJustUploadedSignedPreKey:justUploadedSignedPreKeyRecord
+                                                                        transaction:transaction];
     });
-
-    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
     // We need to keep 3 "old" keys, plus the "current" key
-    XCTAssertEqual(4, self.signedPreKeyCount);
-}
-
-- (void)testOlderRecordsNotDeletedIfNoReplacement
-{
-    XCTAssertEqual(0, self.signedPreKeyCount);
-
-    int days = 3;
-    int lastPreKeyId = days;
-
-    for (int i = 0; i <= days; i++) { // 4 signed keys are generated, one per day from now until 3 days ago.
-        int secondsAgo = (i - days) * 24 * 60 * 60;
-        NSAssert(secondsAgo <= 0, @"Time in past must be negative");
-        NSDate *generatedAt = [NSDate dateWithTimeIntervalSinceNow:secondsAgo];
-        SignedPreKeyRecord *record = [[SignedPreKeyRecord alloc] initWithId:i
-                                                                    keyPair:[ECKeyPair generateKeyPair]
-                                                                  signature:[NSData new]
-                                                                generatedAt:generatedAt];
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
-            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
-        });
-    }
-
-    // Sanity check
-    XCTAssertEqual(4, self.signedPreKeyCount);
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
-    });
-    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
-
-    // All records should still be stored.
-    XCTAssertEqual(4, self.signedPreKeyCount);
+    XCTAssertNil([self.signedPreKeyStore loadSignedPreKey:1]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:2]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:3]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:4]);
+    XCTAssertNotNil([self.signedPreKeyStore loadSignedPreKey:5]);
 }
 
 @end

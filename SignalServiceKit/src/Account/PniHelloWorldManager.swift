@@ -103,9 +103,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         // Use the primary device's existing PNI identity and e164.
         guard
             let localE164 = E164(localIdentifiers.phoneNumber),
-            let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx),
-            let localDevicePniSignedPreKey = pniSignedPreKeyStore.currentSignedPreKey(tx: syncTx),
-            let localDevicePniPqLastResortPreKey = pniKyberPreKeyStore.getLastResortKyberPreKey(tx: syncTx)
+            let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx)
         else {
             logger.warn("Skipping PNI Hello World, missing PNI parameters!")
             return
@@ -113,6 +111,18 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
         let localDeviceId = tsAccountManager.storedDeviceId(tx: syncTx)
         let localDevicePniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: syncTx)
+
+        let localDevicePniSignedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: localPniIdentityKeyPair)
+        pniSignedPreKeyStore.storeSignedPreKey(localDevicePniSignedPreKey.id, signedPreKeyRecord: localDevicePniSignedPreKey, tx: syncTx)
+
+        let localDevicePniPqLastResortPreKey: KyberPreKeyRecord
+        do {
+            localDevicePniPqLastResortPreKey = try pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: localPniIdentityKeyPair, tx: syncTx)
+            try pniKyberPreKeyStore.storeLastResortPreKey(record: localDevicePniPqLastResortPreKey, tx: syncTx)
+        } catch {
+            logger.warn("Skipping PNI Hello World; couldn't generate last resort key")
+            return
+        }
 
         firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
             logger.info("Building PNI distribution parameters.")

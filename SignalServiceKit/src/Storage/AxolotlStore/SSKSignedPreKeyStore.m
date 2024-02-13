@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - SSKSignedPreKeyStore
 
-NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 @interface SSKSignedPreKeyStore ()
@@ -107,11 +106,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
     return [self.keyStore allValuesWithTransaction:transaction];
 }
 
-- (NSArray<NSString *> *)availableSignedPreKeyIdsWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.keyStore allKeysWithTransaction:transaction];
-}
-
 - (void)storeSignedPreKey:(int)signedPreKeyId
        signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
               transaction:(SDSAnyWriteTransaction *)transaction
@@ -121,12 +115,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
                              transaction:transaction];
 }
 
-- (BOOL)containsSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
-                                       transaction:transaction];
-}
-
 - (void)removeSignedPreKey:(int)signedPrekeyId transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"Removing signed prekey id: %lu.", (unsigned long)signedPrekeyId);
@@ -134,70 +122,16 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
     [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:signedPrekeyId] transaction:transaction];
 }
 
-- (nullable NSNumber *)currentSignedPrekeyId
-{
-    __block NSNumber *_Nullable result;
-    [self.databaseStorage
-        readWithBlock:^(
-            SDSAnyReadTransaction *transaction) { result = [self currentSignedPrekeyIdWithTransaction:transaction]; }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-    return result;
-}
-
-- (nullable NSNumber *)currentSignedPrekeyIdWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-}
-
-- (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSLogInfo(@"%lu.", (unsigned long)value);
-    [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-}
-
-- (nullable SignedPreKeyRecord *)currentSignedPreKey
-{
-    __block SignedPreKeyRecord *_Nullable currentRecord;
-    [self.databaseStorage
-        readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
-        }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-
-    return currentRecord;
-}
-
-- (nullable SignedPreKeyRecord *)currentSignedPreKeyWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSNumber *_Nullable preKeyId = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey
-                                                           transaction:transaction];
-
-    if (preKeyId == nil) {
-        return nil;
-    }
-
-    return [self.keyStore signedPreKeyRecordForKey:preKeyId.stringValue transaction:transaction];
-}
-
-- (void)cullSignedPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)cullSignedPreKeyRecordsWithJustUploadedSignedPreKey:(SignedPreKeyRecord *)justUploadedSignedPreKey
+                                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     const NSTimeInterval kSignedPreKeysDeletionTime = 30 * kDayInterval;
-
-    SignedPreKeyRecord *_Nullable currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
-    if (!currentRecord) {
-        OWSFailDebug(@"Couldn't find current signed pre-key; skipping culling until we have one");
-        return;
-    }
 
     NSMutableArray<SignedPreKeyRecord *> *oldSignedPrekeys =
         [[self loadSignedPreKeysWithTransaction:transaction] mutableCopy];
     // Remove the current record from the list.
     for (NSUInteger i = 0; i < oldSignedPrekeys.count; ++i) {
-        if (oldSignedPrekeys[i].Id == currentRecord.Id) {
+        if (oldSignedPrekeys[i].Id == justUploadedSignedPreKey.Id) {
             [oldSignedPrekeys removeObjectAtIndex:i];
             break;
         }

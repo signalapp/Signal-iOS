@@ -99,7 +99,6 @@ public class MockPreKeyStore: SignalPreKeyStore {
 internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
     internal private(set) var generatedSignedPreKeys = [SignalServiceKit.SignedPreKeyRecord]()
     private var preKeyId: Int32 = 0
-    private var currentSignedPreKey: SignalServiceKit.SignedPreKeyRecord?
 
     private(set) var lastSuccessfulRotationDate: Date?
 
@@ -116,19 +115,6 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
     }
 
     func storeSignedPreKey(_ record: LibSignalClient.SignedPreKeyRecord, id: UInt32, context: LibSignalClient.StoreContext) throws {
-    }
-
-    func setCurrentSignedPreKey(_ newSignedPreKey: SignalServiceKit.SignedPreKeyRecord?) {
-        currentSignedPreKey = newSignedPreKey
-    }
-
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
-        currentSignedPreKey
-    }
-
-    func currentSignedPreKeyId(tx: DBReadTransaction) -> Int? {
-        guard let currentSignedPreKey else { return nil }
-        return Int(currentSignedPreKey.id)
     }
 
     func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord {
@@ -151,17 +137,10 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         self.storedSignedPreKeyRecord = signedPreKeyRecord
     }
 
-    func storeSignedPreKeyAsCurrent(
-           signedPreKeyId: Int32,
-           signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-           tx: DBWriteTransaction
-    ) {
-        self.storedSignedPreKeyId = signedPreKeyId
-        self.storedSignedPreKeyRecord = signedPreKeyRecord
-        self.currentSignedPreKey = signedPreKeyRecord
-    }
-
-    func cullSignedPreKeyRecords(tx: DBWriteTransaction) { }
+    func cullSignedPreKeyRecords(
+        justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
+        tx: DBWriteTransaction
+    ) {}
 
     func removeSignedPreKey(
         _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -198,7 +177,6 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     private(set) var lastSuccessfulRotationDate: Date?
 
     private(set) var lastResortRecords = [SignalServiceKit.KyberPreKeyRecord]()
-    private(set) var currentLastResortPreKey: SignalServiceKit.KyberPreKeyRecord!
     private(set) var didStoreLastResortRecord = false
 
     private(set) var oneTimeRecords = [SignalServiceKit.KyberPreKeyRecord]()
@@ -208,10 +186,6 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
 
     init(dateProvider: @escaping DateProvider) {
         self.dateProvider = dateProvider
-    }
-
-    func getLastResortKyberPreKey(tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
-        return currentLastResortPreKey
     }
 
     func generateLastResortKyberPreKey(signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
@@ -262,8 +236,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         )
     }
 
-    public func storeLastResortPreKeyAndMarkAsCurrent(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
-        currentLastResortPreKey = record
+    public func storeLastResortPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
         didStoreLastResortRecord = true
     }
 
@@ -281,7 +254,7 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
 
     func cullOneTimePreKeyRecords(tx: DBWriteTransaction) { }
 
-    func cullLastResortPreKeyRecords(tx: DBWriteTransaction) { }
+    func cullLastResortPreKeyRecords(justUploadedLastResortPreKey: KyberPreKeyRecord, tx: DBWriteTransaction) {}
 
     func removeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,

@@ -21,31 +21,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 - (void)storeSignedPreKey:(int)signedPreKeyId
        signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)containsSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction;
-
 - (void)removeSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)cullSignedPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(cullSignedPreKeyRecords(transaction:));
+- (void)cullSignedPreKeyRecordsWithJustUploadedSignedPreKey:(SignedPreKeyRecord *)justUploadedSignedPreKey
+                                                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(cullSignedPreKeyRecords(justUploadedSignedPreKey:transaction:));
 
 #pragma mark -
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
-
-- (nullable SignedPreKeyRecord *)currentSignedPreKey;
-- (nullable SignedPreKeyRecord *)currentSignedPreKeyWithTransaction:(SDSAnyReadTransaction *)transaction;
-
-// Returns nil if no current signed prekey id is found.
-- (nullable NSNumber *)currentSignedPrekeyId;
-- (nullable NSNumber *)currentSignedPrekeyIdWithTransaction:(SDSAnyReadTransaction *)transaction;
-
-- (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Prekey rotation tracking
 - (void)setLastSuccessfulRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction;

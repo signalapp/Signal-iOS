@@ -15,6 +15,7 @@ final class PreKeyTaskTests: XCTestCase {
     private var mockLinkedDevicePniKeyManager: PreKey.Mocks.LinkedDevicePniKeyManager!
     private var mockServiceClient: PreKey.Mocks.AccountServiceClient!
     private var mockDateProvider: PreKey.Mocks.DateProvider!
+    private var mockDb: MockDB!
 
     private var taskManager: PreKeyTaskManager!
 
@@ -29,6 +30,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockLinkedDevicePniKeyManager = .init()
         mockServiceClient = .init()
         mockDateProvider = .init()
+        mockDb = MockDB()
 
         mockAciProtocolStore = .init()
         mockPniProtocolStore = .init()
@@ -39,7 +41,7 @@ final class PreKeyTaskTests: XCTestCase {
 
         taskManager = PreKeyTaskManager(
             dateProvider: mockDateProvider.targetDate,
-            db: MockDB(),
+            db: mockDb,
             identityManager: mockIdentityManager,
             linkedDevicePniKeyManager: mockLinkedDevicePniKeyManager,
             messageProcessor: PreKey.Mocks.MessageProcessor(),
@@ -136,23 +138,6 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
     }
 
-    func testMockCreateSignedPreKeyWithExisting() async throws {
-        mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
-        mockServiceClient.setPreKeysResult = .value(())
-
-        let originalSignedPreKey = mockAciProtocolStore.mockSignedPreKeyStore.generateRandomSignedRecord()
-        mockAciProtocolStore.mockSignedPreKeyStore.setCurrentSignedPreKey(originalSignedPreKey)
-        XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
-
-        _ = try await taskManager.rotate(identity: .aci, targets: .signedPreKey, auth: .implicit())
-
-        XCTAssertNil(mockServiceClient.preKeyRecords)
-        XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.currentSignedPreKey)
-        XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
-        XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
-        XCTAssertNil(mockServiceClient.pqPreKeyRecords)
-    }
-
     func testMockCreatePreKeyOnlyWithExisting() async throws {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
@@ -176,7 +161,6 @@ final class PreKeyTaskTests: XCTestCase {
         // Pre-validate
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 0)
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 0)
-        XCTAssertNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
 
         _ = try await taskManager.rotate(
             identity: .aci,
@@ -186,7 +170,7 @@ final class PreKeyTaskTests: XCTestCase {
 
         // Validate
         XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 100)
-        XCTAssertNotNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
+        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 1)
 
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
@@ -214,7 +198,13 @@ final class PreKeyTaskTests: XCTestCase {
         mockIdentityManager.aciKeyPair = aciKeyPair
 
         let originalSignedPreKey = mockAciProtocolStore.mockSignedPreKeyStore.generateRandomSignedRecord()
-        mockAciProtocolStore.mockSignedPreKeyStore.setCurrentSignedPreKey(originalSignedPreKey)
+        mockDb.write { tx in
+            mockAciProtocolStore.mockSignedPreKeyStore.storeSignedPreKey(
+                originalSignedPreKey.id,
+                signedPreKeyRecord: originalSignedPreKey,
+                tx: tx
+            )
+        }
 
         mockServiceClient.setPreKeysResult = .value(())
         mockServiceClient.currentPreKeyCount = 0
@@ -222,17 +212,12 @@ final class PreKeyTaskTests: XCTestCase {
 
         mockDateProvider.currentDate = Date(timeIntervalSinceNow: PreKeyTaskManager.Constants.SignedPreKeyRotationTime + 1)
 
-        XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.currentSignedPreKey)
-
         _ = try await taskManager.refresh(identity: .aci, targets: .all, auth: .implicit())
 
         let sentSignedPreKeyRecord = mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNotNil(sentSignedPreKeyRecord)
-        XCTAssertNotEqual(
-            sentSignedPreKeyRecord!.generatedAt,
-            originalSignedPreKey.generatedAt
-        )
+        XCTAssertNotEqual(sentSignedPreKeyRecord!.id, originalSignedPreKey.id)
     }
 
     func testMockPreKeyTaskNoUpdate() async throws {
@@ -302,9 +287,12 @@ final class PreKeyTaskTests: XCTestCase {
 
         mockServiceClient.currentPreKeyCount = 100
         mockServiceClient.currentPqPreKeyCount = 100
-
-        let originalSignedPreKey = mockAciProtocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: mockIdentityManager.aciKeyPair!)
-        mockAciProtocolStore.mockSignedPreKeyStore.setCurrentSignedPreKey(originalSignedPreKey)
+        mockDb.write { tx in
+            mockAciProtocolStore.mockSignedPreKeyStore.setLastSuccessfulRotationDate(
+                mockDateProvider.currentDate,
+                tx: tx
+            )
+        }
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
@@ -324,9 +312,12 @@ final class PreKeyTaskTests: XCTestCase {
         mockServiceClient.setPreKeysResult = .value(())
 
         mockServiceClient.currentPreKeyCount = 100
-
-        let originalSignedPreKey = mockAciProtocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: mockIdentityManager.aciKeyPair!)
-        mockAciProtocolStore.mockSignedPreKeyStore.setCurrentSignedPreKey(originalSignedPreKey)
+        mockDb.write { tx in
+            mockAciProtocolStore.mockSignedPreKeyStore.setLastSuccessfulRotationDate(
+                mockDateProvider.currentDate,
+                tx: tx
+            )
+        }
 
         XCTAssertEqual(mockAciProtocolStore.mockPreKeyStore.records.count, 0)
 
@@ -403,12 +394,6 @@ final class PreKeyTaskTests: XCTestCase {
         mockIdentityManager.aciKeyPair = ECKeyPair.generateKeyPair()
         mockServiceClient.setPreKeysResult = .value(())
 
-        let originalSignedPreKey = mockAciProtocolStore
-            .signedPreKeyStore
-            .generateSignedPreKey(
-                signedBy: mockIdentityManager.aciKeyPair!
-            )
-        mockAciProtocolStore.mockSignedPreKeyStore.setCurrentSignedPreKey(originalSignedPreKey)
         mockDateProvider.currentDate = Date().addingTimeInterval(PreKeyTaskManager.Constants.SignedPreKeyRotationTime + 1)
 
         _ = try await taskManager.refresh(identity: .aci, targets: .signedPreKey, auth: .implicit())
