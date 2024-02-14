@@ -113,7 +113,7 @@ final class LocalProfileChecker {
             if localProfile.familyName != mostRecentRemoteProfile.decryptedProfile.familyName {
                 mismatchedProperties.append("familyName")
             }
-            let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx) == .everybody
+            let localPhoneNumberSharing = udManager.phoneNumberSharingMode(tx: tx).orDefault == .everybody
             if localPhoneNumberSharing != mostRecentRemoteProfile.decryptedProfile.phoneNumberSharing {
                 mismatchedProperties.append("phoneNumberSharing")
             }
