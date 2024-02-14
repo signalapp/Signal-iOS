@@ -424,20 +424,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }()
 
         let detailsText = { () -> String? in
-            if contactThread.isNoteToSelf {
-                return OWSLocalizedString("THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
-                                         comment: "Subtitle appearing at the top of the users 'note to self' conversation")
-            }
-            var details: String?
-            let threadName = contactName
-            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != threadName {
-                let formattedNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
-                if threadName != formattedNumber {
-                    details = formattedNumber
-                }
-            }
-
-            return details
+            guard contactThread.isNoteToSelf else { return nil }
+            return OWSLocalizedString(
+                "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
+                comment: "Subtitle appearing at the top of the users 'note to self' conversation"
+            )
         }()
 
         var shouldShowLearnMore = false
@@ -506,7 +497,31 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 icon = "group-resizable"
             }
 
+            // In order for the phone number to appear in the same box as the
+            // mutual groups, it needs to be part of the same label.
+            let phoneNumberString: NSAttributedString = {
+                let phoneNumber = contactThread.contactAddress.phoneNumber
+                let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber:))
+                guard
+                    let formattedPhoneNumber,
+                    phoneNumber != contactName,
+                    formattedPhoneNumber != contactName
+                else {
+                    return NSAttributedString()
+                }
+                return NSAttributedString.composed(of: [
+                    NSAttributedString.with(image: Theme.iconImage(.contactInfoPhone), font: Self.mutualGroupsFont),
+                    "  ",
+                    formattedPhoneNumber,
+                    "\n"
+                ]).styled(
+                    with: .paragraphSpacingAfter(Self.mutualGroupsFont.lineHeight * 0.5),
+                    .alignment(.center)
+                )
+            }()
+
             return NSAttributedString.composed(of: [
+                phoneNumberString, // Will be empty if unknown
                 NSAttributedString.with(
                     image: UIImage(named: icon)!,
                     font: Self.mutualGroupsFont
